@@ -413,10 +413,11 @@ class CopySharedImageHelperTest
 // Reads back a D3D backed NV12 shared image and compares the result against
 // libyuv scaling the same source.
 TEST_P(CopySharedImageHelperTest, ReadPixelsYUVNV12) {
-  // TODO: Investigate why the readback fails for NV12 images on Ganesh.
-  if (!context_state_->IsGraphiteDawn()) {
-    GTEST_SKIP() << "NV12 readback fails on Ganesh";
-  }
+  // On Ganesh/GL only scaled readbacks work: unscaled ones would read the NV12
+  // plane textures directly, which ANGLE on D3D11 can't do, so they take the
+  // generic YUV420 readback, which fails on Ganesh.
+  // TODO: Investigate why the generic readback fails for NV12 on Ganesh.
+  const bool skip_unscaled = !context_state_->IsGraphiteDawn();
   constexpr gfx::Size kSrcSize(128, 128);
   // The readback converts YUV->RGB, scales and converts back; the reference
   // scales in YUV. Both are exact for the gradients up to rounding.
@@ -444,6 +445,9 @@ TEST_P(CopySharedImageHelperTest, ReadPixelsYUVNV12) {
       {gfx::Rect(32, 16, 64, 96), gfx::Size(32, 48)},
   };
   for (const auto& [src_rect, dst_size] : kCases) {
+    if (skip_unscaled && src_rect.size() == dst_size) {
+      continue;
+    }
     SCOPED_TRACE(testing::Message() << "src_rect=" << src_rect.ToString()
                                     << " dst_size=" << dst_size.ToString());
     I420Image result(dst_size);
