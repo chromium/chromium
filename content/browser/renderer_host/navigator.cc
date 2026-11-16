@@ -11,7 +11,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
@@ -679,7 +678,6 @@ void Navigator::DidNavigate(
 
   int old_entry_count = controller_.GetEntryCount();
   LoadCommittedDetails details;
-  base::TimeTicks start = base::TimeTicks::Now();
   NavigationControllerImpl::CommitResult commit_result =
       controller_.RendererDidNavigate(
           render_frame_host, params, &details, was_within_same_document,
@@ -687,13 +685,6 @@ void Navigator::DidNavigate(
           previous_document_history_intervention_activation, caused_by_ad,
           navigation_request.get());
   bool did_navigate = commit_result.did_navigate;
-  if (!was_within_same_document) {
-    base::UmaHistogramTimes(
-        base::StrCat(
-            {"Navigation.RendererDidNavigateTime.",
-             render_frame_host->GetParent() ? "Subframe" : "MainFrame"}),
-        base::TimeTicks::Now() - start);
-  }
 
   // Update the RenderFrameHost's last committed FrameNavigationEntry, to have a
   // record of it in rare cases where the last committed NavigationEntry may not
