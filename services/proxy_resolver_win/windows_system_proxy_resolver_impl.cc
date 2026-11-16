@@ -86,7 +86,7 @@ bool GetProxyChainFromWinHttpResultEntry(
 
   // At this point the string in `host_wide` is ASCII.
   std::string host;
-  if (!base::WideToUTF8(host_wide.data(), host_wide.length(), &host)) {
+  if (!base::WideToUTF8(host_wide, &host)) {
     return false;
   }
 
