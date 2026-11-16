@@ -465,6 +465,14 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
   frame_node->SetIsRendered(visibility !=
                             blink::mojom::FrameVisibility::kNotRendered);
 
+  // An attached Surface Embed child can outlive its embedder's FrameNode.
+  // Its main frame then has no graph parent, so viewport intersection is not
+  // tracked even though visibility notifications can still arrive.
+  if (web_contents()->GetSurfaceEmbedConnector() &&
+      !frame_node->parent_or_outer_document_or_embedder()) {
+    return;
+  }
+
   ViewportIntersection viewport_intersection = [&]() {
     switch (visibility) {
       case blink::mojom::FrameVisibility::kNotRendered:

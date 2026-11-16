@@ -24,9 +24,11 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/surface_embed_connector.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -244,18 +246,18 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
   content::SurfaceEmbedConnector::Attach(
       child_contents, parent_contents->GetPrimaryMainFrame(), nullptr);
 
-  auto page_node =
+  auto child_page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(child_contents);
-  ASSERT_TRUE(page_node);
+  ASSERT_TRUE(child_page_node);
 
-  const FrameNode* embedder_frame = page_node->GetEmbedderFrameNode();
+  const FrameNode* embedder_frame = child_page_node->GetEmbedderFrameNode();
   ASSERT_TRUE(embedder_frame);
   EXPECT_EQ(
       embedder_frame->GetPageNode(),
       PerformanceManager::GetPrimaryPageNodeForWebContents(parent_contents)
           .get());
 
-  auto* frame_node = page_node->GetPrimaryMainFrameNode();
+  auto* frame_node = child_page_node->GetPrimaryMainFrameNode();
   ASSERT_TRUE(frame_node);
 
   auto* frame_node_impl = FrameNodeImpl::FromNode(frame_node);
@@ -271,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
   content::SurfaceEmbedConnector::Detach(child_contents);
 
   // The embedder frame node should be null after detaching.
-  EXPECT_FALSE(page_node->GetEmbedderFrameNode());
+  EXPECT_FALSE(child_page_node->GetEmbedderFrameNode());
 }
 
 // The embedder frame node can leave the graph while a SurfaceEmbed child is
@@ -290,20 +292,133 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
   content::SurfaceEmbedConnector::Attach(
       child_contents.get(), parent_contents->GetPrimaryMainFrame(), nullptr);
 
-  base::WeakPtr<PageNode> page_node =
+  base::WeakPtr<PageNode> child_page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(
           child_contents.get());
-  ASSERT_TRUE(page_node);
-  ASSERT_TRUE(page_node->GetEmbedderFrameNode());
+  ASSERT_TRUE(child_page_node);
+  ASSERT_TRUE(child_page_node->GetEmbedderFrameNode());
 
   // Removing the embedder's main frame node from the graph severs the
   // embedding relationship.
   content::CrashTab(parent_contents);
-  ASSERT_TRUE(page_node);
-  EXPECT_FALSE(page_node->GetEmbedderFrameNode());
+  ASSERT_TRUE(child_page_node);
+  EXPECT_FALSE(child_page_node->GetEmbedderFrameNode());
 
   child_contents.reset();
-  EXPECT_FALSE(page_node);
+  EXPECT_FALSE(child_page_node);
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
+                       DetachSurfaceEmbedChildAfterEmbedderNavigation) {
+  content::WebContents* parent_contents = shell()->web_contents();
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/a.html")));
+  content::DisableBackForwardCacheForTesting(
+      parent_contents, content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  content::WebContents::CreateParams create_params(
+      parent_contents->GetBrowserContext());
+  std::unique_ptr<content::WebContents> child_contents =
+      content::WebContents::Create(create_params);
+  ASSERT_TRUE(
+      NavigateToURL(child_contents.get(),
+                    embedded_test_server()->GetURL("b.com", "/a.html")));
+
+  content::SurfaceEmbedConnector::Attach(
+      child_contents.get(), parent_contents->GetPrimaryMainFrame(), nullptr);
+  child_contents->GetSurfaceEmbedConnector()->OnVisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedInViewport);
+  auto child_page_node = PerformanceManager::GetPrimaryPageNodeForWebContents(
+      child_contents.get());
+  ASSERT_TRUE(child_page_node);
+  ASSERT_TRUE(child_page_node->GetEmbedderFrameNode());
+  ASSERT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+
+  content::RenderFrameDeletedObserver old_frame_deleted(
+      parent_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("c.com", "/a.html")));
+  ASSERT_TRUE(old_frame_deleted.WaitUntilDeleted());
+
+  ASSERT_TRUE(child_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_FALSE(child_page_node->GetEmbedderFrameNode());
+  ASSERT_TRUE(child_contents->GetSurfaceEmbedConnector());
+  EXPECT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  content::SurfaceEmbedConnector::Detach(child_contents.get());
+  EXPECT_FALSE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
+                       DetachSurfaceEmbedChildAfterEmbedderProcessDied) {
+  content::WebContents* parent_contents = shell()->web_contents();
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/a.html")));
+
+  content::WebContents::CreateParams create_params(
+      parent_contents->GetBrowserContext());
+  std::unique_ptr<content::WebContents> child_contents =
+      content::WebContents::Create(create_params);
+  ASSERT_TRUE(
+      NavigateToURL(child_contents.get(),
+                    embedded_test_server()->GetURL("b.com", "/a.html")));
+  ASSERT_NE(parent_contents->GetPrimaryMainFrame()->GetProcess(),
+            child_contents->GetPrimaryMainFrame()->GetProcess());
+
+  content::SurfaceEmbedConnector::Attach(
+      child_contents.get(), parent_contents->GetPrimaryMainFrame(), nullptr);
+  child_contents->GetSurfaceEmbedConnector()->OnVisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedInViewport);
+  auto child_page_node = PerformanceManager::GetPrimaryPageNodeForWebContents(
+      child_contents.get());
+  ASSERT_TRUE(child_page_node);
+  ASSERT_TRUE(child_page_node->GetEmbedderFrameNode());
+  ASSERT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+
+  content::CrashTab(parent_contents);
+  ASSERT_TRUE(child_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_FALSE(child_page_node->GetEmbedderFrameNode());
+  ASSERT_TRUE(child_contents->GetSurfaceEmbedConnector());
+  EXPECT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+  content::SurfaceEmbedConnector::Detach(child_contents.get());
+  EXPECT_FALSE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
+                       VisibilitySyncAfterSurfaceEmbedderProcessDied) {
+  content::WebContents* parent_contents = shell()->web_contents();
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/a.html")));
+
+  content::WebContents::CreateParams create_params(
+      parent_contents->GetBrowserContext());
+  std::unique_ptr<content::WebContents> child_contents =
+      content::WebContents::Create(create_params);
+  ASSERT_TRUE(
+      NavigateToURL(child_contents.get(),
+                    embedded_test_server()->GetURL("b.com", "/a.html")));
+  ASSERT_NE(parent_contents->GetPrimaryMainFrame()->GetProcess(),
+            child_contents->GetPrimaryMainFrame()->GetProcess());
+
+  content::SurfaceEmbedConnector::Attach(
+      child_contents.get(), parent_contents->GetPrimaryMainFrame(), nullptr);
+  auto child_page_node = PerformanceManager::GetPrimaryPageNodeForWebContents(
+      child_contents.get());
+  ASSERT_TRUE(child_page_node);
+  ASSERT_TRUE(child_page_node->GetEmbedderFrameNode());
+
+  content::CrashTab(parent_contents);
+  ASSERT_TRUE(child_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  ASSERT_FALSE(child_page_node->GetEmbedderFrameNode());
+  ASSERT_TRUE(child_contents->GetSurfaceEmbedConnector());
+
+  // Simulate a delayed visibility sync while the connector remains attached
+  // but the embedder's FrameNode is already gone.
+  child_contents->GetSurfaceEmbedConnector()->OnVisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedInViewport);
+  EXPECT_TRUE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
+
+  content::SurfaceEmbedConnector::Detach(child_contents.get());
+  EXPECT_FALSE(child_page_node->GetPrimaryMainFrameNode()->IsRendered());
 }
 
 }  // namespace performance_manager
