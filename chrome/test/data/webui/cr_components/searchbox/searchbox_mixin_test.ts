@@ -653,6 +653,48 @@ suite('SearchboxMixinTest', () => {
     assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
   });
 
+  test('pressing Ctrl+Enter in keyword mode acts as normal enter', async () => {
+    element.shouldAppendDotCom = true;
+    element.keywordModeManager.enter(
+        'youtube.com', 'YouTube', KeywordModeEntryMethod.TAB);
+    assertTrue(element.inKeywordMode);
+
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, 'hello');
+
+    const matches = [
+      createSearchMatchForTesting({
+        allowedToBeDefaultMatch: true,
+        fillIntoEdit: 'youtube.com hello',
+        keywordModel: createMatchKeywordModelForTesting({
+          type: KeywordType.kInKeyword,
+          keyword: 'youtube.com',
+          chipHint: 'Search YouTube',
+        }),
+      }),
+    ];
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'hello',
+      matches: matches,
+    }));
+    await microtasksFinished();
+    assertTrue(element.dropdownIsVisible);
+
+    const enterEvent = createKeyboardEvent('Enter', {ctrlKey: true});
+    mockInput.inputElement.dispatchEvent(enterEvent);
+    assertTrue(enterEvent.defaultPrevented);
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('openPopupSelection'));
+    assertEquals(
+        0, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
+    const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(0, args.line);
+    assertEquals(matches[0]!.destinationUrl, args.url);
+    assertTrue(args.viaKeyboard);
+  });
+
   test(
       'pressing Ctrl+Enter acts as normal enter on non-omnibox searchbox',
       async () => {

@@ -400,6 +400,51 @@ suite('OmniboxPopupSearchboxTest', function() {
     }
   });
 
+  test(
+      'CtrlEnterInKeywordModeSubmitsVerbatimMatchWhenNoMatchSelected',
+      async () => {
+        for (const virtualFocus of [false, true]) {
+          loadTimeData.overrideValues(
+              {realboxVirtualFocusNavigation: virtualFocus});
+          searchbox.virtualFocusEnabled = virtualFocus;
+          testProxy.handler.resetResolver('openAutocompleteMatch');
+
+          callbackRouter.setInputState(createDefaultOmniboxInputState({
+            text: '',
+            userInputInProgress: true,
+            isFocused: true,
+            keywordModel: {
+              type: KeywordType.kInKeyword,
+              keyword: 'youtube.com',
+              displayText: 'Search YouTube',
+              iconPath: '',
+              placeholder: '',
+            },
+          }));
+          await microtasksFinished();
+          assertTrue(searchbox.inKeywordMode);
+          assertEquals(-1, searchbox.selectedMatchIndex);
+
+          await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+            key: 'Enter',
+            ctrlKey: true,
+            cancelable: true,
+          }));
+          await microtasksFinished();
+
+          assertEquals(0, testProxy.handler.getCallCount('openPopupSelection'));
+          assertEquals(
+              0,
+              testProxy.handler.getCallCount(
+                  'openPopupSelectionWithDisposition'));
+          const [, line, , , , modifiers, viaKeyboard] =
+              await testProxy.handler.whenCalled('openAutocompleteMatch');
+          assertEquals(-1, line);
+          assertTrue(modifiers.ctrlKey);
+          assertTrue(viaKeyboard);
+        }
+      });
+
   test('HandlesSelectionChange', async () => {
     // Focus the input so it's the active element.
     const input = searchbox.$.input.inputElement;
