@@ -4594,6 +4594,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, SearchOpenParam) {
+  // Isolate from desktop size so page 1 isn't already visible at scrollTop 0.
+  GetActiveWebContents()->Resize({0, 0, 1024, 768});
+
   const GURL url = embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf");
   // Opening with #search="Subsection" scrolls to page index 1.
   content::RenderFrameHost* extension_host =
