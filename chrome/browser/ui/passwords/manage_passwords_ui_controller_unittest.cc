@@ -1578,6 +1578,35 @@ TEST_F(ManagePasswordsUIControllerTest, ChooseCredentialPSL) {
   EXPECT_THAT(controller()->GetCurrentForms(), IsEmpty());
 }
 
+// Regression test for crbug.com/585087930.
+TEST_F(ManagePasswordsUIControllerTest,
+       MoveToAccountBubbleClosesAccountChooser) {
+  std::vector<std::unique_ptr<PasswordForm>> local_credentials;
+  local_credentials.push_back(
+      std::make_unique<PasswordForm>(test_local_form()));
+  auto prompt = std::make_unique<CredentialManagementDialogPromptMock>();
+  auto* prompt_ptr = prompt.get();
+  EXPECT_CALL(*controller(), CreateAccountChooser(_))
+      .WillOnce(Return(std::move(prompt)));
+  EXPECT_CALL(*prompt_ptr, ShowAccountChooser());
+  EXPECT_CALL(*controller(), HasBrowserWindow()).WillOnce(Return(true));
+  base::MockCallback<ManagePasswordsState::CredentialsCallback> choose_callback;
+  ASSERT_TRUE(controller()->OnChooseCredentials(
+      std::move(local_credentials), url::Origin::Create(GURL(kExampleUrl)),
+      choose_callback.Get()));
+
+  // A successful login with a profile store password while the account chooser
+  // is open closes the chooser and resolves its request without a credential.
+  // A chooser that stayed open could still be accepted, which crashed.
+  EXPECT_CALL(*prompt_ptr, ControllerGone());
+  EXPECT_CALL(choose_callback, Run(nullptr));
+  controller()->OnShowMoveToAccountBubble(
+      CreateFormManagerWithBestMatches({test_local_form()}, &submitted_form()));
+  EXPECT_EQ(nullptr, controller()->dialog_controller());
+  EXPECT_EQ(password_manager::ui::MOVE_CREDENTIAL_AFTER_LOG_IN_STATE,
+            controller()->GetState());
+}
+
 TEST_F(ManagePasswordsUIControllerTest, AutoSignin) {
   std::vector<std::unique_ptr<PasswordForm>> local_credentials;
   local_credentials.emplace_back(new PasswordForm(test_local_form()));
