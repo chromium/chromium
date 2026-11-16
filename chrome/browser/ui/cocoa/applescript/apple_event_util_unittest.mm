@@ -226,7 +226,7 @@ TEST_F(AppleEventUtilTest, ValueToAppleEventDescriptor) {
     std::optional<base::Value> value = base::JSONReader::Read(
         test_case.json_input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     NSAppleEventDescriptor* descriptor =
-        chrome::mac::ValueToAppleEventDescriptor(value.value());
+        AppleScript::ValueToAppleEventDescriptor(value.value());
 
     EXPECT_EQ(test_case.expected_aedesc_dump, AEDescToString(descriptor.aeDesc))
         << "i: " << i;
@@ -242,7 +242,7 @@ TEST_F(AppleEventUtilTest, ValueToAppleEventDescriptor) {
   for (bool b : {true, false}) {
     base::Value value(b);
     NSAppleEventDescriptor* descriptor =
-        chrome::mac::ValueToAppleEventDescriptor(value);
+        AppleScript::ValueToAppleEventDescriptor(value);
 
     EXPECT_EQ(typeBoolean, descriptor.descriptorType);
     EXPECT_EQ(b, descriptor.booleanValue);

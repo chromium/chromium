@@ -4,10 +4,11 @@
 
 #import "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 
-#import <Carbon/Carbon.h>
-#include <stddef.h>
+#include <Carbon/Carbon.h>
+#import <Foundation/Foundation.h>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
@@ -15,9 +16,11 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
-namespace chrome::mac {
+namespace AppleScript {
 
 namespace {
+
+NSScriptCommand* gOverrideCurrentScriptCommand = nil;
 
 void AppendValueToListDescriptor(NSAppleEventDescriptor* list,
                                  const base::Value& value) {
@@ -121,4 +124,21 @@ bool IsJavaScriptEnabledForProfile(Profile* profile) {
   return prefs->GetBoolean(prefs::kAllowJavascriptAppleEvents);
 }
 
-}  // namespace chrome::mac
+NSScriptCommand* GetCurrentScriptCommand() {
+  if (gOverrideCurrentScriptCommand) {
+    return gOverrideCurrentScriptCommand;
+  }
+  return NSScriptCommand.currentCommand;
+}
+
+ScopedCurrentScriptCommand::ScopedCurrentScriptCommand(NSScriptCommand* command) {
+  CHECK_EQ(nil, gOverrideCurrentScriptCommand);
+  gOverrideCurrentScriptCommand = command;
+}
+
+ScopedCurrentScriptCommand::~ScopedCurrentScriptCommand() {
+  CHECK_NE(nil, gOverrideCurrentScriptCommand);
+  gOverrideCurrentScriptCommand = nil;
+}
+
+}  // namespace AppleScript

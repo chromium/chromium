@@ -10,7 +10,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#import "chrome/browser/ui/cocoa/applescript/applescript_test_utils.h"
+#include "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #include "chrome/common/pref_names.h"
@@ -44,7 +44,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetURL) {
             GURL(base::SysNSStringToUTF8(item1.URL)));
 
   // If scripter enters invalid URL.
-  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  NSScriptCommand* fake_script_command = [[NSScriptCommand alloc] init];
+  ScopedCurrentScriptCommand scoped_current_command(fake_script_command);
   item1.URL = @"invalid-url.org";
   EXPECT_EQ(std::to_underlying(Error::kInvalidURL),
             fake_script_command.scriptErrorNumber);
@@ -58,7 +59,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetJavascriptURL) {
   NSArray* bookmark_items = bookmark_bar_.bookmarkItems;
   BookmarkItemAppleScript* item1 = bookmark_items[0];
 
-  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  NSScriptCommand* fake_script_command = [[NSScriptCommand alloc] init];
+  ScopedCurrentScriptCommand scoped_current_command(fake_script_command);
   item1.URL = @"javascript:alert('hi');";
   EXPECT_EQ(std::to_underlying(Error::kJavaScriptUnsupported),
             fake_script_command.scriptErrorNumber);

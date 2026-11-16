@@ -12,7 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
-#import "chrome/browser/ui/cocoa/applescript/applescript_test_utils.h"
+#include "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
@@ -37,7 +37,8 @@ class TabAppleScriptTest : public InProcessBrowserTest {
 // Calls the method that handles the "View Source" command and returns the
 // script error number.
 int ExecuteViewSourceCommand(TabAppleScript* tab_applescript) {
-  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  NSScriptCommand* fake_script_command = [[NSScriptCommand alloc] init];
+  ScopedCurrentScriptCommand scoped_current_command(fake_script_command);
   [tab_applescript handlesViewSourceScriptCommand:nil];
   return fake_script_command.scriptErrorNumber;
 }
@@ -45,7 +46,8 @@ int ExecuteViewSourceCommand(TabAppleScript* tab_applescript) {
 // Calls the method that handles the "Execute Javascript" command and returns
 // the script error number.
 int ExecuteJavascriptCommand(TabAppleScript* tab_applescript) {
-  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  NSScriptCommand* fake_script_command = [[NSScriptCommand alloc] init];
+  ScopedCurrentScriptCommand scoped_current_command(fake_script_command);
   [tab_applescript handlesExecuteJavascriptScriptCommand:nil];
   return fake_script_command.scriptErrorNumber;
 }

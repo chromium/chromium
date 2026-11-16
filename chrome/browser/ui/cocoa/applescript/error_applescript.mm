@@ -8,16 +8,14 @@
 
 #include <utility>
 
-#include "base/notreached.h"
+#include "base/check.h"
+#include "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 namespace AppleScript {
 
 void SetError(Error error_code) {
-  NSScriptCommand* current_command = [NSScriptCommand currentCommand];
-  current_command.scriptErrorNumber = std::to_underlying(error_code);
-
   NSString* error_string = @"";
   switch (error_code) {
     case Error::kGetProfile:
@@ -71,6 +69,10 @@ void SetError(Error error_code) {
           l10n_util::GetNSString(IDS_DEV_TOOLS_NOT_ALLOWED_APPLESCRIPT_MAC);
       break;
   }
+
+  NSScriptCommand* current_command = GetCurrentScriptCommand();
+  CHECK(current_command);
+  current_command.scriptErrorNumber = std::to_underlying(error_code);
   current_command.scriptErrorString = error_string;
 }
 

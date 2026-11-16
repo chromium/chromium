@@ -63,7 +63,7 @@ using bookmarks::BookmarkNode;
     return;
   }
 
-  if (!chrome::mac::IsJavaScriptEnabledForProfile(
+  if (!AppleScript::IsJavaScriptEnabledForProfile(
           AppController.sharedController.lastProfile) &&
       gurl.SchemeIs(url::kJavaScriptScheme)) {
     AppleScript::SetError(AppleScript::Error::kJavaScriptUnsupported);

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #include "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #include "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
@@ -63,7 +64,7 @@
 
 - (instancetype)init {
   // Check which mode to open a new window.
-  NSScriptCommand* command = [NSScriptCommand currentCommand];
+  NSScriptCommand* command = AppleScript::GetCurrentScriptCommand();
   NSString* mode = command.evaluatedArguments[@"KeyDictionary"][@"mode"];
 
   Profile* lastProfile = AppController.sharedController.lastProfile;

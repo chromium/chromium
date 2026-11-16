@@ -11,7 +11,7 @@
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/profiles/profile.h"
-#import "chrome/browser/ui/cocoa/applescript/applescript_test_utils.h"
+#include "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
@@ -161,7 +161,8 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTabViaIndex) {
   EXPECT_NSEQ(window.activeTab, tab2);
 
   // Switch to bogus tab, verify.
-  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  NSScriptCommand* fake_script_command = [[NSScriptCommand alloc] init];
+  ScopedCurrentScriptCommand scoped_current_command(fake_script_command);
   window.activeTabIndex = @100;
   EXPECT_EQ(std::to_underlying(Error::kInvalidTab),
             fake_script_command.scriptErrorNumber);
@@ -190,7 +191,8 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTabViaObject) {
   // Switch to bogus tab, verify.
   WindowAppleScript* window2 =
       [[WindowAppleScript alloc] initWithBrowser:CreateBrowser(GetProfile())];
-  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  NSScriptCommand* fake_script_command = [[NSScriptCommand alloc] init];
+  ScopedCurrentScriptCommand scoped_current_command(fake_script_command);
   window.activeTab = window2.tabs[0];
   EXPECT_EQ(std::to_underlying(Error::kInvalidTab),
             fake_script_command.scriptErrorNumber);

@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/strings/sys_string_conversions.h"
-#import "chrome/browser/ui/cocoa/applescript/applescript_test_utils.h"
+#include "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_item_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
@@ -137,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, InsertBookmarkItem) {
   EXPECT_NSEQ(unique_id, bi.uniqueID);
 
   // Test to see no bookmark item is created when no/invalid URL is entered.
-  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  NSScriptCommand* fake_script_command = [[NSScriptCommand alloc] init];
+  ScopedCurrentScriptCommand scoped_current_command(fake_script_command);
   bookmark_item = [[BookmarkItemAppleScript alloc] init];
   [bookmark_bar_ insertInBookmarkItems:bookmark_item];
   EXPECT_EQ(std::to_underlying(Error::kInvalidURL),
@@ -169,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest,
   EXPECT_NSEQ(unique_id, bi.uniqueID);
 
   // Test to see no bookmark item is created when no/invalid URL is entered.
-  FakeScriptCommand* fake_script_command = [[FakeScriptCommand alloc] init];
+  NSScriptCommand* fake_script_command = [[NSScriptCommand alloc] init];
+  ScopedCurrentScriptCommand scoped_current_command(fake_script_command);
   bookmark_item = [[BookmarkItemAppleScript alloc] init];
   [bookmark_bar_ insertInBookmarkItems:bookmark_item atIndex:1];
   EXPECT_EQ(std::to_underlying(Error::kInvalidURL),

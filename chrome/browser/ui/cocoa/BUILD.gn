@@ -312,8 +312,6 @@ source_set("browser_tests") {
 
   sources = [
     "accelerators_cocoa_browsertest.mm",
-    "applescript/applescript_test_utils.h",
-    "applescript/applescript_test_utils.mm",
     "applescript/bookmark_applescript_test_utils.h",
     "applescript/bookmark_applescript_test_utils.mm",
     "applescript/bookmark_folder_applescript_browsertest.mm",
