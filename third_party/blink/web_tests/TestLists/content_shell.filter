@@ -393,11 +393,11 @@ external/wpt/css/css-contain/content-visibility/content-visibility-096.html
 external/wpt/css/css-contain/content-visibility/content-visibility-097.html
 external/wpt/css/css-flexbox/scrollbars-auto.html
 external/wpt/css/css-flexbox/scrollbars.html
-external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-001.html
-external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-002.html
-external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-004.html
-external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-baseline-001.html
-external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-baseline-002.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-001.tentative.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-002.tentative.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-004.tentative.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-baseline-001.tentative.html
+external/wpt/css/css-grid/grid-lanes/overflow/grid-lanes-overflow-reverse-baseline-002.tentative.html
 
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation*
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-transition*
