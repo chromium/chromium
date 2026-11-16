@@ -342,13 +342,13 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     return initiating_edge_;
   }
 
-  State state_;
-
   // The destination `FrameNavigationEntry::item_sequence_number()` of the
   // gesture back navigation in the primary main frame. Set when the browser
   // tells the renderer to commit the navigation.
   int64_t primary_main_frame_navigation_entry_item_sequence_number_ =
       cc::RenderFrameMetadata::kInvalidItemSequenceNumber;
+
+  State state_;
 
  private:
   // Initializes `effect_` for the scrim and cross-fade animation.

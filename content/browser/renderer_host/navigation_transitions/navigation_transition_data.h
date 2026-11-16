@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_TRANSITION_DATA_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_TRANSITION_DATA_H_
 
+#include <cstdint>
 #include <optional>
 
 #include "base/types/strong_alias.h"
@@ -24,7 +25,7 @@ class NavigationTransitionData {
   // numeric values should never be reused.
   //
   // LINT.IfChange(CacheHitOrMissReason)
-  enum class CacheHitOrMissReason {
+  enum class CacheHitOrMissReason : uint8_t {
     // The screenshot is captured and placed in the cache.
     kCacheHit = 0,
 
@@ -158,6 +159,15 @@ class NavigationTransitionData {
   // behavior.
   const UniqueId unique_id_;
 
+  // Tracks copy output requests sent for this navigation entry. The embedder
+  // increments this number when the entry is committed so that the results of
+  // stale copy output requests will be ignored, preventing them from
+  // interfering with future requests.
+  int copy_output_request_sequence_number_ = 0;
+
+  // Used to record UMA in `BackForwardTransitionAnimator`
+  std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason_;
+
   // Whether this screenshot is supplied by the embedder.
   bool is_copied_from_embedder_ = false;
 
@@ -169,18 +179,9 @@ class NavigationTransitionData {
   std::optional<blink::SameDocNavigationScreenshotDestinationToken>
       same_document_navigation_entry_screenshot_token_;
 
-  // Tracks copy output requests sent for this navigation entry. The embedder
-  // increments this number when the entry is committed so that the results of
-  // stale copy output requests will be ignored, preventing them from
-  // interfering with future requests.
-  int copy_output_request_sequence_number_ = 0;
-
   // TODO(https://crbug.com/40262175): We might want to move the
   // `NavigationEntryScreenshot` here as well when we make the screenshot
   // disk-persistent.
-
-  // Used to record UMA in `BackForwardTransitionAnimator`
-  std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason_;
 
   // The favicon used to compose the fallback UX.
   SkBitmap favicon_;

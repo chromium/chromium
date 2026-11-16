@@ -215,8 +215,6 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
       view_observation_{this};
   base::ScopedObservation<ui::WindowAndroid, ui::WindowAndroidObserver>
       window_observation_{this};
-  TransitionExitReason last_exit_reason_ =
-      TransitionExitReason::kAnimationTimerExpired;
   std::unique_ptr<WebContentsViewAndroidDelegate>
       web_contents_view_android_delegate_;
 

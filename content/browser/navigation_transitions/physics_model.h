@@ -183,6 +183,9 @@ class CONTENT_EXPORT PhysicsModel {
   };
   NavigationState navigation_state_ = NavigationState::kNotStarted;
 
+  // The physics model always starts with the drag curve.
+  Driver animation_driver_ = Driver::kDragCurve;
+
   // The spring models correspond to
   // `Driver::{kSpringCommitPending|kSpringInvoke|kSpringCancel}`. See the
   // comments on `Driver` that describe the springs behavior. Always non-null.
@@ -192,9 +195,6 @@ class CONTENT_EXPORT PhysicsModel {
 
   // Wallclock.
   base::TimeTicks last_request_animation_frame_;
-
-  // The physics model always starts with the drag curve.
-  Driver animation_driver_ = Driver::kDragCurve;
 
   // Used to "speed up" the animation on `spring_commit_pending_` when the
   // invoke animation is ready to play. Set in

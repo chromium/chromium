@@ -503,7 +503,6 @@ void BlurTransitionAnimationManager::RecordExitReason(
     TransitionExitReason exit_reason) {
   base::UmaHistogramEnumeration("Navigation.BlurTransitionAnimation.ExitReason",
                                 exit_reason);
-  last_exit_reason_ = exit_reason;
 }
 
 void BlurTransitionAnimationManager::SetAnimationState(AnimationState state) {

@@ -323,11 +323,11 @@ class CONTENT_EXPORT NavigationEntryScreenshot
 
   const bool supports_etc_non_power_of_two_;
 
+  bool pending_destruction_ = false;
+
   base::OnceClosure compression_task_;
 
   ScreenshotCallback screenshot_callback_;
-
-  bool pending_destruction_ = false;
 
   base::WeakPtrFactory<NavigationEntryScreenshot> weak_factory_{this};
 };
