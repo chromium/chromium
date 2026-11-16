@@ -1209,6 +1209,54 @@ TEST(XkbKeyboardLayoutEngineTest, ControlTransformedToNul) {
   EXPECT_EQ(ui::VKEY_RETURN, key_code);
 }
 
+// Regression test for crbug.com/547963398. The punctuation keys of the
+// Turkish Q layout must produce the same key codes as the Windows Turkish Q
+// layout (KBDTUQ), e.g. '.' must map to VKEY_OEM_PERIOD rather than to the
+// key code of the US key at the same position.
+TEST(XkbKeyboardLayoutEngineTest, TurkishQPunctuation) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(layout_engine, "tr"));
+
+  constexpr struct {
+    DomCode dom_code;
+    char16_t character;
+    KeyboardCode key_code;
+  } kTestCases[] = {
+      {DomCode::BACKSLASH, u',', VKEY_OEM_COMMA},
+      {DomCode::COMMA, u'\u00F6', VKEY_OEM_2},   // o diaeresis
+      {DomCode::PERIOD, u'\u00E7', VKEY_OEM_5},  // c cedilla
+      {DomCode::SLASH, u'.', VKEY_OEM_PERIOD},
+      {DomCode::SEMICOLON, u'\u015F', VKEY_OEM_1},  // s cedilla
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.dom_code));
+    DomKey dom_key = DomKey::NONE;
+    KeyboardCode key_code = VKEY_UNKNOWN;
+    EXPECT_TRUE(
+        layout_engine.Lookup(test_case.dom_code, EF_NONE, &dom_key, &key_code));
+    EXPECT_EQ(DomKey::FromCharacter(test_case.character), dom_key);
+    EXPECT_EQ(test_case.key_code, key_code);
+  }
+}
+
+// Layouts with '.' and ',' on the US slash key (e.g. Russian) keep
+// VKEY_OEM_2 for that key, as on Windows.
+TEST(XkbKeyboardLayoutEngineTest, RussianSlashKey) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(layout_engine, "ru"));
+
+  DomKey dom_key = DomKey::NONE;
+  KeyboardCode key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(
+      layout_engine.Lookup(DomCode::SLASH, EF_NONE, &dom_key, &key_code));
+  EXPECT_EQ(DomKey::FromCharacter('.'), dom_key);
+  EXPECT_EQ(VKEY_OEM_2, key_code);
+}
+
 TEST(XkbKeyboardLayoutEngineTest, NoStateBeforeKeymap) {
   // GTK IM events (e.g. from fcitx5 on first input activation) can arrive
   // before the compositor delivers the first keymap. The engine must not

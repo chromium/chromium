@@ -160,7 +160,8 @@ const PrintableSubEntry kU002C[] = {
     {DomCode::US_W, false, false, kAny, kAny, VKEY_OEM_COMMA},
     {DomCode::US_V, false, false, kAny, kAny, VKEY_OEM_COMMA},
     {DomCode::US_M, false, false, kAny, kAny, VKEY_OEM_COMMA},
-    {DomCode::COMMA, false, false, kAny, kAny, VKEY_OEM_COMMA}};
+    {DomCode::COMMA, false, false, kAny, kAny, VKEY_OEM_COMMA},
+    {DomCode::BACKSLASH, false, false, kAny, kAny, VKEY_OEM_COMMA}};
 
 // U+002D hyphen-minus
 const PrintableSubEntry kU002D[] = {
@@ -184,6 +185,7 @@ const PrintableSubEntry kU002E[] = {
     {DomCode::US_O, false, false, kAny, kAny, VKEY_OEM_PERIOD},
     {DomCode::QUOTE, false, false, kAny, kAny, VKEY_OEM_7},
     {DomCode::PERIOD, false, false, kAny, kAny, VKEY_OEM_PERIOD},
+    {DomCode::SLASH, true, false, 0x003A, kAny, VKEY_OEM_PERIOD},  // colon
     {DomCode::SLASH, false, false, kAny, kAny, VKEY_OEM_2}};
 
 // U+002F /
@@ -335,6 +337,8 @@ const PrintableSubEntry kU00E7[] = {
     {DomCode::QUOTE, false, false, kAny, kAny, VKEY_OEM_7},
     {DomCode::BACKSLASH, false, false, kAny, kAny, VKEY_OEM_2},
     {DomCode::COMMA, false, false, kAny, kAny, VKEY_OEM_COMMA},
+    {DomCode::PERIOD, false, true, kAny, 0x002E, VKEY_OEM_PERIOD},  // full stop
+    {DomCode::PERIOD, false, false, kAny, kAny, VKEY_OEM_5},
     {DomCode::SEMICOLON, true, true, 0x00C7, 0x00DE,
      VKEY_OEM_3},  // C ced., Thorn
     {DomCode::SEMICOLON, true, false, 0x00C7, kAny,
@@ -380,6 +384,7 @@ const PrintableSubEntry kU00F6[] = {
     {DomCode::DIGIT0, false, false, kAny, kAny, VKEY_OEM_3},
     {DomCode::MINUS, false, false, kAny, kAny, VKEY_OEM_PLUS},
     {DomCode::BRACKET_LEFT, false, false, kAny, kAny, VKEY_OEM_4},
+    {DomCode::COMMA, false, false, kAny, kAny, VKEY_OEM_2},
     {DomCode::SEMICOLON, true, false, 0x00E9, kAny, VKEY_OEM_7},  // e acute
     {DomCode::SEMICOLON, true, true, 0x00D6, 0x0162,
      VKEY_OEM_3},  // O dia., T ced.
