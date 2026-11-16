@@ -348,15 +348,17 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     /** Destroys the singleton profile keyed map. */
     public static void destroyProfileKeyedMap() {
         sSavedActivityOrchestrators.clear();
+        ProfileKeyedMap<ArchivedTabModelOrchestrator> profileMap = sProfileMap;
         // This block can be called at times where sProfileMap may be null
         // (crbug.com/335684785). Probably not necessary now that the application
         // state listener is unregistered.
-        if (sProfileMap == null) return;
-        // Null it out so if we go from 1 -> 0 -> 1 activities, #getForProfile
-        // will still work.
-        sProfileMap.destroy();
+        if (profileMap == null) return;
+        // Null it out before destroying so mid-destroy lookups and re-entrant
+        // calls see no live map, and #getForProfile still works if we go from
+        // 1 -> 0 -> 1 activities.
         sProfileMap = null;
         ApplicationStatus.unregisterApplicationStateListener(sApplicationStateListener);
+        profileMap.destroy();
     }
 
     @VisibleForTesting
@@ -494,6 +496,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
                     public void onResult(Boolean initialized) {
                         if (initialized) {
                             mTabStateInitializedSupplier.removeObserver(this);
+                            if (mIsDestroyed) return;
                             runnable.run();
                         }
                     }

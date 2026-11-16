@@ -387,6 +387,24 @@ public class ArchivedTabModelOrchestratorUnitTest {
     }
 
     @Test
+    public void testRunOnTabStateInitialized_DestroyedDuringBroadcast_SkipsCallback() {
+        mOrchestrator
+                .getTabStateInitializedSupplier()
+                .addSyncObserver(
+                        initialized -> {
+                            if (initialized) {
+                                mOrchestrator.destroy();
+                            }
+                        });
+        Runnable callback = mock(Runnable.class);
+        mOrchestrator.runOnTabStateInitialized(callback);
+
+        mOrchestrator.setTabStateInitializedForTesting(true);
+
+        verify(callback, never()).run();
+    }
+
+    @Test
     public void testInstanceForTestingBypassesProfileCheck() {
         Profile mockProfile = mock(Profile.class);
         // Note: mockProfile.isNativeInitialized() returns false by default for mocks.
@@ -401,6 +419,11 @@ public class ArchivedTabModelOrchestratorUnitTest {
                 ArchivedTabModelOrchestrator.acquireLease(mockProfile, LeaseReason.FOR_TESTING);
         assertNotNull(lease);
         lease.destroy();
+
+        mOrchestrator.destroy();
+        assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(mockProfile));
+        assertNull(ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mockProfile));
+        assertNull(ArchivedTabModelOrchestrator.acquireLease(mockProfile, LeaseReason.FOR_TESTING));
     }
 
     @Test
@@ -598,6 +621,51 @@ public class ArchivedTabModelOrchestratorUnitTest {
         mOrchestrator.destroy();
 
         assertTrue(mOrchestrator.getObserversForTesting().isEmpty());
+    }
+
+    @Test
+    public void testDestroyProfileKeyedMap_GuardsLookupsAndReentrancyDuringDestroy() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(null);
+        Profile secondProfile = mock(Profile.class);
+        when(secondProfile.isNativeInitialized()).thenReturn(true);
+        when(secondProfile.isOffTheRecord()).thenReturn(false);
+        when(secondProfile.shutdownStarted()).thenReturn(false);
+        when(secondProfile.getOriginalProfile()).thenReturn(secondProfile);
+
+        ArchivedTabModelOrchestrator firstOrchestrator =
+                ArchivedTabModelOrchestrator.getForProfile(mMockProfile);
+        ArchivedTabModelOrchestrator secondOrchestrator =
+                ArchivedTabModelOrchestrator.getForProfile(secondProfile);
+        WindowAndroid mockWindow = mock(WindowAndroid.class);
+        firstOrchestrator.setWindowAndroidForTesting(mockWindow);
+        secondOrchestrator.setWindowAndroidForTesting(mockWindow);
+        int[] destroyCount = new int[1];
+        doAnswer(
+                        inv -> {
+                            if (destroyCount[0] == 0) {
+                                assertFalse(
+                                        ArchivedTabModelOrchestrator.isInstantiatedForProfile(
+                                                mMockProfile));
+                                assertNull(
+                                        ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(
+                                                mMockProfile));
+                                assertFalse(
+                                        ArchivedTabModelOrchestrator.isInstantiatedForProfile(
+                                                secondProfile));
+                                assertNull(
+                                        ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(
+                                                secondProfile));
+                                ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
+                            }
+                            destroyCount[0]++;
+                            return null;
+                        })
+                .when(mockWindow)
+                .destroy();
+
+        ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
+
+        assertEquals(2, destroyCount[0]);
     }
 
     @Test
