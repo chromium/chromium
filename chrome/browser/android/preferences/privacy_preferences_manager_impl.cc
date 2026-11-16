@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/universal_optout/universal_optout_service_factory.h"
 #include "chrome/common/pref_names.h"
-#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
@@ -23,12 +22,6 @@ static bool JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingEnabled() {
   PrefService* local_state = g_browser_process->local_state();
   return metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
       local_state);
-}
-
-static void JNI_PrivacyPreferencesManagerImpl_SetMetricsReportingEnabled(
-    bool enabled) {
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetBoolean(metrics::prefs::kMetricsReportingEnabled, enabled);
 }
 
 static bool

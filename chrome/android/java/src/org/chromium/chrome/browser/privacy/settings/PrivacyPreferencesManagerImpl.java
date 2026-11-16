@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.minidump_uploader.util.NetworkPermissionUtil;
 import org.chromium.components.policy.PolicyMap;
@@ -225,7 +227,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
     @Override
     public void setMetricsReportingEnabled(boolean enabled) {
-        PrivacyPreferencesManagerImplJni.get().setMetricsReportingEnabled(enabled);
+        LocalStatePrefs.get().setBoolean(Pref.METRICS_REPORTING_ENABLED, enabled);
         getCrashUploadPermittedSupplier().set(enabled);
     }
 
@@ -266,8 +268,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @NativeMethods
     public interface Natives {
         boolean isMetricsReportingEnabled();
-
-        void setMetricsReportingEnabled(boolean enabled);
 
         boolean isMetricsReportingDisabledByPolicy();
 
