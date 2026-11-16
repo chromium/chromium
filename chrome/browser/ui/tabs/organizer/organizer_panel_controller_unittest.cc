@@ -154,6 +154,21 @@ TEST_F(OrganizerPanelControllerTest, LazyWebContentsInitializationAndReuse) {
   EXPECT_NE(controller()->site_engagement_helper(), nullptr);
 }
 
+TEST_F(OrganizerPanelControllerTest, ShowUIIgnoresClosedPanel) {
+  base::HistogramTester histogram_tester;
+
+  controller()->ShowUI();
+
+  controller()->SetOrganizerVisible(true);
+  controller()->CloseUI();
+  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
+  controller()->ShowUI();
+
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Tabs.Organizer.TimeToShow"),
+      testing::IsEmpty());
+}
+
 TEST_F(OrganizerPanelControllerTest, ResizingBlocksOpenAndMetrics) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*vertical_tab_strip_controller_, IsResizing())

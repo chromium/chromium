@@ -5,6 +5,9 @@
 #include <string_view>
 
 #include "base/callback_list.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -30,13 +33,17 @@
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -439,6 +446,84 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayClosesOnEscPressed) {
       SendAccelerator(kBrowserViewElementId,
                       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
       WaitForPanelClose(), CheckControllerState(false));
+}
+
+namespace {
+
+constexpr char kOpenTabCountJs[] =
+    "el => "
+    "Array.from(el.shadowRoot.querySelectorAll('organizer-list-section'))"
+    ".find(s => s.delegate?.getId() === 'open-tabs')?.items.length ?? -1";
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
+                       RecordsTimeToShowOnDemandAndReshow) {
+  const DeepQuery kListQuery{"organizer-panel-app", "organizer-list"};
+  WebUIContentsPreloadManagerTestAPI preload_api;
+  base::HistogramTester histogram_tester;
+
+  {
+    base::StatisticsRecorder::HistogramWaiter waiter(
+        "Tabs.Organizer.TimeToShow");
+    RunTestSequence(
+        SetVerticalTabsEnabled(false),
+        Do([&]() { preload_api.SetPreloadedContents(nullptr); }),
+        OpenOrganizerPanel(), WaitForPanelLoad(),
+        CheckJsResultAt(kWebContentsId, kListQuery, kOpenTabCountJs, 1));
+    waiter.Wait();
+  }
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.TimeToShow", 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.TimeToShow.PreloadedWebContents", 0);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.TimeToShow.ReshowingWebContents", 0);
+  EXPECT_EQ(
+      1, histogram_tester.GetTotalCountForPrefix("Tabs.Organizer.TimeToShow."));
+
+  {
+    base::StatisticsRecorder::HistogramWaiter waiter(
+        "Tabs.Organizer.TimeToShow.ReshowingWebContents");
+    RunTestSequence(CloseOrganizerPanel(),
+                    Do([this]() { AddBlankTabAndShow(browser()); }),
+                    OpenOrganizerPanel());
+    waiter.Wait();
+    RunTestSequence(
+        CheckJsResultAt(kWebContentsId, kListQuery, kOpenTabCountJs, 2));
+  }
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.TimeToShow", 2);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.TimeToShow.ReshowingWebContents", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, RecordsTimeToShowPreloaded) {
+  const DeepQuery kListQuery{"organizer-panel-app", "organizer-list"};
+  RunTestSequence(SetVerticalTabsEnabled(false));
+
+  WebUIContentsPreloadManagerTestAPI preload_api;
+  preload_api.PreloadUrl(browser()->GetProfile(),
+                         GURL(chrome::kChromeUIOrganizerPanelURL));
+  content::WebContents* preloaded = preload_api.GetPreloadedWebContents();
+  ASSERT_TRUE(preloaded);
+  ASSERT_TRUE(content::WaitForLoadStop(preloaded));
+
+  auto* preload_state = WebUIContentsPreloadState::FromWebContents(preloaded);
+  ASSERT_TRUE(preload_state);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return preload_state->ready_to_show; }));
+
+  AddBlankTabAndShow(browser());
+
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "Tabs.Organizer.TimeToShow.PreloadedWebContents");
+  RunTestSequence(
+      OpenOrganizerPanel(), WaitForPanelLoad(),
+      CheckJsResultAt(kWebContentsId, kListQuery, kOpenTabCountJs, 2));
+  waiter.Wait();
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.TimeToShow", 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.TimeToShow.PreloadedWebContents", 1);
 }
 
 // Vertical tab strip with tray or embedded organizer panel.

@@ -33,7 +33,10 @@
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level_recorder.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -43,10 +46,14 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
@@ -328,12 +335,22 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
         interface->AbortFeaturePromo(iph_feature);
       }
     }
-    UpdatePanelWebContents();
+    visual_state_weak_factory_.InvalidateWeakPtrs();
+    const base::TimeTicks show_trigger_time = base::TimeTicks::Now();
+    if (const std::optional<WebUIContentsWarmupLevel> warmup_level =
+            UpdatePanelWebContents()) {
+      pending_show_metric_ =
+          PendingShowMetric{show_trigger_time, *warmup_level};
+    } else {
+      pending_show_metric_.reset();
+    }
     Profile* const profile = browser_window_->GetProfile();
     CHECK(profile);
     RecordSectionStateMetricsOnOpen(*profile);
   } else {
     RecordCloseMetrics();
+    pending_show_metric_.reset();
+    visual_state_weak_factory_.InvalidateWeakPtrs();
   }
   if (immediate) {
     BrowserAnimationController::From(&*browser_window_)
@@ -413,6 +430,8 @@ content::WebContents* OrganizerPanelController::EnsureWebContentsCreated() {
   WebUIContentsPreloadManager::RequestResult result = preload_manager->Request(
       GURL(chrome::kChromeUIOrganizerPanelURL), browser_window_->GetProfile());
   web_contents_ = std::move(result.web_contents);
+  Observe(web_contents_.get());
+  AttachEmbedder();
   webui::SetBrowserWindowInterface(web_contents_.get(), &*browser_window_);
   web_contents_->SetSupportsDraggableRegions(true);
   if (site_engagement::SiteEngagementService::IsEnabled()) {
@@ -436,13 +455,87 @@ void OrganizerPanelController::UnregisterPanelView(
   panel_view_ = nullptr;
 }
 
-void OrganizerPanelController::UpdatePanelWebContents() {
-  if (!is_visible_ || !panel_view_) {
+void OrganizerPanelController::ShowUI() {
+  if (!pending_show_metric_.has_value() || !is_visible_ || !panel_view_ ||
+      !web_contents_) {
     return;
   }
-  if (content::WebContents* const contents = EnsureWebContentsCreated()) {
-    panel_view_->AttachWebContents(contents);
+  const PendingShowMetric pending_show = *pending_show_metric_;
+  pending_show_metric_.reset();
+  web_contents_->GetPrimaryMainFrame()->InsertVisualStateCallback(
+      base::BindOnce(&OrganizerPanelController::RecordTimeToShow,
+                     visual_state_weak_factory_.GetWeakPtr(), pending_show));
+}
+
+void OrganizerPanelController::CloseUI() {
+  SetOrganizerVisible(false);
+}
+
+// Context menus are triggered directly by OrganizerPanelPageHandler rather than
+// through TopChromeWebUIController::Embedder.
+void OrganizerPanelController::ShowContextMenu(
+    gfx::Point point,
+    std::unique_ptr<ui::MenuModel> menu_model) {}
+
+void OrganizerPanelController::HideContextMenu() {}
+
+void OrganizerPanelController::PrimaryPageChanged(content::Page& page) {
+  AttachEmbedder();
+}
+
+void OrganizerPanelController::AttachEmbedder() {
+  if (!web_contents_ ||
+      web_contents_->GetPrimaryMainFrame()->IsErrorDocument()) {
+    return;
   }
+  content::WebUI* const web_ui = web_contents_->GetWebUI();
+  if (!web_ui || !web_ui->GetController()) {
+    return;
+  }
+  if (TopChromeWebUIConfig::From(web_contents_->GetBrowserContext(),
+                                 web_contents_->GetLastCommittedURL())) {
+    static_cast<TopChromeWebUIController*>(web_ui->GetController())
+        ->set_embedder(embedder_weak_factory_.GetWeakPtr());
+  }
+}
+
+void OrganizerPanelController::RecordTimeToShow(PendingShowMetric pending_show,
+                                                bool visual_state_updated) {
+  if (!visual_state_updated || !is_visible_) {
+    return;
+  }
+  const base::TimeDelta time_to_show =
+      base::TimeTicks::Now() - pending_show.trigger_time;
+  base::UmaHistogramMediumTimes("Tabs.Organizer.TimeToShow", time_to_show);
+  base::UmaHistogramMediumTimes(
+      base::StrCat(
+          {"Tabs.Organizer.TimeToShow.", ToString(pending_show.warmup_level)}),
+      time_to_show);
+}
+
+std::optional<WebUIContentsWarmupLevel>
+OrganizerPanelController::UpdatePanelWebContents() {
+  if (!is_visible_ || !panel_view_) {
+    return std::nullopt;
+  }
+  if (web_contents_) {
+    const bool already_visible =
+        web_contents_->GetVisibility() == content::Visibility::VISIBLE;
+    panel_view_->AttachWebContents(web_contents_.get());
+    return (already_visible || web_contents_->IsCrashed())
+               ? std::nullopt
+               : std::make_optional(
+                     WebUIContentsWarmupLevel::kReshowingWebContents);
+  }
+  WebUIContentsWarmupLevelRecorder warmup_level_recorder;
+  warmup_level_recorder.BeforeContentsCreation();
+  content::WebContents* const contents = EnsureWebContentsCreated();
+  if (!contents) {
+    return std::nullopt;
+  }
+  warmup_level_recorder.AfterContentsCreation(contents);
+  panel_view_->AttachWebContents(contents);
+  return warmup_level_recorder.GetWarmupLevel();
 }
 
 std::unique_ptr<views::View> OrganizerPanelController::SetPanelView(

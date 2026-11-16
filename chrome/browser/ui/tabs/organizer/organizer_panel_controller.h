@@ -12,10 +12,14 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserView;
@@ -54,7 +58,8 @@ enum class OrganizerPanelCloseAction {
 
 // Manages the Organizer Panel, its animations, its placement in the browser,
 // etc.
-class OrganizerPanelController {
+class OrganizerPanelController : public TopChromeWebUIController::Embedder,
+                                 public content::WebContentsObserver {
  public:
   DECLARE_USER_DATA(OrganizerPanelController);
 
@@ -62,7 +67,7 @@ class OrganizerPanelController {
                                     actions::ActionItem* root_action_item);
   OrganizerPanelController(const OrganizerPanelController&) = delete;
   OrganizerPanelController& operator=(const OrganizerPanelController&) = delete;
-  virtual ~OrganizerPanelController();
+  ~OrganizerPanelController() override;
 
   static OrganizerPanelController* From(BrowserWindowInterface* browser_window);
 
@@ -102,7 +107,26 @@ class OrganizerPanelController {
   void RegisterPanelView(OrganizerPanelView* panel_view);
   void UnregisterPanelView(OrganizerPanelView* panel_view);
 
+  // TopChromeWebUIController::Embedder:
+  void ShowUI() override;
+  void CloseUI() override;
+  void ShowContextMenu(gfx::Point point,
+                       std::unique_ptr<ui::MenuModel> menu_model) override;
+  void HideContextMenu() override;
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+
  private:
+  struct PendingShowMetric {
+    base::TimeTicks trigger_time;
+    WebUIContentsWarmupLevel warmup_level;
+  };
+
+  void AttachEmbedder();
+  void RecordTimeToShow(PendingShowMetric pending_show,
+                        bool visual_state_updated);
+
   // Notifies subscribers when the is_visible_ or location state of the
   // Organizer Panel changes.
   void NotifyStateChanged();
@@ -123,9 +147,10 @@ class OrganizerPanelController {
       OrganizerPanelCloseAction::kNoAction;
   int num_tabs_closed_ = 0;
   std::optional<base::ElapsedTimer> displayed_timer_;
+  std::optional<PendingShowMetric> pending_show_metric_;
 
   content::WebContents* EnsureWebContentsCreated();
-  void UpdatePanelWebContents();
+  std::optional<WebUIContentsWarmupLevel> UpdatePanelWebContents();
 
   const raw_ref<BrowserWindowInterface> browser_window_;
   const raw_ptr<actions::ActionItem> root_action_item_;
@@ -144,7 +169,9 @@ class OrganizerPanelController {
   std::unique_ptr<site_engagement::SiteEngagementService::Helper>
       site_engagement_helper_;
 
-  base::WeakPtrFactory<OrganizerPanelController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OrganizerPanelController> embedder_weak_factory_{this};
+  base::WeakPtrFactory<OrganizerPanelController> visual_state_weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLLER_H_

@@ -2733,6 +2733,35 @@ chromium-metrics-reviews@google.com.
   <token key="Section" variants="OrganizerSection"/>
 </histogram>
 
+<histogram name="Tabs.Organizer.TimeToShow{WarmUpLevel}" units="ms"
+    expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Tracks the time between when the user triggers the Organizer panel to show
+    (via the button or keyboard shortcut) and when the initial section data has
+    rendered and committed to the compositor. Recorded both overall and broken
+    down by {WarmUpLevel}, which indicates the readiness of the WebContents when
+    the panel was requested to show.
+  </summary>
+  <token key="WarmUpLevel">
+    <variant name="" summary="across all warm-up levels"/>
+    <variant name=".DedicatedRenderer"
+        summary="when using a renderer that already hosts other Top Chrome
+                 WebUIs"/>
+    <variant name=".NoRenderer" summary="when no renderer can be reused"/>
+    <variant name=".PreloadedWebContents"
+        summary="when using a preloaded WebContents"/>
+    <variant name=".RedirectedWebContents"
+        summary="when using a redirected preloaded WebContents that was on a
+                 different WebUI"/>
+    <variant name=".ReshowingWebContents"
+        summary="when reshowing a cached WebContents that has already
+                 navigated to this WebUI"/>
+    <variant name=".SpareRenderer" summary="when using a spare renderer"/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.Organizer.WebUI.IndexOf{Action}In{State}List"
     units="tabs" expires_after="2027-05-02">
   <owner>agale@chromium.org</owner>
