@@ -179,7 +179,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/site_isolation/features.h"
 #include "components/skills/features.h"
-#include "components/soda/soda_features.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/strike_database/strike_database_features.h"

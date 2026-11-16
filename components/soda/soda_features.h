@@ -13,8 +13,6 @@ namespace speech {
 COMPONENT_EXPORT(SODA_INSTALLER)
 BASE_DECLARE_FEATURE(kFeatureManagementCrosSodaConchLanguages);
 COMPONENT_EXPORT(SODA_INSTALLER)
-BASE_DECLARE_FEATURE(kCrosSodaConchLanguages);
-COMPONENT_EXPORT(SODA_INSTALLER)
 BASE_DECLARE_FEATURE(kAlwaysUsePreloadedSodaModelEnUsForTesting);
 #endif
 }  // namespace speech

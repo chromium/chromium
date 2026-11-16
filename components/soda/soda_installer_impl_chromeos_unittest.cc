@@ -212,10 +212,8 @@ TEST_F(SodaInstallerImplChromeOSTest, SubSetCorrect) {
 
 TEST_F(SodaInstallerImplChromeOSTest, ConchAddOns) {
   base::test::ScopedFeatureList scoped_feature_list_internal;
-  scoped_feature_list_internal.InitWithFeatures(
-      {::speech::kCrosSodaConchLanguages,
-       ::speech::kFeatureManagementCrosSodaConchLanguages},
-      {});
+  scoped_feature_list_internal.InitAndEnableFeature(
+      ::speech::kFeatureManagementCrosSodaConchLanguages);
   auto expected_livecaption_langs =
       GetInstance()->GetLiveCaptionEnabledLanguages();
   EXPECT_THAT(expected_livecaption_langs,
@@ -224,10 +222,8 @@ TEST_F(SodaInstallerImplChromeOSTest, ConchAddOns) {
 
 TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
   base::test::ScopedFeatureList scoped_feature_list_internal;
-  scoped_feature_list_internal.InitWithFeatures(
-      {::speech::kCrosSodaConchLanguages,
-       ::speech::kFeatureManagementCrosSodaConchLanguages},
-      {});
+  scoped_feature_list_internal.InitAndEnableFeature(
+      ::speech::kFeatureManagementCrosSodaConchLanguages);
   soda_installer_impl_.reset();
   soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
   std::vector<std::string> enabled_and_available_languages;
@@ -251,10 +247,8 @@ TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
 TEST_F(SodaInstallerImplChromeOSTest, AlwaysUsePreloadedSodaModelEnUs) {
   {
     base::test::ScopedFeatureList scoped_feature_list_internal;
-    scoped_feature_list_internal.InitWithFeatures(
-        {::speech::kCrosSodaConchLanguages,
-         ::speech::kFeatureManagementCrosSodaConchLanguages},
-        {});
+    scoped_feature_list_internal.InitAndEnableFeature(
+        ::speech::kFeatureManagementCrosSodaConchLanguages);
     soda_installer_impl_.reset();
     soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
     EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale(kUsEnglishLocale),
@@ -263,8 +257,7 @@ TEST_F(SodaInstallerImplChromeOSTest, AlwaysUsePreloadedSodaModelEnUs) {
 
   base::test::ScopedFeatureList scoped_feature_list_internal;
   scoped_feature_list_internal.InitWithFeatures(
-      {::speech::kCrosSodaConchLanguages,
-       ::speech::kFeatureManagementCrosSodaConchLanguages,
+      {::speech::kFeatureManagementCrosSodaConchLanguages,
        ::speech::kAlwaysUsePreloadedSodaModelEnUsForTesting},
       {});
   soda_installer_impl_.reset();

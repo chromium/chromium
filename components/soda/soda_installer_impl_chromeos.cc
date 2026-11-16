@@ -117,9 +117,7 @@ constexpr auto kConchAvailableLanguages =
     });
 
 bool IsConchLanguagesEnabled() {
-  return base::FeatureList::IsEnabled(
-             kFeatureManagementCrosSodaConchLanguages) &&
-         base::FeatureList::IsEnabled(kCrosSodaConchLanguages);
+  return base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages);
 }
 
 const LanguageInfo* FindAvailableLanguage(std::string_view language) {
