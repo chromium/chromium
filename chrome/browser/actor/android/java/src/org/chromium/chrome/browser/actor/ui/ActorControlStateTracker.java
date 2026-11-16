@@ -85,14 +85,11 @@ public class ActorControlStateTracker
                             mGlicInstanceHelper.removeObserver(ActorControlStateTracker.this);
                             mGlicInstanceHelper = null;
                         }
-                        if (tab != null && tab.isOffTheRecord()) {
-                            resetTaskState();
-                            updateState();
-                            return;
-                        }
-                        mGlicInstanceHelper = tab != null ? GlicInstanceHelper.from(tab) : null;
-                        if (mGlicInstanceHelper != null) {
-                            mGlicInstanceHelper.addObserver(ActorControlStateTracker.this);
+                        if (tab != null && !tab.isOffTheRecord()) {
+                            mGlicInstanceHelper = GlicInstanceHelper.from(tab);
+                            if (mGlicInstanceHelper != null) {
+                                mGlicInstanceHelper.addObserver(ActorControlStateTracker.this);
+                            }
                         }
                         onInstanceChanged();
                     }
@@ -115,25 +112,13 @@ public class ActorControlStateTracker
             mActorKeyedService.removeObserver(this);
             mActorKeyedService = null;
         }
-        boolean isProfileValid =
-                profile != null && profile.isNativeInitialized() && !profile.isOffTheRecord();
-        if (!isProfileValid) {
-            resetTaskState();
-            updateState();
-            return;
+        if (profile != null && profile.isNativeInitialized() && !profile.isOffTheRecord()) {
+            mActorKeyedService = ActorKeyedServiceFactory.getForProfile(profile);
+            if (mActorKeyedService != null) {
+                mActorKeyedService.addObserver(this);
+            }
         }
-
-        mActorKeyedService = ActorKeyedServiceFactory.getForProfile(profile);
-        if (mActorKeyedService != null) {
-            mActorKeyedService.addObserver(this);
-        }
-        resetTaskState();
-        ActorTask task = getActiveTaskAssociatedWithCurrentConversation();
-        if (task == null) {
-            updateState();
-        } else {
-            onTaskStateChanged(task.getId(), task.getState());
-        }
+        onInstanceChanged();
     }
 
     private void updateState() {
@@ -215,12 +200,6 @@ public class ActorControlStateTracker
     /** Called when the GLIC instance changes. */
     @Override
     public void onInstanceChanged() {
-        if (mGlicInstanceHelper == null) {
-            resetTaskState();
-            updateState();
-            return;
-        }
-
         resetTaskState();
         ActorTask task = getActiveTaskAssociatedWithCurrentConversation();
         if (task == null) {
