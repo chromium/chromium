@@ -5,5 +5,12 @@ include_rules = [
   "+components/url_formatter",
   "+google_apis",
   "+net",
+  "+services/metrics/public/cpp",
   "+services/network",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+components/ukm/test_ukm_recorder.h",
+  ],
+}

@@ -54,6 +54,7 @@
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/security_state/core/security_state.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -65,6 +66,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -317,6 +319,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
 // Tests that `RetrieveOtp` returns the OTP and records
 // `kSuccessCacheMatchFound` when a matching OTP is found in the cache.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   NavigateAndCommit(GURL("https://example.com"));
   const std::string kOtp = "123456";
   gmail_otp_service().ProcessCallbacks(one_time_tokens::OneTimeToken(
@@ -331,6 +334,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
                         /*is_login_flow=*/false, PredictedOtpType::kEmail,
                         future.GetCallback());
   EXPECT_EQ(future.Get().value(), kOtp);
+  // The sender domain check is recorded to UKM against the tab's page.
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0]->source_id,
+            web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kSuccessCacheMatchFound, 1);

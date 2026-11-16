@@ -5,6 +5,7 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -21,32 +22,55 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 namespace one_time_tokens {
 
 namespace {
 
+// TODO(crbug.com/583695450): Record the same UKM metrics in the non-agentic
+// flow (GmailOtpServiceImpl) once the OtpCoordinator refactoring lands.
 void RecordSenderDomainMatchRejectionReason(
     GmailOtpSenderDomainMatchType reason,
-    bool is_cached) {
+    bool is_cached,
+    ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration(
       is_cached ? "OneTimeTokens.GmailAgentic."
                   "SenderDomainMatchRejectionReason.Cached"
                 : "OneTimeTokens.GmailAgentic."
                   "SenderDomainMatchRejectionReason.Received",
       reason);
+  if (ukm_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::Autofill_OneTimeTokens builder(ukm_source_id);
+    int64_t value = std::to_underlying(reason);
+    is_cached
+        ? builder.SetGmail_SenderDomainMatchRejectionReason_Cached(value)
+        : builder.SetGmail_SenderDomainMatchRejectionReason_Received(value);
+    builder.Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void RecordSenderDomainMatchAcceptedMatchType(
     GmailOtpSenderDomainMatchType match_type,
-    bool is_cached) {
+    bool is_cached,
+    ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration(
       is_cached ? "OneTimeTokens.GmailAgentic."
                   "SenderDomainMatchAcceptedMatchType.Cached"
                 : "OneTimeTokens.GmailAgentic."
                   "SenderDomainMatchAcceptedMatchType.Received",
       match_type);
+  if (ukm_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::Autofill_OneTimeTokens builder(ukm_source_id);
+    int64_t value = std::to_underlying(match_type);
+    is_cached
+        ? builder.SetGmail_SenderDomainMatchAcceptedMatchType_Cached(value)
+        : builder.SetGmail_SenderDomainMatchAcceptedMatchType_Received(value);
+    builder.Record(ukm::UkmRecorder::Get());
+  }
 }
 
 }  // namespace
@@ -57,11 +81,12 @@ std::unique_ptr<GmailOtpRetriever> GmailOtpRetriever::CreateAndStart(
     std::unique_ptr<affiliations::DomainRelationChecker>
         domain_relation_checker,
     const url::Origin& otp_frame_origin,
+    ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     ResultCallback callback) {
   auto retriever = base::WrapUnique(new GmailOtpRetriever(
       backend, std::move(domain_relation_checker), otp_frame_origin,
-      allow_psl_matching, std::move(callback)));
+      ukm_source_id, allow_psl_matching, std::move(callback)));
   retriever->Start();
   return retriever;
 }
@@ -71,10 +96,12 @@ GmailOtpRetriever::GmailOtpRetriever(
     std::unique_ptr<affiliations::DomainRelationChecker>
         domain_relation_checker,
     const url::Origin& otp_frame_origin,
+    ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     ResultCallback callback)
     : gmail_otp_backend_(backend),
       otp_frame_origin_(otp_frame_origin),
+      ukm_source_id_(ukm_source_id),
       allow_psl_matching_(allow_psl_matching),
       sender_domain_matcher_(std::move(domain_relation_checker),
                              otp_frame_origin),
@@ -216,7 +243,8 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
       << ", match_type=" << match_type
       << ", allow_psl_matching=" << allow_psl_matching_;
   if (allowed) {
-    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/true);
+    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/true,
+                                             ukm_source_id_);
     const OneTimeToken& matched_token = cached_tokens.at(index);
     if (!best_candidate_.has_value() ||
         matched_token.email_received_timestamp().value_or(base::Time()) >=
@@ -231,7 +259,8 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
     return;
   }
 
-  RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/true);
+  RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/true,
+                                         ukm_source_id_);
 
   // Since `cached_tokens` is sorted descending by email received timestamp in
   // `Start()`, only check the next cached token if we don't already have a
@@ -293,7 +322,8 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
       << ", match_type=" << match_type
       << ", allow_psl_matching=" << allow_psl_matching_;
   if (allowed) {
-    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false);
+    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false,
+                                             ukm_source_id_);
     if (!best_candidate_.has_value() ||
         token.email_received_timestamp().value_or(base::Time()) >=
             best_candidate_->token.email_received_timestamp().value_or(
@@ -304,7 +334,8 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
       };
     }
   } else {
-    RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/false);
+    RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/false,
+                                           ukm_source_id_);
     has_sender_domain_mismatch_ = true;
   }
 
