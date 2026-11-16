@@ -5,10 +5,12 @@
 """Wraps the turbine jar and expands @FileArgs."""
 
 import argparse
+import contextlib
 import functools
 import logging
 import os
 import sys
+import tempfile
 import time
 import zipfile
 
@@ -16,6 +18,39 @@ import javac_output_processor
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
+
+sys.path.insert(
+    1,
+    os.path.join(
+        build_utils.DIR_SOURCE_ROOT, 'third_party', 'protobuf', 'python'
+    ),
+)
+from proto import deps_pb2  # noqa: E402
+
+
+def ExtractUsedClasspathJarsFromJdeps(jdeps_bytes, classpath):
+    """Returns the subset of |classpath| jars marked as used in |jdeps_bytes|.
+
+    Turbine's --output_deps writes a serialized blaze_deps.Dependencies message
+    where each Dependency has a path and Kind (Dependency.Kind.UNUSED).
+
+    Pruning the depfile to used jars is safe because we continue to pass the
+    full classpath to Turbine and javac. If a used symbol moves to another jar
+    on the classpath, the jar it moved from changes and triggers a rebuild with
+    the full classpath. Note that Turbine's .jdeps walks lowered symbols and
+    currently omits jars referenced only for compile-time constants folded by
+    ConstEvaluator.
+    """
+    deps = deps_pb2.Dependencies()
+    deps.ParseFromString(jdeps_bytes)
+    if not deps.IsInitialized() or not deps.success:
+        raise ValueError('Turbine .jdeps is incomplete or unsuccessful')
+    used_jars = {
+        os.path.normpath(dep.path)
+        for dep in deps.dependency
+        if dep.kind != deps_pb2.Dependency.UNUSED
+    }
+    return [jar for jar in classpath if os.path.normpath(jar) in used_jars]
 
 
 def main(argv):
@@ -167,13 +202,23 @@ def main(argv):
     cmd += javac_cmd
     cmd += ['--']  # Terminate javacopts
 
+    # Annotation processors can inspect classes across the classpath without
+    # emitting direct bytecode references into the header jar.
+    prune_depfile = bool(options.depfile and not options.processorpath)
+    jdeps_bytes = None
+
     # Use AtomicOutput so that output timestamps are not updated when outputs
     # are not changed.
     with (
         action_helpers.atomic_output(options.jar_path) as output_jar,
         action_helpers.atomic_output(options.generated_jar_path) as gensrc_jar,
+        tempfile.NamedTemporaryFile(suffix='.jdeps')
+        if prune_depfile
+        else contextlib.nullcontext() as jdeps_file,
     ):
         cmd += ['--output', output_jar.name, '--gensrc_output', gensrc_jar.name]
+        if jdeps_file:
+            cmd += ['--output_deps', jdeps_file.name]
         process_javac_output_partial = functools.partial(
             javac_output_processor.Process, options.target_name
         )
@@ -188,6 +233,8 @@ def main(argv):
                 stderr_filter=process_javac_output_partial,
                 fail_on_output=options.warnings_as_errors,
             )
+            if jdeps_file:
+                jdeps_bytes = jdeps_file.read()
         except build_utils.CalledProcessError as e:
             # Do not output stacktrace as it takes up space on gerrit UI, forcing
             # you to click though to find the actual compilation error. It's never
@@ -206,10 +253,16 @@ def main(argv):
                 )
 
     if options.depfile:
+        depfile_jars = classpath_jars
+        if jdeps_bytes is not None:
+            depfile_jars = ExtractUsedClasspathJarsFromJdeps(
+                jdeps_bytes, classpath_jars
+            )
+
         # GN already knows of the java files, so avoid listing individual java files
         # in the depfile.
         action_helpers.write_depfile(
-            options.depfile, options.jar_path, classpath_jars
+            options.depfile, options.jar_path, depfile_jars
         )
 
 

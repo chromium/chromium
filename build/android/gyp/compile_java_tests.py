@@ -13,6 +13,17 @@ import unittest
 from unittest import mock
 
 import compile_java
+import turbine
+from util import build_utils
+
+sys.path.insert(
+    1,
+    os.path.join(
+        build_utils.DIR_SOURCE_ROOT, 'third_party', 'protobuf', 'python'
+    ),
+)
+from google.protobuf import message as protobuf_message  # noqa: E402
+from proto import deps_pb2  # noqa: E402
 
 
 def _CreateData(
@@ -300,6 +311,77 @@ class ShardingTests(unittest.TestCase):
             with mock.patch('sys.stderr.write'):
                 self._RunShardedJavac([10, 10], chromium_code=False)
         stdout.assert_not_called()
+
+
+def _BuildJdepsProto(entries, rule_label='//chrome/android:java', success=True):
+    """Builds a serialized blaze_deps.Dependencies protobuf message."""
+    deps = deps_pb2.Dependencies()
+    for path, kind in entries:
+        deps.dependency.add(path=path, kind=kind)
+    if rule_label:
+        deps.rule_label = rule_label
+    if success is not None:
+        deps.success = success
+    return deps.SerializeToString()
+
+
+class ClasspathDepfileFilteringTests(unittest.TestCase):
+    def testExtractUsedClasspathJarsFromJdeps(self):
+        jdeps_bytes = _BuildJdepsProto(
+            [
+                ('obj/explicit.jar', deps_pb2.Dependency.EXPLICIT),
+                ('obj/unused.jar', deps_pb2.Dependency.UNUSED),
+                ('obj/implicit.jar', deps_pb2.Dependency.IMPLICIT),
+                ('obj/incomplete.jar', deps_pb2.Dependency.INCOMPLETE),
+            ]
+        )
+        classpath = [
+            'obj/unused.jar',
+            'obj/implicit.jar',
+            'obj/explicit.jar',
+            'obj/incomplete.jar',
+        ]
+        self.assertEqual(
+            ['obj/implicit.jar', 'obj/explicit.jar', 'obj/incomplete.jar'],
+            turbine.ExtractUsedClasspathJarsFromJdeps(jdeps_bytes, classpath),
+        )
+
+    def testExtractUsedClasspathJarsFromJdeps_EmptyDeps(self):
+        classpath = ['obj/a.jar', 'obj/b.jar']
+        self.assertEqual(
+            [],
+            turbine.ExtractUsedClasspathJarsFromJdeps(
+                _BuildJdepsProto([], rule_label='', success=True), classpath
+            ),
+        )
+
+    def testExtractUsedClasspathJarsFromJdeps_InvalidRaises(self):
+        classpath = ['obj/a.jar', 'obj/b.jar']
+        with self.assertRaises(protobuf_message.DecodeError):
+            turbine.ExtractUsedClasspathJarsFromJdeps(
+                b'\x0a\xff\x01', classpath
+            )
+        with self.assertRaises(protobuf_message.DecodeError):
+            turbine.ExtractUsedClasspathJarsFromJdeps(
+                b'\x0a\x07\x0a\x10short\x18\x01', classpath
+            )
+        with self.assertRaises(ValueError):
+            turbine.ExtractUsedClasspathJarsFromJdeps(b'', classpath)
+        with self.assertRaises(ValueError):
+            turbine.ExtractUsedClasspathJarsFromJdeps(
+                _BuildJdepsProto(
+                    [('obj/a.jar', deps_pb2.Dependency.EXPLICIT)],
+                    success=False,
+                ),
+                classpath,
+            )
+        uninitialized = deps_pb2.Dependencies()
+        uninitialized.success = True
+        uninitialized.dependency.add(path='obj/a.jar')
+        with self.assertRaises(ValueError):
+            turbine.ExtractUsedClasspathJarsFromJdeps(
+                uninitialized.SerializePartialToString(), classpath
+            )
 
 
 if __name__ == '__main__':
