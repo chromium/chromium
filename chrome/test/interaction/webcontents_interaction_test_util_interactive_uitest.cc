@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -49,16 +47,24 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabSearchPageElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 constexpr char kDocumentWithButtonURL[] = "/button.html";
 constexpr char kDocumentWithIframe[] = "/iframe_elements.html";
+
+views::WebView* FindWebViewDescendant(views::View* view) {
+  for (views::View* child : view->children()) {
+    if (auto* const web_view = views::AsViewClass<views::WebView>(child)) {
+      return web_view;
+    }
+    if (auto* const web_view = FindWebViewDescendant(child)) {
+      return web_view;
+    }
+  }
+  return nullptr;
+}
 }  // namespace
 
 class WebContentsInteractionTestUtilInteractiveUiTest
     : public InProcessBrowserTest {
  public:
   WebContentsInteractionTestUtilInteractiveUiTest() {
-    // TODO(crbug.com/579025166): Fix test failures related to missing tab
-    // search bubble.
-    scoped_feature_list_.InitAndDisableFeature(
-        organizer_panel::kOrganizerPanel);
     InteractionTestUtilBrowser::PopulateSimulators(test_util_);
     test_util_.AddSimulator(
         std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
@@ -87,9 +93,6 @@ class WebContentsInteractionTestUtilInteractiveUiTest
 
  protected:
   ui::test::InteractionTestUtil test_util_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 
@@ -129,13 +132,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
                   .SetType(ui::InteractionSequence::StepType::kShown)
                   .SetElementID(kTabSearchBubbleElementId)
                   .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence*,
+                      [&](ui::InteractionSequence* seq,
                           ui::TrackedElement* element) {
-                        auto* const web_view =
-                            views::AsViewClass<WebUIBubbleDialogView>(
-                                element->AsA<views::TrackedElementViews>()
-                                    ->view())
-                                ->web_view();
+                        auto* const web_view = FindWebViewDescendant(
+                            element->AsA<views::TrackedElementViews>()->view());
+                        if (!web_view) {
+                          seq->FailForTesting();
+                          return;
+                        }
                         tab_search_page =
                             WebContentsInteractionTestUtil::ForNonTabWebView(
                                 web_view, kTabSearchPageElementId);
@@ -154,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
 
   std::unique_ptr<WebContentsInteractionTestUtil> tab_search_page;
   const auto context = BrowserElements::From(browser())->GetContext();
-  raw_ptr<WebUIBubbleDialogView> bubble_view = nullptr;
+  raw_ptr<views::View> bubble_view = nullptr;
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -178,43 +182,57 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
                   .SetType(ui::InteractionSequence::StepType::kShown)
                   .SetElementID(kTabSearchBubbleElementId)
                   .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence*,
+                      [&](ui::InteractionSequence* seq,
                           ui::TrackedElement* element) {
-                        bubble_view = views::AsViewClass<WebUIBubbleDialogView>(
-                            element->AsA<views::TrackedElementViews>()->view());
+                        bubble_view =
+                            element->AsA<views::TrackedElementViews>()->view();
+                        auto* const web_view =
+                            FindWebViewDescendant(bubble_view);
+                        if (!web_view) {
+                          seq->FailForTesting();
+                          return;
+                        }
                         tab_search_page =
                             WebContentsInteractionTestUtil::ForNonTabWebView(
-                                bubble_view->web_view(),
-                                kTabSearchPageElementId);
+                                web_view, kTabSearchPageElementId);
                       }))
                   .Build())
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetElementID(kTabSearchPageElementId)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence* sequence,
-                               ui::TrackedElement* element) {
-                             // Hide the ancestor view. This should hide the
-                             // whole chain and cause the element to be
-                             // destroyed.
-                             bubble_view->SetVisible(false);
-                           }))
-                       .Build())
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kHidden)
-                       .SetElementID(kTabSearchPageElementId)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence* sequence,
-                               ui::TrackedElement* element) {
-                             // Verify we've also disposed of the element
-                             // itself:
-                             EXPECT_EQ(nullptr,
-                                       tab_search_page->current_element_);
-                             // Show the ancestor view. This should recreate the
-                             // WebUI element.
-                             bubble_view->SetVisible(true);
-                           }))
-                       .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kTabSearchPageElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+                          chrome::CloseTabSearch(browser());
+                        } else {
+                          // Hide the ancestor view. This should hide the
+                          // whole chain and cause the element to be
+                          // destroyed.
+                          bubble_view->SetVisible(false);
+                        }
+                      }))
+                  .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kHidden)
+                  .SetElementID(kTabSearchPageElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        // Verify we've also disposed of the element
+                        // itself:
+                        EXPECT_EQ(nullptr, tab_search_page->current_element_);
+                        if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+                          chrome::ShowTabSearch(browser());
+                        } else {
+                          // Show the ancestor view. This should recreate
+                          // the WebUI element.
+                          bubble_view->SetVisible(true);
+                        }
+                      }))
+                  .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kTabSearchPageElementId)
