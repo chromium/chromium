@@ -14,24 +14,17 @@
 @protocol PasswordsSettingsCommands;
 @protocol PasswordManagerViewControllerDelegate;
 @protocol PasswordManagerViewControllerPresentationDelegate;
-class PrefService;
 
 namespace password_manager {
 struct CredentialUIEntry;
 }  // namespace password_manager
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 @interface PasswordManagerViewController
     : SettingsRootTableViewController <PasswordsConsumer,
                                        SettingsControllerProtocol>
 
 // The designated initializer.
-- (instancetype)initWithIdentityManager:
-                    (signin::IdentityManager*)identityManager
-                            prefService:(PrefService*)prefService
-                 shouldOpenInSearchMode:(BOOL)shouldOpenInSearchMode
+- (instancetype)initWithShouldOpenInSearchMode:(BOOL)shouldOpenInSearchMode
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

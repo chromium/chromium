@@ -13,6 +13,7 @@
 
 class FaviconLoader;
 class IOSChromePasswordCheckManager;
+class PrefService;
 @protocol PasswordsConsumer;
 
 namespace syncer {
@@ -32,6 +33,7 @@ class Tracker;
                         passwordCheckManager
                                faviconLoader:(FaviconLoader*)faviconLoader
                                  syncService:(syncer::SyncService*)syncService
+                                 prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

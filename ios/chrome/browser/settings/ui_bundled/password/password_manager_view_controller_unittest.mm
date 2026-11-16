@@ -53,7 +53,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -118,8 +117,8 @@ class PasswordManagerViewControllerTest
                                          GetForProfile(profile)
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForProfile(profile)
-                         syncService:SyncServiceFactory::GetForProfile(
-                                         profile)];
+                         syncService:SyncServiceFactory::GetForProfile(profile)
+                         prefService:profile->GetPrefs()];
 
     // Inject some fake passwords to pass the loading state.
     PasswordManagerViewController* passwords_controller =
@@ -169,12 +168,8 @@ class PasswordManagerViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
     return [[PasswordManagerViewController alloc]
-        initWithIdentityManager:identity_manager
-                    prefService:profile_.get()->GetPrefs()
-         shouldOpenInSearchMode:NO];
+        initWithShouldOpenInSearchMode:NO];
   }
 
   PasswordManagerViewController* GetPasswordManagerViewController() {
@@ -182,13 +177,9 @@ class PasswordManagerViewControllerTest
   }
 
   PasswordManagerViewController* CreateControllerForPasswordSearch() {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
     PasswordManagerViewController* passwords_controller =
         [[PasswordManagerViewController alloc]
-            initWithIdentityManager:identity_manager
-                        prefService:profile_.get()->GetPrefs()
-             shouldOpenInSearchMode:YES];
+            initWithShouldOpenInSearchMode:YES];
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
     passwords_controller.handler = passwords_settings_commands_strict_mock_;
@@ -373,7 +364,6 @@ class PasswordManagerViewControllerTest
 TEST_F(PasswordManagerViewControllerTest, TestInitialization) {
   CheckController();
   EXPECT_EQ(0, NumberOfSections());  // Empty state.
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests adding one item in saved password section.
@@ -383,7 +373,6 @@ TEST_F(PasswordManagerViewControllerTest, AddSavedPasswords) {
   EXPECT_EQ(5, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests adding one item in blocked password section.
@@ -393,7 +382,6 @@ TEST_F(PasswordManagerViewControllerTest, AddBlockedPasswords) {
   EXPECT_EQ(5, NumberOfSections());
   EXPECT_EQ(1,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests adding one item in saved password section, and two items in blocked
@@ -412,7 +400,6 @@ TEST_F(PasswordManagerViewControllerTest, AddSavedAndBlocked) {
   // There should be 2 rows in blocked password section.
   EXPECT_EQ(2,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests the order in which the saved passwords are displayed.
@@ -429,7 +416,6 @@ TEST_F(PasswordManagerViewControllerTest, TestSavedPasswordsOrder) {
   CheckURLCellTitleAndDetailText(
       @"example2.com", @"", GetSectionIndex(SectionIdentifierSavedPasswords),
       1);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests the order in which the blocked passwords are displayed.
@@ -443,7 +429,6 @@ TEST_F(PasswordManagerViewControllerTest, TestBlockedPasswordsOrder) {
                     /* item= */ 0);
   CheckURLCellTitle(@"secret2.com", GetSectionIndex(SectionIdentifierBlocked),
                     /* item= */ 1);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests displaying passwords in the saved passwords section when there are
@@ -455,7 +440,6 @@ TEST_F(PasswordManagerViewControllerTest, AddSavedDuplicates) {
   EXPECT_EQ(5, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests displaying passwords in the blocked passwords section when there
@@ -467,7 +451,6 @@ TEST_F(PasswordManagerViewControllerTest, AddBlockedDuplicates) {
   EXPECT_EQ(5, NumberOfSections());
   EXPECT_EQ(1,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests deleting items from saved passwords (as affiliated groups) and blocked
@@ -519,7 +502,6 @@ TEST_F(PasswordManagerViewControllerTest,
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
 
   // There should be no password sections remaining and no search bar.
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests that the password manager is updated when passwords change while in
@@ -584,7 +566,6 @@ TEST_F(PasswordManagerViewControllerTest, TestChangePasswordsWhileSearching) {
 
   // Dismiss the view controller and wait for the dismissal to finish.
   __block bool dismissal_finished = NO;
-  [passwords_controller settingsWillBeDismissed];
   [root_view_controller_ dismissViewControllerAnimated:NO
                                             completion:^{
                                               dismissal_finished = YES;
@@ -630,7 +611,6 @@ TEST_F(PasswordManagerViewControllerTest,
 
   // Dismiss the view controller and wait for the dismissal to finish.
   __block bool dismissal_finished = NO;
-  [passwords_controller settingsWillBeDismissed];
   [root_view_controller_ dismissViewControllerAnimated:NO
                                             completion:^{
                                               dismissal_finished = YES;
@@ -644,10 +624,6 @@ TEST_F(PasswordManagerViewControllerTest,
 // Tests that opening the PasswordManagerViewController in search mode shows the
 // expected content.
 TEST_F(PasswordManagerViewControllerTest, TestOpenInSearchMode) {
-  // Call `settingsWillBeDismissed` on the initial view controller so that its
-  // observers are reset.
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
-
   root_view_controller_ = [[UIViewController alloc] init];
   scoped_window_.Get().rootViewController = root_view_controller_;
 
@@ -701,7 +677,6 @@ TEST_F(PasswordManagerViewControllerTest, TestOpenInSearchMode) {
 
   // Dismiss the view controller and wait for the dismissal to finish.
   __block bool dismissal_finished = NO;
-  [passwords_controller settingsWillBeDismissed];
   [root_view_controller_ dismissViewControllerAnimated:NO
                                             completion:^{
                                               dismissal_finished = YES;
@@ -738,7 +713,6 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_NSEQ([UIColor colorNamed:kBlueColor], checkPasswordButton.textColor);
   EXPECT_FALSE(checkPasswordButton.accessibilityTraits &
                UIAccessibilityTraitNotEnabled);
-  [passwords_controller settingsWillBeDismissed];
 }
 
 // Tests filtering of items.
@@ -786,7 +760,6 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
   EXPECT_EQ(2,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  [passwords_controller settingsWillBeDismissed];
 }
 
 // Tests filtering of items when group with multiple password entries is
@@ -828,8 +801,6 @@ TEST_F(PasswordManagerViewControllerTest, FilterGroupsOfPasswords) {
   // Password entries are groups as one item.
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
-
-  [passwords_controller settingsWillBeDismissed];
 }
 
 // Test verifies disabled state of password check cell.
@@ -866,7 +837,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateDisabled) {
 
   SelectCell(/*item=*/0,
              /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies default state of password check cell.
@@ -903,7 +873,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateDefault) {
 
   SelectCell(/*item=*/0,
              /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies safe state of password check cell.
@@ -941,7 +910,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateSafe) {
   SelectCell(/*item=*/0,
              /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
   EXPECT_OCMOCK_VERIFY(passwords_settings_commands_strict_mock_);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies compromised state of password check cell.
@@ -971,7 +939,6 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
   EXPECT_TRUE(checkPassword.accessoryType);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
   SetEditing(false);
 
   OCMExpect([passwords_settings_commands_strict_mock_ showPasswordCheckup]);
@@ -1009,7 +976,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateReusedPasswords) {
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
   EXPECT_TRUE(checkPassword.accessoryType);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
   SetEditing(false);
 
   OCMExpect([passwords_settings_commands_strict_mock_ showPasswordCheckup]);
@@ -1044,7 +1010,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateWeakPasswords) {
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
   EXPECT_TRUE(checkPassword.accessoryType);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
   SetEditing(false);
 
   OCMExpect([passwords_settings_commands_strict_mock_ showPasswordCheckup]);
@@ -1080,7 +1045,6 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
   EXPECT_TRUE(checkPassword.accessoryType);
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
   SetEditing(false);
 
   OCMExpect([passwords_settings_commands_strict_mock_ showPasswordCheckup]);
@@ -1118,7 +1082,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateRunning) {
 
   SelectCell(/*item=*/0,
              /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies error state of password check cell.
@@ -1157,7 +1120,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateError) {
 
   SelectCell(/*item=*/0,
              /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies that the "Check Now" button is unavailable when the user is
@@ -1173,8 +1135,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordCheckStateSignedOutError) {
   TableViewTextItem* checkNowButton =
       GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   EXPECT_FALSE(checkNowButton.enabled);
-
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies tapping start triggers correct function in service.
@@ -1185,14 +1145,10 @@ TEST_F(PasswordManagerViewControllerTest, StartPasswordCheck) {
   // Switch to default state so that the button is present.
   ChangePasswordCheckState(PasswordCheckStateDefault);
 
-  PasswordManagerViewController* passwords_controller =
-      GetPasswordManagerViewController();
-
   EXPECT_CALL(GetMockPasswordCheckService(), CheckUsernamePasswordPairs);
 
   SelectCell(/*item=*/1,
              /*sectionIndex=*/GetSectionIndex(SectionIdentifierPasswordCheck));
-  [passwords_controller settingsWillBeDismissed];
 }
 
 // Test verifies changes to the password store are reflected on UI.
@@ -1212,7 +1168,6 @@ TEST_F(PasswordManagerViewControllerTest, PasswordStoreListener) {
   RunUntilIdle();
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies the content of the widget promo cell.
@@ -1243,8 +1198,6 @@ TEST_F(PasswordManagerViewControllerTest, WidgetPromo) {
   EXPECT_NSEQ(item.promoImage,
               [UIImage imageNamed:WidgetPromoDisabledImageName()]);
   SetEditing(false);
-
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies the content of the Trusted Vault widget promo cell.
@@ -1290,8 +1243,6 @@ TEST_F(PasswordManagerViewControllerTest, TrustedVaultWidgetPromo) {
       [UIImage
           imageNamed:kPasswordManagerTrustedVaultWidgetPromoDisabledImage]);
   SetEditing(false);
-
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Test verifies that the Trusted Vault widget promo impression is being
@@ -1310,8 +1261,6 @@ TEST_F(PasswordManagerViewControllerTest,
   histogram_tester.ExpectBucketCount(
       kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
       PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kDisplayed, 1);
-
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 // Tests that `showTrustedVaultReauthForFetchKeysFromViewController` is being
@@ -1346,8 +1295,6 @@ TEST_F(PasswordManagerViewControllerTest,
   histogram_tester.ExpectBucketCount(
       kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
       PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kActedUpon, 1);
-
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 TEST_F(PasswordManagerViewControllerTest,
@@ -1394,7 +1341,6 @@ TEST_F(PasswordManagerViewControllerTest,
 
   // Dismiss the view controller and wait for the dismissal to finish.
   __block bool dismissal_finished = NO;
-  [passwords_controller settingsWillBeDismissed];
   [root_view_controller_ dismissViewControllerAnimated:NO
                                             completion:^{
                                               dismissal_finished = YES;
@@ -1436,8 +1382,6 @@ TEST_F(PasswordManagerViewControllerTest, ManageAccountHeaderIsBeingUpdated) {
                                        ->GetTag()
                                        .tag_string()))];
   EXPECT_NSEQ(header.urls[0].nsurl, expectedHeaderUrl.nsurl);
-
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
 }  // namespace

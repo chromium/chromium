@@ -175,18 +175,15 @@ constexpr NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                        GetForProfile(profile)
                      faviconLoader:faviconLoader
-                       syncService:SyncServiceFactory::GetForProfile(profile)];
+                       syncService:SyncServiceFactory::GetForProfile(profile)
+                       prefService:profile->GetPrefs()];
   self.mediator.tracker =
       feature_engagement::TrackerFactory::GetForProfile(profile);
 
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(profile);
-
   PasswordManagerViewController* passwordsViewController =
       [[PasswordManagerViewController alloc]
-          initWithIdentityManager:identityManager
-                      prefService:profile->GetPrefs()
-           shouldOpenInSearchMode:self.openViewControllerForPasswordSearch];
+          initWithShouldOpenInSearchMode:
+              self.openViewControllerForPasswordSearch];
   self.passwordsViewController = passwordsViewController;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
@@ -418,7 +415,7 @@ constexpr NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
 - (void)performReauthenticationForRetrievingTrustedVaultKey {
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
-  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger = trusted_vault ::
+  trusted_vault::TrustedVaultUserActionTriggerForUMA trigger = trusted_vault::
       TrustedVaultUserActionTriggerForUMA::kPasswordManagerSettings;
   if (_trustedVaultReauthenticationCoordinator) {
     // This method can be called while the previous trusted vault reauth is

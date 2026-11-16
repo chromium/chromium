@@ -18,8 +18,10 @@
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -81,6 +83,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 
 @property(nonatomic, assign) BOOL shouldShowPasswordManagerWidgetPromoCalled;
 @property(nonatomic, assign) BOOL shouldShowTrustedVaultWidgetPromoCalled;
+@property(nonatomic, assign) BOOL allowsAddPassword;
 
 @end
 
@@ -99,6 +102,10 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 }
 
 - (void)setSavingPasswordsToAccount:(BOOL)savingPasswordsToAccount {
+}
+
+- (void)setAllowsAddPassword:(BOOL)allowsAddPassword {
+  _allowsAddPassword = allowsAddPassword;
 }
 
 - (void)setAffiliatedGroups:
@@ -165,7 +172,8 @@ class PasswordsMediatorTest : public BlockCleanupTest {
         initWithPasswordCheckManager:password_check_
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForProfile(profile_.get())
-                         syncService:&sync_service_];
+                         syncService:&sync_service_
+                         prefService:profile_->GetPrefs()];
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile()));
@@ -176,7 +184,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
   PasswordsMediator* mediator() { return mediator_; }
 
-  ProfileIOS* profile() { return profile_.get(); }
+  TestProfileIOS* profile() { return profile_.get(); }
 
   TestPasswordStore* store() { return store_.get(); }
 
@@ -296,4 +304,27 @@ TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnPromoClosed) {
   [mediator() notifyFETOfPasswordManagerWidgetPromoDismissal];
 
   EXPECT_FALSE(mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo);
+}
+
+// Tests that `allowsAddPassword` is NO when `kCredentialsEnableService` is
+// managed and set to false, and YES otherwise.
+TEST_F(PasswordsMediatorTest, NotifiesConsumerAllowsAddPassword) {
+  EXPECT_TRUE(consumer().allowsAddPassword);
+
+  profile()->GetTestingPrefService()->SetManagedPref(
+      password_manager::prefs::kCredentialsEnableService,
+      std::make_unique<base::Value>(false));
+  PasswordsMediator* restricted_mediator = [[PasswordsMediator alloc]
+      initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                       GetForProfile(profile())
+                     faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                       profile())
+                       syncService:syncService()
+                       prefService:profile()->GetPrefs()];
+  FakePasswordsConsumer* restricted_consumer =
+      [[FakePasswordsConsumer alloc] init];
+  restricted_mediator.consumer = restricted_consumer;
+
+  EXPECT_FALSE(restricted_consumer.allowsAddPassword);
+  [restricted_mediator disconnect];
 }

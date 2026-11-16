@@ -26,9 +26,6 @@
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "components/password_manager/core/common/password_manager_pref_names.h"
-#import "components/prefs/pref_service.h"
-#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -142,7 +139,6 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 }  // namespace
 
 @interface PasswordManagerViewController () <
-    IdentityManagerObserving,
     PopoverLabelViewControllerDelegate,
     TableViewIllustratedEmptyViewDelegate>
 
@@ -186,9 +182,6 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 // Indicates whether the check button should be shown or not.
 @property(nonatomic, assign) BOOL shouldShowCheckButton;
 
-// The PrefService passed to this instance.
-@property(nonatomic, assign) PrefService* prefService;
-
 // The header for save passwords switch section.
 @property(nonatomic, readonly)
     TableViewLinkHeaderFooterItem* manageAccountLinkItem;
@@ -226,9 +219,8 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   std::vector<password_manager::CredentialUIEntry> _blockedSites;
   // The list of the user's saved grouped passwords.
   std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
-  // IdentityManager Observer.
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityManagerObserver;
+  // Boolean indicating whether adding new passwords is allowed.
+  BOOL _allowsAddPassword;
   // Boolean indicating if password forms have been received for the first time.
   // Used to show a loading indicator while waiting for the store response.
   BOOL _didReceivePasswords;
@@ -280,17 +272,9 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 
 #pragma mark - Initialization
 
-- (instancetype)initWithIdentityManager:
-                    (signin::IdentityManager*)identityManager
-                            prefService:(PrefService*)prefService
-                 shouldOpenInSearchMode:(BOOL)shouldOpenInSearchMode {
+- (instancetype)initWithShouldOpenInSearchMode:(BOOL)shouldOpenInSearchMode {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _prefService = prefService;
-    _identityManagerObserver =
-        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
-                                                                self);
-
     self.shouldDisableDoneButtonOnEdit = YES;
     self.searchTerm = @"";
 
@@ -301,12 +285,6 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
     [self updateUIForEditState];
   }
   return self;
-}
-
-- (void)dealloc {
-  // Not an invariant due to possible race conditions. DCHECKing for debugging
-  // purposes. See crbug.com/40067451.
-  DCHECK(!_identityManagerObserver.get());
 }
 
 - (void)setMostRecentlyUpdatedPasswordDetails:
@@ -526,7 +504,7 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
     }
 
     // Add Password button.
-    if ([self allowsAddPassword]) {
+    if (_allowsAddPassword) {
       [model addSectionWithIdentifier:SectionIdentifierAddPasswordButton];
       [model addItem:self.addPasswordItem
           toSectionWithIdentifier:SectionIdentifierAddPasswordButton];
@@ -667,18 +645,10 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 
 - (void)reportDismissalUserAction {
   base::RecordAction(base::UserMetricsAction("MobilePasswordsSettingsClose"));
-  _identityManagerObserver.reset();
 }
 
 - (void)reportBackUserAction {
   base::RecordAction(base::UserMetricsAction("MobilePasswordsSettingsBack"));
-  _identityManagerObserver.reset();
-}
-
-- (void)settingsWillBeDismissed {
-  CHECK(self.prefService);
-  _identityManagerObserver.reset();
-  self.prefService = nullptr;
 }
 
 #pragma mark - Items
@@ -902,6 +872,19 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
     [self populateManageAccountLinkItemContent];
     // TODO(crbug.com/416468488): Check if it is possible to only update the
     // items affected by this mutation instead of reloading data.
+    [self reloadData];
+  }
+}
+
+- (void)setAllowsAddPassword:(BOOL)allowsAddPassword {
+  if (_allowsAddPassword == allowsAddPassword) {
+    return;
+  }
+  _allowsAddPassword = allowsAddPassword;
+
+  // Reload data to update the add password button. No need to reload before the
+  // view is loaded, as loading the view triggers a data reload.
+  if (self.viewLoaded) {
     [self reloadData];
   }
 }
@@ -1156,7 +1139,7 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
         sectionIndex++;
 
         // Add "Add Password" button.
-        if ([self allowsAddPassword]) {
+        if (_allowsAddPassword) {
           [model insertSectionWithIdentifier:SectionIdentifierAddPasswordButton
                                      atIndex:sectionIndex];
           [self.tableView
@@ -1851,17 +1834,6 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   }
 }
 
-- (bool)allowsAddPassword {
-  if (!self.prefService) {
-    return NO;
-  }
-  // If the settings are managed by enterprise policy and the password manager
-  // is not enabled, there won't be any add functionality.
-  const char* prefName = password_manager::prefs::kCredentialsEnableService;
-  return !self.prefService->IsManagedPreference(prefName) ||
-         self.prefService->GetBoolean(prefName);
-}
-
 // Configures the title of this ViewController.
 - (void)setUpTitle {
   self.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
@@ -2217,7 +2189,7 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
     case ItemTypeCheckForProblemsButton:
       return self.checkForProblemsItem.isEnabled;
     case ItemTypeAddPasswordButton:
-      return [self allowsAddPassword];
+      return _allowsAddPassword;
     case ItemTypeWidgetPromo:
     case ItemTypeTrustedVaultWidgetPromo:
       return NO;
@@ -2336,20 +2308,12 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   }
 }
 
-#pragma mark - IdentityManagerObserving
-
-- (void)primaryAccountDidChange:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  [self reloadData];
-}
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSPasswordsSettingsCloseWithSwipe"));
-  _identityManagerObserver.reset();
 }
 
 #pragma mark - TableViewIllustratedEmptyViewDelegate

@@ -12,6 +12,8 @@
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -51,6 +53,15 @@ struct PasswordManagerActiveWidgetPromoData
   // Key to use for this type in SupportsUserData
   static constexpr char key[] = "PasswordManagerActiveWidgetPromoData";
 };
+
+// Returns whether adding passwords is allowed by enterprise policy.
+bool AllowsAddPassword(PrefService* pref_service) {
+  // If the settings are managed by enterprise policy and the password manager
+  // is not enabled, there won't be any add functionality.
+  const char* pref_name = password_manager::prefs::kCredentialsEnableService;
+  return !pref_service->IsManagedPreference(pref_name) ||
+         pref_service->GetBoolean(pref_name);
+}
 
 }  // namespace
 
@@ -94,17 +105,23 @@ struct PasswordManagerActiveWidgetPromoData
 
   // Service to know whether passwords are synced.
   raw_ptr<syncer::SyncService> _syncService;
+
+  // Profile pref service.
+  raw_ptr<PrefService> _prefService;
 }
 
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
                                faviconLoader:(FaviconLoader*)faviconLoader
-                                 syncService:(syncer::SyncService*)syncService {
+                                 syncService:(syncer::SyncService*)syncService
+                                 prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
+    CHECK(prefService);
     _syncService = syncService;
     _faviconLoader = faviconLoader;
+    _prefService = prefService;
 
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
 
@@ -139,6 +156,7 @@ struct PasswordManagerActiveWidgetPromoData
       setSavingPasswordsToAccount:
           password_manager::sync_util::GetPasswordSyncState(_syncService) !=
           password_manager::sync_util::SyncState::kNotActive];
+  [self.consumer setAllowsAddPassword:AllowsAddPassword(_prefService)];
 }
 
 - (void)disconnect {
@@ -153,6 +171,7 @@ struct PasswordManagerActiveWidgetPromoData
   _savedPasswordsPresenter = nullptr;
   _faviconLoader = nullptr;
   _syncService = nullptr;
+  _prefService = nullptr;
 }
 
 - (void)askFETToShowPasswordManagerWidgetPromo {
