@@ -8,13 +8,17 @@
 
 #include <array>
 #include <memory>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
@@ -84,6 +88,11 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
       content::BrowserContext* browser_context)
       : RendererStartupHelper(browser_context) {}
 
+  // Values received by SetPolicyActivityLoggingEnabled(), in order.
+  const std::vector<bool>& policy_activity_logging_updates() const {
+    return policy_activity_logging_updates_;
+  }
+
  protected:
   mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
       content::RenderProcessHost* process) override {
@@ -96,7 +105,9 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   // mojom::Renderer implementation:
   void ActivateExtension(const std::string& extension_id) override {}
   void SetActivityLoggingEnabled(bool enabled) override {}
-  void SetPolicyActivityLoggingEnabled(bool enabled) override {}
+  void SetPolicyActivityLoggingEnabled(bool enabled) override {
+    policy_activity_logging_updates_.push_back(enabled);
+  }
   void LoadExtensions(
       std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) override {
   }
@@ -152,6 +163,7 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void WatchPages(const std::vector<std::string>& css_selectors) override {}
 
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
+  std::vector<bool> policy_activity_logging_updates_;
 };
 
 class ActivityLogTest : public ChromeRenderViewHostTestHarness {
@@ -640,25 +652,107 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryActivation) {
   // 1. Initially false.
   EXPECT_FALSE(activity_log->IsTelemetryLoggingActive());
 
-  // 2. Register callback + Enable flag -> true.
+  // 2. Enable flag + add a subscriber -> true.
   feature_list.InitAndEnableFeature(
       extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
-  activity_log->SetTelemetryLoggingEnabled(
-      true, base::BindRepeating([](scoped_refptr<Action> action) {}));
+  base::CallbackListSubscription subscription =
+      activity_log->AddTelemetrySubscriber(base::DoNothing());
   EXPECT_TRUE(activity_log->IsTelemetryLoggingActive());
 
-  // 3. Unregister -> false.
-  activity_log->SetTelemetryLoggingEnabled(false, base::NullCallback());
+  // 3. Remove the subscriber -> false.
+  subscription = {};
   EXPECT_FALSE(activity_log->IsTelemetryLoggingActive());
 
-  // 4. Register with flag OFF -> false.
+  // 4. Add a subscriber with flag OFF -> false.
   base::test::ScopedFeatureList feature_list2;
   feature_list2.InitAndDisableFeature(
       extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
-  activity_log->SetTelemetryLoggingEnabled(
-      true, base::BindRepeating([](scoped_refptr<Action> action) {}));
+  subscription = activity_log->AddTelemetrySubscriber(base::DoNothing());
   EXPECT_FALSE(activity_log->IsTelemetryLoggingActive());
-  activity_log->SetTelemetryLoggingEnabled(false, base::NullCallback());
+}
+
+TEST_F(ActivityLogTestWithoutSwitch, TelemetryNotifiesAllSubscribers) {
+  ActivityLog* activity_log = ActivityLog::GetInstance(profile());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
+  int first_count = 0;
+  int second_count = 0;
+  base::CallbackListSubscription first_subscription =
+      activity_log->AddTelemetrySubscriber(base::BindLambdaForTesting(
+          [&](scoped_refptr<Action> action) { ++first_count; }));
+  base::CallbackListSubscription second_subscription =
+      activity_log->AddTelemetrySubscriber(base::BindLambdaForTesting(
+          [&](scoped_refptr<Action> action) { ++second_count; }));
+
+  activity_log->LogAction(base::MakeRefCounted<Action>(
+      kExtensionId, base::Time::Now(), Action::ACTION_DOM_ACCESS,
+      "Document.cookie"));
+
+  EXPECT_EQ(first_count, 1);
+  EXPECT_EQ(second_count, 1);
+}
+
+TEST_F(ActivityLogTestWithoutSwitch,
+       TelemetryStaysActiveUntilLastSubscriberRemoved) {
+  ActivityLog* activity_log = ActivityLog::GetInstance(profile());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
+  base::CallbackListSubscription first_subscription =
+      activity_log->AddTelemetrySubscriber(base::DoNothing());
+  base::CallbackListSubscription second_subscription =
+      activity_log->AddTelemetrySubscriber(base::DoNothing());
+
+  first_subscription = {};
+  EXPECT_TRUE(activity_log->IsTelemetryLoggingActive());
+
+  second_subscription = {};
+  EXPECT_FALSE(activity_log->IsTelemetryLoggingActive());
+}
+
+TEST_F(ActivityLogTestWithoutSwitch,
+       TelemetryNotifiesRenderersOnlyWhenActiveStateChanges) {
+  ActivityLog* activity_log = ActivityLog::GetInstance(profile());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
+  auto* renderer_startup_helper =
+      static_cast<InterceptingRendererStartupHelper*>(
+          RendererStartupHelperFactory::GetForBrowserContext(profile()));
+
+  base::CallbackListSubscription first_subscription =
+      activity_log->AddTelemetrySubscriber(base::DoNothing());
+  base::CallbackListSubscription second_subscription =
+      activity_log->AddTelemetrySubscriber(base::DoNothing());
+  first_subscription = {};
+  second_subscription = {};
+
+  renderer_startup_helper->FlushAllForTesting();
+  EXPECT_THAT(renderer_startup_helper->policy_activity_logging_updates(),
+              testing::ElementsAre(true, false));
+}
+
+TEST_F(ActivityLogTestWithoutSwitch,
+       TelemetrySubscriberCanUnsubscribeOnNotify) {
+  ActivityLog* activity_log = ActivityLog::GetInstance(profile());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
+  int count = 0;
+  base::CallbackListSubscription subscription;
+  subscription = activity_log->AddTelemetrySubscriber(
+      base::BindLambdaForTesting([&](scoped_refptr<Action> action) {
+        ++count;
+        subscription = {};
+      }));
+
+  activity_log->LogAction(base::MakeRefCounted<Action>(
+      kExtensionId, base::Time::Now(), Action::ACTION_DOM_ACCESS,
+      "Document.cookie"));
+
+  EXPECT_EQ(count, 1);
+  EXPECT_FALSE(activity_log->IsTelemetryLoggingActive());
 }
 
 TEST_F(ActivityLogTestWithoutSwitch, TelemetryShouldLog) {
@@ -671,8 +765,8 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryShouldLog) {
   EXPECT_FALSE(activity_log->ShouldLog(kExtensionId, Action::ACTION_API_CALL,
                                        "tabs.query"));
 
-  activity_log->SetTelemetryLoggingEnabled(
-      true, base::BindRepeating([](scoped_refptr<Action> action) {}));
+  base::CallbackListSubscription subscription =
+      activity_log->AddTelemetrySubscriber(base::DoNothing());
 
   // 1. DOM access should always be logged.
   EXPECT_TRUE(activity_log->ShouldLog(kExtensionId, Action::ACTION_DOM_ACCESS,
@@ -693,7 +787,7 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryShouldLog) {
   // Verify database is NOT enabled.
   EXPECT_FALSE(GetDatabaseEnabled());
 
-  activity_log->SetTelemetryLoggingEnabled(false, base::NullCallback());
+  subscription = {};
   EXPECT_FALSE(activity_log->ShouldLog(kExtensionId, Action::ACTION_API_CALL,
                                        "scripting.executeScript"));
 }

@@ -588,6 +588,11 @@ ActivityLog::ActivityLog(content::BrowserContext* context)
 
   observers_ = base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>();
 
+  // Unretained is safe: the removal callback is owned by
+  // `telemetry_subscribers_`, a member of `this`.
+  telemetry_subscribers_.set_removal_callback(base::BindRepeating(
+      &ActivityLog::OnTelemetrySubscriberRemoved, base::Unretained(this)));
+
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   CheckActive(true);  // use cached
   extension_system_->ready().Post(
@@ -718,29 +723,31 @@ void ActivityLog::RemoveObserver(ActivityLog::Observer* observer) {
   observers_->RemoveObserver(observer);
 }
 
-void ActivityLog::SetTelemetryLoggingEnabled(bool enabled,
-                                             TelemetryCallback callback) {
-  if (enabled) {
-    CHECK(!callback.is_null());
+base::CallbackListSubscription ActivityLog::AddTelemetrySubscriber(
+    TelemetryCallback callback) {
+  CHECK(!callback.is_null());
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kEnterpriseExtensionDOMActivityTelemetry)) {
+    return {};
   }
 
   bool was_active = IsTelemetryLoggingActive();
-
-  if (enabled &&
-      base::FeatureList::IsEnabled(
-          extensions_features::kEnterpriseExtensionDOMActivityTelemetry)) {
-    telemetry_callback_ = std::move(callback);
-  } else {
-    telemetry_callback_.Reset();
-  }
-
-  if (was_active != IsTelemetryLoggingActive()) {
+  base::CallbackListSubscription subscription =
+      telemetry_subscribers_.Add(std::move(callback));
+  if (!was_active) {
     NotifyRenderersOfTelemetryLogging();
   }
+  return subscription;
 }
 
 bool ActivityLog::IsTelemetryLoggingActive() const {
-  return !telemetry_callback_.is_null();
+  return !telemetry_subscribers_.empty();
+}
+
+void ActivityLog::OnTelemetrySubscriberRemoved() {
+  if (!IsTelemetryLoggingActive()) {
+    NotifyRenderersOfTelemetryLogging();
+  }
 }
 
 // static
@@ -774,9 +781,7 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
     database_policy_->ProcessAction(action);
   if (has_listeners_)
     observers_->Notify(FROM_HERE, &Observer::OnExtensionActivity, action);
-  if (!telemetry_callback_.is_null()) {
-    telemetry_callback_.Run(action);
-  }
+  telemetry_subscribers_.Notify(action);
   if (testing_mode_)
     VLOG(1) << action->PrintForDebug();
 }

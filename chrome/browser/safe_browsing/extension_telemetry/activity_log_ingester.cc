@@ -20,21 +20,17 @@ namespace safe_browsing {
 ActivityLogIngester::ActivityLogIngester(
     Profile* profile,
     ExtensionTelemetryService* telemetry_service)
-    : profile_(profile), telemetry_service_(telemetry_service) {
-  auto* activity_log = extensions::ActivityLog::GetInstance(profile_);
+    : telemetry_service_(telemetry_service) {
+  auto* activity_log = extensions::ActivityLog::GetInstance(profile);
   if (activity_log) {
-    activity_log->SetTelemetryLoggingEnabled(
-        true, base::BindRepeating(&ActivityLogIngester::OnExtensionActivity,
-                                  weak_factory_.GetWeakPtr()));
+    // Unretained is safe: the subscription is owned by `this`.
+    telemetry_subscription_ =
+        activity_log->AddTelemetrySubscriber(base::BindRepeating(
+            &ActivityLogIngester::OnExtensionActivity, base::Unretained(this)));
   }
 }
 
-ActivityLogIngester::~ActivityLogIngester() {
-  auto* activity_log = extensions::ActivityLog::GetInstance(profile_);
-  if (activity_log) {
-    activity_log->SetTelemetryLoggingEnabled(false, base::NullCallback());
-  }
-}
+ActivityLogIngester::~ActivityLogIngester() = default;
 
 void ActivityLogIngester::OnExtensionActivity(
     scoped_refptr<extensions::Action> action) {
