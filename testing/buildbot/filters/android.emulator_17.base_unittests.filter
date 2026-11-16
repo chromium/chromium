@@ -3,3 +3,6 @@
 
 # crbug.com/579554199
 -FilePathTest.CompareIgnoreCase
+
+# crbug.com/586579902
+-PartitionAllocLockTest.PriorityIsInherited

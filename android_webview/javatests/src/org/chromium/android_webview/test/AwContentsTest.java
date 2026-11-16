@@ -186,6 +186,9 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
+            message = "https://crbug.com/586538780")
     public void testUpdateContextAndAdopt() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         var histogramWatcher =

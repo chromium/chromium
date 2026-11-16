@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
@@ -421,6 +422,9 @@ public class DownloadActivityV2Test {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/571584010
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
+            message = "https://crbug.com/570571761")
     public void testAddRemoveItems() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
