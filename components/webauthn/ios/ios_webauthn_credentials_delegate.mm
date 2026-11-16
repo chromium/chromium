@@ -128,6 +128,19 @@ void IOSWebAuthnCredentialsDelegate::OnCredentialsReceived(
   NotifyClientsOfPasskeyAvailability();
 }
 
+void IOSWebAuthnCredentialsDelegate::ClearCredentialsForRequest(
+    const std::string& passkey_request_id) {
+  if (passkey_request_id.empty() || passkey_request_id_ != passkey_request_id) {
+    return;
+  }
+
+  passkeys_.reset();
+  passkey_request_id_.clear();
+  verified_backend_ids_.clear();
+  passkey_selected_ = false;
+  NotifyClientsOfPasskeyAvailability();
+}
+
 void IOSWebAuthnCredentialsDelegate::NotifyClientsOfPasskeyAvailability() {
   std::vector<base::OnceClosure> callbacks;
   callbacks.swap(passkeys_available_callbacks_);

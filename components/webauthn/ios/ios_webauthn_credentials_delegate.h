@@ -44,6 +44,10 @@ class IOSWebAuthnCredentialsDelegate
       std::vector<password_manager::PasskeyCredential> credentials,
       const std::string& passkey_request_id);
 
+  // Clears stored passkeys and request state if `passkey_request_id_` matches
+  // `passkey_request_id`.
+  void ClearCredentialsForRequest(const std::string& passkey_request_id);
+
   // Marks the passkey suggestion identified by `backend_id` as user verified.
   // A backend_id is the base64-encoded credential ID.
   void MarkPasskeyAsUserVerified(const std::string& backend_id);

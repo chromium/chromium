@@ -210,7 +210,46 @@ void PasskeyTabHelper::LogEvent(
 
 void PasskeyTabHelper::HandleCancelRequestEvent(
     webauthn::IOSPasskeyClient::RequestInfo request_info) {
+  if (request_info.request_id.empty()) {
+    return;
+  }
+
+  const std::string request_id = request_info.request_id;
   client_->CancelPasskeyRequest(std::move(request_info));
+
+  loaders_.erase(request_id);
+  // `PendingRequest` is not assignable due to const members in
+  // `PasskeyRequestParams`, so `std::erase_if` cannot be used here.
+  auto remove_matching_requests =
+      [&request_id](std::vector<PendingRequest>& requests) {
+        std::vector<PendingRequest> remaining;
+        remaining.reserve(requests.size());
+        for (PendingRequest& request : requests) {
+          bool matches = std::visit(
+              [&request_id](const auto& params) {
+                return params.RequestId() == request_id;
+              },
+              request);
+          if (!matches) {
+            remaining.push_back(std::move(request));
+          }
+        }
+        requests.swap(remaining);
+      };
+  remove_matching_requests(requests_waiting_for_passkey_model_);
+  for (auto it = requests_waiting_for_web_frame_.begin();
+       it != requests_waiting_for_web_frame_.end();) {
+    remove_matching_requests(it->second);
+    if (it->second.empty()) {
+      requests_waiting_for_web_frame_.erase(it++);
+    } else {
+      ++it;
+    }
+  }
+
+  ClearAssertionDelegateCredentials(request_id);
+  assertion_requests_.erase(request_id);
+  registration_requests_.erase(request_id);
 }
 
 void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {
@@ -320,6 +359,8 @@ void PasskeyTabHelper::OnWebAuthnCredentialsDelegateResolved(
         request_type == PasskeyRequestParams::RequestType::kModal);
 
   assertion_requests_.emplace(passkey_request_id, std::move(params));
+  assertion_request_delegates_.emplace(passkey_request_id,
+                                       delegate->GetWeakPtr());
   if (request_type == PasskeyRequestParams::RequestType::kModal) {
     // On modal requests, show the passkey suggestion bottom sheet. On
     // conditional requests, the credential bottom sheet will be opened by the
@@ -765,6 +806,8 @@ void PasskeyTabHelper::AddNewPasskey(
 std::optional<AssertionRequestParams>
 PasskeyTabHelper::ExtractParamsFromAssertionRequestsMap(
     std::string request_id) {
+  assertion_request_delegates_.erase(request_id);
+
   // Get parameters and remove the entry from the map.
   auto params_handle = assertion_requests_.extract(request_id);
   if (params_handle) {
@@ -842,6 +885,7 @@ PasskeyTabHelper::ExtractRequestInfo(const std::string& request_id) {
                             optional_params->Type());
     }
   } else if (assertion_requests_.contains(request_id)) {
+    ClearAssertionDelegateCredentials(request_id);
     std::optional<AssertionRequestParams> optional_params =
         ExtractParamsFromAssertionRequestsMap(request_id);
     if (optional_params.has_value()) {
@@ -851,6 +895,20 @@ PasskeyTabHelper::ExtractRequestInfo(const std::string& request_id) {
   }
 
   return std::nullopt;
+}
+
+void PasskeyTabHelper::ClearAssertionDelegateCredentials(
+    const std::string& request_id) {
+  auto it = assertion_request_delegates_.find(request_id);
+  if (it == assertion_request_delegates_.end()) {
+    return;
+  }
+  base::WeakPtr<IOSWebAuthnCredentialsDelegate> delegate =
+      std::move(it->second);
+  assertion_request_delegates_.erase(it);
+  if (delegate) {
+    delegate->ClearCredentialsForRequest(request_id);
+  }
 }
 
 void PasskeyTabHelper::RejectPendingRequest(const std::string& request_id) {
