@@ -2908,6 +2908,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridge.java",
       "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
       "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
+      "java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java",
       "java/src/org/chromium/chrome/browser/lens/LensPolicyUtils.java",
       "java/src/org/chromium/chrome/browser/login/ChromeHttpAuthHandler.java",
       "java/src/org/chromium/chrome/browser/media/AutoPictureInPicturePermissionController.java",

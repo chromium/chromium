@@ -22,6 +22,7 @@
 #include "chrome/browser/android/seccomp_support_detector.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_saver/data_saver.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/webauthn/android/cable_module_android.h"
@@ -36,6 +37,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_paths.h"
+#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider_android.h"
@@ -43,6 +45,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ChromeBackupWatcher_jni.h"
+#include "chrome/android/chrome_jni_headers/ProcessInitializationHandler_jni.h"
 
 ChromeBrowserMainPartsAndroid::ChromeBrowserMainPartsAndroid(
     bool is_integration_test,
@@ -63,6 +66,24 @@ int ChromeBrowserMainPartsAndroid::PreCreateThreads() {
       std::make_unique<crash_reporter::ChildProcessCrashObserver>());
 
   return result_code;
+}
+
+void ChromeBrowserMainPartsAndroid::PreProfileInit() {
+  ChromeBrowserMainParts::PreProfileInit();
+
+  // The tab strip NTB WebUI attaches its WebContents to the activity's
+  // WindowAndroid during profile creation, which happens before
+  // ProcessInitializationHandler pushes the OS theme settings in post-native
+  // init. Each of those pushes resets the ColorProvider cache. Push the initial
+  // values now, while nothing uses the cache, so that the later push is a
+  // no-op.
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kAndroidNewTabButtonTabstripWebUI)) {
+    // Batch the night mode and accent color updates into one notification.
+    ui::NativeTheme::UpdateNotificationDelayScoper scoper;
+    ProcessInitializationHandlerJni::pushInitialOsThemeSettings(
+        base::android::AttachCurrentThread());
+  }
 }
 
 void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
