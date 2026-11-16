@@ -54,8 +54,6 @@
   font-size: var(--cr-chip-font-size, 12px);
   font-weight: 500;
   height: var(--cr-chip-height, 28px);
-  padding-inline: calc(var(--md-select-side-padding) +
-      var(--filter-chip-icon-size) + 4px);
 }
 
 .md-select:has(option:not(:first-child):checked) {
@@ -65,6 +63,8 @@
       var(--cr-fallback-color-tonal-container));
   color: var(--color-chip-foreground-selected,
       var(--cr-fallback-color-on-tonal-container));
+  padding-inline-start: calc(var(--md-select-side-padding) +
+      var(--filter-chip-icon-size) + 4px);
 }
 
 #clearAllButton {
