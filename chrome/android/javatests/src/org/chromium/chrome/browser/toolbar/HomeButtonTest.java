@@ -4,21 +4,28 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.performAccessibilityAction;
+import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -35,6 +42,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -72,12 +80,14 @@ public class HomeButtonTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
 
+    private HomeButton mHomeButton;
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private int mIdHomeButton;
 
     @BeforeClass
     public static void setupSuite() {
         sActivity = sActivityTestRule.launchActivity(null);
+        ApplicationTestUtils.waitForActivityState(sActivity, Stage.RESUMED);
     }
 
     @Before
@@ -92,18 +102,18 @@ public class HomeButtonTest {
                     sActivity.setContentView(content);
 
                     mIdHomeButton = View.generateViewId();
-                    HomeButton homeButton = new HomeButton(sActivity, null);
+                    mHomeButton = new HomeButton(sActivity, null);
                     // For a view created in a test, we can make the view not important for
                     // accessibility to prevent failures from AccessibilityChecks. Do not do this
                     // for views outside tests.
-                    homeButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+                    mHomeButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
                     NonNullObservableSupplier<Boolean> homepagePolicySupplier =
                             ObservableSuppliers.alwaysFalse();
-                    homeButton.setId(mIdHomeButton);
+                    mHomeButton.setId(mIdHomeButton);
                     mHomeButtonCoordinator =
                             new HomeButtonCoordinator(
                                     sActivity,
-                                    homeButton,
+                                    mHomeButton,
                                     (metaState, buttonState) -> {},
                                     HomepageManager.getInstance()::onMenuClick,
                                     SupplierUtils.alwaysFalse(),
@@ -112,21 +122,26 @@ public class HomeButtonTest {
                                     /* actionRegistry= */ null);
                     SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
-                    content.addView(homeButton);
+                    content.addView(mHomeButton);
                 });
     }
 
     @Test
     @SmallTest
     public void testContextMenu_AfterConversion() {
-        onView(withId(mIdHomeButton)).perform(longClick());
+        waitForVisibleView(withId(mIdHomeButton));
+        ThreadUtils.runOnUiThreadBlocking(() -> assertTrue(mHomeButton.performLongClick()));
 
         ModelList menu = mHomeButtonCoordinator.getMenuForTesting();
         assertNotNull(ASSERT_MSG_MENU_IS_CREATED, menu);
         assertEquals(ASSERT_MSG_MENU_SIZE, 1, menu.size());
 
         // Test click on context menu item
-        onView(withText(R.string.options_homepage_edit_title)).perform(click());
+        onViewWaiting(
+                        allOf(
+                                withParent(withId(R.id.menu_list)),
+                                hasDescendant(withText(R.string.options_homepage_edit_title))))
+                .perform(performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK));
         verify(mSettingsNavigation).startSettings(sActivity, HomepageSettings.class);
     }
 }
