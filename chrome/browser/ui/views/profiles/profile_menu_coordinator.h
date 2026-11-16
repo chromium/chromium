@@ -37,7 +37,7 @@ class ProfileMenuCoordinator {
   ProfileMenuCoordinator& operator=(const ProfileMenuCoordinator&) = delete;
   ~ProfileMenuCoordinator();
 
-  // Shows the the profile bubble for this browser.
+  // Shows the profile bubble for this browser.
   //
   // If `from_avatar_promo` is set, then trigger of the menu originated from a
   // promo that was shown on the AvatarButton.
@@ -45,9 +45,12 @@ class ProfileMenuCoordinator {
   // `keep_anchor_visible` is kept alive until the menu is closed, or destroyed
   // immediately if no menu is shown, so callers can keep the avatar button
   // visible while the menu is anchored to it.
+  // TODO(crbug.com/580760684): Remove `keep_anchor_visible` from the public
+  // APIs.
   void Show(bool is_source_accelerator,
             bool from_avatar_promo = false,
-            base::ScopedClosureRunner keep_anchor_visible = {});
+            base::ScopedClosureRunner keep_anchor_visible =
+                base::ScopedClosureRunner());
 
   // Returns true if the bubble is currently showing for the owning browser.
   bool IsShowing() const;
@@ -60,8 +63,6 @@ class ProfileMenuCoordinator {
   BrowserWindowInterface* GetBrowser();
   Profile* GetProfile();
 
-  views::BubbleAnchor GetAvatarToolbarButton();
-
   void ShowWithPromoResults(bool is_source_accelerator,
                             bool from_avatar_promo,
                             base::ScopedClosureRunner keep_anchor_visible
@@ -70,6 +71,20 @@ class ProfileMenuCoordinator {
                             signin::ProfileMenuAvatarButtonPromoInfo promo_info
 #endif
   );
+
+  // `caller_keep_anchor_visible` is the visibility lock passed to `Show()`
+  // (e.g., from `ButtonPressed()`, keeping the button visible across the async
+  // promo-info lookup), while `anchor_keep_visible` is the lock from
+  // `ShowWithPromoResults()`'s `RunWhenVisible()` call (which also covers
+  // direct `Show()` callers). Both are held until the bubble closes.
+  void ShowBubble(bool is_source_accelerator,
+                  bool from_avatar_promo,
+                  base::ScopedClosureRunner caller_keep_anchor_visible,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+                  signin::ProfileMenuAvatarButtonPromoInfo promo_info,
+#endif
+                  views::BubbleAnchor anchor,
+                  base::ScopedClosureRunner anchor_keep_visible);
 
   // TODO(crbug.com/425953501): Replace with `ToolbarButtonProvider` once this
   // bug is fixed.

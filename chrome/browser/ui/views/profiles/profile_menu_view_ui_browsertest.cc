@@ -5,6 +5,7 @@
 #include <array>
 #include <memory>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -818,7 +819,10 @@ class ProfileMenuViewPixelTest
       auto* coordinator = ProfileMenuCoordinator::From(browser());
       ASSERT_TRUE(coordinator);
       coordinator->Show(/*is_source_accelerator=*/false,
-                        /*from_avatar_promo=*/true);
+                        /*from_avatar_promo=*/true,
+                        /*keep_anchor_visible=*/{});
+      ASSERT_TRUE(base::test::RunUntil(
+          [coordinator]() { return coordinator->IsShowing(); }));
     } else {
       // Click the avatar button to open the menu.
       AvatarToolbarButtonTestAccessor avatar_accessor(browser());
