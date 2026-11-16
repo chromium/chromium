@@ -28,6 +28,7 @@ Local Modifications:
   https://github.com/etemesi254/zune-image/pull/507
   https://github.com/etemesi254/zune-image/pull/525
   https://github.com/etemesi254/zune-image/pull/526
+  https://github.com/etemesi254/zune-image/pull/534
   Each patch records its published PR head and source-stage provenance.
   PR498 includes its eighth-step extension; subsequent patches are rebased
   onto that revision rather than carrying a second patch for the same PR.
@@ -48,6 +49,10 @@ Local Modifications:
   dispatch and marker-state tests to the existing types and state.
   Leave zune-core unchanged. Dispatch tests follow its effective SIMD policy;
   explicit scalar references and no-SIMD builds cover scalar output separately.
+- Patch 0013 backports PR534 at
+  2ace9c7facb843e92edb1251945075e346f294d4 for opt-in final-input
+  recovery in converted scanlines. Preserve growing/strict behavior and
+  the preceding scaled-output, dispatch and component-scan fixes.
 - Track upstream acceptance and release availability in:
   https://github.com/etemesi254/zune-image/issues/503
   Remove maintained patches only after verifying their complete behavior is

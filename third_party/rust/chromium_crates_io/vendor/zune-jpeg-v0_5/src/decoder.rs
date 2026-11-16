@@ -664,6 +664,7 @@ struct ScanlineState {
     staged_rows:     usize,
     staging:         Vec<u8>,
     source_complete: bool,
+    input_complete:  bool,
     entropy_tables:  Option<Box<EntropyTables>>
 }
 
@@ -678,6 +679,7 @@ impl Default for ScanlineState {
             staged_rows:     0,
             staging:         Vec::new(),
             source_complete: false,
+            input_complete:  false,
             entropy_tables:  None
         }
     }
@@ -745,6 +747,10 @@ pub struct RawDecodeSession<'decoder, T> {
 /// Output dimensions always match the JPEG frame dimensions. This API does not
 /// provide libjpeg's scaled-IDCT or horizontal crop operations; callers must
 /// perform scaling or cropping after row conversion.
+///
+/// When no more bytes can arrive, [`Self::set_input_complete`] enables the
+/// non-strict decoder's best-effort final-EOF behavior. Without that signal,
+/// incomplete input remains resumable.
 pub struct ScanlineDecodeSession<'decoder, T> {
     decoder: &'decoder mut JpegDecoder<T>,
     previous_incremental_mode: bool,
@@ -766,6 +772,17 @@ impl<T> ScanlineDecodeSession<'_, T>
 where
     T: ZByteReaderTrait
 {
+    /// Signal that no more compressed bytes will be provided for this sequence.
+    ///
+    /// Non-strict decoding may reconstruct best-effort output at final EOF.
+    /// Recovered rows keep opaque alpha in alpha-bearing output layouts.
+    /// Strict decoding keeps its existing EOF behavior. The signal persists
+    /// when a borrowing session is dropped and recreated, but does not carry
+    /// over to raw or whole-image output.
+    pub fn set_input_complete(&mut self) {
+        self.decoder.scanline_state.input_complete = true;
+    }
+
     /// Parse enough input to make converted output geometry available.
     ///
     /// A suspended start does not advance output and can be retried on the
@@ -1061,6 +1078,12 @@ where
     fn decode_scanline_stripe(
         &mut self, pixels: &mut [u8], stride: usize
     ) -> Result<ScanlineReadStatus, DecodeErrors> {
+        if self.decoder.scanline_state.input_complete
+            && self.decoder.scanline_state.source_complete
+            && self.decoder.scanline_state.phase == ScanlinePhase::StreamingBaseline
+        {
+            return self.fill_final_scanline_rows(pixels, stride);
+        }
         let prepared = if self.decoder.scanline_state.phase == ScanlinePhase::Start {
             self.decoder.prepare_for_scan_decode()?;
             let buffered = self.decoder.is_progressive
@@ -1105,8 +1128,10 @@ where
             ScanlinePhase::Start | ScanlinePhase::Complete => unreachable!()
         };
 
-        let (rows_written, source_complete) = match output {
-            McuDecodeOutput::Scanlines(sink) => (sink.rows_written, sink.source_complete),
+        let (rows_written, source_complete, pixels) = match output {
+            McuDecodeOutput::Scanlines(sink) => {
+                (sink.rows_written, sink.source_complete, sink.pixels)
+            }
             McuDecodeOutput::Pixels(_)
             | McuDecodeOutput::RawPlanes(_)
             | McuDecodeOutput::Scaled(_) => unreachable!()
@@ -1116,6 +1141,14 @@ where
                 return Ok(ScanlineReadStatus::NeedMoreInput);
             }
             return Err(error);
+        }
+        if source_complete
+            && rows_written == 0
+            && self.decoder.scanline_state.input_complete
+            && self.decoder.scanline_state.phase == ScanlinePhase::StreamingBaseline
+        {
+            self.decoder.scanline_state.source_complete = true;
+            return self.fill_final_scanline_rows(pixels, stride);
         }
 
         let remaining = usize::from(self.decoder.height())
@@ -1130,6 +1163,35 @@ where
                 Some(Box::new(self.decoder.entropy_tables.clone()));
         }
         Ok(ScanlineReadStatus::RowsProcessed { rows: rows_written })
+    }
+
+    fn fill_final_scanline_rows(
+        &self, pixels: &mut [u8], stride: usize
+    ) -> Result<ScanlineReadStatus, DecodeErrors> {
+        self.decoder.check_cancelled()?;
+        let remaining = usize::from(self.decoder.height())
+            .saturating_sub(self.decoder.scanline_state.output_scanline);
+        let rows = remaining.min(self.max_scanline_stripe_rows()?);
+        let required = rows.checked_mul(stride).ok_or(DecodeErrors::FormatStatic(
+            "converted final row size overflow"
+        ))?;
+        if pixels.len() < required {
+            return Err(DecodeErrors::TooSmallOutput(required, pixels.len()));
+        }
+        let row_bytes = self.output_row_bytes().ok_or(DecodeErrors::FormatStatic(
+            "converted output row size overflow"
+        ))?;
+        let color = self.decoder.options.jpeg_get_out_colorspace();
+        for row in pixels.chunks_exact_mut(stride).take(rows) {
+            let row = &mut row[..row_bytes];
+            row.fill(128);
+            if color.has_alpha() {
+                for pixel in row.chunks_exact_mut(color.num_components()) {
+                    pixel[color.num_components() - 1] = 255;
+                }
+            }
+        }
+        Ok(ScanlineReadStatus::RowsProcessed { rows })
     }
 
     #[cfg(feature = "arith")]
@@ -2468,7 +2530,14 @@ where
     /// Strict mode rejects truncated scans, while incremental mode uses the
     /// error to signal that the caller should provide more input.
     pub(crate) fn scan_eof_is_error(&self) -> bool {
-        self.options.strict_mode() || (self.incremental_mode && !self.raw_pull_state.input_complete)
+        self.options.strict_mode()
+            || (self.incremental_mode
+                && !self.raw_pull_state.input_complete
+                && !self.scanline_state.input_complete)
+    }
+
+    pub(crate) fn scanline_input_complete(&self) -> bool {
+        self.scanline_state.input_complete
     }
 
     /// Return the number of output scanlines known to be stable after the
@@ -3860,7 +3929,7 @@ where
     }
 
     fn abort_scanline_sequence(&mut self) {
-        if !self.scanline_state.started {
+        if !self.scanline_state.started && !self.scanline_state.input_complete {
             return;
         }
         self.scanline_state = ScanlineState::default();
@@ -4286,15 +4355,17 @@ mod extended_xmp_tests {
 
 #[cfg(test)]
 mod planar_layout_helpers {
+    use alloc::sync::Arc;
     use alloc::vec;
     use alloc::vec::Vec;
+    use core::sync::atomic::{AtomicBool, Ordering};
 
     use zune_core::bytestream::ZCursor;
     use zune_core::colorspace::ColorSpace;
     use zune_core::options::DecoderOptions;
 
-    use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
     use super::{round_up_pow2, JpegDecoder, RawImcuRowStatus, ScanlineReadStatus, ScanlineStatus};
+    use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
     use crate::idct::{choose_idct_1x1_func, choose_idct_4x4_func, choose_idct_func};
 
     fn dc_only_progressive_jpeg(with_eoi: bool) -> Vec<u8> {
@@ -4313,6 +4384,287 @@ mod planar_layout_helpers {
             data.extend_from_slice(&[0xFF, 0xD9]);
         }
         data
+    }
+
+    #[test]
+    fn final_scanline_input_matches_buffered_pixels() {
+        let fixtures: [(&[u8], &[ColorSpace]); 2] = [
+            (
+                include_bytes!("../../../test-images/jpeg/2029.jpg"),
+                &[ColorSpace::RGB, ColorSpace::RGBA, ColorSpace::BGRA]
+            ),
+            (
+                include_bytes!("../../../test-images/jpeg/restart_cross_row_128x128.jpg"),
+                &[ColorSpace::Luma, ColorSpace::RGB, ColorSpace::RGBA]
+            )
+        ];
+        for (data, colors) in fixtures {
+            for trim_bytes in [0, 2, 3] {
+                let data = &data[..data.len() - trim_bytes];
+                for &color in colors {
+                    let options = DecoderOptions::default()
+                        .set_strict_mode(false)
+                        .jpeg_set_out_colorspace(color);
+                    let mut reference = JpegDecoder::new_with_options(ZCursor::new(data), options);
+                    let mut expected = reference.decode().unwrap();
+                    // Packed recovery can fill alpha with 128; JPEG scanline output stays opaque.
+                    if color.has_alpha() {
+                        for pixel in expected.chunks_exact_mut(color.num_components()) {
+                            pixel[color.num_components() - 1] = 255;
+                        }
+                    }
+                    let (width, height) = reference.dimensions().unwrap();
+                    let row_bytes = width * color.num_components();
+                    let stride = row_bytes + 3;
+                    let size = height * stride;
+                    let mut output = vec![0xA5; size + 2];
+                    let mut decoder = JpegDecoder::new_with_options(ZCursor::new(data), options);
+                    decoder.scanline_output().set_input_complete();
+                    let mut scanlines = decoder.scanline_output();
+                    let mut rows = 0;
+                    while rows < height {
+                        match scanlines
+                            .read_scanlines(&mut output[1 + rows * stride..size + 1], stride)
+                            .unwrap()
+                        {
+                            ScanlineReadStatus::RowsProcessed { rows: count } if count > 0 => {
+                                rows += count;
+                            }
+                            status => panic!(
+                                "{width}x{height} {color:?} trim_bytes={trim_bytes}: \
+                                 final input suspended after {rows} rows: {status:?}"
+                            )
+                        }
+                    }
+                    assert_eq!(rows, height);
+                    assert_eq!(scanlines.finish().unwrap(), ScanlineStatus::Complete);
+                    for (row, expected_row) in expected.chunks_exact(row_bytes).enumerate() {
+                        let start = 1 + row * stride;
+                        assert_eq!(&output[start..start + row_bytes], expected_row);
+                        assert_eq!(&output[start + row_bytes..start + stride], &[0xA5; 3]);
+                    }
+                    assert_eq!(output[0], 0xA5);
+                    assert_eq!(output[size + 1], 0xA5);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn final_scanline_incomplete_components_preserve_padding() {
+        for original in [
+            include_bytes!("../../../test-images/jpeg/non_interleaved_420_64x64.jpg").as_slice(),
+            include_bytes!("../../../test-images/jpeg/restart_non_interleaved_422_333x257.jpg")
+                .as_slice()
+        ] {
+            let mut scans = original
+                .windows(2)
+                .enumerate()
+                .filter_map(|(offset, bytes)| (bytes == [0xFF, 0xDA]).then_some(offset));
+            let scan_start = |sos| {
+                let length =
+                    usize::from(u16::from_be_bytes([original[sos + 2], original[sos + 3]]));
+                sos + 2 + length
+            };
+            let entropy_start = scan_start(scans.next().unwrap());
+            let next_scan_start = scan_start(scans.next().unwrap());
+            for cut in [entropy_start + 1, next_scan_start] {
+                for color in [ColorSpace::RGB, ColorSpace::RGBA, ColorSpace::BGRA] {
+                    let mut decoder = JpegDecoder::new_with_options(
+                        ZCursor::new(&original[..cut]),
+                        DecoderOptions::default()
+                            .set_strict_mode(false)
+                            .jpeg_set_out_colorspace(color)
+                    );
+                    decoder.decode_headers().unwrap();
+                    let (width, height) = decoder.dimensions().unwrap();
+                    let row_bytes = width * color.num_components();
+                    let stride = row_bytes + 3;
+                    let size = stride * height;
+                    let mut output = vec![0xA5; size + 2];
+                    let mut scanlines = decoder.scanline_output();
+                    scanlines.set_input_complete();
+                    for _ in 0..2 {
+                        output.fill(0xA5);
+                        let before = scanlines.output_scanline();
+                        let rows = match scanlines
+                            .read_scanlines(&mut output[1..size + 1], stride)
+                            .unwrap()
+                        {
+                            ScanlineReadStatus::RowsProcessed { rows } => {
+                                assert!(rows > 0 && rows <= height - before);
+                                rows
+                            }
+                            ScanlineReadStatus::NeedMoreInput => 0,
+                            ScanlineReadStatus::Complete => {
+                                assert_eq!(before, height);
+                                0
+                            }
+                        };
+                        assert_eq!(scanlines.output_scanline(), before + rows);
+                        for row in output[1..size + 1].chunks_exact(stride) {
+                            assert_eq!(&row[row_bytes..], &[0xA5; 3]);
+                        }
+                        assert_eq!(output[0], 0xA5);
+                        assert!(output[1 + rows * stride..].iter().all(|&byte| byte == 0xA5));
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn final_scanline_input_preserves_default_and_strict_suspension() {
+        let data = dc_only_progressive_jpeg(false);
+        for strict in [false, true] {
+            let mut decoder = JpegDecoder::new_with_options(
+                ZCursor::new(&data),
+                DecoderOptions::default().set_strict_mode(strict)
+            );
+            let mut output = [0xA5; 8 * 8 * 3];
+            assert_eq!(
+                decoder
+                    .scanline_output()
+                    .read_scanlines(&mut output, 8 * 3)
+                    .unwrap(),
+                ScanlineReadStatus::NeedMoreInput
+            );
+            assert!(output.iter().all(|&value| value == 0xA5));
+            let mut scanlines = decoder.scanline_output();
+            scanlines.set_input_complete();
+            let status = scanlines.read_scanlines(&mut output, 8 * 3).unwrap();
+            if strict {
+                assert_eq!(status, ScanlineReadStatus::NeedMoreInput);
+                assert!(output.iter().all(|&value| value == 0xA5));
+            } else {
+                assert_eq!(status, ScanlineReadStatus::RowsProcessed { rows: 8 });
+                assert_eq!(output, [128; 8 * 8 * 3]);
+                assert_eq!(scanlines.finish().unwrap(), ScanlineStatus::Complete);
+            }
+        }
+    }
+
+    #[test]
+    fn final_scanline_input_does_not_leak_to_pixel_output() {
+        let data = dc_only_progressive_jpeg(false);
+        for started in [false, true] {
+            let mut decoder = JpegDecoder::new_with_options(
+                ZCursor::new(&data),
+                DecoderOptions::default().set_strict_mode(false)
+            );
+            decoder.decode_headers().unwrap();
+            decoder.set_incremental_mode(true);
+            let mut scanlines = decoder.scanline_output();
+            scanlines.set_input_complete();
+            if started {
+                assert_eq!(scanlines.start().unwrap(), ScanlineStatus::Ready);
+            }
+            drop(scanlines);
+            let mut output = vec![0; decoder.output_buffer_size().unwrap()];
+            assert!(decoder
+                .decode_into(&mut output)
+                .unwrap_err()
+                .is_recoverable_eof());
+        }
+    }
+
+    #[test]
+    fn final_scanline_terminal_recovery_matches_buffered_pixels() {
+        let original = include_bytes!("../../../test-images/jpeg/restart_cross_row_128x128.jpg");
+        let sos = original
+            .windows(2)
+            .position(|bytes| bytes == [0xFF, 0xDA])
+            .unwrap();
+        let header_length = usize::from(u16::from_be_bytes([original[sos + 2], original[sos + 3]]));
+        let mut inputs = Vec::new();
+        for tail in [&[0xFF, 0xD9][..], &[0xFF, 0xD8, 0xFF, 0xD9][..]] {
+            let mut data = original[..sos + 2 + header_length].to_vec();
+            data.extend_from_slice(tail);
+            inputs.push(data);
+        }
+        let mut corrupt = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];
+        corrupt.extend_from_slice(&[1; 64]);
+        corrupt.extend_from_slice(&[0xFF, 0xC0, 0, 11, 8, 0, 65, 0, 8, 1, 1, 0x11, 0]);
+        for table in [0, 0x10] {
+            corrupt.extend_from_slice(&[0xFF, 0xC4, 0, 20, table, 1]);
+            corrupt.extend_from_slice(&[0; 15]);
+            corrupt.push(0);
+        }
+        corrupt.extend_from_slice(&[0xFF, 0xDD, 0, 4, 0, 1, 0xFF, 0xDA, 0, 8, 1, 1, 0, 0, 63, 0]);
+        for block in 0..9 {
+            corrupt.push(if block == 2 { 0xBF } else { 0x3F });
+            if block != 8 {
+                corrupt.extend_from_slice(&[0xFF, 0xD0 + block]);
+            }
+        }
+        corrupt.extend_from_slice(&[0xFF, 0xD9]);
+        inputs.push(corrupt);
+        for data in inputs {
+            let options = DecoderOptions::default()
+                .set_strict_mode(false)
+                .jpeg_set_out_colorspace(ColorSpace::RGB);
+            let mut reference = JpegDecoder::new_with_options(ZCursor::new(&data), options);
+            let expected = reference.decode().unwrap();
+            let (width, height) = reference.dimensions().unwrap();
+            let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
+            let mut scanlines = decoder.scanline_output();
+            scanlines.set_input_complete();
+            let stride = width * 3;
+            let mut actual = vec![0xA5; expected.len()];
+            let mut rows = 0;
+            while rows < height {
+                match scanlines
+                    .read_scanlines(&mut actual[rows * stride..], stride)
+                    .unwrap()
+                {
+                    ScanlineReadStatus::RowsProcessed { rows: count } if count > 0 => rows += count,
+                    status => panic!("terminal input suspended after {rows} rows: {status:?}")
+                }
+            }
+            assert_eq!(scanlines.finish().unwrap(), ScanlineStatus::Complete);
+            assert_eq!(actual, expected);
+        }
+    }
+
+    #[test]
+    fn final_scanline_neutral_tail_remains_cancellable() {
+        let data = include_bytes!("../../../test-images/jpeg/restart_cross_row_128x128.jpg");
+        let sos = data
+            .windows(2)
+            .position(|bytes| bytes == [0xFF, 0xDA])
+            .unwrap();
+        let header_length = usize::from(u16::from_be_bytes([data[sos + 2], data[sos + 3]]));
+        let data = &data[..sos + 2 + header_length];
+        let cancel = Arc::new(AtomicBool::new(false));
+        let callback = Arc::clone(&cancel);
+        let mut decoder = JpegDecoder::new_with_options(
+            ZCursor::new(data),
+            DecoderOptions::default()
+                .set_strict_mode(false)
+                .jpeg_set_out_colorspace(ColorSpace::RGB)
+        );
+        decoder.set_cancel(move || callback.load(Ordering::Relaxed));
+        decoder.scanline_output().set_input_complete();
+        let stride = 128 * 3;
+        let mut output = vec![0xA5; stride * 128];
+        assert!(matches!(
+            decoder.scanline_output().read_scanlines(&mut output, stride).unwrap(),
+            ScanlineReadStatus::RowsProcessed { rows } if rows > 0 && rows < 128
+        ));
+        let previous = output.clone();
+        cancel.store(true, Ordering::Relaxed);
+        assert!(matches!(
+            decoder
+                .scanline_output()
+                .read_scanlines(&mut output, stride),
+            Err(crate::errors::DecodeErrors::Cancelled)
+        ));
+        assert_eq!(output, previous);
+        decoder.set_cancel(crate::NeverCancel);
+        assert!(matches!(
+            decoder.scanline_output().read_scanlines(&mut output, stride).unwrap(),
+            ScanlineReadStatus::RowsProcessed { rows } if rows > 0
+        ));
     }
 
     #[test]
