@@ -15,9 +15,17 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace content {
 class WebUIDataSource;
 }  // namespace content
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
 
 namespace ash::common {
 class SeaPenProvider;
@@ -40,7 +48,11 @@ class VcBackgroundUIConfig : public SystemWebAppUIConfig<VcBackgroundUI> {
 
 class VcBackgroundUI : public ui::MojoWebUIController {
  public:
+  // `app_locale` and `variations_service` are used only during construction
+  // and are not retained.
   VcBackgroundUI(
+      const base::i18n::LanguageTag& app_locale,
+      const variations::VariationsService& variations_service,
       content::WebUI* web_ui,
       std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider);
 
@@ -54,7 +66,9 @@ class VcBackgroundUI : public ui::MojoWebUIController {
           receiver);
 
  private:
-  void AddBooleans(content::WebUIDataSource* source);
+  void AddBooleans(const base::i18n::LanguageTag& app_locale,
+                   const variations::VariationsService& variations_service,
+                   content::WebUIDataSource* source);
 
   std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider_;
 

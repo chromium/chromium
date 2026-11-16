@@ -70,6 +70,8 @@ bool VcBackgroundUIConfig::IsWebUIEnabled(
 }
 
 VcBackgroundUI::VcBackgroundUI(
+    const base::i18n::LanguageTag& app_locale,
+    const variations::VariationsService& variations_service,
     content::WebUI* web_ui,
     std::unique_ptr<::ash::common::SeaPenProvider> sea_pen_provider)
     : ui::MojoWebUIController(web_ui),
@@ -89,7 +91,7 @@ VcBackgroundUI::VcBackgroundUI(
 
   AddResources(source);
   AddStrings(source);
-  AddBooleans(source);
+  AddBooleans(app_locale, variations_service, source);
 }
 
 VcBackgroundUI::~VcBackgroundUI() = default;
@@ -100,16 +102,20 @@ void VcBackgroundUI::BindInterface(
   sea_pen_provider_->BindInterface(std::move(receiver));
 }
 
-void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
+void VcBackgroundUI::AddBooleans(
+    const base::i18n::LanguageTag& app_locale,
+    const variations::VariationsService& variations_service,
+    content::WebUIDataSource* source) {
   const bool common_sea_pen_requirements =
-      sea_pen_provider_->IsEligibleForSeaPen() &&
+      sea_pen_provider_->IsEligibleForSeaPen(variations_service) &&
       ::ash::features::IsVideoConferenceEnabled();
   source->AddBoolean("isSeaPenEnabled",
                          common_sea_pen_requirements);
   source->AddBoolean("isSeaPenTextInputEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenTextInputEnabled() &&
-                         sea_pen_provider_->IsEligibleForSeaPenTextInput());
+                         sea_pen_provider_->IsEligibleForSeaPenTextInput(
+                             app_locale, variations_service));
   source->AddBoolean("isSeaPenUseExptTemplateEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenUseExptTemplateEnabled());

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -23,8 +24,12 @@
 namespace ash::personalization_app {
 
 TestPersonalizationAppWebUIProvider::TestPersonalizationAppWebUIProvider(
-    PrefService* local_state)
-    : local_state_(CHECK_DEREF(local_state)) {}
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    const variations::VariationsService* variations_service)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      variations_service_(CHECK_DEREF(variations_service)) {}
 
 TestPersonalizationAppWebUIProvider::~TestPersonalizationAppWebUIProvider() =
     default;
@@ -51,10 +56,10 @@ TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
   auto user_provider =
       std::make_unique<FakePersonalizationAppUserProvider>(web_ui);
   return std::make_unique<PersonalizationAppUI>(
-      web_ui, std::move(ambient_provider),
-      std::move(keyboard_backlight_provider), std::move(sea_pen_provider),
-      std::move(theme_provider), std::move(user_provider),
-      std::move(wallpaper_provider));
+      application_locale_storage_->GetTag(), variations_service_.get(), web_ui,
+      std::move(ambient_provider), std::move(keyboard_backlight_provider),
+      std::move(sea_pen_provider), std::move(theme_provider),
+      std::move(user_provider), std::move(wallpaper_provider));
 }
 
 }  // namespace ash::personalization_app

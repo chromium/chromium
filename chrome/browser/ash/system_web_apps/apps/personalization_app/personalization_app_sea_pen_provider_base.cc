@@ -17,7 +17,6 @@
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
-#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/user_metrics.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -109,17 +107,16 @@ void PersonalizationAppSeaPenProviderBase::BindInterface(
   sea_pen_receiver_.Bind(std::move(receiver));
 }
 
-bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
-  // TODO(crbug.com/404133902): Avoid using g_browser_process.
-  return ::ash::personalization_app::IsEligibleForSeaPen(
-      CHECK_DEREF(g_browser_process->variations_service()), profile_);
+bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen(
+    const variations::VariationsService& variations_service) {
+  return personalization_app::IsEligibleForSeaPen(variations_service, profile_);
 }
 
-bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput() {
-  // TODO(crbug.com/404133902): Avoid using g_browser_process.
-  return ::ash::personalization_app::IsEligibleForSeaPenTextInput(
-      CHECK_DEREF(g_browser_process->variations_service()), profile_,
-      g_browser_process->GetApplicationLocale());
+bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPenTextInput(
+    const base::i18n::LanguageTag& app_locale,
+    const variations::VariationsService& variations_service) {
+  return personalization_app::IsEligibleForSeaPenTextInput(
+      app_locale, variations_service, profile_);
 }
 
 bool PersonalizationAppSeaPenProviderBase::IsManagedSeaPenEnabled() {

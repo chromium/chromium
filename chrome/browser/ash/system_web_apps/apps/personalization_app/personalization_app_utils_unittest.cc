@@ -357,8 +357,9 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_UnknownAge) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, std::nullopt);
 
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(test_variations_service(),
-                                            regular_profile, "en-US"));
+  ASSERT_FALSE(
+      IsEligibleForSeaPenTextInput(base::i18n::GetKnownLanguageTag("en-US"),
+                                   test_variations_service(), regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_MinorUser) {
@@ -368,8 +369,9 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_MinorUser) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, false);
 
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(test_variations_service(),
-                                            regular_profile, "en-US"));
+  ASSERT_FALSE(
+      IsEligibleForSeaPenTextInput(base::i18n::GetKnownLanguageTag("en-US"),
+                                   test_variations_service(), regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_AdultUser) {
@@ -379,8 +381,9 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInput_AdultUser) {
 
   SetUpIdentityAndCapabilities(regular_profile, kTestAccountId, true);
 
-  ASSERT_TRUE(IsEligibleForSeaPenTextInput(test_variations_service(),
-                                           regular_profile, "en-US"));
+  ASSERT_TRUE(
+      IsEligibleForSeaPenTextInput(base::i18n::GetKnownLanguageTag("en-US"),
+                                   test_variations_service(), regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
@@ -396,9 +399,9 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
 
   ASSERT_TRUE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
-  ASSERT_TRUE(IsEligibleForSeaPenTextInput(
-      test_variations_service(), regular_profile,
-      application_locale_storage()->GetTag().tag_string()));
+  ASSERT_TRUE(
+      IsEligibleForSeaPenTextInput(application_locale_storage()->GetTag(),
+                                   test_variations_service(), regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -416,9 +419,9 @@ TEST_F(PersonalizationAppUtilsTest,
 
   ASSERT_FALSE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(
-      test_variations_service(), regular_profile,
-      application_locale_storage()->GetTag().tag_string()));
+  ASSERT_FALSE(
+      IsEligibleForSeaPenTextInput(application_locale_storage()->GetTag(),
+                                   test_variations_service(), regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
@@ -436,9 +439,9 @@ TEST_F(PersonalizationAppUtilsTest,
 
   ASSERT_TRUE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
-  ASSERT_TRUE(IsEligibleForSeaPenTextInput(
-      test_variations_service(), regular_profile,
-      application_locale_storage()->GetTag().tag_string()));
+  ASSERT_TRUE(
+      IsEligibleForSeaPenTextInput(application_locale_storage()->GetTag(),
+                                   test_variations_service(), regular_profile));
 }
 
 TEST_F(
@@ -457,9 +460,9 @@ TEST_F(
 
   ASSERT_FALSE(
       IsSystemInSupportedLanguage(application_locale_storage()->GetTag()));
-  ASSERT_FALSE(IsEligibleForSeaPenTextInput(
-      test_variations_service(), regular_profile,
-      application_locale_storage()->GetTag().tag_string()));
+  ASSERT_FALSE(
+      IsEligibleForSeaPenTextInput(application_locale_storage()->GetTag(),
+                                   test_variations_service(), regular_profile));
 }
 
 }  // namespace

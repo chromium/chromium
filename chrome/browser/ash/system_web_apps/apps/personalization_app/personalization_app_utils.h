@@ -55,12 +55,15 @@ enum class ManagedSeaPenSettings {
 // PersonalizationAppUIConfig.
 // `local_state` and `application_locale_storage` must not be null and must
 // outlive the returned `WebUIController`.
+// `variations_service` is used only during this call and is not retained by
+// the returned `WebUIController`.
 // `shared_url_loader_factory` must not be null.
 // `manta_service` is the profile's MantaService, resolved by the caller and
 // injected into the SeaPen fetcher; it may be null.
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    const variations::VariationsService& variations_service,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     content::WebUI* web_ui,
     const GURL& url,
@@ -109,9 +112,9 @@ bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile);
 // Controls whether users are eligible for SeaPen text input. The age
 // requirements are stricter than for SeaPen.
 bool IsEligibleForSeaPenTextInput(
+    const base::i18n::LanguageTag& application_locale,
     const variations::VariationsService& variations_service,
-    Profile* profile,
-    std::string_view application_locale);
+    Profile* profile);
 
 // Controls whether SeaPen Wallpaper Feedback is shown for managed profiles.
 bool IsManagedSeaPenWallpaperFeedbackEnabled(Profile* profile);

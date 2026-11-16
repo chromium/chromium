@@ -427,6 +427,8 @@ bool ShouldHandleWebUIRequest(const std::string& path) {
 }  // namespace
 
 PersonalizationAppUI::PersonalizationAppUI(
+    const base::i18n::LanguageTag& app_locale,
+    const variations::VariationsService& variations_service,
     content::WebUI* web_ui,
     std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
     std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
@@ -466,7 +468,7 @@ PersonalizationAppUI::PersonalizationAppUI(
 
   AddResources(source);
   AddStrings(source);
-  AddBooleans(source);
+  AddBooleans(app_locale, variations_service, source);
   AddIntegers(source);
 }
 
@@ -506,7 +508,10 @@ void PersonalizationAppUI::BindInterface(
   user_provider_->BindInterface(std::move(receiver));
 }
 
-void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
+void PersonalizationAppUI::AddBooleans(
+    const base::i18n::LanguageTag& app_locale,
+    const variations::VariationsService& variations_service,
+    content::WebUIDataSource* source) {
   source->AddBoolean("isGooglePhotosIntegrationEnabled",
                      wallpaper_provider_->IsEligibleForGooglePhotos());
 
@@ -529,13 +534,14 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      features::IsCrosPrivacyHubLocationEnabled());
 
   const bool common_sea_pen_requirements =
-      sea_pen_provider_->IsEligibleForSeaPen();
+      sea_pen_provider_->IsEligibleForSeaPen(variations_service);
   source->AddBoolean("isSeaPenEnabled", ::ash::features::IsSeaPenEnabled() &&
                                             common_sea_pen_requirements);
   source->AddBoolean("isSeaPenTextInputEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenTextInputEnabled() &&
-                         sea_pen_provider_->IsEligibleForSeaPenTextInput());
+                         sea_pen_provider_->IsEligibleForSeaPenTextInput(
+                             app_locale, variations_service));
   source->AddBoolean("isSeaPenUseExptTemplateEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenUseExptTemplateEnabled());

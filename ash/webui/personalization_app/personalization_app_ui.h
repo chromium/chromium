@@ -17,9 +17,17 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace content {
 class WebUIDataSource;
 }  // namespace content
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
 
 namespace ash::common {
 class SeaPenProvider;
@@ -47,7 +55,11 @@ class PersonalizationAppUIConfig
 
 class PersonalizationAppUI : public ui::MojoWebUIController {
  public:
+  // `app_locale` and `variations_service` are used only during construction
+  // and are not retained.
   PersonalizationAppUI(
+      const base::i18n::LanguageTag& app_locale,
+      const variations::VariationsService& variations_service,
       content::WebUI* web_ui,
       std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
       std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
@@ -86,7 +98,9 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
           receiver);
 
  private:
-  void AddBooleans(content::WebUIDataSource* source);
+  void AddBooleans(const base::i18n::LanguageTag& app_locale,
+                   const variations::VariationsService& variations_service,
+                   content::WebUIDataSource* source);
 
   void AddIntegers(content::WebUIDataSource* source);
 

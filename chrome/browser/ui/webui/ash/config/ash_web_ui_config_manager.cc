@@ -553,6 +553,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
           base::BindRepeating(
               [](PrefService* local_state,
                  const ApplicationLocaleStorage* application_locale_storage,
+                 const variations::VariationsService* variations_service,
                  scoped_refptr<network::SharedURLLoaderFactory>
                      shared_url_loader_factory,
                  content::WebUI* web_ui,
@@ -564,11 +565,16 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                     MantaServiceProvider::Get().Find(account_id);
                 return personalization_app::CreatePersonalizationAppUI(
                     local_state, application_locale_storage,
+                    CHECK_DEREF(variations_service),
                     std::move(shared_url_loader_factory), web_ui, url,
                     manta_service);
               },
               base::Unretained(&local_state_.get()),
               base::Unretained(&application_locale_storage_.get()),
+              // Safe because `CreateWebUIController()` is never called after
+              // `BrowserProcessImpl::StartTearDown()` destroys
+              // `VariationsService`.
+              base::Unretained(variations_service_.get()),
               shared_url_loader_factory_)),
       /*is_stateful=*/true);
   AddWebUIConfig(std::make_unique<PowerUIConfig>(), /*is_stateful=*/false);
@@ -618,6 +624,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
       std::make_unique<vc_background_ui::VcBackgroundUIConfig>(
           base::BindRepeating(
               [](const ApplicationLocaleStorage* application_locale_storage,
+                 const variations::VariationsService* variations_service,
                  scoped_refptr<network::SharedURLLoaderFactory>
                      shared_url_loader_factory,
                  content::WebUI* web_ui,
@@ -628,11 +635,15 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                 manta::MantaService* manta_service =
                     MantaServiceProvider::Get().Find(account_id);
                 return vc_background_ui::CreateVcBackgroundUI(
-                    application_locale_storage,
+                    application_locale_storage, CHECK_DEREF(variations_service),
                     std::move(shared_url_loader_factory), web_ui, url,
                     manta_service);
               },
               base::Unretained(&application_locale_storage_.get()),
+              // Safe because `CreateWebUIController()` is never called after
+              // `BrowserProcessImpl::StartTearDown()` destroys
+              // `VariationsService`.
+              base::Unretained(variations_service_.get()),
               shared_url_loader_factory_)),
       /*is_stateful=*/true);
   AddWebUIConfig(std::make_unique<GrowthInternalsUIConfig>(),

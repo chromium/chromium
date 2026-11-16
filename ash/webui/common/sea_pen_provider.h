@@ -8,6 +8,14 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace ash::common {
 
 // An interface for binding mojom::SeaPenProvider to a WebUI. Used for
@@ -21,9 +29,12 @@ class SeaPenProvider {
           receiver) = 0;
 
   // Determines if the current active profile is eligible to see the SeaPen UI.
-  virtual bool IsEligibleForSeaPen() = 0;
+  virtual bool IsEligibleForSeaPen(
+      const variations::VariationsService& variations_service) = 0;
 
-  virtual bool IsEligibleForSeaPenTextInput() = 0;
+  virtual bool IsEligibleForSeaPenTextInput(
+      const base::i18n::LanguageTag& app_locale,
+      const variations::VariationsService& variations_service) = 0;
 
   // Managed users controlled by enterprise policy can see Sea Pen entry point
   // which is Sea Pen tile in wallpaper subpage or the Image button in camera

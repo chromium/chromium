@@ -13,7 +13,12 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "url/gurl.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
 
 namespace ash::personalization_app {
 
@@ -24,8 +29,12 @@ namespace ash::personalization_app {
 class TestPersonalizationAppWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  explicit TestPersonalizationAppWebUIProvider(PrefService* local_state);
+  // `local_state`, `application_locale_storage`, and `variations_service` must
+  // not be null and must outlive `this`.
+  TestPersonalizationAppWebUIProvider(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      const variations::VariationsService* variations_service);
 
   TestPersonalizationAppWebUIProvider(
       const TestPersonalizationAppWebUIProvider&) = delete;
@@ -40,6 +49,8 @@ class TestPersonalizationAppWebUIProvider
 
  private:
   const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<const variations::VariationsService> variations_service_;
 };
 
 }  // namespace ash::personalization_app

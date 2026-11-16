@@ -22,9 +22,17 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace content {
 class WebUI;
 }  // namespace content
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
 
 namespace wallpaper_handlers {
 class WallpaperFetcherDelegate;
@@ -70,9 +78,12 @@ class PersonalizationAppSeaPenProviderBase
   void BindInterface(
       mojo::PendingReceiver<mojom::SeaPenProvider> receiver) override;
 
-  bool IsEligibleForSeaPen() override;
+  bool IsEligibleForSeaPen(
+      const variations::VariationsService& variations_service) override;
 
-  bool IsEligibleForSeaPenTextInput() override;
+  bool IsEligibleForSeaPenTextInput(
+      const base::i18n::LanguageTag& app_locale,
+      const variations::VariationsService& variations_service) override;
 
   bool IsManagedSeaPenEnabled() override;
 

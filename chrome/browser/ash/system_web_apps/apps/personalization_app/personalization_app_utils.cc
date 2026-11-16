@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -15,9 +14,9 @@
 #include "ash/constants/generative_ai_country_restrictions.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -34,6 +33,7 @@
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/manta/manta_service_provider.h"
 #include "components/account_id/account_id.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/manta/manta_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -68,6 +68,7 @@ constexpr auto kSeaPenTextInputSupportedLanguages =
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    const variations::VariationsService& variations_service,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     content::WebUI* web_ui,
     const GURL& url,
@@ -93,7 +94,8 @@ std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
       std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(
           application_locale_storage, std::move(shared_url_loader_factory)),
       manta_service);
-  return std::make_unique<ash::personalization_app::PersonalizationAppUI>(
+  return std::make_unique<PersonalizationAppUI>(
+      CHECK_DEREF(application_locale_storage).GetTag(), variations_service,
       web_ui, std::move(ambient_provider),
       std::move(keyboard_backlight_provider), std::move(sea_pen_provider),
       std::move(theme_provider), std::move(user_provider),
@@ -237,9 +239,9 @@ bool IsManagedSeaPenVcBackgroundFeedbackEnabled(Profile* profile) {
 }
 
 bool IsEligibleForSeaPenTextInput(
+    const base::i18n::LanguageTag& application_locale,
     const variations::VariationsService& variations_service,
-    Profile* profile,
-    std::string_view application_locale) {
+    Profile* profile) {
   if (!profile) {
     LOG(ERROR) << __func__ << " no profile";
     return false;
@@ -249,10 +251,7 @@ bool IsEligibleForSeaPenTextInput(
     DVLOG(1) << __func__ << " SeaPenTextInput disabled";
     return false;
   }
-  const std::optional<base::i18n::LanguageTag> application_locale_tag =
-      base::i18n::GetLanguageTagFromString(application_locale);
-  if (!application_locale_tag ||
-      !IsSystemInSupportedLanguage(*application_locale_tag)) {
+  if (!IsSystemInSupportedLanguage(application_locale)) {
     // The feature only supports a limited number of languages.
     DVLOG(1) << __func__ << " system not in supported language";
     return false;

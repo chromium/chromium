@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/fake_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
@@ -146,7 +147,10 @@ class PersonalizationAppTimeOfDayBrowserTest
     wallpaper_controller_test_api.SetDefaultWallpaper(
         GetAccountId(browser()->GetProfile()));
 
-    test_webui_provider_.emplace(g_browser_process->local_state());
+    test_webui_provider_.emplace(
+        g_browser_process->local_state(),
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        g_browser_process->variations_service());
     test_chrome_webui_controller_factory_.AddFactoryOverride(
         kChromeUIPersonalizationAppHost, &test_webui_provider_.value());
 

@@ -22,6 +22,7 @@
 #include "ash/wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -228,8 +229,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
             local_state(), metrics_state_manager_.get());
     test_variations_service_->OverrideStoredPermanentCountry(
         std::string(kAllowedCountryCode));
-    TestingBrowserProcess::GetGlobal()->SetVariationsService(
-        test_variations_service_.get());
 
     sea_pen_wallpaper_manager_.SetSessionDelegateForTesting(
         std::make_unique<TestSeaPenWallpaperManagerSessionDelegate>());
@@ -240,7 +239,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
     sea_pen_provider_remote_.reset();
     web_contents_.reset();
     profile_ = nullptr;
-    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
     test_variations_service_.reset();
     metrics_state_manager_.reset();
     profile_manager_.reset();
@@ -325,6 +323,10 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
 
   PersonalizationAppSeaPenProviderImpl* sea_pen_provider() {
     return sea_pen_provider_.get();
+  }
+
+  variations::TestVariationsService& test_variations_service() {
+    return CHECK_DEREF(test_variations_service_.get());
   }
 
   TestingProfile* profile() { return profile_; }
@@ -1059,23 +1061,27 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Guest) {
   SetUpProfileForTesting(user_manager::GuestAccountId(),
                          user_manager::UserType::kGuest);
-  ASSERT_FALSE(sea_pen_provider()->IsEligibleForSeaPen());
+  ASSERT_FALSE(
+      sea_pen_provider()->IsEligibleForSeaPen(test_variations_service()));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Child) {
   SetUpProfileForTesting(kTestAccountId, user_manager::UserType::kChild);
-  ASSERT_FALSE(sea_pen_provider()->IsEligibleForSeaPen());
+  ASSERT_FALSE(
+      sea_pen_provider()->IsEligibleForSeaPen(test_variations_service()));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Managed) {
   SetUpProfileForTesting(kTestAccountId);
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  ASSERT_FALSE(sea_pen_provider()->IsEligibleForSeaPen());
+  ASSERT_FALSE(
+      sea_pen_provider()->IsEligibleForSeaPen(test_variations_service()));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Regular) {
   SetUpProfileForTesting(kTestAccountId2);
-  ASSERT_TRUE(sea_pen_provider()->IsEligibleForSeaPen());
+  ASSERT_TRUE(
+      sea_pen_provider()->IsEligibleForSeaPen(test_variations_service()));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,

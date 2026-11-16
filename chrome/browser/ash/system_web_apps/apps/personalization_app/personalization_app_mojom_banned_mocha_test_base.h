@@ -6,12 +6,20 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_MOJOM_BANNED_MOCHA_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/memory/raw_ref.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "url/gurl.h"
+
+class ApplicationLocaleStorage;
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
 
 namespace ash::personalization_app {
 
@@ -21,8 +29,26 @@ namespace ash::personalization_app {
 class TestPersonalizationAppMojomBannedWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
+  // `application_locale_storage` and `variations_service` must not be null and
+  // must outlive `this`.
+  TestPersonalizationAppMojomBannedWebUIProvider(
+      const ApplicationLocaleStorage* application_locale_storage,
+      const variations::VariationsService* variations_service);
+
+  TestPersonalizationAppMojomBannedWebUIProvider(
+      const TestPersonalizationAppMojomBannedWebUIProvider&) = delete;
+  TestPersonalizationAppMojomBannedWebUIProvider& operator=(
+      const TestPersonalizationAppMojomBannedWebUIProvider&) = delete;
+
+  ~TestPersonalizationAppMojomBannedWebUIProvider() override;
+
+  // TestChromeWebUIControllerFactory::WebUIProvider:
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
                                                      const GURL& url) override;
+
+ private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<const variations::VariationsService> variations_service_;
 };
 
 class PersonalizationAppMojomBannedMochaTestBase
@@ -35,13 +61,15 @@ class PersonalizationAppMojomBannedMochaTestBase
   PersonalizationAppMojomBannedMochaTestBase& operator=(
       const PersonalizationAppMojomBannedMochaTestBase&) = delete;
 
-  ~PersonalizationAppMojomBannedMochaTestBase() override = default;
+  ~PersonalizationAppMojomBannedMochaTestBase() override;
 
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
  private:
   TestChromeWebUIControllerFactory test_factory_;
-  TestPersonalizationAppMojomBannedWebUIProvider test_web_ui_provider_;
+  std::optional<TestPersonalizationAppMojomBannedWebUIProvider>
+      test_web_ui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
       scoped_controller_factory_registration_{&test_factory_};
 };

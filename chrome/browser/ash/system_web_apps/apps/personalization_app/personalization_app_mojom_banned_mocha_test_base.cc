@@ -16,8 +16,12 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
+#include "base/check_deref.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -116,8 +120,15 @@ class MockSeaPenProvider
               (mojo::PendingReceiver<
                   ::ash::personalization_app::mojom::SeaPenProvider> receiver),
               (override));
-  bool IsEligibleForSeaPen() override { return true; }
-  bool IsEligibleForSeaPenTextInput() override { return true; }
+  bool IsEligibleForSeaPen(
+      const variations::VariationsService& variations_service) override {
+    return true;
+  }
+  bool IsEligibleForSeaPenTextInput(
+      const base::i18n::LanguageTag& app_locale,
+      const variations::VariationsService& variations_service) override {
+    return true;
+  }
   bool IsManagedSeaPenEnabled() override { return true; }
   bool IsManagedSeaPenFeedbackEnabled() override { return false; }
   // ::ash::personalization_app::mojom::SeaPenProvider:
@@ -384,6 +395,16 @@ class MockPersonalizationAppUserProvider
 
 }  // namespace
 
+TestPersonalizationAppMojomBannedWebUIProvider::
+    TestPersonalizationAppMojomBannedWebUIProvider(
+        const ApplicationLocaleStorage* application_locale_storage,
+        const variations::VariationsService* variations_service)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      variations_service_(CHECK_DEREF(variations_service)) {}
+
+TestPersonalizationAppMojomBannedWebUIProvider::
+    ~TestPersonalizationAppMojomBannedWebUIProvider() = default;
+
 std::unique_ptr<content::WebUIController>
 TestPersonalizationAppMojomBannedWebUIProvider::NewWebUI(content::WebUI* web_ui,
                                                          const GURL& url) {
@@ -400,10 +421,10 @@ TestPersonalizationAppMojomBannedWebUIProvider::NewWebUI(content::WebUI* web_ui,
   auto user_provider = std::make_unique<
       testing::StrictMock<MockPersonalizationAppUserProvider>>();
   return std::make_unique<PersonalizationAppUI>(
-      web_ui, std::move(ambient_provider),
-      std::move(keyboard_backlight_provider), std::move(sea_pen_provider),
-      std::move(theme_provider), std::move(user_provider),
-      std::move(wallpaper_provider));
+      application_locale_storage_->GetTag(), variations_service_.get(), web_ui,
+      std::move(ambient_provider), std::move(keyboard_backlight_provider),
+      std::move(sea_pen_provider), std::move(theme_provider),
+      std::move(user_provider), std::move(wallpaper_provider));
 }
 
 PersonalizationAppMojomBannedMochaTestBase::
@@ -412,11 +433,23 @@ PersonalizationAppMojomBannedMochaTestBase::
       ::ash::personalization_app::kChromeUIPersonalizationAppHost);
 }
 
+PersonalizationAppMojomBannedMochaTestBase::
+    ~PersonalizationAppMojomBannedMochaTestBase() = default;
+
 void PersonalizationAppMojomBannedMochaTestBase::SetUpOnMainThread() {
   WebUIMochaBrowserTest::SetUpOnMainThread();
+  test_web_ui_provider_.emplace(
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->variations_service());
   test_factory_.AddFactoryOverride(kChromeUIPersonalizationAppHost,
-                                   &test_web_ui_provider_);
+                                   &test_web_ui_provider_.value());
   ::ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
+}
+
+void PersonalizationAppMojomBannedMochaTestBase::TearDownOnMainThread() {
+  test_factory_.RemoveFactoryOverride(kChromeUIPersonalizationAppHost);
+  test_web_ui_provider_.reset();
+  WebUIMochaBrowserTest::TearDownOnMainThread();
 }
 
 }  // namespace ash::personalization_app
