@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -21,14 +22,18 @@
 #include "chrome/browser/ui/page_action/page_action_model.h"
 #include "chrome/browser/ui/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -43,6 +48,19 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
+#include "ui/views/widget/widget.h"
 
 namespace page_actions {
 
@@ -1046,8 +1064,11 @@ TEST_F(WebUIPageActionControlTest,
   auto tab2 = CreateTestTabContext();
 
   // Switching controller to web_contents2 should close the active anchored
-  // message on controller1.
+  // message on controller1 without notifying again through controller1's model.
+  testing::Mock::VerifyAndClearExpectations(&webui_delegate_);
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_)).Times(1);
   control_->UpdateController(tab2->web_contents.get());
+  testing::Mock::VerifyAndClearExpectations(&webui_delegate_);
   EXPECT_EQ(controller1->GetActiveAnchoredMessage(), std::nullopt);
   EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
   EXPECT_EQ(tab2->controller->GetActiveAnchoredMessage(), std::nullopt);
@@ -1254,6 +1275,413 @@ TEST_F(WebUIPageActionControlTest,
             states[2]->page_action_id);
   EXPECT_FALSE(states[2]->should_show_chip);
 }
+
+class WebUIPageActionControlAnchoredMessageTest : public ChromeViewsTestBase {
+ public:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    animation_duration_ =
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    rich_animation_mode_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+    anchor_widget_ =
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    anchor_widget_->SetBounds(
+        gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/800, /*height=*/600));
+    anchor_widget_->SetContentsView(std::make_unique<views::View>());
+    anchor_widget_->Show();
+
+    const ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForWidget(anchor_widget_.get());
+    browser_elements_ =
+        std::make_unique<TestBrowserElements>(mock_browser_, context);
+    ON_CALL(webui_delegate_, GetBrowser())
+        .WillByDefault(testing::Return(&mock_browser_));
+
+    location_bar_element_ =
+        std::make_unique<ui::test::TestElement>(kLocationBarElementId, context);
+    location_bar_element_->SetNativeView(anchor_widget_->GetNativeView());
+    location_bar_element_->SetScreenBounds(
+        gfx::Rect(/*x=*/100, /*y=*/10, /*width=*/600, /*height=*/24));
+    location_bar_element_->Show();
+
+    translate_element_ = std::make_unique<ui::test::TestElement>(
+        kTranslatePageActionElementId, context);
+    translate_element_->SetNativeView(anchor_widget_->GetNativeView());
+    translate_element_->SetScreenBounds(
+        gfx::Rect(/*x=*/700, /*y=*/10, /*width=*/24, /*height=*/24));
+    translate_element_->Show();
+
+    tab_ = std::make_unique<FakeTabInterface>(&profile_);
+    tab_->Activate();
+    tabs::TabLookupFromWebContents::CreateForWebContents(tab_->GetContents(),
+                                                         tab_.get());
+
+    pinned_actions_model_ =
+        std::make_unique<PinnedToolbarActionsModel>(&profile_);
+    controller_ = std::make_unique<PageActionControllerImpl>(
+        *tab_,
+        std::vector<actions::ActionId>(kActionIds.begin(), kActionIds.end()),
+        PageActionPropertiesProvider(), pinned_actions_model_.get());
+
+    const ui::ImageModel icon = ui::ImageModel::FromVectorIcon(kZoomInIcon);
+    root_action_item_ =
+        actions::ActionItem::Builder()
+            .AddChild(actions::ActionItem::Builder()
+                          .SetActionId(kActionAiMode)
+                          .SetText(u"AI Mode")
+                          .SetImage(icon))
+            .AddChild(actions::ActionItem::Builder()
+                          .SetActionId(kActionShowTranslate)
+                          .SetText(u"Translate")
+                          .SetImage(icon))
+            .AddChild(actions::ActionItem::Builder()
+                          .SetActionId(kActionAnchoredContextualCue)
+                          .SetText(u"Contextual Cue")
+                          .SetImage(icon))
+            .Build();
+
+    control_ =
+        std::make_unique<WebUIPageActionControl>(root_action_item_.get());
+    control_->Init(&webui_delegate_);
+    control_->UpdateController(tab_->GetContents());
+  }
+
+  void TearDown() override {
+    rich_animation_mode_.reset();
+    animation_duration_.reset();
+    control_.reset();
+    controller_.reset();
+    pinned_actions_model_.reset();
+    tab_.reset();
+    translate_element_.reset();
+    location_bar_element_.reset();
+    browser_elements_.reset();
+    anchor_widget_.reset();
+    root_action_item_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
+
+ protected:
+  AnchoredMessageBubbleView* ShowAnchoredMessage(
+      actions::ActionId action_id,
+      const AnchoredMessageConfig& config = {}) {
+    controller_->Show(action_id);
+    controller_->ShowAnchoredMessage(action_id, config);
+    return GetAnchoredMessage(action_id);
+  }
+
+  AnchoredMessageBubbleView* GetAnchoredMessage(actions::ActionId action_id) {
+    return control_->GetAnchoredMessageForTesting(action_id);
+  }
+
+  ui::Layer* GetFrameLayer(AnchoredMessageBubbleView* bubble) {
+    return bubble->GetBubbleFrameView()->layer();
+  }
+
+  class ExitAnimationWaiter {
+   public:
+    explicit ExitAnimationWaiter(AnchoredMessageBubbleView* bubble)
+        : frame_tracker_(bubble->GetBubbleFrameView()),
+          destroyed_waiter_(bubble->GetWidget()) {}
+    ExitAnimationWaiter(const ExitAnimationWaiter&) = delete;
+    ExitAnimationWaiter& operator=(const ExitAnimationWaiter&) = delete;
+
+    void Wait() {
+      if (views::View* frame = frame_tracker_.view()) {
+        frame->layer()->GetAnimator()->StopAnimating();
+      }
+      destroyed_waiter_.Wait();
+    }
+
+   private:
+    views::ViewTracker frame_tracker_;
+    views::test::WidgetDestroyedWaiter destroyed_waiter_;
+  };
+
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_duration_;
+  gfx::AnimationTestApi::RenderModeResetter rich_animation_mode_;
+  TestingProfile profile_;
+  std::unique_ptr<views::Widget> anchor_widget_;
+  NiceMock<MockBrowserWindowInterface> mock_browser_;
+  std::unique_ptr<TestBrowserElements> browser_elements_;
+  std::unique_ptr<ui::test::TestElement> location_bar_element_;
+  std::unique_ptr<ui::test::TestElement> translate_element_;
+  NiceMock<MockWebUIToolbarControlDelegate> webui_delegate_;
+  std::unique_ptr<FakeTabInterface> tab_;
+  std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
+  std::unique_ptr<PageActionControllerImpl> controller_;
+  std::unique_ptr<actions::ActionItem> root_action_item_;
+  std::unique_ptr<WebUIPageActionControl> control_;
+};
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageExitAnimation) {
+  AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  ExitAnimationWaiter exit_waiter(bubble);
+  ASSERT_TRUE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  EXPECT_EQ(bubble->GetAnchor().GetIfElement(), translate_element_.get());
+  ASSERT_TRUE(GetFrameLayer(bubble));
+  EXPECT_EQ(GetFrameLayer(bubble)->GetTargetOpacity(), 1.0f);
+
+  controller_->HideAnchoredMessage(kActionShowTranslate);
+
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  ASSERT_EQ(GetAnchoredMessage(kActionShowTranslate), bubble);
+  EXPECT_TRUE(bubble->is_closing());
+  EXPECT_FALSE(bubble->GetWidget()->IsClosed());
+  EXPECT_EQ(GetFrameLayer(bubble)->GetTargetOpacity(), 0.0f);
+
+  exit_waiter.Wait();
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageReordersIconsImmediatelyOnExitAnimation) {
+  controller_->Show(kActionAiMode);
+  AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  ExitAnimationWaiter exit_waiter(bubble);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(2u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[0]->page_action_id);
+
+  testing::Mock::VerifyAndClearExpectations(&webui_delegate_);
+  std::vector<toolbar_ui_api::mojom::PageActionStatePtr> notified_states;
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .WillOnce(
+          [&notified_states](
+              std::vector<toolbar_ui_api::mojom::PageActionStatePtr> states) {
+            notified_states = std::move(states);
+          });
+
+  controller_->HideAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble->is_closing());
+
+  ASSERT_EQ(2u, notified_states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            notified_states[0]->page_action_id);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            notified_states[1]->page_action_id);
+
+  exit_waiter.Wait();
+}
+
+// HideAnchoredMessage() dismisses only the bubble while keeping the page action
+// icon visible in the toolbar, so clicks during fade-out invoke the action.
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       ClickDuringExitAnimationInvokesAction) {
+  AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  ExitAnimationWaiter exit_waiter(bubble);
+
+  actions::ActionItem* translate_action_item =
+      actions::ActionManager::Get().FindAction(kActionShowTranslate,
+                                               root_action_item_.get());
+  ASSERT_TRUE(translate_action_item);
+  int invoke_count = 0;
+  translate_action_item->SetInvokeActionCallback(
+      base::BindRepeating([](int* count, actions::ActionItem*,
+                             actions::ActionInvocationContext) { ++(*count); },
+                          &invoke_count));
+
+  controller_->HideAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble->is_closing());
+
+  base::test::TestFuture<
+      base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+      click_future;
+  control_->OnPageActionClick(
+      toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+      PageActionTrigger::kMouse, click_future.GetCallback());
+  EXPECT_OK(click_future.Get());
+  EXPECT_EQ(1, invoke_count);
+
+  exit_waiter.Wait();
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageAnimatesOutWhenPageActionHidden) {
+  AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  ExitAnimationWaiter exit_waiter(bubble);
+
+  controller_->Hide(kActionShowTranslate);
+  translate_element_->Hide();
+
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  EXPECT_EQ(controller_->GetActiveAnchoredMessage(), std::nullopt);
+  EXPECT_TRUE(bubble->is_closing());
+  EXPECT_FALSE(bubble->GetWidget()->IsClosed());
+  EXPECT_EQ(GetFrameLayer(bubble)->GetTargetOpacity(), 0.0f);
+
+  exit_waiter.Wait();
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       DeferredAnchoredMessageClearedWhenPageActionHidden) {
+  translate_element_->Hide();
+  ASSERT_EQ(ShowAnchoredMessage(kActionShowTranslate), nullptr);
+  ASSERT_EQ(controller_->GetActiveAnchoredMessage(), kActionShowTranslate);
+
+  controller_->Hide(kActionShowTranslate);
+  EXPECT_EQ(controller_->GetActiveAnchoredMessage(), std::nullopt);
+
+  translate_element_->Show();
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       ActionWithoutElementIdDefersToLocationBarElement) {
+  location_bar_element_->Hide();
+  ASSERT_EQ(ShowAnchoredMessage(kActionAnchoredContextualCue), nullptr);
+
+  location_bar_element_->Show();
+
+  AnchoredMessageBubbleView* bubble =
+      GetAnchoredMessage(kActionAnchoredContextualCue);
+  ASSERT_TRUE(bubble);
+  EXPECT_EQ(bubble->GetAnchor().GetIfElement(), location_bar_element_.get());
+  EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionAnchoredContextualCue));
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageReshownDuringExitAnimation) {
+  AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  views::Label* label =
+      views::ElementTrackerViews::GetInstance()
+          ->GetFirstMatchingViewAs<views::Label>(
+              AnchoredMessageBubbleView::kAnchoredMessageLabelId,
+              views::ElementTrackerViews::GetContextForView(bubble));
+  ASSERT_TRUE(label);
+  EXPECT_TRUE(label->GetText().empty());
+
+  controller_->Hide(kActionShowTranslate);
+  translate_element_->Hide();
+  ASSERT_TRUE(bubble->is_closing());
+  ASSERT_TRUE(bubble->GetAnchor().IsNull());
+
+  controller_->SetAnchoredMessageText(kActionShowTranslate, u"Updated");
+  ShowAnchoredMessage(kActionShowTranslate);
+
+  EXPECT_TRUE(bubble->is_closing());
+  EXPECT_TRUE(bubble->GetAnchor().IsNull());
+  EXPECT_TRUE(label->GetText().empty());
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+
+  translate_element_->Show();
+
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), bubble);
+  EXPECT_EQ(bubble->GetAnchor().GetIfElement(), translate_element_.get());
+  EXPECT_EQ(label->GetText(), u"Updated");
+  EXPECT_FALSE(bubble->is_closing());
+  EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  EXPECT_EQ(GetFrameLayer(bubble)->GetTargetOpacity(), 1.0f);
+
+  GetFrameLayer(bubble)->GetAnimator()->StopAnimating();
+  EXPECT_FALSE(bubble->GetWidget()->IsClosed());
+  EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageExitAnimationFinishesBeforeDeferredReshow) {
+  AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  ExitAnimationWaiter exit_waiter(bubble);
+
+  controller_->Hide(kActionShowTranslate);
+  translate_element_->Hide();
+  ASSERT_TRUE(bubble->is_closing());
+
+  ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_EQ(controller_->GetActiveAnchoredMessage(), kActionShowTranslate);
+
+  exit_waiter.Wait();
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
+  EXPECT_EQ(controller_->GetActiveAnchoredMessage(), kActionShowTranslate);
+
+  translate_element_->Show();
+
+  AnchoredMessageBubbleView* reshown_bubble =
+      GetAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(reshown_bubble);
+  EXPECT_EQ(reshown_bubble->GetAnchor().GetIfElement(),
+            translate_element_.get());
+  EXPECT_FALSE(reshown_bubble->is_closing());
+  EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageCloseOnDeactivateNotifiesController) {
+  AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  ASSERT_EQ(controller_->GetActiveAnchoredMessage(), kActionShowTranslate);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
+
+  bubble->GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
+  EXPECT_EQ(controller_->GetActiveAnchoredMessage(), std::nullopt);
+  destroyed_waiter.Wait();
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageClosesImmediatelyWithReducedMotion) {
+  rich_animation_mode_.reset();
+  auto reduced_motion = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  AnchoredMessageBubbleView* bubble = ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
+
+  controller_->HideAnchoredMessage(kActionShowTranslate);
+
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
+  destroyed_waiter.Wait();
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       UpdateControllerDestroysAnchoredMessageSynchronously) {
+  AnchoredMessageBubbleView* live_bubble =
+      ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(live_bubble);
+  ASSERT_EQ(controller_->GetActiveAnchoredMessage(), kActionShowTranslate);
+  base::WeakPtr<views::Widget> live_widget =
+      live_bubble->GetWidget()->GetWeakPtr();
+
+  testing::Mock::VerifyAndClearExpectations(&webui_delegate_);
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_)).Times(1);
+  control_->UpdateController(/*web_contents=*/nullptr);
+  testing::Mock::VerifyAndClearExpectations(&webui_delegate_);
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
+  EXPECT_FALSE(live_widget);
+  EXPECT_EQ(controller_->GetActiveAnchoredMessage(), std::nullopt);
+
+  control_->UpdateController(tab_->GetContents());
+  AnchoredMessageBubbleView* closing_bubble =
+      ShowAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(closing_bubble);
+  base::WeakPtr<views::Widget> closing_widget =
+      closing_bubble->GetWidget()->GetWeakPtr();
+
+  controller_->HideAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(closing_bubble->is_closing());
+
+  control_->UpdateController(/*web_contents=*/nullptr);
+  EXPECT_EQ(GetAnchoredMessage(kActionShowTranslate), nullptr);
+  EXPECT_FALSE(closing_widget);
+}
+
 }  // namespace
 
 }  // namespace page_actions

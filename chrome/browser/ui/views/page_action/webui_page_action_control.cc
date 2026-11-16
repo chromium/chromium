@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
@@ -37,6 +38,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -110,8 +112,9 @@ ui::ColorVariant ResolveIconColor(
       // (`PaintedOnSolidBackground()`) means the suggestion chip is showing.
       // TODO(crbug.com/572793227): Match Views' tonal styling while the
       // anchored message is visible: render the tonal pill background in the
-      // WebUI, use the tonal icon color, and re-notify from
-      // OnAnchoredMessageWidgetClose().
+      // WebUI, use the tonal icon color, and re-notify when
+      // IsAnchoredMessageVisible() changes (when AnimateOut() starts or from
+      // OnAnchoredMessageWidgetClose()).
       if (model.ShouldShowSuggestionChip()) {
         return kColorOmniboxIconForegroundTonal;
       }
@@ -184,11 +187,13 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   void AnchoredMessageCollapsed() override;
 
   // Returns whether an anchored message bubble is currently visible for this
-  // action.
-  bool IsAnchoredMessageVisible() const { return anchored_message_ != nullptr; }
+  // action. A message is not considered visible while it animates out.
+  bool IsAnchoredMessageVisible() const {
+    return anchored_message_ && !anchored_message_->is_closing();
+  }
 
-  // Returns the AnchoredMessageBubbleView currently showing, or nullptr if none
-  // is showing. For testing.
+  // Returns the AnchoredMessageBubbleView (including while it animates out), or
+  // nullptr if none exists. For testing.
   page_actions::AnchoredMessageBubbleView*
   GetAnchoredMessageForTesting()  // IN-TEST
       const {
@@ -222,20 +227,25 @@ class WebUIPageActionControl::WebUIPageActionDelegate
 
  private:
   // Creates and displays the anchored message bubble for `model`. If the bubble
-  // is already showing, updates its content. If the anchor element is not yet
-  // rendered/tracked in WebUI, registers an ElementTracker callback to defer
-  // bubble creation until the element is shown.
+  // is already visible, updates its content in place. If it is animating out,
+  // re-attaches the anchor, updates its content, and animates it back in once
+  // the anchor is ready. If the anchor element is not yet rendered/tracked in
+  // WebUI, registers an ElementTracker callback to defer bubble creation.
   void CreateAndShowAnchoredMessage(
       const page_actions::PageActionModelInterface& model);
 
   // Callback invoked by ElementTracker when the WebUI anchor element is
-  // displayed, creating the deferred anchored message bubble.
+  // displayed, creating or re-anchoring the deferred anchored message bubble.
   void OnElementShownForAnchoredMessage(ui::TrackedElement* element);
 
   // Callback invoked when the anchored message bubble widget is closed. Posts
   // tasks to destroy the widget and delegate asynchronously, and notifies the
-  // controller if the model still requested an anchored message.
+  // controller if the message was not already animating out.
   void OnAnchoredMessageWidgetClose(views::Widget::ClosedReason closed_reason);
+
+  // Notifies the controller that the anchored message has closed if the model
+  // still requests showing it.
+  void NotifyControllerOfMessageClose();
 
   void CloseWidgetDeferred(base::WeakPtr<views::Widget> widget_to_close);
 
@@ -312,10 +322,9 @@ WebUIPageActionControl::WebUIPageActionDelegate::~WebUIPageActionDelegate() {
 
 void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
     page_actions::PageActionController* controller) {
-  if (observation_.IsObserving() &&
-      observation_.GetSource()->ShouldShowAnchoredMessage()) {
-    CloseAnchoredMessage();
-  }
+  const bool should_close_anchored_message =
+      observation_.IsObserving() &&
+      observation_.GetSource()->ShouldShowAnchoredMessage();
   if (anchored_message_widget_) {
     anchored_message_ = nullptr;
     anchored_message_widget_.reset();
@@ -323,6 +332,11 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
   element_shown_subscription_ = {};
   observation_.Reset();
   action_item_subscription_ = {};
+  // Reset the widget and model observation first so notifying the outgoing
+  // controller does not re-enter `OnPageActionModelChanged()`.
+  if (should_close_anchored_message) {
+    CloseAnchoredMessage();
+  }
   controller_ = controller;
   was_chip_visible_ = false;
   was_anchored_message_showing_ = false;
@@ -371,12 +385,23 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
   }
   was_chip_visible_ = is_chip_visible;
 
-  const bool is_anchored_message_showing =
-      visible &&
-      (model.ShouldShowAnchoredMessage() || IsAnchoredMessageVisible());
+  const bool should_show_anchored_message =
+      visible && model.ShouldShowAnchoredMessage();
+  if (!should_show_anchored_message) {
+    element_shown_subscription_ = {};
+    // Animate out before computing state so `IsAnchoredMessageVisible()`
+    // reflects `is_closing()` when notifying `owner_` to re-order icons.
+    if (IsAnchoredMessageVisible()) {
+      anchored_message_->AnimateOut();
+      NotifyControllerOfMessageClose();
+    } else if (was_anchored_message_showing_) {
+      NotifyControllerOfMessageClose();
+    }
+  }
+
   const bool anchored_message_changed =
-      (was_anchored_message_showing_ != is_anchored_message_showing);
-  was_anchored_message_showing_ = is_anchored_message_showing;
+      (was_anchored_message_showing_ != should_show_anchored_message);
+  was_anchored_message_showing_ = should_show_anchored_message;
 
   // Only check for navigation URL changes if this action is currently visible
   // or was previously visible. Actions that remain invisible have no WebUI
@@ -397,19 +422,8 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     owner_->NotifyPageActionStateChanged();
   }
 
-  if (visible && model.ShouldShowAnchoredMessage()) {
+  if (should_show_anchored_message) {
     CreateAndShowAnchoredMessage(model);
-  } else {
-    // We want to hide the message. First, unconditionally clear any pending
-    // subscriptions waiting to spawn the bubble.
-    element_shown_subscription_ = {};
-
-    // Then, close the active bubble widget if it is currently open.
-    // TODO(crbug.com/571160141): Animate out like PageActionView.
-    if (anchored_message_widget_ && !anchored_message_widget_->IsClosed()) {
-      anchored_message_widget_->CloseWithReason(
-          views::Widget::ClosedReason::kUnspecified);
-    }
   }
 }
 
@@ -604,38 +618,49 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
 void WebUIPageActionControl::WebUIPageActionDelegate::
     CreateAndShowAnchoredMessage(
         const page_actions::PageActionModelInterface& model) {
-  if (anchored_message_) {
+  if (anchored_message_ && !anchored_message_->is_closing()) {
     anchored_message_->UpdateContent(model);
     return;
   }
 
-  page_actions::PageActionViewInterface* view_interface =
-      owner_->GetPageActionViewInterface(action_id_);
-  if (!view_interface) {
+  BrowserWindowInterface* browser = owner_->GetBrowser();
+  if (!browser) {
     return;
   }
-  views::BubbleAnchor anchor = view_interface->GetBubbleAnchor();
+
+  ui::ElementIdentifier anchor_element_id = kLocationBarElementId;
+  page_actions::PageActionPropertiesProvider provider;
+  if (provider.Contains(action_id_)) {
+    if (ui::ElementIdentifier element_id =
+            provider.GetProperties(action_id_).element_identifier) {
+      anchor_element_id = element_id;
+    }
+  }
+
+  views::BubbleAnchor anchor(
+      BrowserElements::From(browser)->GetElement(anchor_element_id));
   if (anchor.IsNull()) {
     // In WebUI toolbar, the UI renders asynchronously in the WebContents, so
-    // the page action element (e.g. the toolbar-chip-button) may not have been
+    // the anchor element (e.g. the toolbar-chip-button) may not have been
     // painted or registered with ElementTracker yet when the anchored message
     // is requested. In that case, subscribe to ElementTracker to wait for the
     // element to be shown before creating and anchoring the bubble.
-    page_actions::PageActionPropertiesProvider provider;
-    if (provider.Contains(action_id_)) {
-      ui::ElementIdentifier element_id =
-          provider.GetProperties(action_id_).element_identifier;
-      BrowserWindowInterface* browser = owner_->GetBrowser();
-      if (element_id && browser) {
-        element_shown_subscription_ =
-            ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
-                element_id, BrowserElements::From(browser)->GetContext(),
-                base::BindRepeating(
-                    &WebUIPageActionControl::WebUIPageActionDelegate::
-                        OnElementShownForAnchoredMessage,
-                    weak_factory_.GetWeakPtr()));
-      }
-    }
+    element_shown_subscription_ =
+        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+            anchor_element_id, BrowserElements::From(browser)->GetContext(),
+            base::BindRepeating(
+                &WebUIPageActionControl::WebUIPageActionDelegate::
+                    OnElementShownForAnchoredMessage,
+                weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Reverse a closing bubble's exit animation. If `anchor` was null, the early
+  // return above defers this until OnElementShownForAnchoredMessage().
+  if (anchored_message_) {
+    anchored_message_->SetAnchor(anchor);
+    anchored_message_->UpdateContent(model);
+    anchored_message_->AnimateIn();
     return;
   }
 
@@ -683,6 +708,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
     return;
   }
   CHECK(anchored_message_widget_);
+  const bool already_closing = anchored_message_->is_closing();
   anchored_message_ = nullptr;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -690,6 +716,13 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
           &WebUIPageActionControl::WebUIPageActionDelegate::CloseWidgetDeferred,
           weak_factory_.GetWeakPtr(), anchored_message_widget_->GetWeakPtr()));
 
+  if (!already_closing) {
+    NotifyControllerOfMessageClose();
+  }
+}
+
+void WebUIPageActionControl::WebUIPageActionDelegate::
+    NotifyControllerOfMessageClose() {
   if (observation_.IsObserving() &&
       observation_.GetSource()->ShouldShowAnchoredMessage()) {
     CloseAnchoredMessage();

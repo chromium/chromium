@@ -100,11 +100,11 @@ class WebUIPageActionControl {
       actions::ActionId action_id);
 
   // Returns true if there is an anchored message currently showing for
-  // `action_id`.
+  // `action_id`. A message is not considered showing while it animates out.
   bool IsAnchoredMessageShowing(actions::ActionId action_id) const;
 
-  // Returns the AnchoredMessageBubbleView currently showing for `action_id`,
-  // or nullptr if none is showing. For testing.
+  // Returns the AnchoredMessageBubbleView for `action_id` (including while it
+  // animates out), or nullptr if none exists. For testing.
   AnchoredMessageBubbleView* GetAnchoredMessageForTesting(
       actions::ActionId action_id);
 

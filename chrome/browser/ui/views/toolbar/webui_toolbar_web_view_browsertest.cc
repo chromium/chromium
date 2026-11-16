@@ -199,10 +199,14 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
@@ -5665,6 +5669,11 @@ class WebUIPageActionBrowserTest : public WebUIToolbarWebViewBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
                        AnchoredMessageShowsAndCloses) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  auto rich_animation_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* toolbar_webview = nullptr;
   views::WebView* web_view = nullptr;
@@ -5704,13 +5713,25 @@ IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
 
   auto* bubble = control.GetAnchoredMessageForTesting(target_action_id);
   ASSERT_TRUE(bubble);
-  EXPECT_EQ(bubble->GetBubbleFrameView()->layer()->GetTargetOpacity(), 1.0f);
+  ASSERT_TRUE(bubble->GetAnchor().GetIfElement());
+  EXPECT_EQ(bubble->GetAnchor().GetIfElement()->identifier(),
+            kTranslatePageActionElementId);
+  views::View* frame = bubble->GetBubbleFrameView();
+  ASSERT_TRUE(frame->layer());
+  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
 
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
   controller->HideAnchoredMessage(target_action_id);
 
-  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
-    return !control.IsAnchoredMessageShowing(target_action_id);
-  }));
+  EXPECT_FALSE(control.IsAnchoredMessageShowing(target_action_id));
+  ASSERT_EQ(control.GetAnchoredMessageForTesting(target_action_id), bubble);
+  EXPECT_TRUE(bubble->is_closing());
+  EXPECT_FALSE(bubble->GetWidget()->IsClosed());
+  EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
+
+  frame->layer()->GetAnimator()->StopAnimating();
+  destroyed_waiter.Wait();
+  EXPECT_EQ(control.GetAnchoredMessageForTesting(target_action_id), nullptr);
 }
 
 class WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest
