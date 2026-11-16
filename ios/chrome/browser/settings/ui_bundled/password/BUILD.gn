@@ -80,6 +80,8 @@ source_set("common") {
 
 source_set("ui") {
   sources = [
+    "password_filter_chips_header_item.h",
+    "password_filter_chips_header_item.mm",
     "password_manager_view_controller+Testing.h",
     "password_manager_view_controller.h",
     "password_manager_view_controller.mm",
@@ -201,6 +203,7 @@ source_set("password_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "password_filter_chips_header_item_unittest.mm",
     "password_manager_view_controller_unittest.mm",
     "password_utils_unittest.mm",
     "passwords_coordinator_unittest.mm",
@@ -256,6 +259,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/public/test",

@@ -10,6 +10,13 @@ NSString* const kPasswordsTableViewID = @"PasswordsTableViewID";
 NSString* const kPasswordsSearchBarID = @"PasswordsSearchBar";
 NSString* const kPasswordsScrimViewID = @"PasswordsScrimViewID";
 
+NSString* const kPasswordManagerFilterChipAllIdentifier =
+    @"PasswordManagerFilterChipAllIdentifier";
+NSString* const kPasswordManagerFilterChipPasswordsIdentifier =
+    @"PasswordManagerFilterChipPasswordsIdentifier";
+NSString* const kPasswordManagerFilterChipPasskeysIdentifier =
+    @"PasswordManagerFilterChipPasskeysIdentifier";
+
 NSString* const kPasswordDetailsTableViewID = @"PasswordDetailsTableViewID";
 NSString* const kPasswordsAddPasswordSaveButtonID =
     @"PasswordsAddPasswordSaveButtonID";

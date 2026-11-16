@@ -14,6 +14,11 @@ extern NSString* const kPasswordsTableViewID;
 extern NSString* const kPasswordsSearchBarID;
 extern NSString* const kPasswordsScrimViewID;
 
+// Accessibility identifiers for the Password Manager credential filter chips.
+extern NSString* const kPasswordManagerFilterChipAllIdentifier;
+extern NSString* const kPasswordManagerFilterChipPasswordsIdentifier;
+extern NSString* const kPasswordManagerFilterChipPasskeysIdentifier;
+
 // The accessibility identifier of the password details table view.
 extern NSString* const kPasswordDetailsTableViewID;
 extern NSString* const kPasswordsAddPasswordSaveButtonID;

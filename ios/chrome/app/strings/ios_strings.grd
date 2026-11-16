@@ -6221,6 +6221,15 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PASSWORD_MANAGER_BLOCK_BUTTON" desc="Button text for the 'Save Password' infobar's 'Never remember for this site' option [Length: 10em]">
         Never
       </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_FILTER_ALL" desc="Label for the filter chip showing all saved credentials in the Password Manager. [iOS only]">
+        All
+      </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_FILTER_PASSKEYS" desc="Label for the filter chip showing saved passkeys in the Password Manager. Refer to Glossary when translating passkeys. [iOS only]">
+        Passkeys
+      </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_FILTER_PASSWORDS" desc="Label for the filter chip showing saved passwords in the Password Manager. [iOS only]">
+        Passwords
+      </message>
       <message name="IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING" desc="Header text for the view in Settings for managing saved passwords. This string only appears when the user is not syncing their passwords. [Length: unlimited] [iOS only]">
         Passwords are saved to Google Password Manager on this device only.
       </message>
