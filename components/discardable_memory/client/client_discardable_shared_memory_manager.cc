@@ -420,14 +420,9 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
   base::AutoLock lock(lock_);
   if (foregrounded_) {
     const size_t total_size = heap_->GetSize() / 1024;                // in KiB
-    const size_t freelist_size = heap_->GetFreelistSize() / 1024;     // in KiB
 
-    base::UmaHistogramCounts1M("Memory.Discardable.FreelistSize.Foreground",
-                               freelist_size);
     base::UmaHistogramCounts1M("Memory.Discardable.VirtualSize.Foreground",
                                total_size);
-    base::UmaHistogramCounts1M("Memory.Discardable.Size.Foreground",
-                               total_size - freelist_size);
   }
 
   return heap_->OnMemoryDump(args, pmd);
