@@ -159,32 +159,49 @@ BatchFreeQueue<QuarantineTarget::kSanitizedObjects>::Purge() {
 
 namespace {
 
+// Wraps a `BatchFreeQueue` and constructs it on first use, as constructing it
+// zero-initializes its storage. It is only needed for the entries that the
+// thread cache doesn't take: all entries of a global branch, and entries larger
+// than the thread cache's size limit for a thread-bound branch.
+template <QuarantineTarget quarantine_target>
+class LazyBatchFreeQueue {
+ public:
+  PA_ALWAYS_INLINE explicit LazyBatchFreeQueue(PartitionRoot* root)
+      : root_(root) {}
+
+  PA_ALWAYS_INLINE void Queue(UntaggedSlotStart slot_start) {
+    if (!queue_.has_value()) {
+      queue_.emplace(root_);
+    }
+    queue_->Queue(slot_start);
+  }
+
+ private:
+  PartitionRoot* const root_;
+  std::optional<BatchFreeQueue<quarantine_target>> queue_;
+};
+
 // Releases a single dequarantined slot for `PurgeInternal()`: into the thread
 // cache if it takes it, otherwise batched in `queue`.
 //
-// `queue` amortizes the root lock over `kQueueSize` slots and is constructed
-// lazily on first use.
 // `tcache` is the cache owning this branch, and is null unless `thread_bound`.
 template <bool thread_bound,
           QuarantineTarget quarantine_target,
-          ThreadCache::CacheFillPolicy fill_policy>
-PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
-    PartitionRoot* root,
-    UntaggedSlotStart slot_start,
-    size_t bucket_index,
-    size_t slot_size,
-    std::optional<BatchFreeQueue<quarantine_target>>& queue,
-    ThreadCache* tcache) {
+          ThreadCache::CacheFillPolicy fill_policy,
+          typename QueueType>
+PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(PartitionRoot* root,
+                                               UntaggedSlotStart slot_start,
+                                               size_t bucket_index,
+                                               size_t slot_size,
+                                               QueueType& queue,
+                                               ThreadCache* tcache) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   root->RetagSlotIfNeeded(slot_start, slot_size);
 #endif
   if constexpr (!thread_bound) {
     // Assuming that ThreadCache is not available as this is not thread-bound.
     // Going to `RawFree()` directly.
-    if (!queue.has_value()) {
-      queue.emplace(root);
-    }
-    queue->Queue(slot_start);
+    queue.Queue(slot_start);
     return;
   } else {
     // `Quarantine()` already zapped the slot with `kFreedByte` (`0xcd`), so
@@ -215,10 +232,7 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     // it.
     const size_t usable_size = root->AdjustSizeForExtrasSubtract(slot_size);
     tcache->RecordDeallocation(usable_size);
-    if (!queue.has_value()) {
-      queue.emplace(root);
-    }
-    queue->Queue(slot_start);
+    queue.Queue(slot_start);
   }
 }
 
@@ -542,12 +556,6 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
   size_t freed_count = 0;
   size_t freed_size_in_bytes = 0;
 
-  // Only needed for entries that the thread cache doesn't take: all entries of
-  // a global branch, and entries larger than the thread cache's size limit for
-  // a thread-bound branch. Constructed lazily, as constructing it
-  // zero-initializes its storage.
-  std::optional<BatchFreeQueue<quarantine_target>> queue;
-
   // During a bulk full purge (`target_size_in_bytes == 0`, e.g. end-of-task),
   // once `ThreadCache` buckets already hold at least half their limit, bypass
   // `ThreadCache` insertion and batch-free the remaining cold slots directly
@@ -559,47 +567,53 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
       target_size_in_bytes == 0 &&
       slots_.size() >= BatchFreeQueue<quarantine_target>::kQueueSize;
 
-  // Dequarantine some entries as required.
-  while (target_size_in_bytes < branch_size_in_bytes_) {
-    PA_DCHECK(!slots_.empty());
+  auto dequarantine_loop =
+      [&]<ThreadCache::CacheFillPolicy fill_policy, typename QueueType>(
+          QueueType& queue) PA_EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+        while (target_size_in_bytes < branch_size_in_bytes_) {
+          PA_DCHECK(!slots_.empty());
 
-    // As quarantined entries are shuffled, picking last entry is equivalent
-    // to picking random entry.
-    SlotStart slot_start = slots_.back().slot_start;
-    const size_t bucket_index = slots_.back().bucket_index;
-    const size_t slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
+          // As quarantined entries are shuffled, picking last entry is
+          // equivalent to picking random entry.
+          SlotStart slot_start = slots_.back().slot_start;
+          const size_t bucket_index = slots_.back().bucket_index;
+          const size_t slot_size =
+              BucketIndexLookup::GetBucketSize(bucket_index);
 
-    // Take the entry off the list before releasing it, so that anything the
-    // release runs that re-enters `PurgeInternal()` finds neither this entry
-    // nor its bytes.
-    slots_.pop_back();
-    ++freed_count;
-    PA_DCHECK(slot_size > 0);
-    freed_size_in_bytes += slot_size;
-    branch_size_in_bytes_ -= slot_size;
+          // Take the entry off the list before releasing it, so that anything
+          // the release runs that re-enters `PurgeInternal()` finds neither
+          // this entry nor its bytes.
+          slots_.pop_back();
+          ++freed_count;
+          PA_DCHECK(slot_size > 0);
+          freed_size_in_bytes += slot_size;
+          branch_size_in_bytes_ -= slot_size;
 
-    if constexpr (kThreadBound) {
-      // Unless during its destruction, we can assume ThreadCache is valid
-      // because this branch is embedded inside ThreadCache.
+          if constexpr (kThreadBound) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-      PA_DCHECK(being_destructed_ ||
-                ThreadCache::IsValid(allocator_root_->GetThreadCache()));
-      PA_DCHECK(being_destructed_ ||
-                allocator_root_->GetThreadCache() == tcache_);
+            // Unless during its destruction, we can assume ThreadCache is
+            // valid because this branch is embedded inside ThreadCache.
+            PA_DCHECK(being_destructed_ ||
+                      ThreadCache::IsValid(allocator_root_->GetThreadCache()));
+            PA_DCHECK(being_destructed_ ||
+                      allocator_root_->GetThreadCache() == tcache_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-    }
+          }
 
-    if (avoid_tcache_overflow) {
-      ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
-                               ThreadCache::CacheFillPolicy::kCapAtHalfLimit>(
-          allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
-          tcache_);
-    } else {
-      ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
-                               ThreadCache::CacheFillPolicy::kClearOnOverflow>(
-          allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
-          tcache_);
-    }
+          ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
+                                   fill_policy>(
+              allocator_root_, slot_start.Untag(), bucket_index, slot_size,
+              queue, tcache_);
+        }
+      };
+
+  LazyBatchFreeQueue<quarantine_target> queue(allocator_root_);
+  if (avoid_tcache_overflow) {
+    dequarantine_loop.template
+    operator()<ThreadCache::CacheFillPolicy::kCapAtHalfLimit>(queue);
+  } else {
+    dequarantine_loop.template
+    operator()<ThreadCache::CacheFillPolicy::kClearOnOverflow>(queue);
   }
 
   unpublished_stats_.dequarantined_count += freed_count;
