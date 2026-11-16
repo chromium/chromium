@@ -4,7 +4,6 @@
 -NotificationsApiTest.TestShouldDisplayPopupNotification
 -NotificationsApiTest.TestShouldDisplayFullscreen
 -MenuItemViewTestInsertWithSubmenu1.InsertItemWithSubmenu1
--AutomaticFullscreenTest.ImmediatelyAfterPopupExit/*
 -PerformanceInterventionInteractiveTest.SuggestTabsOnlyForLastActiveProfile
 -OmniboxViewViewsTest.SelectAllOnTabToFocus
 
