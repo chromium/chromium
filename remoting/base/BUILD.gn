@@ -573,6 +573,7 @@ source_set("unit_tests") {
     deps += [
       "//base/test:test_support",
       "//third_party/crashpad/crashpad/util",
+      "//third_party/zlib/google:compression_utils",
     ]
   }
 

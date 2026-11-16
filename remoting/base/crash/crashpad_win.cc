@@ -9,6 +9,7 @@
 #include <crtdbg.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -24,8 +25,12 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/access_control_list.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
@@ -291,11 +296,24 @@ bool CrashpadWin::Initialize() {
   annotations["plat"] = "Win64";
 #endif
 
+  const RegistryConfig registry_config = ReadRegistryConfig();
+  const std::string upload_url =
+      registry_config.upload_url.value_or(kDefaultCrashpadUploadUrl);
+  if (registry_config.upload_url.has_value()) {
+    LOG(WARNING) << "Overriding Crashpad upload URL via HKLM\\"
+                 << kCrashpadRegistryKeyPath << ": " << upload_url;
+  }
+
   std::vector<std::string> arguments;
   // Make sure Crashpad's generate_dump tool includes monitor-self annotations.
   // This creates a second crashpad instance that monitors the handler so it can
   // report crashes in the handler.
   arguments.push_back("--monitor-self-annotation=ptype=crashpad-handler");
+  if (registry_config.disable_rate_limit) {
+    arguments.push_back("--no-rate-limit");
+    LOG(WARNING) << "Disabling Crashpad upload rate limit via HKLM\\"
+                 << kCrashpadRegistryKeyPath;
+  }
 
   base::FilePath handler_path;
   if (!GetCrashpadHandlerPath(&handler_path)) {
@@ -307,9 +325,8 @@ bool CrashpadWin::Initialize() {
   {
     ScopedClearStdIoHandles clear_stdio_handles;
     handler_started = client->StartHandler(
-        handler_path, database_path, metrics_path, kDefaultCrashpadUploadUrl,
-        annotations, arguments, /*restartable=*/false,
-        /*asynchronous_start=*/false);
+        handler_path, database_path, metrics_path, upload_url, annotations,
+        arguments, /*restartable=*/false, /*asynchronous_start=*/false);
   }
   if (!handler_started) {
     LOG(ERROR) << "Failed to start Crashpad handler.";
@@ -372,6 +389,150 @@ bool CrashpadWin::CanUnprivilegedClientsConnect() const {
 CrashpadWin& CrashpadWin::GetInstance() {
   static base::NoDestructor<CrashpadWin> instance;
   return *instance;
+}
+
+// static
+bool CrashpadWin::IsValidUploadUrlOverride(std::string_view url) {
+  // Enforces a strict subset of URLs accepted by both WinHttpCrackUrl (used by
+  // http_transport_win.cc) and crashpad::CrackURL(): lowercase http:// or
+  // https:// scheme, ASCII hostname or IPv4 address (IPv6 literals are not
+  // supported), optional numeric port, and a '/' resource path without a '#'
+  // fragment (CrashReportUploadThread appends query parameters to the end of
+  // the URL and http_transport_win.cc drops everything from '#' onward). Plain
+  // HTTP is restricted to 127.0.0.1 or localhost so minidumps cannot be sent in
+  // cleartext over a network.
+  if (url.empty() || url.find('#') != std::string_view::npos) {
+    return false;
+  }
+  for (unsigned char c : url) {
+    if (c <= 0x20 || c >= 0x7f) {
+      return false;
+    }
+  }
+
+  constexpr std::string_view kHttpsPrefix = "https://";
+  constexpr std::string_view kHttpPrefix = "http://";
+  bool is_http = false;
+  size_t scheme_len = 0;
+  if (base::StartsWith(url, kHttpsPrefix, base::CompareCase::SENSITIVE)) {
+    scheme_len = kHttpsPrefix.size();
+  } else if (base::StartsWith(url, kHttpPrefix, base::CompareCase::SENSITIVE)) {
+    is_http = true;
+    scheme_len = kHttpPrefix.size();
+  } else {
+    return false;
+  }
+
+  const size_t authority_end = url.find_first_of("/?", scheme_len);
+  if (authority_end == std::string_view::npos || url[authority_end] != '/') {
+    return false;
+  }
+
+  const std::string_view authority =
+      url.substr(scheme_len, authority_end - scheme_len);
+  if (authority.empty() || authority.find('@') != std::string_view::npos) {
+    return false;
+  }
+
+  std::string_view host = authority;
+  const size_t colon_pos = authority.find(':');
+  if (colon_pos != std::string_view::npos) {
+    host = authority.substr(0, colon_pos);
+    const std::string_view port_str = authority.substr(colon_pos + 1);
+    unsigned int port = 0;
+    if (port_str.empty() ||
+        !std::ranges::all_of(port_str,
+                             [](char c) { return base::IsAsciiDigit(c); }) ||
+        !base::StringToUint(port_str, &port) || port < 1 || port > 65535) {
+      return false;
+    }
+  }
+
+  if (host.empty() || host.front() == '.' || host.back() == '.' ||
+      host.front() == '-' || host.back() == '-' ||
+      host.find("..") != std::string_view::npos ||
+      host.find(".-") != std::string_view::npos ||
+      host.find("-.") != std::string_view::npos ||
+      !std::ranges::all_of(host, [](char c) {
+        return base::IsAsciiAlphaNumeric(c) || c == '.' || c == '-';
+      })) {
+    return false;
+  }
+
+  if (is_http && host != "127.0.0.1" &&
+      !base::EqualsCaseInsensitiveASCII(host, "localhost")) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
+CrashpadWin::RegistryConfig CrashpadWin::ReadRegistryConfig() {
+  RegistryConfig config;
+  base::win::RegKey crashpad_reg_key;
+  const LONG open_res = crashpad_reg_key.Open(
+      HKEY_LOCAL_MACHINE, kCrashpadRegistryKeyPath, KEY_READ);
+  if (open_res != ERROR_SUCCESS) {
+    if (open_res != ERROR_FILE_NOT_FOUND) {
+      LOG(ERROR) << "Failed to open HKLM\\" << kCrashpadRegistryKeyPath
+                 << " (error=" << open_res << ")";
+    }
+    return config;
+  }
+
+  // Matches base::win::RegKey::ReadValue's 1024-wchar limit; longer values
+  // return ERROR_MORE_DATA and are rejected below.
+  constexpr size_t kMaxUploadUrlLength = 1024;
+  std::array<wchar_t, kMaxUploadUrlLength> raw_url;
+  DWORD url_bytes = sizeof(raw_url);
+  DWORD url_type = 0;
+  const LONG url_res = crashpad_reg_key.ReadValue(
+      kCrashpadUploadUrlValue, raw_url.data(), &url_bytes, &url_type);
+  if (url_res != ERROR_FILE_NOT_FOUND) {
+    if (url_res != ERROR_SUCCESS || url_type != REG_SZ ||
+        url_bytes % sizeof(wchar_t) != 0) {
+      LOG(ERROR) << "Ignoring unreadable or non-REG_SZ Crashpad UploadUrl in "
+                    "HKLM\\"
+                 << kCrashpadRegistryKeyPath << " (error=" << url_res
+                 << ", type=" << url_type << ")";
+    } else {
+      size_t url_len = url_bytes / sizeof(wchar_t);
+      if (url_len > 0 && raw_url[url_len - 1] == L'\0') {
+        --url_len;
+      }
+      std::string upload_url;
+      if (base::WideToUTF8(std::wstring_view(raw_url.data(), url_len),
+                           &upload_url) &&
+          IsValidUploadUrlOverride(upload_url)) {
+        config.upload_url = std::move(upload_url);
+      } else {
+        LOG(ERROR) << "Ignoring invalid Crashpad UploadUrl in HKLM\\"
+                   << kCrashpadRegistryKeyPath;
+      }
+    }
+  }
+
+  DWORD disable_rate_limit = 0;
+  DWORD rate_bytes = sizeof(disable_rate_limit);
+  DWORD rate_type = 0;
+  const LONG rate_res =
+      crashpad_reg_key.ReadValue(kCrashpadDisableRateLimitValue,
+                                 &disable_rate_limit, &rate_bytes, &rate_type);
+  if (rate_res != ERROR_FILE_NOT_FOUND) {
+    if (rate_res == ERROR_SUCCESS && rate_type == REG_DWORD &&
+        rate_bytes == sizeof(disable_rate_limit)) {
+      config.disable_rate_limit = (disable_rate_limit != 0);
+    } else {
+      LOG(ERROR)
+          << "Ignoring unreadable or non-REG_DWORD Crashpad DisableRateLimit "
+             "in HKLM\\"
+          << kCrashpadRegistryKeyPath << " (error=" << rate_res
+          << ", type=" << rate_type << ")";
+    }
+  }
+
+  return config;
 }
 
 // static

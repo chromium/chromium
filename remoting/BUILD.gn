@@ -86,6 +86,7 @@ group("test_support") {
 }
 
 test("remoting_unittests") {
+  data_deps = []
   defines = []
   libs = []
 
@@ -125,6 +126,7 @@ test("remoting_unittests") {
 
   if (is_win) {
     defines += [ "_ALT_NO_EXCEPTIONS" ]
+    data_deps += [ "//remoting/host/crash:remoting_crashpad_handler" ]
 
     libs += [
       "comctl32.lib",

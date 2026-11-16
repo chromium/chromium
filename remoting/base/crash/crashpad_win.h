@@ -6,6 +6,7 @@
 #define REMOTING_BASE_CRASH_CRASHPAD_WIN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -19,8 +20,26 @@ class CrashpadClient;
 
 namespace remoting {
 
+// Matches the OFFICIAL_BUILD registry/directory branding split in
+// remoting/base/branding.cc, remoting/base/host_settings_win.cc, and
+// remoting/host/daemon_process_win.cc.
+#if defined(OFFICIAL_BUILD)
+inline constexpr wchar_t kCrashpadRegistryKeyPath[] =
+    L"SOFTWARE\\Google\\Chrome Remote Desktop\\crashpad";
+#else
+inline constexpr wchar_t kCrashpadRegistryKeyPath[] =
+    L"SOFTWARE\\Chromoting\\crashpad";
+#endif
+inline constexpr wchar_t kCrashpadUploadUrlValue[] = L"UploadUrl";
+inline constexpr wchar_t kCrashpadDisableRateLimitValue[] = L"DisableRateLimit";
+
 class CrashpadWin : CrashpadDatabaseManager::Logger {
  public:
+  struct RegistryConfig {
+    std::optional<std::string> upload_url;
+    bool disable_rate_limit = false;
+  };
+
   CrashpadWin(const CrashpadWin&) = delete;
   CrashpadWin& operator=(const CrashpadWin&) = delete;
 
@@ -30,6 +49,19 @@ class CrashpadWin : CrashpadDatabaseManager::Logger {
   bool CanUnprivilegedClientsConnect() const;
 
   static CrashpadWin& GetInstance();
+
+  // Validates a Crashpad upload URL override. Remote endpoints must use
+  // https://, while http:// is permitted only for IPv4/hostname loopback
+  // (127.0.0.1 or localhost) for local testing. URL userinfo (user:pass@),
+  // fragments (#), and IPv6 literals are not supported.
+  static bool IsValidUploadUrlOverride(std::string_view url);
+
+  // Reads and validates optional admin-controlled Crashpad overrides from
+  // HKLM\...\crashpad using the default registry view of the process
+  // (WOW6432Node for a 32-bit host on 64-bit Windows), matching how the
+  // ...\logging and HostSettings keys are read. Unreadable keys or invalid
+  // UploadUrl and DisableRateLimit values are logged and ignored.
+  static RegistryConfig ReadRegistryConfig();
 
   static bool GrantLocalServiceAccessToHandlerPipeForTesting(
       const std::wstring& handler_ipc_pipe);
