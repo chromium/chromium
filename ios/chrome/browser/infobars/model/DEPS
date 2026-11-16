@@ -11,6 +11,9 @@ specific_include_rules = {
   "^infobar_badge_tab_helper.h": [
     "+ios/chrome/browser/badges/ui_bundled/badge_item.h",
   ],
+  "^infobar_badge_tab_helper(_unittest)?\\.mm": [
+    "+ios/chrome/browser/location_bar/badge/model",
+  ],
   "^infobar_metrics_recorder.h": [
     "+ios/chrome/browser/default_browser/default_browser_utils.h",
   ],

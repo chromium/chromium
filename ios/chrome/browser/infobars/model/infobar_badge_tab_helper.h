@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_INFOBAR_BADGE_TAB_HELPER_H_
 
 #include <map>
+#import <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -15,13 +16,17 @@
 #include "ios/chrome/browser/infobars/model/badge_state.h"
 #include "ios/chrome/browser/infobars/model/infobar_ios.h"
 #include "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
 class InfobarBadgeTabHelperObserver;
+class LocationBarBadgeTabHelper;
+enum class LocationBarBadgeType;
 
 namespace web {
+class NavigationContext;
 class WebState;
-}
+}  // namespace web
 
 @protocol InfobarBadgeTabHelperDelegate;
 @protocol LegacyInfobarBadgeTabHelperDelegate;
@@ -29,7 +34,8 @@ class WebState;
 // TabHelper that observes InfoBarManager. It updates an InfobarBadge delegate
 // for relevant Infobar changes.
 class InfobarBadgeTabHelper
-    : public web::WebStateUserData<InfobarBadgeTabHelper> {
+    : public web::WebStateObserver,
+      public web::WebStateUserData<InfobarBadgeTabHelper> {
  public:
   InfobarBadgeTabHelper(const InfobarBadgeTabHelper&) = delete;
   InfobarBadgeTabHelper& operator=(const InfobarBadgeTabHelper&) = delete;
@@ -74,11 +80,29 @@ class InfobarBadgeTabHelper
   // activities.
   void RegisterInfobar(infobars::InfoBar* infobar);
   void UnregisterInfobar(infobars::InfoBar* infobar);
+  // Returns the `LocationBarBadgeTabHelper` attached to `web_state_`, or
+  // `nullptr` if unavailable.
+  LocationBarBadgeTabHelper* GetLocationBarBadgeTabHelper() const;
+  // Returns the migrated `LocationBarBadgeType` for `infobar_type`, or
+  // `std::nullopt` if unmapped or unsupported.
+  std::optional<LocationBarBadgeType> MigratedBadgeType(
+      InfobarType infobar_type) const;
+  // Returns whether `infobar_type` maps to a migrated location bar badge and
+  // `LocationBarBadgeTabHelper` is attached to `web_state_`.
+  bool IsMigratedBadgeSupported(InfobarType infobar_type) const;
+  // Synchronizes the current `BadgeState` for `infobar_type` (or its removal)
+  // with `LocationBarBadgeTabHelper`.
+  void SyncLocationBarBadge(InfobarType infobar_type);
   // Notifies the tab helper that an infobar with `type` was accepted or
   // reverted.
   void OnInfobarAcceptanceStateChanged(InfobarType infobar_type, bool accepted);
   // Update the badges displayed in the location bar.
   void UpdateBadgesShown();
+
+  // web::WebStateObserver:
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
 
   // Helper object that listens for accept and revert events for an InfoBarIOS.
   class InfobarAcceptanceObserver : public InfoBarIOS::Observer {
@@ -140,6 +164,9 @@ class InfobarBadgeTabHelper
   InfobarManagerObserver infobar_manager_observer_;
   // The WebState this TabHelper is scoped to.
   raw_ptr<web::WebState> web_state_;
+  // Scoped observation for `web_state_`.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
   // Map storing the BadgeState for each InfobarType.
   std::map<InfobarType, BadgeState> infobar_badge_states_;
   // Vector storing infobars that are added when prerendering.

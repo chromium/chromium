@@ -4,11 +4,17 @@
 
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 
+#import "base/check.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
-#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/infobars/ui_bundled/test_infobar_badge_tab_helper_delegate.h"
+#import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_request.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_tab_helper.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -16,6 +22,8 @@
 namespace {
 // The InfobarTypes to use for the test.
 const InfobarType kInfobarTypeWithBadge = InfobarType::kInfobarTypePasswordSave;
+const InfobarType kInfobarTypeWithMigratedBadge =
+    InfobarType::kInfobarTypeTranslate;
 const InfobarType kInfobarTypeNoBadge = InfobarType::kInfobarTypeConfirm;
 }  // namespace
 
@@ -49,6 +57,33 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
     InfoBarManagerImpl::FromWebState(&web_state_)
         ->AddInfoBar(std::move(added_infobar), replace_existing);
     return infobar;
+  }
+
+  // Adds a `FakeInfobarIOS` with `infobar_type` to `web_state_`.
+  FakeInfobarIOS* AddInfobarWithType(InfobarType infobar_type) {
+    std::unique_ptr<FakeInfobarIOS> added_infobar =
+        std::make_unique<FakeInfobarIOS>(infobar_type);
+    FakeInfobarIOS* infobar = added_infobar.get();
+    InfoBarManagerImpl::FromWebState(&web_state_)
+        ->AddInfoBar(std::move(added_infobar), /*replace_existing=*/false);
+    return infobar;
+  }
+
+  // Recreates `InfobarBadgeTabHelper` (under the active `ScopedFeatureList`)
+  // and creates `LocationBarBadgeTabHelper` for `web_state_`, asserting that it
+  // starts with no displayed badge request.
+  LocationBarBadgeTabHelper* CreateLocationBarBadgeTabHelper() {
+    web_state_.RemoveUserData(InfobarBadgeTabHelper::UserDataKey());
+    InfobarBadgeTabHelper::CreateForWebState(&web_state_);
+    delegate_.badgeTabHelper = tab_helper();
+    tab_helper()->SetDelegate(delegate_);
+    LocationBarBadgeTabHelper::CreateForWebState(&web_state_);
+    LocationBarBadgeTabHelper* location_bar_badge_tab_helper =
+        LocationBarBadgeTabHelper::FromWebState(&web_state_);
+    CHECK(location_bar_badge_tab_helper);
+    EXPECT_FALSE(
+        location_bar_badge_tab_helper->GetDisplayedBadgeRequest().has_value());
+    return location_bar_badge_tab_helper;
   }
 
   // Returns InfobarBadgeTabHelper attached to web_state_.
@@ -225,4 +260,117 @@ TEST_F(InfobarBadgeTabHelperTest, TestInfobarReplacing) {
   EXPECT_EQ(InfoBarManagerImpl::FromWebState(&web_state_)->infobars().size(),
             0u);
   // No crash.
+}
+
+// Tests that when `kLocationBarBadgeMigration` is enabled, adding, updating,
+// reverting, and removing an infobar synchronizes `LocationBarBadgeTabHelper`,
+// including prerendering and non-committed navigations.
+TEST_F(InfobarBadgeTabHelperTest,
+       RegistersBadgeWhenLocationBarBadgeMigrationEnabled) {
+  base::test::ScopedFeatureList feature_list(kLocationBarBadgeMigration);
+  LocationBarBadgeTabHelper* location_bar_badge_tab_helper =
+      CreateLocationBarBadgeTabHelper();
+  ASSERT_TRUE(location_bar_badge_tab_helper);
+
+  // Add an unbadged infobar (e.g. confirm) and verify no badge is registered.
+  FakeInfobarIOS* unbadged_infobar = AddInfobar(/*has_badge=*/false);
+  EXPECT_FALSE(
+      location_bar_badge_tab_helper->GetDisplayedBadgeRequest().has_value());
+  InfoBarManagerImpl::FromWebState(&web_state_)
+      ->RemoveInfoBar(unbadged_infobar);
+
+  // Add an infobar while `delegate_` is `nil` (prerender case) and verify it
+  // registers on `LocationBarBadgeTabHelper` and survives `SetDelegate`.
+  tab_helper()->SetDelegate(nil);
+  FakeInfobarIOS* infobar = AddInfobarWithType(kInfobarTypeWithMigratedBadge);
+  tab_helper()->SetDelegate(delegate_);
+  std::optional<LocationBarBadgeRequest> request =
+      location_bar_badge_tab_helper->GetDisplayedBadgeRequest();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->badge_type, LocationBarBadgeType::kTranslate);
+  EXPECT_TRUE(request->has_unread_indicator);
+  EXPECT_FALSE(request->accepted);
+  EXPECT_FALSE(request->is_highlighted);
+
+  // Banner presentation highlights the badge; banner dismissal clears
+  // highlight.
+  tab_helper()->UpdateBadgeForInfobarBannerPresented(
+      kInfobarTypeWithMigratedBadge);
+  request = location_bar_badge_tab_helper->GetDisplayedBadgeRequest();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_TRUE(request->is_highlighted);
+
+  tab_helper()->UpdateBadgeForInfobarBannerDismissed(
+      kInfobarTypeWithMigratedBadge);
+  request = location_bar_badge_tab_helper->GetDisplayedBadgeRequest();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_FALSE(request->is_highlighted);
+
+  // Reading the infobar clears the unread indicator.
+  tab_helper()->UpdateBadgeForInfobarRead(kInfobarTypeWithMigratedBadge);
+  request = location_bar_badge_tab_helper->GetDisplayedBadgeRequest();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_FALSE(request->has_unread_indicator);
+
+  // Accepting marks it accepted; reverting clears accepted.
+  infobar->set_accepted(true);
+  request = location_bar_badge_tab_helper->GetDisplayedBadgeRequest();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_TRUE(request->accepted);
+
+  infobar->set_accepted(false);
+  request = location_bar_badge_tab_helper->GetDisplayedBadgeRequest();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_FALSE(request->accepted);
+
+  // Non-committed cross-document navigation re-syncs the surviving infobar.
+  web::FakeNavigationContext navigation_context_uncommitted;
+  navigation_context_uncommitted.SetIsSameDocument(false);
+  navigation_context_uncommitted.SetHasCommitted(false);
+  web_state_.OnNavigationStarted(&navigation_context_uncommitted);
+  EXPECT_FALSE(
+      location_bar_badge_tab_helper->GetDisplayedBadgeRequest().has_value());
+  web_state_.OnNavigationFinished(&navigation_context_uncommitted);
+  request = location_bar_badge_tab_helper->GetDisplayedBadgeRequest();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->badge_type, LocationBarBadgeType::kTranslate);
+  EXPECT_FALSE(request->accepted);
+
+  // Committed cross-document navigation also re-syncs surviving infobars.
+  web::FakeNavigationContext navigation_context_committed;
+  navigation_context_committed.SetIsSameDocument(false);
+  navigation_context_committed.SetHasCommitted(true);
+  web_state_.OnNavigationStarted(&navigation_context_committed);
+  EXPECT_FALSE(
+      location_bar_badge_tab_helper->GetDisplayedBadgeRequest().has_value());
+  web_state_.OnNavigationFinished(&navigation_context_committed);
+  request = location_bar_badge_tab_helper->GetDisplayedBadgeRequest();
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->badge_type, LocationBarBadgeType::kTranslate);
+  EXPECT_FALSE(request->accepted);
+
+  InfoBarManagerImpl::FromWebState(&web_state_)->RemoveInfoBar(infobar);
+  EXPECT_FALSE(
+      location_bar_badge_tab_helper->GetDisplayedBadgeRequest().has_value());
+}
+
+// Tests that when `kLocationBarBadgeMigration` is disabled, adding an infobar
+// does not register a badge on `LocationBarBadgeTabHelper`.
+TEST_F(InfobarBadgeTabHelperTest,
+       DoesNotRegisterBadgeWhenLocationBarBadgeMigrationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLocationBarBadgeMigration);
+
+  LocationBarBadgeTabHelper* location_bar_badge_tab_helper =
+      CreateLocationBarBadgeTabHelper();
+  ASSERT_TRUE(location_bar_badge_tab_helper);
+
+  FakeInfobarIOS* infobar = AddInfobar(/*has_badge=*/true);
+  EXPECT_FALSE(
+      location_bar_badge_tab_helper->GetDisplayedBadgeRequest().has_value());
+  EXPECT_TRUE([delegate_ itemForInfobarType:kInfobarTypeWithBadge]);
+
+  InfoBarManagerImpl::FromWebState(&web_state_)->RemoveInfoBar(infobar);
+  EXPECT_FALSE(
+      location_bar_badge_tab_helper->GetDisplayedBadgeRequest().has_value());
 }

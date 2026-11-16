@@ -5,15 +5,37 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 
 #import <algorithm>
+#import <optional>
 
+#import "base/check.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_request.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_tab_helper.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/web_state.h"
 
 namespace {
 // Returns `infobar`'s InfobarType.
 InfobarType GetInfobarType(infobars::InfoBar* infobar) {
   return static_cast<InfoBarIOS*>(infobar)->infobar_type();
+}
+
+// Builds a `LocationBarBadgeRequest` from a badge type and `BadgeState`
+// bitmask.
+LocationBarBadgeRequest RequestForBadgeState(LocationBarBadgeType badge_type,
+                                             BadgeState badge_state) {
+  LocationBarBadgeRequest request;
+  request.badge_type = badge_type;
+  request.priority = LocationBarBadgePriority::kDefault;
+  request.has_unread_indicator = !(badge_state & BadgeStateRead);
+  request.accepted = (badge_state & BadgeStateAccepted) != 0;
+  request.is_highlighted = (badge_state & BadgeStatePresented) != 0;
+  return request;
 }
 }  // namespace
 
@@ -22,7 +44,11 @@ InfobarType GetInfobarType(infobars::InfoBar* infobar) {
 InfobarBadgeTabHelper::InfobarBadgeTabHelper(web::WebState* web_state)
     : infobar_accept_observer_(this),
       infobar_manager_observer_(this, web_state, &infobar_accept_observer_),
-      web_state_(web_state) {}
+      web_state_(web_state) {
+  if (IsLocationBarBadgeMigrationEnabled() && web_state_) {
+    web_state_observation_.Observe(web_state_);
+  }
+}
 
 InfobarBadgeTabHelper::~InfobarBadgeTabHelper() = default;
 
@@ -69,6 +95,7 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarRead(
     return;
   }
   infobar_badge_states_[infobar_type] |= BadgeStateRead;
+  SyncLocationBarBadge(infobar_type);
 }
 
 void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerPresented(
@@ -77,6 +104,7 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerPresented(
     return;
   }
   infobar_badge_states_[infobar_type] |= BadgeStatePresented;
+  SyncLocationBarBadge(infobar_type);
   UpdateBadgesShown();
 }
 
@@ -86,6 +114,7 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerDismissed(
     return;
   }
   infobar_badge_states_[infobar_type] &= ~BadgeStatePresented;
+  SyncLocationBarBadge(infobar_type);
   UpdateBadgesShown();
 }
 
@@ -100,46 +129,104 @@ size_t InfobarBadgeTabHelper::GetInfobarBadgesCount() {
 
 #pragma mark Private
 
-void InfobarBadgeTabHelper::RegisterInfobar(infobars::InfoBar* infobar) {
-  // Handling the case where an infobar is added during prerendering.
-  if (!delegate_) {
-    infobars_added_when_prerendering_.push_back(infobar);
+LocationBarBadgeTabHelper* InfobarBadgeTabHelper::GetLocationBarBadgeTabHelper()
+    const {
+  if (!IsLocationBarBadgeMigrationEnabled() || !web_state_) {
+    return nullptr;
+  }
+  return LocationBarBadgeTabHelper::FromWebState(web_state_);
+}
+
+std::optional<LocationBarBadgeType> InfobarBadgeTabHelper::MigratedBadgeType(
+    InfobarType infobar_type) const {
+  if (infobar_type == InfobarType::kInfobarTypePermissions) {
+    // TODO(crbug.com/466407913): Support dynamic microphone vs. camera
+    // resolution for permissions infobars.
+    return std::nullopt;
+  }
+  return LocationBarBadgeTypeForInfobarType(infobar_type);
+}
+
+bool InfobarBadgeTabHelper::IsMigratedBadgeSupported(
+    InfobarType infobar_type) const {
+  return IsLocationBarBadgeMigrationEnabled() &&
+         GetLocationBarBadgeTabHelper() != nullptr &&
+         MigratedBadgeType(infobar_type).has_value();
+}
+
+void InfobarBadgeTabHelper::SyncLocationBarBadge(InfobarType infobar_type) {
+  LocationBarBadgeTabHelper* location_bar_badge_tab_helper =
+      GetLocationBarBadgeTabHelper();
+  if (!location_bar_badge_tab_helper) {
     return;
   }
-  // All other cases.
-  InfobarType infobar_type = GetInfobarType(infobar);
-  if ([delegate_ badgeSupportedForInfobarType:infobar_type]) {
-    infobar_badge_states_[infobar_type] = BadgeStateNone;
-    infobar_accept_observer_.scoped_observations().AddObservation(
-        static_cast<InfoBarIOS*>(infobar));
+  const std::optional<LocationBarBadgeType> badge_type =
+      MigratedBadgeType(infobar_type);
+  if (!badge_type.has_value()) {
+    return;
+  }
+  const auto badge_state_iterator = infobar_badge_states_.find(infobar_type);
+  if (badge_state_iterator == infobar_badge_states_.end()) {
+    location_bar_badge_tab_helper->RemoveBadge(*badge_type);
+    return;
+  }
+  location_bar_badge_tab_helper->SetBadge(
+      RequestForBadgeState(*badge_type, badge_state_iterator->second));
+}
+
+void InfobarBadgeTabHelper::RegisterInfobar(infobars::InfoBar* infobar) {
+  CHECK(infobar);
+  const InfobarType infobar_type = GetInfobarType(infobar);
+  const bool migrated_badge_supported = IsMigratedBadgeSupported(infobar_type);
+  if (!delegate_) {
+    // Defer legacy registration until SetDelegate is called.
+    infobars_added_when_prerendering_.push_back(infobar);
+    if (!migrated_badge_supported) {
+      return;
+    }
+  }
+  if (migrated_badge_supported ||
+      [delegate_ badgeSupportedForInfobarType:infobar_type]) {
+    InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
+    const BadgeState initial_badge_state =
+        infobar_ios->accepted() ? (BadgeStateAccepted | BadgeStateRead)
+                                : BadgeStateNone;
+    infobar_badge_states_.try_emplace(infobar_type, initial_badge_state);
+    auto& accept_observations = infobar_accept_observer_.scoped_observations();
+    if (!accept_observations.IsObservingSource(infobar_ios)) {
+      accept_observations.AddObservation(infobar_ios);
+    }
+    SyncLocationBarBadge(infobar_type);
   }
 }
 
 void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
-  // Handling the case where an infobar is removed during prerendering.
+  CHECK(infobar);
+  const InfobarType infobar_type = GetInfobarType(infobar);
+  const bool migrated_badge_supported = IsMigratedBadgeSupported(infobar_type);
   if (!delegate_) {
-    auto pos = std::ranges::find(infobars_added_when_prerendering_, infobar);
-    if (pos != infobars_added_when_prerendering_.end()) {
-      infobars_added_when_prerendering_.erase(pos);
+    auto position =
+        std::ranges::find(infobars_added_when_prerendering_, infobar);
+    if (position != infobars_added_when_prerendering_.end()) {
+      infobars_added_when_prerendering_.erase(position);
     }
-    return;
+    if (!migrated_badge_supported) {
+      return;
+    }
   }
-  // All other cases.
-  InfobarType infobar_type = GetInfobarType(infobar);
-  if ([delegate_ badgeSupportedForInfobarType:infobar_type]) {
+  if (migrated_badge_supported ||
+      [delegate_ badgeSupportedForInfobarType:infobar_type]) {
     infobar_badge_states_.erase(infobar_type);
-    base::ScopedMultiSourceObservation<InfoBarIOS, InfoBarIOS::Observer>&
-        infobar_accept_observations =
-            infobar_accept_observer_.scoped_observations();
+    auto& accept_observations = infobar_accept_observer_.scoped_observations();
     InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
-    // Defensively ensure the infobar is currently observed before removal.
-    if (infobar_accept_observations.IsObservingSource(infobar_ios)) {
-      infobar_accept_observations.RemoveObservation(infobar_ios);
+    if (accept_observations.IsObservingSource(infobar_ios)) {
+      accept_observations.RemoveObservation(infobar_ios);
     } else {
       DUMP_WILL_BE_NOTREACHED()
           << "cannot find observed infobar with type: "
           << static_cast<int>(infobar_ios->infobar_type());
     }
+    SyncLocationBarBadge(infobar_type);
   }
 }
 
@@ -154,6 +241,7 @@ void InfobarBadgeTabHelper::OnInfobarAcceptanceStateChanged(
   } else {
     infobar_badge_states_[infobar_type] &= ~BadgeStateAccepted;
   }
+  SyncLocationBarBadge(infobar_type);
   UpdateBadgesShown();
 }
 
@@ -164,6 +252,29 @@ void InfobarBadgeTabHelper::UpdateBadgesShown() {
   for (auto& observer : badge_updates_observers_) {
     observer.InfobarBadgesUpdated(this);
   }
+}
+
+void InfobarBadgeTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  CHECK(navigation_context);
+  if (!IsLocationBarBadgeMigrationEnabled() ||
+      navigation_context->IsSameDocument()) {
+    return;
+  }
+  // `LocationBarBadgeTabHelper::DidStartNavigation` clears transient badges on
+  // navigation start, whereas `InfoBarManagerImpl` only expires infobars when a
+  // navigation commits (or retains them on non-committed navigations / client
+  // redirects). Re-sync surviving infobar badges after any cross-document
+  // navigation finishes.
+  for (const auto& [infobar_type, badge_state] : infobar_badge_states_) {
+    SyncLocationBarBadge(infobar_type);
+  }
+}
+
+void InfobarBadgeTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  web_state_observation_.Reset();
+  web_state_ = nullptr;
 }
 
 #pragma mark - InfobarBadgeTabHelper::InfobarAcceptanceObserver
