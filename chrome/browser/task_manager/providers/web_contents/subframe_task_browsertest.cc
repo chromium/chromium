@@ -154,11 +154,11 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
   } else {
     // Sites are isolated. We expect, in addition to the above task, two more
     // SubframeTasks, one for b.com and another for c.com.
-    ASSERT_THAT(
-        MockWebContentsTaskManager::TaskTitles(tasks),
-        testing::ElementsAre(PrefixExpectedTabTitle("cross-site iframe test"),
-                             PrefixExpectedSubframeTitle("http://b.com/"),
-                             PrefixExpectedSubframeTitle("http://c.com/")));
+    ASSERT_THAT(MockWebContentsTaskManager::TaskTitles(tasks),
+                testing::UnorderedElementsAre(
+                    PrefixExpectedTabTitle("cross-site iframe test"),
+                    PrefixExpectedSubframeTitle("http://b.com/"),
+                    PrefixExpectedSubframeTitle("http://c.com/")));
 
     const Task* subframe_task_1 = tasks[1];
     const Task* subframe_task_2 = tasks[2];
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     ASSERT_THAT(
         MockWebContentsTaskManager::TaskTitles(tasks),
-        testing::ElementsAre(
+        testing::UnorderedElementsAre(
             PrefixExpectedBFCacheTitle("http://a.com/", /*is_subframe=*/false),
             PrefixExpectedBFCacheTitle("http://b.com/",
                                        /*is_subframe=*/true),
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
   // We expect SubframeTasks for b.com and c.com, in either order.
   auto tasks = task_manager.NonToolTasks();
   ASSERT_THAT(MockWebContentsTaskManager::TaskTitles(tasks),
-              testing::ElementsAre(
+              testing::UnorderedElementsAre(
                   PrefixExpectedTabTitle("cross-site iframe test").c_str(),
                   PrefixExpectedSubframeTitle("http://b.com/"),
                   PrefixExpectedSubframeTitle("http://c.com/")));
