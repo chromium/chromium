@@ -94,6 +94,8 @@ class FakeCompositorDelegateForInput : public CompositorDelegateForInput {
       bool animate,
       base::optional_ref<const BrowserControlsOffsetTagModifications>
           offset_tag_modifications) override {}
+  void StartBrowserControlsAnimation(
+      const BrowserControlsAnimationParams& params) override {}
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
 
  private:

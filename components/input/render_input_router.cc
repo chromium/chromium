@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "components/input/features.h"
 #include "components/input/input_constants.h"
@@ -129,6 +130,10 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
       bool animate,
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications) override {
+    NOTREACHED() << "Input request on unbound interface";
+  }
+  void StartBrowserControlsAnimation(
+      const cc::BrowserControlsAnimationParams& params) override {
     NOTREACHED() << "Input request on unbound interface";
   }
 };

@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -42,7 +43,9 @@
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/base/switches.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
@@ -3158,6 +3161,21 @@ void RenderWidgetHostImpl::UpdateBrowserControlsState(
         offset_tag_modifications) {
   GetWidgetInputHandler()->UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);
+}
+
+void RenderWidgetHostImpl::StartBrowserControlsAnimation(
+    const cc::BrowserControlsAnimationParams& params) {
+  CHECK(base::FeatureList::IsEnabled(features::kControlsInBrowser));
+  // Only the primary main frame has browser controls.
+  if (delegate_ && !delegate_->IsWidgetForPrimaryMainFrame(this)) {
+    return;
+  }
+  // There is no input handler to receive the message until the renderer
+  // widget exists.
+  if (!renderer_initialized()) {
+    return;
+  }
+  GetWidgetInputHandler()->StartBrowserControlsAnimation(params);
 }
 
 void RenderWidgetHostImpl::StartDragging(

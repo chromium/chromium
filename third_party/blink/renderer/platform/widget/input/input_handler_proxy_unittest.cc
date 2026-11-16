@@ -22,6 +22,7 @@
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
@@ -2147,6 +2148,23 @@ TEST_P(InputHandlerProxyTest, UpdateBrowserControlsState) {
   input_handler_->UpdateBrowserControlsState(cc::BrowserControlsState::kShown,
                                              cc::BrowserControlsState::kBoth,
                                              true, std::nullopt);
+  VERIFY_AND_RESET_MOCKS();
+}
+
+TEST_P(InputHandlerProxyTest, StartBrowserControlsAnimation) {
+  VERIFY_AND_RESET_MOCKS();
+  const cc::BrowserControlsAnimationParams params{
+      .target_top_controls_visible_height = 25.f,
+      .target_bottom_controls_visible_height = 10.f,
+      .duration = base::Milliseconds(200),
+  };
+  EXPECT_CALL(mock_input_handler_,
+              StartBrowserControlsAnimation(
+                  testing::Field(&cc::BrowserControlsAnimationParams::duration,
+                                 base::Milliseconds(200))))
+      .Times(1);
+
+  input_handler_->StartBrowserControlsAnimation(params);
   VERIFY_AND_RESET_MOCKS();
 }
 

@@ -2513,7 +2513,7 @@ TEST_P(LayerTreeHostImplControlsInBrowserTest,
   // Hide the top controls. Nothing moves until the next frame, which applies
   // the ratio and counter-scrolls the page by the change in the top controls
   // height together, so that the content stays in place on screen.
-  host_impl_->SetBrowserControlsAnimation(InstantParams(0.f, 0.f));
+  host_impl_->StartBrowserControlsAnimation(InstantParams(0.f, 0.f));
   EXPECT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
   EXPECT_TRUE(host_impl_->browser_controls_manager()->HasAnimation());
   EXPECT_TRUE(did_request_next_frame_);
@@ -2525,7 +2525,7 @@ TEST_P(LayerTreeHostImplControlsInBrowserTest,
   EXPECT_FALSE(host_impl_->browser_controls_manager()->HasAnimation());
 
   // Showing the controls again counter-scrolls the page back down.
-  host_impl_->SetBrowserControlsAnimation(
+  host_impl_->StartBrowserControlsAnimation(
       InstantParams(top_controls_height_, 0.f));
   AnimateFrame(kFrameStartTime);
   EXPECT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
@@ -2543,7 +2543,7 @@ TEST_P(LayerTreeHostImplControlsInBrowserTest,
       .UpdateScrollOffsetBaseForTesting(outer_scroll->element_id(),
                                         gfx::PointF());
 
-  host_impl_->SetBrowserControlsAnimation(InstantParams(0.f, 0.f));
+  host_impl_->StartBrowserControlsAnimation(InstantParams(0.f, 0.f));
   AnimateFrame(kFrameStartTime);
   EXPECT_EQ(0.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
   EXPECT_EQ(0, CurrentScrollOffset(outer_scroll).y());
@@ -2551,13 +2551,13 @@ TEST_P(LayerTreeHostImplControlsInBrowserTest,
 }
 
 TEST_P(LayerTreeHostImplControlsInBrowserTest,
-       SetBrowserControlsAnimationCounterScrollsEveryFrame) {
+       StartBrowserControlsAnimationCounterScrollsEveryFrame) {
   ASSERT_EQ(1.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
   ASSERT_EQ(200, CurrentScrollOffset(OuterViewportScrollLayer()).y());
 
   // Hide the top controls over 200ms with a linear curve so that the expected
   // values are exact.
-  host_impl_->SetBrowserControlsAnimation(BrowserControlsAnimationParams{
+  host_impl_->StartBrowserControlsAnimation(BrowserControlsAnimationParams{
       .target_top_controls_visible_height = 0,
       .target_bottom_controls_visible_height = 0,
       .duration = base::Milliseconds(200),

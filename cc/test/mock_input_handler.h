@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/event_listener_properties.h"
@@ -148,6 +149,8 @@ class MockInputHandler : public InputHandler {
            bool animate,
            base::optional_ref<const BrowserControlsOffsetTagModifications>
                offset_tag_modifications));
+  MOCK_METHOD1(StartBrowserControlsAnimation,
+               void(const BrowserControlsAnimationParams& params));
 
  private:
   bool is_scrolling_root_ = true;

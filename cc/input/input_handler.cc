@@ -2731,6 +2731,11 @@ void InputHandler::UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);
 }
 
+void InputHandler::StartBrowserControlsAnimation(
+    const BrowserControlsAnimationParams& params) {
+  compositor_delegate_->StartBrowserControlsAnimation(params);
+}
+
 void InputHandler::SetIsHandlingTouchSequence(bool is_handling_touch_sequence) {
   // We should not attempt to start handling a touch sequence twice.
   DCHECK(!is_handling_touch_sequence || !is_handling_touch_sequence_);

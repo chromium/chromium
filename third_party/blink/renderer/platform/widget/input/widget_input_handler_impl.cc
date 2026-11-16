@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_animation_params.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -283,6 +284,11 @@ void WidgetInputHandlerImpl::UpdateBrowserControlsState(
         offset_tag_modifications) {
   input_handler_manager_->UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);
+}
+
+void WidgetInputHandlerImpl::StartBrowserControlsAnimation(
+    const cc::BrowserControlsAnimationParams& params) {
+  input_handler_manager_->StartBrowserControlsAnimation(params);
 }
 
 void WidgetInputHandlerImpl::RunOnMainThread(base::OnceClosure closure) {

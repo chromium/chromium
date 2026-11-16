@@ -316,6 +316,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       bool animate,
       base::optional_ref<const BrowserControlsOffsetTagModifications>
           offset_tag_modifications) override;
+  void StartBrowserControlsAnimation(
+      const BrowserControlsAnimationParams& params) override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
 
   void DetachInputDelegateAndRenderFrameObserver();
@@ -704,10 +706,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   BrowserControlsOffsetManagerInterface* browser_controls_manager() {
     return browser_controls_offset_manager_.get();
   }
-  // Animates the browser controls as dictated by the browser process. Only
-  // valid when the browser process owns the controls position.
-  void SetBrowserControlsAnimation(
-      const BrowserControlsAnimationParams& params);
   const GlobalStateThatImpactsTilePriority& global_tile_state() {
     return global_tile_state_;
   }

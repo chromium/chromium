@@ -31,6 +31,7 @@
 
 namespace cc {
 class EventMetrics;
+struct BrowserControlsAnimationParams;
 }
 
 namespace gfx {
@@ -193,6 +194,9 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       bool animate,
       base::optional_ref<const cc::BrowserControlsOffsetTagModifications>
           offset_tag_modifications);
+
+  void StartBrowserControlsAnimation(
+      const cc::BrowserControlsAnimationParams& params);
 
   MainThreadEventQueue* input_event_queue() { return input_event_queue_.get(); }
 

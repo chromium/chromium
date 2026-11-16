@@ -1299,6 +1299,16 @@ void WidgetInputHandlerManager::UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);
 }
 
+void WidgetInputHandlerManager::StartBrowserControlsAnimation(
+    const cc::BrowserControlsAnimationParams& params) {
+  if (!input_handler_proxy_) {
+    return;
+  }
+
+  DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
+  input_handler_proxy_->StartBrowserControlsAnimation(params);
+}
+
 void WidgetInputHandlerManager::FlushCompositorQueueForTesting() {
   CHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
   if (!input_handler_proxy_) {

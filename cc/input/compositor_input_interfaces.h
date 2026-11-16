@@ -33,6 +33,7 @@ class Vector2dF;
 
 namespace cc {
 
+struct BrowserControlsAnimationParams;
 struct CompositorCommitData;
 class LayerTreeHostImpl;
 class LayerTreeSettings;
@@ -198,6 +199,8 @@ class CompositorDelegateForInput {
       bool animate,
       base::optional_ref<const BrowserControlsOffsetTagModifications>
           offset_tag_modifications) = 0;
+  virtual void StartBrowserControlsAnimation(
+      const BrowserControlsAnimationParams& params) = 0;
   virtual bool HasScrollLinkedAnimation(ElementId for_scroller) const = 0;
 
   // TODO(crbug.com/404586886): Temporary escape hatch for code that hasn't yet

@@ -43,6 +43,7 @@ class LatencyInfo;
 
 namespace cc {
 
+struct BrowserControlsAnimationParams;
 class CompositorDelegateForInput;
 class LatencyInfoSwapPromiseMonitor;
 class LayerImpl;
@@ -480,6 +481,9 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
       bool animate,
       base::optional_ref<const BrowserControlsOffsetTagModifications>
           offset_tag_modifications);
+
+  virtual void StartBrowserControlsAnimation(
+      const BrowserControlsAnimationParams& params);
 
   virtual void SetIsHandlingTouchSequence(bool is_handling_touch_sequence);
 

@@ -1033,6 +1033,18 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications);
 
+  // Starts an animation of the browser controls visible heights in the
+  // renderer. The message is delivered to the renderer compositor thread and
+  // does not wait for the renderer main thread. The animation starts on the
+  // first frame that the compositor produces after it receives the message
+  // and runs for the full duration from that frame, so an IPC delay moves the
+  // animation later but does not shorten it (a zero-duration animation
+  // applies the target heights on that frame). Does nothing if this is not
+  // the widget of the primary main frame, or if the renderer widget does not
+  // exist yet. Only valid when cc::features::kControlsInBrowser is enabled.
+  void StartBrowserControlsAnimation(
+      const cc::BrowserControlsAnimationParams& params);
+
   void StartDragging(RenderFrameHost& source_rfh,
                      blink::mojom::DragDataPtr drag_data,
                      blink::DragOperationsMask drag_operations_mask,

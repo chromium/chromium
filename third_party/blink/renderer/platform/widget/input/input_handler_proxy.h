@@ -30,6 +30,7 @@ class TickClock;
 
 namespace cc {
 class EventMetrics;
+struct BrowserControlsAnimationParams;
 }
 
 namespace ui {
@@ -265,6 +266,9 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       bool animate,
       base::optional_ref<const cc::BrowserControlsOffsetTagModifications>
           offset_tag_modifications);
+
+  void StartBrowserControlsAnimation(
+      const cc::BrowserControlsAnimationParams& params);
 
   bool gesture_scroll_on_impl_thread_for_testing() const {
     return handling_gesture_on_impl_thread_;

@@ -2022,6 +2022,12 @@ void InputHandlerProxy::UpdateBrowserControlsState(
                                              offset_tag_modifications);
 }
 
+void InputHandlerProxy::StartBrowserControlsAnimation(
+    const cc::BrowserControlsAnimationParams& params) {
+  DCHECK(input_handler_);
+  input_handler_->StartBrowserControlsAnimation(params);
+}
+
 void InputHandlerProxy::FlushQueuedEventsForTesting() {
   // The queue is blocked while there's a ScrollBegin hit test in progress.
   CHECK(scroll_begin_main_thread_hit_test_reasons_.empty());

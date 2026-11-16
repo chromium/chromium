@@ -647,7 +647,7 @@ void LayerTreeHostImpl::UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);
 }
 
-void LayerTreeHostImpl::SetBrowserControlsAnimation(
+void LayerTreeHostImpl::StartBrowserControlsAnimation(
     const BrowserControlsAnimationParams& params) {
   browser_controls_offset_manager_->SetAnimation(params);
 }

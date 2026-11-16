@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "cc/mojom/browser_controls_animation_params.mojom";
 import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
 import "cc/mojom/browser_controls_state.mojom";
 import "cc/mojom/overscroll_behavior.mojom";
@@ -620,4 +621,16 @@ interface WidgetInputHandler {
       cc.mojom.BrowserControlsState current,
       bool animate,
       cc.mojom.BrowserControlsOffsetTagModifications? offset_tag_modifications);
+
+  // Starts an animation of the browser controls visible heights to the
+  // targets in `params`. The message is delivered to the renderer compositor
+  // thread and does not wait for the renderer main thread. The animation
+  // starts on the first frame that the compositor produces after it receives
+  // the message and runs for the full duration from that frame, so an IPC
+  // delay moves the animation later but does not shorten it (a zero-duration
+  // animation applies the target heights on that frame). Replaces a running
+  // animation. Only sent when the browser process owns the browser controls
+  // position (cc::features::kControlsInBrowser); the renderer treats the
+  // message as a precondition violation otherwise.
+  StartBrowserControlsAnimation(cc.mojom.BrowserControlsAnimationParams params);
 };

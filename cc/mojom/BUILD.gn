@@ -105,16 +105,32 @@ mojom("mojom") {
 mojom("mojom_browser_controls") {
   generate_blink = true
   sources = [
+    "browser_controls_animation_params.mojom",
     "browser_controls_offset_tag_modifications.mojom",
     "browser_controls_offset_tags.mojom",
     "browser_controls_params.mojom",
   ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
 
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   shared_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.BrowserControlsAnimationParams"
+          cpp = "::cc::BrowserControlsAnimationParams"
+        },
+      ]
+      traits_headers = [ "browser_controls_animation_params_mojom_traits.h" ]
+      traits_public_deps = [
+        "//mojo/public/cpp/base:shared_typemap_traits",
+        "//ui/gfx/geometry",
+      ]
+    },
     {
       types = [
         {

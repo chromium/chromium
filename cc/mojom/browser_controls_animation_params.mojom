@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Corresponds to |cc::BrowserControlsAnimationParams|. See
+// blink.mojom.WidgetInputHandler.StartBrowserControlsAnimation.
+struct BrowserControlsAnimationParams {
+  // Visible heights at the end of the animation. Must be finite.
+  float target_top_controls_visible_height;
+  float target_bottom_controls_visible_height;
+  // Duration of the animation. Must be non-negative.
+  mojo_base.mojom.TimeDelta duration;
+  // Control points of the cubic bezier easing curve from (0, 0) to (1, 1).
+  // x1 and x2 must be in [0, 1] so that the curve is a function of x; y1 and
+  // y2 must be finite.
+  double curve_x1;
+  double curve_y1;
+  double curve_x2;
+  double curve_y2;
+};

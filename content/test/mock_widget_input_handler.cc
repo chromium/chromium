@@ -162,6 +162,9 @@ void MockWidgetInputHandler::UpdateBrowserControlsState(
     const std::optional<cc::BrowserControlsOffsetTagModifications>&
         offset_tag_modifications) {}
 
+void MockWidgetInputHandler::StartBrowserControlsAnimation(
+    const cc::BrowserControlsAnimationParams& params) {}
+
 void MockWidgetInputHandler::FlushReceiverForTesting() {
   DCHECK(receiver_.is_bound());
   receiver_.FlushForTesting();
