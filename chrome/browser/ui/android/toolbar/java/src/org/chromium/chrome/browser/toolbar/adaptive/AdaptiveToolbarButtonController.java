@@ -440,6 +440,18 @@ public class AdaptiveToolbarButtonController
 
     /** Called to notify the controller that a dynamic action is available and should be shown. */
     public void showDynamicAction(@AdaptiveToolbarButtonVariant int action) {
+        showAction(action, /* recordOnPageLoad= */ true);
+    }
+
+    /**
+     * Replaces a dynamic action with the static button. Unlike {@link #showDynamicAction}, this
+     * records no page load sample, because no action was computed for the page.
+     */
+    public void revertToStaticAction() {
+        showAction(AdaptiveToolbarButtonVariant.UNKNOWN, /* recordOnPageLoad= */ false);
+    }
+
+    private void showAction(@AdaptiveToolbarButtonVariant int action, boolean recordOnPageLoad) {
         if (mSingleProvider != null && mTabSupplier != null) {
             Tab currentTab = mTabSupplier.get();
             if (currentTab != null) {
@@ -451,10 +463,12 @@ public class AdaptiveToolbarButtonController
         }
         int actionToShow =
                 action != AdaptiveToolbarButtonVariant.UNKNOWN ? action : mSessionButtonVariant;
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.AdaptiveToolbarButton.Variant.OnPageLoad",
-                actionToShow,
-                AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
+        if (recordOnPageLoad) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.AdaptiveToolbarButton.Variant.OnPageLoad",
+                    actionToShow,
+                    AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
+        }
         if (mOriginalButtonSpec != null && mOriginalButtonSpec.getButtonVariant() == actionToShow) {
             return;
         }

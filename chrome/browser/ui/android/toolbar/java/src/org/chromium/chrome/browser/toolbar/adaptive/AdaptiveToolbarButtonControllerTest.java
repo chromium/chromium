@@ -44,6 +44,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
@@ -173,6 +174,33 @@ public class AdaptiveToolbarButtonControllerTest {
         assertEquals(
                 mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testRevertToStaticAction_recordsNoPageLoadSample() {
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, List.of(AdaptiveToolbarButtonVariant.NEW_TAB)));
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+        mProfileSupplier.set(mProfile);
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.READER_MODE, mReaderModeButtonController);
+        adaptiveToolbarButtonController.showDynamicAction(AdaptiveToolbarButtonVariant.READER_MODE);
+        assertEquals(
+                mReaderModeButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.AdaptiveToolbarButton.Variant.OnPageLoad")
+                        .build();
+
+        adaptiveToolbarButtonController.revertToStaticAction();
+
+        assertEquals(
+                mNewTabButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+        watcher.assertExpected();
     }
 
     @Test

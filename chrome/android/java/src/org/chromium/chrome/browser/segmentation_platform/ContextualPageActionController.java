@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.segmentation_platform;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -34,9 +33,13 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonControl
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.segmentation_platform.Constants;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
+import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.function.Supplier;
@@ -118,7 +121,7 @@ public class ContextualPageActionController {
                     if (!AdaptiveToolbarFeatures.isContextualPageActionsEnabled()) return;
 
                     // TODO(shaktisahu): Observe the right method to handle tab switch, same-page
-                    // navigations. Also handle chrome:// URLs if not already handled.
+                    // navigations.
                     mCurrentTabObserver =
                             new CurrentTabObserver(
                                     tabSupplier,
@@ -126,6 +129,14 @@ public class ContextualPageActionController {
                                         @Override
                                         public void didFirstVisuallyNonEmptyPaint(Tab tab) {
                                             if (tab != null) maybeShowContextualPageAction();
+                                        }
+
+                                        @Override
+                                        public void onDidFinishNavigationInPrimaryMainFrame(
+                                                Tab tab, NavigationHandle navigation) {
+                                            if (shouldRevertToStaticAction(navigation)) {
+                                                revertToStaticAction();
+                                            }
                                         }
                                     },
                                     this::activeTabChanged);
@@ -221,6 +232,17 @@ public class ContextualPageActionController {
         }
     }
 
+    /**
+     * Returns whether the action chosen for the previous page should be cleared on navigation
+     * commit. Native pages never report a non-empty paint, and non-HTTP(S) pages that do paint
+     * recompute to no dynamic action, whereas distilled pages keep the reader mode action.
+     */
+    private static boolean shouldRevertToStaticAction(NavigationHandle navigation) {
+        if (!navigation.hasCommitted() || navigation.isSameDocument()) return false;
+        GURL url = navigation.getUrl();
+        return !UrlUtilities.isHttpOrHttps(url) && !WebDistillerUrlUtils.isDistilledPage(url);
+    }
+
     private void maybeShowContextualPageAction() {
         Tab tab = getValidActiveTab();
         if (tab == null) {
@@ -233,12 +255,14 @@ public class ContextualPageActionController {
 
     private void collectSignals(Tab tab) {
         if (mActionProviders.isEmpty()) return;
-        mSignalAccumulator =
+        SignalAccumulator signalAccumulator =
                 new SignalAccumulator(new Handler(Looper.getMainLooper()), mActionProviders);
-        mSignalAccumulator.getSignals(tab, this::findBestAction);
+        mSignalAccumulator = signalAccumulator;
+        signalAccumulator.getSignals(tab, () -> findBestAction(signalAccumulator));
     }
 
-    private void findBestAction() {
+    private void findBestAction(SignalAccumulator signalAccumulator) {
+        if (signalAccumulator != mSignalAccumulator) return;
         Tab tab = getValidActiveTab();
         if (tab == null) return;
         // IMPORTANT: The number of entries here MUST match kLabelInputSize in
@@ -247,35 +271,34 @@ public class ContextualPageActionController {
         // resulting in AdaptiveToolbarButtonVariant.UNKNOWN (0) and a fallback to the session
         // default. Feature flag guarded page actions should not be conditionally added here.
         InputContext inputContext = new InputContext();
-        assumeNonNull(mSignalAccumulator);
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
                 ProcessedValue.fromFloat(
-                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING)
+                        signalAccumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_TRACKING)
                                 ? 1.0f
                                 : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
                 ProcessedValue.fromFloat(
-                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE)
+                        signalAccumulator.getSignal(AdaptiveToolbarButtonVariant.READER_MODE)
                                 ? 1.0f
                                 : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
                 ProcessedValue.fromFloat(
-                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS)
+                        signalAccumulator.getSignal(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS)
                                 ? 1.0f
                                 : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
                 ProcessedValue.fromFloat(
-                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.DISCOUNTS)
+                        signalAccumulator.getSignal(AdaptiveToolbarButtonVariant.DISCOUNTS)
                                 ? 1.0f
                                 : 0.0f));
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_TAB_GROPING_INPUT,
                 ProcessedValue.fromFloat(
-                        mSignalAccumulator.getSignal(AdaptiveToolbarButtonVariant.TAB_GROUPING)
+                        signalAccumulator.getSignal(AdaptiveToolbarButtonVariant.TAB_GROUPING)
                                 ? 1.0f
                                 : 0.0f));
         inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));
@@ -285,7 +308,9 @@ public class ContextualPageActionController {
                         assertNonNull(mProfileSupplier.get()),
                         inputContext,
                         result -> {
-                            if (tab.isDestroyed()) return;
+                            if (tab.isDestroyed() || signalAccumulator != mSignalAccumulator) {
+                                return;
+                            }
 
                             boolean isSameTab =
                                     mTabSupplier.get() != null
@@ -297,12 +322,22 @@ public class ContextualPageActionController {
     }
 
     private void showDynamicAction(@AdaptiveToolbarButtonVariant int action) {
-        for (ActionProvider actionProvider : mActionProviders.values()) {
-            actionProvider.onActionShown(mTabSupplier.get(), action);
-        }
+        notifyActionProviders(action);
 
         // TODO(crbug.com/40242242): Add logic to inform reader mode backend.
         mAdaptiveToolbarButtonController.showDynamicAction(action);
+    }
+
+    private void revertToStaticAction() {
+        mSignalAccumulator = null;
+        notifyActionProviders(AdaptiveToolbarButtonVariant.UNKNOWN);
+        mAdaptiveToolbarButtonController.revertToStaticAction();
+    }
+
+    private void notifyActionProviders(@AdaptiveToolbarButtonVariant int action) {
+        for (ActionProvider actionProvider : mActionProviders.values()) {
+            actionProvider.onActionShown(mTabSupplier.get(), action);
+        }
     }
 
     /**
