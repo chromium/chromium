@@ -333,8 +333,9 @@ void ManagePasswordsState::ProcessLoginsChanged(
 }
 
 void ManagePasswordsState::ChooseCredential(const PasswordForm* form) {
-  CHECK_EQ(password_manager::ui::CREDENTIAL_REQUEST_STATE, state(),
-           base::NotFatalUntil::M162);
+  // TODO(crbug.com/585087930): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(password_manager::ui::CREDENTIAL_REQUEST_STATE, state());
   CHECK(!credentials_callback_.is_null(), base::NotFatalUntil::M162);
 
   std::move(credentials_callback_).Run(form);
