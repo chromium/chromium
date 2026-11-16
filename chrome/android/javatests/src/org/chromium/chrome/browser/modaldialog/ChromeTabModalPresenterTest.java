@@ -209,6 +209,26 @@ public class ChromeTabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
+    // Vertical Tabs eligibility selects main_forked_with_secondary_ui_container.xml. It requires a
+    // tablet-sized display.
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testShow_UrlBarFocusedDuringEnterAnimation_ForkedLayout() throws Exception {
+        doTestUrlBarFocusedDuringEnterAnimation(/* expectForkedLayout= */ true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    // With Side Panel (disabled for this class) and Vertical Tabs disabled, main.xml is used.
+    @DisableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    public void testShow_UrlBarFocusedDuringEnterAnimation_LegacyLayout() throws Exception {
+        doTestUrlBarFocusedDuringEnterAnimation(/* expectForkedLayout= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
     @Restriction(DeviceFormFactor.PHONE)
     public void testSuspend_ToggleOverview() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -653,6 +673,89 @@ public class ChromeTabModalPresenterTest {
                             "Dialog view should block inputs during dismissal",
                             dialogView.isBlockInputForTesting());
                 });
+    }
+
+    /**
+     * Verifies that a dialog stays behind the omnibox suggestions if the URL bar gains focus before
+     * the dialog's enter animation ends.
+     *
+     * @param expectForkedLayout Whether the activity is expected to use the forked layout, in which
+     *     the dialog container is nested in secondary_ui_container_tab_modal.
+     */
+    private void doTestUrlBarFocusedDuringEnterAnimation(boolean expectForkedLayout)
+            throws Exception {
+        final View controlContainer = mActivity.findViewById(R.id.control_container);
+        final ViewGroup parent = (ViewGroup) controlContainer.getParent();
+        final UrlBar urlBar = mActivity.findViewById(R.id.url_bar);
+
+        // The URL bar is not focusable before its first draw.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(urlBar.isShown(), Matchers.is(true));
+                    Criteria.checkThat(urlBar.isFocusable(), Matchers.is(true));
+                });
+
+        // Show a dialog and focus the URL bar in the same UI thread task, so that the URL bar is
+        // focused before the dialog's enter animation ends.
+        PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
+        int callCount = mTestObserver.onUrlFocusChangedCallback.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.showDialog(dialog1, ModalDialogType.TAB);
+                    urlBar.requestFocus();
+                });
+        mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
+
+        final View dialogContainer = mTabModalPresenter.getDialogContainerForTest();
+        final ViewGroup containerParent = mTabModalPresenter.getContainerParentForTest();
+        final View dialogViewInParent =
+                containerParent == parent ? dialogContainer : containerParent;
+        if (expectForkedLayout) {
+            Assert.assertEquals(
+                    "Expected the forked layout.",
+                    R.id.secondary_ui_container_tab_modal,
+                    containerParent.getId());
+        } else {
+            Assert.assertEquals("Expected the legacy layout.", parent, containerParent);
+        }
+
+        // Wait for the enter animation to end. The animation end listener runs in the same frame
+        // that applies the final alpha value.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(dialogContainer.getVisibility(), Matchers.is(View.VISIBLE));
+                    Criteria.checkThat(dialogContainer.getAlpha(), Matchers.is(1f));
+                });
+
+        // The dialog should still be behind the omnibox suggestions.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View suggestionsContainer =
+                            parent.findViewById(R.id.omnibox_suggestions_container);
+                    if (suggestionsContainer == null) {
+                        suggestionsContainer =
+                                parent.findViewById(R.id.omnibox_suggestions_container_stub);
+                    }
+                    Assert.assertNotNull(suggestionsContainer);
+                    Assert.assertTrue(
+                            "Dialog should be behind the omnibox suggestions.",
+                            parent.indexOfChild(dialogViewInParent)
+                                    < parent.indexOfChild(suggestionsContainer));
+                });
+
+        // When URL bar is not focused, the dialog should be shown on top of the toolbar.
+        callCount = mTestObserver.onUrlFocusChangedCallback.getCallCount();
+        mOmnibox.clearFocus();
+        mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            parent.indexOfChild(dialogViewInParent),
+                            Matchers.greaterThan(parent.indexOfChild(controlContainer)));
+                });
+
+        // Dismiss the dialog by clicking OK.
+        onView(withText(R.string.ok)).perform(click());
     }
 
     private @BrowserControlsState int getBrowserControlsConstraints() {

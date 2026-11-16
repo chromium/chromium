@@ -340,6 +340,12 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         return mToolbarManagerSupplier.get();
     }
 
+    /** Returns whether the URL bar currently has focus. */
+    private boolean isUrlBarFocused() {
+        ToolbarManager toolbarManager = getToolbarManager();
+        return toolbarManager != null && toolbarManager.isUrlBarFocused();
+    }
+
     void setActiveTabForTesting(Tab tab) {
         mActiveTab = tab;
     }
@@ -396,6 +402,9 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
     @Override
     public void updateContainerHierarchy(boolean toFront) {
+        // Don't bring to front if omnibox is focused.
+        if (toFront && isUrlBarFocused()) toFront = false;
+
         super.updateContainerHierarchy(toFront);
 
         if (toFront == mContainerIsAtFront) return;
