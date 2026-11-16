@@ -2477,12 +2477,10 @@ void BrowserAutofillManager::DidShowSuggestions(
   }
 
   // `SuggestionType::kAddressEntryOnTyping` suggestions do not depend on
-  // Autofill types. Because they can be displayed on any fields and are never
-  // mixed with other suggestions, emit its possible logging first and return
-  // early.
-  if (std::ranges::any_of(shown_suggestion_types, [](SuggestionType type) {
-        return type == SuggestionType::kAddressEntryOnTyping;
-      })) {
+  // Autofill types. Because they can be displayed on any fields and are only
+  // mixed with datalist or merged footer items, emit their logging first and
+  // return early.
+  if (shown_suggestion_types.contains(SuggestionType::kAddressEntryOnTyping)) {
     // TODO: crbug.com/468793696 - Remove crashkey after investigation.
     SCOPED_CRASH_KEY_STRING64(
         "autofill", "suggestions-shown-on-typing",
@@ -2500,6 +2498,7 @@ void BrowserAutofillManager::DidShowSuggestions(
               {SuggestionType::kAddressEntryOnTyping,
                SuggestionType::kDatalistEntry, SuggestionType::kSeparator,
                SuggestionType::kWebauthnSignInWithAnotherDevice,
+               SuggestionType::kPendingStateTrustedVaultError,
                SuggestionType::kManageAddress})
               .contains_all(shown_suggestion_types));
     address_on_typing_manager_.OnDidShowAddressOnTyping(field_id,

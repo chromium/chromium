@@ -1816,6 +1816,42 @@ TEST_P(BrowserAutofillManagerTrustedVaultTest,
       AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick);
 }
 
+TEST_P(BrowserAutofillManagerTrustedVaultTest,
+       DidShowSuggestions_AddressOnTypingWithTrustedVaultErrorDoesNotCrash) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAddressSuggestionsOnTyping};
+  FormData form = test::GetFormData(
+      {.fields = {{.role = UNKNOWN_TYPE, .value = u"bud"},
+                  {.form_control_type = FormControlType::kInputPassword}}});
+  ON_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillByDefault(
+          [](const FormData&, const FormStructure*, const FormFieldData& field,
+             const AutofillField*, const AutofillClient&,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback callback) {
+            std::move(callback).Run(field.global_id(), {});
+          });
+  EXPECT_CALL(password_delegate(), GetTrustedVaultUnlockSuggestion)
+      .WillOnce(
+          Return(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
+
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  const std::vector<Suggestion>& suggestions =
+      external_delegate()->suggestions();
+  ASSERT_THAT(
+      suggestions,
+      AllOf(Contains(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                      u"buddy@gmail.com")),
+            Contains(EqualsSuggestion(
+                SuggestionType::kPendingStateTrustedVaultError))));
+
+  autofill_client().SetAutofillSuggestions(suggestions);
+  autofill_manager().DidShowSuggestions(suggestions, /*metadata=*/{},
+                                        form.global_id(),
+                                        form.fields()[0].global_id(), {});
+}
+
 TEST_F(BrowserAutofillManagerTest,
        WebauthnInlineQrAndSignInWithAnotherDeviceSuggestion) {
   FormData form = CreateTestHybridSignUpFormData();

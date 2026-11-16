@@ -6381,6 +6381,18 @@ TEST_F(AutofillExternalDelegateTest,
                         {Suggestion(SuggestionType::kAddressEntry)});
 }
 
+// Regression test verifying that showing a standalone
+// `kPendingStateTrustedVaultError` suggestion does not trip the non-password
+// `CHECK` in `OnSuggestionsShown`.
+TEST_F(AutofillExternalDelegateTest,
+       OnSuggestionsShown_StandaloneTrustedVaultErrorDoesNotCrash) {
+  IssueOnQuery();
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kPendingStateTrustedVaultError)};
+  OnSuggestionsReturned(queried_field(), suggestions);
+  external_delegate().OnSuggestionsShown(suggestions, /*metadata=*/{});
+}
+
 }  // namespace
 
 }  // namespace autofill

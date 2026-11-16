@@ -27,6 +27,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -696,10 +697,14 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
 void AutofillExternalDelegate::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     const SuggestionUiMetadata& metadata) {
-  // Popups are expected to be Autofill or Autocomplete.
-  DCHECK(suggestions.empty() ||
-         GetFillingProductFromSuggestionType(suggestions[0].type) !=
-             FillingProduct::kPassword);
+  // Popups are expected to be Autofill or Autocomplete (or a standalone
+  // Trusted Vault unlock item merged on a username field).
+  CHECK(suggestions.empty() ||
+            suggestions[0].type ==
+                SuggestionType::kPendingStateTrustedVaultError ||
+            GetFillingProductFromSuggestionType(suggestions[0].type) !=
+                FillingProduct::kPassword,
+        base::NotFatalUntil::M163);
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);
