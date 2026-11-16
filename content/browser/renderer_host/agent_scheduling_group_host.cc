@@ -20,7 +20,6 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
-#include "ipc/constants.mojom.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom.h"
 
@@ -260,8 +259,6 @@ void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
   // TODO(crbug.com/557077751): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK_EQ(state_, LifecycleState::kBound);
-  CHECK(!listener_map_.Lookup(routing_id), base::NotFatalUntil::M153);
-  listener_map_.AddWithID(listener, routing_id);
   process_->AddRoute(routing_id, listener);
 }
 
@@ -272,7 +269,6 @@ void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
   // TODO(crbug.com/558680516): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK_EQ(state_, LifecycleState::kBound);
-  listener_map_.Remove(routing_id);
   process_->RemoveRoute(routing_id);
 }
 mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
@@ -435,13 +431,6 @@ std::ostream& operator<<(std::ostream& os,
       os << "<invalid value: " << static_cast<int>(state) << ">";
   }
   return os;
-}
-
-Listener* AgentSchedulingGroupHost::GetListener(int32_t routing_id) {
-  CHECK_NE(routing_id, IPC::mojom::kRoutingIdControl,
-           base::NotFatalUntil::M153);
-
-  return listener_map_.Lookup(routing_id);
 }
 
 }  // namespace content
