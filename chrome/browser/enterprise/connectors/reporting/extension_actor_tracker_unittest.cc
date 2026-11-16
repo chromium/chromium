@@ -291,6 +291,33 @@ TEST_F(ExtensionActorTrackerTest, FailedExtensionNavigationDoesNotKeepActor) {
 }
 
 TEST_F(ExtensionActorTrackerTest,
+       UserReloadOfExtensionNavigationDoesNotRestoreActor) {
+  // The reload after an interstitial bypass, the Reload button and Back keep
+  // the extension as the initiator of the original navigation.
+  for (ui::PageTransition transition :
+       {ui::PAGE_TRANSITION_RELOAD,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                  ui::PAGE_TRANSITION_FORWARD_BACK)}) {
+    SCOPED_TRACE(transition);
+    ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
+                                          "tabs.update");
+
+    NiceMock<content::MockNavigationHandle> user_nav(web_contents());
+    user_nav.set_url(GURL("https://example.com/target"));
+    user_nav.set_is_in_primary_main_frame(true);
+    user_nav.set_is_renderer_initiated(false);
+    user_nav.set_page_transition(transition);
+    user_nav.set_initiator_origin(
+        url::Origin::Create(GURL("chrome-extension://extension_alpha")));
+    tracker()->DidStartNavigation(&user_nav);
+    user_nav.set_has_committed(true);
+    tracker()->DidFinishNavigation(&user_nav);
+    EXPECT_EQ(std::nullopt,
+              ExtensionActorTracker::GetActiveActor(web_contents()));
+  }
+}
+
+TEST_F(ExtensionActorTrackerTest,
        ExtensionInitiatedNavigationDoesNotKeepActor) {
   // These commands start navigations with the extension as the initiator, so
   // if they fail, the user's next Reload or Back is not attributed.

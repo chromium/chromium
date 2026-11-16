@@ -30,6 +30,12 @@ bool IsExtensionOrigin(const std::optional<url::Origin>& origin) {
   return origin.has_value() && origin->scheme() == extensions::kExtensionScheme;
 }
 
+// Returns true if `transition` is a reload or a back/forward navigation.
+bool IsReloadOrHistoryTransition(ui::PageTransition transition) {
+  return ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD) ||
+         (transition & ui::PAGE_TRANSITION_FORWARD_BACK);
+}
+
 // Returns true if `command` navigates to an existing session history entry.
 bool IsHistoryNavigation(std::string_view command) {
   return command == extensions::TabsGoBackFunction::static_function_name() ||
@@ -136,9 +142,7 @@ void ExtensionActorTracker::DidStartNavigation(
   // unless an extension just started this reload or history navigation.
   ui::PageTransition transition = navigation_handle->GetPageTransition();
   bool is_extension_reload_or_history =
-      is_initial_navigation_ &&
-      (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD) ||
-       (transition & ui::PAGE_TRANSITION_FORWARD_BACK));
+      is_initial_navigation_ && IsReloadOrHistoryTransition(transition);
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsRendererInitiated() ||
       (transition & ui::PAGE_TRANSITION_FROM_API) ||
@@ -162,7 +166,10 @@ void ExtensionActorTracker::DidFinishNavigation(
 
   bool is_initial_navigation = std::exchange(is_initial_navigation_, false);
 
-  if (IsExtensionOrigin(navigation_handle->GetInitiatorOrigin())) {
+  // A reload or back/forward keeps the original initiator, even when the user
+  // starts it (e.g. by bypassing an interstitial).
+  if (IsExtensionOrigin(navigation_handle->GetInitiatorOrigin()) &&
+      !IsReloadOrHistoryTransition(navigation_handle->GetPageTransition())) {
     active_actor_id_ = navigation_handle->GetInitiatorOrigin()->host();
     return;
   }
