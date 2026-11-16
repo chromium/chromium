@@ -2380,17 +2380,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.SendCommitNavigationTime.{FrameType}" units="ms"
-    expires_after="2023-08-15">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
-  <summary>
-    Measures the time RenderFrameHostImpl::SendCommitNavigation takes to run.
-    Recorded every time the method executes.
-  </summary>
-  <token key="FrameType" variants="FrameTypes"/>
-</histogram>
-
 <histogram name="Navigation.StartAdjustment.AllFrames"
     enum="NavigationStartAdjustmentType" expires_after="2027-09-13">
   <owner>kouhei@chromium.org</owner>

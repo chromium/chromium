@@ -18016,7 +18016,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::SendCommitNavigation");
   UpdateOrDisableCompositorMetricRecorder();
 
-  base::ElapsedTimer timer;
   CHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
@@ -18155,10 +18154,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
         std::move(cookie_manager_info), std::move(storage_info),
         BuildCommitNavigationCallback(navigation_request));
   }
-  base::UmaHistogramTimes(
-      base::StrCat({"Navigation.SendCommitNavigationTime.",
-                    IsOutermostMainFrame() ? "MainFrame" : "Subframe"}),
-      timer.Elapsed());
 }
 
 void RenderFrameHostImpl::SendCommitFailedNavigation(
