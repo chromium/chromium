@@ -29,6 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_EXECUTION_CONTEXT_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -177,6 +178,16 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual void MaybeRecordNetworkRequestUrlForPushEvents(const KURL& url) {}
   virtual void MaybeRecordFetchError(int net_error_code,
                                      const FetchRequestData* request_data) {}
+  // Returns a context-specific error message to override the default "Failed
+  // to fetch" TypeError when `request_data` fails before receiving response
+  // headers, or `std::nullopt` to preserve the default message. Must be
+  // queried before `MaybeRecordFetchError()`, which may erase per-request
+  // loader state.
+  virtual std::optional<String> GetCustomFetchErrorMessage(
+      int net_error_code,
+      const FetchRequestData* request_data) const {
+    return std::nullopt;
+  }
 
   virtual void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature) {
   }

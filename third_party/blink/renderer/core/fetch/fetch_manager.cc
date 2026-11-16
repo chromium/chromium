@@ -277,6 +277,11 @@ class ResponseResolver final : public GarbageCollected<ResponseResolver> {
   void Reject(v8::Local<v8::Value> error);
   void Reject(DOMException*);
 
+  // Replaces the pre-created TypeError with one carrying `error_message`
+  // without executing script. Does nothing if the execution context has already
+  // been destroyed.
+  void OverrideTypeErrorMessage(const String& error_message);
+
   // Rejects the promise with the TypeError exception created at construction
   // time. Also optionally passes `devtools_request_id`, `issue_id`, and
   // `issue_summary` to DevTools if they are set; this happens via a side
@@ -329,6 +334,18 @@ void ResponseResolver::Reject(DOMException* dom_exception) {
   CHECK(resolver_);
   resolver_->Reject(dom_exception);
   Clear();
+}
+
+void ResponseResolver::OverrideTypeErrorMessage(const String& error_message) {
+  CHECK(resolver_);
+  auto* script_state = resolver_->GetScriptState();
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+  ScriptState::Scope scope(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  exception_.Reset(isolate,
+                   V8ThrowException::CreateTypeError(isolate, error_message));
 }
 
 void ResponseResolver::RejectBecauseFailed(
@@ -901,6 +918,14 @@ void FetchManager::Loader::DidFail(uint64_t identifier,
   }
 
   if (GetExecutionContext()) {
+    // Query for a context-specific TypeError message before
+    // `MaybeRecordFetchError()` erases any per-request loader state.
+    std::optional<String> custom_error_message =
+        GetExecutionContext()->GetCustomFetchErrorMessage(
+            error.ErrorCode(), GetFetchRequestData());
+    if (custom_error_message && response_resolver_) {
+      response_resolver_->OverrideTypeErrorMessage(*custom_error_message);
+    }
     GetExecutionContext()->MaybeRecordFetchError(error.ErrorCode(),
                                                  GetFetchRequestData());
   }
