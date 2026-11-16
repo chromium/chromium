@@ -5,19 +5,15 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
-import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.containsString;
 
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabWithDescription;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.scrollToAndSelectTab;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -37,7 +33,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.keyboard_accessory.FakeKeyboard;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -105,16 +100,10 @@ public class CreditCardAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
 
         // Click the tab to show the sheet and hide the keyboard.
-        whenDisplayed(withId(R.id.bar_items_view))
-                .perform(
-                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
-                        actionOnItem(
-                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
-                                selectTabWithDescription(
-                                        R.string.credit_card_accessory_sheet_toggle)));
+        scrollToAndSelectTab(R.string.credit_card_accessory_sheet_toggle);
 
         mHelper.waitForKeyboardToDisappear();
-        whenDisplayed(withId(R.id.credit_card_sheet));
+        waitForView(withId(R.id.credit_card_sheet));
         onView(withText(containsString("No saved payment methods"))).check(matches(isDisplayed()));
     }
 
@@ -128,19 +117,13 @@ public class CreditCardAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         // Scroll to last element and click the first icon:
-        whenDisplayed(withId(R.id.bar_items_view))
-                .perform(
-                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
-                        actionOnItem(
-                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
-                                selectTabWithDescription(
-                                        R.string.credit_card_accessory_sheet_toggle)));
+        scrollToAndSelectTab(R.string.credit_card_accessory_sheet_toggle);
 
         // Wait for the sheet to come up and be stable.
-        whenDisplayed(withId(R.id.credit_card_sheet));
+        waitForView(withId(R.id.credit_card_sheet));
 
         // Click a suggestion.
-        whenDisplayed(withId(R.id.cc_number)).perform(click());
+        waitForView(withId(R.id.cc_number)).click();
 
         CriteriaHelper.pollInstrumentationThread(
                 () -> mHelper.getFieldText("CREDIT_CARD_NAME_FULL").equals("4111111111111111"));

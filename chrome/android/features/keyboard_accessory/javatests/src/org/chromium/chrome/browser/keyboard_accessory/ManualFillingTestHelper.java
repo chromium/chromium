@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.autofill.mojom.FocusedFieldType.FILLABLE_NON_SEARCH_FIELD;
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.base.test.util.CriteriaHelper.pollInstrumentationThread;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.build.NullUtil.assertNonNull;
@@ -19,7 +23,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.checkThatAccessoryViewFullyShown;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.text.method.PasswordTransformationMethod;
@@ -28,13 +31,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.util.HumanReadables;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -47,7 +48,6 @@ import org.junit.Assert;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.build.annotations.Nullable;
@@ -616,19 +616,17 @@ public class ManualFillingTestHelper {
     }
 
     /**
-     * Use like {@link androidx.test.espresso.Espresso#onView}. It waits for a view matching the
-     * given |matcher| to be displayed and allows to chain checks/performs on the result.
-     *
-     * @param matcher The matcher matching exactly the view that is expected to be displayed.
-     * @return An interaction on the view matching |matcher|.
+     * Waits for the keyboard accessory bar, scrolls to the tab switcher button group, and clicks
+     * the tab matching {@code descriptionResId}.
      */
-    public static ViewInteraction whenDisplayed(Matcher<View> matcher) {
-        return onViewWaiting(matcher);
-    }
-
-    public static ViewInteraction whenDisplayed(
-            Matcher<View> matcher, @IntRange(from = 1, to = 100) int atLeast) {
-        return onViewWaiting(matcher, ViewElement.displayingAtLeastOption(atLeast));
+    public static void scrollToAndSelectTab(@StringRes int descriptionResId) {
+        var barItems = waitForView(withId(R.id.bar_items_view));
+        barItems.performViewAction(
+                scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)));
+        barItems.performViewAction(
+                actionOnItem(
+                        isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
+                        selectTabWithDescription(descriptionResId)));
     }
 
     public static void waitToBeHidden(Matcher<View> matcher) {

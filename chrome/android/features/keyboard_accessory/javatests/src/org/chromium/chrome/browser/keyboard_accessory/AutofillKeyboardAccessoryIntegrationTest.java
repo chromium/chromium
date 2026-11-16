@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
@@ -17,12 +16,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.base.test.util.ViewActionOnDescendant.performOnRecyclerViewNthItem;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabWithDescription;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.scrollToAndSelectTab;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.waitToBeHidden;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 
 import android.app.Activity;
 import android.view.MotionEvent;
@@ -137,8 +136,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         // Scroll to the tab switcher and check that the scroll offset is greater than zero.
-        whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)));
+        waitForView(withId(R.id.bar_items_view))
+                .performViewAction(
+                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)));
         CriteriaHelper.pollUiThread(
                 () -> mHelper.getAccessoryBarView().computeHorizontalScrollOffset() > 0,
                 "Should keep the manual scroll position.");
@@ -167,7 +167,8 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
+        waitForView(withId(R.id.bar_items_view))
+                .performViewAction(actionOnItemAtPosition(0, click()));
         mHelper.waitForKeyboardAccessoryToDisappear();
         histogramExpectation.assertExpected();
     }
@@ -180,7 +181,8 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
+        waitForView(withId(R.id.bar_items_view))
+                .performViewAction(actionOnItemAtPosition(0, click()));
         mHelper.waitForKeyboardAccessoryToDisappear();
     }
 
@@ -248,7 +250,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.focusPasswordField();
         mHelper.waitForKeyboardAccessoryToBeShown();
 
-        whenDisplayed(isAssignableFrom(KeyboardAccessoryButtonGroupView.class))
+        waitForView(isAssignableFrom(KeyboardAccessoryButtonGroupView.class))
                 .check((v, e) -> assertTrue("Didn't catch the click!", singleMouseClickView(v)));
     }
 
@@ -261,17 +263,11 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)))
-                .perform(
-                        actionOnItem(
-                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
-                                selectTabWithDescription(
-                                        R.string.address_accessory_sheet_toggle)));
+        scrollToAndSelectTab(R.string.address_accessory_sheet_toggle);
 
-        whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
+        waitForView(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
-        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame), /* atLeast= */ 51)
+        waitForView(withId(R.id.keyboard_accessory_sheet_frame))
                 .check((v, e) -> assertTrue("Catch click to stay open!", singleMouseClickView(v)));
 
         assertTrue(
@@ -296,21 +292,15 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        whenDisplayed(withId(R.id.bar_items_view))
-                .perform(
-                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
-                        actionOnItem(
-                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
-                                selectTabWithDescription(
-                                        R.string.address_accessory_sheet_toggle)));
+        scrollToAndSelectTab(R.string.address_accessory_sheet_toggle);
 
-        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame), /* atLeast= */ 51)
+        waitForView(withId(R.id.keyboard_accessory_sheet_frame))
                 .check(
                         (View sheetView, NoMatchingViewException _) ->
                                 assertTrue(sheetView.isShown() && sheetView.getHeight() > 0));
 
         // Click the back arrow.
-        whenDisplayed(withId(R.id.show_keyboard)).perform(click());
+        waitForView(withId(R.id.show_keyboard)).click();
         waitToBeHidden(withId(R.id.keyboard_accessory_sheet_container));
 
         CriteriaHelper.pollUiThread(

@@ -5,22 +5,18 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
-import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabWithDescription;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.scrollToAndSelectTab;
 
 import android.widget.TextView;
 
@@ -42,7 +38,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.FakeKeyboard;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -118,13 +113,12 @@ public class AddressAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
 
         // Click the tab to show the sheet and hide the keyboard.
-        whenDisplayed(
-                        allOf(
-                                withContentDescription(R.string.address_accessory_sheet_toggle),
-                                not(isAssignableFrom(TextView.class))))
-                .perform(click());
+        waitForView(
+                        withContentDescription(R.string.address_accessory_sheet_toggle),
+                        not(isAssignableFrom(TextView.class)))
+                .click();
         mHelper.waitForKeyboardToDisappear();
-        whenDisplayed(withId(R.id.addresses_sheet));
+        waitForView(withId(R.id.addresses_sheet));
         onView(withText(containsString("No saved addresses"))).check(matches(isDisplayed()));
     }
 
@@ -137,18 +131,13 @@ public class AddressAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         // Scroll to last element and click the second icon:
-        whenDisplayed(withId(R.id.bar_items_view))
-                .perform(
-                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
-                        actionOnItem(
-                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
-                                selectTabWithDescription(R.string.address_accessory_sheet_toggle)));
+        scrollToAndSelectTab(R.string.address_accessory_sheet_toggle);
 
         // Wait for the sheet to come up and be stable.
-        whenDisplayed(withId(R.id.addresses_sheet));
+        waitForView(withId(R.id.addresses_sheet));
 
         // Click a suggestion.
-        whenDisplayed(withText("Marcus McSpartangregor")).perform(click());
+        waitForView(withText("Marcus McSpartangregor")).click();
 
         CriteriaHelper.pollInstrumentationThread(
                 () -> mHelper.getFieldText("NAME_FIRST").equals("Marcus McSpartangregor"));

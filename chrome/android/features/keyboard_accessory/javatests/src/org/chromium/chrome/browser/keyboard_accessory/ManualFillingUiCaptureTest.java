@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
-import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.scrollToAndSelectTab;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.scrollToLastElement;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabWithDescription;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 
 import androidx.test.filters.MediumTest;
 
@@ -25,7 +22,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -77,19 +73,13 @@ public class ManualFillingUiCaptureTest {
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessoryBar");
 
-        whenDisplayed(withId(R.id.bar_items_view))
-                .perform(
-                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
-                        actionOnItem(
-                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
-                                selectTabWithDescription(
-                                        R.string.password_accessory_sheet_toggle)));
+        scrollToAndSelectTab(R.string.password_accessory_sheet_toggle);
 
         waitForSuggestionsInSheet();
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessorySheetPasswords");
 
-        whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
+        waitForView(withId(R.id.passwords_sheet)).performViewAction(scrollToLastElement());
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessorySheetPasswordsScrolled");
     }
@@ -110,19 +100,13 @@ public class ManualFillingUiCaptureTest {
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessoryBarRTL");
 
-        whenDisplayed(withId(R.id.bar_items_view))
-                .perform(
-                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
-                        actionOnItem(
-                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
-                                selectTabWithDescription(
-                                        R.string.password_accessory_sheet_toggle)));
+        scrollToAndSelectTab(R.string.password_accessory_sheet_toggle);
 
         waitForSuggestionsInSheet();
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessorySheetPasswordsRTL");
 
-        whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
+        waitForView(withId(R.id.passwords_sheet)).performViewAction(scrollToLastElement());
         waitForUnrelatedChromeUi();
         mScreenShooter.shoot("AccessorySheetPasswordsScrolledRTL");
     }
@@ -132,12 +116,12 @@ public class ManualFillingUiCaptureTest {
     }
 
     private void waitForActionsInAccessory() {
-        whenDisplayed(withId(R.id.bar_items_view));
+        waitForView(withId(R.id.bar_items_view));
         RecyclerViewTestUtils.waitForStableRecyclerView(mHelper.getAccessoryBarView());
     }
 
     private void waitForSuggestionsInSheet() {
-        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame));
+        waitForView(withId(R.id.keyboard_accessory_sheet_frame));
         RecyclerViewTestUtils.waitForStableRecyclerView(
                 mActivityTestRule.getActivity().findViewById(R.id.passwords_sheet));
     }
