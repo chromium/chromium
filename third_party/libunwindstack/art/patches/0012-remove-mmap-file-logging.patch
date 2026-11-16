@@ -1,3 +1,11 @@
+Remove PrintFileToLog() calls from mem_map.cc
+
+They print /proc/self/maps to the log. PrintFileToLog() is in
+libartbase/base/logging.cc, which BUILD.gn does not build because it
+needs liblog (<log/log.h>).
+
+Chromium commit 8d71305 in libunwindstack.git.
+
 diff --git a/src/libartbase/base/mem_map.cc b/src/libartbase/base/mem_map.cc
 index 0ab47f2..e044890 100644
 --- a/src/libartbase/base/mem_map.cc

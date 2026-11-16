@@ -1,3 +1,13 @@
+Do not define ADDRESS_SANITIZER in memory_tool.h
+
+Chromium's ASan build already defines the ADDRESS_SANITIZER macro, so
+the build fails:
+  memory_tool.h:31:10: error: 'ADDRESS_SANITIZER' macro redefined
+  [-Werror,-Wmacro-redefined]
+
+Chromium commits 8740b09 (comments the line out) and 8d71305 (deletes
+it) in libunwindstack.git.
+
 diff --git a/src/libartbase/base/memory_tool.h b/src/libartbase/base/memory_tool.h
 index 675ceb2..4e6cf57 100644
 --- a/src/libartbase/base/memory_tool.h

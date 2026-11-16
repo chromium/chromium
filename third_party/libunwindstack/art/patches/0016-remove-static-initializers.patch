@@ -1,3 +1,13 @@
+Remove static initializers from dex_file_loader and mem_map
+
+Replace DexFileLoader::kInvalidFile with nullptr, and make mem_map.cc's
+debugStrMap a function-local static that is never destroyed.
+Chromium's android-binary-size check fails on new static initializers,
+which blocked rolls (crbug.com/375463618).
+
+Chromium commit d1e3895 in libunwindstack.git. Its DexFile part is
+0016 in //third_party/libunwindstack/patches.
+
 diff --git a/src/libdexfile/dex/dex_file_loader.cc b/src/libdexfile/dex/dex_file_loader.cc
 index 3ceb754..a3184ae 100644
 --- a/src/libdexfile/dex/dex_file_loader.cc

@@ -1,3 +1,16 @@
+Guard ART_BASE_ADDRESS code in mem_map.cc with !defined(__ANDROID_NDK__)
+
+CreateStartPos() uses ART_BASE_ADDRESS, which ART's build passes with
+-D (build/art.go) and Chromium's does not. NDK builds define
+__BIONIC__ too, so leave CreateStartPos() out there and let
+GenerateNextMemPos() take its non-bionic branch (LOW_MEM_START). The
+code is under USE_ART_LOW_4G_ALLOCATOR, so without this patch arm64
+and riscv64 Android builds fail (x86_64 and arm32 do not compile it):
+  mem_map.cc:123:15: error: use of undeclared identifier
+  'ART_BASE_ADDRESS'
+
+Chromium commit d208908 in libunwindstack.git.
+
 diff --git a/src/libartbase/base/mem_map.cc b/src/libartbase/base/mem_map.cc
 index e044890..d6e7e16 100644
 --- a/src/libartbase/base/mem_map.cc

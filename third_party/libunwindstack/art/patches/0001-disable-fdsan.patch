@@ -1,3 +1,10 @@
+Use fdsan in fd_file.cc only from Android API 29
+
+The NDK has fdsan only from API level 29 (https://bit.ly/2W4II7E), so
+use it only when __ANDROID_API__ >= 29.
+
+Chromium commit 8d71305 in libunwindstack.git.
+
 diff --git a/src/libartbase/base/unix_file/fd_file.cc b/src/libartbase/base/unix_file/fd_file.cc
 index bb34b75..d8befde 100644
 --- a/src/libartbase/base/unix_file/fd_file.cc

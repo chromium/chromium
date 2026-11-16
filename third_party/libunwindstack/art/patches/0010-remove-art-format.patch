@@ -1,3 +1,10 @@
+Remove ART_FORMAT from macros.h
+
+Drop the ART_FORMAT macro and its android-base/format.h include, so
+libartbase needs no fmtlib.
+
+Chromium commit 8d71305 in libunwindstack.git.
+
 diff --git a/src/libartbase/base/macros.h b/src/libartbase/base/macros.h
 index ee28018..1fbbe5b 100644
 --- a/src/libartbase/base/macros.h

@@ -1,3 +1,11 @@
+Use std::allocator_traits in hash_set.h
+
+std::allocator's construct(), destroy() and address() members are
+removed in C++20, so call std::allocator_traits<Alloc>::construct()
+and destroy() with std::addressof() instead.
+
+Chromium commit 1ac11f3 in libunwindstack.git.
+
 diff --git a/src/libartbase/base/hash_set.h b/src/libartbase/base/hash_set.h
 index fec9440..960fdb8 100644
 --- a/src/libartbase/base/hash_set.h

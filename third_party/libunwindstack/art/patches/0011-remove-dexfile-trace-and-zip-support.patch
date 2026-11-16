@@ -1,3 +1,13 @@
+Remove dex file tracing and zip support from dex_file_loader.cc
+
+Drop the base/systrace.h include (which includes palette/palette.h),
+the base/zip_archive.h include, DEXFILE_SCOPED_TRACE() and the zip
+archive code; that branch returns false instead. Neither header is
+imported, and Chromium's use of libdexfile needs neither tracing nor
+zip archives.
+
+Chromium commit 8d71305 in libunwindstack.git.
+
 diff --git a/src/libdexfile/dex/dex_file_loader.cc b/src/libdexfile/dex/dex_file_loader.cc
 index daefa2f..3ceb754 100644
 --- a/src/libdexfile/dex/dex_file_loader.cc

@@ -1,0 +1,58 @@
+Add missing system #includes in libartbase and libdexfile
+
+Add <algorithm> to libartbase/base/mem_map.cc (std::max, std::fill),
+libdexfile/dex/compact_dex_file.cc and standard_dex_file.cc
+(std::copy_n), and <alloca.h> to libdexfile/dex/dex_file_verifier.cc
+(alloca()). These files did not include them (crbug.com/40263312).
+
+Chromium commits dcd4e94 and 0928ad0 in libunwindstack.git.
+
+diff --git a/src/libartbase/base/mem_map.cc b/src/libartbase/base/mem_map.cc
+index 730a27c..0e8f6ad 100644
+--- a/src/libartbase/base/mem_map.cc
++++ b/src/libartbase/base/mem_map.cc
+@@ -26,6 +26,7 @@
+ #include <sys/prctl.h>
+ #endif
+ 
++#include <algorithm>
+ #include <map>
+ #include <memory>
+ #include <sstream>
+diff --git a/src/libdexfile/dex/compact_dex_file.cc b/src/libdexfile/dex/compact_dex_file.cc
+index 9bc38f3..0b68402 100644
+--- a/src/libdexfile/dex/compact_dex_file.cc
++++ b/src/libdexfile/dex/compact_dex_file.cc
+@@ -16,6 +16,7 @@
+ 
+ #include "compact_dex_file.h"
+ 
++#include <algorithm>
+ #include <memory>
+ 
+ #include "base/leb128.h"
+diff --git a/src/libdexfile/dex/dex_file_verifier.cc b/src/libdexfile/dex/dex_file_verifier.cc
+index f15dc50..caefe2b 100644
+--- a/src/libdexfile/dex/dex_file_verifier.cc
++++ b/src/libdexfile/dex/dex_file_verifier.cc
+@@ -17,6 +17,7 @@
+ #include "dex_file_verifier.h"
+ 
+ #include <algorithm>
++#include <alloca.h>
+ #include <bitset>
+ #include <limits>
+ #include <memory>
+diff --git a/src/libdexfile/dex/standard_dex_file.cc b/src/libdexfile/dex/standard_dex_file.cc
+index 4dc96d4..7d696d5 100644
+--- a/src/libdexfile/dex/standard_dex_file.cc
++++ b/src/libdexfile/dex/standard_dex_file.cc
+@@ -16,6 +16,8 @@
+ 
+ #include "standard_dex_file.h"
+ 
++#include <algorithm>
++
+ #include "base/casts.h"
+ #include "base/leb128.h"
+ #include "code_item_accessors-inl.h"
