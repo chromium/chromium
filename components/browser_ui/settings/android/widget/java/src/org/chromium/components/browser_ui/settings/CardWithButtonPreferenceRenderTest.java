@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertNotNull;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 
 import android.app.Activity;
@@ -31,7 +32,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -114,7 +114,7 @@ public class CardWithButtonPreferenceRenderTest {
         preference.setButtonText(BUTTON_TEXT);
         mPreferenceScreen.addPreference(preference);
 
-        ViewUtils.waitForVisibleView(withId(R.id.card_layout));
+        waitForView(withId(R.id.card_layout));
         View view = mActivity.findViewById(R.id.card_layout);
         assertNotNull(view);
 
@@ -131,7 +131,7 @@ public class CardWithButtonPreferenceRenderTest {
         preference.setButtonText(BUTTON_TEXT);
         mPreferenceScreen.addPreference(preference);
 
-        ViewUtils.waitForVisibleView(withId(R.id.card_layout));
+        waitForView(withId(R.id.card_layout));
         View view = mActivity.findViewById(R.id.card_layout);
         assertNotNull(view);
 
@@ -149,7 +149,7 @@ public class CardWithButtonPreferenceRenderTest {
         preference.setButtonText(BUTTON_TEXT);
         mPreferenceScreen.addPreference(preference);
 
-        ViewUtils.waitForVisibleView(withId(R.id.card_layout));
+        waitForView(withId(R.id.card_layout));
         View view = mActivity.findViewById(R.id.card_layout);
         assertNotNull(view);
 

@@ -12,7 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.view.View;
 
@@ -136,9 +136,7 @@ public class ChoiceScreenRenderTest {
 
         onView(withText(R.string.next)).inRoot(isDialog()).perform(click());
 
-        onViewWaiting(withText(R.string.blocking_choice_dialog_second_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.blocking_choice_dialog_second_title));
         mRenderTestRule.render(getDialogView(), "second_choice_screen_dialog");
     }
 
@@ -156,9 +154,7 @@ public class ChoiceScreenRenderTest {
 
         onView(withText(R.string.next)).inRoot(isDialog()).perform(click());
 
-        onViewWaiting(withText(R.string.blocking_choice_dialog_second_title_chrome_search_only))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
+        waitForView(withText(R.string.blocking_choice_dialog_second_title_chrome_search_only));
         mRenderTestRule.render(getDialogView(), "second_choice_screen_dialog_chrome_search_only");
     }
 

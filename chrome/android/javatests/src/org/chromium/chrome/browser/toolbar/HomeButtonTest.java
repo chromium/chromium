@@ -9,15 +9,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.ViewUtils.performAccessibilityAction;
-import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.app.Activity;
 import android.view.View;
@@ -129,7 +127,7 @@ public class HomeButtonTest {
     @Test
     @SmallTest
     public void testContextMenu_AfterConversion() {
-        waitForVisibleView(withId(mIdHomeButton));
+        waitForView(withId(mIdHomeButton));
         ThreadUtils.runOnUiThreadBlocking(() -> assertTrue(mHomeButton.performLongClick()));
 
         ModelList menu = mHomeButtonCoordinator.getMenuForTesting();
@@ -137,11 +135,10 @@ public class HomeButtonTest {
         assertEquals(ASSERT_MSG_MENU_SIZE, 1, menu.size());
 
         // Test click on context menu item
-        onViewWaiting(
-                        allOf(
-                                withParent(withId(R.id.menu_list)),
-                                hasDescendant(withText(R.string.options_homepage_edit_title))))
-                .perform(performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK));
+        waitForView(
+                        withParent(withId(R.id.menu_list)),
+                        hasDescendant(withText(R.string.options_homepage_edit_title)))
+                .performViewAction(performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK));
         verify(mSettingsNavigation).startSettings(sActivity, HomepageSettings.class);
     }
 }

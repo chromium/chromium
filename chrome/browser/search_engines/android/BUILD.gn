@@ -244,6 +244,7 @@ android_library("unit_device_javatests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base/test:public_transit_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_unit_test_support",

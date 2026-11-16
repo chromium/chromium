@@ -148,6 +148,7 @@ android_library("unit_device_javatests") {
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base/test:public_transit_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:espresso_java",
