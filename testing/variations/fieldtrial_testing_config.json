@@ -5377,6 +5377,26 @@
             ]
         }
     ],
+    "ClientSideDetectionIframeInnerText": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261116",
+                    "enable_features": [
+                        "ClientSideDetectionIframeInnerText"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionImageEmbeddingMatch": [
         {
             "platforms": [
