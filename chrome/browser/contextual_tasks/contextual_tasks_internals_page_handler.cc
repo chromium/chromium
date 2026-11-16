@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -51,12 +53,17 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/common/extension_features.h"
+#endif
 
 namespace {
 
@@ -689,6 +696,20 @@ void ContextualTasksInternalsPageHandler::GetEligibilityState(
     GetEligibilityStateCallback callback) {
   auto state = contextual_tasks_internals::mojom::EligibilityState::New();
 
+  state->is_contextual_tasks_rearchitecture_enabled =
+      contextual_tasks::IsContextualTasksRearchitectureEnabled();
+  state->is_side_panel_rearchitecture_enabled =
+      contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled();
+  state->is_rearchitecture_enabled =
+      state->is_contextual_tasks_rearchitecture_enabled ||
+      state->is_side_panel_rearchitecture_enabled;
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  state->is_api_contextual_tasks_private_enabled = base::FeatureList::IsEnabled(
+      extensions_features::kApiContextualTasksPrivate);
+#else
+  state->is_api_contextual_tasks_private_enabled = false;
+#endif
+
   if (profile_) {
     auto* aim_eligibility_service =
         AimEligibilityServiceFactory::GetForProfile(profile_);
@@ -712,6 +733,7 @@ void ContextualTasksInternalsPageHandler::GetEligibilityState(
       state->is_aim_eligible = aim_eligibility_service->IsAimEligible();
       state->is_cobrowse_eligible =
           aim_eligibility_service->IsCobrowseEligible();
+      state->is_fusebox_eligible = aim_eligibility_service->IsFuseboxEligible();
     }
 
     state->is_context_sharing_enabled =
@@ -723,6 +745,15 @@ void ContextualTasksInternalsPageHandler::GetEligibilityState(
 
     state->is_eligible =
         contextual_tasks::EntryPointEligibilityManager::IsEligible(profile_);
+
+    state->is_aim_tabs_picker_eligible =
+        state->is_contextual_tasks_rearchitecture_enabled &&
+        state->is_api_contextual_tasks_private_enabled &&
+        contextual_tasks::CanShareTabContext(profile_);
+
+    state->is_rearchitected_side_panel_eligible =
+        state->is_side_panel_rearchitecture_enabled &&
+        state->is_aim_tabs_picker_eligible;
   }
 
   std::move(callback).Run(std::move(state));

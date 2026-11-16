@@ -9,10 +9,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
@@ -27,24 +29,32 @@
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/common/extension_features.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -449,6 +459,114 @@ TEST_F(
             tab_task_id.AsLowercaseString());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ContextualTasksInternalsPageHandlerTest, GetEligibilityState_Legacy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kContextualTasksRearchitecture,
+                             kContextualTasksSidePanelRearchitecture});
+
+  base::test::TestFuture<contextual_tasks_internals::mojom::EligibilityStatePtr>
+      future;
+  handler_->GetEligibilityState(future.GetCallback());
+  auto state = future.Take();
+  ASSERT_TRUE(state);
+  EXPECT_FALSE(state->is_rearchitecture_enabled);
+  EXPECT_FALSE(state->is_contextual_tasks_rearchitecture_enabled);
+  EXPECT_FALSE(state->is_side_panel_rearchitecture_enabled);
+  EXPECT_FALSE(state->is_aim_tabs_picker_eligible);
+  EXPECT_FALSE(state->is_rearchitected_side_panel_eligible);
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_F(ContextualTasksInternalsPageHandlerTest,
+       GetEligibilityState_RearchitectureTabsPickerAndSidePanel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kContextualTasksRearchitecture,
+                            extensions_features::kApiContextualTasksPrivate},
+      /*disabled_features=*/{kContextualTasksSidePanelRearchitecture});
+
+  auto* mock_aim_service =
+      static_cast<testing::NiceMock<MockAimEligibilityService>*>(
+          AimEligibilityServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+              profile_.get(),
+              base::BindRepeating([](content::BrowserContext* context)
+                                      -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockAimEligibilityService>>(
+                    *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                    nullptr, nullptr);
+              })));
+  ASSERT_TRUE(mock_aim_service);
+
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsCobrowseEligible())
+      .WillByDefault(testing::Return(false));
+
+  base::test::TestFuture<contextual_tasks_internals::mojom::EligibilityStatePtr>
+      future;
+  handler_->GetEligibilityState(future.GetCallback());
+  auto state = future.Take();
+  ASSERT_TRUE(state);
+  EXPECT_TRUE(state->is_rearchitecture_enabled);
+  EXPECT_TRUE(state->is_contextual_tasks_rearchitecture_enabled);
+  EXPECT_FALSE(state->is_side_panel_rearchitecture_enabled);
+  EXPECT_TRUE(state->is_api_contextual_tasks_private_enabled);
+  EXPECT_TRUE(state->is_aim_eligible);
+  EXPECT_TRUE(state->is_fusebox_eligible);
+  EXPECT_TRUE(state->is_aim_tabs_picker_eligible);
+  EXPECT_FALSE(state->is_rearchitected_side_panel_eligible);
+}
+
+TEST_F(ContextualTasksInternalsPageHandlerTest,
+       GetEligibilityState_RearchitectedSidePanelEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kContextualTasksRearchitecture,
+                            kContextualTasksSidePanelRearchitecture,
+                            extensions_features::kApiContextualTasksPrivate},
+      /*disabled_features=*/{});
+
+  auto* mock_aim_service =
+      static_cast<testing::NiceMock<MockAimEligibilityService>*>(
+          AimEligibilityServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+              profile_.get(),
+              base::BindRepeating([](content::BrowserContext* context)
+                                      -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockAimEligibilityService>>(
+                    *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                    nullptr, nullptr);
+              })));
+  ASSERT_TRUE(mock_aim_service);
+
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsCobrowseEligible())
+      .WillByDefault(testing::Return(false));
+
+  base::test::TestFuture<contextual_tasks_internals::mojom::EligibilityStatePtr>
+      future;
+  handler_->GetEligibilityState(future.GetCallback());
+  auto state = future.Take();
+  ASSERT_TRUE(state);
+  EXPECT_TRUE(state->is_rearchitecture_enabled);
+  EXPECT_TRUE(state->is_contextual_tasks_rearchitecture_enabled);
+  EXPECT_TRUE(state->is_side_panel_rearchitecture_enabled);
+  EXPECT_TRUE(state->is_api_contextual_tasks_private_enabled);
+  EXPECT_FALSE(state->is_signed_in);
+  EXPECT_FALSE(state->primary_account_in_cookie_jar);
+  EXPECT_TRUE(state->is_aim_tabs_picker_eligible);
+  EXPECT_TRUE(state->is_rearchitected_side_panel_eligible);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace
 }  // namespace contextual_tasks
