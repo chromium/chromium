@@ -32,6 +32,7 @@ source_set("ode") {
   ]
 
   deps = [
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/sync/base",
   ]
@@ -97,6 +98,7 @@ source_set("unit_tests") {
   deps = [
     ":ode",
     "//base/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/prefs:test_support",
     "//components/sync:test_support",

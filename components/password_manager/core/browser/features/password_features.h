@@ -171,6 +171,10 @@ BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 // readiness metrics.
 BASE_DECLARE_FEATURE(kPasswordManagerOnDeviceEncryptionMetricsReporter);
 
+// Killswitch for recording PasswordManager.OnDeviceEncryptionTimeToUnlock.*
+// metrics.
+BASE_DECLARE_FEATURE(kPasswordManagerOnDeviceEncryptionTimeToUnlockMetrics);
+
 // Performs additional security checks wrt. the triggering frame before adding
 // the "Select password" entry to the context menu.
 BASE_DECLARE_FEATURE(kPasswordManualFallbackSecurityChecks);

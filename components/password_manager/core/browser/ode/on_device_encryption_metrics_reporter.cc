@@ -30,6 +30,19 @@ void OnDeviceEncryptionMetricsReporter::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kOnDeviceEncryptionStatePasswordLastReportedBucket,
       kNoReportedBucket);
+
+  registry->RegisterTimePref(prefs::kOnDeviceEncryptionLastSignInTime,
+                             base::Time());
+  registry->RegisterTimePref(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime,
+                             base::Time());
+  registry->RegisterTimePref(
+      prefs::kOnDeviceEncryptionPasskeyTimeToUnlockLastReportingTime,
+      base::Time());
+  registry->RegisterTimePref(prefs::kOnDeviceEncryptionPasswordFirstUnlockTime,
+                             base::Time());
+  registry->RegisterTimePref(
+      prefs::kOnDeviceEncryptionPasswordTimeToUnlockLastReportingTime,
+      base::Time());
 }
 
 OnDeviceEncryptionMetricsReporter::OnDeviceEncryptionMetricsReporter(

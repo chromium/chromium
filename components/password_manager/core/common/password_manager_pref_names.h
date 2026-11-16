@@ -193,6 +193,36 @@ inline constexpr char kOnDeviceEncryptionStatePasswordLastReportingTime[] =
 inline constexpr char kOnDeviceEncryptionStatePasswordLastReportedBucket[] =
     "password_manager.on_device_encryption_state_password_last_reported_bucket";
 
+// Timestamp of the most recent primary account sign-in
+// (`ConsentLevel::kSignin`) observed for on-device encryption time-to-unlock
+// metrics. Cleared on sign-out.
+inline constexpr char kOnDeviceEncryptionLastSignInTime[] =
+    "password_manager.on_device_encryption_last_sign_in_time";
+
+// Timestamp when on-device encryption for passkeys first became ready after
+// the most recent sign-in. Cleared on sign-out.
+inline constexpr char kOnDeviceEncryptionPasskeyFirstUnlockTime[] =
+    "password_manager.on_device_encryption_passkey_first_unlock_time";
+
+// Timestamp of the last time the passkey on-device encryption time-to-unlock
+// metric was reported to UMA. Cleared on sign-out.
+inline constexpr char
+    kOnDeviceEncryptionPasskeyTimeToUnlockLastReportingTime[] =
+        "password_manager.on_device_encryption_passkey_time_to_unlock_last_"
+        "reporting_time";
+
+// Timestamp when on-device encryption for passwords first became ready after
+// the most recent sign-in. Cleared on sign-out.
+inline constexpr char kOnDeviceEncryptionPasswordFirstUnlockTime[] =
+    "password_manager.on_device_encryption_password_first_unlock_time";
+
+// Timestamp of the last time the password on-device encryption time-to-unlock
+// metric was reported to UMA. Cleared on sign-out.
+inline constexpr char
+    kOnDeviceEncryptionPasswordTimeToUnlockLastReportingTime[] =
+        "password_manager.on_device_encryption_password_time_to_unlock_last_"
+        "reporting_time";
+
 // Indicates the time (in seconds) when last cleaning of obsolete HTTP
 // credentials was performed.
 inline constexpr char kLastTimeObsoleteHttpCredentialsRemoved[] =

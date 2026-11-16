@@ -10,7 +10,9 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
 #include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -25,6 +27,10 @@ constexpr char kPasskeyHistogram[] =
     "PasswordManager.OnDeviceEncryptionState.Passkeys";
 constexpr char kPasswordHistogram[] =
     "PasswordManager.OnDeviceEncryptionState.Passwords";
+constexpr char kPasskeyTimeToUnlockHistogram[] =
+    "PasswordManager.OnDeviceEncryptionTimeToUnlock.Passkeys";
+constexpr char kPasswordTimeToUnlockHistogram[] =
+    "PasswordManager.OnDeviceEncryptionTimeToUnlock.Passwords";
 
 class OnDeviceEncryptionDataTypeSpecificMetricsReporterTest
     : public testing::Test {
@@ -35,6 +41,22 @@ class OnDeviceEncryptionDataTypeSpecificMetricsReporterTest
   }
 
  protected:
+  using DataType = OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType;
+
+  std::unique_ptr<OnDeviceEncryptionDataTypeSpecificMetricsReporter>
+  CreateReporter(OnDeviceEncryptionState initial_state =
+                     OnDeviceEncryptionState::kDeviceReady,
+                 DataType data_type = DataType::kPasskeys,
+                 OnDeviceEncryptionStateTracker** out_tracker = nullptr) {
+    auto tracker = std::make_unique<OnDeviceEncryptionStateTracker>();
+    tracker->SetStateForTesting(initial_state);
+    if (out_tracker) {
+      *out_tracker = tracker.get();
+    }
+    return std::make_unique<OnDeviceEncryptionDataTypeSpecificMetricsReporter>(
+        data_type, std::move(tracker), pref_service_);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
@@ -448,6 +470,226 @@ TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
       pref_service_.GetInteger(
           prefs::kOnDeviceEncryptionStatePasswordLastReportedBucket),
       static_cast<int>(OnDeviceEncryptionStateHistogramBucket::kDeviceReady));
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockNotRecordedWithoutSignInTime) {
+  auto reporter = CreateReporter();
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 0);
+  EXPECT_TRUE(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime)
+          .is_null());
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockNotRecordedWhenNotReady) {
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime,
+                        base::Time::Now());
+  OnDeviceEncryptionStateTracker* tracker = nullptr;
+  auto reporter = CreateReporter(OnDeviceEncryptionState::kDeviceNotReady,
+                                 DataType::kPasskeys, &tracker);
+
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 0);
+
+  tracker->SetStateForTesting(OnDeviceEncryptionState::kProfileNotSignedIn);
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 0);
+  EXPECT_TRUE(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime)
+          .is_null());
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockRecordedOnFirstUnlockAndPreservedAcrossTransitions) {
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime,
+                        base::Time::Now());
+  OnDeviceEncryptionStateTracker* tracker = nullptr;
+  auto reporter = CreateReporter(OnDeviceEncryptionState::kDeviceNotReady,
+                                 DataType::kPasskeys, &tracker);
+
+  task_environment_.FastForwardBy(base::Hours(2));
+  const base::Time expected_unlock_time = base::Time::Now();
+  tracker->SetStateForTesting(OnDeviceEncryptionState::kDeviceReady);
+
+  histogram_tester_.ExpectUniqueSample(kPasskeyTimeToUnlockHistogram,
+                                       base::Hours(2).InSeconds(), 1);
+  EXPECT_EQ(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime),
+      expected_unlock_time);
+
+  // Subsequent lock/unlock cycles must not overwrite first unlock time or emit
+  // duplicate samples before `kPeriodicReportingDelay`.
+  task_environment_.FastForwardBy(base::Hours(1));
+  tracker->SetStateForTesting(OnDeviceEncryptionState::kDeviceNotReady);
+  task_environment_.FastForwardBy(base::Hours(1));
+  tracker->SetStateForTesting(OnDeviceEncryptionState::kDeviceReady);
+
+  histogram_tester_.ExpectUniqueSample(kPasskeyTimeToUnlockHistogram,
+                                       base::Hours(2).InSeconds(), 1);
+  EXPECT_EQ(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime),
+      expected_unlock_time);
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockPeriodicReporting) {
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime,
+                        base::Time::Now() - base::Minutes(10));
+  auto reporter = CreateReporter();
+
+  const int expected_seconds =
+      (base::Minutes(10) + kInitialStateReportingDelay).InSeconds();
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+  histogram_tester_.ExpectUniqueSample(kPasskeyTimeToUnlockHistogram,
+                                       expected_seconds, 1);
+
+  task_environment_.FastForwardBy(kPeriodicReportingDelay);
+  histogram_tester_.ExpectUniqueSample(kPasskeyTimeToUnlockHistogram,
+                                       expected_seconds, 2);
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockInterleavedScheduleWithReadiness) {
+  const base::Time now = base::Time::Now();
+  // Readiness was reported 6h ago; TimeToUnlock was reported 2h ago (1h to
+  // unlock).
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionStatePasskeyLastReportingTime,
+                        now - base::Hours(6));
+  pref_service_.SetInteger(
+      prefs::kOnDeviceEncryptionStatePasskeyLastReportedBucket,
+      static_cast<int>(OnDeviceEncryptionStateHistogramBucket::kDeviceReady));
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime,
+                        now - base::Hours(3));
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime,
+                        now - base::Hours(2));
+  pref_service_.SetTime(
+      prefs::kOnDeviceEncryptionPasskeyTimeToUnlockLastReportingTime,
+      now - base::Hours(2));
+
+  auto reporter = CreateReporter();
+
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+  histogram_tester_.ExpectTotalCount(kPasskeyHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 0);
+
+  // At +18h, Readiness becomes due while TimeToUnlock still waits.
+  task_environment_.FastForwardBy(base::Hours(18) -
+                                  kInitialStateReportingDelay);
+  histogram_tester_.ExpectTotalCount(kPasskeyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 0);
+
+  // 4 hours later (+22h), TimeToUnlock reaches its own 24h deadline.
+  task_environment_.FastForwardBy(base::Hours(4));
+  histogram_tester_.ExpectTotalCount(kPasskeyHistogram, 1);
+  histogram_tester_.ExpectUniqueSample(kPasskeyTimeToUnlockHistogram,
+                                       base::Hours(1).InSeconds(), 1);
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockSkipsNegativeDurationAndHealsAfterClockRecovers) {
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime,
+                        base::Time::Now() + base::Hours(5));
+  auto reporter = CreateReporter();
+
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 0);
+  EXPECT_TRUE(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime)
+          .is_null());
+
+  task_environment_.FastForwardBy(kPeriodicReportingDelay);
+  const int expected_seconds =
+      (kInitialStateReportingDelay + kPeriodicReportingDelay - base::Hours(5))
+          .InSeconds();
+  histogram_tester_.ExpectUniqueSample(kPasskeyTimeToUnlockHistogram,
+                                       expected_seconds, 1);
+  EXPECT_EQ(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime),
+      base::Time::Now());
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockHealsWhenPersistedFirstUnlockTimePrecedesSignIn) {
+  const base::Time now = base::Time::Now();
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime, now);
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime,
+                        now - base::Minutes(5));
+  auto reporter = CreateReporter();
+
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+  histogram_tester_.ExpectUniqueSample(kPasskeyTimeToUnlockHistogram,
+                                       kInitialStateReportingDelay.InSeconds(),
+                                       1);
+  EXPECT_EQ(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime),
+      base::Time::Now());
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockHealsWhenLastReportedTimeIsInFuture) {
+  const base::Time now = base::Time::Now();
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime,
+                        now - base::Minutes(15));
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime,
+                        now - base::Minutes(5));
+  pref_service_.SetTime(
+      prefs::kOnDeviceEncryptionPasskeyTimeToUnlockLastReportingTime,
+      now + base::Hours(5));
+
+  auto reporter = CreateReporter();
+
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+  histogram_tester_.ExpectUniqueSample(kPasskeyTimeToUnlockHistogram,
+                                       base::Minutes(10).InSeconds(), 1);
+  EXPECT_EQ(pref_service_.GetTime(
+                prefs::kOnDeviceEncryptionPasskeyTimeToUnlockLastReportingTime),
+            base::Time::Now());
+
+  task_environment_.FastForwardBy(kPeriodicReportingDelay - base::Hours(1));
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 1);
+  task_environment_.FastForwardBy(base::Hours(1));
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 2);
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockNotRecordedWhenKillswitchDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPasswordManagerOnDeviceEncryptionTimeToUnlockMetrics);
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime,
+                        base::Time::Now());
+  auto reporter = CreateReporter();
+
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+  histogram_tester_.ExpectTotalCount(kPasskeyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kPasskeyTimeToUnlockHistogram, 0);
+  EXPECT_TRUE(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasskeyFirstUnlockTime)
+          .is_null());
+}
+
+TEST_F(OnDeviceEncryptionDataTypeSpecificMetricsReporterTest,
+       TimeToUnlockPasswordsDataTypeRecordsPasswordHistogramAndPrefs) {
+  pref_service_.SetTime(prefs::kOnDeviceEncryptionLastSignInTime,
+                        base::Time::Now() - base::Minutes(5));
+  auto reporter = CreateReporter(OnDeviceEncryptionState::kDeviceReady,
+                                 DataType::kPasswords);
+
+  task_environment_.FastForwardBy(kInitialStateReportingDelay);
+
+  const int expected_seconds =
+      (base::Minutes(5) + kInitialStateReportingDelay).InSeconds();
+  histogram_tester_.ExpectUniqueSample(kPasswordTimeToUnlockHistogram,
+                                       expected_seconds, 1);
+  EXPECT_EQ(
+      pref_service_.GetTime(prefs::kOnDeviceEncryptionPasswordFirstUnlockTime),
+      base::Time::Now());
+  EXPECT_EQ(
+      pref_service_.GetTime(
+          prefs::kOnDeviceEncryptionPasswordTimeToUnlockLastReportingTime),
+      base::Time::Now());
 }
 
 }  // namespace

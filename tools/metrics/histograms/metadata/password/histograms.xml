@@ -2356,6 +2356,24 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
+<histogram name="PasswordManager.OnDeviceEncryptionTimeToUnlock.{Type}"
+    units="seconds" expires_after="2027-04-11">
+  <owner>ylahodiuk@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <owner>anki-team@google.com</owner>
+  <summary>
+    Records the elapsed time in seconds between the user's most recent primary
+    account sign-in and the first time on-device encryption for {Type} became
+    ready on this device. Recorded upon first unlock (after initial startup
+    delay) and re-reported periodically once per day while on-device encryption
+    for {Type} remains ready.
+  </summary>
+  <token key="Type">
+    <variant name="Passkeys" summary="passkeys"/>
+    <variant name="Passwords" summary="passwords"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.OpenedAsShortcut" enum="Boolean"
     expires_after="2027-04-11">
   <owner>vsemeniuk@google.com</owner>

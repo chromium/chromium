@@ -42,12 +42,15 @@ enum class OnDeviceEncryptionStateHistogramBucket {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:OnDeviceEncryptionStateHistogramBucket)
 
 // Tracks the on-device encryption state for a specific data type (passwords or
-// passkeys) and publishes the corresponding readiness metrics periodically.
+// passkeys) and publishes readiness and time-to-unlock metrics periodically.
 //
-// Metrics are recorded at least once per `kPeriodicReportingDelay`, provided
-// that the on-device encryption state is different from
+// Readiness metrics are recorded at least once per `kPeriodicReportingDelay`,
+// provided that the on-device encryption state is different from
 // `OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable`.
 // In addition, metrics are recorded immediately whenever the state changes.
+// Time-to-unlock metrics measure elapsed time between the most recent sign-in
+// and the first time the state reaches `kDeviceReady`, and are likewise
+// re-reported every `kPeriodicReportingDelay` while `kDeviceReady`.
 //
 // Note that recording of the initial state on startup is delayed by
 // `kInitialStateReportingDelay`; if the browser terminates sooner than
@@ -89,12 +92,19 @@ class OnDeviceEncryptionDataTypeSpecificMetricsReporter
   void MaybeRecordMetrics();
 
   // Evaluates whether the current on-device encryption state should be recorded
-  // to UMA. A metric is recorded if it has never been reported before, if the
-  // state has changed since the last report, or if at least
-  // `kPeriodicReportingDelay` has elapsed since the last report. If recorded,
-  // updates the last reporting time and bucket in preferences. Returns the
-  // next scheduled reporting time.
-  base::Time MaybeRecordReadiness();
+  // to UMA using `now` as the current timestamp. A metric is recorded if it has
+  // never been reported before, if the state has changed since the last report,
+  // or if at least `kPeriodicReportingDelay` has elapsed since the last report.
+  // If recorded, updates the last reporting time and bucket in preferences.
+  // Returns the next scheduled reporting time.
+  base::Time MaybeRecordReadinessAndSuggestNextReportingTime(base::Time now);
+
+  // Evaluates whether time-to-unlock should be recorded to UMA using `now` as
+  // the current timestamp. Caches the first unlock timestamp upon reaching
+  // `kDeviceReady` after a recorded sign-in, and records the elapsed time once
+  // per `kPeriodicReportingDelay` while `kDeviceReady`. Returns the next
+  // scheduled reporting time.
+  base::Time MaybeRecordTimeToUnlockAndSuggestNextReportingTime(base::Time now);
 
   // Schedules `timer_` to invoke `MaybeRecordMetrics()` at `execution_time`.
   void ScheduleNextReporting(base::Time execution_time);
