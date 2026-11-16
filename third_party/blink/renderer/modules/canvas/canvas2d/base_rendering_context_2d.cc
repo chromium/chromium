@@ -1040,7 +1040,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
 
       // The |release_callback| keeps a ref on this resource to ensure the
       // backing shared image is kept alive until the lifetime of the image.
-      // Note that the code in CanvasResourceProvider::RecycleResource also uses
+      // Note that the code in OnResourceRefReturned() also uses
       // the ref-count on the resource as a proxy for a read lock to allow
       // recycling the resource once all refs have been released.
       auto release_callback = blink::BindOnce(
@@ -1098,7 +1098,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
     cached_snapshot_->SetOriginClean(OriginClean());
     return cached_snapshot_;
   }
-  // When using CPU raster with a SharedImage provider, we do not need to end
+  // When using CPU raster with a SharedImage pool, we do not need to end
   // write access (which uploads the CPU rendering results to the SharedImage
   // for compositing) because we are simply returning the CPU-side results to
   // the client.
@@ -1118,11 +1118,14 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
     EnsureResourceReadyForDraw();
 
     // The below write to the resource's SharedImage will need to be preserved
-    // in the case of a subsequent CopyOnWrite.
-    // TODO(crbug.com/352263194): Logically this bool must already be true
-    // (see discussion here:
-    // https://chromium-review.googlesource.com/c/chromium/src/+/7557841/comment/bb38e497_ef1efdbc/).
-    // Verify that this is the case and update the code here.
+    // in the case of a subsequent CopyOnWrite. Note that a full-canvas
+    // WritePixels() in CanvasRenderingContext2D calls RestartRecording()
+    // (which sets `must_preserve_content_on_copy_on_write_ = false` in
+    // RecordingCleared()) before calling WritePixelsToBacking(); if
+    // `ShouldReplaceTargetBuffer()` was false in `EnsureResourceReadyForDraw()`
+    // (e.g., `resource_->HasOneRef()`),
+    // `must_preserve_content_on_copy_on_write_` is still false at this point
+    // and must be reset to true here.
     must_preserve_content_on_copy_on_write_ = true;
 
     gpu::SyncToken sync_token = RasterInterface()->WritePixels(

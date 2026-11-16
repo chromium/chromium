@@ -826,8 +826,8 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 
   bool page_is_visible = element->IsPageVisible();
 
-  // If the canvas is backed by a SharedImage resource provider, toggle
-  // whether resource recycling is enabled based on page visibility.
+  // If the canvas is backed by a SharedImage pool, toggle whether resource
+  // recycling is enabled based on page visibility.
   SetResourceRecyclingEnabled(page_is_visible);
 
   // Conserve memory.
@@ -987,7 +987,7 @@ void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,
 void CanvasRenderingContext2D::DisableAcceleration() {
   canvas()->OnAccelerationDisabled();
 
-  // Create and configure an unaccelerated CanvasResourceProvider.
+  // Switch to CPU raster and recreate the backing.
   canvas()->SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
 
   DropAndRecreateExistingBacking();

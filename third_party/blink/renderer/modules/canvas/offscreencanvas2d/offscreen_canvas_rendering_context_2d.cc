@@ -198,13 +198,13 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
         CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
 
   // TODO(crbug.com/479561824): The computation of whether it's possible to use
-  // a SharedImage provider with software raster here is not correct.
-  // Using a SharedImage provider with software raster and GPU compositing
+  // a SharedImage pool with software raster here is not correct.
+  // Using a SharedImage pool with software raster and GPU compositing
   // requires that the SharedImage can be mapped into software for raster and
   // read out into GPU memory for display. This is true if native mappable
   // buffers are supported (e.g., IOSurface), but is not generically true on all
   // platforms. CanvasRenderingContext2D handles this by using a SharedImage
-  // provider with SW raster/GPU compositing *only if* native mappable buffers
+  // pool with SW raster/GPU compositing *only if* native mappable buffers
   // are provided. However, in that case the fallback usage of a software
   // surface is still able to display to the screen, which is not the case here.
   // We need to determine a proper fix for this use case.
