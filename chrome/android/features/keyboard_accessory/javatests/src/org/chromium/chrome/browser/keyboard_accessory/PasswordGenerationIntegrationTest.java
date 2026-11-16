@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -43,7 +44,7 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -210,9 +211,7 @@ public class PasswordGenerationIntegrationTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> !mHelper.getFieldText(PASSWORD_NODE_ID).isEmpty());
         assertPasswordText(PASSWORD_NODE_ID, generatedPassword);
-        clickNode(SUBMIT_NODE_ID);
-        ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivityTab(), mTestServer.getURL(DONE_URL));
+        submitForm(SUBMIT_NODE_ID);
         waitForMessageShown();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -243,9 +242,7 @@ public class PasswordGenerationIntegrationTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> !mHelper.getFieldText(PASSWORD_NODE_ID_MANUAL).isEmpty());
         assertPasswordText(PASSWORD_NODE_ID_MANUAL, generatedPassword);
-        clickNode(SUBMIT_NODE_ID_MANUAL);
-        ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivityTab(), mTestServer.getURL(DONE_URL));
+        submitForm(SUBMIT_NODE_ID_MANUAL);
         waitForMessageShown();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -314,8 +311,13 @@ public class PasswordGenerationIntegrationTest {
         DOMUtils.clickNode(mHelper.getWebContents(), node);
     }
 
-    private void clickNode(String node) throws InterruptedException, TimeoutException {
-        DOMUtils.clickNodeWithJavaScript(mHelper.getWebContents(), node);
+    /** Submits the form by clicking |node| and waits for the done page to load. */
+    private WebPageStation submitForm(String node) {
+        return WebPageStation.waitForWebPageLoad(
+                Triggers.runTo(
+                        () -> DOMUtils.clickNodeWithJavaScript(mHelper.getWebContents(), node)),
+                mActivityTestRule.getActivityTab(),
+                mTestServer.getURL(DONE_URL));
     }
 
     private void assertPasswordTextEmpty(String passwordNode)

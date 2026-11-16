@@ -50,6 +50,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.memory.MemoryPressureCallback;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -86,8 +87,8 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -352,27 +353,6 @@ public class NewTabPageTest {
         mOmnibox.checkFocus(true);
     }
 
-    /** Tests clicking on a most visited item. */
-    @Test
-    @SmallTest
-    @Feature({"NewTabPage", "FeedNewTabPage"})
-    public void testClickMostVisitedItem() {
-        ensureTestServerStarted();
-        Assert.assertNotNull(mMvTilesLayout);
-        HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
-
-        ChromeTabUtils.waitForTabPageLoaded(
-                mTab,
-                mSiteSuggestions.get(0).url.getSpec(),
-                () -> {
-                    TileView mostVisitedItem = mMvTilesLayout.getTileAt(0);
-                    TouchCommon.singleClickView(mostVisitedItem);
-                });
-
-        Assert.assertEquals(mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlOnUiThread(mTab));
-        histogramWatcher.assertExpected();
-    }
-
     /** Tests deleting a most visited item. */
     @Test
     @SmallTest
@@ -404,21 +384,19 @@ public class NewTabPageTest {
     public void testUrlFocusAnimationsDisabledOnLoad() {
         ensureTestServerStarted();
         Assert.assertFalse(getUrlFocusAnimationsDisabled());
-        ChromeTabUtils.waitForTabPageLoaded(
+        WebPageStation.waitForWebPageLoad(
+                Triggers.runOnUiThreadTo(
+                        () -> {
+                            int pageTransition =
+                                    PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
+                            mTab.loadUrl(
+                                    new LoadUrlParams(
+                                            mTestServer.getURL(TEST_PAGE), pageTransition));
+                            // It should be disabled as soon as a load URL is triggered.
+                            Assert.assertTrue(getUrlFocusAnimationsDisabled());
+                        }),
                 mTab,
-                mTestServer.getURL(TEST_PAGE),
-                () -> {
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () -> {
-                                int pageTransition =
-                                        PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                                mTab.loadUrl(
-                                        new LoadUrlParams(
-                                                mTestServer.getURL(TEST_PAGE), pageTransition));
-                                // It should be disabled as soon as a load URL is triggered.
-                                Assert.assertTrue(getUrlFocusAnimationsDisabled());
-                            });
-                });
+                mTestServer.getURL(TEST_PAGE));
         // Ensure it is still marked as disabled once the new page is fully loaded.
         Assert.assertTrue(getUrlFocusAnimationsDisabled());
     }

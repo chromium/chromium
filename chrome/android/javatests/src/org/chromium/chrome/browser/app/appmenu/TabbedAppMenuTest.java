@@ -56,9 +56,10 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.PageLoadStoppedCondition;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -101,6 +102,7 @@ public class TabbedAppMenuTest {
                     .build();
 
     private AppMenuHandler mAppMenuHandler;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
@@ -111,7 +113,7 @@ public class TabbedAppMenuTest {
 
         CompositorAnimationHandler.setTestingMode(true);
 
-        mActivityTestRule.startOnUrl(TEST_URL);
+        mPage = mActivityTestRule.startOnUrl(TEST_URL);
 
         AppMenuTestSupport.overrideOnOptionItemSelectedListener(
                 mActivityTestRule.getAppMenuCoordinator(), CallbackUtils.emptyCallback());
@@ -254,14 +256,19 @@ public class TabbedAppMenuTest {
                 getMenuItemView(R.id.request_desktop_site_id), "request_desktop_site_uncheck");
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    WebsitePreferenceBridge.setCategoryEnabled(
-                            ProfileManager.getLastUsedRegularProfile(),
-                            ContentSettingsType.REQUEST_DESKTOP_SITE,
-                            true);
-                    tab.reload();
-                });
-        ChromeTabUtils.waitForTabPageLoaded(tab, TEST_URL);
+                () ->
+                        WebsitePreferenceBridge.setCategoryEnabled(
+                                ProfileManager.getLastUsedRegularProfile(),
+                                ContentSettingsType.REQUEST_DESKTOP_SITE,
+                                true));
+        mPage =
+                mPage.runOnUiThreadTo(tab::reload)
+                        .withPossiblyAlreadyFulfilled()
+                        .waitForAnd(new PageLoadStoppedCondition(tab, /* expectedUrl= */ null))
+                        .arriveAt(
+                                WebPageStation.newBuilder()
+                                        .initForLoadingUrlOnSameTab(TEST_URL, mPage)
+                                        .build());
         isRequestDesktopSite =
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
         Assert.assertTrue("Should request desktop site.", isRequestDesktopSite);

@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
@@ -131,7 +131,7 @@ public class NavigationTransitionsTest {
                             .name("Gestural"));
 
     private final int mTestNavigationMode;
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
 
     private static class ScreenshotCallback
             implements ScreenshotCaptureTestHelper.NavScreenshotCallback {
@@ -331,13 +331,12 @@ public class NavigationTransitionsTest {
 
     private void performNavigationTransition(
             String expectedUrl, @BackGestureEventSwipeEdge int edge) {
-        Tab tab = mActivityTestRule.getActivityTab();
-        ChromeTabUtils.waitForTabPageLoaded(
-                tab,
-                expectedUrl,
-                () -> {
-                    invokeNavigateGesture(edge);
-                });
+        mPage = mPage.runTo(() -> invokeNavigateGesture(edge)).arriveAt(pageAt(expectedUrl));
+    }
+
+    // |url| may be the NTP, so use a generic page Station.
+    private CtaPageStation pageAt(String url) {
+        return CtaPageStation.newGenericBuilder().initForLoadingUrlOnSameTab(url, mPage).build();
     }
 
     private void waitForTransitionFinished() {
@@ -400,7 +399,7 @@ public class NavigationTransitionsTest {
 
     private void loadUrlAndWaitForScreenshotCallback(String url, CallbackHelper helper)
             throws TimeoutException {
-        mActivityTestRule.loadUrl(url);
+        mPage = mPage.loadWebPageProgrammatically(url);
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         helper.waitForNext();
     }
@@ -805,18 +804,22 @@ public class NavigationTransitionsTest {
 
         Assert.assertEquals(url2, getCurrentUrl());
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BackPressManager manager =
-                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
-                    var backEvent = new BackEventCompat(1, 0, .8f, BackEventCompat.EDGE_LEFT);
-                    // BackPressManager will prevent this from triggering because of no active
-                    // handler.
-                    manager.getCallback().handleOnBackProgressed(backEvent);
-                    manager.getCallback().handleOnBackPressed();
-                });
-
-        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivityTab(), url1);
+        mPage =
+                mPage.runOnUiThreadTo(
+                                () -> {
+                                    BackPressManager manager =
+                                            mActivityTestRule
+                                                    .getActivity()
+                                                    .getBackPressManagerForTesting();
+                                    var backEvent =
+                                            new BackEventCompat(
+                                                    1, 0, .8f, BackEventCompat.EDGE_LEFT);
+                                    // BackPressManager will prevent this from triggering because
+                                    // of no active handler.
+                                    manager.getCallback().handleOnBackProgressed(backEvent);
+                                    manager.getCallback().handleOnBackPressed();
+                                })
+                        .arriveAt(pageAt(url1));
 
         helper.waitForNext();
     }
@@ -833,9 +836,9 @@ public class NavigationTransitionsTest {
         String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
         String url3 = mTestServer.getURL("/chrome/test/data/android/simple.html");
-        mActivityTestRule.loadUrl(url1);
-        mActivityTestRule.loadUrl(url2);
-        mActivityTestRule.loadUrl(url3);
+        mPage = mPage.loadWebPageProgrammatically(url1);
+        mPage = mPage.loadWebPageProgrammatically(url2);
+        mPage = mPage.loadWebPageProgrammatically(url3);
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
 
         // Perform a back gesture transition from the left edge.
@@ -952,11 +955,11 @@ public class NavigationTransitionsTest {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         // 1. Load NTP.
-        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+        mPage = mPage.loadNtp();
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         // 2. Load url1.
         String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
-        mActivityTestRule.loadUrl(url1);
+        mPage = mPage.loadWebPageProgrammatically(url1);
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
 
         CallbackHelper callbackHelper = new CallbackHelper();

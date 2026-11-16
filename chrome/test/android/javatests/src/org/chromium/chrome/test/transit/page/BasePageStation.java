@@ -341,20 +341,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
     }
 
     /**
-     * Runs |trigger| on the UI thread to start a Trip that also waits for a new page load in the
-     * same tab. Use it for loads that may keep the URL, such as reloads, same-document loads and
-     * back navigations restored from the back/forward cache.
-     */
-    @CheckReturnValue
-    public TripBuilder runOnUiThreadToNewPageLoad(Runnable trigger) {
-        return runOnUiThreadTo(trigger)
-                .withPossiblyAlreadyFulfilled()
-                .waitForAnd(
-                        new PageLoadStoppedCondition(
-                                loadedTabElement.value(), /* expectedUrl= */ null));
-    }
-
-    /**
      * Hops on at the page |tab| shows once a URL containing |url| is loaded. Passes right away if
      * it already is; use {@link #waitForPageLoad} to wait for a new load. |tab| must be its
      * Activity's current tab.

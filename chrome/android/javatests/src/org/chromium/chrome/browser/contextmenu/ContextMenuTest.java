@@ -55,6 +55,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CloseableOnMainThread;
@@ -99,6 +100,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
@@ -1360,16 +1362,15 @@ public class ContextMenuTest {
                         () -> !TabUtils.isUsingDesktopUserAgent(tab.getWebContents()));
 
         if (needsSwitch) {
-            ChromeTabUtils.waitForTabPageLoaded(
+            // Switching the user agent reloads the same URL.
+            WebPageStation.waitForWebPageLoad(
+                    Triggers.runOnUiThreadTo(
+                            () -> TabUtils.switchUserAgent(tab, /* switchToDesktop= */ true)),
                     tab,
-                    mTestUrl,
-                    () ->
-                            ThreadUtils.runOnUiThreadBlocking(
-                                    () ->
-                                            TabUtils.switchUserAgent(
-                                                    tab, /* switchToDesktop= */ true)));
+                    mTestUrl);
+        } else {
+            ChromeTabUtils.waitForInteractable(tab);
         }
-        ChromeTabUtils.waitForInteractable(tab);
         mActivityTestRule.assertWaitForPageScaleFactorMatch(PAGE_SCALE_FACTOR);
     }
 

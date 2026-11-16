@@ -40,9 +40,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
 
@@ -158,8 +156,7 @@ public class HomepagePolicyIntegrationTest {
     @Feature({"Homepage"})
     public void testHomeButton() throws Exception {
         String anotherUrl = mTestServer.getURL(GOOGLE_HTML);
-        new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab())
-                .fullyLoadUrl(anotherUrl);
+        WebPageStation anotherPage = mPage.loadWebPageProgrammatically(anotherUrl);
 
         Assert.assertNotEquals(
                 "Did not switch to a different URL",
@@ -188,14 +185,14 @@ public class HomepagePolicyIntegrationTest {
                             Matchers.nullValue());
                 });
 
-        ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(),
-                TEST_URL,
-                () -> {
-                    View homeButton =
-                            mActivityTestRule.getActivity().findViewById(R.id.home_button);
-                    TouchCommon.singleClickView(homeButton);
-                });
+        anotherPage
+                .toolbar
+                .homeButtonElement
+                .clickTo()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .initForLoadingUrlOnSameTab(TEST_URL, anotherPage)
+                                .build());
 
         assertEquals(
                 "After clicking HomeButton, URL should be back to Homepage",
