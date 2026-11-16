@@ -211,4 +211,14 @@ void LogPersonalContextFillingCorrectnessMergeConstraints(
       metric_value);
 }
 
+void LogSpiiVerificationShown() {
+  base::UmaHistogramBoolean("Autofill.Ai.SpiiVerification.Shown", true);
+}
+
+void LogSpiiVerificationDecision(
+    AutofillClient::AutofillAiVerificationDecision decision) {
+  base::UmaHistogramEnumeration("Autofill.Ai.SpiiVerification.Decision",
+                                decision);
+}
+
 }  // namespace autofill

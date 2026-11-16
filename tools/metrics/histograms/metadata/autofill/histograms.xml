@@ -2503,6 +2503,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="EntityTypeName" variants="Autofill.Ai.EntityType"/>
 </histogram>
 
+<histogram name="Autofill.Ai.SpiiVerification.Decision"
+    enum="AutofillAiVerificationDecision" expires_after="2027-04-01">
+  <owner>friedrichh@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded once per in-context SPII verification UI, with the decision the
+    user made. Recorded on all platforms.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Ai.SpiiVerification.Shown" enum="BooleanShown"
+    expires_after="2027-04-01">
+  <owner>friedrichh@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts requests handed to the embedding client to show verification UI (not
+    confirmed UI impressions). Recorded on all platforms, independent of the
+    actual review.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.StoredEntitiesCount{EntityType}{RecordType}"
     units="units" expires_after="2027-12-12">
   <owner>jihadghanna@google.com</owner>

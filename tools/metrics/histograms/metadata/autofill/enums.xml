@@ -711,6 +711,17 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h:AutofillAiUpsertDetailsCacheStatus) -->
 
+<!-- LINT.IfChange(AutofillAiVerificationDecision) -->
+
+<enum name="AutofillAiVerificationDecision">
+  <int value="0" label="Hide (undo field filling, suppress entity)"/>
+  <int value="1" label="Dismiss (keep field filling)"/>
+  <int value="2" label="Confirm (keep field filling)"/>
+  <int value="3" label="Undo (undo field filling)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/foundations/autofill_client.h:AutofillAiVerificationDecision) -->
+
 <!-- LINT.IfChange(AutofillAiWalletManagementUrlSyncStatus) -->
 
 <enum name="AutofillAiWalletManagementUrlSyncStatus">

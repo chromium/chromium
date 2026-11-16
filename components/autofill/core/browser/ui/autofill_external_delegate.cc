@@ -1989,6 +1989,7 @@ void AutofillExternalDelegate::ShowAttributionVerification(
     const EntityInstance& filled_entity) {
   PendingVerification verified{
       .entity_id = filled_entity.guid(), .form = form_id, .field = field_id};
+  LogSpiiVerificationShown();
   manager_->client().ShowAutofillAiAttributionVerification(
       filled_entity, source_url, field_bounds,
       base::BindOnce(&AutofillExternalDelegate::ApplyVerificationDecision,
@@ -1998,6 +1999,7 @@ void AutofillExternalDelegate::ShowAttributionVerification(
 void AutofillExternalDelegate::ApplyVerificationDecision(
     const PendingVerification& v,
     Decision decision) {
+  LogSpiiVerificationDecision(decision);
   switch (decision) {
     case Decision::kConfirm:
       // TODO(crbug.com/583800808): Record verification confirmation via

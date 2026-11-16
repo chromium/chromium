@@ -287,6 +287,9 @@ class AutofillClient {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpPermissionUiStatus)
 
   // Decisions that can be returned by the in-context SPII verification UI.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(AutofillAiVerificationDecision)
   enum class AutofillAiVerificationDecision {
     // The user asked to hide the entity; the fill is undone and the entity is
     // suppressed.
@@ -297,7 +300,9 @@ class AutofillClient {
     kConfirm = 2,
     // The user undid the fill without suppressing the entity.
     kUndo = 3,
+    kMaxValue = kUndo,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiVerificationDecision)
   using AutofillAiVerificationDecisionCallback =
       base::OnceCallback<void(AutofillAiVerificationDecision)>;
 

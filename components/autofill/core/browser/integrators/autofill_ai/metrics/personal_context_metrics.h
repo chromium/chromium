@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/personal_context/core/personal_context_types.h"
 
@@ -219,6 +220,13 @@ void LogEntitySuppressionConfirmationDialogResult(bool accepted);
 void LogPersonalContextFillingCorrectnessMergeConstraints(
     std::optional<EntityType> type,
     bool metric_value);
+
+// Logs that the in-context SPII verification UI was shown.
+void LogSpiiVerificationShown();
+
+// Logs the user's `decision` in the in-context SPII verification UI.
+void LogSpiiVerificationDecision(
+    AutofillClient::AutofillAiVerificationDecision decision);
 
 }  // namespace autofill
 
