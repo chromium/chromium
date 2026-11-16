@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
@@ -51,9 +52,46 @@ namespace protocol {
 
 class DisplayCaptureLauncher;
 
+// Sends the captured audio to the encoding service. The audio device calls
+// Capture() on its audio thread, and OnCaptureError() on the audio thread or on
+// the sequence that owns the device. All members are const, and this object
+// has its own copy of the SharedRemote. Thus the audio thread shares no mutable
+// state with MediaRecorder. Destroy this object only after the audio device
+// stops.
+class CONTENT_EXPORT MediaRecorderAudioForwarder
+    : public media::AudioCapturerSource::CaptureCallback {
+ public:
+  // `on_error` can run on any thread.
+  MediaRecorderAudioForwarder(
+      mojo::SharedRemote<
+          devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+          service,
+      base::TimeTicks session_start_time,
+      base::RepeatingClosure on_error);
+  MediaRecorderAudioForwarder(const MediaRecorderAudioForwarder&) = delete;
+  MediaRecorderAudioForwarder& operator=(const MediaRecorderAudioForwarder&) =
+      delete;
+  ~MediaRecorderAudioForwarder() override;
+
+  // media::AudioCapturerSource::CaptureCallback overrides
+  void Capture(const media::AudioBus* audio_source,
+               base::TimeTicks audio_capture_time,
+               const media::AudioGlitchInfo& glitch_info,
+               double volume) override;
+  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
+                      const std::string& message) override;
+  void OnCaptureMuted(bool is_muted) override;
+
+ private:
+  const mojo::SharedRemote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+      service_;
+  const base::TimeTicks session_start_time_;
+  const base::RepeatingClosure on_error_;
+};
+
 class CONTENT_EXPORT MediaRecorder
-    : public media::AudioCapturerSource::CaptureCallback,
-      public devtools_media_encoding_service::mojom::
+    : public devtools_media_encoding_service::mojom::
           DevToolsMediaEncodingServiceClient {
  public:
   MediaRecorder(DevToolsIOContext* io_context,
@@ -98,6 +136,8 @@ class CONTENT_EXPORT MediaRecorder
   void OnVideoCaptureError();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MediaRecorderTest, LateAudioCaptureErrorAfterStop);
+
   // Stops capturing frames and audio, and removes the UI. The recording stays
   // active until Stop().
   void StopDisplayCapture();
@@ -116,17 +156,16 @@ class CONTENT_EXPORT MediaRecorder
                             int frame_rate,
                             bool has_audio);
   void StartAudioCapture(WebContents* audio_source);
+  // Stops the audio device, which joins the audio thread, and then destroys
+  // `audio_forwarder_`.
+  void StopAudioCapture();
+  // Returns a callback that posts OnAudioCaptureError() to this sequence. The
+  // callback can run on any thread. It does nothing after StopAudioCapture().
+  base::RepeatingClosure CreateAudioErrorCallback();
+  // Stops the recording after an audio capture error.
+  void OnAudioCaptureError();
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);
   void RequestRefreshFrame();
-
-  // media::AudioCapturerSource::CaptureCallback overrides
-  void Capture(const media::AudioBus* audio_source,
-               base::TimeTicks audio_capture_time,
-               const media::AudioGlitchInfo& glitch_info,
-               double volume) override;
-  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
-                      const std::string& message) override;
-  void OnCaptureMuted(bool is_muted) override;
 
   // devtools_media_encoding_service::mojom::DevToolsMediaEncodingServiceClient:
   void OnData(const std::vector<uint8_t>& data) override;
@@ -167,6 +206,9 @@ class CONTENT_EXPORT MediaRecorder
     ~ClientBuffer();
   };
   base::flat_map<int, scoped_refptr<ClientBuffer>> client_buffers_;
+  // The callback of `audio_capturer_`. Must stay alive until `audio_capturer_`
+  // stops.
+  std::unique_ptr<MediaRecorderAudioForwarder> audio_forwarder_;
   scoped_refptr<media::AudioCapturerSource> audio_capturer_;
 
   scoped_refptr<DevToolsStreamFile> stream_file_;
@@ -181,6 +223,9 @@ class CONTENT_EXPORT MediaRecorder
                      DevToolsMediaEncodingServiceClient>
       client_receiver_{this};
 
+  // For the error tasks of the audio capture. StopAudioCapture() invalidates
+  // the pointers, so that an error task that is in the queue does nothing.
+  base::WeakPtrFactory<MediaRecorder> audio_error_weak_factory_{this};
   base::WeakPtrFactory<MediaRecorder> weak_factory_{this};
 };
 

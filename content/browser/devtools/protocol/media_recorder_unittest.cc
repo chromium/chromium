@@ -14,14 +14,17 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/services/devtools_media_encoding_service/public/mojom/devtools_media_encoding_service.mojom.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
-#include "content/services/devtools_media_encoding_service/public/mojom/devtools_media_encoding_service.mojom.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_glitch_info.h"
@@ -29,6 +32,10 @@
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/video/video_frame_receiver_types.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/mojom/media_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
@@ -216,21 +223,205 @@ TEST_F(MediaRecorderTest, VideoBufferInvalidSize) {
   recorder_->OnBufferRetired(kBufferId);
 }
 
+namespace {
+
+using EncodingService =
+    devtools_media_encoding_service::mojom::DevToolsMediaEncodingService;
+
+// Counts the audio buffers and the StopRecording() calls that it receives.
+class FakeEncodingService : public EncodingService {
+ public:
+  mojo::PendingRemote<EncodingService> BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  void Disconnect() { receiver_.reset(); }
+  void set_on_audio_buffer(base::RepeatingClosure closure) {
+    on_audio_buffer_ = std::move(closure);
+  }
+  int audio_buffer_count() const { return audio_buffer_count_; }
+  void set_on_stop_recording(base::RepeatingClosure closure) {
+    on_stop_recording_ = std::move(closure);
+  }
+  int stop_recording_count() const { return stop_recording_count_; }
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  // EncodingService:
+  void StartRecording(
+      mojo::PendingRemote<devtools_media_encoding_service::mojom::
+                              DevToolsMediaEncodingServiceClient> client,
+      uint32_t max_width,
+      uint32_t max_height,
+      uint32_t frame_rate,
+      bool has_audio) override {}
+  void RecordVideoFrame(
+      const scoped_refptr<media::VideoFrame>& frame) override {}
+  void RecordAudioBuffer(media::mojom::AudioBufferPtr buffer) override {
+    ++audio_buffer_count_;
+    if (on_audio_buffer_) {
+      on_audio_buffer_.Run();
+    }
+  }
+  void StopRecording() override {
+    ++stop_recording_count_;
+    if (on_stop_recording_) {
+      on_stop_recording_.Run();
+    }
+  }
+
+ private:
+  int stop_recording_count_ = 0;
+  base::RepeatingClosure on_stop_recording_;
+  int audio_buffer_count_ = 0;
+  base::RepeatingClosure on_audio_buffer_;
+  mojo::Receiver<EncodingService> receiver_{this};
+};
+
+// Calls Capture() on `forwarder` on `thread`, as the audio device does, and
+// waits until the call returns.
+void CaptureOnThread(base::Thread& thread,
+                     MediaRecorderAudioForwarder& forwarder) {
+  thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&forwarder]() {
+        std::unique_ptr<media::AudioBus> audio_bus =
+            media::AudioBus::Create(/*channels=*/2, /*frames=*/480);
+        audio_bus->Zero();
+        forwarder.Capture(audio_bus.get(), base::TimeTicks::Now(),
+                          media::AudioGlitchInfo(), /*volume=*/1.0);
+      }));
+  thread.FlushForTesting();
+}
+
+}  // namespace
+
 TEST_F(MediaRecorderTest, AudioCaptureWithoutService) {
-  media::AudioCapturerSource::CaptureCallback* capture_callback =
-      static_cast<media::AudioCapturerSource::CaptureCallback*>(
-          recorder_.get());
+  MediaRecorderAudioForwarder forwarder(mojo::SharedRemote<EncodingService>(),
+                                        base::TimeTicks::Now(),
+                                        base::DoNothing());
 
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(/*channels=*/2, /*frames=*/480);
   audio_bus->Zero();
 
-  // Should return early without crash when service_ is null.
-  capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(),
-                            media::AudioGlitchInfo(), /*volume=*/1.0);
-  capture_callback->OnCaptureMuted(true);
-  capture_callback->OnCaptureError(
-      media::AudioCapturerSource::ErrorCode::kUnknown, "Test error");
+  // Should return early without crash when the service is not bound.
+  forwarder.Capture(audio_bus.get(), base::TimeTicks::Now(),
+                    media::AudioGlitchInfo(), /*volume=*/1.0);
+  forwarder.OnCaptureMuted(true);
+}
+
+// The audio thread must not use the SharedRemote that the recorder resets when
+// the service closes the connection.
+TEST_F(MediaRecorderTest, AudioCaptureAfterOwnerResetsService) {
+  FakeEncodingService fake_service;
+  mojo::SharedRemote<EncodingService> service(
+      fake_service.BindNewPipeAndPassRemote());
+  MediaRecorderAudioForwarder forwarder(service, base::TimeTicks::Now(),
+                                        base::DoNothing());
+  // MediaRecorder::OnClosed() does this on the UI thread.
+  service.reset();
+
+  base::RunLoop run_loop;
+  fake_service.set_on_audio_buffer(run_loop.QuitClosure());
+  base::Thread audio_thread("TestAudioThread");
+  ASSERT_TRUE(audio_thread.Start());
+  CaptureOnThread(audio_thread, forwarder);
+  run_loop.Run();
+  EXPECT_EQ(1, fake_service.audio_buffer_count());
+  audio_thread.Stop();
+}
+
+TEST_F(MediaRecorderTest, AudioCaptureAfterServiceDisconnects) {
+  FakeEncodingService fake_service;
+  mojo::SharedRemote<EncodingService> service(
+      fake_service.BindNewPipeAndPassRemote());
+  MediaRecorderAudioForwarder forwarder(service, base::TimeTicks::Now(),
+                                        base::DoNothing());
+  fake_service.Disconnect();
+  service.reset();
+
+  base::Thread audio_thread("TestAudioThread");
+  ASSERT_TRUE(audio_thread.Start());
+  // Mojo discards the message. The call must not crash.
+  CaptureOnThread(audio_thread, forwarder);
+  // Capture() posted the message to this sequence. Run the tasks that are in
+  // the queue now.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(0, fake_service.audio_buffer_count());
+  audio_thread.Stop();
+}
+
+// The audio device can report an error on the audio thread. The recorder must
+// get the error on its own sequence.
+TEST_F(MediaRecorderTest, AudioCaptureErrorFromAudioThread) {
+  base::RunLoop run_loop;
+  scoped_refptr<base::SequencedTaskRunner> main_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  bool ran_on_main_sequence = false;
+  MediaRecorderAudioForwarder forwarder(
+      mojo::SharedRemote<EncodingService>(), base::TimeTicks::Now(),
+      base::BindPostTask(main_runner, base::BindLambdaForTesting([&]() {
+                           ran_on_main_sequence =
+                               main_runner->RunsTasksInCurrentSequence();
+                           run_loop.Quit();
+                         })));
+
+  base::Thread audio_thread("TestAudioThread");
+  ASSERT_TRUE(audio_thread.Start());
+  audio_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&forwarder]() {
+        forwarder.OnCaptureError(
+            media::AudioCapturerSource::ErrorCode::kSocketError, "Test error");
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(ran_on_main_sequence);
+  audio_thread.Stop();
+}
+
+// An audio error task can be in the queue when the client stops the recording.
+// The task must not call Stop() again. A second Stop() destroys the pending
+// stop callback, which owns the recorder, as in PageHandler.
+TEST_F(MediaRecorderTest, LateAudioCaptureErrorAfterStop) {
+  FakeEncodingService fake_service;
+  recorder_->service_ = mojo::SharedRemote<EncodingService>(
+      fake_service.BindNewPipeAndPassRemote());
+  // Post the error task.
+  recorder_->CreateAudioErrorCallback().Run();
+
+  MediaRecorder* recorder = recorder_.get();
+  bool stopped = false;
+  bool callback_destroyed = false;
+  base::RunLoop stop_loop;
+  recorder->Stop(base::BindOnce(
+      [](std::unique_ptr<MediaRecorder> recorder,
+         base::ScopedClosureRunner on_destroyed, bool* stopped,
+         base::OnceClosure quit, std::string stream) {
+        *stopped = true;
+        std::move(quit).Run();
+      },
+      std::move(recorder_),
+      base::ScopedClosureRunner(
+          base::BindLambdaForTesting([&]() { callback_destroyed = true; })),
+      &stopped, stop_loop.QuitClosure()));
+
+  // Run the error task, which was posted before the Stop() messages.
+  base::RunLoop service_loop;
+  fake_service.set_on_stop_recording(service_loop.QuitClosure());
+  service_loop.Run();
+  fake_service.FlushForTesting();
+  ASSERT_FALSE(callback_destroyed);
+  EXPECT_FALSE(stopped);
+  EXPECT_EQ(1, fake_service.stop_recording_count());
+
+  // The service closes the recording. The stop callback runs and destroys
+  // the recorder.
+  static_cast<devtools_media_encoding_service::mojom::
+                  DevToolsMediaEncodingServiceClient*>(recorder)
+      ->OnClosed();
+  stop_loop.Run();
+  EXPECT_TRUE(stopped);
+  EXPECT_TRUE(callback_destroyed);
 }
 
 TEST_F(MediaRecorderTest, OnClosedInvokesCallback) {

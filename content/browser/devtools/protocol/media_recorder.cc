@@ -232,6 +232,42 @@ MediaRecorder::ClientBuffer::ClientBuffer(
       buffer_handle(std::move(buffer_handle)) {}
 MediaRecorder::ClientBuffer::~ClientBuffer() = default;
 
+MediaRecorderAudioForwarder::MediaRecorderAudioForwarder(
+    mojo::SharedRemote<
+        devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+        service,
+    base::TimeTicks session_start_time,
+    base::RepeatingClosure on_error)
+    : service_(std::move(service)),
+      session_start_time_(session_start_time),
+      on_error_(std::move(on_error)) {}
+
+MediaRecorderAudioForwarder::~MediaRecorderAudioForwarder() = default;
+
+void MediaRecorderAudioForwarder::Capture(
+    const media::AudioBus* audio_source,
+    base::TimeTicks audio_capture_time,
+    const media::AudioGlitchInfo& glitch_info,
+    double volume) {
+  if (!service_ || !audio_source) {
+    return;
+  }
+
+  // If the service closed the connection, mojo discards the message.
+  base::TimeDelta timestamp = audio_capture_time - session_start_time_;
+  auto buffer = media::AudioBuffer::CopyFrom(48000, timestamp, audio_source);
+  service_->RecordAudioBuffer(
+      mojo::ConvertTo<media::mojom::AudioBufferPtr>(*buffer));
+}
+
+void MediaRecorderAudioForwarder::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
+  on_error_.Run();
+}
+
+void MediaRecorderAudioForwarder::OnCaptureMuted(bool is_muted) {}
+
 MediaRecorder::MediaRecorder(DevToolsIOContext* io_context,
                              base::RepeatingClosure on_stop_recording)
     : io_context_(io_context),
@@ -430,10 +466,7 @@ void MediaRecorder::StopDisplayCapture() {
   }
   display_capture_launcher_.reset();
   display_capture_receiver_.reset();
-  if (audio_capturer_) {
-    audio_capturer_->Stop();
-    audio_capturer_ = nullptr;
-  }
+  StopAudioCapture();
   ReleaseUI();
 }
 
@@ -500,8 +533,38 @@ void MediaRecorder::StartAudioCapture(WebContents* audio_source) {
   media::AudioParameters audio_params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::ChannelLayoutConfig::Stereo(), 48000, 480);
-  audio_capturer_->Initialize(audio_params, this);
+  // The audio thread uses the copy of `service_` that the forwarder owns.
+  audio_forwarder_ = std::make_unique<MediaRecorderAudioForwarder>(
+      service_, session_start_time_, CreateAudioErrorCallback());
+  audio_capturer_->Initialize(audio_params, audio_forwarder_.get());
   audio_capturer_->Start();
+}
+
+void MediaRecorder::StopAudioCapture() {
+  if (audio_capturer_) {
+    // Stop() joins the audio thread. After that, no call to `audio_forwarder_`
+    // is in progress.
+    audio_capturer_->Stop();
+    audio_capturer_ = nullptr;
+  }
+  audio_forwarder_.reset();
+  // An error task can be in the queue. It must not stop the recording again:
+  // a second Stop() replaces `on_stop_callback_`, which can own this object.
+  audio_error_weak_factory_.InvalidateWeakPtrs();
+}
+
+base::RepeatingClosure MediaRecorder::CreateAudioErrorCallback() {
+  // The forwarder can report an error on the audio thread, thus post the error
+  // to this sequence.
+  return base::BindPostTaskToCurrentDefault(
+      base::BindRepeating(&MediaRecorder::OnAudioCaptureError,
+                          audio_error_weak_factory_.GetWeakPtr()));
+}
+
+void MediaRecorder::OnAudioCaptureError() {
+  if (service_) {
+    Stop(base::OnceCallback<void(std::string)>());
+  }
 }
 
 void MediaRecorder::RequestRefreshFrame() {
@@ -626,29 +689,6 @@ void MediaRecorder::OnFrameFromVideoConsumer(
   AnswerPendingStart();
 }
 
-void MediaRecorder::Capture(const media::AudioBus* audio_source,
-                            base::TimeTicks audio_capture_time,
-                            const media::AudioGlitchInfo& glitch_info,
-                            double volume) {
-  if (!service_ || !audio_source) {
-    return;
-  }
-
-  base::TimeDelta timestamp = audio_capture_time - session_start_time_;
-  auto buffer = media::AudioBuffer::CopyFrom(48000, timestamp, audio_source);
-  service_->RecordAudioBuffer(
-      mojo::ConvertTo<media::mojom::AudioBufferPtr>(*buffer));
-}
-
-void MediaRecorder::OnCaptureError(media::AudioCapturerSource::ErrorCode code,
-                                   const std::string& message) {
-  if (service_) {
-    Stop(base::OnceCallback<void(std::string)>());
-  }
-}
-
-void MediaRecorder::OnCaptureMuted(bool is_muted) {}
-
 void MediaRecorder::Stop(
     base::OnceCallback<void(std::string)> on_stop_callback) {
   FailPendingStart("Screen recording was stopped before the first frame.");
@@ -664,10 +704,10 @@ void MediaRecorder::Stop(
   display_capture_launcher_.reset();
   display_capture_receiver_.reset();
   ReleaseUI();
-  if (audio_capturer_) {
-    audio_capturer_->Stop();
-    audio_capturer_ = nullptr;
-  }
+  // The audio thread posts its buffers to this sequence. Buffers that are in
+  // the queue now reach the service after StopRecording(), and the service
+  // drops them.
+  StopAudioCapture();
 
   if (service_) {
     if (!has_received_frames_) {
@@ -698,6 +738,8 @@ void MediaRecorder::OnData(const std::vector<uint8_t>& data) {
 }
 
 void MediaRecorder::OnClosed() {
+  // The service does not accept more audio.
+  StopAudioCapture();
   service_.reset();
   client_receiver_.reset();
   FailPendingStart("Screen recording was stopped before the first frame.");
