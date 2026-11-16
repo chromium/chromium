@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -786,8 +787,20 @@ void HostResolverManager::Job::CancelRequestCommon(
 }
 
 void HostResolverManager::Job::UpdatePriority() {
-  if (is_queued()) {
-    handle_ = resolver_->dispatcher_->ChangePriority(handle_, priority());
+  if (!is_queued()) {
+    return;
+  }
+  // ChangePriority() may start `this`, and Start() may re-queue it via
+  // Schedule(), setting `handle_`. ChangePriority() then returns a null handle,
+  // which must not overwrite it (same as Schedule()). Otherwise the untracked
+  // queue entry could be started after `this` is destroyed.
+  PrioritizedDispatcher::Handle old_handle = std::exchange(handle_, {});
+  PrioritizedDispatcher::Handle new_handle =
+      resolver_->dispatcher_->ChangePriority(old_handle, priority());
+  if (!new_handle.is_null()) {
+    // The job was not started, so nothing could have re-queued it.
+    CHECK(handle_.is_null());
+    handle_ = new_handle;
   }
 }
 

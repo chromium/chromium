@@ -22,6 +22,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/field_trial.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -36,6 +37,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -518,6 +520,11 @@ void HostResolverManagerTest::CreateResolverWithOptionsAndParams(
 size_t HostResolverManagerTest::num_running_dispatcher_jobs() const {
   DCHECK(resolver_.get());
   return resolver_->num_running_dispatcher_jobs_for_tests();
+}
+
+size_t HostResolverManagerTest::num_queued_dispatcher_jobs() const {
+  DCHECK(resolver_.get());
+  return resolver_->num_queued_dispatcher_jobs_for_tests();
 }
 
 void HostResolverManagerTest::set_allow_fallback_to_systemtask(
@@ -7944,6 +7951,99 @@ TEST_F(HostResolverManagerDnsTest, UnspecEmptyFallback) {
   EXPECT_THAT(response.request()->GetEndpointResults(),
               testing::ElementsAre(ExpectEndpointResult(
                   testing::ElementsAre(CreateExpected("192.168.0.1", 80)))));
+}
+
+// Regression test for crbug.com/583274916. Raising the priority of a queued Job
+// can make PrioritizedDispatcher::ChangePriority() start the Job synchronously.
+// If the started DnsTask needs another transaction slot, Job::Start() re-queues
+// the Job for that slot. The Job must keep tracking that queue entry, so that
+// it is cancelled when the Job no longer needs it, instead of being left in the
+// dispatcher pointing at a destroyed Job.
+TEST_F(HostResolverManagerDnsTest,
+       ChangePriorityStartingJobKeepsTrackOfRequeuedTransaction) {
+  // Per-priority limits only come from the "HostResolverDispatch" field trial.
+  // Reserve 1 slot for MEDIUM out of 2 total, so that LOW (and lower) can run
+  // 1 job slot while MEDIUM and HIGHEST can run 2. Use a fresh FieldTrialList
+  // so that the trial does not leak into other tests.
+  AddScopedFeatureList().InitWithEmptyFeatureAndFieldTrialLists();
+  ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial("HostResolverDispatch",
+                                                     "0:0:0:0:1:0:2"));
+  HostResolver::ManagerOptions options = DefaultOptions();
+  options.max_concurrent_resolves =
+      HostResolver::ManagerOptions::kDefaultParallelism;
+  CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
+                                     /*ipv6_reachable=*/true);
+  set_allow_fallback_to_systemtask(false);
+
+  // Each host needs an A and an AAAA transaction, i.e. two job slots.
+  // "promoted" resolves without delay; the others wait until
+  // CompleteDelayedTransactions().
+  MockDnsClientRuleList rules;
+  for (const char* host : {"promoted", "low", "highest"}) {
+    const bool delay = std::string_view(host) != "promoted";
+    AddDnsRule(&rules, host, dns_protocol::kTypeA, IPAddress::IPv4Localhost(),
+               delay);
+    AddDnsRule(&rules, host, dns_protocol::kTypeAAAA,
+               IPAddress::IPv6Localhost(), delay);
+  }
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+
+  auto create_request = [&](std::string_view host, RequestPriority priority) {
+    HostResolver::ResolveHostParameters params;
+    params.initial_priority = priority;
+    return std::make_unique<ResolveHostResponseHelper>(resolver_->CreateRequest(
+        HostPortPair(host, 80), NetworkAnonymizationKey(),
+        handles::kInvalidNetworkHandle, NetLogWithSource(), params,
+        resolve_context_.get()));
+  };
+
+  // "low" takes the only LOW slot. Its second transaction is queued at LOW.
+  auto low_response = create_request("low", LOW);
+  EXPECT_EQ(1u, num_running_dispatcher_jobs());
+  EXPECT_EQ(1u, num_queued_dispatcher_jobs());
+
+  // "promoted" is queued at LOW.
+  auto promoted_low_response = create_request("promoted", LOW);
+  EXPECT_EQ(1u, num_running_dispatcher_jobs());
+  EXPECT_EQ(2u, num_queued_dispatcher_jobs());
+
+  // A MEDIUM request raises the priority of the "promoted" Job, so
+  // ChangePriority() starts it in the spare MEDIUM slot. Starting it re-queues
+  // the Job at MEDIUM for its second transaction.
+  auto promoted_medium_response = create_request("promoted", MEDIUM);
+  EXPECT_EQ(2u, num_running_dispatcher_jobs());
+  EXPECT_EQ(2u, num_queued_dispatcher_jobs());
+
+  // "highest" is queued at HIGHEST, so it gets the next free slot.
+  auto highest_response = create_request("highest", HIGHEST);
+  EXPECT_EQ(2u, num_running_dispatcher_jobs());
+  EXPECT_EQ(3u, num_queued_dispatcher_jobs());
+  EXPECT_EQ(3u, resolver_->num_jobs_for_testing());
+
+  // "promoted" runs its second transaction in the slot freed by the first one,
+  // so its queue entry must be cancelled. When the Job completes, "highest"
+  // starts in the freed slot and queues its second transaction.
+  EXPECT_THAT(promoted_low_response->result_error(), IsOk());
+  EXPECT_THAT(promoted_medium_response->result_error(), IsOk());
+  // Without the fix, the queue still holds an entry for the destroyed
+  // "promoted" Job, which the dispatcher would start once a slot is freed.
+  ASSERT_EQ(2u, resolver_->num_jobs_for_testing());
+  ASSERT_EQ(2u, num_running_dispatcher_jobs());
+  ASSERT_EQ(2u, num_queued_dispatcher_jobs());
+
+  // Complete the delayed A transactions. Each remaining Job then runs its AAAA
+  // transaction in the slot freed by its A transaction and cancels its queue
+  // entry. Once that happens, complete the AAAA transactions.
+  mock_dns_client_->CompleteDelayedTransactions();
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return num_queued_dispatcher_jobs() == 0u; }));
+  EXPECT_EQ(2u, num_running_dispatcher_jobs());
+  mock_dns_client_->CompleteDelayedTransactions();
+  EXPECT_THAT(low_response->result_error(), IsOk());
+  EXPECT_THAT(highest_response->result_error(), IsOk());
+  EXPECT_EQ(0u, resolver_->num_jobs_for_testing());
+  EXPECT_EQ(0u, num_running_dispatcher_jobs());
+  EXPECT_EQ(0u, num_queued_dispatcher_jobs());
 }
 
 // Tests getting a new invalid DnsConfig while there are active DnsTasks.

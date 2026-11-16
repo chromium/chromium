@@ -104,6 +104,7 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
 
   // Friendship is not inherited, so use proxies to access those.
   size_t num_running_dispatcher_jobs() const;
+  size_t num_queued_dispatcher_jobs() const;
 
   void set_allow_fallback_to_systemtask(bool allow_fallback_to_systemtask);
 
