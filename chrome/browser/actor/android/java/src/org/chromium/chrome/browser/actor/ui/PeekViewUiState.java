@@ -76,24 +76,6 @@ public class PeekViewUiState {
         this.buttonContentDescriptionResId = buttonContentDescriptionResId;
     }
 
-    /**
-     * Returns the visibility of the actor control button.
-     *
-     * @return The visibility of the actor control button.
-     */
-    public @ViewVisibility int getButtonVisibility() {
-        return buttonVisibility;
-    }
-
-    /**
-     * Returns the visibility of the description view.
-     *
-     * @return The visibility of the description view.
-     */
-    public @ViewVisibility int getDescriptionVisibility() {
-        return descriptionVisibility;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

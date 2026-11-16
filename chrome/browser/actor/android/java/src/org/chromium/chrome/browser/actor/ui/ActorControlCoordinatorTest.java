@@ -166,13 +166,13 @@ public class ActorControlCoordinatorTest {
                 state.descriptionResId,
                 mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
         assertEquals(
-                state.getDescriptionVisibility(),
+                state.descriptionVisibility,
                 mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY));
         assertEquals(
                 state.buttonTextResId,
                 mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT_ID));
         assertEquals(
-                state.getButtonVisibility(),
+                state.buttonVisibility,
                 mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY));
         assertEquals(
                 state.buttonIconResId,

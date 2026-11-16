@@ -50,11 +50,9 @@ public class ActorControlMediator {
         mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID, state.descriptionResId);
         mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT, customDescription);
         mModel.set(
-                TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY,
-                state.getDescriptionVisibility());
+                TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY, state.descriptionVisibility);
         mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_TEXT_ID, state.buttonTextResId);
-        mModel.set(
-                TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY, state.getButtonVisibility());
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_VISIBILITY, state.buttonVisibility);
         mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_ICON_ID, state.buttonIconResId);
         mModel.set(
                 TabBottomSheetPeekProperties.ACTION_BUTTON_BACKGROUND_TINT_ID,
@@ -97,7 +95,7 @@ public class ActorControlMediator {
                             ? context.getString(state.descriptionResId)
                             : "";
         }
-        if (state.getDescriptionVisibility() == View.VISIBLE && !TextUtils.isEmpty(desc)) {
+        if (state.descriptionVisibility == View.VISIBLE && !TextUtils.isEmpty(desc)) {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
