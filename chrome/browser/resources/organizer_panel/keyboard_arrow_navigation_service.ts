@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
-
 /**
  * Navigates focus through focusable elements using ArrowUp and ArrowDown keys.
  */
@@ -41,20 +39,6 @@ export class KeyArrowNavigationService {
   }
 
   /**
-   * Sets the current focus index to the specified element.
-   * Returns false if the element was not found.
-   */
-  setCurrentFocusIndex(element: HTMLElement): boolean {
-    this.elements_ = this.getNavigableElements_();
-    const newCurrentIndex = this.findElementIndex_(element);
-    if (newCurrentIndex < 0) {
-      return false;
-    }
-    this.focusIndex_ = newCurrentIndex;
-    return true;
-  }
-
-  /**
    * Rebuilds the navigation elements list.
    */
   rebuildNavigationElements() {
@@ -79,13 +63,6 @@ export class KeyArrowNavigationService {
    */
   getElementsForTesting(): HTMLElement[] {
     return [...this.elements_];
-  }
-
-  /**
-   * Returns the count of navigable elements.
-   */
-  getElementCount(): number {
-    return this.elements_.length;
   }
 
   /**
@@ -159,19 +136,4 @@ export class KeyArrowNavigationService {
       element.focus();
     }
   }
-
-  private findElementIndex_(element: HTMLElement): number {
-    return this.elements_.findIndex((elem) => elem === element);
-  }
-
-  static getInstance(): KeyArrowNavigationService {
-    assert(instance);
-    return instance;
-  }
-
-  static setInstance(obj: KeyArrowNavigationService) {
-    instance = obj;
-  }
 }
-
-let instance: KeyArrowNavigationService|null = null;

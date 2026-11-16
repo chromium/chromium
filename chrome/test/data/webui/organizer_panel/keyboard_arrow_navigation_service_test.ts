@@ -4,7 +4,7 @@
 
 import {KeyArrowNavigationService} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('KeyArrowNavigationServiceTest', () => {
   let service: KeyArrowNavigationService;
@@ -59,7 +59,6 @@ suite('KeyArrowNavigationServiceTest', () => {
     document.body.appendChild(rootElement);
 
     service = new KeyArrowNavigationService(rootElement, () => items);
-    KeyArrowNavigationService.setInstance(service);
     service.startListening();
     service.rebuildNavigationElements();
   });
@@ -72,8 +71,6 @@ suite('KeyArrowNavigationServiceTest', () => {
     const elementIds =
         service.getElementsForTesting().map((el: HTMLElement) => el.id);
     assertArrayEquals(['item1', 'item2', 'item3'], elementIds);
-    assertEquals(3, service.getElementCount());
-    assertEquals(service, KeyArrowNavigationService.getInstance());
   });
 
   test('Moves focus down and up with arrow keys', () => {
@@ -143,14 +140,6 @@ suite('KeyArrowNavigationServiceTest', () => {
     assertEquals('dialogBtn', getDeepActiveElement()!.id);
   });
 
-  test('setCurrentFocusIndex updates focus index', () => {
-    assertTrue(service.setCurrentFocusIndex(items[1]!));
-    assertEquals(items[1], service.getElementAtFocusIndexForTesting());
-
-    const outsideElement = document.createElement('div');
-    assertFalse(service.setCurrentFocusIndex(outsideElement));
-  });
-
   test(
       'rebuildNavigationElements clamps focus index if elements shrink', () => {
         items[2]!.focus();
@@ -161,7 +150,7 @@ suite('KeyArrowNavigationServiceTest', () => {
         items.pop();
         service.rebuildNavigationElements();
 
-        assertEquals(1, service.getElementCount());
+        assertEquals(1, service.getElementsForTesting().length);
         assertEquals(items[0], service.getElementAtFocusIndexForTesting());
       });
 });

@@ -14,10 +14,6 @@ export interface OptionKeyObject<T> {
 }
 
 export interface SearchOptions<T> {
-  includeScore?: boolean;
-  includeMatches?: boolean;
-  ignoreLocation?: boolean;
-  threshold?: number;
   distance?: number;
   keys: Array<OptionKeyObject<T>>;
 }

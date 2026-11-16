@@ -164,11 +164,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
   }
 
   private getCloseButton_(): HTMLElement|null {
-    const button = this.shadowRoot?.querySelector<HTMLElement>('#closeButton');
-    if (!button || button.hidden || button.style.display === 'none') {
-      return null;
-    }
-    return button;
+    return this.shadowRoot?.querySelector<HTMLElement>('#closeButton') ?? null;
   }
 
   private async notifyShowUiWhenReady_(waitForLoad: () => Promise<void>) {

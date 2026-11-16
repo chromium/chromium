@@ -102,10 +102,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   private searchOptions_:
       SearchOptions<HighlightableOrganizerListSectionItem<unknown>> = {
-        includeScore: true,
-        includeMatches: true,
-        ignoreLocation: false,
-        threshold: 0.0,
         distance: 200,
         keys:
             [
