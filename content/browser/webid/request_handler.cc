@@ -1004,7 +1004,9 @@ void RequestHandler::MaybeShowAccountsDialog() {
   fetch_data_ = FetchData();
 
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
-  CHECK(render_frame_host().GetPage().IsPrimary(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585206226): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(render_frame_host().GetPage().IsPrimary());
 
   bool intercept = false;
   // In tests (content_shell or when --use-fake-ui-for-fedcm is used), the
