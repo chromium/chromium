@@ -40,6 +40,7 @@
 #include "services/network/public/cpp/url_util.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
@@ -148,32 +149,32 @@ void ResourceRequestSender::SendSync(
   }
 
   // A task is posted to a separate thread to execute the request so that
-  // this thread may block on a waitable event. It is safe to pass raw
-  // pointers to on-stack objects as this stack frame will
-  // survive until the request is complete.
+  // this thread may block on a waitable event. `context` is held on this stack
+  // frame and released on `task_runner` via `ReleaseSoon` when `SendSync()`
+  // returns, so it outlives all tasks posted to `task_runner` below.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       base::ThreadPool::CreateSingleThreadTaskRunner({});
-  SyncLoadContext* context_for_redirect = nullptr;
+  scoped_refptr<SyncLoadContext> context = SyncLoadContext::Create(task_runner);
+  absl::Cleanup release_context = [&]() {
+    task_runner->ReleaseSoon(FROM_HERE, std::move(context));
+  };
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
-      CrossThreadBindOnce(&SyncLoadContext::StartAsyncWithWaitableEvent,
-                          std::move(request), task_runner, traffic_annotation,
-                          loader_options, std::move(pending_factory),
-                          std::move(throttles), CrossThreadUnretained(response),
-                          CrossThreadUnretained(&context_for_redirect),
-                          CrossThreadUnretained(&redirect_or_response_event),
-                          CrossThreadUnretained(terminate_sync_load_event),
-                          timeout, std::move(download_to_blob_registry),
-                          cors_exempt_header_list,
-                          std::move(resource_load_info_notifier_wrapper)));
+      CrossThreadBindOnce(
+          &SyncLoadContext::StartAsyncWithWaitableEvent,
+          CrossThreadUnretained(context.get()), std::move(request),
+          traffic_annotation, loader_options, std::move(pending_factory),
+          std::move(throttles), CrossThreadUnretained(response),
+          CrossThreadUnretained(&redirect_or_response_event),
+          CrossThreadUnretained(terminate_sync_load_event), timeout,
+          std::move(download_to_blob_registry), cors_exempt_header_list,
+          std::move(resource_load_info_notifier_wrapper)));
 
   // `redirect_or_response_event` will signal when each redirect completes, and
   // when the final response is complete.
   redirect_or_response_event.Wait();
 
-  while (context_for_redirect) {
-    DCHECK(response->redirect_info);
-
+  while (response->redirect_info.has_value()) {
     using RefCountedOptionalStringVector =
         base::RefCountedData<std::optional<std::vector<std::string>>>;
     const scoped_refptr<RefCountedOptionalStringVector> removed_headers =
@@ -203,15 +204,15 @@ void ResourceRequestSender::SendSync(
     CHECK(removed_headers->HasOneRef());
     redirect_or_response_event.Reset();
     if (removed_headers->data.has_value()) {
-      task_runner->PostTask(
-          FROM_HERE, base::BindOnce(&SyncLoadContext::FollowRedirect,
-                                    base::Unretained(context_for_redirect),
-                                    std::move(*removed_headers->data),
-                                    std::move(*modified_headers->data)));
+      task_runner->PostTask(FROM_HERE,
+                            base::BindOnce(&SyncLoadContext::FollowRedirect,
+                                           base::Unretained(context.get()),
+                                           std::move(*removed_headers->data),
+                                           std::move(*modified_headers->data)));
     } else {
-      task_runner->PostTask(
-          FROM_HERE, base::BindOnce(&SyncLoadContext::CancelRedirect,
-                                    base::Unretained(context_for_redirect)));
+      task_runner->PostTask(FROM_HERE,
+                            base::BindOnce(&SyncLoadContext::CancelRedirect,
+                                           base::Unretained(context.get())));
     }
     redirect_or_response_event.Wait();
   }

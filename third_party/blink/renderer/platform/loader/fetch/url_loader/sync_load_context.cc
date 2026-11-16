@@ -36,7 +36,7 @@
 namespace blink {
 
 // An inner helper class to manage the SyncLoadContext's events and timeouts,
-// so that we can stop or resumse all of them at once.
+// so that we can stop or resume all of them at once.
 class SyncLoadContext::SignalHelper final {
  public:
   SignalHelper(SyncLoadContext* context,
@@ -54,23 +54,37 @@ class SyncLoadContext::SignalHelper final {
     Start(timeout);
   }
 
-  void SignalRedirectOrResponseComplete() {
+  void SignalRedirectComplete() {
     abort_watcher_.StopWatching();
-    if (timeout_timer_)
+    if (timeout_timer_) {
       timeout_timer_->Stop();
+    }
     redirect_or_response_event_->Signal();
   }
 
+  base::WaitableEvent* TakeEventForCompletion() {
+    abort_watcher_.StopWatching();
+    if (timeout_timer_) {
+      timeout_timer_->Stop();
+    }
+    base::WaitableEvent* event = redirect_or_response_event_;
+    redirect_or_response_event_ = nullptr;
+    abort_event_ = nullptr;
+    return event;
+  }
+
   bool RestartAfterRedirect() {
-    if (abort_event_ && abort_event_->IsSignaled())
+    if (abort_event_ && abort_event_->IsSignaled()) {
       return false;
+    }
 
     base::TimeDelta timeout_remainder = base::TimeDelta::Max();
     if (timeout_timer_) {
       timeout_remainder =
           timeout_timer_->desired_run_time() - base::TimeTicks::Now();
-      if (timeout_remainder <= base::TimeDelta())
+      if (timeout_remainder <= base::TimeDelta()) {
         return false;
+      }
     }
     Start(timeout_remainder);
     return true;
@@ -100,16 +114,27 @@ class SyncLoadContext::SignalHelper final {
 };
 
 // static
+scoped_refptr<SyncLoadContext> SyncLoadContext::Create(
+    scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner) {
+  return base::AdoptRef(new SyncLoadContext(std::move(loading_task_runner)));
+}
+
+SyncLoadContext::SyncLoadContext(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)) {}
+
+SyncLoadContext::~SyncLoadContext() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+}
+
 void SyncLoadContext::StartAsyncWithWaitableEvent(
     std::unique_ptr<network::ResourceRequest> request,
-    scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
     SyncLoadResponse* response,
-    SyncLoadContext** context_for_redirect,
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
@@ -117,15 +142,13 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     const Vector<String>& cors_exempt_header_list,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
-  scoped_refptr<SyncLoadContext> context(base::AdoptRef(new SyncLoadContext(
-      request.get(), std::move(pending_url_loader_factory), response,
-      context_for_redirect, redirect_or_response_event, abort_event, timeout,
-      std::move(download_to_blob_registry), loading_task_runner)));
-  context->resource_request_sender_->SendAsync(
-      std::move(request), std::move(loading_task_runner), traffic_annotation,
-      loader_options, cors_exempt_header_list, context,
-      context->url_loader_factory_, std::move(throttles),
-      std::move(resource_load_info_notifier_wrapper),
+  InitializeRequest(request.get(), std::move(pending_url_loader_factory),
+                    response, redirect_or_response_event, abort_event, timeout,
+                    std::move(download_to_blob_registry));
+  resource_request_sender_->SendAsync(
+      std::move(request), task_runner_, traffic_annotation, loader_options,
+      cors_exempt_header_list, base::WrapRefCounted(this), url_loader_factory_,
+      std::move(throttles), std::move(resource_load_info_notifier_wrapper),
       /*code_cache_host=*/nullptr,
       /*evict_from_bfcache_callback=*/
       base::OnceCallback<void(mojom::blink::RendererEvictionReason)>(),
@@ -133,28 +156,28 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
       base::RepeatingCallback<void(size_t)>());
 }
 
-SyncLoadContext::SyncLoadContext(
+void SyncLoadContext::InitializeRequest(
     network::ResourceRequest* request,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> url_loader_factory,
     SyncLoadResponse* response,
-    SyncLoadContext** context_for_redirect,
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
-    mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : response_(response),
-      context_for_redirect_(context_for_redirect),
-      body_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      download_to_blob_registry_(std::move(download_to_blob_registry)),
-      task_runner_(std::move(task_runner)),
-      signals_(std::make_unique<SignalHelper>(this,
-                                              redirect_or_response_event,
-                                              abort_event,
-                                              timeout)) {
-  if (download_to_blob_registry_)
-    mode_ = Mode::kBlob;
+    mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(!response_);
+  response_ = response;
+  response_->redirect_info.reset();
 
+  if (download_to_blob_registry) {
+    download_to_blob_registry_.Bind(std::move(download_to_blob_registry));
+    mode_ = Mode::kBlob;
+  }
+
+  body_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL, task_runner_);
+  signals_ = std::make_unique<SignalHelper>(this, redirect_or_response_event,
+                                            abort_event, timeout);
   url_loader_factory_ =
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory));
 
@@ -168,8 +191,6 @@ SyncLoadContext::SyncLoadContext(
   has_authorization_header_ =
       request->headers.HasHeader(net::HttpRequestHeaders::kAuthorization);
 }
-
-SyncLoadContext::~SyncLoadContext() {}
 
 void SyncLoadContext::OnUploadProgress(uint64_t position, uint64_t size) {}
 
@@ -189,10 +210,9 @@ void SyncLoadContext::OnReceivedRedirect(
   response_->url = redirect_info.new_url;
   response_->head = std::move(head);
   response_->redirect_info = redirect_info;
-  *context_for_redirect_ = this;
 
   follow_redirect_callback_ = std::move(follow_redirect_callback);
-  signals_->SignalRedirectOrResponseComplete();
+  signals_->SignalRedirectComplete();
 }
 
 void SyncLoadContext::FollowRedirect(std::vector<std::string> removed_headers,
@@ -201,7 +221,6 @@ void SyncLoadContext::FollowRedirect(std::vector<std::string> removed_headers,
   if (deferred_completion_status_) {
     follow_redirect_callback_.Reset();
     response_->redirect_info.reset();
-    *context_for_redirect_ = nullptr;
     OnCompletedRequest(
         *std::exchange(deferred_completion_status_, std::nullopt));
     return;
@@ -212,7 +231,6 @@ void SyncLoadContext::FollowRedirect(std::vector<std::string> removed_headers,
   }
 
   response_->redirect_info.reset();
-  *context_for_redirect_ = nullptr;
   std::move(follow_redirect_callback_)
       .Run(std::move(removed_headers), std::move(modified_headers));
 }
@@ -221,7 +239,6 @@ void SyncLoadContext::CancelRedirect() {
   follow_redirect_callback_.Reset();
   deferred_completion_status_.reset();
   response_->redirect_info.reset();
-  *context_for_redirect_ = nullptr;
 
   response_->error_code = net::ERR_ABORTED;
   CompleteRequest();
@@ -258,13 +275,13 @@ void SyncLoadContext::OnReceivedResponse(
   mode_ = Mode::kDataPipe;
   // setup datapipe to read.
   body_handle_ = std::move(body);
-  body_watcher_.Watch(
+  body_watcher_->Watch(
       body_handle_.get(),
       MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
       base::BindRepeating(&SyncLoadContext::OnBodyReadable,
                           base::Unretained(this)));
-  body_watcher_.ArmOrNotify();
+  body_watcher_->ArmOrNotify();
 }
 
 void SyncLoadContext::OnTransferSizeUpdated(base::ByteSize transfer_size_diff) {
@@ -279,8 +296,8 @@ void SyncLoadContext::OnCompletedRequest(
   }
   if (follow_redirect_callback_) {
     // Defer completion until FollowRedirect() or CancelRedirect() runs so
-    // `response_` is not mutated and `this` is not deleted while the calling
-    // thread is handling the redirect.
+    // `response_` is not mutated and `redirect_or_response_event` is not
+    // signaled while the calling thread is handling the redirect.
     if (!deferred_completion_status_) {
       network::URLLoaderCompletionStatus deferred_status = status;
       // Completing with `net::OK` before the redirect is followed means no
@@ -305,7 +322,7 @@ void SyncLoadContext::OnCompletedRequest(
   response_->head->encoded_body_length = network::mojom::EncodedBodyLength::New(
       status.encoded_body_length.InBytes());
   if ((blob_response_started_ && !blob_finished_) || body_handle_.is_valid()) {
-    // The body is still begin downloaded as a Blob, or being read through the
+    // The body is still being downloaded as a Blob, or being read through the
     // handle. Wait until it's completed.
     return;
   }
@@ -317,8 +334,9 @@ void SyncLoadContext::OnFinishCreatingBlob(
   DCHECK(!Completed());
   blob_finished_ = true;
   response_->downloaded_blob = blob;
-  if (request_completed_)
+  if (request_completed_) {
     CompleteRequest();
+  }
 }
 
 void SyncLoadContext::OnBodyReadable(MojoResult,
@@ -329,21 +347,22 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
   MojoResult result =
       body_handle_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
-    body_watcher_.ArmOrNotify();
+    body_watcher_->ArmOrNotify();
     return;
   }
   if (result == MOJO_RESULT_FAILED_PRECONDITION) {
     // Whole body has been read.
     body_handle_.reset();
-    body_watcher_.Cancel();
-    if (request_completed_)
+    body_watcher_->Cancel();
+    if (request_completed_) {
       CompleteRequest();
+    }
     return;
   }
   if (result != MOJO_RESULT_OK) {
     // Something went wrong.
     body_handle_.reset();
-    body_watcher_.Cancel();
+    body_watcher_->Cancel();
     response_->error_code = net::ERR_FAILED;
     CompleteRequest();
     return;
@@ -355,13 +374,13 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
     response_->data->Append(buffer);
   }
   body_handle_->EndReadData(buffer.size());
-  body_watcher_.ArmOrNotify();
+  body_watcher_->ArmOrNotify();
 }
 
 void SyncLoadContext::OnAbort(base::WaitableEvent* event) {
   DCHECK(!Completed());
   body_handle_.reset();
-  body_watcher_.Cancel();
+  body_watcher_->Cancel();
   response_->error_code = net::ERR_ABORTED;
   CompleteRequest();
 }
@@ -371,7 +390,7 @@ void SyncLoadContext::OnTimeout() {
   // the OneShotTimer must have been stopped.
   DCHECK(!Completed());
   body_handle_.reset();
-  body_watcher_.Cancel();
+  body_watcher_->Cancel();
   response_->error_code = net::ERR_TIMED_OUT;
   CompleteRequest();
 }
@@ -381,14 +400,15 @@ void SyncLoadContext::CompleteRequest() {
   DCHECK(!body_handle_.is_valid());
   CHECK(!follow_redirect_callback_);
   CHECK(!deferred_completion_status_);
-  CHECK(!*context_for_redirect_);
-  body_watcher_.Cancel();
-  signals_->SignalRedirectOrResponseComplete();
-  signals_ = nullptr;
-  response_ = nullptr;
-
-  // This will indirectly cause this object to be deleted.
+  body_watcher_->Cancel();
   resource_request_sender_->DeletePendingRequest(task_runner_);
+
+  // Clear stack pointers before waking the blocked calling thread so no raw_ptr
+  // references the caller's stack frame once SendSync() returns.
+  base::WaitableEvent* completed_event = signals_->TakeEventForCompletion();
+  signals_.reset();
+  response_ = nullptr;
+  completed_event->Signal();
 }
 
 bool SyncLoadContext::Completed() const {

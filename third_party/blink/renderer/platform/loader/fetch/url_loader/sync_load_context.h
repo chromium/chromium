@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 
+#include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
@@ -38,38 +41,49 @@ class ResourceLoadInfoNotifierWrapper;
 class URLLoaderThrottle;
 struct SyncLoadResponse;
 
-// This class owns the context necessary to perform an asynchronous request
-// while the main thread is blocked so that it appears to be synchronous.
+// This class owns the context necessary to perform an asynchronous request on a
+// background `loading_task_runner` while the calling thread is blocked so that
+// it appears to be synchronous.
+//
+// Ownership model: Created on the calling thread via `Create()` (with initial
+// refcount 1 and detached sequence checker), bound and used on
+// `loading_task_runner`, and released on `loading_task_runner` via
+// `SequencedTaskRunner::ReleaseSoon()` once the blocked caller finishes.
+//
 // There are a couple of modes to load a request:
-//   1) kDataPipe; body is received on a data pipe passed on
-//      OnStartLoadingResponseBody(), and the body is set to response_.data.
+//   1) kDataPipe: body is received on a data pipe passed on
+//      OnReceivedResponse(), and the body is set to response_.data.
 //   2) kBlob: body is received on a data pipe passed on
-//      OnStartLoadingResponseBody(), and wraps the data pipe with a
-//      SerializedBlobPtr.
+//      OnReceivedResponse(), and wraps the data pipe with a BlobDataHandle.
 class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
  public:
-  // Begins a new asynchronous request on whatever sequence this method is
-  // called on. |completed_event| will be signalled when the request is complete
-  // and |response| will be populated with the response data. |abort_event|
-  // will be signalled from the main thread to abort the sync request on a
-  // worker thread when the worker thread is being terminated.
-  // The pointer whose address is `context_for_redirect` is held by the caller
-  // that is blocked on this method, so it will remain valid until the operation
-  // completes. If there are redirects, `context_for_redirect` will point to the
-  // callee context.
-  // If |download_to_blob_registry| is not null, it is used to
-  // redirect the download to a blob, with the resulting blob populated in
-  // |response|.
-  static void StartAsyncWithWaitableEvent(
+  // Creates a `SyncLoadContext` bound to `loading_task_runner`. The caller must
+  // not copy the returned `scoped_refptr` on the calling thread and must
+  // release it on `loading_task_runner` via `ReleaseSoon()`.
+  static scoped_refptr<SyncLoadContext> Create(
+      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner);
+
+  SyncLoadContext(const SyncLoadContext&) = delete;
+  SyncLoadContext& operator=(const SyncLoadContext&) = delete;
+  ~SyncLoadContext() override;
+
+  // Begins a new asynchronous request on `loading_task_runner`.
+  // `completed_event` will be signalled when each redirect or the final
+  // response completes, and `response` will be populated with redirect or
+  // response data (`response->redirect_info` is engaged iff a redirect awaits
+  // `FollowRedirect()` or `CancelRedirect()`). `abort_event` will be signalled
+  // from the main thread to abort the sync request on a worker thread when the
+  // worker thread is being terminated.
+  // If `download_to_blob_registry` is not null, it is used to redirect the
+  // download to a blob, with the resulting blob populated in `response`.
+  void StartAsyncWithWaitableEvent(
       std::unique_ptr<network::ResourceRequest> request,
-      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       SyncLoadResponse* response,
-      SyncLoadContext** context_for_redirect,
       base::WaitableEvent* completed_event,
       base::WaitableEvent* abort_event,
       base::TimeDelta timeout,
@@ -78,28 +92,27 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
 
-  SyncLoadContext(const SyncLoadContext&) = delete;
-  SyncLoadContext& operator=(const SyncLoadContext&) = delete;
-  ~SyncLoadContext() override;
-
   void FollowRedirect(std::vector<std::string> removed_headers,
                       net::HttpRequestHeaders modified_headers);
   void CancelRedirect();
 
  private:
   friend class SyncLoadContextTest;
+  class SignalHelper;
 
-  SyncLoadContext(
-      network::ResourceRequest* request,
-      std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          url_loader_factory,
-      SyncLoadResponse* response,
-      SyncLoadContext** context_for_redirect,
-      base::WaitableEvent* completed_event,
-      base::WaitableEvent* abort_event,
-      base::TimeDelta timeout,
-      mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
+  explicit SyncLoadContext(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  void InitializeRequest(network::ResourceRequest* request,
+                         std::unique_ptr<network::PendingSharedURLLoaderFactory>
+                             url_loader_factory,
+                         SyncLoadResponse* response,
+                         base::WaitableEvent* completed_event,
+                         base::WaitableEvent* abort_event,
+                         base::TimeDelta timeout,
+                         mojo::PendingRemote<mojom::blink::BlobRegistry>
+                             download_to_blob_registry);
+
   // ResourceRequestClient implementation:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
   void OnReceivedRedirect(
@@ -123,20 +136,14 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   void CompleteRequest();
   bool Completed() const;
 
-  // This raw pointer will remain valid for the lifetime of this object because
-  // it remains on the stack until |event_| is signaled.
-  // Set to null after CompleteRequest() is called.
-  raw_ptr<SyncLoadResponse> response_;
+  // This raw pointer will remain valid until CompleteRequest() signals the
+  // completion event because it remains on the caller's stack.
+  // Set to null before CompleteRequest() signals the final event.
+  raw_ptr<SyncLoadResponse> response_ = nullptr;
 
   // Used when handling a redirect. It is set in OnReceivedRedirect(), and
   // called when FollowRedirect() is called from the original thread.
   FollowRedirectCallback follow_redirect_callback_;
-
-  // This raw pointer will be set to `this` when receiving redirects on
-  // independent thread and set to nullptr in `FollowRedirect()` or
-  // `CancelRedirect()` on the same thread after `redirect_or_response_event_`
-  // is signaled, which protects it against race condition.
-  raw_ptr<SyncLoadContext*> context_for_redirect_;
 
   // Stores the completion status if OnCompletedRequest() arrives while a
   // redirect is being handled on the calling thread.
@@ -147,9 +154,9 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
 
   // Used when Mode::kDataPipe.
   mojo::ScopedDataPipeConsumerHandle body_handle_;
-  mojo::SimpleWatcher body_watcher_;
+  std::unique_ptr<mojo::SimpleWatcher> body_watcher_;
 
-  // State necessary to run a request on an independent thread.
+  // State necessary to run a request on `task_runner_`.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<ResourceRequestSender> resource_request_sender_;
 
@@ -166,7 +173,6 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  class SignalHelper;
   std::unique_ptr<SignalHelper> signals_;
 };
 
