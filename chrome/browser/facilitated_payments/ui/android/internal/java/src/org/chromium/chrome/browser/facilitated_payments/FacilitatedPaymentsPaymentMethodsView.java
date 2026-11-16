@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -217,7 +215,9 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return assumeNonNull(mCurrentScreen).getVerticalScrollOffset();
+        // The bottom sheet can query the scroll offset while it is animating closed, after
+        // {@link #setVisible(boolean)} has already cleared {@link #mCurrentScreen}.
+        return mCurrentScreen == null ? 0 : mCurrentScreen.getVerticalScrollOffset();
     }
 
     @Override
