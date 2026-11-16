@@ -927,9 +927,9 @@ void CameraEffectsController::SetCameraEffects(
   config->segmentation_model = GetSegmentationModelType();
 
   config->segmentation_inference_backend =
-      GetInferenceBackend(ash::features::kVcSegmentationInferenceBackend);
+      cros::mojom::InferenceBackend::kDefaultValue;
   config->relighting_inference_backend =
-      GetInferenceBackend(ash::features::kVcRelightingInferenceBackend);
+      cros::mojom::InferenceBackend::kDefaultValue;
   config->retouch_inference_backend =
       GetInferenceBackend(ash::features::kVcRetouchInferenceBackend);
 

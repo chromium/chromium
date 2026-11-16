@@ -3245,21 +3245,10 @@ const FeatureEntry::FeatureParam kVcInferenceBackendNpu[] = {
     {"inference_backend", "NPU"},
 };
 
-const FeatureEntry::FeatureVariation kVcRelightingInferenceBackendVariations[] =
-    {{"AUTO", kVcInferenceBackendAuto, nullptr},
-     {"GPU", kVcInferenceBackendGpu, nullptr},
-     {"NPU", kVcInferenceBackendNpu, nullptr}};
-
 const FeatureEntry::FeatureVariation kVcRetouchInferenceBackendVariations[] = {
     {"AUTO", kVcInferenceBackendAuto, nullptr},
     {"GPU", kVcInferenceBackendGpu, nullptr},
     {"NPU", kVcInferenceBackendNpu, nullptr}};
-
-const FeatureEntry::FeatureVariation
-    kVcSegmentationInferenceBackendVariations[] = {
-        {"AUTO", kVcInferenceBackendAuto, nullptr},
-        {"GPU", kVcInferenceBackendGpu, nullptr},
-        {"NPU", kVcInferenceBackendNpu, nullptr}};
 
 const FeatureEntry::FeatureParam kVcSegmentationModelHighResolution[] = {
     {"segmentation_model", "high_resolution"},
@@ -9338,13 +9327,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesksTemplatesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDesksTemplates)},
 
-    {"vc-relighting-inference-backend",
-     flag_descriptions::kVcRelightingInferenceBackendName,
-     flag_descriptions::kVcRelightingInferenceBackendDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         ash::features::kVcRelightingInferenceBackend,
-         kVcRelightingInferenceBackendVariations,
-         "VcRelightingInferenceBackend")},
     {"vc-retouch-inference-backend",
      flag_descriptions::kVcRetouchInferenceBackendName,
      flag_descriptions::kVcRetouchInferenceBackendDescription, kOsCrOS,
@@ -9356,13 +9338,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVcSegmentationModel,
                                     kVcSegmentationModelVariations,
                                     "VCSegmentationModel")},
-    {"vc-segmentation-inference-backend",
-     flag_descriptions::kVcSegmentationInferenceBackendName,
-     flag_descriptions::kVcSegmentationInferenceBackendDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         ash::features::kVcSegmentationInferenceBackend,
-         kVcSegmentationInferenceBackendVariations,
-         "VcSegmentationInferenceBackend")},
     {"vc-web-api", flag_descriptions::kVcWebApiName,
      flag_descriptions::kVcWebApiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVcWebApi)},

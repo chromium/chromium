@@ -9964,34 +9964,12 @@
     "expiry_milestone": 164
   },
   {
-    "name": "vc-relighting-inference-backend",
-    "owners": [
-      "shik@chromium.org",
-      "chingkang@chromium.org",
-      "jcliang@chromium.org",
-      "ototot@chromium.org",
-      "cros-odml-foundations-eng@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "vc-retouch-inference-backend",
     "owners": [
       "shik@chromium.org",
       "chingkang@chromium.org",
       "jcliang@chromium.org",
       "ototot@google.com",
-      "cros-odml-foundations-eng@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "vc-segmentation-inference-backend",
-    "owners": [
-      "shik@chromium.org",
-      "chingkang@chromium.org",
-      "jcliang@chromium.org",
-      "ototot@chromium.org",
       "cros-odml-foundations-eng@google.com"
     ],
     "expiry_milestone": 150

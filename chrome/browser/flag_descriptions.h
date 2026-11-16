@@ -4908,23 +4908,11 @@ inline constexpr char kNotificationOneTapUnsubscribeOnDesktopDescription[] =
     "Enables an experimental UX  on Desktop that replaces the [Site settings]"
     "button on web push notifications with an [Unsubscribe] button.";
 
-inline constexpr char kVcRelightingInferenceBackendName[] =
-    "Select relighting backend for video conferencing";
-inline constexpr char kVcRelightingInferenceBackendDescription[] =
-    "Select relighting backend to be used for running model inference during "
-    "video conferencing, which may offload work from GPU.";
-
 inline constexpr char kVcRetouchInferenceBackendName[] =
     "Select retouch backend for video conferencing";
 inline constexpr char kVcRetouchInferenceBackendDescription[] =
     "Select retouch backend to be used for running model inference during "
     "video conferencing, which may offload work from GPU.";
-
-inline constexpr char kVcSegmentationInferenceBackendName[] =
-    "Select segmentation backend for video conferencing";
-inline constexpr char kVcSegmentationInferenceBackendDescription[] =
-    "Select segmentation backend to be used for running model inference "
-    "during video conferencing, which may offload work from GPU.";
 
 inline constexpr char kVcSegmentationModelName[] =
     "Use a different segmentation model";
