@@ -1,0 +1,6 @@
+monorail: {
+  component: "Internals>Plugins>PDF>Save to Drive"
+}
+buganizer_public: {
+  component_id: 1819595
+}
