@@ -30,6 +30,7 @@ class Window;
 
 namespace ash {
 class OverviewItem;
+class ScopedDecorationHider;
 class ScopedOverviewAnimationSettings;
 class ScopedOverviewHideWindows;
 
@@ -97,9 +98,6 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // identity transform when exiting the overview mode. See
   // `OverviewItem::RestoreWindow()` for details why we need this.
   void RestoreWindow(bool reset_transform, bool animate);
-
-  // Prepares for overview mode by doing any necessary actions before entering.
-  void PrepareForOverview();
 
   // Sets the opacity of the managed windows.
   void SetOpacity(float opacity);
@@ -175,6 +173,11 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   void RestoreWindowTree();
 
+  // Stops hiding the decorations of `window_` and its transient children. If
+  // overview is exiting, the decorations stay hidden until the exit animation
+  // completes.
+  void ReleaseDecorationHiders();
+
   // A weak pointer to the overview item that owns |this|. Guaranteed to be not
   // null for the lifetime of |this|.
   raw_ptr<OverviewItem> overview_item_;
@@ -198,16 +201,22 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // event targeting policy will be sent to NONE. In addition, bubble should not
   // adjust their bounds using the display info as it should stay as is.  Store
   // the original states so we can change them back when destroying |this|.
+  // The decoration (e.g. shadow) of the window is also hidden.
   class TransientInfo {
    public:
     explicit TransientInfo(aura::Window* transient);
     TransientInfo(const TransientInfo&) = delete;
-    TransientInfo& operator=(aura::Window* transient) = delete;
+    TransientInfo& operator=(const TransientInfo&) = delete;
     ~TransientInfo();
+
+    // Returns the object that hides the decoration of the window, so that the
+    // caller can decide when to show the decoration again.
+    std::unique_ptr<ScopedDecorationHider> TakeDecorationHider();
 
    private:
     bool adjust_if_offscreen = true;
     aura::ScopedWindowEventTargetingBlocker event_targeting_blocker;
+    std::unique_ptr<ScopedDecorationHider> decoration_hider;
   };
   base::flat_map<aura::Window*, std::unique_ptr<TransientInfo>>
       transient_windows_info_map_;

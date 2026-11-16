@@ -10,6 +10,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/decoration/decoration_source.h"
 #include "ui/gfx/geometry/insets.h"
@@ -273,6 +274,38 @@ TEST_F(DecorationTest, CrossFade) {
   // Completing animations cleans up the fading layer.
   decoration().OnImplicitAnimationsCompleted();
   EXPECT_FALSE(decoration().fading_layer_for_testing());
+}
+
+// A hidden decoration is updated immediately, without a cross-fade, and hiding
+// a decoration cancels any cross-fade already in progress.
+TEST_F(DecorationTest, NoCrossFadeWhenHidden) {
+  decoration().SetContentBounds({100, 100});
+  decoration().layer()->SetVisible(false);
+
+  source().TriggerChanged(base::Milliseconds(100));
+  EXPECT_FALSE(decoration().fading_layer_for_testing());
+
+  decoration().layer()->SetVisible(true);
+  set_details(MakeDetails(20));
+  source().TriggerChanged(base::Milliseconds(100));
+  ASSERT_TRUE(decoration().fading_layer_for_testing());
+  ASSERT_TRUE(decoration()
+                  .decoration_layer_for_testing()
+                  ->GetAnimator()
+                  ->is_animating());
+
+  // Hiding the decoration while a cross-fade is in progress cancels the
+  // cross-fade and resets the decoration layer's opacity to 1.
+  decoration().layer()->SetVisible(false);
+  set_details(MakeDetails(10));
+  source().TriggerChanged(base::Milliseconds(100));
+  EXPECT_FALSE(decoration().fading_layer_for_testing());
+  EXPECT_FALSE(decoration()
+                   .decoration_layer_for_testing()
+                   ->GetAnimator()
+                   ->is_animating());
+  EXPECT_EQ(1.f, decoration().decoration_layer_for_testing()->opacity());
+  EXPECT_EQ(gfx::Rect(-10, -10, 120, 120), decoration().layer()->bounds());
 }
 
 // The fading layer keeps framing the content with its own margins if the

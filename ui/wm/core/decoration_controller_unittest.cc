@@ -24,6 +24,7 @@
 #include "ui/decoration/highlight_border.h"
 #include "ui/decoration/shadow.h"
 #include "ui/decoration/shadow_with_highlight_border.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/decoration_controller_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
@@ -458,6 +459,39 @@ TEST_F(DecorationControllerTest, HighlightBorderVisibilityAndShowStates) {
   EXPECT_TRUE(decoration_controller()->IsShadowVisibleForWindow(window.get()));
   EXPECT_FALSE(
       decoration_controller()->IsHighlightBorderVisibleForWindow(window.get()));
+}
+
+// Hiding the decoration doesn't cross-fade it, while showing it does.
+TEST_F(DecorationControllerTest, CrossFadeOnlyWhenVisible) {
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_TEXTURED);
+  ParentWindow(window.get());
+  window->SetBounds({10, 20, 300, 400});
+  window->Show();
+
+  ui::Decoration* decoration =
+      DecorationController::GetDecorationForWindow(window.get());
+  ASSERT_TRUE(decoration);
+  EXPECT_TRUE(decoration->layer()->GetTargetVisibility());
+  EXPECT_FALSE(decoration->fading_layer_for_testing());
+
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Maximizing hides the shadow without a cross-fade.
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMaximized);
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+  EXPECT_EQ(
+      0, DecorationController::GetShadowForWindow(window.get())->elevation());
+  EXPECT_FALSE(decoration->fading_layer_for_testing());
+
+  // Restoring shows the shadow with a cross-fade.
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
+  EXPECT_TRUE(decoration->layer()->GetTargetVisibility());
+  EXPECT_TRUE(decoration->fading_layer_for_testing());
 }
 
 TEST_F(DecorationControllerTest, HighlightBorderStacksAboveChildWindows) {

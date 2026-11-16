@@ -28,6 +28,7 @@
 namespace ash {
 
 class OverviewSession;
+class ScopedDecorationHider;
 
 // Manages a overview session which displays an overview of all windows and
 // allows selecting a window to activate it.
@@ -120,6 +121,11 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // Post a task to update the shadow and rounded corners of overview windows.
   void DelayedUpdateRoundedCornersAndShadow();
 
+  // Keeps `decoration_hider` alive until the exit animation completes, so that
+  // the decoration of the window stays hidden during the exit animation.
+  void AddExitDecorationHider(
+      std::unique_ptr<ScopedDecorationHider> decoration_hider);
+
   // OverviewDelegate:
   void AddExitAnimationObserver(
       std::unique_ptr<DelayedAnimationObserver> animation) override;
@@ -185,6 +191,10 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // We may pause occlusion tracking on enter and exit overview mode.
   std::optional<ScopedOcclusionPauser> enter_pauser_;
   std::optional<ScopedOcclusionPauser> exit_pauser_;
+
+  // Hide the decorations (e.g. shadow) of the windows that were in overview
+  // until the exit animation completes.
+  std::vector<std::unique_ptr<ScopedDecorationHider>> exit_decoration_hiders_;
 
   // The following state tracks occlusion pausing and its delayed unpausing for
   // overview mode.

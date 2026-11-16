@@ -682,7 +682,6 @@ float OverviewItem::GetOpacity() const {
 }
 
 void OverviewItem::PrepareForOverview() {
-  transform_window_.PrepareForOverview();
   prepared_for_overview_ = true;
 }
 

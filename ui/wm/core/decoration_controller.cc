@@ -396,6 +396,12 @@ void DecorationController::Impl::HandlePossibleDecorationVisibilityChange(
     decoration = GetDecorationForWindow(window);
   }
 
+  // Update the visibility first, so that hiding the decoration updates it
+  // without a cross-fade animation, while showing it still cross-fades.
+  if (decoration->layer()->GetTargetVisibility() != should_show_any) {
+    decoration->layer()->SetVisible(should_show_any);
+  }
+
   auto* source =
       decoration->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>();
   CHECK(source);
@@ -427,10 +433,6 @@ void DecorationController::Impl::HandlePossibleDecorationVisibilityChange(
     window->layer()->StackAtTop(decoration->layer());
   } else {
     window->layer()->StackAtBottom(decoration->layer());
-  }
-
-  if (decoration->layer()->GetTargetVisibility() != should_show_any) {
-    decoration->layer()->SetVisible(should_show_any);
   }
 }
 

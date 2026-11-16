@@ -4,20 +4,33 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_element.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/decoration/decoration.h"
 #include "ui/decoration/highlight_border.h"
 #include "ui/decoration/shadow.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/decoration_controller.h"
@@ -348,6 +361,229 @@ TEST_F(WmDecorationControllerDelegateTest, HighlightBorderThemeColors) {
             border->highlight_color());
   EXPECT_EQ(get_color(ui::kColorCrosSystemHighlightBorder1),
             border->border_color());
+}
+
+namespace {
+
+// Records whether the decoration is visible each time the target transform of
+// the window is about to change, i.e. when a transform animation starts.
+class DecorationVisibilityRecorder : public aura::WindowObserver {
+ public:
+  DecorationVisibilityRecorder(aura::Window* window, ui::Decoration* decoration)
+      : decoration_(decoration) {
+    observation_.Observe(window);
+  }
+
+  // The number of times the target transform has changed.
+  int transform_change_count() const { return transform_change_count_; }
+
+  // True if the decoration was visible in any of the changes.
+  bool was_decoration_visible() const { return was_decoration_visible_; }
+
+  // aura::WindowObserver:
+  void OnWindowTargetTransformChanging(
+      aura::Window* window,
+      const gfx::Transform& new_transform) override {
+    ++transform_change_count_;
+    was_decoration_visible_ |= decoration_->layer()->GetTargetVisibility();
+  }
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    was_decoration_visible_ |= decoration_->layer()->GetTargetVisibility();
+  }
+
+ private:
+  const raw_ptr<ui::Decoration> decoration_;
+  int transform_change_count_ = 0;
+  bool was_decoration_visible_ = false;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observation_{
+      this};
+};
+
+}  // namespace
+
+// Tests that the decoration is hidden for the entire overview session: before
+// the enter animation starts, while in overview, and until the exit animation
+// ends.
+TEST_F(WmDecorationControllerDelegateTest, HideDecorationDuringOverview) {
+  auto* decoration_controller = Shell::Get()->decoration_controller();
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
+  window->SetProperty(wm::kWindowHasHighlightBorderKey, true);
+  auto* decoration =
+      decoration_controller->GetDecorationForWindow(window.get());
+  ASSERT_TRUE(decoration);
+  EXPECT_TRUE(decoration->layer()->GetTargetVisibility());
+
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ui::LayerAnimator* animator = window->layer()->GetAnimator();
+  DecorationVisibilityRecorder recorder(window.get(), decoration);
+
+  // The decoration is hidden before the enter animation starts.
+  EnterOverview();
+  ASSERT_TRUE(
+      animator->IsAnimatingProperty(ui::LayerAnimationElement::TRANSFORM));
+  const int enter_transform_change_count = recorder.transform_change_count();
+  EXPECT_GT(enter_transform_change_count, 0);
+  EXPECT_FALSE(recorder.was_decoration_visible());
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+  WaitForOverviewEnterAnimation();
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+
+  // The decoration stays hidden while in overview even if it is updated.
+  decoration_controller->UpdateDecorationForWindow(window.get());
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+  wm::SetShadowElevation(window.get(), wm::kShadowElevationInactiveWindow);
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+  wm::SetShadowElevation(window.get(), wm::kShadowElevationDefault);
+  window->SetProperty(wm::kWindowHasHighlightBorderKey, false);
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+  window->SetProperty(wm::kWindowHasHighlightBorderKey, true);
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+  EXPECT_FALSE(decoration_controller->IsShadowVisibleForWindow(window.get()));
+  EXPECT_FALSE(
+      decoration_controller->IsHighlightBorderVisibleForWindow(window.get()));
+
+  // The decoration stays hidden until the exit animation ends.
+  ExitOverview();
+  ASSERT_TRUE(
+      animator->IsAnimatingProperty(ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_GT(recorder.transform_change_count(), enter_transform_change_count);
+  EXPECT_FALSE(recorder.was_decoration_visible());
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+  WaitForOverviewExitAnimation();
+  EXPECT_TRUE(decoration->layer()->GetTargetVisibility());
+  EXPECT_TRUE(decoration_controller->IsShadowVisibleForWindow(window.get()));
+  EXPECT_TRUE(
+      decoration_controller->IsHighlightBorderVisibleForWindow(window.get()));
+}
+
+// Tests that the decoration of a window added during overview is hidden until
+// the overview ends.
+TEST_F(WmDecorationControllerDelegateTest,
+       HideDecorationForWindowAddedDuringOverview) {
+  auto* decoration_controller = Shell::Get()->decoration_controller();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
+  EnterOverview();
+
+  // Show the new window without activating it so that overview does not end.
+  auto window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300},
+                              kShellWindowId_Invalid, /*delegate=*/nullptr,
+                              /*show=*/false);
+  views::Widget::GetWidgetForNativeWindow(window2.get())->ShowInactive();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_TRUE(decoration_controller->IsShadowVisibleForWindow(window2.get()));
+  OverviewController::Get()->overview_session()->AddItemInMruOrder(
+      window2.get(), /*reposition=*/true, /*animate=*/false,
+      /*restack=*/false, /*use_spawn_animation=*/false);
+  ASSERT_TRUE(GetOverviewItemForWindow(window2.get()));
+  auto* decoration2 =
+      decoration_controller->GetDecorationForWindow(window2.get());
+  ASSERT_TRUE(decoration2);
+  EXPECT_FALSE(decoration2->layer()->GetTargetVisibility());
+  decoration_controller->UpdateDecorationForWindow(window2.get());
+  EXPECT_FALSE(decoration2->layer()->GetTargetVisibility());
+  EXPECT_FALSE(decoration_controller->IsShadowVisibleForWindow(window2.get()));
+
+  // A transient child added during overview is hidden as well.
+  auto transient =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {50, 50, 100, 100},
+                              kShellWindowId_Invalid, /*delegate=*/nullptr,
+                              /*show=*/false);
+  wm::AddTransientChild(window2.get(), transient.get());
+  views::Widget::GetWidgetForNativeWindow(transient.get())->ShowInactive();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(
+      decoration_controller->IsShadowVisibleForWindow(transient.get()));
+  decoration_controller->UpdateDecorationForWindow(transient.get());
+  EXPECT_FALSE(
+      decoration_controller->IsShadowVisibleForWindow(transient.get()));
+
+  ExitOverview();
+  EXPECT_TRUE(decoration2->layer()->GetTargetVisibility());
+  EXPECT_TRUE(decoration_controller->IsShadowVisibleForWindow(window2.get()));
+  EXPECT_TRUE(decoration_controller->IsShadowVisibleForWindow(transient.get()));
+}
+
+// Tests that destroying a window during overview or during the exit animation
+// is safe, and that the decoration of the remaining window is restored.
+TEST_F(WmDecorationControllerDelegateTest, WindowDestroyedDuringOverview) {
+  auto* decoration_controller = Shell::Get()->decoration_controller();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
+  auto window2 = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
+  auto window3 = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
+  auto* decoration3 =
+      decoration_controller->GetDecorationForWindow(window3.get());
+  ASSERT_TRUE(decoration3);
+
+  EnterOverview();
+  EXPECT_FALSE(decoration3->layer()->GetTargetVisibility());
+
+  // Destroy a window while in overview.
+  window1.reset();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(decoration3->layer()->GetTargetVisibility());
+
+  // Destroy a window while the exit animation is running.
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ExitOverview();
+  ASSERT_TRUE(window2->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_FALSE(decoration3->layer()->GetTargetVisibility());
+  window2.reset();
+  EXPECT_FALSE(decoration3->layer()->GetTargetVisibility());
+
+  WaitForOverviewExitAnimation();
+  EXPECT_TRUE(decoration3->layer()->GetTargetVisibility());
+  EXPECT_TRUE(decoration_controller->IsShadowVisibleForWindow(window3.get()));
+}
+
+// Tests that re-entering overview while the previous exit animation is still
+// running keeps the decoration of re-entering windows hidden continuously,
+// while restoring windows excluded from the new overview session.
+TEST_F(WmDecorationControllerDelegateTest, ReenterOverviewDuringExitAnimation) {
+  auto* decoration_controller = Shell::Get()->decoration_controller();
+  auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
+  auto window2 =
+      CreateWindowWithAppType(AppType::SYSTEM_APP, {250, 0, 200, 300});
+  auto* decoration1 =
+      decoration_controller->GetDecorationForWindow(window1.get());
+  auto* decoration2 =
+      decoration_controller->GetDecorationForWindow(window2.get());
+  ASSERT_TRUE(decoration1);
+  ASSERT_TRUE(decoration2);
+
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  EnterOverview();
+  WaitForOverviewEnterAnimation();
+
+  DecorationVisibilityRecorder recorder1(window1.get(), decoration1);
+  ExitOverview();
+  ASSERT_TRUE(window1->layer()->GetAnimator()->IsAnimatingProperty(
+      ui::LayerAnimationElement::TRANSFORM));
+  EXPECT_FALSE(decoration1->layer()->GetTargetVisibility());
+  EXPECT_FALSE(decoration2->layer()->GetTargetVisibility());
+
+  // Exclude `window2` from the next overview session before re-entering while
+  // the exit animation is still running. `kHideInOverviewKey` hides `window2`
+  // during overview, so force an update to verify its exit hider was released.
+  window2->SetProperty(kHideInOverviewKey, true);
+  EnterOverview();
+  EXPECT_FALSE(recorder1.was_decoration_visible());
+  EXPECT_FALSE(decoration1->layer()->GetTargetVisibility());
+  EXPECT_FALSE(decoration1->fading_layer_for_testing());
+  decoration_controller->UpdateDecorationForWindow(window2.get());
+  EXPECT_TRUE(decoration2->layer()->GetTargetVisibility());
+
+  WaitForOverviewEnterAnimation();
+  ExitOverview();
+  WaitForOverviewExitAnimation();
+  EXPECT_TRUE(decoration1->layer()->GetTargetVisibility());
+  EXPECT_TRUE(decoration2->layer()->GetTargetVisibility());
 }
 
 }  // namespace ash

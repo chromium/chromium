@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_not_drawn.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -200,6 +201,19 @@ void Decoration::RecreateDecorationLayer() {
 void Decoration::UpdateAppearance(
     std::optional<base::TimeDelta> cross_fade_duration) {
   CHECK(layer());
+
+  // A hidden decoration isn't seen, so update it immediately instead of
+  // starting or continuing cross-fade animations on hidden layers.
+  if (!layer()->GetTargetVisibility()) {
+    if (fading_layer()) {
+      StopObservingImplicitAnimations();
+      fading_layer_owner_.ReleaseLayer();
+      fading_appearance_ = std::nullopt;
+    }
+    decoration_layer()->GetAnimator()->StopAnimating();
+    UpdateAppearanceImmediately();
+    return;
+  }
 
   if (cross_fade_duration.has_value()) {
     CrossFadeToNewAppearance(*cross_fade_duration);

@@ -22,6 +22,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/scoped_decoration_hider.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -248,6 +249,11 @@ void OverviewController::DelayedUpdateRoundedCornersAndShadow() {
       FROM_HERE,
       base::BindOnce(&OverviewController::UpdateRoundedCornersAndShadow,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OverviewController::AddExitDecorationHider(
+    std::unique_ptr<ScopedDecorationHider> decoration_hider) {
+  exit_decoration_hiders_.push_back(std::move(decoration_hider));
 }
 
 void OverviewController::AddExitAnimationObserver(
@@ -480,6 +486,12 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     overview_session_->Init(
         windows, hide_windows,
         overview_window_occlusion_calculator_.GetCalculator());
+    // Clear any hiders left over from a canceled overview exit after the new
+    // session has created its own hiders, so windows re-entering overview keep
+    // their decorations hidden without interruption.
+    // TODO(crbug.com/581508679): Keep all overview decoration hiders in
+    // `OverviewController` instead of moving them upon exit.
+    exit_decoration_hiders_.clear();
 
     overview_session_->UpdateFrameThrottling();
 
@@ -541,6 +553,11 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
 }
 
 void OverviewController::OnEndingAnimationComplete(bool canceled) {
+  if (!canceled) {
+    // Show the decorations of the windows that were in overview.
+    exit_decoration_hiders_.clear();
+  }
+
   for (auto& observer : observers_)
     observer.OnOverviewModeEndingAnimationComplete(canceled);
 
