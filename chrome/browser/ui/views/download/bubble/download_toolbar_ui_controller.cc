@@ -22,6 +22,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -894,8 +895,7 @@ void DownloadToolbarUIController::UpdateIconDormant() {
   // TODO(crbug.com/323962334): This should also check whether the bubble is
   // open once the bubble is added.
   BrowserWindowInterface* last_active =
-      ProfileBrowserCollection::GetForProfile(browser_view_->GetProfile())
-          ->GetLastActiveBrowser();
+      GetLastActiveBrowserForDownloadBubble(browser_view_->GetProfile());
   bool should_update_button_progress =
       last_active && browser_view_->browser() == last_active;
   if (is_dormant_ == !should_update_button_progress) {

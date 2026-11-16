@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/common",
     "//chrome/common:constants",
     "//components/prefs",
+    "//components/tabs:public",
     "//content/public/browser",
     "//ui/base",
     "//ui/views",

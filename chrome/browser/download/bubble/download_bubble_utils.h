@@ -53,6 +53,13 @@ BrowserWindowInterface* FindBrowserToShowAnimation(
     download::DownloadItem* item,
     Profile* profile);
 
+// Returns the last active browser for `profile`, for deciding which window
+// shows the download bubble. If that browser is an undocked DevTools window,
+// returns the browser containing the inspected tab instead (or nullptr if there
+// is none), since DevTools windows have no visible toolbar to anchor the bubble
+// to.
+BrowserWindowInterface* GetLastActiveBrowserForDownloadBubble(Profile* profile);
+
 // Gets a pointer to the web app id, if the browser is for a web app, otherwise
 // nullptr.
 const webapps::AppId* GetWebAppIdForBrowser(

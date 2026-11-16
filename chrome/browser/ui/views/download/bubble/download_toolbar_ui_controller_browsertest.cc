@@ -7,11 +7,14 @@
 #include "base/files/file_path.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -31,6 +34,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
+#include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
@@ -463,4 +467,45 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
   CloseBrowserSynchronously(browser());
+}
+
+// Downloads completed while an undocked DevTools window is active should show
+// the bubble in the inspected browser window, not in the DevTools window, which
+// has no visible toolbar (https://crbug.com/469466897).
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       UndockedDevToolsShowsBubbleInInspectedBrowser) {
+  download::DownloadItem* download_item = CreateSlowTestDownload();
+  ASSERT_TRUE(download_item);
+
+  DevToolsWindow* devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(browser(),
+                                                    /*is_docked=*/false);
+  BrowserWindowInterface* devtools_browser =
+      DevToolsWindowTesting::Get(devtools_window)->browser();
+  ASSERT_NE(devtools_browser, browser());
+  ASSERT_TRUE(controller(devtools_browser));
+  ui_test_utils::DeprecatedFakeActivateBrowser(devtools_browser);
+
+  // Finish the download without activating `browser()`.
+  std::unique_ptr<content::DownloadTestObserver> observer(
+      CreateWaiter(browser(), 1));
+  ASSERT_TRUE(content::ExecJs(
+      browser()->GetTabStripModel()->GetActiveWebContents(),
+      content::JsReplace(
+          "fetch($1, {mode: 'no-cors'})",
+          embedded_test_server()->GetURL(
+              content::SlowDownloadHttpResponse::kFinishSlowResponseUrl))));
+  observer->WaitForFinished();
+  ASSERT_EQ(download::DownloadItem::COMPLETE, download_item->GetState());
+  ASSERT_EQ(devtools_browser,
+            ProfileBrowserCollection::GetForProfile(browser()->GetProfile())
+                ->GetLastActiveBrowser());
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller(browser())->bubble_contents_for_testing() != nullptr;
+  }));
+  EXPECT_EQ(controller(devtools_browser)->bubble_contents_for_testing(),
+            nullptr);
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 }

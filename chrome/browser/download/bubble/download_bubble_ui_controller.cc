@@ -33,7 +33,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -179,8 +178,7 @@ void DownloadBubbleUIController::OnOfflineItemUpdated(const OfflineItem& item) {
   OfflineItemModel model(offline_manager_, item);
   bool may_show_details =
       model.ShouldShowInBubble() &&
-      (browser_ == ProfileBrowserCollection::GetForProfile(profile_.get())
-                       ->GetLastActiveBrowser());
+      browser_ == GetLastActiveBrowserForDownloadBubble(profile_.get());
   // Consider dangerous in-progress downloads to be completed.
   bool is_done = model.IsDone() ||
                  (model.GetState() == download::DownloadItem::IN_PROGRESS &&
@@ -197,8 +195,7 @@ void DownloadBubbleUIController::OnDownloadItemUpdated(
   DownloadItemModel model(item);
   bool may_show_details =
       model.ShouldShowInBubble() &&
-      (browser_ == ProfileBrowserCollection::GetForProfile(profile_.get())
-                       ->GetLastActiveBrowser());
+      browser_ == GetLastActiveBrowserForDownloadBubble(profile_.get());
   // Consider dangerous in-progress downloads to be completed.
   bool is_done = item->IsDone() ||
                  (item->GetState() == download::DownloadItem::IN_PROGRESS &&

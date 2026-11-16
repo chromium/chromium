@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
@@ -18,6 +19,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -214,6 +216,21 @@ BrowserWindowInterface* FindBrowserToShowAnimation(
                                     ->GetLastActiveBrowser();
   }
   return browser_to_show_animation;
+}
+
+BrowserWindowInterface* GetLastActiveBrowserForDownloadBubble(
+    Profile* profile) {
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
+  if (!browser || browser->GetType() != BrowserWindowInterface::TYPE_DEVTOOLS) {
+    return browser;
+  }
+  DevToolsWindow* devtools_window = DevToolsWindow::AsDevToolsWindow(browser);
+  content::WebContents* inspected =
+      devtools_window ? devtools_window->GetInspectedWebContents() : nullptr;
+  tabs::TabInterface* inspected_tab =
+      inspected ? tabs::TabInterface::MaybeGetFromContents(inspected) : nullptr;
+  return inspected_tab ? inspected_tab->GetBrowserWindowInterface() : nullptr;
 }
 
 const webapps::AppId* GetWebAppIdForBrowser(
