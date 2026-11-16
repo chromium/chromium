@@ -642,17 +642,22 @@ def _browser_startup_crossbench(
   # We cannot use --browser-config here because it conflicts with the
   # --browser flag automatically added by the Chromium test runner.
 
-  # NOTE: Keep this list in sync with:
-  # third_party/crossbench/config/benchmark/browser_startup/browser.config.hjson
-  # chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh
-  # The shard maps in tools/perf/core/shard_maps/ also embed these flags, so
-  # update them too.
+  # NOTE: To update INITIAL_WEBUI_FEATURES and the shard maps:
+  # 1. Edit chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh.
+  # 2. Run generate_chrome_flags.py in that directory (which updates
+  #    about_flags.cc, INITIAL_WEBUI_FEATURES below, and the
+  #    browser_startup.crossbench entries in tools/perf/core/shard_maps/).
+  #    Pass --update-crossbench to also update
+  #    config/benchmark/browser_startup/browser.config.hjson in
+  #    third_party/crossbench.
   INITIAL_WEBUI_FEATURES = (
     "BypassOutdatedSurfaceActivation,"
     "DeferHistoryBackendInit,"
     "DeferLayoutDuringBrowserStartup,"
     "DeferSessionStorageScavengingOnStartup,"
     "DeferSpellcheckInitialization,"
+    "GpuPersistentCacheAsyncInitialize,"
+    "GtkPrefetchNavButtonIcons,"
     "InitialWebUI,"
     "InitialWebUISurfaceSync:deadline_in_frames/12000/"
     "renderer_commit_delay_ms/100000,"
@@ -660,11 +665,16 @@ def _browser_startup_crossbench(
     "InitialWebUIWithoutSpellCheckForNtp,"
     "InitialWebUIWithoutTranslateForNtp,"
     "LazyKeyedServiceInstantiation,"
+    "OmniboxAimPopupDeferCreation,"
+    "OmniboxWebUIPopupDeferCreation,"
     "OnlyUseWindowResizeHelperOnResize,"
+    "OptimizeVariationsIpc,"
     "PerDependencyDeadlines,"
+    "PrioritizeCompositorTaskRunnerOnStartup,"
     "PrioritizeResizeTaskRunnerOnStartup,"
     "SendGPUChannelEarly,"
     "SkipIPCChannelPausingForNonGuests,"
+    "TopChromeWebUISharedRenderer,"
     "WebUIBackForwardButton,"
     "WebUIBundledCodeCache,"
     "WebUIBypassMojoConnections,"

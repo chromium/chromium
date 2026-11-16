@@ -8,6 +8,7 @@ from __future__ import print_function
 import argparse
 import collections
 import filecmp
+import itertools
 import json
 import multiprocessing
 import os
@@ -695,6 +696,35 @@ def _ValidateShardMaps(args):
         f'`{__file__} deschedule` to deschedule the benchmark '
         'from the shard map.'
       )
+    if platform.crossbench:
+      cb_by_name = {c.name: c for c in platform.crossbench}
+      with open(platform.shards_map_file_path, encoding='utf-8') as f:
+        shard_map = json.load(f)
+      for shard, benchmarks_in_shard in shard_map.items():
+        if 'extra_infos' in shard:
+          continue
+        for cb_name, cb_entry in benchmarks_in_shard.get(
+          'crossbench', {}
+        ).items():
+          if cb_name in cb_by_name:
+            expected_args = list(cb_by_name[cb_name].flags)
+            actual_args = cb_entry.get('arguments', [])
+            if expected_args != actual_args:
+              expected_arg, actual_arg = next(
+                (e, a)
+                for e, a in itertools.zip_longest(expected_args, actual_args)
+                if e != a
+              )
+              errors.append(
+                f'Crossbench {cb_name} arguments in '
+                f'{platform.shards_map_file_path} do not match '
+                'bot_platforms.py. First difference:\n'
+                f'  expected: {expected_arg}\n'
+                f'  actual:   {actual_arg}\n'
+                'Please run chrome/browser/ui/webui/webui_toolbar/scripts/'
+                'generate_chrome_flags.py (for browser_startup.crossbench) '
+                f'or `{__file__} update` to regenerate the shard map.'
+              )
 
   for error in errors:
     print('*', error, '\n', file=sys.stderr)
