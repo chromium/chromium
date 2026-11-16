@@ -86,20 +86,12 @@ void CanvasResource::DropRefOnOwningThread(
   CHECK(resource);
   DCHECK(!resource->is_cross_thread());
 
-  // Allow the resource to determine whether it wants to preserve itself for
-  // reuse.
-  auto* raw_resource = resource.get();
-  raw_resource->OnRefReturned(std::move(resource));
+  if (auto* client = resource->client_.get()) {
+    client->OnResourceRefReturned(std::move(resource));
+  }
 }
 
-// CanvasResourceSharedImage
-//==============================================================================
-
-CanvasResourceSharedImage::CanvasResourceSharedImage(
-    scoped_refptr<gpu::ClientSharedImage> shared_image)
-    : CanvasResource(shared_image) {}
-
-void CanvasResourceSharedImage::InitializeSoftware(
+void CanvasResource::InitializeSoftware(
     base::WeakPtr<Client> client,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider) {
@@ -123,7 +115,7 @@ void CanvasResourceSharedImage::InitializeSoftware(
   is_initialized_ = true;
 }
 
-void CanvasResourceSharedImage::Initialize(base::WeakPtr<Client> client) {
+void CanvasResource::Initialize(base::WeakPtr<Client> client) {
   DCHECK(GetSharedImage());
   DCHECK(!is_initialized_);
 
@@ -135,8 +127,7 @@ void CanvasResourceSharedImage::Initialize(base::WeakPtr<Client> client) {
   is_initialized_ = true;
 }
 
-scoped_refptr<CanvasResourceSharedImage>
-CanvasResourceSharedImage::CreateForTesting(
+scoped_refptr<CanvasResource> CanvasResource::CreateForTesting(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -154,7 +145,7 @@ CanvasResourceSharedImage::CreateForTesting(
       is_software
           ? shared_image_interface_provider->SharedImageInterface()
           : context_provider_wrapper->ContextProvider().SharedImageInterface();
-  auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+  auto image_pool = gpu::SharedImagePool<CanvasResource>::Create(
       image_info, sii, "CanvasResourceSharedImage", /*max_pool_size=*/0);
 
   auto canvas_resource = image_pool->GetImage();
@@ -167,24 +158,7 @@ CanvasResourceSharedImage::CreateForTesting(
   return canvas_resource;
 }
 
-void CanvasResourceSharedImage::OnRefReturned(
-    scoped_refptr<CanvasResource> resource) {
-  // Create a downcast ref to the resource as a CanvasResourceSI to pass over to
-  // the provider.
-  auto downcast_ref = scoped_refptr<CanvasResourceSharedImage>(this);
-  CHECK_EQ(downcast_ref, resource);
-
-  // Reset the passed-in ref now that we've added a ref in `downcast_ref` to
-  // ensure that the provider sees the actual number of currently-outstanding
-  // refs (necessary for the provider to actually recycle the resource in the
-  // case where there this is the last outstanding ref).
-  resource.reset();
-  if (client_) {
-    client_->OnResourceRefReturned(std::move(downcast_ref));
-  }
-}
-
-SkImageInfo CanvasResourceSharedImage::CreateSkImageInfo() const {
+SkImageInfo CanvasResource::CreateSkImageInfo() const {
   auto size = GetSharedImage()->size();
   auto format = GetSharedImage()->format();
   auto color_space = GetSharedImage()->color_space();
@@ -194,7 +168,7 @@ SkImageInfo CanvasResourceSharedImage::CreateSkImageInfo() const {
                            color_space.ToSkColorSpace());
 }
 
-CanvasResourceSharedImage::~CanvasResourceSharedImage() {
+CanvasResource::~CanvasResource() {
   if (is_cross_thread()) {
     // Destroyed on wrong thread. This can happen when the thread of origin was
     // torn down, in which case the GPU context owning any underlying resources
@@ -208,8 +182,7 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
   }
 }
 
-void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
-    SkSurface* sk_surface) {
+void CanvasResource::UploadSoftwareRenderingResults(SkSurface* sk_surface) {
   // Copy the rendering results from `sk_surface` to the SharedImage backing
   // this resource.
   auto scoped_mapping = GetSharedImage()->Map();
@@ -240,8 +213,7 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
   }
 }
 
-void CanvasResourceSharedImage::WaitSyncToken(
-    const gpu::SyncToken& sync_token) {
+void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
   DCHECK(!is_cross_thread());
   if (sync_token.HasData()) {
     acquire_sync_token_ = sync_token;
@@ -249,14 +221,13 @@ void CanvasResourceSharedImage::WaitSyncToken(
   }
 }
 
-void CanvasResourceSharedImage::NotifyResourceLost() {
+void CanvasResource::NotifyResourceLost() {
   DCHECK(!is_cross_thread());
   resource_is_lost_ = true;
 }
 
-void CanvasResourceSharedImage::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_path) const {
+void CanvasResource::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                                  const std::string& parent_path) const {
   scoped_refptr<gpu::ClientSharedImage> client_si = GetSharedImage();
 
   std::string dump_name =

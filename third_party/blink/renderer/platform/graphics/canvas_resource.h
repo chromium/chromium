@@ -67,62 +67,27 @@ enum class CanvasResourceProviderType {
 };
 #pragma GCC diagnostic pop
 
-// Generic resource interface, used for locking (RAII) and recycling pixel
-// buffers of any type.
-// Note that this object may be accessed across multiple threads but not
-// concurrently. The caller is responsible to call Transfer on the object before
-// using it on a different thread.
-class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
- public:
-  using ReleaseCallback = base::OnceCallback<void(
-      scoped_refptr<blink::CanvasResource> canvas_resource,
-      const gpu::SyncToken& sync_token,
-      bool is_lost)>;
-
-  virtual void OnRefReturned(scoped_refptr<CanvasResource> resource) {}
-
-  static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
-
-  // Issues a wait for this sync token on the context used by this resource for
-  // rendering.
-  virtual void WaitSyncToken(const gpu::SyncToken&) = 0;
-
-  // Called when the resource is marked lost. Losing a resource does not mean
-  // that the backing memory has been destroyed, since the resource itself keeps
-  // a ref on that memory.
-  // It means that the consumer (commonly the compositor) can not provide a sync
-  // token for the resource to be safely recycled and its the GL state may be
-  // inconsistent with when the resource was given to the compositor. So it
-  // should not be recycled for writing again but can be safely read from.
-  virtual void NotifyResourceLost() = 0;
-
-  bool is_cross_thread() const {
-    return base::PlatformThread::CurrentRef() != owning_thread_ref_;
-  }
-
-  const gpu::SyncToken& sync_token() const { return GetSyncToken(); }
-
-  explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
-
- private:
-  const base::PlatformThreadRef owning_thread_ref_;
-};
-
 // Resource type for SharedImage
-class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
+class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
  public:
   class Client {
    public:
     virtual ~Client() = default;
     virtual void OnResourceRefReturned(
-        scoped_refptr<CanvasResourceSharedImage> resource) = 0;
+        scoped_refptr<CanvasResource> resource) = 0;
     virtual void OnDestroyResource() = 0;
   };
 
-  explicit CanvasResourceSharedImage(
-      scoped_refptr<gpu::ClientSharedImage> shared_image);
+  using ReleaseCallback = base::OnceCallback<void(
+      scoped_refptr<blink::CanvasResource> canvas_resource,
+      const gpu::SyncToken& sync_token,
+      bool is_lost)>;
 
-  static scoped_refptr<CanvasResourceSharedImage> CreateForTesting(
+  static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
+
+  explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
+
+  static scoped_refptr<CanvasResource> CreateForTesting(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -139,19 +104,24 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void Initialize(base::WeakPtr<Client> client);
   bool IsInitialized() const { return is_initialized_; }
 
-  void OnRefReturned(scoped_refptr<CanvasResource> resource) final;
-
   // Save (and wait on) this sync token on the context used by this resource for
   // rendering.
   // TODO(crbug.com/40286368): completely defer the waiting to the
   // zero-parameter variant of WaitSyncToken().
-  void WaitSyncToken(const gpu::SyncToken&) override;
+  void WaitSyncToken(const gpu::SyncToken&);
 
   const gpu::SyncToken& acquire_sync_token() const {
     return acquire_sync_token_;
   }
 
-  void NotifyResourceLost() final;
+  // Called when the resource is marked lost. Losing a resource does not mean
+  // that the backing memory has been destroyed, since the resource itself keeps
+  // a ref on that memory.
+  // It means that the consumer (commonly the compositor) can not provide a sync
+  // token for the resource to be safely recycled and its the GL state may be
+  // inconsistent with when the resource was given to the compositor. So it
+  // should not be recycled for writing again but can be safely read from.
+  void NotifyResourceLost();
 
   bool IsLost() const {
     DCHECK(!is_cross_thread());
@@ -165,10 +135,18 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // Should be called only if the resource is using software raster.
   void UploadSoftwareRenderingResults(SkSurface* sk_surface);
 
-  ~CanvasResourceSharedImage() override;
+  bool is_cross_thread() const {
+    return base::PlatformThread::CurrentRef() != owning_thread_ref_;
+  }
+
+  const gpu::SyncToken& sync_token() const { return GetSyncToken(); }
+
+  ~CanvasResource() override;
 
  private:
   SkImageInfo CreateSkImageInfo() const;
+
+  const base::PlatformThreadRef owning_thread_ref_;
 
   // These members are either only accessed on the owning thread, or are only
   // updated on the owning thread and then are read on a different thread.
@@ -181,8 +159,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool is_initialized_ = false;
   base::WeakPtr<Client> client_;
 };
-
-
 
 }  // namespace blink
 

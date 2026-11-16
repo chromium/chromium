@@ -238,7 +238,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
               CreateCompositorFrameSink_(viz::FrameSinkId(kClientId, kSinkId)));
   platform->RunUntilIdle();
 
-  auto resource = CanvasResourceSharedImage::CreateForTesting(
+  auto resource = CanvasResource::CreateForTesting(
       GetSize(), viz::SinglePlaneFormat::kBGRA_8888, kPremul_SkAlphaType,
       gfx::ColorSpace::CreateSRGB(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
       /*is_software=*/true, /*client=*/nullptr,
@@ -282,7 +282,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
                           gfx::Size(kWidth, kHeight)),
                       gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f));
 
-            // CanvasResourceSharedImage::CreateSoftware() creates a resource
+            // CanvasResource::CreateForTesting() creates a resource
             // whose origin is top-left.
             EXPECT_EQ(frame->resource_list.front().GetOrigin(),
                       kTopLeft_GrSurfaceOrigin);

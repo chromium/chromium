@@ -95,7 +95,7 @@ enum class RasterMode;
 class MODULES_EXPORT BaseRenderingContext2D
     : public CanvasRenderingContext,
       public Canvas2DRecorderContext,
-      public CanvasResourceSharedImage::Client,
+      public CanvasResource::Client,
       public MemoryManagedPaintRecorder::Client,
       public FlushForImageObserver,
       public CanvasMemoryDumpClient,
@@ -414,7 +414,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
  private:
   scoped_refptr<ExportedCanvasResource> CreateExportedResource(
-      scoped_refptr<CanvasResourceSharedImage> resource);
+      scoped_refptr<CanvasResource> resource);
 
   void UpdateRecordingLimits(bool is_graphite);
   virtual bool IsHibernating() const { return false; }
@@ -442,9 +442,8 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   scoped_refptr<StaticBitmapImage> UnacceleratedSnapshot();
 
-  // CanvasResourceSharedImage::Client implementation.
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage> resource) override;
+  // CanvasResource::Client implementation.
+  void OnResourceRefReturned(scoped_refptr<CanvasResource> resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
 
   // CanvasMemoryDumpClient implementation.
@@ -462,7 +461,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void ResetSharedImagePool();
   void ClearUnusedResources();
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+  scoped_refptr<CanvasResource> NewOrRecycledResource();
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
   bool ShouldReplaceTargetBuffer();
@@ -486,8 +485,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   Canvas2DColorParams color_params_;
   // If this instance is single-buffered or `resource_recycling_enabled_` is
   // false, `image_pool_` will not recycle resources.
-  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
-  scoped_refptr<CanvasResourceSharedImage> resource_;
+  std::unique_ptr<gpu::SharedImagePool<CanvasResource>> image_pool_;
+  scoped_refptr<CanvasResource> resource_;
   bool is_accelerated_ = false;
   bool resource_recycling_enabled_ = true;
   int num_inflight_resources_ = 0;
@@ -541,7 +540,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   base::RepeatingClosure on_restore_failed_callback_for_testing_;
   Vector<scoped_refptr<const cc::AnimatedImageFrameIndexMap>>
       animated_image_frame_index_maps_;
-  base::WeakPtrFactory<CanvasResourceSharedImage::Client>
+  base::WeakPtrFactory<CanvasResource::Client>
       resource_client_weak_ptr_factory_{this};
 };
 

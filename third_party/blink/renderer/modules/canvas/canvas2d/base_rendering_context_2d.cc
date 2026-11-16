@@ -310,15 +310,14 @@ void BaseRenderingContext2D::ClearUnusedResources() {
 }
 
 void BaseRenderingContext2D::OnResourceRefReturned(
-    scoped_refptr<CanvasResourceSharedImage> resource) {
+    scoped_refptr<CanvasResource> resource) {
   if (!resource->IsLost() && resource->HasOneRef() &&
       resource_recycling_enabled_ && image_pool_) {
     image_pool_->ReleaseImage(std::move(resource));
   }
 }
 
-scoped_refptr<CanvasResourceSharedImage>
-BaseRenderingContext2D::NewOrRecycledResource() {
+scoped_refptr<CanvasResource> BaseRenderingContext2D::NewOrRecycledResource() {
   if (!image_pool_) {
     return nullptr;
   }
@@ -553,7 +552,7 @@ void BaseRenderingContext2D::CreateSharedImagePool(
   bool is_single_buffered = shared_image_usage_flags.Has(
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 
-  image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+  image_pool_ = gpu::SharedImagePool<CanvasResource>::Create(
       image_info, sii,
       is_accelerated_ ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
       is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
@@ -626,7 +625,7 @@ void BaseRenderingContext2D::CreateSharedImagePoolForSoftwareCompositor() {
       color_params_.GetGfxColorSpace(), kTopLeft_GrSurfaceOrigin,
       color_params_.GetAlphaType(), /*buffer_usage=*/std::nullopt,
       /*is_software=*/true);
-  image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+  image_pool_ = gpu::SharedImagePool<CanvasResource>::Create(
       image_info, sii, "CanvasResourceSharedImage",
       kMaxRecycledCanvasResources);
   CreateSoftwareSurface();
@@ -1044,7 +1043,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
       // the ref-count on the resource as a proxy for a read lock to allow
       // recycling the resource once all refs have been released.
       auto release_callback = blink::BindOnce(
-          [](scoped_refptr<CanvasResourceSharedImage> resource,
+          [](scoped_refptr<CanvasResource> resource,
              const gpu::SyncToken& sync_token, bool lost_resource) {
             CHECK(resource);
 
@@ -1168,19 +1167,19 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
 
 scoped_refptr<ExportedCanvasResource>
 BaseRenderingContext2D::CreateExportedResource(
-    scoped_refptr<CanvasResourceSharedImage> resource) {
+    scoped_refptr<CanvasResource> resource) {
   // Callbacks below never run on the different thread, but could be destroyed
   // on different thread if current thread is gone (and so PostTask will fail) .
   auto wait_sync_token =
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          [](scoped_refptr<CanvasResourceSharedImage> resource,
+          [](scoped_refptr<CanvasResource> resource,
              gpu::SyncToken sync_token) {
             resource->WaitSyncToken(sync_token);
           },
           resource));
 
   auto release_callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
-      [](scoped_refptr<CanvasResourceSharedImage> resource,
+      [](scoped_refptr<CanvasResource> resource,
          const gpu::SyncToken& sync_token, bool is_lost) {
         if (is_lost) {
           resource->NotifyResourceLost();
@@ -1209,8 +1208,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
   FlushCanvas(reason);
   if (image_pool_->GetImageInfo().is_software) {
     DCHECK(surface_);
-    scoped_refptr<CanvasResourceSharedImage> output_resource =
-        NewOrRecycledResource();
+    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
     if (!output_resource) {
       return nullptr;
     }
