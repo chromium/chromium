@@ -833,6 +833,12 @@ void X11Window::ShowWindowControlsMenu(const gfx::Point& point_in_dip) {
   const uint32_t x = static_cast<uint32_t>(point_in_pixels.x());
   const uint32_t y = static_cast<uint32_t>(point_in_pixels.y());
 
+  // The menu is usually requested on a button press, while this window still
+  // holds the implicit pointer grab. Release it (as GTK does) so the window
+  // manager can grab the pointer for the menu. Otherwise, some window managers
+  // stop delivering pointer events to this window until the focus changes.
+  UngrabPointer();
+
   SendClientMessage(xwindow_, x_root_window_,
                     connection_->GetAtom("_GTK_SHOW_WINDOW_MENU"),
                     {/*device_id=*/0, x, y, 0, 0});

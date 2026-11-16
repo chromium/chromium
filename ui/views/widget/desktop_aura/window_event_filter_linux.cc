@@ -98,6 +98,7 @@ bool WindowEventFilterLinux::HandleMouseEventWithHitTest(
                 .supports_server_window_menus) {
           desktop_window_tree_host_->ShowWindowControlsMenu(
               display::Screen::Get()->GetCursorScreenPoint());
+          event->SetHandled();
           return true;
         }
         break;

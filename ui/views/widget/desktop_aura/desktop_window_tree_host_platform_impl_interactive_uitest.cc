@@ -14,6 +14,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -223,8 +224,15 @@ class TestDesktopWindowTreeHostPlatformImpl
     DesktopWindowTreeHostPlatformImpl::Maximize();
   }
 
+  int window_controls_menu_count() const { return window_controls_menu_count_; }
+  // Records the request instead of asking the window manager for a real menu.
+  void ShowWindowControlsMenu(const gfx::Point& point) override {
+    ++window_controls_menu_count_;
+  }
+
  private:
   bool called_maximize_ = false;
+  int window_controls_menu_count_ = 0;
 };
 
 }  // namespace
@@ -557,6 +565,41 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
   flags_left_button |= ui::EF_IS_DOUBLE_CLICK;
   GenerateAndDispatchClickMouseEvent(gfx::Point(), flags_left_button);
   EXPECT_FALSE(host_->called_maximize());
+
+  widget->CloseNow();
+}
+
+// Tests that a right press on a window control button shows the window controls
+// menu and is marked as handled, so the widget doesn't also process the press
+// (e.g. by taking capture while the window manager shows the menu).
+TEST_F(DesktopWindowTreeHostPlatformImplTest,
+       RightPressOnWindowControlShowsWindowControlsMenu) {
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_server_window_menus) {
+    GTEST_SKIP() << "Server-side window menus are not supported.";
+  }
+
+  std::unique_ptr<Widget> widget(
+      BuildTopLevelDesktopWidget(gfx::Rect(0, 0, 100, 100)));
+  widget->Show();
+  RunPendingMessages();
+
+  auto* frame_view = delegate_->frame_view();
+  ASSERT_TRUE(frame_view);
+
+  int expected_menu_count = 0;
+  for (int hittest : {HTMINBUTTON, HTMAXBUTTON, HTCLOSE}) {
+    frame_view->set_hit_test_result(hittest);
+    std::unique_ptr<ui::MouseEvent> press(GenerateMouseEvent(
+        ui::EventType::kMousePressed, gfx::Point(), ui::EF_RIGHT_MOUSE_BUTTON));
+    host_->DispatchEvent(press.get());
+    EXPECT_EQ(host_->window_controls_menu_count(), ++expected_menu_count);
+    EXPECT_TRUE(press->handled());
+    EXPECT_FALSE(widget->HasCapture());
+    DispatchEvent(GenerateMouseEvent(ui::EventType::kMouseReleased,
+                                     gfx::Point(), ui::EF_RIGHT_MOUSE_BUTTON));
+  }
 
   widget->CloseNow();
 }
