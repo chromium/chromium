@@ -493,6 +493,13 @@ StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::menu_tooltip(
 }
 
 // static
+const std::string&
+StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::chip_a11y_label(
+    const omnibox::ToolConfig& config) {
+  return config.chip_a11y_label();
+}
+
+// static
 int32_t StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::icon(
     const omnibox::ToolConfig& config) {
   if (config.has_icon() && config.icon().has_icon_id()) {
@@ -550,6 +557,12 @@ bool StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::Read(
     return false;
   }
   output->set_menu_tooltip(menu_tooltip);
+
+  std::string chip_a11y_label;
+  if (!data.ReadChipA11yLabel(&chip_a11y_label)) {
+    return false;
+  }
+  output->set_chip_a11y_label(chip_a11y_label);
 
   int32_t icon_id = data.icon();
   if (omnibox::IconResourceIds_IsValid(icon_id) &&

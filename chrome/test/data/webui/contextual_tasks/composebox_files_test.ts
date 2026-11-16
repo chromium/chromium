@@ -117,6 +117,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
           disableActiveModelSelection: false,
           menuLabel: 'Canvas',
           chipLabel: 'Canvas',
+          chipA11yLabel: '',
           hintText: 'Canvas hint',
           aimUrlParams: [{paramKey: 'rc', paramValue: '1'}],
           menuTooltip: '',

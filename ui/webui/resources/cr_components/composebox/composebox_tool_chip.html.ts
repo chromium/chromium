@@ -13,7 +13,7 @@ export function getHtml(this: ComposeboxToolChipElement) {
   return html`
 <cr-button id="toolEnabledButton"
   class="upload-icon no-overlap ${this.getModeClasses_()}"
-  aria-label="${this.i18n('removeToolChipAriaLabel', this.getToolChipLabel_())}"
+  aria-label="${this.getToolChipAriaLabel_()}"
   @click="${this.onClick_}">
   ${this.isClankMode_() ? html`
     <div class="chip-content">

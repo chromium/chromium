@@ -119,6 +119,20 @@ TEST(ContextualSearchMojomTraitsTest, ToolConfigWithInvalidIcon) {
   EXPECT_FALSE(output.has_icon());
 }
 
+TEST(ContextualSearchMojomTraitsTest, ToolConfigWithChipA11yLabel) {
+  omnibox::ToolConfig input;
+  input.set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  input.set_chip_label("Canvas");
+  input.set_chip_a11y_label("Canvas (active), click to remove");
+
+  omnibox::ToolConfig output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::ToolConfig>(input, output));
+
+  EXPECT_EQ(output.chip_label(), "Canvas");
+  EXPECT_EQ(output.chip_a11y_label(), "Canvas (active), click to remove");
+}
+
 TEST(ContextualSearchMojomTraitsTest, ContextUploadStatusUnknownValue) {
   contextual_search::ContextUploadStatus input =
       static_cast<contextual_search::ContextUploadStatus>(999);

@@ -67,6 +67,13 @@ export class ComposeboxToolChipElement extends I18nMixinLit
     }
   }
 
+  protected getToolChipAriaLabel_(): string {
+    const config = this.inputState?.toolConfigs?.find(
+        c => c.tool === this.inputState!.activeTool);
+    return config?.chipA11yLabel ||
+        this.i18n('removeToolChipAriaLabel', this.getToolChipLabel_());
+  }
+
   protected getIcon_(): string {
     if (!this.inputState) {
       return '';

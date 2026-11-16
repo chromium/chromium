@@ -41,6 +41,7 @@ suite('ComposeboxToolChipTest', () => {
           menuLabel: 'Deep Search',
           disableActiveModelSelection: false,
           chipLabel: 'Deep Search',
+          chipA11yLabel: '',
           icon: 94,
           hintText: '',
           aimUrlParams: [],
@@ -64,6 +65,7 @@ suite('ComposeboxToolChipTest', () => {
           menuLabel: 'Create Images',
           disableActiveModelSelection: false,
           chipLabel: 'Create Images',
+          chipA11yLabel: '',
           icon: 108,
           hintText: '',
           aimUrlParams: [],
@@ -89,6 +91,7 @@ suite('ComposeboxToolChipTest', () => {
               menuLabel: 'Deep Search',
               disableActiveModelSelection: false,
               chipLabel: 'Deep Search',
+              chipA11yLabel: '',
               icon: 0,
               hintText: '',
               aimUrlParams: [],
@@ -131,6 +134,7 @@ suite('ComposeboxToolChipTest', () => {
               menuLabel: 'Deep Search',
               disableActiveModelSelection: false,
               chipLabel: 'Deep Search',
+              chipA11yLabel: '',
               icon: 94,
               hintText: '',
               aimUrlParams: [],
@@ -143,5 +147,56 @@ suite('ComposeboxToolChipTest', () => {
         const toolIcon = $$<CrIconElement>(toolChip, '.tool-icon');
         assertTrue(isVisible(toolIcon));
         assertEquals('composebox:travel-explore', toolIcon!.icon);
+      });
+
+  test('Uses chipA11yLabel from toolConfig as the aria-label', async () => {
+    toolChip['inputState'] = new MockInputState({
+      activeTool: ToolMode.kCanvas,
+      toolConfigs: [
+        {
+          tool: ToolMode.kCanvas,
+          menuLabel: 'Canvas',
+          disableActiveModelSelection: false,
+          chipLabel: 'Canvas',
+          chipA11yLabel: 'Canvas (active), click to remove',
+          icon: 0,
+          hintText: '',
+          aimUrlParams: [],
+          menuTooltip: '',
+        },
+      ],
+    });
+    await microtasksFinished();
+
+    const button = $$(toolChip, '#toolEnabledButton');
+    assertTrue(!!button);
+    assertEquals(
+        'Canvas (active), click to remove', button.getAttribute('aria-label'));
+  });
+
+  test(
+      'Falls back to removeToolChipAriaLabel when chipA11yLabel is empty',
+      async () => {
+        toolChip['inputState'] = new MockInputState({
+          activeTool: ToolMode.kCanvas,
+          toolConfigs: [
+            {
+              tool: ToolMode.kCanvas,
+              menuLabel: 'Canvas',
+              disableActiveModelSelection: false,
+              chipLabel: 'Canvas',
+              chipA11yLabel: '',
+              icon: 0,
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+            },
+          ],
+        });
+        await microtasksFinished();
+
+        const button = $$(toolChip, '#toolEnabledButton');
+        assertTrue(!!button);
+        assertEquals('Remove Canvas', button.getAttribute('aria-label'));
       });
 });

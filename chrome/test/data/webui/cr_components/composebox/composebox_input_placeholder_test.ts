@@ -145,6 +145,7 @@ suite('ComposeboxInputPlaceholder', () => {
                                       hintText: t.hint,
                                       menuLabel: '',
                                       chipLabel: '',
+                                      chipA11yLabel: '',
                                       disableActiveModelSelection: false,
                                       aimUrlParams: [],
                                       menuTooltip: '',

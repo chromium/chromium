@@ -3427,6 +3427,7 @@ suite('OmniboxComposeboxTest', () => {
         hintText: 'Ask Deep Search',
         menuLabel: 'Deep Search',
         chipLabel: '',
+        chipA11yLabel: '',
         disableActiveModelSelection: false,
         aimUrlParams: [],
         menuTooltip: '',
