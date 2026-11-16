@@ -197,6 +197,7 @@ source_set("unit_tests") {
     "//components/session_manager/core:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:test_support",
     "//components/user_manager",
     "//content/test:test_support",
     "//extensions/browser",

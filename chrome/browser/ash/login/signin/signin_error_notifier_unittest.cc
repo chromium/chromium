@@ -25,6 +25,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -283,8 +284,8 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
           .GetAccountId();
 
   // Mark the profile as a child user.
-  GetProfile()->SetIsSupervisedProfile();
-  base::RunLoop().RunUntilIdle();
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      identity_test_env()->identity_manager());
 
   // Invalidate the secondary account.
   SetAuthError(
