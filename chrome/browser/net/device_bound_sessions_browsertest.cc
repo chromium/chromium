@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
@@ -48,7 +49,9 @@
 #include "net/device_bound_sessions/session_usage.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -99,18 +102,24 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
         {});
   }
 
+  void SetUp() override {
+    // Listen before the command line is set up, so that subclasses can map
+    // hosts to the server's port in `SetUpCommandLine()`.
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_https_test_server().SetSSLConfig(
-        net::EmbeddedTestServer::CERT_TEST_NAMES);
-    EXPECT_TRUE(embedded_https_test_server().InitializeAndListen());
     embedded_https_test_server().RegisterRequestHandler(
         net::device_bound_sessions::GetTestRequestHandler(GetURL("/")));
     embedded_https_test_server().StartAcceptingConnections();
   }
 
-  GURL GetURL(std::string_view relative_url) {
+  virtual GURL GetURL(std::string_view relative_url) {
     // We use one of the SSL certificates configured by CERT_TEST_NAMES
     // so we can do a DBSC session in a secure context.
     return GetURLForHost("a.test", relative_url);
@@ -324,6 +333,69 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
   EXPECT_THAT(GetAllSessions(),
               testing::ElementsAre(testing::Field(
                   &SessionKey::site, net::SchemefulSite(GetURL("/")))));
+}
+
+// Restarts the browser between a PRE_ test and the main test. A session keeps
+// the origin it was registered on, but the test server listens on a new port
+// after a restart, so these tests use port-less URLs and map `a.test` to the
+// server through the host resolver.
+class DeviceBoundSessionRestartBrowserTest
+    : public DeviceBoundSessionBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DeviceBoundSessionBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP a.test " +
+            embedded_https_test_server().host_port_pair().ToString());
+  }
+
+  GURL GetURL(std::string_view relative_url) override {
+    return GURL("https://a.test").Resolve(relative_url);
+  }
+
+  std::vector<net::CanonicalCookie> GetBoundCookies() {
+    std::vector<net::CanonicalCookie> cookies =
+        GetCanonicalCookies(browser()->GetProfile(), GetURL("/"));
+    std::erase_if(cookies, [](const net::CanonicalCookie& cookie) {
+      return cookie.Name() != "auth_cookie";
+    });
+    return cookies;
+  }
+};
+
+// Session cookies don't survive a restart unless the last session is restored.
+// The session must survive it, and the next request must restore its bound
+// cookie, which the test server sets without an expiry.
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionRestartBrowserTest,
+                       PRE_SessionCookieClearedOnRestartKeepsSession) {
+  // Restoring the last session would also restore session cookies.
+  SessionStartupPref::SetStartupPref(
+      browser()->GetProfile(), SessionStartupPref(SessionStartupPref::DEFAULT));
+
+  RegisterSession();
+
+  std::vector<net::CanonicalCookie> bound_cookies = GetBoundCookies();
+  ASSERT_THAT(bound_cookies, testing::SizeIs(1));
+  ASSERT_FALSE(bound_cookies[0].IsPersistent());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionRestartBrowserTest,
+                       SessionCookieClearedOnRestartKeepsSession) {
+  EXPECT_THAT(GetAllSessions(),
+              testing::ElementsAre(testing::Field(
+                  &SessionKey::site, net::SchemefulSite(GetURL("/")))));
+  EXPECT_THAT(GetBoundCookies(), testing::IsEmpty());
+
+  // The next request is deferred, and the refresh restores the bound cookie.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.RequestDeferralDecision3",
+      net::device_bound_sessions::SessionUsage::kDeferred, 1);
+  EXPECT_THAT(GetBoundCookies(), testing::SizeIs(1));
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, UseCounterOnResource) {

@@ -599,6 +599,7 @@ if (!is_android) {
     }
     if (enable_device_bound_sessions) {
       sources += [ "device_bound_sessions_browsertest.cc" ]
+      deps += [ "//chrome/browser/prefs:util" ]
     }
     if (enable_reporting) {
       sources += [ "reporting_browsertest.cc" ]
