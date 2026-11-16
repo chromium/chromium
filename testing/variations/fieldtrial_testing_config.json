@@ -7489,6 +7489,28 @@
             ]
         }
     ],
+    "DnsTaskAllowPartialAddressResults": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261105",
+                    "enable_features": [
+                        "DnsTaskAllowPartialAddressResults"
+                    ]
+                }
+            ]
+        }
+    ],
     "DomStorageSqliteNewDatabases": [
         {
             "platforms": [
