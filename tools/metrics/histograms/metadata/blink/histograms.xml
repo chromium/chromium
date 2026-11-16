@@ -4202,15 +4202,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.OffscreenCanvas.NewOffscreenCanvas" enum="Boolean"
-    expires_after="2025-06-08">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Records the creation of a new offscreen canvas in OffscreenCanvas::Create.
-  </summary>
-</histogram>
-
 <histogram name="Blink.OffscreenCanvas.SqrtNumberOfPixels" units="sqrt(pixels)"
     expires_after="2025-04-01">
   <owner>aaronhk@chromium.org</owner>

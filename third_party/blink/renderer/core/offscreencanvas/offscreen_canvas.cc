@@ -274,7 +274,6 @@ OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
                                          uint32_t client_id,
                                          uint32_t sink_id,
                                          DOMNodeId canvas_id) {
-  UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.NewOffscreenCanvas", true);
   return MakeGarbageCollected<OffscreenCanvas>(
       ExecutionContext::From(script_state),
       gfx::Size(ClampTo<int>(width), ClampTo<int>(height)), client_id, sink_id,
