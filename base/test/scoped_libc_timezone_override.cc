@@ -4,6 +4,8 @@
 
 #include "base/test/scoped_libc_timezone_override.h"
 
+#include <time.h>
+
 #include "base/check.h"
 #include "base/environment.h"
 
