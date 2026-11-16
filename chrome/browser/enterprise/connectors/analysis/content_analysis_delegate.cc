@@ -212,6 +212,13 @@ ContentAnalysisDelegate::~ContentAnalysisDelegate() {
 
 void ContentAnalysisDelegate::BypassWarnings(
     std::optional<std::u16string> user_justification) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!copy_warning_time_.is_null()) {
+    CopyWarningDelegateTracker::SetAnswer(
+        web_contents_.get(),
+        {copy_warning_time_, /*bypassed=*/true, user_justification});
+  }
+#endif
   for (auto& follower : std::exchange(copy_warning_followers_, {})) {
     if (follower) {
       follower->BypassWarnings(user_justification);
@@ -274,6 +281,12 @@ void ContentAnalysisDelegate::BypassWarnings(
 }
 
 void ContentAnalysisDelegate::Cancel(bool warning) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!copy_warning_time_.is_null()) {
+    CopyWarningDelegateTracker::SetAnswer(
+        web_contents_.get(), {copy_warning_time_, /*bypassed=*/false});
+  }
+#endif
   for (auto& follower : std::exchange(copy_warning_followers_, {})) {
     if (follower) {
       follower->Cancel(warning);
@@ -806,14 +819,37 @@ bool ContentAnalysisDelegate::ShowFinalResultInToast() {
           RunCallback();
           return false;
         }
-        // Another format of this copy is already waiting on the warning, so
-        // follow the user's answer to it. Replacing it would decline it.
-        ContentAnalysisDelegate* leader =
-            CopyWarningDelegateTracker::GetDelegate(web_contents_.get());
-        if (leader && !is_new_copy) {
-          leader->copy_warning_followers_.push_back(GetWeakPtr());
-          return true;
+        if (!is_new_copy) {
+          // Another format of this copy is already waiting on the warning or
+          // its justification dialog, so follow the user's answer to it.
+          // Replacing it would decline it.
+          ContentAnalysisDelegate* leader =
+              CopyWarningDelegateTracker::GetDelegate(web_contents_.get());
+          if (!leader) {
+            leader = CopyWarningDelegateTracker::GetJustifyingDelegate(
+                web_contents_.get());
+          }
+          if (leader) {
+            leader->copy_warning_followers_.push_back(GetWeakPtr());
+            return true;
+          }
+          // The user already answered the warning for this copy, so give
+          // this format the same answer instead of warning again.
+          std::optional<CopyWarningDelegateTracker::Answer> answer =
+              CopyWarningDelegateTracker::GetAnswer(web_contents_.get());
+          if (answer && creation_time_ <= answer->warning_time) {
+            if (answer->bypassed) {
+              BypassWarnings(answer->justification);
+            } else {
+              // Don't use `Cancel()`: it would delete this scan's upload while
+              // the upload is still running this code.
+              FillAllResultsWith(false);
+              RunCallback();
+            }
+            return false;
+          }
         }
+        copy_warning_time_ = base::TimeTicks::Now();
         // Closing the warning without "Copy anyway" declines the copy, so its
         // clipboard write doesn't stay pending and hold back later copies. A
         // copy made after the toast showed is left alone, as it has its own
@@ -831,7 +867,7 @@ bool ContentAnalysisDelegate::ShowFinalResultInToast() {
                         web_contents.get());
                   }
                 },
-                web_contents_, base::TimeTicks::Now()));
+                web_contents_, copy_warning_time_));
         // Set the delegate in the tracker so it can be found by the toast
         // controller later to bypass the copy warning. It's set after showing
         // the toast, as showing it can drop a queued older warning, whose

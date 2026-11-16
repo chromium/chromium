@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/copy_warning_delegate_tracker.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
@@ -42,6 +43,7 @@ void CopyWarningDelegateTracker::BypassAndClear(
     if (tracker->delegate_->BypassRequiresJustification()) {
       ContentAnalysisDialogController::ShowForCopyJustification(
           web_contents, base::WrapUnique(tracker->delegate_.get()));
+      tracker->justifying_delegate_ = tracker->delegate_;
       tracker->delegate_ = nullptr;
       // Do not delete the delegate here, it is now owned by the dialog.
       return;
@@ -90,6 +92,39 @@ ContentAnalysisDelegate* CopyWarningDelegateTracker::GetDelegate(
   }
   auto* tracker = FromWebContents(web_contents);
   return tracker ? tracker->delegate_.get() : nullptr;
+}
+
+// static
+ContentAnalysisDelegate* CopyWarningDelegateTracker::GetJustifyingDelegate(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  auto* tracker = FromWebContents(web_contents);
+  return tracker ? tracker->justifying_delegate_.get() : nullptr;
+}
+
+// static
+void CopyWarningDelegateTracker::SetAnswer(content::WebContents* web_contents,
+                                           Answer answer) {
+  if (!web_contents) {
+    return;
+  }
+  // The tracker always exists once a warning showed, so don't create one
+  // here, which could happen while `web_contents` is being destroyed.
+  if (auto* tracker = FromWebContents(web_contents)) {
+    tracker->answer_ = std::move(answer);
+  }
+}
+
+// static
+std::optional<CopyWarningDelegateTracker::Answer>
+CopyWarningDelegateTracker::GetAnswer(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::nullopt;
+  }
+  auto* tracker = FromWebContents(web_contents);
+  return tracker ? tracker->answer_ : std::nullopt;
 }
 
 CopyWarningDelegateTracker::CopyWarningDelegateTracker(

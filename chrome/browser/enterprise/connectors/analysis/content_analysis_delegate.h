@@ -542,6 +542,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   // the user's answer to it.
   std::vector<base::WeakPtr<ContentAnalysisDelegate>> copy_warning_followers_;
 
+  // When this delegate showed its copy warning, or null if it didn't.
+  base::TimeTicks copy_warning_time_;
+
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};
 };
 

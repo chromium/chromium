@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_COPY_WARNING_DELEGATE_TRACKER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_COPY_WARNING_DELEGATE_TRACKER_H_
 
+#include <optional>
+#include <string>
+
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -27,6 +31,14 @@ class ContentAnalysisDelegate;
 class CopyWarningDelegateTracker
     : public content::WebContentsUserData<CopyWarningDelegateTracker> {
  public:
+  // The user's answer to a copy warning.
+  struct Answer {
+    // When the warning showed. Only copies made by then get the answer.
+    base::TimeTicks warning_time;
+    bool bypassed = false;
+    std::optional<std::u16string> justification;
+  };
+
   // Sets the delegate for the given WebContents. If a delegate is already
   // set, it will be deleted.
   static void SetDelegate(content::WebContents* web_contents,
@@ -52,6 +64,21 @@ class CopyWarningDelegateTracker
   static ContentAnalysisDelegate* GetDelegate(
       content::WebContents* web_contents);
 
+  // Returns the delegate whose copy warning the user is writing a
+  // justification for in `web_contents`, or null if there's none or
+  // `web_contents` is null. The justification dialog owns it.
+  static ContentAnalysisDelegate* GetJustifyingDelegate(
+      content::WebContents* web_contents);
+
+  // Keeps the answer to the last copy warning in `web_contents`, so formats of
+  // that copy whose verdict comes in later get it too. Does nothing if
+  // `web_contents` is null.
+  static void SetAnswer(content::WebContents* web_contents, Answer answer);
+
+  // Returns the answer kept for `web_contents`, or nullopt if there's none or
+  // `web_contents` is null.
+  static std::optional<Answer> GetAnswer(content::WebContents* web_contents);
+
   CopyWarningDelegateTracker(const CopyWarningDelegateTracker&) = delete;
   CopyWarningDelegateTracker& operator=(const CopyWarningDelegateTracker&) =
       delete;
@@ -65,6 +92,8 @@ class CopyWarningDelegateTracker
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   base::WeakPtr<ContentAnalysisDelegate> delegate_ = nullptr;
+  base::WeakPtr<ContentAnalysisDelegate> justifying_delegate_;
+  std::optional<Answer> answer_;
 };
 
 }  // namespace enterprise_connectors

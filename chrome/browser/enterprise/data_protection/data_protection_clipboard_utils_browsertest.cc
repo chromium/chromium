@@ -5,9 +5,11 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,6 +28,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/copy_warning_delegate_tracker.h"
 #include "chrome/browser/enterprise/connectors/test/active_user_test_mixin.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
@@ -135,6 +138,75 @@ class DialogObserver : public enterprise_connectors::
   raw_ptr<enterprise_connectors::ContentAnalysisDialogDelegate> dialog_ =
       nullptr;
   base::RunLoop run_loop_;
+};
+
+// Holds the verdict for an image's bitmap until `release` is run, so it can
+// come in after the user answered the warning shown for the image's markup.
+// `release` must outlive the delegate.
+class HoldBitmapVerdictDelegate
+    : public enterprise_connectors::test::FakeContentAnalysisDelegate {
+ public:
+  HoldBitmapVerdictDelegate(
+      base::OnceClosure& release,
+      StatusCallback status_callback,
+      content::WebContents* web_contents,
+      Data data,
+      CompletionCallback callback,
+      enterprise_connectors::DeepScanAccessPoint access_point)
+      : FakeContentAnalysisDelegate(base::DoNothing(),
+                                    std::move(status_callback),
+                                    "dm_token",
+                                    web_contents,
+                                    std::move(data),
+                                    std::move(callback),
+                                    access_point),
+        release_(release) {}
+
+  // Use with `ContentAnalysisDelegate::SetFactoryForTesting()`, like
+  // `FakeContentAnalysisDelegate::Create()`.
+  static std::unique_ptr<enterprise_connectors::ContentAnalysisDelegate> Create(
+      base::OnceClosure* release,
+      StatusCallback status_callback,
+      content::WebContents* web_contents,
+      Data data,
+      CompletionCallback callback,
+      enterprise_connectors::DeepScanAccessPoint access_point) {
+    auto delegate = std::make_unique<HoldBitmapVerdictDelegate>(
+        *release, std::move(status_callback), web_contents, std::move(data),
+        std::move(callback), access_point);
+    enterprise_connectors::ClipboardRequestHandler::SetFactoryForTesting(
+        base::BindRepeating(
+            &enterprise_connectors::test::FakeClipboardRequestHandler::Create,
+            base::Unretained(delegate.get())));
+    return delegate;
+  }
+
+  void FakeUploadClipboardDataForDeepScanning(
+      enterprise_connectors::ClipboardRequestHandler::Type type,
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
+      override {
+    if (type != enterprise_connectors::ClipboardRequestHandler::Type::kImage) {
+      FakeContentAnalysisDelegate::FakeUploadClipboardDataForDeepScanning(
+          type, std::move(request));
+      return;
+    }
+    *release_ = base::BindOnce(
+        [](base::WeakPtr<FakeContentAnalysisDelegate> delegate,
+           std::unique_ptr<enterprise_connectors::BinaryUploadRequest>
+               request) {
+          if (delegate) {
+            delegate->FakeContentAnalysisDelegate::
+                FakeUploadClipboardDataForDeepScanning(
+                    enterprise_connectors::ClipboardRequestHandler::Type::
+                        kImage,
+                    std::move(request));
+          }
+        },
+        weakptr_factory_.GetWeakPtr(), std::move(request));
+  }
+
+ private:
+  const raw_ref<base::OnceClosure> release_;
 };
 
 // TODO(crbug.com/387484337): Set up equivalent browser tests for Clank.
@@ -3096,6 +3168,199 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
     EXPECT_FALSE(html_future.Get<2>().has_value());
     EXPECT_FALSE(bitmap_future.Get<2>().has_value());
   }
+}
+
+// The bitmap's verdict can come in after the user answered the warning shown
+// for the image's markup. It should get the same answer instead of showing a
+// second warning.
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       CopyContentAnalysisWarning_ImageLateVerdictGetsAnswer) {
+  SetupDMToken();
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  base::OnceClosure release_bitmap_verdict;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &HoldBitmapVerdictDelegate::Create,
+          base::Unretained(&release_bitmap_verdict),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::WARN);
+          })));
+
+  auto source = CreateURLClipboardEndpoint("https://google.com");
+  content::ClipboardPasteData html_data;
+  html_data.html = std::u16string(100, 'a');
+  content::ClipboardPasteData bitmap_data;
+  bitmap_data.bitmap.allocN32Pixels(10, 10);
+  bitmap_data.bitmap.eraseColor(SK_ColorRED);
+  auto* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+
+  for (bool copy_anyway : {true, false}) {
+    base::test::TestFuture<const ui::ClipboardFormatType&,
+                           const content::ClipboardPasteData&,
+                           std::optional<std::u16string>>
+        bitmap_future;
+    IsClipboardCopyAllowedByPolicy(
+        source,
+        {.size = html_data.size(),
+         .format_type = ui::ClipboardFormatType::HtmlType()},
+        html_data, base::DoNothing());
+    IsClipboardCopyAllowedByPolicy(
+        source,
+        {.size = bitmap_data.size(),
+         .format_type = ui::ClipboardFormatType::BitmapType()},
+        bitmap_data, bitmap_future.GetCallback());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return toast_controller->GetCurrentToastId() ==
+                 ToastId::kEnterpriseCopyWarning &&
+             !release_bitmap_verdict.is_null();
+    }));
+
+    if (copy_anyway) {
+      views::test::ButtonTestApi(toast_controller->GetToastViewForTesting()
+                                     ->action_button_for_testing())
+          .NotifyDefaultMouseClick();
+    } else {
+      toast_controller->GetToastWidgetForTesting()->CloseNow();
+    }
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !toast_controller->IsShowingToast(); }));
+
+    std::exchange(release_bitmap_verdict, {}).Run();
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return bitmap_future.IsReady() || toast_controller->IsShowingToast();
+    }));
+    EXPECT_NE(toast_controller->GetCurrentToastId(),
+              ToastId::kEnterpriseCopyWarning);
+    ASSERT_TRUE(bitmap_future.IsReady());
+    if (copy_anyway) {
+      EXPECT_FALSE(bitmap_future.Get<2>().has_value());
+    } else {
+      EXPECT_EQ(bitmap_future.Get<2>(),
+                l10n_util::GetStringUTF16(
+                    IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_BLOCKED_MESSAGE));
+    }
+  }
+}
+
+// The bitmap's verdict can also come in while the user writes the
+// justification for "Copy anyway". It should wait for the dialog's answer
+// instead of showing a second warning.
+IN_PROC_BROWSER_TEST_P(
+    DataControlsClipboardUtilsBrowserTest,
+    CopyContentAnalysisWarning_ImageLateVerdictFollowsJustification) {
+  SetupDMToken();
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "require_justification_tags": ["dlp"],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  base::OnceClosure release_bitmap_verdict;
+  int verdict_count = 0;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &HoldBitmapVerdictDelegate::Create,
+          base::Unretained(&release_bitmap_verdict),
+          base::BindLambdaForTesting([&verdict_count](const std::string&,
+                                                      const base::FilePath&) {
+            ++verdict_count;
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                Result::SUCCESS,
+                            "dlp",
+                            enterprise_connectors::ContentAnalysisResponse::
+                                Result::TriggeredRule::WARN);
+          })));
+
+  auto source = CreateURLClipboardEndpoint("https://google.com");
+  content::ClipboardPasteData html_data;
+  html_data.html = std::u16string(100, 'a');
+  content::ClipboardPasteData bitmap_data;
+  bitmap_data.bitmap.allocN32Pixels(10, 10);
+  bitmap_data.bitmap.eraseColor(SK_ColorRED);
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      html_future;
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      bitmap_future;
+  IsClipboardCopyAllowedByPolicy(
+      source,
+      {.size = html_data.size(),
+       .format_type = ui::ClipboardFormatType::HtmlType()},
+      html_data, html_future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(
+      source,
+      {.size = bitmap_data.size(),
+       .format_type = ui::ClipboardFormatType::BitmapType()},
+      bitmap_data, bitmap_future.GetCallback());
+
+  auto* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return toast_controller->IsShowingToast() &&
+           !release_bitmap_verdict.is_null();
+  }));
+
+  DialogObserver dialog_observer;
+  views::test::ButtonTestApi(
+      toast_controller->GetToastViewForTesting()->action_button_for_testing())
+      .NotifyDefaultMouseClick();
+  auto* dialog = dialog_observer.WaitForDialog();
+  ASSERT_TRUE(dialog);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !toast_controller->IsShowingToast(); }));
+
+  std::move(release_bitmap_verdict).Run();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return verdict_count == 2; }));
+  EXPECT_FALSE(toast_controller->IsShowingToast());
+  EXPECT_FALSE(bitmap_future.IsReady());
+
+  views::Textarea* textarea =
+      dialog->GetBypassJustificationTextareaForTesting();
+  ASSERT_TRUE(textarea);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return textarea->HasFocus(); }));
+  textarea->InsertText(
+      u"a",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  dialog->AcceptDialog();
+
+  ASSERT_TRUE(html_future.Wait());
+  ASSERT_TRUE(bitmap_future.IsReady());
+  EXPECT_FALSE(html_future.Get<2>().has_value());
+  EXPECT_FALSE(bitmap_future.Get<2>().has_value());
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
