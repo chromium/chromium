@@ -247,7 +247,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
                            const gfx::Rect& damage_from_parent,
                            PrewalkResult& result);
 
-  void CopyUndrawnSurfaces(PrewalkResult* prewalk);
+  void CopyUndrawnSurfaces(base::flat_set<SurfaceId> undrawn_surfaces);
   void CopyPasses(ResolvedFrameData& resolved_frame);
   void AddRootReadbackPass();
   void AddDisplayTransformPass();

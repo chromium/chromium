@@ -2118,14 +2118,14 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   return damage_rect;
 }
 
-void SurfaceAggregator::CopyUndrawnSurfaces(PrewalkResult* prewalk_result) {
+void SurfaceAggregator::CopyUndrawnSurfaces(
+    base::flat_set<SurfaceId> undrawn_surfaces) {
   // undrawn_surfaces are Surfaces that were identified by prewalk as being
   // referenced by a drawn Surface, but aren't contained in a SurfaceDrawQuad.
   // They need to be iterated over to ensure that any copy requests on them
   // (or on Surfaces they reference) are executed.
-  std::vector<SurfaceId> surfaces_to_copy(
-      prewalk_result->undrawn_surfaces.begin(),
-      prewalk_result->undrawn_surfaces.end());
+  std::vector<SurfaceId> surfaces_to_copy(undrawn_surfaces.begin(),
+                                          undrawn_surfaces.end());
   DCHECK(referenced_surfaces_.empty());
 
   for (size_t i = 0; i < surfaces_to_copy.size(); i++) {
@@ -2143,13 +2143,12 @@ void SurfaceAggregator::CopyUndrawnSurfaces(PrewalkResult* prewalk_result) {
         // Don't iterate over the child Surface if it was already listed as a
         // child of a different Surface, or in the case where there's infinite
         // recursion.
-        if (!prewalk_result->undrawn_surfaces.count(child_id)) {
+        if (!undrawn_surfaces.contains(child_id)) {
           surfaces_to_copy.push_back(child_id);
-          prewalk_result->undrawn_surfaces.insert(child_id);
+          undrawn_surfaces.insert(child_id);
         }
       }
     } else {
-      prewalk_result->undrawn_surfaces.erase(surface_id);
       referenced_surfaces_.insert(surface_id);
       CopyPasses(*resolved_frame);
       referenced_surfaces_.erase(surface_id);
@@ -2283,7 +2282,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   frame.content_color_usage = prewalk_result.content_color_usage;
   frame.page_fullscreen_mode = prewalk_result.page_fullscreen_mode;
 
-  CopyUndrawnSurfaces(&prewalk_result);
+  CopyUndrawnSurfaces(std::move(prewalk_result.undrawn_surfaces));
   referenced_surfaces_.insert(surface_id);
   CopyPasses(*resolved_frame);
   referenced_surfaces_.erase(surface_id);
