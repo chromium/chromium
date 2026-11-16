@@ -19,7 +19,6 @@
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_actuator.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "url/gurl.h"
@@ -27,6 +26,10 @@
 namespace content {
 class WebContents;
 }
+
+namespace password_manager {
+struct LeakedPasswordDetails;
+}  // namespace password_manager
 
 class CrossOriginNavigationObserver;
 class Profile;
@@ -36,8 +39,7 @@ class Profile;
 class ScriptPasswordChangeActuator : public PasswordChangeActuator {
  public:
   ScriptPasswordChangeActuator(
-      GURL change_password_url,
-      password_manager::PasswordForm password_form_info,
+      password_manager::LeakedPasswordDetails leak_details,
       Profile* profile,
       ModelQualityLogsUploader* logs_uploader);
   ~ScriptPasswordChangeActuator() override;

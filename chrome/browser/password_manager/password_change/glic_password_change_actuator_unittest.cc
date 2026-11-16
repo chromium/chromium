@@ -39,6 +39,7 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/match_type.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/autofill_test_util.h"
@@ -48,6 +49,7 @@
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_prediction_waiter.h"
@@ -168,8 +170,8 @@ autofill::FormData CreateLoginFormData() {
   return form;
 }
 
-password_manager::StoredCredential CreateTestCredential() {
-  GURL url(kTestUrl);
+password_manager::PasswordForm CreateTestForm(
+    const GURL& url = GURL(kTestUrl)) {
   password_manager::PasswordForm form;
   form.url = url;
   form.signon_realm = url::Origin::Create(url).GetURL().spec();
@@ -177,7 +179,21 @@ password_manager::StoredCredential CreateTestCredential() {
   form.password_value = password_manager::PasswordString(kTestPassword);
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   form.match_type = affiliations::MatchType::kExact;
-  return password_manager::FromPasswordForm(std::move(form));
+  return form;
+}
+
+password_manager::StoredCredential CreateTestCredential() {
+  return password_manager::FromPasswordForm(CreateTestForm());
+}
+
+password_manager::LeakedPasswordDetails CreateTestLeakDetails(
+    const GURL& target_url,
+    const GURL& credential_url = GURL(kTestUrl)) {
+  return password_manager::LeakedPasswordDetails(
+      /*leak_type=*/0, CreateTestForm(credential_url),
+      /*in_account_store=*/false,
+      affiliations::AffiliationService::ChangePasswordUrlMatch(
+          target_url.is_valid() ? target_url : credential_url));
 }
 
 }  // namespace
@@ -247,7 +263,7 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
             affiliations::AffiliatedFacets(), true));
     actuator_ = std::make_unique<GlicPasswordChangeActuator>(
-        CreateTestCredential(), web_contents(), profile());
+        CreateTestCredential(), web_contents());
     actuator_->AddObserver(&mock_observer_);
   }
 
@@ -284,16 +300,8 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
     if (target_url.is_empty() && credential_url == GURL(kTestUrl)) {
       actuator_->Start();
     } else {
-      password_manager::PasswordForm form;
-      form.url = credential_url;
-      form.signon_realm = url::Origin::Create(credential_url).GetURL().spec();
-      form.username_value = kTestUsername;
-      form.password_value = password_manager::PasswordString(kTestPassword);
-      form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-      form.match_type = affiliations::MatchType::kExact;
       custom_actuator_ = std::make_unique<GlicPasswordChangeActuator>(
-          password_manager::FromPasswordForm(std::move(form)), web_contents(),
-          profile(), target_url);
+          CreateTestLeakDetails(target_url, credential_url), web_contents());
       custom_actuator_->Start();
     }
     actor::TaskId task_id = actor_service()->CreateTaskForTesting();
@@ -601,7 +609,7 @@ TEST_F(GlicPasswordChangeActuatorTest,
       });
 
   auto custom_actuator = std::make_unique<GlicPasswordChangeActuator>(
-      CreateTestCredential(), web_contents(), profile(), kTargetUrl);
+      CreateTestLeakDetails(kTargetUrl), web_contents());
 
   EXPECT_CALL(*mock_glic_service(),
               InvokeWithAutoSubmit(

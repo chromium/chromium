@@ -7,10 +7,9 @@
 
 #include <memory>
 #include <optional>
-#include <string>
+#include <set>
 
 #include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -20,6 +19,7 @@
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 
 namespace affiliations {
@@ -30,6 +30,7 @@ class WebContents;
 }
 
 namespace password_manager {
+struct LeakedPasswordDetails;
 class PasswordFormManager;
 }  // namespace password_manager
 
@@ -37,8 +38,6 @@ namespace glic {
 class GlicInstance;
 class GlicKeyedService;
 }  // namespace glic
-
-class Profile;
 
 // Actuator implementation that uses Gemini in Chrome (Glic) and Actor for
 // password change navigation, form filling, and submission verification.
@@ -55,10 +54,13 @@ class GlicPasswordChangeActuator
     kUnknownFailure,
   };
 
+  GlicPasswordChangeActuator(
+      password_manager::LeakedPasswordDetails leak_details,
+      content::WebContents* originator);
+  // TODO(crbug.com/537619236): Clean up once `StartPasswordChangeFromCheckup()`
+  // passes `LeakedPasswordDetails`.
   GlicPasswordChangeActuator(password_manager::StoredCredential credential,
-                             content::WebContents* originator,
-                             Profile* profile,
-                             GURL change_password_url = GURL());
+                             content::WebContents* originator);
   ~GlicPasswordChangeActuator() override;
 
   GlicPasswordChangeActuator(const GlicPasswordChangeActuator&) = delete;
@@ -108,7 +110,6 @@ class GlicPasswordChangeActuator
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
 
   base::WeakPtr<content::WebContents> originator_;
-  const raw_ptr<Profile> profile_ = nullptr;
 
   base::WeakPtr<content::WebContents> actuation_web_contents_;
   base::WeakPtr<glic::GlicInstance> glic_instance_;

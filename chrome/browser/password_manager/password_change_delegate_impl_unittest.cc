@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/autofill_test_util.h"
@@ -70,7 +71,9 @@ password_manager::LeakedPasswordDetails CreateLeakedPasswordDetails() {
           password_manager::IsSaved(true), password_manager::IsReused(false),
           password_manager::IsSyncing(true),
           password_manager::HasChangePasswordUrl(true)),
-      std::move(form), /*in_account_store=*/true);
+      std::move(form), /*in_account_store=*/true,
+      affiliations::AffiliationService::ChangePasswordUrlMatch(
+          GURL(kChangePasswordURL)));
 }
 
 class MockPasswordChangeUIController : public PasswordChangeUIController {
@@ -260,8 +263,7 @@ class PasswordChangeDelegateImplTest : public base::test::WithFeatureOverride,
 
   void CreateDelegate(bool inject_actuator = true) {
     delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
-        GURL(kChangePasswordURL), CreateLeakedPasswordDetails(),
-        tab_interface_.get());
+        CreateLeakedPasswordDetails(), tab_interface_.get());
     delegate_->SetCustomUIController(
         std::make_unique<NiceMock<MockPasswordChangeUIController>>(
             delegate_.get()));

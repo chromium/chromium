@@ -89,8 +89,7 @@ class PasswordChangeDelegateImpl
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:CoarseFinalPasswordChangeState)
 
-  PasswordChangeDelegateImpl(GURL change_password_url,
-                             password_manager::LeakedPasswordDetails details,
+  PasswordChangeDelegateImpl(password_manager::LeakedPasswordDetails details,
                              tabs::TabInterface* tab_interface);
   ~PasswordChangeDelegateImpl() override;
 
@@ -181,7 +180,6 @@ class PasswordChangeDelegateImpl
 
   void RecordLoggedInCheckQuality(LoginCheckResult result);
 
-  const GURL change_password_url_;
   // Leaked credentials for which password change is offered. Also used to
   // show a regular leak warning if password change isn't possible.
   password_manager::LeakedPasswordDetails leak_details_;

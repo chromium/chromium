@@ -49,6 +49,39 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
 inline constexpr base::TimeDelta kThrottleDuration = base::Days(14);
+
+// Returns the target change-password URL to use for `details`, preferring
+// `override_url`, then the fetched change-password URL, and falling back to
+// `details.credentials.url` only when `kPasswordChangeWithGlic` is enabled.
+GURL ResolveChangePasswordUrl(
+    GURL override_url,
+    const password_manager::LeakedPasswordDetails& details) {
+  if (override_url.is_valid()) {
+    return override_url;
+  }
+  if (details.change_password_url_match &&
+      details.change_password_url_match->change_password_url.is_valid()) {
+    return details.change_password_url_match->change_password_url;
+  }
+  CHECK(base::FeatureList::IsEnabled(
+      password_change::features::kPasswordChangeWithGlic));
+  return details.credentials.url;
+}
+
+// Resolves the target change-password URL and writes it into
+// `details.change_password_url_match`, preserving any fetched affiliations.
+void PopulateChangePasswordUrl(
+    GURL override_url,
+    password_manager::LeakedPasswordDetails& details) {
+  GURL change_pwd_url =
+      ResolveChangePasswordUrl(std::move(override_url), details);
+  if (details.change_password_url_match) {
+    details.change_password_url_match->change_password_url =
+        std::move(change_pwd_url);
+  } else {
+    details.change_password_url_match.emplace(std::move(change_pwd_url));
+  }
+}
 #endif
 
 // Shorten the name to spare line breaks. The code provides enough context
@@ -211,19 +244,12 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
     password_manager::LeakedPasswordDetails details,
     content::WebContents* originator) {
 #if !BUILDFLAG(IS_ANDROID)
-  GURL change_pwd_url = GetChangePasswordURLOverride(details.credentials.url);
-  if (!change_pwd_url.is_valid() && details.change_password_url_match) {
-    change_pwd_url = details.change_password_url_match->change_password_url;
-  }
-
-  CHECK(change_pwd_url.is_valid() ||
-        base::FeatureList::IsEnabled(
-            password_change::features::kPasswordChangeWithGlic));
+  PopulateChangePasswordUrl(
+      GetChangePasswordURLOverride(details.credentials.url), details);
 
   password_change_delegates_.emplace_back(
       std::make_unique<PasswordChangeDelegateImpl>(
-          std::move(change_pwd_url), std::move(details),
-          tabs::TabInterface::GetFromContents(originator)));
+          std::move(details), tabs::TabInterface::GetFromContents(originator)));
   password_change_delegates_.back()->Start(
       base::BindOnce(&ChromePasswordChangeService::OnPasswordChangeStopped,
                      weak_ptr_factory_.GetWeakPtr(),

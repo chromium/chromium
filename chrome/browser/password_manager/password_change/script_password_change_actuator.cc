@@ -16,10 +16,12 @@
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_change/change_password_generation_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -95,15 +97,18 @@ void AddPasswordChangeToTabStrip(
 }  // namespace
 
 ScriptPasswordChangeActuator::ScriptPasswordChangeActuator(
-    GURL change_password_url,
-    password_manager::PasswordForm password_form_info,
+    password_manager::LeakedPasswordDetails leak_details,
     Profile* profile,
     ModelQualityLogsUploader* logs_uploader)
-    : change_password_url_(std::move(change_password_url)),
-      username_(std::move(password_form_info.username_value)),
-      original_password_(std::move(password_form_info.password_value)),
+    : change_password_url_(std::move(leak_details.change_password_url_match)
+                               .value()
+                               .change_password_url),
+      username_(std::move(leak_details.credentials.username_value)),
+      original_password_(std::move(leak_details.credentials.password_value)),
       profile_(profile),
-      logs_uploader_(logs_uploader) {}
+      logs_uploader_(logs_uploader) {
+  CHECK(change_password_url_.is_valid());
+}
 
 ScriptPasswordChangeActuator::~ScriptPasswordChangeActuator() = default;
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change/glic_password_change_actuator.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <string_view>
@@ -38,6 +39,7 @@
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_change/change_password_generation_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -170,14 +172,25 @@ affiliations::FacetURI GetFacetURI(const GURL& url) {
 }  // namespace
 
 GlicPasswordChangeActuator::GlicPasswordChangeActuator(
+    password_manager::LeakedPasswordDetails leak_details,
+    content::WebContents* originator)
+    : change_password_url_(std::move(leak_details.change_password_url_match)
+                               .value()
+                               .change_password_url),
+      credential_(password_manager::FromPasswordForm(
+          std::move(leak_details.credentials))),
+      originator_(originator ? originator->GetWeakPtr() : nullptr) {
+  CHECK(change_password_url_.is_valid());
+}
+
+GlicPasswordChangeActuator::GlicPasswordChangeActuator(
     password_manager::StoredCredential credential,
-    content::WebContents* originator,
-    Profile* profile,
-    GURL change_password_url)
-    : change_password_url_(std::move(change_password_url)),
+    content::WebContents* originator)
+    : change_password_url_(credential.url),
       credential_(std::move(credential)),
-      originator_(originator ? originator->GetWeakPtr() : nullptr),
-      profile_(profile) {}
+      originator_(originator ? originator->GetWeakPtr() : nullptr) {
+  CHECK(change_password_url_.is_valid());
+}
 
 GlicPasswordChangeActuator::~GlicPasswordChangeActuator() {
   ResetInternalState(actor::ActorTask::StoppedReason::kShutdown);
@@ -189,16 +202,14 @@ void GlicPasswordChangeActuator::Start() {
     return;
   }
 
-  GURL target_url =
-      change_password_url_.is_empty() ? credential_.url : change_password_url_;
   if (affiliations::AffiliationService* affiliation_service =
           GetAffiliationService()) {
     affiliation_service->GetAffiliationsAndBranding(
-        GetFacetURI(target_url),
+        GetFacetURI(change_password_url_),
         base::BindOnce(&GlicPasswordChangeActuator::OnAffiliationsReceived,
-                       weak_ptr_factory_.GetWeakPtr(), target_url));
+                       weak_ptr_factory_.GetWeakPtr(), change_password_url_));
   } else {
-    OnAffiliationsReceived(target_url, {}, /*success=*/false);
+    OnAffiliationsReceived(change_password_url_, {}, /*success=*/false);
   }
 }
 
@@ -335,13 +346,11 @@ void GlicPasswordChangeActuator::OpenPasswordChangeTab(
   }
 
   if (originator) {
-    GURL target_url = change_password_url_.is_empty() ? credential_.url
-                                                      : change_password_url_;
-    originator->OpenURL(
-        content::OpenURLParams::CreateBrowserInitiated(
-            target_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
-            ui::PAGE_TRANSITION_LINK),
-        /*navigation_handle_callback=*/{});
+    originator->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                            change_password_url_,
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                            ui::PAGE_TRANSITION_LINK),
+                        /*navigation_handle_callback=*/{});
   }
 }
 
@@ -400,9 +409,6 @@ void GlicPasswordChangeActuator::RemoveObserver(
 }
 
 glic::GlicKeyedService* GlicPasswordChangeActuator::GetGlicService() {
-  if (profile_) {
-    return glic::GlicKeyedService::Get(profile_);
-  }
   if (originator_) {
     return glic::GlicKeyedService::Get(
         Profile::FromBrowserContext(originator_->GetBrowserContext()));
@@ -448,9 +454,7 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
              .task_policy_config_slot()
              .has_value());
   allowed_origins_.emplace(credential_.url);
-  if (change_password_url_.is_valid()) {
-    allowed_origins_.emplace(change_password_url_);
-  }
+  allowed_origins_.emplace(change_password_url_);
 
   task.GetExecutionEngine()
       .GetOriginGatingChecker()
@@ -612,9 +616,6 @@ void GlicPasswordChangeActuator::OnUpdate(
 
 affiliations::AffiliationService*
 GlicPasswordChangeActuator::GetAffiliationService() {
-  if (profile_) {
-    return AffiliationServiceFactory::GetForProfile(profile_);
-  }
   if (originator_) {
     return AffiliationServiceFactory::GetForProfile(
         Profile::FromBrowserContext(originator_->GetBrowserContext()));

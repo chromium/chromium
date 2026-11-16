@@ -21,7 +21,9 @@
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -96,14 +98,17 @@ class ScriptPasswordChangeActuatorTest
     return logs_uploader_.get();
   }
 
-  password_manager::PasswordForm CreateTestForm() {
+  password_manager::LeakedPasswordDetails CreateLeakDetails() {
     password_manager::PasswordForm form;
     form.url = GURL(kChangePasswordURL);
     form.signon_realm = GURL(kChangePasswordURL).GetWithEmptyPath().spec();
     form.username_value = kTestEmail;
     form.password_value =
         password_manager::PasswordString(std::u16string(kPassword));
-    return form;
+    return password_manager::LeakedPasswordDetails(
+        /*leak_type=*/0, std::move(form), /*in_account_store=*/false,
+        affiliations::AffiliationService::ChangePasswordUrlMatch(
+            GURL(kChangePasswordURL)));
   }
 
   void InjectHiddenExecutor(ScriptPasswordChangeActuator& actuator) {
@@ -127,8 +132,8 @@ class ScriptPasswordChangeActuatorTest
 };
 
 TEST_F(ScriptPasswordChangeActuatorTest, StartCreatesExecutorAndFormFinder) {
-  ScriptPasswordChangeActuator actuator(
-      GURL(kChangePasswordURL), CreateTestForm(), profile(), GetLogsUploader());
+  ScriptPasswordChangeActuator actuator(CreateLeakDetails(), profile(),
+                                        GetLogsUploader());
   EXPECT_FALSE(actuator.GetExecutorWebContents());
   EXPECT_FALSE(actuator.GetFormFinderForTesting());
   EXPECT_FALSE(actuator.GetNavigationObserverForTesting());
@@ -142,8 +147,8 @@ TEST_F(ScriptPasswordChangeActuatorTest, StartCreatesExecutorAndFormFinder) {
 }
 
 TEST_F(ScriptPasswordChangeActuatorTest, StartCalledTwiceReusesExecutor) {
-  ScriptPasswordChangeActuator actuator(
-      GURL(kChangePasswordURL), CreateTestForm(), profile(), GetLogsUploader());
+  ScriptPasswordChangeActuator actuator(CreateLeakDetails(), profile(),
+                                        GetLogsUploader());
   InjectHiddenExecutor(actuator);
   actuator.Start();
   content::WebContents* first_executor = actuator.GetExecutorWebContents();
@@ -154,8 +159,8 @@ TEST_F(ScriptPasswordChangeActuatorTest, StartCalledTwiceReusesExecutor) {
 }
 
 TEST_F(ScriptPasswordChangeActuatorTest, CancelNotifiesObserverAndResetsState) {
-  ScriptPasswordChangeActuator actuator(
-      GURL(kChangePasswordURL), CreateTestForm(), profile(), GetLogsUploader());
+  ScriptPasswordChangeActuator actuator(CreateLeakDetails(), profile(),
+                                        GetLogsUploader());
   MockPasswordChangeActuatorObserver observer;
   actuator.AddObserver(&observer);
 
@@ -180,8 +185,8 @@ TEST_F(ScriptPasswordChangeActuatorTest, CancelNotifiesObserverAndResetsState) {
 }
 
 TEST_F(ScriptPasswordChangeActuatorTest, CancelWithoutActiveStepResetsState) {
-  ScriptPasswordChangeActuator actuator(
-      GURL(kChangePasswordURL), CreateTestForm(), profile(), GetLogsUploader());
+  ScriptPasswordChangeActuator actuator(CreateLeakDetails(), profile(),
+                                        GetLogsUploader());
   MockPasswordChangeActuatorObserver observer;
   actuator.AddObserver(&observer);
 
@@ -210,8 +215,8 @@ TEST_F(ScriptPasswordChangeActuatorTest, CancelWithoutActiveStepResetsState) {
 
 TEST_F(ScriptPasswordChangeActuatorTest,
        OpenPasswordChangeTabBeforeStartOpensURL) {
-  ScriptPasswordChangeActuator actuator(
-      GURL(kChangePasswordURL), CreateTestForm(), profile(), GetLogsUploader());
+  ScriptPasswordChangeActuator actuator(CreateLeakDetails(), profile(),
+                                        GetLogsUploader());
   MockWebContentsDelegate delegate;
   web_contents()->SetDelegate(&delegate);
 
@@ -226,8 +231,8 @@ TEST_F(ScriptPasswordChangeActuatorTest,
 
 TEST_F(ScriptPasswordChangeActuatorTest,
        OnPasswordChangeFormNotFoundNotifiesObserver) {
-  ScriptPasswordChangeActuator actuator(
-      GURL(kChangePasswordURL), CreateTestForm(), profile(), GetLogsUploader());
+  ScriptPasswordChangeActuator actuator(CreateLeakDetails(), profile(),
+                                        GetLogsUploader());
   MockPasswordChangeActuatorObserver observer;
   actuator.AddObserver(&observer);
 
@@ -245,8 +250,8 @@ TEST_F(ScriptPasswordChangeActuatorTest,
 
 TEST_F(ScriptPasswordChangeActuatorTest,
        OnCrossOriginNavigationDetectedDuringFormFinder) {
-  ScriptPasswordChangeActuator actuator(
-      GURL(kChangePasswordURL), CreateTestForm(), profile(), GetLogsUploader());
+  ScriptPasswordChangeActuator actuator(CreateLeakDetails(), profile(),
+                                        GetLogsUploader());
   MockPasswordChangeActuatorObserver observer;
   actuator.AddObserver(&observer);
 
