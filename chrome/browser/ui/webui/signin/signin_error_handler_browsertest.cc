@@ -8,12 +8,22 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/signin_error_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 
@@ -85,6 +95,8 @@ class SigninErrorHandlerTest : public InProcessBrowserTest {
 
   TestingSigninErrorHandler* handler() { return handler_; }
 
+  SigninErrorUI* signin_error_ui() { return signin_error_ui_.get(); }
+
   content::TestWebUI* web_ui() { return web_ui_.get(); }
 
  private:
@@ -146,6 +158,40 @@ IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {
 
   // Confirm simply closes the dialog.
   EXPECT_TRUE(handler()->browser_modal_dialog_did_close());
+}
+
+// Regression test for crbug.com/582848651: Initializing `SigninErrorUI` for
+// `SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile` when the duplicate
+// profile is signed in with an unconsented primary account (`kSignin`, neither
+// syncing nor enterprise-managed) should succeed and allow switching to the
+// existing profile.
+IN_PROC_BROWSER_TEST_F(
+    SigninErrorHandlerTest,
+    InitializeWithAccountAlreadyUsedBySignedInUnmanagedProfile) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& other_profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(&other_profile), "user@gmail.com",
+      signin::ConsentLevel::kSignin);
+
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(other_profile.GetPath());
+  ASSERT_NE(entry, nullptr);
+  ASSERT_EQ(entry->GetSigninState(),
+            SigninState::kSignedInWithUnconsentedPrimaryAccount);
+  ASSERT_FALSE(entry->IsAuthenticated());
+  ASSERT_FALSE(entry->CanBeManaged());
+
+  signin_error_ui()->InitializeMessageHandlerWithBrowser(
+      browser(), SigninUIError::AccountAlreadyUsedByAnotherProfile(
+                     "user@gmail.com", other_profile.GetPath()));
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  web_ui()->HandleReceivedMessage("switchToExistingProfile", base::ListValue());
+  BrowserWindowInterface* other_browser = browser_created_observer.Wait();
+  EXPECT_EQ(other_browser->GetProfile(), &other_profile);
 }
 
 }  // namespace

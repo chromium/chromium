@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -94,9 +96,8 @@ void SigninErrorUI::InitializeMessageHandlerWithBrowser(
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(error.another_profile_path());
     CHECK(entry, base::NotFatalUntil::M162);
-    // TODO(crbug.com/582848651): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK(entry->IsAuthenticated() || entry->CanBeManaged());
+    CHECK_NE(entry->GetSigninState(), SigninState::kNotSignedIn,
+             base::NotFatalUntil::M162);
     handler->set_duplicate_profile_path(entry->GetPath());
     existing_name = entry->GetName();
     source->AddString("signinErrorMessage",
