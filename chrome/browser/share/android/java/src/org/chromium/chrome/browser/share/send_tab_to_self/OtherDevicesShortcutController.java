@@ -143,6 +143,9 @@ public class OtherDevicesShortcutController implements Destroyable {
 
         Intent forwardIntent = new Intent(intent);
         forwardIntent.setClass(activity, SendTabToSelfShareTargetActivity.class);
+        // A new task was just started for ChromeLauncherActivity, so no need to create another one.
+        forwardIntent.setFlags(forwardIntent.getFlags() & ~Intent.FLAG_ACTIVITY_NEW_TASK);
+        forwardIntent.setFlags(forwardIntent.getFlags() & ~Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         activity.startActivity(forwardIntent);
         return true;
     }
