@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/components/external_intents/ExternalIntentFilter.java",
     "java/src/org/chromium/components/external_intents/ExternalIntentsFeatures.java",
     "java/src/org/chromium/components/external_intents/ExternalIntentsSwitches.java",
     "java/src/org/chromium/components/external_intents/ExternalNavigationDelegate.java",
@@ -134,7 +135,10 @@ generate_jni("test_support_java_jni_headers") {
 }
 
 robolectric_library("junit") {
-  sources = [ "junit/src/org/chromium/components/external_intents/RedirectHandlerTest.java" ]
+  sources = [
+    "junit/src/org/chromium/components/external_intents/ExternalIntentFilterTest.java",
+    "junit/src/org/chromium/components/external_intents/RedirectHandlerTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",

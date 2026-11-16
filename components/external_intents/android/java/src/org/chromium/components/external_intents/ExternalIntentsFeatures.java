@@ -7,6 +7,8 @@ package org.chromium.components.external_intents;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Features;
 import org.chromium.build.annotations.NullMarked;
 
@@ -24,6 +26,7 @@ public class ExternalIntentsFeatures {
             "DontClobberTabsWithChromeAppId";
     public static final String WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH_NAME =
             "WebApkSelfOwnedRendererNavLaunch";
+    public static final String EXTERNAL_INTENT_FILTER_NAME = "ExternalIntentFilter";
 
     public static final ExternalIntentsFeature EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeature(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
@@ -33,6 +36,9 @@ public class ExternalIntentsFeatures {
 
     public static final ExternalIntentsFeature WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH =
             new ExternalIntentsFeature(2, WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH_NAME);
+
+    public static final ExternalIntentsFeature EXTERNAL_INTENT_FILTER =
+            new ExternalIntentsFeature(3, EXTERNAL_INTENT_FILTER_NAME);
 
     public static class ExternalIntentsFeature extends Features {
         private final int mOrdinal;
@@ -45,6 +51,15 @@ public class ExternalIntentsFeatures {
         @Override
         protected long getFeaturePointer() {
             return ExternalIntentsFeaturesJni.get().getFeature(mOrdinal);
+        }
+
+        @Override
+        public String getFieldTrialParamByFeatureAsString(String paramName) {
+            String testValue =
+                    FeatureOverrides.getTestValueForFieldTrialParam(getName(), paramName);
+            if (testValue != null) return testValue;
+            if (!FeatureList.isNativeInitialized()) return "";
+            return super.getFieldTrialParamByFeatureAsString(paramName);
         }
     }
 
