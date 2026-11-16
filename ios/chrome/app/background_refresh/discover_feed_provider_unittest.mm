@@ -66,22 +66,20 @@ class FakeDiscoverFeedService : public DiscoverFeedService {
   NSDate* earliest_date_ = nil;
 };
 
-// Controls whether CreateFakeDiscoverFeedService returns a service or nullptr.
-bool g_return_null_service = false;
-
-std::unique_ptr<KeyedService> CreateFakeDiscoverFeedService(
-    ProfileIOS* profile) {
-  if (g_return_null_service) {
-    return nullptr;
+base::OnceCallback<std::unique_ptr<FakeDiscoverFeedService>()>
+CreateFakeDiscoverFeedServiceCallback(bool return_null_service) {
+  if (return_null_service) {
+    return {};
   }
-  return std::make_unique<FakeDiscoverFeedService>();
+
+  return base::BindOnce(&std::make_unique<FakeDiscoverFeedService>);
 }
 
-TestProfileIOS::Builder CreateProfileBuilder() {
+TestProfileIOS::Builder CreateProfileBuilder(bool return_null_service) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       DiscoverFeedServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateFakeDiscoverFeedService));
+      CreateFakeDiscoverFeedServiceCallback(return_null_service));
   return builder;
 }
 
@@ -90,21 +88,16 @@ TestProfileIOS::Builder CreateProfileBuilder() {
 class DiscoverFeedProviderTest : public PlatformTest {
  public:
   DiscoverFeedProviderTest() {
-    g_return_null_service = false;
     scoped_feature_list_.InitAndEnableFeature(
         kEnableDiscoverBackgroundRefresh);
 
-    personal_profile_ =
-        profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
+    personal_profile_ = profile_manager_.AddProfileWithBuilder(
+        CreateProfileBuilder(/*return_null_service=*/false));
 
     GetApplicationContext()->GetLocalState()->SetString(
         prefs::kLastUsedProfile, personal_profile_->GetProfileName());
 
     provider_ = [[DiscoverFeedProvider alloc] init];
-  }
-
-  ~DiscoverFeedProviderTest() override {
-    g_return_null_service = false;
   }
 
   FakeDiscoverFeedService* GetFakeService() {
@@ -135,10 +128,9 @@ TEST_F(DiscoverFeedProviderTest, FeatureDisabled) {
 // Tests that when no service exists (e.g. factory returns nullptr),
 // the provider safely handles it without crashing.
 TEST_F(DiscoverFeedProviderTest, NullServiceHandledSafely) {
-  g_return_null_service = true;
   TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
       profile_manager_, [FakeSystemIdentity fakeManagedIdentity],
-      CreateProfileBuilder());
+      CreateProfileBuilder(/*return_null_service=*/true));
   GetApplicationContext()->GetLocalState()->SetString(
       prefs::kLastUsedProfile, managed_profile->GetProfileName());
 
@@ -162,10 +154,9 @@ TEST_F(DiscoverFeedProviderTest, AccountRemovalDoesNotCrashOnRefreshInterval) {
   EXPECT_GT([provider_ refreshInterval].InSeconds(), 0);
 
   // Step 2: Switch to a profile state where DiscoverFeedService is null.
-  g_return_null_service = true;
   TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
       profile_manager_, [FakeSystemIdentity fakeManagedIdentity],
-      CreateProfileBuilder());
+      CreateProfileBuilder(/*return_null_service=*/true));
   GetApplicationContext()->GetLocalState()->SetString(
       prefs::kLastUsedProfile, managed_profile->GetProfileName());
 
