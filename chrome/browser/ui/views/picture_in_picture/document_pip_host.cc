@@ -73,6 +73,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -899,6 +900,10 @@ void DocumentPipHost::CreateChildWebContentsHelpers(
 #endif
 
   RecentlyAudibleHelper::CreateForWebContents(child_web_contents);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::DlpContentTabHelper::MaybeCreateForWebContents(child_web_contents);
+#endif
 
   // Create PageSpecificContentSettings so media grants from the PiP document
   // are recorded on the child and mirrored onto the opener via the PiP

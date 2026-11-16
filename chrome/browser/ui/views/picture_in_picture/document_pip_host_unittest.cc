@@ -68,6 +68,10 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -330,6 +334,19 @@ TEST_F(DocumentPipHostTest, AttachesRecentlyAudibleHelperToChildWebContents) {
   audible_helper->SetRecentlyAudibleForTesting();
   EXPECT_TRUE(audible_helper->WasRecentlyAudible());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(DocumentPipHostTest, AttachesDlpContentTabHelperToChildWebContents) {
+  auto ignore_dlp_rules_manager =
+      policy::DlpContentTabHelper::IgnoreDlpRulesManagerForTesting();
+
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  EXPECT_NE(nullptr, policy::DlpContentTabHelper::FromWebContents(
+                         host->GetChildWebContents()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace {

@@ -145,6 +145,7 @@ source_set("picture_in_picture") {
       "//ash/constants",
       "//ash/public/cpp",
       "//chrome/app/vector_icons",
+      "//chrome/browser/chromeos/policy/dlp",
     ]
   }
 }
@@ -224,6 +225,7 @@ source_set("unit_tests") {
     deps += [
       "//ash/constants",
       "//ash/public/cpp",
+      "//chrome/browser/chromeos/policy/dlp",
       "//chromeos/ui/base",
       "//ui/aura",
       "//ui/events:test_support",
