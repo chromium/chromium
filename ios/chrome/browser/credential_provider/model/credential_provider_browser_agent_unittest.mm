@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 
+#import "base/functional/bind.h"
 #import "base/time/time.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -12,7 +15,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -26,12 +32,19 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
   CredentialProviderBrowserAgentTest() {
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    test_profile_builder.AddTestingFactory(
         IOSPasskeyModelFactory::GetInstance(),
         base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
           return std::make_unique<webauthn::TestPasskeyModel>();
         }));
 
     profile_ = std::move(test_profile_builder).Build();
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile_.get()),
+        "user@example.com", signin::ConsentLevel::kSignin);
   }
 
   void SetUpBrowserAgent(bool incognito) {
@@ -81,6 +94,7 @@ class CredentialProviderBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   id<SettingsCommands> mock_settings_commands_handler_;

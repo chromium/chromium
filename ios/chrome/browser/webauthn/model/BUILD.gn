@@ -56,11 +56,15 @@ source_set("ios_chrome_passkey_client") {
   ]
   deps = [
     ":model",
+    "//base",
     "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync/protocol",
     "//components/webauthn/core/browser/device_authorization",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
@@ -72,6 +76,8 @@ source_set("ios_chrome_passkey_client") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/webauthn/public",
@@ -122,7 +128,9 @@ source_set("unit_tests") {
     ":ios_chrome_passkey_client",
     ":model",
     "//base/test:test_support",
+    "//components/infobars/core",
     "//components/keyed_service/core",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -130,6 +138,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
+    "//components/sync/protocol",
     "//components/sync/service",
     "//components/webauthn/core/browser/device_authorization",
     "//components/webauthn/core/browser/device_authorization:features",
@@ -140,8 +149,14 @@ source_set("unit_tests") {
     "//ios/chrome/app",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:test_utils",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/credential_provider/model:buildflags",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
@@ -153,5 +168,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
+
+  if (ios_enable_credential_provider_extension) {
+    deps += [ "//ios/chrome/browser/credential_provider/model:test_support" ]
+  }
 }

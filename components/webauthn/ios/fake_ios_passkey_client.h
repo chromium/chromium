@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_FAKE_IOS_PASSKEY_CLIENT_H_
 #define COMPONENTS_WEBAUTHN_IOS_FAKE_IOS_PASSKEY_CLIENT_H_
 
+#import <cstddef>
+#import <memory>
+
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 
@@ -27,9 +30,9 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   void ShowSuggestionBottomSheet(RequestInfo request_info) override;
   void ShowCreationBottomSheet(RequestInfo request_info) override;
   void ShowInterstitial(InterstitialCallback callback) override;
+  void ShowPasskeyCreationInfobar(
+      const sync_pb::WebauthnCredentialSpecifics& passkey) override;
   void CancelPasskeyRequest(RequestInfo request_info) override;
-
-  void AllowPasskeyCreationInfobar(bool allowed) override;
   bool IsGpmPasskeySavingEnabled() const override;
   bool IsAutomaticPasskeyUpgradeEnabled() const override;
   bool IsBiometricsEnabled() const override;
@@ -40,6 +43,9 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   void SetAutomaticPasskeyUpgradeEnabled(bool enabled);
   void SetBiometricsEnabled(bool enabled);
   bool DidShowCreationBottomSheet() const;
+  bool DidShowPasskeyCreationInfobar() const;
+  size_t show_passkey_creation_infobar_count() const;
+  const sync_pb::WebauthnCredentialSpecifics* last_infobar_passkey() const;
   bool DidFetchTrustedVaultKeys() const;
   bool DidFetchDeviceAuthorizationKeys() const;
   void SetDeviceAuthFetchResult(DeviceAuthFetchResult result);
@@ -50,6 +56,8 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
 
  private:
   bool show_creation_bottom_sheet_called_ = false;
+  size_t show_passkey_creation_infobar_count_ = 0;
+  std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> last_infobar_passkey_;
   bool show_suggestion_bottom_sheet_called_ = false;
   bool fetch_trusted_vault_keys_called_ = false;
   bool fetch_device_authorization_keys_called_ = false;

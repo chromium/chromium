@@ -33,11 +33,15 @@ if (ios_enable_credential_provider_extension) {
       "ios_credential_provider_infobar_delegate.h",
       "ios_credential_provider_infobar_delegate.mm",
     ]
-    public_deps = [ "//base" ]
+    public_deps = [
+      "//base",
+      "//components/infobars/core",
+      "//components/sync/protocol",
+      "//ui/base",
+    ]
     deps = [
       ":buildflags",
       ":features",
-      "//base",
       "//components/affiliations/core/browser:affiliations",
       "//components/autofill/core/common",
       "//components/password_manager/core/browser",
@@ -45,6 +49,7 @@ if (ios_enable_credential_provider_extension) {
       "//components/password_manager/core/common",
       "//components/password_manager/core/common:features",
       "//components/prefs",
+      "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/webauthn/core/browser:passkey_model",
       "//ios/chrome/app/application_delegate:app_state",
@@ -88,6 +93,22 @@ if (ios_enable_credential_provider_extension) {
     ]
   }
 
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "fake_credential_provider_settings_handler.h",
+      "fake_credential_provider_settings_handler.mm",
+    ]
+    public_deps =
+        [ "//components/password_manager/core/browser/ui:credential_ui_entry" ]
+    deps = [
+      "//base",
+      "//ios/chrome/browser/shared/public/commands",
+      "//third_party/ocmock",
+    ]
+    frameworks = [ "Foundation.framework" ]
+  }
+
   source_set("unit_tests") {
     testonly = true
     sources = [
@@ -102,14 +123,20 @@ if (ios_enable_credential_provider_extension) {
     deps = [
       ":features",
       ":model",
+      ":test_support",
       "//base/test:test_support",
       "//components/affiliations/core/browser:test_support",
       "//components/autofill/core/common",
       "//components/favicon/core",
+      "//components/infobars/core",
       "//components/password_manager/core/browser:test_support",
+      "//components/password_manager/core/browser/ui:credential_ui_entry",
       "//components/password_manager/core/common",
       "//components/prefs",
       "//components/prefs:test_support",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync/protocol",
       "//components/variations:test_support",
       "//components/webauthn/core/browser:test_support",
       "//ios/chrome/app/strings",
@@ -123,6 +150,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/shared/model/profile/test",
       "//ios/chrome/browser/shared/model/web_state_list",
       "//ios/chrome/browser/shared/public/commands",
+      "//ios/chrome/browser/signin/model",
       "//ios/chrome/browser/signin/model:fake_system_identity",
       "//ios/chrome/browser/signin/model:fake_system_identity_manager",
       "//ios/chrome/browser/signin/model:test_support",
