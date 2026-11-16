@@ -135,10 +135,15 @@ struct NET_EXPORT HttpRequestInfo {
   // True if the request is for a pervasive, shared third-party resource.
   bool is_shared_resource = false;
 
-  // TODO(crbug.com/495684670): Do not rely on this, it is not fully implemented
-  // yet. Once fully implemented, to prevent this from being unset, consider
-  // changing it to an optional and CHECK that it is set prior to use (see
-  // https://chromium-review.git.corp.google.com/c/chromium/src/+/7612167/comment/05941166_0f11478f/).
+  // The network handle this request must use. All data traffic triggered by
+  // this request will be sent and received via `target_network`. The request
+  // will fail if `target_network` disconnects. By design, this will disable
+  // QUIC connection migration for this request.
+  // Only implemented for Android.
+  // TODO(crbug.com/583654366): We should make it harder/impossible to leave
+  // this unset. Consider changing it to an optional and CHECK that is set prior
+  // to use. See
+  // https://chromium-review.git.corp.google.com/c/chromium/src/+/7612167/comment/05941166_0f11478f/.
   handles::NetworkHandle target_network = handles::kInvalidNetworkHandle;
 };
 
