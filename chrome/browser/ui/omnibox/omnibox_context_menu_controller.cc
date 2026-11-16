@@ -2029,11 +2029,13 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
         int max_num_files = input_state_.allowed_models.empty()
                                 ? kDefaultMaxNumFiles
                                 : input_state_.max_total_inputs;
-        std::vector<contextual_search::FileInfo> file_infos;
+        // Count tokens rather than `FileInfo`s, since a tab whose page context
+        // is still being fetched has a token but no `FileInfo` yet.
+        size_t num_inputs = 0;
         if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
-          file_infos = session_handle->GetUploadedContextFileInfos();
+          num_inputs = session_handle->GetUploadedContextTokens().size();
         }
-        if (static_cast<int>(file_infos.size()) >= max_num_files) {
+        if (static_cast<int>(num_inputs) >= max_num_files) {
           return false;
         }
 
