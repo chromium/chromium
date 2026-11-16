@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -14,8 +16,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -34,6 +35,7 @@
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_state/core/security_state.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -52,20 +54,24 @@
 
 namespace {
 
-// Waits until the title of any tab in the browser for |contents| has the title
-// |target_title|.
-class TestTitleObserver : public TabStripModelObserver {
+// Waits until the title of the tab for |contents| has the title |target_title|.
+class TestTitleObserver {
  public:
-  // Create a new TitleObserver for the browser of |contents|, waiting for
+  // Create a new TitleObserver for the tab of |contents|, waiting for
   // |target_title|.
   TestTitleObserver(content::WebContents* contents, std::u16string target_title)
       : contents_(contents), target_title_(target_title) {
-    browser_ =
-        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents_);
-    browser_->GetTabStripModel()->AddObserver(this);
+    tabs::TabInterface* const tab =
+        tabs::TabInterface::GetFromContents(contents_);
+    BrowserView* const browser_view =
+        BrowserView::GetBrowserViewForBrowser(tab->GetBrowserWindowInterface());
+    custom_tab_bar_ = browser_view->toolbar()->custom_tab_bar();
+    tab_ui_subscription_ =
+        TabUIHelper::From(tab)->AddTabUIChangeCallback(base::BindRepeating(
+            &TestTitleObserver::OnTabUIChanged, base::Unretained(this)));
   }
 
-  // Run a loop, blocking until a tab has the title |target_title|.
+  // Run a loop, blocking until the tab has the title |target_title|.
   void Wait() {
     if (seen_target_title_) {
       return;
@@ -74,14 +80,18 @@ class TestTitleObserver : public TabStripModelObserver {
     awaiter_.Run();
   }
 
-  // TabstripModelObserver:
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override {
-    content::NavigationEntry* entry =
-        tab->GetContents()->GetController().GetVisibleEntry();
-    std::u16string title = entry ? entry->GetTitle() : std::u16string();
+ private:
+  void OnTabUIChanged() {
+    content::NavigationEntry* const entry =
+        contents_->GetController().GetVisibleEntry();
+    const std::u16string title = entry ? entry->GetTitle() : std::u16string();
 
     if (title != target_title_) {
+      return;
+    }
+
+    if (custom_tab_bar_ && custom_tab_bar_->GetVisible() && entry &&
+        custom_tab_bar_->title_for_testing() != entry->GetTitleForDisplay()) {
       return;
     }
 
@@ -89,12 +99,13 @@ class TestTitleObserver : public TabStripModelObserver {
     awaiter_.Quit();
   }
 
- private:
   bool seen_target_title_ = false;
 
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> contents_;
-  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser_;
+  raw_ptr<CustomTabBarView, AcrossTasksDanglingUntriaged> custom_tab_bar_ =
+      nullptr;
   std::u16string target_title_;
+  base::CallbackListSubscription tab_ui_subscription_;
   base::RunLoop awaiter_;
 };
 
