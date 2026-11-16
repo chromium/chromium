@@ -108,12 +108,12 @@ GURL ExtractEndpoint(const GURL& provider,
   return provider.Resolve(*endpoint);
 }
 
-GURL FindBestMatchingIconUrl(const base::ListValue* icons_value,
+GURL FindBestMatchingIconUrl(const base::ListValue& icons_value,
                              int brand_icon_ideal_size,
                              int brand_icon_minimum_size,
                              const GURL& config_url) {
   std::vector<blink::Manifest::ImageResource> icons;
-  for (const base::Value& icon_value : *icons_value) {
+  for (const base::Value& icon_value : icons_value) {
     const base::DictValue* icon_value_dict = icon_value.GetIfDict();
     if (!icon_value_dict) {
       continue;

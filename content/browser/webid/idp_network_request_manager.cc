@@ -215,7 +215,7 @@ void ParseIdentityProviderMetadata(const base::DictValue& idp_metadata_value,
   }
 
   idp_metadata.brand_icon_url =
-      FindBestMatchingIconUrl(icons_value, brand_icon_ideal_size,
+      FindBestMatchingIconUrl(*icons_value, brand_icon_ideal_size,
                               brand_icon_minimum_size, idp_metadata.config_url);
 }
 
@@ -399,7 +399,7 @@ void OnClientMetadataParsed(
   const base::ListValue* icons_value = result->FindList(kBrandingIconsKey);
   if (icons_value) {
     data.brand_icon_url =
-        FindBestMatchingIconUrl(icons_value, rp_brand_icon_ideal_size,
+        FindBestMatchingIconUrl(*icons_value, rp_brand_icon_ideal_size,
                                 rp_brand_icon_minimum_size, GURL());
   }
 

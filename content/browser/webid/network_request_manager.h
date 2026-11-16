@@ -57,7 +57,7 @@ GURL ExtractEndpoint(const GURL& provider,
 // `brand_icon_ideal_size`, ignoring icons smaller than
 // `brand_icon_minimum_size`. Relative icon URLs are resolved against
 // `config_url` if it is non-empty. Returns an empty GURL if none match.
-GURL FindBestMatchingIconUrl(const base::ListValue* icons_value,
+GURL FindBestMatchingIconUrl(const base::ListValue& icons_value,
                              int brand_icon_ideal_size,
                              int brand_icon_minimum_size,
                              const GURL& config_url);

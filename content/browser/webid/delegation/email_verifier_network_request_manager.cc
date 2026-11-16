@@ -103,7 +103,7 @@ void OnWellKnownParsed(
   if (const base::DictValue* branding = result->FindDict(kBrandingKey)) {
     if (const base::ListValue* icons = branding->FindList(kBrandingIconsKey)) {
       well_known.brand_icon_url = FindBestMatchingIconUrl(
-          icons, kBrandIconIdealSize, kBrandIconMinimumSize, well_known_url);
+          *icons, kBrandIconIdealSize, kBrandIconMinimumSize, well_known_url);
     }
   }
   // The logo is shown in browser UI, so don't fetch it over an insecure
