@@ -86,6 +86,9 @@ static_library("gcm_driver") {
       "gcm_desktop_utils.h",
       "gcm_driver_desktop.cc",
       "gcm_driver_desktop.h",
+      "gcm_registration_manager.h",
+      "gcm_registration_manager_impl.cc",
+      "gcm_registration_manager_impl.h",
     ]
     deps += [
       "//components/crx_file",
@@ -189,6 +192,7 @@ source_set("unit_tests") {
       "gcm_driver_desktop_integration_unittest.cc",
       "gcm_driver_desktop_unittest.cc",
       "gcm_driver_unittest.cc",
+      "gcm_registration_manager_impl_unittest.cc",
     ]
 
     deps += [

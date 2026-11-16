@@ -60,6 +60,7 @@ namespace gcm {
 class CheckinRequest;
 class ConnectionFactory;
 class GCMClientImplTest;
+class GCMRegistrationManagerImpl;
 
 // Implements the GCM Client. It is used to coordinate MCS Client (communication
 // with MCS) and other pieces of GCM infrastructure like Registration and
@@ -297,6 +298,11 @@ class GCMClientImpl : public GCMClient,
   // serial number mappings.
   std::unique_ptr<GCMStore> gcm_store_;
 
+  // Manages registrations and Instance ID data. Must be declared after
+  // `gcm_store_` so `gcm_store_` outlives it.
+  // TODO(b/545115204): Move ownership to `GCMDriverDesktop::IOWorker`.
+  std::unique_ptr<GCMRegistrationManagerImpl> registration_manager_;
+
   // Data loaded from the GCM store.
   std::unique_ptr<GCMStore::LoadResult> load_result_;
 
@@ -337,10 +343,6 @@ class GCMClientImpl : public GCMClient,
 
   // Time of the last successful checkin.
   base::Time last_checkin_time_;
-
-  // Cached instance ID data, key is app ID and value is pair of instance ID
-  // and extra data.
-  std::map<std::string, std::pair<std::string, std::string>> instance_id_data_;
 
   // Factory for creating references when scheduling periodic checkin.
   base::WeakPtrFactory<GCMClientImpl> periodic_checkin_ptr_factory_{this};

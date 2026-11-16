@@ -99,6 +99,8 @@ static_library("test_support") {
     "engine/fake_connection_factory.h",
     "engine/fake_connection_handler.cc",
     "engine/fake_connection_handler.h",
+    "engine/fake_gcm_store.cc",
+    "engine/fake_gcm_store.h",
     "engine/fake_mcs_server.cc",
     "engine/fake_mcs_server.h",
     "monitoring/fake_gcm_stats_recorder.cc",

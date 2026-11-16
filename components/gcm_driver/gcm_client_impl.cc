@@ -27,6 +27,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/fcm/base/fcm_backoff_policy.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
+#include "components/gcm_driver/gcm_registration_manager_impl.h"
 #include "google_apis/gcm/base/encryptor.h"
 #include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
@@ -116,13 +117,6 @@ int ConstructGCMVersion(const std::string& chrome_version) {
   return gcm_version;
 }
 
-std::string SerializeInstanceIDData(const std::string& instance_id,
-                                    const std::string& extra_data) {
-  DCHECK(!instance_id.empty() && !extra_data.empty());
-  DCHECK(instance_id.find(',') == std::string::npos);
-  return instance_id + "," + extra_data;
-}
-
 bool DeserializeInstanceIDData(const std::string& serialized_data,
                                std::string* instance_id,
                                std::string* extra_data) {
@@ -175,6 +169,8 @@ void GCMClientImpl::Initialize(
   chrome_build_info_ = chrome_build_info;
   gcm_store_ = std::make_unique<GCMStoreImpl>(path, blocking_task_runner,
                                               std::move(encryptor));
+  registration_manager_ =
+      std::make_unique<GCMRegistrationManagerImpl>(*gcm_store_);
   io_task_runner_ = std::move(io_task_runner);
   recorder_.SetDelegate(this);
   state_ = INITIALIZED;
@@ -270,11 +266,13 @@ void GCMClientImpl::OnLoadCompleted(
     }
   }
 
+  CHECK(registration_manager_);
   for (const auto& [key, value] : result->instance_id_data) {
     std::string instance_id;
     std::string extra_data;
     if (DeserializeInstanceIDData(value, &instance_id, &extra_data)) {
-      instance_id_data_[key] = std::make_pair(instance_id, extra_data);
+      registration_manager_->mutable_instance_id_data()[key] =
+          std::make_pair(instance_id, extra_data);
     }
   }
 
@@ -413,26 +411,14 @@ void GCMClientImpl::AddInstanceIDData(const std::string& app_id,
                                       const std::string& instance_id,
                                       const std::string& extra_data) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  // `InstanceIDImpl` re-sends the Instance ID before every token operation;
-  // skip unchanged entries to avoid a synchronous LevelDB write on startup.
-  auto iter = instance_id_data_.find(app_id);
-  if (iter != instance_id_data_.end() && iter->second.first == instance_id &&
-      iter->second.second == extra_data) {
-    return;
-  }
-  instance_id_data_[app_id] = std::make_pair(instance_id, extra_data);
-  // TODO(crbug.com/40109289): If this call fails, we likely leak a registration
-  // (the one stored in instance_id_data_ would be used for a registration but
-  // not persisted).
-  gcm_store_->AddInstanceIDData(
-      app_id, SerializeInstanceIDData(instance_id, extra_data),
-      base::BindOnce(&GCMClientImpl::IgnoreWriteResultCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+  CHECK(registration_manager_);
+  registration_manager_->AddInstanceIDData(app_id, instance_id, extra_data);
 }
 
 void GCMClientImpl::RemoveInstanceIDData(const std::string& app_id) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  instance_id_data_.erase(app_id);
+  CHECK(registration_manager_);
+  registration_manager_->mutable_instance_id_data().erase(app_id);
   gcm_store_->RemoveInstanceIDData(
       app_id, base::BindOnce(&GCMClientImpl::IgnoreWriteResultCallback,
                              weak_ptr_factory_.GetWeakPtr()));
@@ -442,9 +428,10 @@ void GCMClientImpl::GetInstanceIDData(const std::string& app_id,
                                       std::string* instance_id,
                                       std::string* extra_data) {
   DCHECK(instance_id && extra_data);
+  CHECK(registration_manager_);
 
-  auto iter = instance_id_data_.find(app_id);
-  if (iter == instance_id_data_.end()) {
+  auto iter = registration_manager_->instance_id_data().find(app_id);
+  if (iter == registration_manager_->instance_id_data().end()) {
     return;
   }
   *instance_id = iter->second.first;
@@ -697,8 +684,10 @@ void GCMClientImpl::Register(
   const InstanceIDTokenInfo* instance_id_token_info =
       InstanceIDTokenInfo::FromRegistrationInfo(registration_info.get());
   if (instance_id_token_info) {
-    auto instance_id_iter = instance_id_data_.find(registration_info->app_id);
-    CHECK(instance_id_iter != instance_id_data_.end());
+    CHECK(registration_manager_);
+    auto instance_id_iter = registration_manager_->instance_id_data().find(
+        registration_info->app_id);
+    CHECK(instance_id_iter != registration_manager_->instance_id_data().end());
 
     request_handler = std::make_unique<InstanceIDGetTokenRequestHandler>(
         instance_id_iter->second.first,
@@ -834,8 +823,10 @@ void GCMClientImpl::Unregister(
   const InstanceIDTokenInfo* instance_id_token_info =
       InstanceIDTokenInfo::FromRegistrationInfo(registration_info.get());
   if (instance_id_token_info) {
-    auto instance_id_iter = instance_id_data_.find(registration_info->app_id);
-    if (instance_id_iter == instance_id_data_.end()) {
+    CHECK(registration_manager_);
+    auto instance_id_iter = registration_manager_->instance_id_data().find(
+        registration_info->app_id);
+    if (instance_id_iter == registration_manager_->instance_id_data().end()) {
       // This should not be reached since we should not delete tokens when
       // an InstanceID has not been created yet.
       NOTREACHED();
