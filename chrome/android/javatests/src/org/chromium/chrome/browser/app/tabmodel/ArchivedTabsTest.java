@@ -128,9 +128,7 @@ public class ArchivedTabsTest {
         CriteriaHelper.pollUiThread(() -> mOrchestrator.isTabStateInitialized());
     }
 
-    private void createArchivedTabAndCloseAllTabs() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-
+    private void createArchivedTab() {
         runOnUiThreadBlocking(
                 () -> {
                     TabCreator archivedTabCreator = mOrchestrator.getArchivedTabCreatorForTesting();
@@ -144,31 +142,34 @@ public class ArchivedTabsTest {
         CriteriaHelper.pollUiThread(
                 () -> 1 == mTabArchiveSettings.getArchivedTabCountSupplier().get());
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
+    }
 
-        TabUiTestHelper.enterTabSwitcher(cta);
+    private void closeAllTabsFromTabSwitcher(ChromeTabbedActivity cta) {
         runOnUiThreadBlocking(
                 () -> {
                     TabModelSelector selector = cta.getTabModelSelectorSupplier().get();
                     CloseAllTabsHelper.closeAllTabsHidingTabGroups(
                             selector,
-                            () ->
-                                    ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(
-                                            selector),
+                            ArchivedTabModelOrchestrator.createCloseAllTabsDelegate(selector),
                             /* allowUndo= */ true,
                             TabClosingSource.GRID_TAB_SWITCHER,
                             /* closePinnedTabs= */ false);
                 });
-        CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
-        CriteriaHelper.pollUiThread(() -> 0 == mTabArchiveSettings.getArchivedTabCount());
-        CriteriaHelper.pollUiThread(
-                () -> 0 == mTabArchiveSettings.getArchivedTabCountSupplier().get());
-        CriteriaHelper.pollUiThread(() -> 0 == mRegularTabModel.getCount());
     }
 
     @Test
     @MediumTest
     public void testCloseAllTabsAndClickUndo() {
-        createArchivedTabAndCloseAllTabs();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createArchivedTab();
+        TabUiTestHelper.enterTabSwitcher(cta);
+        closeAllTabsFromTabSwitcher(cta);
+
+        CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
+        CriteriaHelper.pollUiThread(() -> 0 == mTabArchiveSettings.getArchivedTabCount());
+        CriteriaHelper.pollUiThread(
+                () -> 0 == mTabArchiveSettings.getArchivedTabCountSupplier().get());
+        CriteriaHelper.pollUiThread(() -> 0 == mRegularTabModel.getCount());
 
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         CriteriaHelper.pollUiThread(() -> 1 == mArchivedTabModel.getCount());
@@ -182,26 +183,52 @@ public class ArchivedTabsTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
     public void testCloseAllTabsAndClickUndo_AfterTeardown() {
-        createArchivedTabAndCloseAllTabs();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createArchivedTab();
+        TabUiTestHelper.enterTabSwitcher(cta);
 
+        // Tear down before closing all tabs to exercise resurrection during close-all preparation.
         runOnUiThreadBlocking(() -> mOrchestrator.performTeardownForTesting());
         assertFalse(
                 runOnUiThreadBlocking(
                         () -> ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile)));
 
-        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
+        closeAllTabsFromTabSwitcher(cta);
+        CriteriaHelper.pollUiThread(() -> 0 == mTabArchiveSettings.getArchivedTabCount());
         CriteriaHelper.pollUiThread(
-                () -> ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile));
-        CriteriaHelper.pollUiThread(
+                () -> 0 == mTabArchiveSettings.getArchivedTabCountSupplier().get());
+        CriteriaHelper.pollUiThread(() -> 0 == mRegularTabModel.getCount());
+
+        // Tear down the newly resurrected orchestrator (if not already evicted) before undoing
+        // closure.
+        runOnUiThreadBlocking(
                 () -> {
                     ArchivedTabModelOrchestrator newOrchestrator =
                             ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mProfile);
-                    if (newOrchestrator == null) return false;
-                    TabModel newArchivedTabModel = newOrchestrator.getTabModel();
-                    return newArchivedTabModel != null && 1 == newArchivedTabModel.getCount();
+                    if (newOrchestrator != null) {
+                        assertTrue(newOrchestrator.isTabStateInitialized());
+                        assertEquals(0, newOrchestrator.getTabModel().getCount());
+                        newOrchestrator.performTeardownForTesting();
+                    }
                 });
+        assertFalse(
+                runOnUiThreadBlocking(
+                        () -> ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile)));
+
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         CriteriaHelper.pollUiThread(() -> 1 == mTabArchiveSettings.getArchivedTabCount());
+        CriteriaHelper.pollUiThread(
+                () -> 1 == mTabArchiveSettings.getArchivedTabCountSupplier().get());
         CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
+        runOnUiThreadBlocking(
+                () -> {
+                    ArchivedTabModelOrchestrator resurrected =
+                            ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(mProfile);
+                    if (resurrected != null) {
+                        assertTrue(resurrected.isTabStateInitialized());
+                        assertEquals(1, resurrected.getTabModel().getCount());
+                    }
+                });
     }
 
     @Test

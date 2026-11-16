@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
@@ -51,6 +50,7 @@ import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.close_all_tabs.CloseAllTabsHelper;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCountTracker;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
@@ -470,6 +470,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     private Destroyable addDestroyCallback(Runnable callback) {
+        ThreadUtils.assertOnUiThread();
         assert !mIsDestroyed;
         mDestroyCallbacks.addObserver(callback);
         return () -> mDestroyCallbacks.removeObserver(callback);
@@ -951,30 +952,129 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     /**
-     * Unarchives all archived tabs into the regular {@link TabModel} so they will be closed
-     * alongside regular tabs during a close-all-tabs operation, and returns a {@link Runnable} to
-     * re-archive them if the closure is undone. Returns an empty runnable if the archived tab
-     * models are not yet initialized or there are no archived tabs.
+     * Creates a {@link CloseAllTabsHelper.ArchivedTabsDelegate} for coordinating archived tab
+     * lifecycle and unarchiving during a close-all-tabs operation.
      *
      * @param tabModelSelector The {@link TabModelSelector} for the activity closing all tabs.
      */
-    public static Runnable unarchiveTabsAndGetUndoRunnable(TabModelSelector tabModelSelector) {
+    public static CloseAllTabsHelper.ArchivedTabsDelegate createCloseAllTabsDelegate(
+            TabModelSelector tabModelSelector) {
+        return new CloseAllTabsDelegateImpl(tabModelSelector);
+    }
+
+    private static final class CloseAllTabsDelegateImpl
+            implements CloseAllTabsHelper.ArchivedTabsDelegate {
+        private final TabModelSelector mTabModelSelector;
+        private @Nullable Destroyable mLease;
+        private @Nullable Destroyable mCleanupWait;
+
+        CloseAllTabsDelegateImpl(TabModelSelector tabModelSelector) {
+            mTabModelSelector = tabModelSelector;
+        }
+
+        private @Nullable Profile getValidOriginalProfile() {
+            TabModel regularTabModel = mTabModelSelector.getModel(/* incognito= */ false);
+            Profile profile = regularTabModel.getProfile();
+            if (regularTabModel.getTabModelType() == TabModelType.EMPTY || profile == null) {
+                return null;
+            }
+            Profile originalProfile = profile.getOriginalProfile();
+            return isValidProfile(originalProfile) ? originalProfile : null;
+        }
+
+        @Override
+        public @Nullable Destroyable prepareForCloseAll(Runnable onReadyToClose) {
+            ThreadUtils.assertOnUiThread();
+            assert mLease == null && mCleanupWait == null;
+            if (TabArchiveSettings.getInstance().getArchivedTabCount() == 0) {
+                return null;
+            }
+            Profile originalProfile = getValidOriginalProfile();
+            if (originalProfile == null) {
+                return null;
+            }
+            ArchivedTabModelOrchestrator orchestrator =
+                    getOrCreateAndInitForProfile(originalProfile);
+            if (orchestrator == null || !orchestrator.areTabModelsInitialized()) {
+                return null;
+            }
+            // Acquire and immediately release if already ready so a resurrected orchestrator
+            // starts its grace-period teardown timer even when prepareForCloseAll returns null.
+            Destroyable lease = orchestrator.acquireLease(LeaseReason.RESCUE_ARCHIVED_TABS);
+            if (orchestrator.isTabStateInitialized()) {
+                lease.destroy();
+                return null;
+            }
+
+            mLease = lease;
+            Runnable onReady =
+                    () -> {
+                        cleanupWait();
+                        onReadyToClose.run();
+                    };
+            Destroyable destroyObserver = orchestrator.addDestroyCallback(onReady);
+            Destroyable initObserver = orchestrator.runOnTabStateInitialized(onReady);
+            mCleanupWait =
+                    () -> {
+                        initObserver.destroy();
+                        destroyObserver.destroy();
+                    };
+            return () -> {
+                cleanupWait();
+                releaseLease();
+            };
+        }
+
+        private void cleanupWait() {
+            ThreadUtils.assertOnUiThread();
+            if (mCleanupWait == null) return;
+            Destroyable cleanupWait = mCleanupWait;
+            mCleanupWait = null;
+            cleanupWait.destroy();
+        }
+
+        private void releaseLease() {
+            if (mLease == null) return;
+            Destroyable lease = mLease;
+            mLease = null;
+            lease.destroy();
+        }
+
+        @Override
+        public @Nullable Runnable unarchiveAndGetUndoRunnable() {
+            ThreadUtils.assertOnUiThread();
+            Profile originalProfile = getValidOriginalProfile();
+            ArchivedTabModelOrchestrator orchestrator =
+                    originalProfile != null ? getIfInstantiatedForProfile(originalProfile) : null;
+            @Nullable Runnable undoRunnable =
+                    originalProfile != null && orchestrator != null
+                            ? orchestrator.unarchiveTabsAndGetUndoRunnable(
+                                    mTabModelSelector, originalProfile)
+                            : null;
+            cleanupWait();
+            releaseLease();
+            return undoRunnable;
+        }
+    }
+
+    /**
+     * Unarchives all archived tabs into the regular {@link TabModel} so they will be closed
+     * alongside regular tabs during a close-all-tabs operation, and returns a {@link Runnable} to
+     * re-archive them if the closure is undone. Returns {@code null} if the archived tab models are
+     * not yet initialized or there are no archived tabs.
+     *
+     * @param tabModelSelector The {@link TabModelSelector} for the activity closing all tabs.
+     * @param originalProfile Validated original {@link Profile} owning the archived tab model.
+     */
+    private @Nullable Runnable unarchiveTabsAndGetUndoRunnable(
+            TabModelSelector tabModelSelector, Profile originalProfile) {
         ThreadUtils.assertOnUiThread();
-        TabModel initialRegularTabModel = tabModelSelector.getModel(/* incognito= */ false);
-        Profile profile = initialRegularTabModel.getProfile();
-        if (initialRegularTabModel.getTabModelType() == TabModelType.EMPTY || profile == null) {
-            return CallbackUtils.emptyRunnable();
+        if (!areTabModelsInitialized() || !isTabStateInitialized()) {
+            return null;
         }
-        Profile originalProfile = profile.getOriginalProfile();
-        ArchivedTabModelOrchestrator orchestrator = getIfInstantiatedForProfile(originalProfile);
-        if (orchestrator == null
-                || !orchestrator.areTabModelsInitialized()
-                || !orchestrator.isTabStateInitialized()) {
-            return CallbackUtils.emptyRunnable();
-        }
-        TabModel archivedTabModel = orchestrator.getTabModel();
+        TabModel archivedTabModel = getTabModel();
         if (archivedTabModel == null || archivedTabModel.getCount() == 0) {
-            return CallbackUtils.emptyRunnable();
+            return null;
         }
 
         List<Tab> tabsToUnarchive = TabModelUtils.convertTabListToListOfTabs(archivedTabModel);
@@ -982,8 +1082,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         for (Tab tab : tabsToUnarchive) {
             previouslyArchivedTabIds.add(tab.getId());
         }
-        orchestrator
-                .getTabArchiver()
+        getTabArchiver()
                 .unarchiveAndRestoreTabs(
                         tabModelSelector
                                 .getTabCreatorManager()

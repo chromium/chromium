@@ -2443,9 +2443,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             TabModelSelector tabModelSelector = assertNonNull(getTabModelSelectorSupplier().get());
             CloseAllTabsHelper.closeAllTabsHidingTabGroups(
                     tabModelSelector,
-                    () ->
-                            ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(
-                                    tabModelSelector),
+                    ArchivedTabModelOrchestrator.createCloseAllTabsDelegate(tabModelSelector),
                     /* allowUndo= */ true,
                     TabClosingSource.UNKNOWN,
                     /* closePinnedTabs= */ true);
@@ -4825,9 +4823,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             Callback<Boolean> closeAllTabsCallback =
                     CloseAllTabsHelper.buildCloseAllTabsCallback(
                             tabModelSelector,
-                            () ->
-                                    ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(
-                                            tabModelSelector),
+                            ArchivedTabModelOrchestrator.createCloseAllTabsDelegate(
+                                    tabModelSelector),
                             allowUndo);
             CloseAllTabsDialog.show(
                     this,

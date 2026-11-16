@@ -30,14 +30,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.close_all_tabs.CloseAllTabsHelper;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
 import org.chromium.chrome.browser.tabmodel.StubTabModel;
@@ -67,6 +69,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link ArchivedTabModelOrchestrator}. */
@@ -847,89 +850,6 @@ public class ArchivedTabModelOrchestratorUnitTest {
         verify(mockOrchestrator2).onDeclutterPassCompleted();
     }
 
-    private static class UnarchiveUndoTestFixture {
-        public final List<TabModelSelectorObserver> selectorObservers = new ArrayList<>();
-        public ArchivedTabModelOrchestrator orchestrator;
-        public MockTabModel regularTabModel;
-        public MockTabModel archivedTabModel;
-        public MockTab archivedTab;
-        public TabArchiver mockArchiver;
-        public TabModelSelector selector;
-        public TabCreator regularCreator;
-    }
-
-    private ArchivedTabModelOrchestrator createProfileOrchestrator(
-            boolean tabStateInitialized, TabArchiver archiver) {
-        ArchivedTabModelOrchestrator orchestrator =
-                ArchivedTabModelOrchestrator.getForProfile(mMockProfile);
-        when(mMockTabModelSelector.isTabStateInitialized()).thenReturn(tabStateInitialized);
-        orchestrator.initForTesting(
-                mMockTabModelSelector,
-                mMockTabPersistentStore,
-                mMockTabPersistencePolicy,
-                mMockShadowTabPersistentStore);
-        orchestrator.setArchivedTabCreatorForTesting(mMockArchivedTabCreator);
-        orchestrator.setWindowAndroidForTesting(mMockWindowAndroid);
-        orchestrator.setCipherFactoryForTesting(mMockCipherFactory);
-        orchestrator.setTabGroupSyncServiceForTesting(mMockTabGroupSyncService);
-        orchestrator.markTabModelsInitialized();
-        orchestrator.setTabStateInitializedForTesting(tabStateInitialized);
-        orchestrator.setTabArchiverForTesting(archiver);
-        return orchestrator;
-    }
-
-    private UnarchiveUndoTestFixture setUpUnarchiveUndoTestFixture() {
-        UnarchiveUndoTestFixture fixture = new UnarchiveUndoTestFixture();
-        fixture.regularTabModel = new MockTabModel(mMockProfile, /* delegate= */ null);
-        fixture.regularTabModel.addTab(10);
-        fixture.archivedTabModel = new MockTabModel(mMockProfile, /* delegate= */ null);
-        fixture.archivedTab = fixture.archivedTabModel.addTab(20);
-        when(mMockTabModelSelector.getModel(/* incognito= */ false))
-                .thenReturn(fixture.archivedTabModel);
-
-        fixture.mockArchiver = mock(TabArchiver.class);
-        fixture.orchestrator =
-                createProfileOrchestrator(/* tabStateInitialized= */ true, fixture.mockArchiver);
-
-        fixture.selector = mock(TabModelSelector.class);
-        TabCreatorManager creatorManager = mock(TabCreatorManager.class);
-        fixture.regularCreator = mock(TabCreator.class);
-        when(fixture.selector.getModel(/* incognito= */ false)).thenReturn(fixture.regularTabModel);
-        when(fixture.selector.getTabCreatorManager()).thenReturn(creatorManager);
-        when(creatorManager.getTabCreator(/* incognito= */ false))
-                .thenReturn(fixture.regularCreator);
-        doAnswer(
-                        inv -> {
-                            fixture.selectorObservers.add(inv.getArgument(0));
-                            return null;
-                        })
-                .when(fixture.selector)
-                .addObserver(any());
-        doAnswer(
-                        inv -> {
-                            fixture.selectorObservers.remove(inv.getArgument(0));
-                            return null;
-                        })
-                .when(fixture.selector)
-                .removeObserver(any());
-        doAnswer(
-                        inv -> {
-                            List<Tab> tabs = inv.getArgument(1);
-                            for (Tab tab : tabs) {
-                                fixture.archivedTabModel.removeTab(tab);
-                                fixture.regularTabModel.addTab(
-                                        tab,
-                                        /* index= */ 0,
-                                        TabLaunchType.FROM_RESTORE,
-                                        TabCreationState.FROZEN_ON_RESTORE);
-                            }
-                            return null;
-                        })
-                .when(fixture.mockArchiver)
-                .unarchiveAndRestoreTabs(eq(fixture.regularCreator), any(), eq(true), eq(false));
-        return fixture;
-    }
-
     @Test
     public void testUnarchiveTabsAndGetUndoRunnable_PreconditionGuards() {
         TabModelSelector selector = mock(TabModelSelector.class);
@@ -937,15 +857,11 @@ public class ArchivedTabModelOrchestratorUnitTest {
         TabModel nullProfileTabModel = mock(TabModel.class);
         when(nullProfileTabModel.getProfile()).thenReturn(null);
         when(selector.getModel(/* incognito= */ false)).thenReturn(nullProfileTabModel);
-        assertEquals(
-                CallbackUtils.emptyRunnable(),
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(selector));
+        assertNull(unarchiveThroughDelegate(selector));
 
         MockTabModel regularTabModel = new MockTabModel(mMockProfile, /* delegate= */ null);
         when(selector.getModel(/* incognito= */ false)).thenReturn(regularTabModel);
-        assertEquals(
-                CallbackUtils.emptyRunnable(),
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(selector));
+        assertNull(unarchiveThroughDelegate(selector));
 
         ArchivedTabModelOrchestrator orchestrator =
                 ArchivedTabModelOrchestrator.getForProfile(mMockProfile);
@@ -954,32 +870,24 @@ public class ArchivedTabModelOrchestratorUnitTest {
                 mMockTabPersistentStore,
                 mMockTabPersistencePolicy,
                 mMockShadowTabPersistentStore);
-        assertEquals(
-                CallbackUtils.emptyRunnable(),
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(selector));
+        assertNull(unarchiveThroughDelegate(selector));
 
         orchestrator.markTabModelsInitialized();
         MockTabModel archivedTabModel = new MockTabModel(mMockProfile, /* delegate= */ null);
         archivedTabModel.addTab(20);
         when(mMockTabModelSelector.getModel(/* incognito= */ false)).thenReturn(archivedTabModel);
-        // Tab state not yet initialized -> still returns empty runnable even with archived tabs.
-        assertEquals(
-                CallbackUtils.emptyRunnable(),
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(selector));
+        // Tab state not yet initialized -> still returns null even with archived tabs.
+        assertNull(unarchiveThroughDelegate(selector));
 
         orchestrator.setTabStateInitializedForTesting(true);
         archivedTabModel = new MockTabModel(mMockProfile, /* delegate= */ null);
         when(mMockTabModelSelector.getModel(/* incognito= */ false)).thenReturn(archivedTabModel);
-        assertEquals(
-                CallbackUtils.emptyRunnable(),
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(selector));
+        assertNull(unarchiveThroughDelegate(selector));
 
         archivedTabModel.addTab(20);
         when(selector.getModel(/* incognito= */ false))
                 .thenReturn(new StubTabModel(/* isIncognito= */ false, mMockProfile));
-        assertEquals(
-                CallbackUtils.emptyRunnable(),
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(selector));
+        assertNull(unarchiveThroughDelegate(selector));
     }
 
     @Test
@@ -987,8 +895,8 @@ public class ArchivedTabModelOrchestratorUnitTest {
     public void testUnarchiveTabsAndGetUndoRunnable_UnarchivesAndUndoesArchivedTabs() {
         UnarchiveUndoTestFixture fixture = setUpUnarchiveUndoTestFixture();
 
-        Runnable undoRunnable =
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(fixture.selector);
+        Runnable undoRunnable = unarchiveThroughDelegate(fixture.selector);
+        assertNotNull(undoRunnable);
         verify(fixture.mockArchiver)
                 .unarchiveAndRestoreTabs(
                         eq(fixture.regularCreator),
@@ -1007,30 +915,13 @@ public class ArchivedTabModelOrchestratorUnitTest {
         assertTrue(fixture.selectorObservers.isEmpty());
     }
 
-    private ArchivedTabModelOrchestrator startAsyncUndoAfterTeardown(
-            UnarchiveUndoTestFixture fixture, TabArchiver nextArchiver) {
-        Runnable undoRunnable =
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(fixture.selector);
-        assertTrue(fixture.selectorObservers.isEmpty());
-        fixture.orchestrator.performTeardownForTesting();
-
-        ArchivedTabModelOrchestrator nextOrchestrator =
-                createProfileOrchestrator(/* tabStateInitialized= */ false, nextArchiver);
-        undoRunnable.run();
-        undoRunnable.run();
-        assertEquals(1, nextOrchestrator.getLeaseCountForTesting());
-        assertEquals(1, fixture.selectorObservers.size());
-        return nextOrchestrator;
-    }
-
     @Test
     @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
     public void testUnarchiveTabsAndGetUndoRunnable_UndoGuards() {
         // Guard 1: Orchestrator torn down before undo runs.
         UnarchiveUndoTestFixture teardownFixture = setUpUnarchiveUndoTestFixture();
-        Runnable teardownUndo =
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(
-                        teardownFixture.selector);
+        Runnable teardownUndo = unarchiveThroughDelegate(teardownFixture.selector);
+        assertNotNull(teardownUndo);
         assertTrue(teardownFixture.selectorObservers.isEmpty());
         teardownFixture.orchestrator.performTeardownForTesting();
         teardownUndo.run();
@@ -1041,9 +932,8 @@ public class ArchivedTabModelOrchestratorUnitTest {
         // Guard 2: Selector cleared its models before undo runs.
         ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
         UnarchiveUndoTestFixture destroyedFixture = setUpUnarchiveUndoTestFixture();
-        Runnable destroyedUndo =
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(
-                        destroyedFixture.selector);
+        Runnable destroyedUndo = unarchiveThroughDelegate(destroyedFixture.selector);
+        assertNotNull(destroyedUndo);
         assertTrue(destroyedFixture.selectorObservers.isEmpty());
         when(destroyedFixture.selector.getModel(/* incognito= */ false))
                 .thenReturn(EmptyTabModel.getInstance(/* isIncognito= */ false));
@@ -1121,8 +1011,8 @@ public class ArchivedTabModelOrchestratorUnitTest {
         MockTab closingTab = fixture.archivedTabModel.addTab(21);
         MockTab destroyedTab = fixture.archivedTabModel.addTab(22);
 
-        Runnable undoRunnable =
-                ArchivedTabModelOrchestrator.unarchiveTabsAndGetUndoRunnable(fixture.selector);
+        Runnable undoRunnable = unarchiveThroughDelegate(fixture.selector);
+        assertNotNull(undoRunnable);
 
         closingTab.setClosing(true);
         destroyedTab.destroy();
@@ -1131,5 +1021,208 @@ public class ArchivedTabModelOrchestratorUnitTest {
         verify(fixture.mockArchiver)
                 .archiveAndRemoveTabs(fixture.regularTabModel, List.of(fixture.archivedTab));
         assertEquals(0, fixture.orchestrator.getLeaseCountForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
+    public void testCreateCloseAllTabsDelegate_ZeroArchivedTabsSkipsLeaseAndInit() {
+        ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
+        TabArchiveSettings.getInstance().setArchivedTabCount(0);
+        TabModelSelector selector = mock(TabModelSelector.class);
+        MockTabModel regularTabModel = new MockTabModel(mMockProfile, /* delegate= */ null);
+        when(selector.getModel(/* incognito= */ false)).thenReturn(regularTabModel);
+
+        CloseAllTabsHelper.ArchivedTabsDelegate delegate =
+                ArchivedTabModelOrchestrator.createCloseAllTabsDelegate(selector);
+        assertNull(delegate.prepareForCloseAll(mock(Runnable.class)));
+        assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(mMockProfile));
+        assertNull(delegate.unarchiveAndGetUndoRunnable());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
+    public void testCreateCloseAllTabsDelegate_ReadyTabStateSchedulesGracePeriodTeardown() {
+        UnarchiveUndoTestFixture fixture = setUpUnarchiveUndoTestFixture();
+        TabArchiveSettings.getInstance().setArchivedTabCount(1);
+        CloseAllTabsHelper.ArchivedTabsDelegate delegate =
+                ArchivedTabModelOrchestrator.createCloseAllTabsDelegate(fixture.selector);
+        assertNull(fixture.orchestrator.getGracePeriodTeardownRunnableForTesting());
+
+        Runnable onReadyToClose = mock(Runnable.class);
+        assertNull(delegate.prepareForCloseAll(onReadyToClose));
+        assertEquals(0, fixture.orchestrator.getLeaseCountForTesting());
+        assertNotNull(fixture.orchestrator.getGracePeriodTeardownRunnableForTesting());
+        verify(onReadyToClose, never()).run();
+
+        Runnable undoRunnable = delegate.unarchiveAndGetUndoRunnable();
+        assertNotNull(undoRunnable);
+        verify(fixture.mockArchiver)
+                .unarchiveAndRestoreTabs(
+                        eq(fixture.regularCreator),
+                        eq(List.of(fixture.archivedTab)),
+                        eq(true),
+                        eq(false));
+        assertEquals(0, fixture.orchestrator.getLeaseCountForTesting());
+
+        ShadowLooper.idleMainLooper(5000, TimeUnit.MILLISECONDS);
+        assertFalse(ArchivedTabModelOrchestrator.isInstantiatedForProfile(mMockProfile));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ARCHIVED_TABS_TEARDOWN)
+    public void testCreateCloseAllTabsDelegate_WaitsForInitAndReleasesLeaseLifecycle() {
+        UnarchiveUndoTestFixture fixture = setUpUnarchiveUndoTestFixture();
+        TabArchiveSettings.getInstance().setArchivedTabCount(1);
+        fixture.orchestrator.setTabStateInitializedForTesting(false);
+        CloseAllTabsHelper.ArchivedTabsDelegate delegate =
+                ArchivedTabModelOrchestrator.createCloseAllTabsDelegate(fixture.selector);
+
+        Runnable onReadyToClose = mock(Runnable.class);
+        Destroyable handle = delegate.prepareForCloseAll(onReadyToClose);
+        assertNotNull(handle);
+        assertEquals(1, fixture.orchestrator.getLeaseCountForTesting());
+        verify(onReadyToClose, never()).run();
+
+        // Initialization completes: invokes callback while keeping lease held until unarchiving.
+        fixture.orchestrator.setTabStateInitializedForTesting(true);
+        verify(onReadyToClose).run();
+        assertEquals(1, fixture.orchestrator.getLeaseCountForTesting());
+
+        Runnable undoRunnable = delegate.unarchiveAndGetUndoRunnable();
+        assertEquals(0, fixture.orchestrator.getLeaseCountForTesting());
+        verify(fixture.mockArchiver)
+                .unarchiveAndRestoreTabs(
+                        eq(fixture.regularCreator),
+                        eq(List.of(fixture.archivedTab)),
+                        eq(true),
+                        eq(false));
+        assertNotNull(undoRunnable);
+
+        // Canceling a second pending wait releases lease and unregisters observers without invoking
+        // callback even if tab state finishes initializing afterward.
+        fixture.orchestrator.setTabStateInitializedForTesting(false);
+        Runnable cancelReady = mock(Runnable.class);
+        Destroyable cancelHandle = delegate.prepareForCloseAll(cancelReady);
+        assertNotNull(cancelHandle);
+        assertEquals(1, fixture.orchestrator.getLeaseCountForTesting());
+        cancelHandle.destroy();
+        assertEquals(0, fixture.orchestrator.getLeaseCountForTesting());
+        fixture.orchestrator.setTabStateInitializedForTesting(true);
+        verify(cancelReady, never()).run();
+
+        // Destroying orchestrator while waiting invokes callback; unarchiving releases lease.
+        fixture.orchestrator.setTabStateInitializedForTesting(false);
+        Runnable destroyReady = mock(Runnable.class);
+        Destroyable destroyHandle = delegate.prepareForCloseAll(destroyReady);
+        assertNotNull(destroyHandle);
+        assertEquals(1, fixture.orchestrator.getLeaseCountForTesting());
+        fixture.orchestrator.destroy();
+        verify(destroyReady).run();
+        assertNull(delegate.unarchiveAndGetUndoRunnable());
+        assertEquals(0, fixture.orchestrator.getLeaseCountForTesting());
+    }
+
+    private static class UnarchiveUndoTestFixture {
+        public final List<TabModelSelectorObserver> selectorObservers = new ArrayList<>();
+        public ArchivedTabModelOrchestrator orchestrator;
+        public MockTabModel regularTabModel;
+        public MockTabModel archivedTabModel;
+        public MockTab archivedTab;
+        public TabArchiver mockArchiver;
+        public TabModelSelector selector;
+        public TabCreator regularCreator;
+    }
+
+    private @Nullable Runnable unarchiveThroughDelegate(TabModelSelector selector) {
+        return ArchivedTabModelOrchestrator.createCloseAllTabsDelegate(selector)
+                .unarchiveAndGetUndoRunnable();
+    }
+
+    private ArchivedTabModelOrchestrator createProfileOrchestrator(
+            boolean tabStateInitialized, TabArchiver archiver) {
+        ArchivedTabModelOrchestrator orchestrator =
+                ArchivedTabModelOrchestrator.getForProfile(mMockProfile);
+        when(mMockTabModelSelector.isTabStateInitialized()).thenReturn(tabStateInitialized);
+        orchestrator.initForTesting(
+                mMockTabModelSelector,
+                mMockTabPersistentStore,
+                mMockTabPersistencePolicy,
+                mMockShadowTabPersistentStore);
+        orchestrator.setArchivedTabCreatorForTesting(mMockArchivedTabCreator);
+        orchestrator.setWindowAndroidForTesting(mMockWindowAndroid);
+        orchestrator.setCipherFactoryForTesting(mMockCipherFactory);
+        orchestrator.setTabGroupSyncServiceForTesting(mMockTabGroupSyncService);
+        orchestrator.markTabModelsInitialized();
+        orchestrator.setTabStateInitializedForTesting(tabStateInitialized);
+        orchestrator.setTabArchiverForTesting(archiver);
+        return orchestrator;
+    }
+
+    private UnarchiveUndoTestFixture setUpUnarchiveUndoTestFixture() {
+        UnarchiveUndoTestFixture fixture = new UnarchiveUndoTestFixture();
+        fixture.regularTabModel = new MockTabModel(mMockProfile, /* delegate= */ null);
+        fixture.regularTabModel.addTab(10);
+        fixture.archivedTabModel = new MockTabModel(mMockProfile, /* delegate= */ null);
+        fixture.archivedTab = fixture.archivedTabModel.addTab(20);
+        when(mMockTabModelSelector.getModel(/* incognito= */ false))
+                .thenReturn(fixture.archivedTabModel);
+
+        fixture.mockArchiver = mock(TabArchiver.class);
+        fixture.orchestrator =
+                createProfileOrchestrator(/* tabStateInitialized= */ true, fixture.mockArchiver);
+
+        fixture.selector = mock(TabModelSelector.class);
+        TabCreatorManager creatorManager = mock(TabCreatorManager.class);
+        fixture.regularCreator = mock(TabCreator.class);
+        when(fixture.selector.getModel(/* incognito= */ false)).thenReturn(fixture.regularTabModel);
+        when(fixture.selector.getTabCreatorManager()).thenReturn(creatorManager);
+        when(creatorManager.getTabCreator(/* incognito= */ false))
+                .thenReturn(fixture.regularCreator);
+        doAnswer(
+                        inv -> {
+                            fixture.selectorObservers.add(inv.getArgument(0));
+                            return null;
+                        })
+                .when(fixture.selector)
+                .addObserver(any());
+        doAnswer(
+                        inv -> {
+                            fixture.selectorObservers.remove(inv.getArgument(0));
+                            return null;
+                        })
+                .when(fixture.selector)
+                .removeObserver(any());
+        doAnswer(
+                        inv -> {
+                            List<Tab> tabs = inv.getArgument(1);
+                            for (Tab tab : tabs) {
+                                fixture.archivedTabModel.removeTab(tab);
+                                fixture.regularTabModel.addTab(
+                                        tab,
+                                        /* index= */ 0,
+                                        TabLaunchType.FROM_RESTORE,
+                                        TabCreationState.FROZEN_ON_RESTORE);
+                            }
+                            return null;
+                        })
+                .when(fixture.mockArchiver)
+                .unarchiveAndRestoreTabs(eq(fixture.regularCreator), any(), eq(true), eq(false));
+        return fixture;
+    }
+
+    private ArchivedTabModelOrchestrator startAsyncUndoAfterTeardown(
+            UnarchiveUndoTestFixture fixture, TabArchiver nextArchiver) {
+        Runnable undoRunnable = unarchiveThroughDelegate(fixture.selector);
+        assertNotNull(undoRunnable);
+        assertTrue(fixture.selectorObservers.isEmpty());
+        fixture.orchestrator.performTeardownForTesting();
+
+        ArchivedTabModelOrchestrator nextOrchestrator =
+                createProfileOrchestrator(/* tabStateInitialized= */ false, nextArchiver);
+        undoRunnable.run();
+        undoRunnable.run();
+        assertEquals(1, nextOrchestrator.getLeaseCountForTesting());
+        assertEquals(1, fixture.selectorObservers.size());
+        return nextOrchestrator;
     }
 }
