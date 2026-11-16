@@ -10,13 +10,11 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVIT
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_ON;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -30,10 +28,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -2439,7 +2437,7 @@ public class CustomTabActivityTest {
             return;
         }
 
-        onViewWaiting(allOf(withId(R.id.custom_tabs_sidepanel_maximize), isDisplayed()));
+        waitForView(withId(R.id.custom_tabs_sidepanel_maximize));
         View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
         CustomTabToolbar toolbar = (CustomTabToolbar) toolbarView;
         ImageButton maximizeButton = toolbar.getMaximizeButtonForTest();
@@ -2455,7 +2453,7 @@ public class CustomTabActivityTest {
         assertEquals("The window should be max width", maxWidth, attrs.width);
 
         ThreadUtils.runOnUiThreadBlocking((Runnable) maximizeButton::performClick);
-        onViewWaiting(allOf(withId(R.id.custom_tabs_sidepanel_maximize), isDisplayed()));
+        waitForView(withId(R.id.custom_tabs_sidepanel_maximize));
 
         CriteriaHelper.pollInstrumentationThread(
                 () ->
@@ -3178,12 +3176,12 @@ public class CustomTabActivityTest {
         assertEquals(
                 mTestPage,
                 ChromeTabUtils.getUrlStringOnUiThread(recreatedActivity.getActivityTab()));
-        onViewWaiting(withId(R.id.toolbar))
+        waitForView(withId(R.id.toolbar))
                 .check(
                         (view, e) -> {
                             ColorDrawable toolbarBg = (ColorDrawable) view.getBackground();
                             assertEquals(Color.BLUE, toolbarBg.getColor());
                         });
-        onViewWaiting(withId(R.id.title_bar));
+        waitForView(withId(R.id.title_bar));
     }
 }

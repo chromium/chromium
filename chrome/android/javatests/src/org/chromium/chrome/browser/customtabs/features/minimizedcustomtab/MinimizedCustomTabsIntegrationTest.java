@@ -4,15 +4,14 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalCustomTabIntent;
 import static org.chromium.ui.test.util.DeviceRestriction.RESTRICTION_TYPE_NON_AUTO;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.content.Intent;
@@ -73,7 +72,7 @@ public class MinimizedCustomTabsIntegrationTest {
         var intent = createIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        onViewWaiting(withId(R.id.custom_tabs_minimize_button)).perform(click());
+        waitForView(withId(R.id.custom_tabs_minimize_button)).click();
 
         CriteriaHelper.pollUiThread(
                 () -> mCustomTabActivityTestRule.getActivity().isInPictureInPictureMode());

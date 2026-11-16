@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -18,9 +17,9 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 
@@ -60,7 +59,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.ViewUtils;
 
 /** Tests {@link VoiceToolbarButtonController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -129,12 +127,7 @@ public final class VoiceToolbarButtonControllerTest {
     @MediumTest
     public void testVoiceButtonInToolbarIsDisabledOnNtp() {
         // Ensure the button starts visible.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        isEnabled(),
-                        withContentDescription(mButtonString)));
+        waitForView(withId(R.id.optional_toolbar_button), withContentDescription(mButtonString));
 
         // Navigate to the New Tab Page and wait for the page transition to complete.
         String ntpUrl =
@@ -161,12 +154,7 @@ public final class VoiceToolbarButtonControllerTest {
     @MediumTest
     public void testVoiceButtonDisabledOnIncognito() {
         // Ensure the button starts visible.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        isEnabled(),
-                        withContentDescription(mButtonString)));
+        waitForView(withId(R.id.optional_toolbar_button), withContentDescription(mButtonString));
 
         var incognitoNtp = mPage.openNewIncognitoTabOrWindowFast();
 
@@ -177,12 +165,7 @@ public final class VoiceToolbarButtonControllerTest {
     @MediumTest
     public void testVoiceButtonInToolbarIsDisabledDuringModal() {
         // Ensure the button starts visible.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        isEnabled(),
-                        withContentDescription(mButtonString)));
+        waitForView(withId(R.id.optional_toolbar_button), withContentDescription(mButtonString));
 
         // Get a reference to the button before the modal is opened as it's harder to get after.
         View button = BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());
@@ -230,24 +213,14 @@ public final class VoiceToolbarButtonControllerTest {
                             .getModalDialogManager()
                             .dismissDialog(dialogModel, DialogDismissalCause.UNKNOWN);
                 });
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        isDisplayed(),
-                        isEnabled(),
-                        withContentDescription(mButtonString)));
+        waitForView(withId(R.id.optional_toolbar_button), withContentDescription(mButtonString));
     }
 
     @Test
     @MediumTest
     public void testVoiceButtonInToolbarStartsVoiceRecognition() {
-        onViewWaiting(
-                        allOf(
-                                withId(R.id.optional_toolbar_button),
-                                isDisplayed(),
-                                isEnabled(),
-                                withContentDescription(mButtonString)))
-                .perform(click());
+        waitForView(withId(R.id.optional_toolbar_button), withContentDescription(mButtonString))
+                .click();
 
         verify(mVoiceRecognitionHandler)
                 .startVoiceRecognition(eq(VoiceInteractionSource.TOOLBAR), any());

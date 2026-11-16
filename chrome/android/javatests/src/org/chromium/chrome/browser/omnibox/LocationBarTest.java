@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.base.test.util.Criteria.checkThat;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
@@ -68,7 +69,6 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -290,7 +290,7 @@ public class LocationBarTest {
                     mUrlBar.requestFocus();
                 });
 
-        ViewUtils.waitForVisibleView(withId(R.id.mic_button));
+        waitForView(withId(R.id.mic_button));
 
         onView(withId(R.id.mic_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -335,7 +335,7 @@ public class LocationBarTest {
                     mUrlBar.requestFocus();
                 });
 
-        ViewUtils.waitForVisibleView(withId(R.id.mic_button));
+        waitForView(withId(R.id.mic_button));
         onView(withId(R.id.lens_camera_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
         assertLocationBarButtonsAre(R.id.mic_button);
@@ -373,7 +373,7 @@ public class LocationBarTest {
                     mUrlBar.requestFocus();
                 });
 
-        ViewUtils.waitForVisibleView(withId(R.id.lens_camera_button));
+        waitForView(withId(R.id.lens_camera_button));
         onView(withId(R.id.lens_camera_button)).check(matches(isDisplayed()));
         onView(withId(R.id.delete_button)).check(matches(not(isDisplayed())));
         assertLocationBarButtonsAre(R.id.lens_camera_button, R.id.mic_button);

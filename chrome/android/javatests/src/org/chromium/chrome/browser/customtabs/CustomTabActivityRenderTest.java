@@ -11,12 +11,11 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_PO
 import static androidx.test.espresso.matcher.ViewMatchers.withAlpha;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
-import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -184,7 +183,7 @@ public class CustomTabActivityRenderTest {
             throws IOException {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(mIntent);
         if (expectTitle) {
-            waitForVisibleView(allOf(withId(R.id.title_bar), withAlpha(1.f)));
+            waitForView(withId(R.id.title_bar), withAlpha(1.f));
         }
         View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
         String httpStr = mRunWithHttps ? "https" : "http";

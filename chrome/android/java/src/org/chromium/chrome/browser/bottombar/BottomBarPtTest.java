@@ -8,6 +8,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import android.view.View;
 import android.widget.ListView;
 
@@ -29,7 +31,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.RegularWebPageAppMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.ViewUtils;
 
 /** Public transit tests for the Bottom Bar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -47,7 +48,7 @@ public class BottomBarPtTest {
         mActivityTestRule.startOnBlankPage();
 
         // Will fail or timeout if the bottom bar container is not inflated and visible.
-        ViewUtils.waitForVisibleView(withId(R.id.bottom_app_bar_container));
+        waitForView(withId(R.id.bottom_app_bar_container));
     }
 
     @Test

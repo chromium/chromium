@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Instrumentation;
 import android.os.SystemClock;
@@ -86,7 +87,6 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -132,7 +132,7 @@ public class ExtensionsToolbarTest {
                 () -> UserPrefs.get(mProfile).setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, true));
 
         // Wait until the extensions toolbar is loaded.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.extensions_menu_button));
     }
 
     @After
@@ -148,12 +148,10 @@ public class ExtensionsToolbarTest {
         loadBasicExtension("extension1", "Test Extension", "Test Action");
 
         // Open the extensions menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
 
         // Verify that the test extension is in the menu.
-        ViewUtils.onViewWaiting(withText("Test Extension")).check(matches(isDisplayed()));
+        waitForView(withText("Test Extension"));
     }
 
     @Test
@@ -167,10 +165,8 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extension2Id, true);
 
         // Ensure visibility of the toolbar actions.
-        ViewUtils.onViewWaiting(withContentDescription("Test Action 1"))
-                .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Test Action 2"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Test Action 1"));
+        waitForView(withContentDescription("Test Action 2"));
 
         // Disable the extension 2.
         ExtensionTestUtils.disableExtension(mProfile, extension2Id);
@@ -198,10 +194,8 @@ public class ExtensionsToolbarTest {
         // Pin both extensions.
         ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
         ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
-                .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Beta Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Alpha Action"));
+        waitForView(withContentDescription("Beta Action"));
 
         // To start, neither extensions should have any render frames (which here equates to no open
         // popups).
@@ -243,34 +237,26 @@ public class ExtensionsToolbarTest {
         loadBasicExtension("extension1", "Test Extension", "Test Action");
 
         // Check the default state of the button.
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.extensions_menu_button),
-                                withContentDescription(R.string.acc_name_extensions_button)))
-                .check(matches(isDisplayed()));
+        waitForView(
+                withId(R.id.extensions_menu_button),
+                withContentDescription(R.string.acc_name_extensions_button));
 
         // Open the extensions menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
 
         // Verify that the test extension is in the menu.
-        ViewUtils.onViewWaiting(withText("Test Extension")).check(matches(isDisplayed()));
+        waitForView(withText("Test Extension"));
 
         // Block all extensions.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_site_settings_toggle)).perform(click());
+        waitForView(withId(R.id.extensions_menu_site_settings_toggle)).click();
 
         // Close the menu so Espresso can find views in the activity window again.
         Espresso.pressBack();
 
         // Check the button state after blocking all extensions.
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.extensions_menu_button),
-                                withContentDescription(
-                                        R.string
-                                                .acc_name_extensions_button_all_extensions_blocked)))
-                .check(matches(isDisplayed()));
+        waitForView(
+                withId(R.id.extensions_menu_button),
+                withContentDescription(R.string.acc_name_extensions_button_all_extensions_blocked));
     }
 
     /**
@@ -288,8 +274,7 @@ public class ExtensionsToolbarTest {
 
         // Pin the extension.
         ExtensionTestUtils.setExtensionActionVisible(mProfile, id, true);
-        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Test Action"));
 
         // Click on the extension and wait for it to open the popup.
         try (ExtensionTestMessageListener listener =
@@ -321,14 +306,12 @@ public class ExtensionsToolbarTest {
         String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
 
         // Open the extensions menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
 
         try (ExtensionTestMessageListener listener =
                 new ExtensionTestMessageListener("popup opened")) {
             // Click on the extension item.
-            ViewUtils.onViewWaiting(withText("Extension")).perform(click());
+            waitForView(withText("Extension")).click();
             assertTrue(listener.waitUntilSatisfied());
         }
 
@@ -357,7 +340,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, false);
 
         // Open the extensions menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
 
         // Find the context menu button for the pinned extension.
         ViewInteraction contextMenuButton =
@@ -612,52 +595,39 @@ public class ExtensionsToolbarTest {
 
         // Check the default state of the button (should be allowed since extension requested access
         // on url1).
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.extensions_menu_button),
-                                withContentDescription(
-                                        R.string
-                                                .acc_name_extensions_button_any_extension_has_access)))
-                .check(matches(isDisplayed()));
+        waitForView(
+                withId(R.id.extensions_menu_button),
+                withContentDescription(
+                        R.string.acc_name_extensions_button_any_extension_has_access));
 
         // Open the extensions menu and block all extensions on site 1.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).perform(click());
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_site_settings_toggle)).perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
+        waitForView(withId(R.id.extensions_menu_site_settings_toggle)).click();
 
         // Close the menu so Espresso can find views in the activity window again.
         Espresso.pressBack();
 
         // Check the button state after blocking all extensions.
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.extensions_menu_button),
-                                withContentDescription(
-                                        R.string
-                                                .acc_name_extensions_button_all_extensions_blocked)))
-                .check(matches(isDisplayed()));
+        waitForView(
+                withId(R.id.extensions_menu_button),
+                withContentDescription(R.string.acc_name_extensions_button_all_extensions_blocked));
 
         // Navigate to site 2 (where extensions are not blocked).
         mPage = mPage.loadWebPageProgrammatically(url2);
 
         // Check that button state returns to default for the new site since extension doesn't
         // request access on url2.
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.extensions_menu_button),
-                                withContentDescription(R.string.acc_name_extensions_button)))
-                .check(matches(isDisplayed()));
+        waitForView(
+                withId(R.id.extensions_menu_button),
+                withContentDescription(R.string.acc_name_extensions_button));
 
         // Navigate back to site 1 (where extensions are blocked).
         mPage = mPage.loadWebPageProgrammatically(url1);
 
         // Check the button state is blocked again.
-        ViewUtils.onViewWaiting(
-                        allOf(
-                                withId(R.id.extensions_menu_button),
-                                withContentDescription(
-                                        R.string
-                                                .acc_name_extensions_button_all_extensions_blocked)))
-                .check(matches(isDisplayed()));
+        waitForView(
+                withId(R.id.extensions_menu_button),
+                withContentDescription(R.string.acc_name_extensions_button_all_extensions_blocked));
     }
 
     @Test
@@ -670,7 +640,7 @@ public class ExtensionsToolbarTest {
                 () -> UserPrefs.get(mProfile).setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, true));
 
         // Ensure the menu button is visible.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.extensions_menu_button));
 
         // Update the prefs to unpinned.
         ThreadUtils.runOnUiThreadBlocking(
@@ -690,40 +660,38 @@ public class ExtensionsToolbarTest {
                 () -> UserPrefs.get(mProfile).setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, true));
 
         // Ensure the menu button is visible.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.extensions_menu_button));
 
         // Open the extensions menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
 
         // Unpin the menu icon using the toggle.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button_pinning_toggle))
-                .perform(click());
+        waitForView(withId(R.id.extensions_menu_button_pinning_toggle)).click();
 
         // TODO(crbug.com/481457578): Check that the menu button is visible even when unpinned if
         // the menu is open.
 
         // Close the menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_close_button)).perform(click());
+        waitForView(withId(R.id.extensions_menu_close_button)).click();
 
         // Verify that the extensions menu button is no longer visible on the toolbar.
         waitForNoView(withId(R.id.extensions_menu_button));
 
         // Open the extensions menu via the app menu.
-        ViewUtils.onViewWaiting(withId(R.id.menu_button_wrapper)).perform(click());
+        waitForView(withId(R.id.menu_button_wrapper)).click();
         if (TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mActivityTestRule.getActivity())) {
-            ViewUtils.onViewWaiting(withId(R.id.extensions_parent_menu_id)).perform(click());
+            waitForView(withId(R.id.extensions_parent_menu_id)).click();
         }
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_menu_id)).perform(click());
+        waitForView(withId(R.id.extensions_menu_menu_id)).click();
 
         // Pin the menu icon using the toggle.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button_pinning_toggle))
-                .perform(click());
+        waitForView(withId(R.id.extensions_menu_button_pinning_toggle)).click();
 
         // Close the menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_close_button)).perform(click());
+        waitForView(withId(R.id.extensions_menu_close_button)).click();
 
         // Verify the icon is still visible after the menu is closed.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.extensions_menu_button));
     }
 
     @Test
@@ -748,12 +716,11 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.addHostAccessRequest(mProfile, webContents, extensionId);
 
         // Verify the request access button is visible and shows the count.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_request_access_button))
-                .check(matches(isDisplayed()))
+        waitForView(withId(R.id.extensions_request_access_button))
                 .check(matches(withText("Allow 1?")));
 
         // Click the request access button.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_request_access_button)).perform(click());
+        waitForView(withId(R.id.extensions_request_access_button)).click();
 
         // Verify the button text changes to "Allowed" and it becomes disabled.
         CriteriaHelper.pollUiThread(
@@ -789,8 +756,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
 
         // Verify the action appears on the toolbar.
-        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Test Action"));
 
         // Unpin the extension programmatically.
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, false);
@@ -808,8 +774,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
 
         // Verify the action appears on the toolbar.
-        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Test Action"));
 
         // Disable the extension.
         ExtensionTestUtils.disableExtension(mProfile, extensionId);
@@ -821,8 +786,7 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.enableExtension(mProfile, extensionId);
 
         // Verify the action automatically reappears on the toolbar without needing to be re-pinned.
-        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Test Action"));
     }
 
     /**
@@ -879,12 +843,9 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
         ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
         ExtensionTestUtils.setExtensionActionVisible(mProfile, gammaId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
-                .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Beta Action"))
-                .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Gamma Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Alpha Action"));
+        waitForView(withContentDescription("Beta Action"));
+        waitForView(withContentDescription("Gamma Action"));
 
         View root =
                 mActivityTestRule
@@ -951,12 +912,9 @@ public class ExtensionsToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
         ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
         ExtensionTestUtils.setExtensionActionVisible(mProfile, gammaId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
-                .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Beta Action"))
-                .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Gamma Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Alpha Action"));
+        waitForView(withContentDescription("Beta Action"));
+        waitForView(withContentDescription("Gamma Action"));
 
         View root =
                 mActivityTestRule
@@ -1032,10 +990,8 @@ public class ExtensionsToolbarTest {
         // Pin both extensions.
         ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
         ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
-                .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Beta Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Alpha Action"));
+        waitForView(withContentDescription("Beta Action"));
 
         View root =
                 mActivityTestRule
@@ -1130,7 +1086,7 @@ public class ExtensionsToolbarTest {
     public void testNonExtensionCommandIsSentToApplicationWindow() throws IOException {
         String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Action")).check(matches(isDisplayed()));
+        waitForView(withContentDescription("Action"));
 
         // Listen for the background script to echo the command back.
         try (ExtensionTestMessageListener listener =
@@ -1161,14 +1117,12 @@ public class ExtensionsToolbarTest {
         String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
 
         // Open the extensions menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
 
         try (ExtensionTestMessageListener listener =
                 new ExtensionTestMessageListener("popup opened")) {
             // Click on the extension item.
-            ViewUtils.onViewWaiting(withText("Extension")).perform(click());
+            waitForView(withText("Extension")).click();
             assertTrue(listener.waitUntilSatisfied());
         }
 
@@ -1183,17 +1137,15 @@ public class ExtensionsToolbarTest {
     public void testTriggerPinnedActionFromExtensionsMenu() throws IOException {
         String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Action")).check(matches(isDisplayed()));
+        waitForView(withContentDescription("Action"));
 
         // Open the extensions menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
 
         try (ExtensionTestMessageListener listener =
                 new ExtensionTestMessageListener("popup opened")) {
             // Click on the extension item.
-            ViewUtils.onViewWaiting(withText("Extension")).perform(click());
+            waitForView(withText("Extension")).click();
             assertTrue(listener.waitUntilSatisfied());
         }
 
@@ -1211,13 +1163,11 @@ public class ExtensionsToolbarTest {
         loadBasicExtension("extension1", "Test Extension", "Test Action");
 
         // Open the extensions menu.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        waitForView(withId(R.id.extensions_menu_button)).click();
 
         // Show "Remove extension" dialog.
-        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_item_context_menu)).perform(click());
-        ViewUtils.onViewWaiting(withText("Remove from Chromium")).perform(click());
+        waitForView(withId(R.id.extensions_menu_item_context_menu)).click();
+        waitForView(withText("Remove from Chromium")).click();
 
         // The dialog should trigger dismiss on the extensions menu.
         waitForNoView(withId(R.id.extensions_menu_close_button));
@@ -1230,8 +1180,7 @@ public class ExtensionsToolbarTest {
                 loadPopupExtension(
                         "alpha", "Alpha Extension", "Alpha Action", "alpha popup opened");
         ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Alpha Action"));
 
         // Click on Alpha and wait for it to open the popup.
         try (ExtensionTestMessageListener listener =
@@ -1253,7 +1202,7 @@ public class ExtensionsToolbarTest {
                 });
 
         // Wait for the dialog to appear and click OK.
-        ViewUtils.onViewWaiting(withText("OK")).perform(click());
+        waitForView(withText("OK")).click();
 
         // Verify the extension popup was dismissed by the alert dialog.
         CriteriaHelper.pollInstrumentationThread(
@@ -1294,14 +1243,13 @@ public class ExtensionsToolbarTest {
 
         // Ensure the extension's icon is fully laid out by the RecyclerView so the IPH has an
         // anchor.
-        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
-                .check(matches(isDisplayed()));
+        waitForView(withContentDescription("Test Action"));
 
         // Trigger the install success UI which should trigger the IPH.
         ExtensionTestUtils.triggerInstallSuccessForTesting(mProfile, extensionId);
 
         // The post-install dialog blocks the IPH. Wait for it and click "Got it".
-        ViewUtils.onViewWaiting(withText("Got it")).perform(click());
+        waitForView(withText("Got it")).click();
 
         // Verify that the IPH bubble is displayed with the correct text in the popup window.
         CriteriaHelper.pollInstrumentationThread(
@@ -1330,7 +1278,7 @@ public class ExtensionsToolbarTest {
     public void testClickingInsidePopupDoesNotDismiss() throws IOException {
         String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Action")).check(matches(isDisplayed()));
+        waitForView(withContentDescription("Action"));
 
         // Click on the action button to open the popup.
         try (ExtensionTestMessageListener listener =
@@ -1361,13 +1309,12 @@ public class ExtensionsToolbarTest {
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL);
 
         // Verify the NTP confirmation dialog appears with the extension message and buttons.
-        ViewUtils.onViewWaiting(withText(containsString("NTP Override Extension")))
-                .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withText("Keep it")).check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withText("Change it back")).check(matches(isDisplayed()));
+        waitForView(withText(containsString("NTP Override Extension")));
+        waitForView(withText("Keep it"));
+        waitForView(withText("Change it back"));
 
         // Click "Change it back" to revert settings and disable the extension.
-        ViewUtils.onViewWaiting(withText("Change it back")).perform(click());
+        waitForView(withText("Change it back")).click();
 
         // Verify that the extension is disabled.
         CriteriaHelper.pollInstrumentationThread(

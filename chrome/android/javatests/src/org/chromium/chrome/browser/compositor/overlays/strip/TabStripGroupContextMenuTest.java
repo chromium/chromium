@@ -30,7 +30,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.KeyEvent;
 import android.view.View;
@@ -382,7 +381,7 @@ public class TabStripGroupContextMenuTest {
 
         // Focus title edit box and replace text with rapid typing to verify debouncing.
         onView(withId(R.id.tab_group_title)).perform(click());
-        onViewWaiting(allOf(withId(R.id.tab_group_title), isFocused()));
+        waitForView(withId(R.id.tab_group_title), isFocused());
         onView(withId(R.id.tab_group_title)).perform(replaceText("live"));
         onView(withId(R.id.tab_group_title)).perform(replaceText("liveTitle"));
 
@@ -459,7 +458,7 @@ public class TabStripGroupContextMenuTest {
 
         // Start with the edit text box. Click to focus, then hit down arrow.
         onView(withId(R.id.tab_group_title)).perform(click());
-        onViewWaiting(allOf(withId(R.id.tab_group_title), isFocused()));
+        waitForView(withId(R.id.tab_group_title), isFocused());
         onView(withId(R.id.tab_group_title)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
 
         // One of the color picker circles should be focused in the first row.
@@ -715,7 +714,7 @@ public class TabStripGroupContextMenuTest {
                     mTabGroupId = stripLayoutGroupTitle.getTabGroupId();
                     manager.simulateLongPress(x, y);
                 });
-        onViewWaiting(allOf(withId(R.id.tab_group_action_menu_list), isDisplayed()));
+        waitForView(withId(R.id.tab_group_action_menu_list));
     }
 
     private void updateGroupTitle(String title) {
@@ -724,7 +723,7 @@ public class TabStripGroupContextMenuTest {
 
         // Click group title text box to focus it for editing.
         onView(withId(R.id.tab_group_title)).perform(click());
-        onViewWaiting(allOf(withId(R.id.tab_group_title), isFocused()));
+        waitForView(withId(R.id.tab_group_title), isFocused());
 
         // Enter new title in text box and press "enter" to dismiss menu and update group title.
         onView(withId(R.id.tab_group_title))

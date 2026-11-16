@@ -9,13 +9,11 @@ import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -74,7 +72,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.util.ValueUtils;
 
 /** Integration tests for {@link SigninButtonCoordinator}. */
@@ -137,12 +134,10 @@ public class SigninButtonCoordinatorTest {
         setSigninAllowed(false);
 
         // Should show signed-out avatar instead of text button.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(
+                        R.string.accessibility_toolbar_btn_signed_out_identity_disc));
 
         setSigninAllowed(true);
 
@@ -165,11 +160,9 @@ public class SigninButtonCoordinatorTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         // Avatar should update to a personalized disc with a name and email in its description.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(mContentDescriptionWithNameAndEmail));
     }
 
     @Test
@@ -194,11 +187,7 @@ public class SigninButtonCoordinatorTest {
                         .getString(
                                 R.string.accessibility_toolbar_btn_identity_disc_with_name,
                                 TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL.getFullName());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedDescription)));
+        waitForView(withId(R.id.avatar_button), withContentDescription(expectedDescription));
     }
 
     @Test
@@ -225,11 +214,7 @@ public class SigninButtonCoordinatorTest {
                                 mActivityTestRule
                                         .getActivity()
                                         .getString(R.string.default_google_account_username));
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedDescription)));
+        waitForView(withId(R.id.avatar_button), withContentDescription(expectedDescription));
     }
 
     @Test
@@ -244,11 +229,9 @@ public class SigninButtonCoordinatorTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         // Initially shows the user's avatar with a personalized description.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(mContentDescriptionWithNameAndEmail));
 
         mSigninTestRule.signOut();
 
@@ -274,11 +257,9 @@ public class SigninButtonCoordinatorTest {
 
         // Test initial state with no error.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(mContentDescriptionWithNameAndEmail));
 
         // Test transition to error.
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
@@ -291,19 +272,15 @@ public class SigninButtonCoordinatorTest {
                                         .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
                                 TestAccounts.ACCOUNT1.getFullName(),
                                 TestAccounts.ACCOUNT1.getEmail());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(expectedErrorContentDescription)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(expectedErrorContentDescription));
 
         // Test transition to signed in state with error resolved.
         mFakeSyncServiceImpl.setRequiresClientUpgrade(false);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(mContentDescriptionWithNameAndEmail));
     }
 
     @Test
@@ -324,11 +301,9 @@ public class SigninButtonCoordinatorTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         // Avatar should update to a personalized disc with a name and email in its description.
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(mContentDescriptionWithNameAndEmail));
     }
 
     @Test
@@ -406,10 +381,9 @@ public class SigninButtonCoordinatorTest {
 
         // Clicking the sign-in button should lead to the sign-in bottom sheet.
         onView(withId(R.id.signin_button)).perform(click());
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.account_picker_header_title),
-                        withText(R.string.signin_account_picker_bottom_sheet_title)));
+        waitForView(
+                withId(R.id.account_picker_header_title),
+                withText(R.string.signin_account_picker_bottom_sheet_title));
         pressBack();
     }
 
@@ -445,11 +419,9 @@ public class SigninButtonCoordinatorTest {
         startActivityOnNtp();
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(mContentDescriptionWithNameAndEmail));
 
         // Clicking the signed-in avatar should lead to the settings screen.
         Activity settingsHost =
@@ -524,7 +496,7 @@ public class SigninButtonCoordinatorTest {
 
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
-        ViewUtils.waitForVisibleView(withId(R.id.avatar_button));
+        waitForView(withId(R.id.avatar_button));
         onView(withId(R.id.avatar_button)).check(matches(isEnabled()));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -551,7 +523,7 @@ public class SigninButtonCoordinatorTest {
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         setSigninAllowed(false);
-        ViewUtils.waitForVisibleView(withId(R.id.avatar_button));
+        waitForView(withId(R.id.avatar_button));
 
         ListMenuButton avatarButton =
                 mActivityTestRule.getActivity().findViewById(R.id.avatar_button);
@@ -584,11 +556,9 @@ public class SigninButtonCoordinatorTest {
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(mContentDescriptionWithNameAndEmail));
 
         ListMenuButton avatarButton =
                 mActivityTestRule.getActivity().findViewById(R.id.avatar_button);
@@ -653,11 +623,9 @@ public class SigninButtonCoordinatorTest {
         AppHeaderUtils.setAppInDesktopWindowForTesting(true);
         mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+        waitForView(withId(R.id.signin_button)).click();
 
-        onView(withId(R.id.signin_button)).perform(click());
-
-        ViewUtils.waitForVisibleView(withId(R.id.account_menu_container));
+        waitForView(withId(R.id.account_menu_container));
 
         // The management page opens in a new tab.
         waitForView(withId(R.id.account_menu_managed_header))
@@ -718,12 +686,10 @@ public class SigninButtonCoordinatorTest {
     }
 
     private void verifySignedOutButtonVisible() {
-        ViewUtils.waitForVisibleView(
-                allOf(
-                        withId(R.id.avatar_button),
-                        isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+        waitForView(
+                withId(R.id.avatar_button),
+                withContentDescription(
+                        R.string.accessibility_toolbar_btn_signed_out_identity_disc));
     }
 
     private Rect getAvatarButtonHitRect() {

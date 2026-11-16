@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -37,7 +36,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_OFFSET;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -225,11 +223,11 @@ public class AccessorySheetViewTest {
                     mModel.set(VISIBLE, true);
                 }); // Render view.
 
-        onViewWaiting(withText(kFirstTab)).check(matches(isDisplayed()));
+        waitForView(withText(kFirstTab));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(ACTIVE_TAB_INDEX, 1));
 
-        onViewWaiting(withText(kSecondTab));
+        waitForView(withText(kSecondTab));
     }
 
     @Test
@@ -245,7 +243,7 @@ public class AccessorySheetViewTest {
                     mModel.set(VISIBLE, true);
                 }); // Render view.
 
-        onViewWaiting(withText(kFirstTab)).check(matches(isDisplayed()));
+        waitForView(withText(kFirstTab));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.get(TABS).remove(mModel.get(TABS).get(0)));
 
@@ -264,7 +262,7 @@ public class AccessorySheetViewTest {
                 }); // Render view.
 
         // Remove the last tab.
-        onViewWaiting(withText(kFirstTab)).check(matches(isDisplayed()));
+        waitForView(withText(kFirstTab));
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.get(TABS).remove(mModel.get(TABS).get(0)));
         onView(withText(kFirstTab)).check(doesNotExist());
 
@@ -275,7 +273,7 @@ public class AccessorySheetViewTest {
                     mModel.get(TABS).add(createTestTabWithTextView(kSecondTab));
                     mModel.set(ACTIVE_TAB_INDEX, 0);
                 });
-        onViewWaiting(withText(kSecondTab));
+        waitForView(withText(kSecondTab));
     }
 
     @Test
@@ -354,12 +352,12 @@ public class AccessorySheetViewTest {
                     mModel.set(VISIBLE, true);
                 });
 
-        onViewWaiting(withId(R.id.show_keyboard)).perform(click());
+        waitForView(withId(R.id.show_keyboard)).click();
 
         verify(runnable, times(1)).run();
 
         onView(withId(R.id.sheet_title)).check(matches(withText("Passwords")));
-        onViewWaiting(withId(R.id.sheet_header_shadow));
+        waitForView(withId(R.id.sheet_header_shadow));
     }
 
     @Test
@@ -376,8 +374,8 @@ public class AccessorySheetViewTest {
                     mModel.set(VISIBLE, true);
                 });
 
-        onViewWaiting(withId(R.id.show_keyboard))
-                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForView(withId(R.id.show_keyboard))
+                .performViewAction(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         verify(runnable, times(1)).run();
     }
 
@@ -397,12 +395,13 @@ public class AccessorySheetViewTest {
                 });
 
         // Any clicks should be ignored when the sheet view is fully of partially obscured.
-        onViewWaiting(withId(R.id.show_keyboard))
-                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForView(withId(R.id.show_keyboard))
+                .performViewAction(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         verify(runnable, times(0)).run();
 
-        onViewWaiting(withId(R.id.show_keyboard))
-                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+        waitForView(withId(R.id.show_keyboard))
+                .performViewAction(
+                        createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
         verify(runnable, times(0)).run();
     }
 

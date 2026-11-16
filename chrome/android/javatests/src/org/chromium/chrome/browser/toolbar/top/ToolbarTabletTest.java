@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_TOOLBAR;
 
 import android.view.View;
@@ -107,7 +108,7 @@ public class ToolbarTabletTest {
         // Wait for the button to be visible and then request focus. We explicitly set
         // focusableInTouchMode to true because the system-wide touch mode state is often
         // unpredictable in instrumentation tests.
-        ViewUtils.waitForVisibleView(withId(R.id.bookmark_button));
+        waitForView(withId(R.id.bookmark_button));
         var bookmarkButton = mToolbar.findViewById(R.id.bookmark_button);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

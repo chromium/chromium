@@ -12,10 +12,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
 import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.addActionButtonToIntent;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
-import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -251,7 +251,7 @@ public class CustomTabActivityIncognitoTest {
         Intent intent = createTestCustomTabIntent();
         launchIncognitoCustomTab(intent);
 
-        waitForVisibleView(withId(R.id.incognito_cct_logo_image_view));
+        waitForView(withId(R.id.incognito_cct_logo_image_view));
     }
 
     @Test
@@ -626,6 +626,6 @@ public class CustomTabActivityIncognitoTest {
                         () -> recreatedActivity.getActivityTab().getProfile());
         assertEquals(initialProfile, recreatedProfile);
         assertEquals(getIncognitoThemeColor(recreatedActivity), getToolbarColor(recreatedActivity));
-        waitForVisibleView(withId(R.id.incognito_cct_logo_image_view));
+        waitForView(withId(R.id.incognito_cct_logo_image_view));
     }
 }

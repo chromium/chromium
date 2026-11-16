@@ -20,8 +20,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
@@ -348,8 +348,7 @@ public class ToolbarTest {
         boolean wantPrefocus = !KeyboardUtils.shouldShowImeWithHardwareKeyboard(mActivity);
 
         // Open a new tab from the tab switcher.
-        onViewWaiting(allOf(withId(R.id.tab_switcher_button), isDisplayed()));
-        onView(withId(R.id.tab_switcher_button)).perform(click());
+        waitForView(withId(R.id.tab_switcher_button)).click();
         onView(withId(R.id.toolbar_action_button)).check(matches(isDisplayed()));
         onView(withId(R.id.toolbar_action_button)).perform(click());
 

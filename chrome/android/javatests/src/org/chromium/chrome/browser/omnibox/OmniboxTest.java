@@ -5,19 +5,16 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.annotation.SuppressLint;
 import android.os.SystemClock;
@@ -475,7 +472,7 @@ public class OmniboxTest {
     public void testClickStatusIcon_OnNTPDoesNothing() {
         mActivityTestRule.startOnNtp();
 
-        onViewWaiting(withId(R.id.location_bar_status_icon)).perform(click());
+        waitForView(withId(R.id.location_bar_status_icon)).click();
         onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());
     }
 
@@ -490,8 +487,8 @@ public class OmniboxTest {
                         .getURL("/chrome/test/data/android/omnibox/one.html");
         mActivityTestRule.loadUrl(testUrl);
 
-        onViewWaiting(withId(R.id.location_bar_status_icon)).perform(click());
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
+        waitForView(withId(R.id.location_bar_status_icon)).click();
+        waitForView(withId(R.id.page_info_url_wrapper));
     }
 
     @Test

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -13,7 +11,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -483,7 +481,7 @@ public class TrustedCdnPublisherUrlTest {
     }
 
     private void verifyUrl(String expectedUrl) {
-        onViewWaiting(
+        waitForView(
                 allOf(withId(R.id.url_bar), withText(expectedUrl)),
                 ViewElement.allowDisabledOption());
     }
@@ -501,7 +499,7 @@ public class TrustedCdnPublisherUrlTest {
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.GONE, securityButton.getVisibility());
         } else {
-            onViewWaiting(withId(securityId)).check(matches(isDisplayed()));
+            waitForView(withId(securityId));
 
             // VectorDrawables don't have a good means for comparison so just verify resource IDs.
             if (securityButton.getDrawable() instanceof VectorDrawable) {

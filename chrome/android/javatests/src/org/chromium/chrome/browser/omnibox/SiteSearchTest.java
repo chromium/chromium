@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.view.KeyEvent;
 import android.view.View;
@@ -44,7 +44,6 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,7 +133,7 @@ public class SiteSearchTest {
         mOmniboxUtils.checkSuggestionsShown();
 
         // Wait for the Site Search Action chip to be bound and displayed in the suggestion row
-        ViewUtils.onViewWaiting(withText("Search TestName")).check(matches(isDisplayed()));
+        waitForView(withText("Search TestName"));
     }
 
     @Test
@@ -149,11 +148,9 @@ public class SiteSearchTest {
         checkIsFirstSuggestionRowSelected();
 
         // Wait for the Site Search Action chip to be bound and displayed in the suggestion row
-        ViewUtils.onViewWaiting(
-                        Matchers.allOf(
-                                ViewMatchers.isAssignableFrom(ChipView.class),
-                                ViewMatchers.hasDescendant(withText("Search TestName"))))
-                .check(matches(isDisplayed()));
+        waitForView(
+                ViewMatchers.isAssignableFrom(ChipView.class),
+                ViewMatchers.hasDescendant(withText("Search TestName")));
 
         // Press <tab>
         mOmniboxUtils.sendKey(KeyEvent.KEYCODE_TAB);
@@ -209,11 +206,9 @@ public class SiteSearchTest {
     private void checkIsActionChipSelected(String chipText) {
         // Since action chips are dynamically created, we locate it by asserting the view
         // is a ChipView containing specific text, and then verify it has been selected.
-        ViewUtils.onViewWaiting(
-                        Matchers.allOf(
-                                ViewMatchers.isAssignableFrom(ChipView.class),
-                                ViewMatchers.hasDescendant(withText(chipText)),
-                                ViewMatchers.isSelected()))
-                .check(matches(isDisplayed()));
+        waitForView(
+                ViewMatchers.isAssignableFrom(ChipView.class),
+                ViewMatchers.hasDescendant(withText(chipText)),
+                ViewMatchers.isSelected());
     }
 }

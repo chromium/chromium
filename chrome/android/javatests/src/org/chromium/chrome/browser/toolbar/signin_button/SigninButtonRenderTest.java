@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.signin_button;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -39,7 +41,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
@@ -100,7 +101,7 @@ public class SigninButtonRenderTest {
     public void testSigninButton_SignedOut(boolean nightModeEnabled) throws IOException {
         startActivityOnNtp();
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+        waitForView(withId(R.id.signin_button));
 
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.signin_button),
@@ -116,7 +117,7 @@ public class SigninButtonRenderTest {
             throws IOException {
         startActivityOnNtp();
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+        waitForView(withId(R.id.signin_button));
 
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.signin_button),
@@ -134,7 +135,7 @@ public class SigninButtonRenderTest {
 
         setSigninAllowed(false);
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+        waitForView(withId(R.id.signin_button));
 
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.signin_button),
@@ -151,7 +152,7 @@ public class SigninButtonRenderTest {
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+        waitForView(withId(R.id.signin_button));
 
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.signin_button),
@@ -178,7 +179,7 @@ public class SigninButtonRenderTest {
         // Test transition to error.
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+        waitForView(withId(R.id.signin_button));
 
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(R.id.signin_button),
@@ -206,7 +207,7 @@ public class SigninButtonRenderTest {
         // Test transition to error.
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+        waitForView(withId(R.id.signin_button));
 
         // Set the pref natively to trigger the AI tier ring.
         ThreadUtils.runOnUiThreadBlocking(
@@ -231,7 +232,7 @@ public class SigninButtonRenderTest {
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
+        waitForView(withId(R.id.signin_button));
 
         // Set the pref natively to trigger the AI tier ring.
         ThreadUtils.runOnUiThreadBlocking(
