@@ -973,12 +973,18 @@ def get_stories(benchmark: Benchmark, args: OptionsNamespace):
     proc = subprocess.run(
         print_stories_cmd, text=True, capture_output=True, cwd=_ROOT_DIR
     )
+    if proc.returncode not in (0, 111):
+        _LOGGER.error('Stdout:\n%s\nStderr:\n%s', proc.stdout, proc.stderr)
+        proc.check_returncode()
 
     stories = []
     for line in proc.stdout.splitlines():
         if line and not line.startswith(('[', 'View results at')):
             stories.append(line)
     _LOGGER.debug(f"Found {len(stories)} stories")
+    if not stories:
+        _LOGGER.error('Stdout:\n%s\nStderr:\n%s', proc.stdout, proc.stderr)
+        raise RuntimeError(f'No runnable stories found for {benchmark.name}')
     return stories
 
 
@@ -1194,8 +1200,7 @@ def main():
         # timeouts, see https://crbug.com/487336000 and
         # https://crbug.com/565414952.
         jetstream_args.append(
-            '--stories=default,-babylonjs-scene-es6,'
-            '-transformersjs-bert-wasm'
+            '--stories=default,-babylonjs-scene-es6,-transformersjs-bert-wasm'
         )
     benchmarks.append(Benchmark('jetstream3.crossbench', jetstream_args))
 
