@@ -226,6 +226,20 @@ class PrerenderBrowserAgent::Delegate final
     std::move(callback).Run(nil);
   }
 
+  void OnProxyAuthChallenge(web::WebState* web_state,
+                            NSURLProtectionSpace* protection_space,
+                            NSURLCredential* proposed_credential,
+                            NSURLResponse* failure_response,
+                            ProxyAuthCallback callback) final
+      API_AVAILABLE(ios(18.1)) {
+    agent_->ScheduleCancelPrerender();
+    // Cancel the proxy authentication challenge.
+    std::move(callback).Run(/*username=*/nil, /*password=*/nil,
+                            [NSError errorWithDomain:NSURLErrorDomain
+                                                code:NSURLErrorCancelled
+                                            userInfo:nil]);
+  }
+
   UIView* GetWebViewContainer(web::WebState* web_state) final {
     return [agent_->delegate_ webViewContainer];
   }

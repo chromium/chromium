@@ -7,7 +7,11 @@
 #import <utility>
 
 #import "base/check_deref.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
+#import "base/test/scoped_run_loop_timeout.h"
+#import "base/test/test_future.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/fake_signin_enabled_datasource.h"
 #import "components/signin/public/base/consent_level.h"
@@ -29,6 +33,8 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state_delegate.h"
+#import "ios/web/public/web_state_observer.h"
 #import "net/base/mock_network_change_notifier.h"
 #import "net/base/network_change_notifier.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -81,6 +87,15 @@ class TestWebState : public web::FakeWebState {
     return std::make_unique<TestWebState>(
         ProfileIOS::FromBrowserState(GetBrowserState()));
   }
+
+  web::WebStateDelegate* GetDelegate() override { return delegate_; }
+
+  void SetDelegate(web::WebStateDelegate* delegate) override {
+    delegate_ = delegate;
+  }
+
+ private:
+  raw_ptr<web::WebStateDelegate> delegate_ = nullptr;
 };
 
 // NetworkChangeObserver that invoke a callback when the connection type
@@ -105,6 +120,26 @@ class ScopedNetworkChangeObserver
 
  private:
   base::RepeatingClosure closure_;
+};
+
+// WebStateObserver that invokes a callback when the WebState is destroyed.
+class WebStateDestroyedObserver : public web::WebStateObserver {
+ public:
+  WebStateDestroyedObserver(web::WebState* web_state, base::OnceClosure closure)
+      : closure_(std::move(closure)) {
+    observation_.Observe(web_state);
+  }
+
+  // web::WebStateObserver implementation.
+  void WebStateDestroyed(web::WebState* web_state) override {
+    observation_.Reset();
+    std::move(closure_).Run();
+  }
+
+ private:
+  base::OnceClosure closure_;
+  base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
+      this};
 };
 
 // Converts NetworkPredictionSetting to a string.
@@ -434,6 +469,62 @@ TEST_F(PrerenderBrowserAgentTest, Cancel_EnabledWifiAndCellularToDisabled) {
   // the prerender.
   PrerenderDisabled();
   EXPECT_FALSE(agent()->ValidatePrerender(url, transition));
+}
+
+// Tests that proxy authentication challenges are cancelled with an error and
+// that they cancel the prerender.
+TEST_F(PrerenderBrowserAgentTest, Cancel_ProxyAuthChallenge) {
+  if (@available(iOS 18.1, *)) {
+    PrerenderEnabledOnWiFiAndCellular();
+    SimulateWiFiConnection();
+
+    // Pre-clone the WebState used for prerendering to access its delegate.
+    agent()->SetWebStatePrecloningNeeded(true);
+    web::WebState* prerender_web_state =
+        agent()->precloned_web_state_for_testing();
+    ASSERT_TRUE(prerender_web_state);
+
+    // Cancelling the prerender destroys its WebState.
+    base::test::TestFuture<void> prerender_cancelled;
+    WebStateDestroyedObserver observer(prerender_web_state,
+                                       prerender_cancelled.GetCallback());
+
+    const GURL url("https://www.google.com/");
+    const auto transition = ui::PageTransition::PAGE_TRANSITION_TYPED;
+    StartPrerender(url, transition);
+
+    // Check that the pre-cloned WebState is used for prerendering.
+    ASSERT_FALSE(prerender_cancelled.IsReady());
+    ASSERT_EQ(url, prerender_web_state->GetVisibleURL());
+
+    web::WebStateDelegate* delegate = prerender_web_state->GetDelegate();
+    ASSERT_TRUE(delegate);
+
+    base::test::TestFuture<NSString*, NSString*, NSError*> auth_result;
+    delegate->OnProxyAuthChallenge(
+        prerender_web_state, /*protection_space=*/nil,
+        /*proposed_credential=*/nil, /*failure_response=*/nil,
+        auth_result.GetCallback());
+
+    // The challenge is answered right away, but the prerender is only
+    // cancelled asynchronously.
+    ASSERT_TRUE(auth_result.IsReady());
+    EXPECT_FALSE(prerender_cancelled.IsReady());
+
+    const auto& [username, password, error] = auth_result.Get();
+    EXPECT_FALSE(username);
+    EXPECT_FALSE(password);
+    EXPECT_TRUE(error);
+
+    // `MOCK_TIME` disables the default `RunLoop` timeout. Set one so that the
+    // test fails instead of hanging if the prerender is never cancelled.
+    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE,
+                                                      base::Seconds(1));
+    ASSERT_TRUE(prerender_cancelled.Wait());
+    EXPECT_FALSE(agent()->ValidatePrerender(url, transition));
+  } else {
+    GTEST_SKIP() << "Proxy auth challenges require iOS 18.1+.";
+  }
 }
 
 // Check that prerender is disabled if the WebStateList has no active WebState.
