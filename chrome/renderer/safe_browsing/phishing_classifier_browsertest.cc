@@ -12,7 +12,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -25,6 +28,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/content_phishing_image_embedder.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/murmurhash3_util.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/phishing_classifier/features.h"
@@ -410,6 +414,75 @@ TEST_F(PhishingClassifierTest,
   ASSERT_FALSE(verdict_.has_image_feature_embedding());
 }
 #endif
+
+namespace {
+
+class ReentrantDestroyVisualFeatureExtractor
+    : public PhishingVisualFeatureExtractor {
+ public:
+  explicit ReentrantDestroyVisualFeatureExtractor(
+      base::OnceCallback<bool()> on_capture)
+      : on_capture_(std::move(on_capture)) {}
+
+ protected:
+  bool CapturePaintPreview(blink::WebLocalFrame* frame,
+                           const gfx::Rect& bounds,
+                           cc::PaintCanvas* canvas) override {
+    return std::move(on_capture_).Run();
+  }
+
+ private:
+  base::OnceCallback<bool()> on_capture_;
+};
+
+void VerifyExtractFeaturesSurvivesReentrantDestruction(
+    blink::WebLocalFrame* frame,
+    bool capture_return_value) {
+  base::HistogramTester histogram_tester;
+  bool done_callback_called = false;
+  std::unique_ptr<PhishingVisualFeatureExtractor> extractor;
+  extractor =
+      std::make_unique<ReentrantDestroyVisualFeatureExtractor>(base::BindOnce(
+          [](std::unique_ptr<PhishingVisualFeatureExtractor>* owner,
+             bool result) {
+            owner->reset();
+            return result;
+          },
+          &extractor, capture_return_value));
+
+  extractor->ExtractFeatures(
+      frame, base::BindOnce([](bool* called,
+                               std::unique_ptr<SkBitmap>) { *called = true; },
+                            &done_callback_called));
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(extractor);
+  EXPECT_FALSE(done_callback_called);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.VisualFeatureTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.VisualFeatureTime.TotalDuration", 0);
+}
+
+}  // namespace
+
+TEST_F(PhishingClassifierTest,
+       CapturePaintPreviewReentrantDestroyOnFailureDoesNotUAF) {
+  LoadHtml(GURL("http://host.net"), "<html><body>hello</body></html>");
+  VerifyExtractFeaturesSurvivesReentrantDestruction(
+      GetMainFrame(), /*capture_return_value=*/false);
+}
+
+TEST_F(PhishingClassifierTest,
+       CapturePaintPreviewReentrantDestroyOnSuccessDoesNotUAF) {
+  LoadHtml(GURL("http://host.net"), "<html><body>hello</body></html>");
+  VerifyExtractFeaturesSurvivesReentrantDestruction(
+      GetMainFrame(), /*capture_return_value=*/true);
+}
+
 // TODO(jialiul): Add test to verify that classification only starts on GET
 // method. It seems there is no easy way to simulate a HTTP POST in
 // ChromeRenderViewTest.
