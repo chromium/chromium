@@ -5,9 +5,11 @@
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_CANVAS_ANNOTATOR_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_ANNOTATIONS_AX_CANVAS_ANNOTATOR_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -57,11 +59,16 @@ class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator {
   struct CanvasAnnotationInfo {
     std::string text;
     bool is_pending = false;
+    std::optional<size_t> last_bitmap_hash;
   };
 
   void AddCanvasAnnotationForNode(blink::WebAXObject& src, ui::AXNodeData& dst);
 
-  // Connects to the Screen AI OCR service if not already connected.
+  void RefreshCanvasAnnotation(blink::WebAXObject& src);
+
+  void SetCanvasAnnotation(CanvasAnnotationInfo& info, std::string text);
+
+  // Connects to the OCR service if not already connected.
   // Returns true if connected or successfully bound.
   bool ConnectOcrIfNeeded();
 
@@ -78,7 +85,7 @@ class CONTENT_EXPORT AXCanvasAnnotator : public AXAnnotator {
   // Weak, owns us.
   const raw_ref<RenderAccessibilityImpl> render_accessibility_;
 
-  // A reference to the Screen AI service for OCR.
+  // A reference to the OCR service.
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> annotator_remote_;
 
   // Keeps track of the automatic annotations for each canvas.

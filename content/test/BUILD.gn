@@ -2129,8 +2129,14 @@ test("content_browsertests") {
   }
 
   if (enable_screen_ai_service) {
-    sources += [ "../renderer/accessibility/annotations/ax_main_node_annotator_browsertest.cc" ]
-    deps += [ "//services/screen_ai" ]
+    sources += [
+      "../renderer/accessibility/annotations/ax_canvas_annotator_browsertest.cc",
+      "../renderer/accessibility/annotations/ax_main_node_annotator_browsertest.cc",
+    ]
+    deps += [
+      "//services/screen_ai",
+      "//services/screen_ai/public/mojom",
+    ]
   }
 
   if (enable_library_cdms) {
