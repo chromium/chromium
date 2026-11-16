@@ -13,9 +13,7 @@ from unittest import mock
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.python_support.script_checker as script_checker
-from chromium_src.tools.metrics.python_support.tests_helpers import (
-  TestableScript,
-)
+import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
 
 # Fails on purpose, so that check_scripts() returns what the script printed.
 _ECHO_STDIN_AND_FAIL = """
@@ -33,7 +31,7 @@ class CheckScriptsTest(unittest.TestCase):
       script_path.write_text(_ECHO_STDIN_AND_FAIL)
       failed = script_checker.check_scripts(
         [
-          TestableScript(
+          tests_helpers.TestableScript(
             identifiable_name='echo_stdin',
             file_path=script_path,
             cmd=[sys.executable, str(script_path)],

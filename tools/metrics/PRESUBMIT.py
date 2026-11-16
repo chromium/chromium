@@ -23,11 +23,10 @@ sys.path.remove('.')
 
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+import chromium_src.tools.metrics.python_support.import_checker as import_checker
 import chromium_src.tools.metrics.python_support.quote_checker as quote_checker
 import chromium_src.tools.metrics.python_support.script_checker as script_checker
-from chromium_src.tools.metrics.python_support.tests_helpers import (
-  TestableScript,
-)
+import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
 
 
 class MetricsPresubmitCheckType(enum.Enum):
@@ -50,22 +49,22 @@ _ISOLATED_CHECKS_INPUT_EXTENSIONS = ('.py', '.gn', '.ini', '.toml', '.lock')
 
 def _PresubmitChecksAsTestableScripts(
   affected_files: Iterable[str],
-) -> List[TestableScript]:
+) -> List[tests_helpers.TestableScript]:
   # The affected files go through stdin: on CI every file under tools/metrics
   # is affected, which is too long for a Windows command line.
   affected_files_lines = '\n'.join(affected_files)
   return [
-    TestableScript.CreatePythonScript(
+    tests_helpers.TestableScript.CreatePythonScript(
       pathlib.Path('tools/metrics/python_support/validate_gn.py')
     ),
-    TestableScript.CreatePythonScript(
+    tests_helpers.TestableScript.CreatePythonScript(
       pathlib.Path('tools/metrics/python_support/validate_mypy.py')
     ),
-    TestableScript.CreatePythonScript(
+    tests_helpers.TestableScript.CreatePythonScript(
       pathlib.Path('tools/metrics/python_support/validate_affected_scripts.py'),
       stdin=affected_files_lines,
     ),
-    TestableScript.CreatePythonScript(
+    tests_helpers.TestableScript.CreatePythonScript(
       pathlib.Path('tools/metrics/metrics_python_tests.py'),
       # Otherwise typ uploads each test result to the presubmit's ResultDB,
       # which rejects typ's test IDs.
@@ -102,7 +101,7 @@ def _ReportEnumXmlIssues(
   if not enums_changed:
     return
 
-  script = TestableScript(
+  script = tests_helpers.TestableScript(
     identifiable_name=UKM_XML,
     file_path=pathlib.Path('tools/metrics/ukm/validate_format.py'),
     cmd=[
@@ -228,11 +227,46 @@ def _CheckQuoteConsistency(input_api: Any, output_api: Any) -> List[Any]:
   return results
 
 
+def _CheckImportStyle(input_api: Any, output_api: Any) -> List[Any]:
+  """Checks that changed imports import modules, not classes or functions."""
+  results: List[Any] = []
+  cwd = input_api.PresubmitLocalPath()
+
+  for affected_file in input_api.AffectedFiles(
+    file_filter=lambda f: f.LocalPath().endswith('.py'),
+    include_deletes=False,
+  ):
+    filepath = input_api.os_path.relpath(affected_file.AbsoluteLocalPath(), cwd)
+    changed_lines = {
+      line_number for line_number, _ in affected_file.ChangedContents()
+    }
+    try:
+      symbol_imports = import_checker.FindSymbolImports(
+        '\n'.join(affected_file.NewContents()),
+        changed_lines,
+        path_util.CHROMIUM_SRC_PATH,
+      )
+    except SyntaxError:
+      # _CheckQuoteConsistency reports the files that fail to parse.
+      continue
+    results.extend(
+      output_api.PresubmitError(
+        f'{filepath}:{symbol_import.line} imports {symbol_import.name} from '
+        f'{symbol_import.module}. Import the module instead, see '
+        'https://google.github.io/styleguide/pyguide.html#22-imports'
+      )
+      for symbol_import in symbol_imports
+    )
+
+  return results
+
+
 def CheckChange(input_api: Type, output_api: Type):
   problems: List[Any] = []
   if input_api.HasAffectedFiles(extensions='.py'):
     problems.extend(_CheckNoManualSysPathManipulation(input_api, output_api))
     problems.extend(_CheckQuoteConsistency(input_api, output_api))
+    problems.extend(_CheckImportStyle(input_api, output_api))
   problems.extend(
     input_api.canned_checks.CheckPatchFormatted(input_api, output_api)
   )

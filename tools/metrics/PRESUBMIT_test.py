@@ -115,5 +115,38 @@ class CheckQuoteConsistencyTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
 
+class CheckImportStyleTest(unittest.TestCase):
+  def _RunImportCheck(self, code_text: str) -> list[str]:
+    input_api = PRESUBMIT_test_mocks.MockInputApi()
+    input_api.InitFiles(
+      [
+        PRESUBMIT_test_mocks.MockFile(
+          'tools/metrics/test_file.py',
+          code_text.splitlines(),
+        )
+      ]
+    )
+    return [
+      result.message
+      for result in PRESUBMIT._CheckImportStyle(
+        input_api, PRESUBMIT_test_mocks.MockOutputApi()
+      )
+    ]
+
+  def testClassImportFlagged(self):
+    messages = self._RunImportCheck('import os\nfrom pathlib import Path\n')
+    self.assertEqual(len(messages), 1)
+    self.assertIn('test_file.py:2 imports Path from pathlib', messages[0])
+
+  def testModuleImportsAllowed(self):
+    self.assertEqual(
+      self._RunImportCheck('import os\nfrom unittest import mock\n'), []
+    )
+
+  def testUnparsableFileSkipped(self):
+    # The quote consistency check reports it instead.
+    self.assertEqual(self._RunImportCheck('from import\n'), [])
+
+
 if __name__ == '__main__':
   unittest.main()

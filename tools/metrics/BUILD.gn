@@ -191,6 +191,8 @@ group("metrics_python_tests") {
     "//tools/metrics/python_support/setup_modules_lib_test.py",
     "//tools/metrics/python_support/dependency_solver_test.py",
     "//tools/metrics/python_support/tests_helpers_test.py",
+    "//tools/metrics/python_support/import_checker.py",
+    "//tools/metrics/python_support/import_checker_test.py",
     "//tools/metrics/python_support/quote_checker.py",
     "//tools/metrics/python_support/quote_checker_test.py",
     "//tools/metrics/python_support/script_checker_test.py",
