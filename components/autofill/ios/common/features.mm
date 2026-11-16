@@ -56,6 +56,20 @@ BASE_FEATURE(kAutofillReportFormSubmissionErrors,
 
 BASE_FEATURE(kAutofillStickyInfobarIos, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillSuggestionPipelineIOS, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<AutofillSuggestionPipelineStage>::Option
+    kAutofillSuggestionPipelineStageOptions[] = {
+        {AutofillSuggestionPipelineStage::kLegacy, "0"},
+        {AutofillSuggestionPipelineStage::kBAMAutofill, "1"}};
+
+BASE_FEATURE_ENUM_PARAM(AutofillSuggestionPipelineStage,
+                        kAutofillSuggestionPipelineStageParam,
+                        &kAutofillSuggestionPipelineIOS,
+                        kAutofillSuggestionPipelineStageParamName,
+                        AutofillSuggestionPipelineStage::kLegacy,
+                        &kAutofillSuggestionPipelineStageOptions);
+
 // LINT.IfChange(autofill_support_content_editable_ios)
 BASE_FEATURE(kAutofillSupportContentEditableIos,
              base::FEATURE_DISABLED_BY_DEFAULT);

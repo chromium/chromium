@@ -420,7 +420,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
       autofill_suggestion.payload =
-          base::FeatureList::IsEnabled(autofill::features::kAutofillUseOriginalPayloadIos) ||
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillUseOriginalPayloadIos) ||
                   HasGuid(suggestion.payload)
               ? suggestion.payload
               : Suggestion::Payload();
@@ -594,7 +595,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
   // TODO(crbug.com/363958046): Pass the actually shown suggestions instead of
   // `popup_suggestions`.
-  if (delegate) {
+  if (delegate && !IsAutofillBAMSuggestionFlowEnabled()) {
     delegate->OnSuggestionsShown(popup_suggestions, /*metadata=*/{});
   }
 }

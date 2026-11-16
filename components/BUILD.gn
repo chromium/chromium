@@ -615,6 +615,7 @@ test("components_unittests") {
     }
     deps += [
       "//components/autofill/ios/browser:unit_tests",
+      "//components/autofill/ios/common:unit_tests",
       "//components/autofill/ios/form_util:unit_tests",
       "//components/commerce/ios/browser:unit_tests",
       "//components/contextual_search/internal/ios:unit_tests",

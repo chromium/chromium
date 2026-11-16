@@ -78,6 +78,29 @@ BASE_DECLARE_FEATURE(kAutofillReportFormSubmissionErrors);
 // timeout but will be dismissed once navigating from an explicit user gesture.
 BASE_DECLARE_FEATURE(kAutofillStickyInfobarIos);
 
+// Controls the progressive migration of Autofill and Password suggestion
+// pipelines to BrowserAutofillManager and PasswordAutofillManager on iOS.
+BASE_DECLARE_FEATURE(kAutofillSuggestionPipelineIOS);
+
+inline constexpr char kAutofillSuggestionPipelineStageParamName[] = "stage";
+
+enum class AutofillSuggestionPipelineStage {
+  kLegacy = 0,
+  kBAMAutofill = 1,
+};
+
+BASE_DECLARE_FEATURE_PARAM(AutofillSuggestionPipelineStage,
+                           kAutofillSuggestionPipelineStageParam);
+
+// Returns the active `AutofillSuggestionPipelineStage` configured by
+// `kAutofillSuggestionPipelineIOS`.
+inline AutofillSuggestionPipelineStage GetAutofillSuggestionPipelineStage() {
+  if (!base::FeatureList::IsEnabled(kAutofillSuggestionPipelineIOS)) {
+    return AutofillSuggestionPipelineStage::kLegacy;
+  }
+  return kAutofillSuggestionPipelineStageParam.Get();
+}
+
 // Enables support for contenteditable elements in Autofill on iOS.
 BASE_DECLARE_FEATURE(kAutofillSupportContentEditableIos);
 
@@ -106,5 +129,12 @@ BASE_DECLARE_FEATURE(kAutofillTrackPasswordFieldsIos);
 // specific forms on the spot. Throttles with scheduled batches.
 BASE_DECLARE_FEATURE(kAutofillThrottleFilteredDocumentFormScanIos);
 extern const base::FeatureParam<int> kAutofillFilteredDocumentFormScanPeriodMs;
+
+// Returns true if Autofill suggestions are routed through
+// `BrowserAutofillManager` and `AutofillSuggestionControllerIOS`.
+inline bool IsAutofillBAMSuggestionFlowEnabled() {
+  return GetAutofillSuggestionPipelineStage() >=
+         AutofillSuggestionPipelineStage::kBAMAutofill;
+}
 
 #endif  // COMPONENTS_AUTOFILL_IOS_COMMON_FEATURES_H_

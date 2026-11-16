@@ -27,3 +27,13 @@ source_set("autofill_optimization_features") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "features_unittest.mm" ]
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

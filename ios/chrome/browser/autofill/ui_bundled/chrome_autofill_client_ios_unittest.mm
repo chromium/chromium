@@ -38,6 +38,7 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -910,4 +911,203 @@ TEST_F(ChromeAutofillClientIOSTest,
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
+// Tests that `ShowAutofillSuggestions`, `UpdateAutofillSuggestions`, and
+// `HideSuggestions` delegate to `AutofillSuggestionControllerIOS` when the BAM
+// suggestion flow is enabled.
+TEST_F(ChromeAutofillClientIOSTest,
+       ShowAndHideSuggestions_BAMSuggestionFlowEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kAutofillSuggestionPipelineIOS,
+      {{kAutofillSuggestionPipelineStageParamName, "1"}});
+
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  AutofillClient::PopupOpenArgs open_args;
+  open_args.form_id = form_id;
+  open_args.field_id = field_id;
+  open_args.suggestions = {Suggestion(u"Alice", SuggestionType::kAddressEntry)};
+
+  testing::NiceMock<MockAutofillSuggestionDelegate> delegate;
+  EXPECT_CALL(delegate, OnSuggestionsShown).Times(1);
+  AutofillClient::SuggestionUiSessionId session_id =
+      client().ShowAutofillSuggestions(open_args, delegate.GetWeakPtr());
+
+  EXPECT_TRUE(client().suggestion_controller().is_showing());
+  EXPECT_EQ(session_id, client().GetSessionIdForCurrentAutofillSuggestions());
+  ASSERT_EQ(1U, client().GetAutofillSuggestions().size());
+  EXPECT_EQ(u"Alice", client().GetAutofillSuggestions()[0].main_text.value);
+
+  NSArray<FormSuggestion*>* suggestions = LastSuggestionsSentToKeyboard();
+  ASSERT_EQ(1U, suggestions.count);
+  EXPECT_EQ(SuggestionType::kAddressEntry, suggestions[0].type);
+  EXPECT_TRUE([@"Alice" isEqualToString:suggestions[0].value]);
+
+  client().HideSuggestions(SuggestionHidingReason::kUserAborted,
+                           /*product=*/std::nullopt);
+  EXPECT_FALSE(client().suggestion_controller().is_showing());
+  EXPECT_FALSE(
+      client().GetSessionIdForCurrentAutofillSuggestions().has_value());
+}
+
+// Tests that `UpdateAutofillSuggestions` hides the suggestions as stale when
+// the updated `main_filling_product` doesn't match the showing one.
+TEST_F(ChromeAutofillClientIOSTest,
+       UpdateSuggestions_ProductMismatchHidesAsStale_BAMSuggestionFlowEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kAutofillSuggestionPipelineIOS,
+      {{kAutofillSuggestionPipelineStageParamName, "1"}});
+
+  AutofillClient::PopupOpenArgs open_args;
+  open_args.form_id = test::MakeFormGlobalId();
+  open_args.field_id = test::MakeFieldGlobalId();
+  open_args.suggestions = {
+      Suggestion(u"John Doe", SuggestionType::kAddressEntry)};
+
+  testing::NiceMock<MockAutofillSuggestionDelegate> delegate;
+  ON_CALL(delegate, GetMainFillingProduct)
+      .WillByDefault(testing::Return(FillingProduct::kAddress));
+  EXPECT_CALL(delegate,
+              OnSuggestionsHidden(SuggestionHidingReason::kStaleData));
+  client().ShowAutofillSuggestions(open_args, delegate.GetWeakPtr());
+  ASSERT_TRUE(client().suggestion_controller().is_showing());
+
+  client().UpdateAutofillSuggestions(
+      {Suggestion(u"4111", SuggestionType::kCreditCardEntry)},
+      FillingProduct::kCreditCard,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      AutofillSuggestionsIgnoreFocusLoss(false));
+
+  EXPECT_FALSE(client().suggestion_controller().is_showing());
+  EXPECT_EQ(0U, LastSuggestionsSentToKeyboard().count);
+}
+
+// Tests that `UpdateAutofillSuggestions` updates the controller when the
+// `main_filling_product` matches the showing one.
+TEST_F(ChromeAutofillClientIOSTest,
+       UpdateSuggestions_ProductMatchUpdates_BAMSuggestionFlowEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kAutofillSuggestionPipelineIOS,
+      {{kAutofillSuggestionPipelineStageParamName, "1"}});
+
+  AutofillClient::PopupOpenArgs open_args;
+  open_args.form_id = test::MakeFormGlobalId();
+  open_args.field_id = test::MakeFieldGlobalId();
+  open_args.suggestions = {
+      Suggestion(u"John Doe", SuggestionType::kAddressEntry)};
+
+  testing::NiceMock<MockAutofillSuggestionDelegate> delegate;
+  ON_CALL(delegate, GetMainFillingProduct)
+      .WillByDefault(testing::Return(FillingProduct::kAddress));
+  client().ShowAutofillSuggestions(open_args, delegate.GetWeakPtr());
+
+  client().UpdateAutofillSuggestions(
+      {Suggestion(u"Jane Doe", SuggestionType::kAddressEntry)},
+      FillingProduct::kAddress,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      AutofillSuggestionsIgnoreFocusLoss(false));
+
+  ASSERT_TRUE(client().suggestion_controller().is_showing());
+  ASSERT_EQ(1U, client().GetAutofillSuggestions().size());
+  EXPECT_EQ(u"Jane Doe", client().GetAutofillSuggestions()[0].main_text.value);
+}
+
+// Tests that `ShowAutofillSuggestions` with empty suggestions hides the
+// suggestions and returns a valid session ID without crashing.
+TEST_F(ChromeAutofillClientIOSTest,
+       ShowAutofillSuggestions_EmptySuggestionsHides_BAMSuggestionFlowEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kAutofillSuggestionPipelineIOS,
+      {{kAutofillSuggestionPipelineStageParamName, "1"}});
+
+  AutofillClient::PopupOpenArgs open_args;
+  open_args.form_id = test::MakeFormGlobalId();
+  open_args.field_id = test::MakeFieldGlobalId();
+  open_args.suggestions = {
+      Suggestion(u"John Doe", SuggestionType::kAddressEntry)};
+
+  testing::NiceMock<MockAutofillSuggestionDelegate> delegate;
+  client().ShowAutofillSuggestions(open_args, delegate.GetWeakPtr());
+  ASSERT_TRUE(client().suggestion_controller().is_showing());
+  ASSERT_EQ(1U, LastSuggestionsSentToKeyboard().count);
+
+  open_args.suggestions = {};
+  EXPECT_CALL(delegate,
+              OnSuggestionsHidden(SuggestionHidingReason::kNoSuggestions));
+  client().ShowAutofillSuggestions(open_args, delegate.GetWeakPtr());
+
+  EXPECT_FALSE(client().suggestion_controller().is_showing());
+  EXPECT_EQ(std::nullopt, client().suggestion_controller().GetUiSessionId());
+  EXPECT_EQ(0U, LastSuggestionsSentToKeyboard().count);
+}
+
+// Tests that `UpdateAutofillSuggestions` with empty suggestions hides the
+// active suggestions and notifies the bridge.
+TEST_F(ChromeAutofillClientIOSTest,
+       UpdateSuggestions_EmptySuggestionsHides_BAMSuggestionFlowEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kAutofillSuggestionPipelineIOS,
+      {{kAutofillSuggestionPipelineStageParamName, "1"}});
+
+  AutofillClient::PopupOpenArgs open_args;
+  open_args.form_id = test::MakeFormGlobalId();
+  open_args.field_id = test::MakeFieldGlobalId();
+  open_args.suggestions = {
+      Suggestion(u"John Doe", SuggestionType::kAddressEntry)};
+
+  testing::NiceMock<MockAutofillSuggestionDelegate> delegate;
+  ON_CALL(delegate, GetMainFillingProduct)
+      .WillByDefault(testing::Return(FillingProduct::kAddress));
+  client().ShowAutofillSuggestions(open_args, delegate.GetWeakPtr());
+  ASSERT_TRUE(client().suggestion_controller().is_showing());
+  ASSERT_EQ(1U, LastSuggestionsSentToKeyboard().count);
+
+  EXPECT_CALL(delegate,
+              OnSuggestionsHidden(SuggestionHidingReason::kNoSuggestions));
+  client().UpdateAutofillSuggestions(
+      {}, FillingProduct::kAddress,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      AutofillSuggestionsIgnoreFocusLoss(false));
+
+  EXPECT_FALSE(client().suggestion_controller().is_showing());
+  EXPECT_EQ(std::nullopt, client().suggestion_controller().GetUiSessionId());
+  EXPECT_EQ(0U, LastSuggestionsSentToKeyboard().count);
+}
+
+// Tests that `HideSuggestions` with a `product` filter only hides the showing
+// suggestions when the product matches theirs, even if the delegate is gone.
+TEST_F(ChromeAutofillClientIOSTest,
+       HideSuggestions_ProductFilter_BAMSuggestionFlowEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kAutofillSuggestionPipelineIOS,
+      {{kAutofillSuggestionPipelineStageParamName, "1"}});
+
+  AutofillClient::PopupOpenArgs open_args;
+  open_args.form_id = test::MakeFormGlobalId();
+  open_args.field_id = test::MakeFieldGlobalId();
+  open_args.suggestions = {
+      Suggestion(u"John Doe", SuggestionType::kAddressEntry)};
+
+  auto delegate =
+      std::make_unique<testing::NiceMock<MockAutofillSuggestionDelegate>>();
+  ON_CALL(*delegate, GetMainFillingProduct)
+      .WillByDefault(testing::Return(FillingProduct::kAddress));
+  client().ShowAutofillSuggestions(open_args, delegate->GetWeakPtr());
+  ASSERT_TRUE(client().suggestion_controller().is_showing());
+  delegate.reset();
+
+  client().HideSuggestions(SuggestionHidingReason::kUserAborted,
+                           FillingProduct::kCreditCard);
+  EXPECT_TRUE(client().suggestion_controller().is_showing());
+
+  client().HideSuggestions(SuggestionHidingReason::kUserAborted,
+                           FillingProduct::kAddress);
+  EXPECT_FALSE(client().suggestion_controller().is_showing());
+}
 }  // namespace autofill

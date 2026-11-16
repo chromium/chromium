@@ -30,6 +30,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
+#import "components/autofill/ios/browser/autofill_suggestion_controller_ios.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/prefs/pref_service.h"
 #import "components/strike_database/strike_database.h"
@@ -114,6 +115,15 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
     return form_input_accessory_commands_handler_;
   }
 
+  // Returns the suggestion controller managing the Autofill suggestions UI
+  // lifecycle.
+  AutofillSuggestionControllerIOS& suggestion_controller() {
+    return suggestion_controller_;
+  }
+  const AutofillSuggestionControllerIOS& suggestion_controller() const {
+    return suggestion_controller_;
+  }
+
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() override;
   const base::i18n::LanguageTag& GetAppLocale() const override;
@@ -128,8 +138,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   PersonalContextEntityMetadataManager*
   GetPersonalContextEntityMetadataManager() override;
   WalletPassAccessManager* GetWalletPassAccessManager() override;
-  FieldClassificationModelHandler*
-  GetAutofillFieldClassificationModelHandler() override;
+  FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
+      override;
   FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
@@ -305,6 +315,10 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   __weak id<AutofillCommands> commands_handler_;
 
   __weak id<FormInputAccessoryCommands> form_input_accessory_commands_handler_;
+
+  // Controller managing the Autofill suggestions UI lifecycle and tapjacking
+  // protection when the BAM suggestion flow is enabled.
+  AutofillSuggestionControllerIOS suggestion_controller_;
 
   // Holds a weak reference to the delegate driving the active suggestions
   // popup.
