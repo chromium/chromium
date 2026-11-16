@@ -73,8 +73,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   };
 
   // Blurs the omnibox and closes the popup unless it holds a draft, i.e. user
-  // text or keyword mode. See `FocusAfterBlur` for what happens to the browser
-  // window's focus.
+  // text or keyword mode, through `OmniboxPopupViewFullWebUI::BlurOmnibox()`.
+  // Adds the widget's own steps: drops pending focus work and the permission
+  // prompt state, and moves the browser window's focus as `FocusAfterBlur`
+  // says.
   void DeactivatePopupAndKillFocus(FocusAfterBlur focus_after_blur);
 
   // OmniboxPopupPresenterBase:

@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
@@ -85,6 +86,16 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // OnTabChanged() and LocationBar::FocusLocation(/*user_initiated=*/false) are
   // messy.
   bool is_focused() const { return focused_; }
+
+  // The Full popup's blur sequence: reverts unedited text (see
+  // `OmniboxEditModel::RevertUneditedText()`), tells the WebUI it lost focus
+  // (`edit_model->popup_view()->OnBlur()`, when the popup view is still
+  // registered), runs `move_focus` (the host's own focus change, e.g. clearing
+  // views focus or focusing the page), blurs the edit model, and closes the
+  // popup unless the edit model holds a draft. Static so a host can still run
+  // the rest of the sequence while the popup view is tearing down.
+  static void BlurOmnibox(OmniboxController& controller,
+                          base::FunctionRef<void()> move_focus);
 
   const OmniboxPopupHandler* popup_handler_for_testing() {
     return GetPopupHandler();
