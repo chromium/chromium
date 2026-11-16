@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_DIRECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_DIRECTION_H_
 
-#include <cstdint>
 #include <iosfwd>
 
 #include "base/i18n/rtl.h"

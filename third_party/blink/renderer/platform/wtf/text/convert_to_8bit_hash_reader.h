@@ -29,7 +29,6 @@
 #endif
 
 #include <array>
-#include <cstdint>
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"

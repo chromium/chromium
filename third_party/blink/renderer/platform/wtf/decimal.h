@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DECIMAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DECIMAL_H_
 
-#include <cstdint>
-
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

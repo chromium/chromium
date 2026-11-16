@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LOGICAL_DIRECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LOGICAL_DIRECTION_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace blink {
 

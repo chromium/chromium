@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <cstring>
 #include <map>
 

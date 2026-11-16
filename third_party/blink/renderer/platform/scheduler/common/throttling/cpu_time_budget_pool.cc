@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 
-#include <cstdint>
 #include <optional>
 
 #include "base/check_op.h"

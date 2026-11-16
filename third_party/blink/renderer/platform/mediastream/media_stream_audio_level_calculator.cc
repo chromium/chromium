@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstdint>
 #include <limits>
 
 #include "base/check.h"

@@ -28,14 +28,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <atomic>
-#include <cstdint>
-
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
+
+#include <atomic>
 
 namespace blink {
 
-static std::atomic<std::uint64_t> g_unique_identifier(1);
+static std::atomic<uint64_t> g_unique_identifier(1);
 
 uint64_t CreateUniqueIdentifier() {
   return g_unique_identifier.fetch_add(1, std::memory_order_relaxed);

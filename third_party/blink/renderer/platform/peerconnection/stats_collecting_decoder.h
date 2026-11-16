@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTING_DECODER_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 

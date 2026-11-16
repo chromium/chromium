@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>

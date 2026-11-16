@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_NETWORK_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_NETWORK_UTILS_H_
 
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <tuple>

@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_JUSTIFY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_JUSTIFY_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace blink {
 
 // Represent a justification method.
 // https://drafts.csswg.org/css-text-4/#text-justify-property
-enum class TextJustify : std::uint8_t {
+enum class TextJustify : uint8_t {
   kAuto,
   kNone,
   kInterCharacter,

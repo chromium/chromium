@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/mediastream/audio_service_audio_processor_proxy.h"
 
-#include <cstdint>
 #include <optional>
 
 #include "base/check.h"

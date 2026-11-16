@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <numeric>
 #include <optional>

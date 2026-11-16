@@ -8,7 +8,6 @@
 #include <array>
 #include <atomic>
 #include <bit>
-#include <cstdint>
 #include <cstring>
 #include <type_traits>
 #include <utility>

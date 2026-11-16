@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_PROPERTY_H_
 
-#include <cstdint>
-
 #include "third_party/blink/renderer/platform/text/east_asian_spacing_type.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 

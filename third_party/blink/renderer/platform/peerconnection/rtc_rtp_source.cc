@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
 
 #include <cmath>
-#include <cstdint>
 #include <optional>
 
 #include "base/notreached.h"

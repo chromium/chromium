@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_FORMAT_H_
 
 #include <concepts>
-#include <cstdint>
 #include <limits>
 #include <optional>
 #include <string_view>

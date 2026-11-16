@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/h265_parameter_sets_tracker.h"
 
 #include <cstddef>
-#include <cstdint>
 #include <cstring>
 #include <memory>
 #include <optional>

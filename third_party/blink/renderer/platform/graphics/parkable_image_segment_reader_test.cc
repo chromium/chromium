@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <array>
-#include <cstdint>
 
 #include "base/compiler_specific.h"
 #include "base/test/task_environment.h"

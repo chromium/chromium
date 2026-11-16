@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_THREAD_STATE_STORAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_THREAD_STATE_STORAGE_H_
 
-#include <cstdint>
-
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/heap/thread_local.h"

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTING_ENCODER_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <span>  // Required by `webrtc::VideoEncoder`; nocheck
 #include <vector>

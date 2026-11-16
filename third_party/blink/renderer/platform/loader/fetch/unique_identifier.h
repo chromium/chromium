@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_UNIQUE_IDENTIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_UNIQUE_IDENTIFIER_H_
 
+#include <stdint.h>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/decoding_image_generator.h"
 
 #include <array>
-#include <cstdint>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"

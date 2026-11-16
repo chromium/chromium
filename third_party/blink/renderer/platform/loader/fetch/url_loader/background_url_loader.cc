@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
 
 #include <atomic>
-#include <cstdint>
 #include <memory>
 #include <variant>
 

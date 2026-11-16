@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/wake_up_budget_pool.h"
 
 #include <algorithm>
-#include <cstdint>
 
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"

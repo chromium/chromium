@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 
-#include <cstdint>
-
 #include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 #include "media/base/audio_glitch_info.h"

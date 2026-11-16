@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jxl/jxl_image_decoder.h"
 
-#include <cstdint>
 #include <limits>
 
 #include "base/check_op.h"

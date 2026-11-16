@@ -337,7 +337,7 @@ static void GenerateUTrieSerialized(FILE* fp,
                                     size_t size,
                                     base::span<uint8_t> array) {
   fprintf(fp,
-          "#include <cstdint>\n\n"
+          "#include <stdint.h>\n\n"
           "namespace blink {\n\n"
           "extern const int32_t kSerializedCharacterDataSize = %zu;\n"
           // The utrie2_openFromSerialized function requires character data to
@@ -498,7 +498,6 @@ class LineBreakData {
   void Print(FILE* fp) {
     // Print file headers.
     fprintf(fp,
-            "#include <cstdint>\n"
             "#include "
             "\"third_party/blink/renderer/platform/wtf/text/wtf_uchar.h\"\n"
             "\nnamespace {\n\n");

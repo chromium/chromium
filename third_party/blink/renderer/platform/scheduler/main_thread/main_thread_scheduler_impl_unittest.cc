@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 
 #include <atomic>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <sstream>

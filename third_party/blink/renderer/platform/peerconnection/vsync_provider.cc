@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/vsync_provider.h"
 
-#include <cstdint>
 #include <memory>
 #include <utility>
 

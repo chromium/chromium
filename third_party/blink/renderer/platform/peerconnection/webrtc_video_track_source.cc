@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
 
-#include <cstdint>
 #include <optional>
 #include <utility>
 

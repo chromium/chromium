@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_audio_sink.h"
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 

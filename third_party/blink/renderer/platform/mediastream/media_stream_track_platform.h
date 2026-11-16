@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_TRACK_PLATFORM_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 

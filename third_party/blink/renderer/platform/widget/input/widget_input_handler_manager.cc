@@ -6,7 +6,6 @@
 
 #include <sys/types.h>
 
-#include <cstdint>
 #include <utility>
 
 #include "base/check_op.h"

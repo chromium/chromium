@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BASE_HASH_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BASE_HASH_TRAITS_H_
 
-#include <cstdint>
 #include <limits>
 #include <new>
 

@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_EMOJI_SEGMENTATION_CATEGORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_EMOJI_SEGMENTATION_CATEGORY_H_
 
-#include <cstdint>
-
 namespace blink {
 
 // Must match the categories defined in

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_factory.h"
 
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

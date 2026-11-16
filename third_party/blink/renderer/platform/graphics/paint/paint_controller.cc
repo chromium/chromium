@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
-#include <cstdint>
 #include <memory>
 
 #include "base/logging.h"

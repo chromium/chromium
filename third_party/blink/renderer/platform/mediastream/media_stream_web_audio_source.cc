@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_web_audio_source.h"
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>

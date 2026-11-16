@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_H265_PARAMETER_SETS_TRACKER_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 
 #include "base/containers/span.h"

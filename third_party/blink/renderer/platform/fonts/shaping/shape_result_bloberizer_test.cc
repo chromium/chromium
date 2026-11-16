@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

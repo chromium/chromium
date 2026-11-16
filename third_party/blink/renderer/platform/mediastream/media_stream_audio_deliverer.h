@@ -8,7 +8,6 @@
 #include <inttypes.h>
 
 #include <algorithm>
-#include <cstdint>
 
 #include "base/check.h"
 #include "base/synchronization/lock.h"

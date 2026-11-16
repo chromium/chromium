@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 
-#include <cstdint>
 #include <optional>
 #include <utility>
 

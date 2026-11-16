@@ -31,8 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_MODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_MODE_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <iosfwd>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {

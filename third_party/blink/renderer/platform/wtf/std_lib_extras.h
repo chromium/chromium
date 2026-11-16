@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_STD_LIB_EXTRAS_H_
 
 #include <cstddef>
-#include <cstdint>
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"

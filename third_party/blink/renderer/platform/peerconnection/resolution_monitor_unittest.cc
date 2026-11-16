@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>

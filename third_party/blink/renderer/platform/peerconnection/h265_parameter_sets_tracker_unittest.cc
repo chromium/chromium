@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/peerconnection/h265_parameter_sets_tracker.h"
 
 #include <array>
-#include <cstdint>
 #include <vector>
 
 #include "base/containers/span.h"

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_ADAPTER_H_
 
 #include <atomic>
-#include <cstdint>
 #include <memory>
 #include <optional>
 
