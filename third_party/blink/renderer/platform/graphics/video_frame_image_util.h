@@ -58,34 +58,41 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
   gfx::Size Size() const { return info_.size; }
   CanvasSnapshotInfo GetInfo() const { return info_; }
 
-  scoped_refptr<StaticBitmapImage> DoExternalOverdrawAndSnapshot(
+  scoped_refptr<StaticBitmapImage> CreateSnapshot(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
  private:
-  static constexpr int kMaxRecycledCanvasResources = 3;
+  static constexpr int kMaxRecycledImages = 3;
 
   VideoFrameAcceleratedSnapshotPool(
       const CanvasSnapshotInfo& info,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
 
-  static void OnResourceReleased(
+  static void OnImageReleased(
       base::WeakPtr<VideoFrameAcceleratedSnapshotPool> pool,
-      scoped_refptr<gpu::ClientImage> resource,
+      scoped_refptr<gpu::ClientImage> image,
       const gpu::SyncToken& sync_token,
       bool is_lost);
 
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
-  void EnsureResourceReadyForDraw();
+  void EnsureImageReadyForDraw();
   gpu::raster::RasterInterface* RasterInterface() const;
 
   const CanvasSnapshotInfo info_;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   std::unique_ptr<gpu::SharedImagePool<gpu::ClientImage>> image_pool_;
-  scoped_refptr<gpu::ClientImage> resource_;
+  // Holds the most recently drawn image so that if its snapshot is released
+  // before the next draw (`current_image_->HasOneRef()`), it is reused in place
+  // without round-tripping through `image_pool_` or re-clearing (`is_cleared_`
+  // stays true). If `current_image_` still has an external reader on the next
+  // draw, `EnsureImageReadyForDraw()` replaces `current_image_` from
+  // `image_pool_` and the old image is returned to `image_pool_` by
+  // `OnImageReleased()` once its last reader drops its ref.
+  scoped_refptr<gpu::ClientImage> current_image_;
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
   bool is_cleared_ = false;
@@ -113,9 +120,8 @@ enum class VideoColorSpaceInterpretation {
   kReinterpretAsSRGB,
 };
 
-// Returns true if CreateImageFromVideoFrame() expects to create an
-// AcceleratedStaticBitmapImage. Note: This may be overridden if a software
-// `snapshot_provider` is given to CreateImageFromVideoFrame().
+// Returns true if CreateAcceleratedImageFromVideoFrame() can be used to create
+// an AcceleratedStaticBitmapImage from a VideoFrame.
 PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 
 // Returns an accelerated StaticBitmapImage for the given frame.
@@ -185,7 +191,7 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
 PLATFORM_EXPORT scoped_refptr<viz::RasterContextProvider>
 GetRasterContextProvider();
 
-// Helper function for creating a CanvasSnapshotProvider from a VideoFrame. The
+// Helper function for creating a CanvasSnapshotInfo from a VideoFrame. The
 // returned info structure will be filled as follows:
 //   alpha_type: kOpaque_SkAlphaType for opaque frames, kPremul_SkAlphaType
 //   otherwise.

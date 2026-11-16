@@ -165,7 +165,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
                                   orientation);
   }
 
-  return snapshot_pool->DoExternalOverdrawAndSnapshot(draw_callback);
+  return snapshot_pool->CreateSnapshot(draw_callback);
 }
 
 }  // namespace
@@ -181,7 +181,7 @@ VideoFrameAcceleratedSnapshotPool::Create(const CanvasSnapshotInfo& info) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
 
   // If the context is lost we don't want to re-create it here, the resulting
-  // resource provider would be invalid anyway
+  // snapshot pool would be invalid anyway.
   if (!context_provider_wrapper ||
       !context_provider_wrapper->ContextProvider().RasterInterface() ||
       context_provider_wrapper->ContextProvider().IsContextLost()) {
@@ -226,12 +226,9 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
 
   if (auto* sii = context_provider_wrapper_->ContextProvider()
                       .SharedImageInterface()) {
-    // These SharedImages are both read and written by the raster interface
-    // (both occur, for example, when copying canvas resources between
-    // canvases). Additionally, these SharedImages can be put into
-    // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
-    // GL textures by WebGL (via
-    // AcceleratedStaticBitmapImage::CopyToTexture()).
+    // These SharedImages are both read and written by the raster interface and
+    // can be put into AcceleratedStaticBitmapImages that are copied into GL
+    // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
@@ -253,9 +250,9 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
             : std::nullopt;
 
     image_pool_ = gpu::SharedImagePool<gpu::ClientImage>::Create(
-        image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
+        image_info, sii, "CanvasResourceRaster", kMaxRecycledImages,
         expiration_time);
-    resource_ = image_pool_->GetImage();
+    current_image_ = image_pool_->GetImage();
   }
 }
 
@@ -272,17 +269,22 @@ void VideoFrameAcceleratedSnapshotPool::OnContextLost() {
 }
 
 // static
-void VideoFrameAcceleratedSnapshotPool::OnResourceReleased(
+void VideoFrameAcceleratedSnapshotPool::OnImageReleased(
     base::WeakPtr<VideoFrameAcceleratedSnapshotPool> pool,
-    scoped_refptr<gpu::ClientImage> resource,
+    scoped_refptr<gpu::ClientImage> image,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
   CHECK(!is_lost);
   if (sync_token.HasData()) {
-    resource->SetReleaseSyncToken(sync_token);
+    image->SetReleaseSyncToken(sync_token);
   }
-  if (resource->HasOneRef() && pool && pool->image_pool_) {
-    pool->image_pool_->ReleaseImage(std::move(resource));
+  // If `image` was replaced as `pool->current_image_` while it still had active
+  // snapshot readers, `image` now has a single reference and can be returned to
+  // `image_pool_` for reuse. (If `image` is still `pool->current_image_`,
+  // `pool->current_image_` holds a second reference and will be reused directly
+  // on the next draw.)
+  if (image->HasOneRef() && pool && pool->image_pool_) {
+    pool->image_pool_->ReleaseImage(std::move(image));
   }
 }
 
@@ -300,35 +302,35 @@ bool VideoFrameAcceleratedSnapshotPool::IsValid() const {
          raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
 }
 
-void VideoFrameAcceleratedSnapshotPool::EnsureResourceReadyForDraw() {
-  DCHECK(resource_);
+void VideoFrameAcceleratedSnapshotPool::EnsureImageReadyForDraw() {
+  DCHECK(current_image_);
 
-  // We have the only ref to `resource_`, which implies there are no active
+  // We have the only ref to `current_image_`, which implies there are no active
   // readers and it can be reused in place without re-clearing.
-  if (resource_->HasOneRef()) {
+  if (current_image_->HasOneRef()) {
     return;
   }
 
-  // It is possible to have deferred work in Skia which uses this resource. Try
+  // It is possible to have deferred work in Skia which uses this image. Try
   // flushing once to see if that releases the read refs. We can avoid a copy
-  // by queuing this work before writing to this resource.
+  // by queuing this work before writing to this image.
   FlushForImageListener::Get()->NotifyFlushForImage(cached_content_id_);
-  if (resource_->HasOneRef()) {
+  if (current_image_->HasOneRef()) {
     return;
   }
 
   cached_content_id_ = PaintImage::kInvalidContentId;
-  resource_ = image_pool_->GetImage();
+  current_image_ = image_pool_->GetImage();
 
   // As the image might have just been created, we need to ensure that it is
   // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
   // requirements (note: as an optimization we could avoid doing this if the
-  // resource was recycled as in that case there are no security implications).
+  // image was recycled as in that case there are no security implications).
   is_cleared_ = false;
 }
 
 scoped_refptr<StaticBitmapImage>
-VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
+VideoFrameAcceleratedSnapshotPool::CreateSnapshot(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   if (!IsValid()) {
     return nullptr;
@@ -337,13 +339,13 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
   MemoryManagedPaintRecorder recorder(Size(), /*client=*/nullptr);
   draw_callback(recorder.getRecordingCanvas());
   if (recorder.HasReleasableDrawOps()) {
-    EnsureResourceReadyForDraw();
+    EnsureImageReadyForDraw();
 
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
 
-    // Create an ImageDecodeCache for half float images only if the canvas is
-    // using half float back storage.
+    // Create an ImageDecodeCache for half float images only if the backing
+    // SharedImage is using half float storage.
     cc::ImageDecodeCache* cache_f16 = nullptr;
     if (info_.format == viz::SinglePlaneFormat::kRGBA_F16) {
       cache_f16 = context_provider_wrapper_->ContextProvider().ImageDecodeCache(
@@ -359,9 +361,9 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
         cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper_);
 
     gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
-        resource_->GetSharedImage(), resource_->GetSyncToken(),
+        current_image_->GetSharedImage(), current_image_->GetSyncToken(),
         recorder.ReleaseMainRecording(), &image_provider, needs_clear);
-    resource_->SetReleaseSyncToken(sync_token);
+    current_image_->SetReleaseSyncToken(sync_token);
 
     // Images are locked for the duration of the rasterization, in case they get
     // used multiple times. We can unlock them once the rasterization is
@@ -375,12 +377,12 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
   }
 
   auto release_callback = blink::BindOnce(
-      &VideoFrameAcceleratedSnapshotPool::OnResourceReleased,
-      weak_ptr_factory_.GetWeakPtr(), resource_);
+      &VideoFrameAcceleratedSnapshotPool::OnImageReleased,
+      weak_ptr_factory_.GetWeakPtr(), current_image_);
 
   scoped_refptr<StaticBitmapImage> snapshot =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          resource_->GetSharedImage(), resource_->GetSyncToken(),
+          current_image_->GetSharedImage(), current_image_->GetSyncToken(),
           info_.alpha_type, info_.hdr_metadata, context_provider_wrapper_,
           base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
@@ -513,7 +515,7 @@ scoped_refptr<StaticBitmapImage> CreateUnacceleratedImageFromVideoFrame(
     VideoOrientationBehavior orientation_behavior,
     VideoColorSpaceInterpretation color_space_interpretation) {
   return CreateImageFromVideoFrame(
-      std::move(frame), /*snapshot_provider=*/nullptr, draw_info,
+      std::move(frame), /*snapshot_pool=*/nullptr, draw_info,
       video_renderer, orientation_behavior, color_space_interpretation);
 }
 
