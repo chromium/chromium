@@ -754,6 +754,31 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathInital) {
   StartAndVerifyNonEligibleClipPathAnimation(element, 2000);
 }
 
+// Neutral keyframes depend on the underlying clip-path value, so they must run
+// on the main thread to reflect changes to that value.
+TEST_F(ClipPathPaintDefinitionTest, FallbackForNeutralKeyframe) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            100% {
+                clip-path: circle(50% at 50% 50%);
+            }
+        }
+        .animation {
+            clip-path: circle(10% at 50% 50%);
+            animation: clippath 4s steps(4, jump-end);
+        }
+    </style>
+    <div id="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
+}
+
 // <br> cannot be composited due to it not supporting paint properties, so we
 // fall back in this case. See crbug.com/401076540.
 TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
