@@ -299,17 +299,19 @@ TEST_P(WellKnownChangePasswordStateTest,
        PrefetchCallbackFirst_ThenHttpResponses_NoSupport) {
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service;
-  base::OnceCallback<void(GURL)> prefetch_callback;
+  affiliations::AffiliationService::ChangePasswordUrlCallback prefetch_callback;
   EXPECT_CALL(mock_affiliation_service, FetchChangePasswordURL)
-      .WillOnce([&](const GURL& url, base::OnceCallback<void(GURL)> callback) {
-        prefetch_callback = std::move(callback);
-      });
+      .WillOnce([&](const GURL& url,
+                    affiliations::AffiliationService::ChangePasswordUrlCallback
+                        callback) { prefetch_callback = std::move(callback); });
   state()->FetchChangePasswordURL(&mock_affiliation_service,
                                   GURL("https://example.com"));
 
   // 1. Prefetch callback runs first.
   // We do NOT expect OnProcessingFinished yet.
-  std::move(prefetch_callback).Run(GURL("https://example.com/change-password"));
+  std::move(prefetch_callback)
+      .Run(affiliations::AffiliationService::ChangePasswordUrlMatch(
+          GURL("https://example.com/change-password")));
   FastForwardBy(base::Milliseconds(0));
 
   // 2. Now HTTP requests finish (not supported).
@@ -348,11 +350,11 @@ TEST_P(WellKnownChangePasswordStateTest,
        PrefetchCallbackArrivesLate_AfterWellKnownSupported) {
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service;
-  base::OnceCallback<void(GURL)> prefetch_callback;
+  affiliations::AffiliationService::ChangePasswordUrlCallback prefetch_callback;
   EXPECT_CALL(mock_affiliation_service, FetchChangePasswordURL)
-      .WillOnce([&](const GURL& url, base::OnceCallback<void(GURL)> callback) {
-        prefetch_callback = std::move(callback);
-      });
+      .WillOnce([&](const GURL& url,
+                    affiliations::AffiliationService::ChangePasswordUrlCallback
+                        callback) { prefetch_callback = std::move(callback); });
   state()->FetchChangePasswordURL(&mock_affiliation_service,
                                   GURL("https://example.com"));
 
@@ -365,7 +367,9 @@ TEST_P(WellKnownChangePasswordStateTest,
 
   // 2. Late prefetch callback arrives.
   // We do NOT expect another OnProcessingFinished call.
-  std::move(prefetch_callback).Run(GURL("https://example.com/change-password"));
+  std::move(prefetch_callback)
+      .Run(affiliations::AffiliationService::ChangePasswordUrlMatch(
+          GURL("https://example.com/change-password")));
   FastForwardPostTasks();
   EXPECT_TRUE(state()->change_password_url_override().is_empty());
 }

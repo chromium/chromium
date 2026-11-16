@@ -5,6 +5,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
 #import "base/test/gmock_callback_support.h"
@@ -72,7 +74,7 @@ std::unique_ptr<KeyedService> MakeMockAffiliationService(ProfileIOS* profile) {
   auto mock_service =
       std::make_unique<NiceMock<affiliations::MockAffiliationService>>();
   ON_CALL(*mock_service, FetchChangePasswordURL)
-      .WillByDefault(base::test::RunOnceCallback<1>(GURL()));
+      .WillByDefault(base::test::RunOnceCallback<1>(std::nullopt));
   return mock_service;
 }
 
@@ -139,7 +141,9 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
   void SetChangePasswordURLForAffiliationService(
       const GURL& change_password_url) {
     EXPECT_CALL(*affiliation_service_, FetchChangePasswordURL)
-        .WillOnce(base::test::RunOnceCallback<1>(change_password_url));
+        .WillOnce(base::test::RunOnceCallback<1>(
+            affiliations::AffiliationService::ChangePasswordUrlMatch(
+                change_password_url)));
   }
 
   // Maps a path to a ServerResponse config object.

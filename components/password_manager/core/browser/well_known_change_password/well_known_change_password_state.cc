@@ -132,9 +132,12 @@ void WellKnownChangePasswordState::FetchNonExistingResourceCallback(
   ContinueProcessing();
 }
 
-void WellKnownChangePasswordState::OnChangePasswordURLFetched(GURL url) {
+void WellKnownChangePasswordState::OnChangePasswordURLFetched(
+    std::optional<affiliations::AffiliationService::ChangePasswordUrlMatch>
+        result) {
   if (fetch_timer_.IsRunning()) {
-    change_password_url_override_ = std::move(url);
+    change_password_url_override_ =
+        result ? std::move(result->change_password_url) : GURL();
     fetch_timer_.Stop();
     ContinueProcessing();
   }

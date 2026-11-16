@@ -84,7 +84,7 @@ BASE_FEATURE(kFetchChangePasswordPatterns, base::FEATURE_ENABLED_BY_DEFAULT);
 struct AffiliationServiceImpl::FetchInfo {
   FetchInfo(const GURL& url,
             const base::flat_set<std::string>& psl_extension_list,
-            base::OnceCallback<void(GURL)> result_callback)
+            ChangePasswordUrlCallback result_callback)
       : requested_url(url),
         requested_facet(ConvertGURLToFacet(url)),
         top_level_domain(
@@ -105,7 +105,7 @@ struct AffiliationServiceImpl::FetchInfo {
       // |FetchChangePasswordURL| from unexpectedly receiving the result of
       // the callback during the execution of |FetchChangePasswordURL|.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), GURL()));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     }
   }
 
@@ -184,7 +184,7 @@ struct AffiliationServiceImpl::FetchInfo {
   FacetURI top_level_domain;
   // Callback is passed in FetchChangePasswordURL and is run to indicate the
   // fetch has finished or got canceled.
-  base::OnceCallback<void(GURL)> callback;
+  ChangePasswordUrlCallback callback;
 };
 
 // TODO(crbug.com/40789139): Create the backend task runner in Init and stop
@@ -220,11 +220,11 @@ void AffiliationServiceImpl::Shutdown() {
 
 void AffiliationServiceImpl::FetchChangePasswordURL(
     const GURL& url,
-    base::OnceCallback<void(GURL)> callback) {
+    ChangePasswordUrlCallback callback) {
   FacetURI facet_uri = ConvertGURLToFacet(url);
   if (!facet_uri.is_valid()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), GURL()));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
@@ -251,8 +251,7 @@ void AffiliationServiceImpl::OnFetchFinished(
   }
 
   if (fetch_info.callback) {
-    std::move(fetch_info.callback)
-        .Run(result ? std::move(result->change_password_url) : GURL());
+    std::move(fetch_info.callback).Run(std::move(result));
   }
 }
 

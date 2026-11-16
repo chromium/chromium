@@ -123,7 +123,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
               auto mock_service =
                   std::make_unique<testing::NiceMock<MockAffiliationService>>();
               ON_CALL(*mock_service, FetchChangePasswordURL)
-                  .WillByDefault(base::test::RunOnceCallback<1>(GURL()));
+                  .WillByDefault(base::test::RunOnceCallback<1>(std::nullopt));
               return mock_service;
             }));
   }
@@ -388,7 +388,8 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
                 FetchChangePasswordURL(
                     test_server_->GetURL(kWellKnownChangePasswordPath), _))
         .WillOnce(base::test::RunOnceCallback<1>(
-            test_server_->GetURL(kMockChangePasswordPath)));
+            affiliations::AffiliationService::ChangePasswordUrlMatch(
+                test_server_->GetURL(kMockChangePasswordPath))));
     TestNavigationThrottleForLocalhost(
         /*expected_path=*/kMockChangePasswordPath);
     ExpectUmaAndUkmMetric(
@@ -489,7 +490,8 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
               FetchChangePasswordURL(
                   test_server_->GetURL(kWellKnownChangePasswordPath), _))
       .WillOnce(base::test::RunOnceCallback<1>(
-          test_server_->GetURL(kWellKnownChangePasswordPath)));
+          affiliations::AffiliationService::ChangePasswordUrlMatch(
+              test_server_->GetURL(kWellKnownChangePasswordPath))));
 
   GURL navigate_url = test_server_->GetURL(kWellKnownChangePasswordPath);
   GURL expected_url = test_server_->GetURL("/change-password");

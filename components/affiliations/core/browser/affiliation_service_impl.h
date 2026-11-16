@@ -64,10 +64,11 @@ class AffiliationServiceImpl : public AffiliationService {
   // Shutdowns the service by deleting its backend.
   void Shutdown() override;
 
-  // Fetches the change password URL for `url` using a dedicated fetcher and
-  // invokes `callback` with the result when the fetch finishes.
+  // Fetches the change password URL and affiliated facets for `url` using a
+  // dedicated fetcher and invokes `callback` with the result when the fetch
+  // finishes.
   void FetchChangePasswordURL(const GURL& url,
-                              base::OnceCallback<void(GURL)> callback) override;
+                              ChangePasswordUrlCallback callback) override;
 
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {

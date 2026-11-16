@@ -5,6 +5,7 @@
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -57,9 +58,9 @@ void FakeAffiliationService::SetPSLExtensions(
 
 void FakeAffiliationService::FetchChangePasswordURL(
     const GURL& url,
-    base::OnceCallback<void(GURL)> callback) {
+    ChangePasswordUrlCallback callback) {
   GetTaskRunner()->PostTask(FROM_HERE,
-                            base::BindOnce(std::move(callback), GURL()));
+                            base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void FakeAffiliationService::GetAffiliationsAndBranding(

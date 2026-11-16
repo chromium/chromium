@@ -52,8 +52,10 @@ std::unique_ptr<autofill::SavePasswordProgressLogger> GetLogger(
   return nullptr;
 }
 
-std::variant<LeakedPasswordDetails, GURL> PassUrl(GURL url) {
-  return url;
+std::variant<LeakedPasswordDetails, GURL> PassUrl(
+    std::optional<affiliations::AffiliationService::ChangePasswordUrlMatch>
+        result) {
+  return result ? std::move(result->change_password_url) : GURL();
 }
 
 LeakedPasswordDetails MergeResponses(

@@ -12,14 +12,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-namespace affiliations {
-class AffiliationService;
-}  // namespace affiliations
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -76,7 +73,9 @@ class WellKnownChangePasswordState {
   void FetchNonExistingResourceCallback(
       scoped_refptr<net::HttpResponseHeaders> headers);
   // Callback for the request to the Affiliation Service fetch.
-  void OnChangePasswordURLFetched(GURL url);
+  void OnChangePasswordURLFetched(
+      std::optional<affiliations::AffiliationService::ChangePasswordUrlMatch>
+          result);
   // Function is called when both requests are finished. Decides to continue or
   // redirect to change password URL or homepage.
   void ContinueProcessing();

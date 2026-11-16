@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AFFILIATIONS_CORE_BROWSER_AFFILIATION_SERVICE_H_
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_AFFILIATION_SERVICE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -39,6 +40,9 @@ class AffiliationService : public KeyedService {
     std::vector<FacetURI> affiliations;
   };
 
+  using ChangePasswordUrlCallback =
+      base::OnceCallback<void(std::optional<ChangePasswordUrlMatch>)>;
+
   using ResultCallback =
       base::OnceCallback<void(const AffiliatedFacets& /* results */,
                               bool /* success */)>;
@@ -46,11 +50,11 @@ class AffiliationService : public KeyedService {
   using GroupsCallback =
       base::OnceCallback<void(const std::vector<GroupedFacets>&)>;
 
-  // Fetches change password URLs for sites requested. Receives a callback to
-  // run when the fetch finishes.
-  virtual void FetchChangePasswordURL(
-      const GURL& url,
-      base::OnceCallback<void(GURL)> callback) = 0;
+  // Fetches the change password URL and affiliated facets for `url`. Invokes
+  // `callback` with `std::nullopt` if no change password URL is found or the
+  // fetch fails.
+  virtual void FetchChangePasswordURL(const GURL& url,
+                                      ChangePasswordUrlCallback callback) = 0;
 
   // Looks up facets affiliated with the facet identified by |facet_uri| and
   // branding information in the local cache if it's fresh. Invokes

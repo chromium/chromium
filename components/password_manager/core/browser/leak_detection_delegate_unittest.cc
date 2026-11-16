@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -740,7 +741,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckTriggersChangePwdUrlPrefetch) {
   const PasswordForm form = CreateTestForm();
   EXPECT_CALL(mock_affiliation_service,
               FetchChangePasswordURL(form.url, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(GURL()));
+      .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
 
   ExpectPasswords({});
   EXPECT_CALL(client(), GetProfilePasswordStore())
@@ -770,7 +771,8 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
   EXPECT_CALL(client(), GetAffiliationService)
       .WillOnce(Return(&mock_affiliation_service));
   const PasswordForm form = CreateTestForm();
-  base::OnceCallback<void(GURL)> change_pwd_url_fetch_callback;
+  affiliations::AffiliationService::ChangePasswordUrlCallback
+      change_pwd_url_fetch_callback;
   EXPECT_CALL(mock_affiliation_service,
               FetchChangePasswordURL(form.url, testing::_))
       .WillOnce(MoveArg<1>(&change_pwd_url_fetch_callback));
@@ -805,7 +807,8 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
                                 IsSyncing(false), HasChangePasswordUrl(true)),
                             expected_form, /* in_account_store = */ false)));
   std::move(change_pwd_url_fetch_callback)
-      .Run(GURL("https://example.com/change"));
+      .Run(affiliations::AffiliationService::ChangePasswordUrlMatch(
+          GURL("https://example.com/change")));
 }
 
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
@@ -895,7 +898,7 @@ TEST_F(LeakDetectionDelegateTest,
       .WillOnce(Return(&mock_affiliation_service));
   EXPECT_CALL(mock_affiliation_service,
               FetchChangePasswordURL(form.url, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(GURL()));
+      .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
   EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(Return(profile_store()));
 

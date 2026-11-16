@@ -53,7 +53,7 @@ class FakeAffiliationService : public AffiliationService {
 
   // AffiliationService:
   void FetchChangePasswordURL(const GURL& url,
-                              base::OnceCallback<void(GURL)> callback) override;
+                              ChangePasswordUrlCallback callback) override;
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
       ResultCallback result_callback) override;
