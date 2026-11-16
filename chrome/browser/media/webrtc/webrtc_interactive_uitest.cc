@@ -6,6 +6,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
@@ -314,10 +315,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
   SetupPeerconnectionWithLocalStream(right_tab_);
   NegotiateCall(left_tab_, right_tab_);
 
-  EXPECT_EQ(2u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetPeerToPeerConnectionsCountChangeFromNetworkService() == 2u;
+  }));
 
   DetectVideoAndHangUp();
-  EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetPeerToPeerConnectionsCountChangeFromNetworkService() == 0u;
+  }));
 }
 
 // TODO(crbug.com/490247578): Flaky on ASan.
@@ -359,12 +364,16 @@ IN_PROC_BROWSER_TEST_F(
   SetupPeerconnectionWithLocalStream(left_tab_);
   SetupPeerconnectionWithLocalStream(right_tab_);
   NegotiateCall(left_tab_, right_tab_);
-  EXPECT_EQ(2u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetPeerToPeerConnectionsCountChangeFromNetworkService() == 2u;
+  }));
 
   std::string ice_gatheringstate =
       ExecuteJavascript("getLastGatheringState()", left_tab_);
 
   EXPECT_EQ("complete", ice_gatheringstate);
   DetectVideoAndHangUp();
-  EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetPeerToPeerConnectionsCountChangeFromNetworkService() == 0u;
+  }));
 }
