@@ -621,23 +621,24 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
                                        base::TimeTicks end_time,
                                        ExecutionContext* task_context,
                                        bool has_multiple_contexts) {
-  if (!DomWindow()) {
+  if (!DomWindow() || !DomWindow()->GetFrame()) {
     return;
   }
+  LocalFrame* observer_frame = DomWindow()->GetFrame();
   std::pair<AtomicString, DOMWindow*> attribution =
       WindowPerformance::SanitizedAttribution(
-          task_context, has_multiple_contexts, DomWindow()->GetFrame());
+          task_context, has_multiple_contexts, observer_frame);
   DOMWindow* culprit_dom_window = attribution.second;
-  if (!culprit_dom_window || !culprit_dom_window->GetFrame() ||
-      !CanAccessOrigin(DomWindow()->GetFrame(),
-                       culprit_dom_window->GetFrame()) ||
-      !culprit_dom_window->GetFrame()->DeprecatedLocalOwner()) {
+  Frame* culprit_frame =
+      culprit_dom_window ? culprit_dom_window->GetFrame() : nullptr;
+  HTMLFrameOwnerElement* frame_owner =
+      culprit_frame ? culprit_frame->DeprecatedLocalOwner() : nullptr;
+  if (!frame_owner ||
+      !CanAccessOrigin(observer_frame, frame_owner->GetDocument().GetFrame())) {
     AddLongTaskTiming(start_time, end_time, attribution.first,
                       performance_entry_names::kWindow, g_empty_atom,
                       g_empty_atom, g_empty_atom);
   } else {
-    HTMLFrameOwnerElement* frame_owner =
-        culprit_dom_window->GetFrame()->DeprecatedLocalOwner();
     AddLongTaskTiming(start_time, end_time, attribution.first,
                       GetFrameOwnerType(frame_owner), GetFrameSrc(frame_owner),
                       GetFrameAttribute(frame_owner, html_names::kIdAttr),
