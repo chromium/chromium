@@ -159,7 +159,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       base::UnguessableToken same_document_metrics_token,
       bool caused_by_ad) {}
   virtual void DidFailAsyncSameDocumentCommit() {}
-  virtual void DispatchDidOpenDocumentInputStream(const KURL&) {}
   virtual void DispatchDidReceiveTitle(const String&) = 0;
   virtual void DispatchDidCommitLoad(
       HistoryItem* item,

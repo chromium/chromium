@@ -561,7 +561,6 @@ class CONTENT_EXPORT RenderFrameImpl
       bool caused_by_ad) override;
   void DidFailAsyncSameDocumentCommit() override;
   void WillFreezePage() override;
-  void DidOpenDocumentInputStream(const blink::WebURL& url) override;
   void NotifyCurrentHistoryItemChanged() override;
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;

@@ -211,6 +211,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void SuppressXSLTDeprecationBanner() override;
   void DidHaveFormEdit() override;
   void DidHaveUserEdit() override;
+  void DidOpenDocumentInputStream(const KURL& url) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

@@ -292,4 +292,6 @@ void FakeLocalFrameHost::DidHaveFormEdit() {}
 
 void FakeLocalFrameHost::DidHaveUserEdit() {}
 
+void FakeLocalFrameHost::DidOpenDocumentInputStream(const KURL& url) {}
+
 }  // namespace blink

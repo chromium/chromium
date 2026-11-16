@@ -529,10 +529,6 @@ void LocalFrameClientImpl::DidFailAsyncSameDocumentCommit() {
   web_frame_->Client()->DidFailAsyncSameDocumentCommit();
 }
 
-void LocalFrameClientImpl::DispatchDidOpenDocumentInputStream(const KURL& url) {
-  web_frame_->Client()->DidOpenDocumentInputStream(url);
-}
-
 void LocalFrameClientImpl::DispatchDidReceiveTitle(const String& title) {
   if (web_frame_->Client()) {
     web_frame_->Client()->DidReceiveTitle(title);

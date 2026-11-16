@@ -794,6 +794,12 @@ interface LocalFrameHost {
   // text controls and non-form editable elements such as contenteditable) for
   // the first time.
   DidHaveUserEdit();
+
+  // Sent by the renderer to indicate that the document input stream has
+  // been updated using document.open() and that the URL for the current
+  // document in the frame should be updated to `url` per step 12 of
+  // https://whatwg.org/C/dynamic-markup-insertion.html#document-open-steps.
+  DidOpenDocumentInputStream(url.mojom.Url url);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

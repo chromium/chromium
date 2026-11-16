@@ -106,7 +106,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       base::UnguessableToken same_document_metrics_token,
       bool caused_by_ad) override;
   void DidFailAsyncSameDocumentCommit() override;
-  void DispatchDidOpenDocumentInputStream(const KURL& url) override;
   void DispatchDidReceiveTitle(const String&) override;
   void DispatchDidCommitLoad(
       HistoryItem*,

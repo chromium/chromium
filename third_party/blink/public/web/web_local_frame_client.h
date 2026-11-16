@@ -465,9 +465,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Called before a frame's page is frozen.
   virtual void WillFreezePage() {}
 
-  // The frame's document changed its URL due to document.open().
-  virtual void DidOpenDocumentInputStream(const WebURL&) {}
-
   // Immediately notifies the browser of a change in the current HistoryItem.
   // Prefer DidUpdateCurrentHistoryItem().
   virtual void NotifyCurrentHistoryItemChanged() {}

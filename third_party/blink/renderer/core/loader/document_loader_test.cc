@@ -19,6 +19,7 @@
 #include "net/storage_access_api/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/commit_url.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_encoding_data.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
+#include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
@@ -1215,6 +1217,51 @@ TEST_P(DocumentLoaderTest, PartitionedVisitedLinksMainFrame) {
   // Check if our mock Link Element would not be styled as visited.
   result = document->GetVisitedLinkState().DetermineLinkState(*unvisited_link);
   EXPECT_NE(result, EInsideLink::kInsideVisitedLink);
+}
+
+class RecordingDidOpenLocalFrameHost : public FakeLocalFrameHost {
+ public:
+  void DidOpenDocumentInputStream(const KURL& url) override {
+    urls_.push_back(url);
+  }
+
+  const Vector<KURL>& urls() const { return urls_; }
+
+ private:
+  Vector<KURL> urls_;
+};
+
+TEST(DocumentLoaderDidOpenInputStreamTest, FiltersCommitUrl) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::TestWebFrameClient web_frame_client;
+  RecordingDidOpenLocalFrameHost local_frame_host;
+  local_frame_host.Init(
+      web_frame_client.GetRemoteNavigationAssociatedInterfaces());
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize(&web_frame_client);
+  DocumentLoader* loader = To<LocalFrame>(web_view->GetPage()->MainFrame())
+                               ->Loader()
+                               .GetDocumentLoader();
+
+  base::HistogramTester histogram_tester;
+
+  const KURL valid_url("https://example.com/opened.html");
+  loader->DidOpenDocumentInputStream(valid_url);
+  EXPECT_EQ(loader->Url(), valid_url);
+
+  const KURL bad_about_url("about:mumble");
+  loader->DidOpenDocumentInputStream(bad_about_url);
+  EXPECT_EQ(loader->Url(), bad_about_url);
+
+  local_frame_host.FlushForTesting();
+  ASSERT_EQ(local_frame_host.urls().size(), 2u);
+  EXPECT_EQ(local_frame_host.urls()[0], valid_url);
+  EXPECT_EQ(local_frame_host.urls()[1], KURL(kBlockedURL));
+
+  histogram_tester.ExpectUniqueSample("Navigation.Renderer.BlockedForFilterURL",
+                                      RendererBlockedURLReason::kBadAboutURL,
+                                      1);
 }
 
 }  // namespace

@@ -2515,6 +2515,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const gfx::Rect& bounds) override;
   void DidHaveFormEdit() override;
   void DidHaveUserEdit() override;
+  void DidOpenDocumentInputStream(const GURL& url) override;
   enum class UnboundedElementAuth {
     kDenied,
     kAllowedOpenWeb,
@@ -3518,7 +3519,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params)
       override;
-  void DidOpenDocumentInputStream(const GURL& url) override;
   void DidCommitDocumentReplacement() override;
   // |initiator_navigation_state_keep_alive_handle| is needed to ensure that the
   // NavigationStateKeepAlive of the initiator RenderFrameHost can still be

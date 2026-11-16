@@ -66,6 +66,7 @@
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
+#include "third_party/blink/public/common/navigation/commit_url.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -1311,7 +1312,12 @@ const KURL& DocumentLoader::UrlForHistory() const {
 void DocumentLoader::DidOpenDocumentInputStream(const KURL& url) {
   url_ = url;
   // Let the browser know that we have done a document.open().
-  GetLocalFrameClient().DispatchDidOpenDocumentInputStream(url_);
+  DCHECK(frame_);
+  KURL filtered_url = url_;
+  if (!IsValidCommitUrl(GURL(filtered_url))) {
+    filtered_url = KURL(kBlockedURL);
+  }
+  frame_->GetLocalFrameHostRemote().DidOpenDocumentInputStream(filtered_url);
 }
 
 void DocumentLoader::SetHistoryItemStateForCommit(

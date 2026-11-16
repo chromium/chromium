@@ -1940,6 +1940,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:WaitingForHeadersFinishedReason) -->
 
+<!-- LINT.IfChange(RendererBlockedURLReason) -->
+
 <enum name="RendererBlockedURLReason">
   <int value="0" label="Invalid URL"/>
   <int value="1" label="URL Was Too Long"/>
@@ -1947,6 +1949,8 @@ chromium-metrics-reviews@google.com.
     URL had about: scheme without being about:blank or about:srcdoc.
   </int>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/public/common/navigation/commit_url.h:RendererBlockedURLReason) -->
 
 <!-- LINT.IfChange(RendererProcessReadiness) -->
 

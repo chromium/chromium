@@ -8045,7 +8045,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AboutMumble) {
   // The renderer will try to commit the original "about:mumble" URL, which will
   // still show up via `window.location.href`, but the URL passed back in the
   // DidCommit IPC will be rewritten to `about:blank#blocked` due to
-  // `RenderFrameImpl`'s `IsValidCommitUrl` and therefore this is what we expect
+  // `blink::IsValidCommitUrl` and therefore this is what we expect
   // in `GetLastCommittedURL`.
   ASSERT_FALSE(NavigateToURL(shell(), GURL("about:mumble")));
   EXPECT_EQ(EvalJs(shell(), "window.location.href"), "about:mumble");
