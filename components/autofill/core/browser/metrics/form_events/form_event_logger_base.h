@@ -161,10 +161,10 @@ class FormEventLoggerBase {
   // For each funnel metric, a separate function is defined below.
   // `RecordFunnelMetrics()` checks the necessary pre-conditions for metrics to
   // be emitted and calls the relevant functions.
-  void RecordInteractionAfterParsedAsType(LogBuffer& logs) const;
-  void RecordSuggestionAfterInteraction(LogBuffer& logs) const;
-  void RecordFillAfterSuggestion(LogBuffer& logs) const;
-  void RecordSubmissionAfterFill(LogBuffer& logs) const;
+  virtual void RecordInteractionAfterParsedAsType(LogBuffer& logs) const;
+  virtual void RecordSuggestionAfterInteraction(LogBuffer& logs) const;
+  virtual void RecordFillAfterSuggestion(LogBuffer& logs) const;
+  virtual void RecordSubmissionAfterFill(LogBuffer& logs) const;
 
   // Records UMA metrics on key metrics and writes logs to autofill-internals.
   // Similar to the funnel metrics, a separate function for each key metric is
@@ -187,7 +187,7 @@ class FormEventLoggerBase {
   virtual void RecordFillingAssistance(LogBuffer& logs) const;
 
   // Whether a (non-)autofilled form was submitted.
-  void RecordFormSubmission(LogBuffer& logs) const;
+  virtual void RecordFormSubmission(LogBuffer& logs) const;
 
   // Records UMA metrics if this form submission happened as part of an ablation
   // study or the corresponding control group. This is not virtual because it is

@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -679,6 +680,55 @@ TEST_F(OtpFormEventLoggerGmailTest, RecordsGmailKeyMetrics) {
        .correctness = true});
 }
 
+// Tests that the funnel and form submission metrics are also recorded as
+// `OneTimePassword.GmailEligibleClients` for users who are eligible for Gmail
+// OTPs.
+TEST_F(OtpFormEventLoggerGmailTest, RecordsGmailFunnelMetrics) {
+  base::HistogramTester histogram_tester;
+  FormData otp_form = SeeParsedOtpForm();
+  FillAndSubmitOtp(otp_form);
+
+  for (std::string_view stage :
+       {"InteractionAfterParsedAsType", "SuggestionAfterInteraction",
+        "FillAfterSuggestion", "SubmissionAfterFill"}) {
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"Autofill.Funnel.", stage,
+                      ".OneTimePassword.GmailEligibleClients"}),
+        true, 1);
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.KeyMetrics.FormSubmission.Autofilled.OneTimePassword."
+      "GmailEligibleClients",
+      true, 1);
+}
+
+// Tests that typing the OTP instead of filling it is recorded as not filled and
+// not autofilled for users who are eligible for Gmail OTPs.
+TEST_F(OtpFormEventLoggerGmailTest, TypedOtp_RecordsGmailNotAutofilled) {
+  base::HistogramTester histogram_tester;
+  FormData otp_form = SeeParsedOtpForm();
+  autofill_manager().OnAskForValuesToFillTest(
+      otp_form, otp_form.fields().front().global_id());
+  DidShowAutofillSuggestions(otp_form, /*field_index=*/0,
+                             SuggestionType::kGmailOneTimePasswordEntry);
+  SimulateUserChangedField(otp_form, otp_form.fields().front());
+  SubmitForm(otp_form);
+  DeleteDriverToCommitMetrics();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Funnel.FillAfterSuggestion.OneTimePassword."
+      "GmailEligibleClients",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.KeyMetrics.FormSubmission.NotAutofilled.OneTimePassword."
+      "GmailEligibleClients",
+      true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FormSubmission.Autofilled.OneTimePassword."
+      "GmailEligibleClients",
+      0);
+}
+
 // Reasons why a user is not eligible for Gmail OTPs.
 enum class GmailOtpIneligibility {
   kNotOptedIn,
@@ -719,9 +769,9 @@ class OtpFormEventLoggerGmailIneligibleTest
             GetPrimaryAccountEmail(GetParam())) {}
 };
 
-// Tests that no Gmail key metrics are recorded for users who are not eligible
-// for Gmail OTPs.
-TEST_P(OtpFormEventLoggerGmailIneligibleTest, NoGmailKeyMetrics) {
+// Tests that no Gmail metrics are recorded for users who are not eligible for
+// Gmail OTPs.
+TEST_P(OtpFormEventLoggerGmailIneligibleTest, NoGmailMetrics) {
   switch (GetParam()) {
     case GmailOtpIneligibility::kNotOptedIn:
       prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(),
@@ -744,6 +794,10 @@ TEST_P(OtpFormEventLoggerGmailIneligibleTest, NoGmailKeyMetrics) {
       "Autofill.KeyMetrics.FillingReadiness.OneTimePassword", true, 1);
   VerifySingleSubmissionKeyMetricExpectations(
       histogram_tester, "OneTimePassword.GmailEligibleClients", {});
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Funnel.InteractionAfterParsedAsType.OneTimePassword."
+      "GmailEligibleClients",
+      0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
