@@ -170,6 +170,37 @@ TEST_F(InputMethodControllerTest, BackspaceFromEndOfInput) {
   input->SetValue(
       String::FromUtf8("foo\xF0\x9F\x8F\x86"));  // U+1F3C6 == "trophy"
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Controller().SetEditableSelectionOffsets(PlainTextRange(5, 5));
+  EXPECT_EQ("foo\xF0\x9F\x8F\x86", input->Value().Utf8());
+  Controller().ExtendSelectionAndDelete(2, 0);
+  EXPECT_EQ("foo", input->Value());
+
+  // composed U+0E01 "ka kai" + U+0E49 "mai tho"
+  input->SetValue(String::FromUtf8("foo\xE0\xB8\x81\xE0\xB9\x89"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Controller().SetEditableSelectionOffsets(PlainTextRange(5, 5));
+  EXPECT_EQ("foo\xE0\xB8\x81\xE0\xB9\x89", input->Value().Utf8());
+  Controller().ExtendSelectionAndDelete(1, 0);
+  EXPECT_EQ("foo\xE0\xB8\x81", input->Value().Utf8());
+  Controller().ExtendSelectionAndDelete(1, 0);
+  EXPECT_EQ("foo", input->Value());
+
+  input->SetValue("fooX");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Controller().SetEditableSelectionOffsets(PlainTextRange(4, 4));
+  EXPECT_EQ("fooX", input->Value());
+  Controller().ExtendSelectionAndDelete(0, 1);
+  EXPECT_EQ("fooX", input->Value());
+}
+
+TEST_F(InputMethodControllerTest, BackspaceFromEndOfInputKillswitch) {
+  ScopedExtendSelectionAndDeleteInCodeUnitsForTest disabled(false);
+  auto* input =
+      To<HTMLInputElement>(InsertHtmlElement("<input id='sample'>", "sample"));
+
+  input->SetValue(
+      String::FromUtf8("foo\xF0\x9F\x8F\x86"));  // U+1F3C6 == "trophy"
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Controller().SetEditableSelectionOffsets(PlainTextRange(4, 4));
   EXPECT_EQ("foo\xF0\x9F\x8F\x86", input->Value().Utf8());
   Controller().ExtendSelectionAndDelete(1, 0);
@@ -182,13 +213,57 @@ TEST_F(InputMethodControllerTest, BackspaceFromEndOfInput) {
   EXPECT_EQ("foo\xE0\xB8\x81\xE0\xB9\x89", input->Value().Utf8());
   Controller().ExtendSelectionAndDelete(1, 0);
   EXPECT_EQ("foo", input->Value());
+}
 
-  input->SetValue("fooX");
+TEST_F(InputMethodControllerTest,
+       ExtendSelectionAndDeleteForComposedCharacter) {
+  auto* input =
+      To<HTMLInputElement>(InsertHtmlElement("<input id='sample'>", "sample"));
+
+  // Khmer Angkor Keyman reorder sequence (crbug.com/505643410):
+  // After typing U+1781 U+17C2 U+17D2, the IME deletes the last 2 UTF-16 code
+  // units (U+17C2 U+17D2) before committing U+17D2 U+1798 U+17C2 and U+179A.
+  // U+1781 must remain rather than having the entire grapheme cluster deleted.
+  input->SetValue(u"\u1781\u17C2\u17D2");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  Controller().SetEditableSelectionOffsets(PlainTextRange(4, 4));
-  EXPECT_EQ("fooX", input->Value());
-  Controller().ExtendSelectionAndDelete(0, 1);
-  EXPECT_EQ("fooX", input->Value());
+  Controller().SetEditableSelectionOffsets(PlainTextRange(3, 3));
+  Controller().ExtendSelectionAndDelete(2, 0);
+  EXPECT_EQ(String(u"\u1781"), input->Value());
+  Controller().CommitText(String(u"\u17D2\u1798\u17C2"), Vector<ImeTextSpan>(),
+                          0);
+  Controller().CommitText(String(u"\u179A"), Vector<ImeTextSpan>(), 0);
+  EXPECT_EQ(String(u"\u1781\u17D2\u1798\u17C2\u179A"), input->Value());
+
+  // Deleting ខ្មែរ (U+1781 U+17D2 U+1798 U+17C2 U+179A) one code unit at a
+  // time via ExtendSelectionAndDelete(1, 0) must take 5 steps.
+  Controller().ExtendSelectionAndDelete(1, 0);
+  EXPECT_EQ(String(u"\u1781\u17D2\u1798\u17C2"), input->Value());
+  Controller().ExtendSelectionAndDelete(1, 0);
+  EXPECT_EQ(String(u"\u1781\u17D2\u1798"), input->Value());
+  Controller().ExtendSelectionAndDelete(1, 0);
+  EXPECT_EQ(String(u"\u1781\u17D2"), input->Value());
+  Controller().ExtendSelectionAndDelete(1, 0);
+  EXPECT_EQ(String(u"\u1781"), input->Value());
+  Controller().ExtendSelectionAndDelete(1, 0);
+  EXPECT_EQ(String(u""), input->Value());
+
+  // Non-empty selection extended partially into a combining sequence.
+  input->SetValue(u"a\u1781\u17D2\u1798\u17C2z");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Controller().SetEditableSelectionOffsets(PlainTextRange(5, 6));
+  Controller().ExtendSelectionAndDelete(2, 0);
+  EXPECT_EQ(String(u"a\u1781\u17D2"), input->Value());
+
+  input->SetValue(u"a\u1781\u17D2\u1798\u17C2z");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Controller().SetEditableSelectionOffsets(PlainTextRange(0, 1));
+  Controller().ExtendSelectionAndDelete(0, 2);
+  EXPECT_EQ(String(u"\u1798\u17C2z"), input->Value());
+
+  // Negative lengths are ignored.
+  Controller().ExtendSelectionAndDelete(-1, 0);
+  Controller().ExtendSelectionAndDelete(0, -1);
+  EXPECT_EQ(String(u"\u1798\u17C2z"), input->Value());
 }
 
 TEST_F(InputMethodControllerTest, SetCompositionFromExistingText) {

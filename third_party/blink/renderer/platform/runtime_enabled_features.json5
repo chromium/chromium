@@ -3038,6 +3038,13 @@
       status: "experimental",
     },
     {
+      // Delete exact UTF-16 code units in
+      // InputMethodController::ExtendSelectionAndDelete() rather than snapping
+      // to grapheme cluster boundaries. See https://crbug.com/505643410.
+      name: "ExtendSelectionAndDeleteInCodeUnits",
+      status: "stable",
+    },
+    {
       name: "ExtensionScriptTagging",
       public: true,
       status: "stable",

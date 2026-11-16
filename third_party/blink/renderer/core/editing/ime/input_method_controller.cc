@@ -30,6 +30,7 @@
 #include <tuple>
 
 #include "base/feature_list.h"
+#include "base/numerics/clamped_math.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -1436,6 +1437,21 @@ void InputMethodController::ExtendSelectionAndDelete(int before, int after) {
   PlainTextRange selection_offsets(GetSelectionOffsets());
   if (selection_offsets.IsNull())
     return;
+
+  if (RuntimeEnabledFeatures::ExtendSelectionAndDeleteInCodeUnitsEnabled()) {
+    if (before < 0 || after < 0) {
+      return;
+    }
+    const wtf_size_t start = base::ClampSub(selection_offsets.Start(),
+                                            static_cast<wtf_size_t>(before));
+    const wtf_size_t end =
+        base::ClampAdd(selection_offsets.End(), static_cast<wtf_size_t>(after));
+    if (!SetSelectionOffsets(PlainTextRange(start, end))) {
+      return;
+    }
+    std::ignore = DeleteSelectionWithoutAdjustment();
+    return;
+  }
 
   // A common call of before=1 and after=0 will fail if the last character
   // is multi-code-word UTF-16, including both multi-16bit code-points and
