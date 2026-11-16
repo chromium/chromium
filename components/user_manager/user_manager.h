@@ -216,6 +216,7 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns users allowed on login screen in the given `users` list.
   virtual UserList FindLoginAllowedUsersFrom(const UserList& users) const = 0;
 
+  // DEPRECATED: Please take user sesisons from SessionManager.
   // Returns a list of users who are currently logged in.
   virtual const UserList& GetLoggedInUsers() const = 0;
 
@@ -276,6 +277,7 @@ class USER_MANAGER_EXPORT UserManager {
   // will be destroyed.
   virtual void OnUserProfileWillBeDestroyed(const AccountId& account_id) = 0;
 
+  // DEPRECATED: Please use SessionManagre::SwitchActiveSession.
   // Switches to active user identified by |account_id|. User has to be logged
   // in.
   // NOTE: Please do not call this method directly. Instead, please use
@@ -427,12 +429,16 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns true if the given |user| is the device owner.
   virtual bool IsOwnerUser(const User* user) const = 0;
 
+  // DEPRECATED: please check if User is the one for
+  // SessionManager::GetPrimarySession()'s.
   // Returns true if the given |user| is the primary user.
   virtual bool IsPrimaryUser(const User* user) const = 0;
 
   // Returns true if the given |user| is an ephemeral user.
   virtual bool IsEphemeralUser(const User* user) const = 0;
 
+  // DEPRECATED: please check if the user taken from the
+  // SessionManager::GetActiveSession is owner.
   // Returns true if current user is an owner.
   virtual bool IsCurrentUserOwner() const = 0;
 
@@ -443,45 +449,71 @@ class USER_MANAGER_EXPORT UserManager {
   // not full initialized yet" flag.
   virtual void SetIsCurrentUserNew(bool is_new) = 0;
 
+  // DEPRECATED: please check if the user taken from the
+  // SessionManager::GetActiveSession satisfies
+  // IsUserNonCryptohomeDataEphemeral.
   // Returns true if data stored or cached for the current user outside that
   // user's cryptohome (wallpaper, avatar, OAuth token status, display name,
   // display email) is ephemeral.
   virtual bool IsCurrentUserNonCryptohomeDataEphemeral() const = 0;
 
+  // DEPRECATED: please check if the user taken from the
+  // SessionManager::GetActiveSession satisfies IsUserCryptohomeDataEphemeral.
   // Returns true if data stored or cached for the current user inside that
   // user's cryptohome is ephemeral.
   virtual bool IsCurrentUserCryptohomeDataEphemeral() const = 0;
 
+  // DEPRECATED: please check if there's a user session via SessionManager.
   // Returns true if at least one user has signed in.
   virtual bool IsUserLoggedIn() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // satisfies the "GAIA-account" user.
   // Returns true if we're logged in as a user with gaia account.
   virtual bool IsLoggedInAsUserWithGaiaAccount() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // has UserType::kChild.
   // Returns true if we're logged in as a child user.
   virtual bool IsLoggedInAsChildUser() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // has UserType::kPublicAccount.
   // Returns true if we're logged in as a managed guest session.
   virtual bool IsLoggedInAsManagedGuestSession() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // is Guest user.
   // Returns true if we're logged in as a Guest.
   virtual bool IsLoggedInAsGuest() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // is for ChromeApp Kiosk.
   // Returns true if we're logged in as a kiosk Chrome app.
   virtual bool IsLoggedInAsKioskChromeApp() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // is for WebApp Kiosk.
   // Returns true if we're logged in as a kiosk Web app.
   virtual bool IsLoggedInAsKioskWebApp() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // is for Isolated WebApp Kiosk.
   // Returns true if we're logged in as a kiosk Isolated web app (IWA).
   virtual bool IsLoggedInAsKioskIWA() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // is for ARCVM Kiosk.
   // Returns true if we're logged in as an ARCVM kiosk app.
   virtual bool IsLoggedInAsKioskArcvmApp() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // is for any kind of Kiosk.
   // Returns true if we're logged in as any kiosk app: chrome, web or IWA.
   virtual bool IsLoggedInAsAnyKioskApp() const = 0;
 
+  // DEPRECATED: please check if the logged in user taken from SessionManager
+  // is a Stub user.
   // Returns true if we're logged in as the stub user used for testing on Linux.
   virtual bool IsLoggedInAsStub() const = 0;
 
