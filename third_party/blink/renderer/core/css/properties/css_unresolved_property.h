@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_exposure.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -40,11 +41,11 @@ class CORE_EXPORT CSSUnresolvedProperty {
   }
 
   virtual bool IsResolvedProperty() const { return false; }
-  virtual const char* GetPropertyName() const { NOTREACHED(); }
+  virtual StringView GetPropertyName() const { NOTREACHED(); }
   virtual const AtomicString& GetPropertyNameAtomicString() const {
     NOTREACHED();
   }
-  virtual const char* GetJSPropertyName() const { NOTREACHED(); }
+  virtual StringView GetJSPropertyName() const { NOTREACHED(); }
   String GetPropertyNameString() const {
     // We share the StringImpl with the AtomicStrings.
     return GetPropertyNameAtomicString().GetString();

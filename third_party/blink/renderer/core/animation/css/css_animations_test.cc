@@ -3914,7 +3914,9 @@ std::vector<CSSPropertyID> AnimatedSourceProperties() {
 // gtest-safe test suffix for a property, e.g. "transform".
 std::string AnimatedSourcePropertyName(
     const testing::TestParamInfo<CSSPropertyID>& info) {
-  std::string name = CSSProperty::Get(info.param).GetPropertyName();
+  const StringView property_name =
+      CSSProperty::Get(info.param).GetPropertyName();
+  std::string name(std::from_range, property_name.Span8());
   std::replace(name.begin(), name.end(), '-', '_');
   return name;
 }

@@ -29,7 +29,7 @@ static String CSSPropertyToKeyframeAttribute(const CSSProperty& property) {
     case CSSPropertyID::kOffset:
       return "cssOffset";
     default:
-      return property.GetJSPropertyName();
+      return property.GetJSPropertyName().ToString();
   }
 }
 

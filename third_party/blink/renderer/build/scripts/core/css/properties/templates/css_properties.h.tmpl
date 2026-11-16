@@ -78,9 +78,9 @@ namespace {{namespace}} {
 class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
  public:
   constexpr {{class_name}}() : {{property.superclass}}({{ctor_args | join(', ')}}) { }
-  const char* GetPropertyName() const override;
+  StringView GetPropertyName() const override;
   const AtomicString& GetPropertyNameAtomicString() const override;
-  const char* GetJSPropertyName() const override;
+  StringView GetJSPropertyName() const override;
   {% if not property.known_exposed %}
   CSSExposure Exposure(const ExecutionContext*) const override;
   {% endif %}
