@@ -34,6 +34,7 @@ class Profile;
 
 namespace content {
 class RenderFrameHost;
+class RenderWidgetHost;
 class WebContents;
 }  // namespace content
 
@@ -120,6 +121,13 @@ DictationContext ExtensionGetUpdatedContext(
 std::string GetEditableExpectedText(content::RenderFrameHost* render_frame_host,
                                     std::string_view selector,
                                     std::string_view expected);
+
+// Forwards a synthetic Enter key press (RawKeyDown, Char, KeyUp) to
+// `widget_host` with `skip_if_unhandled` set to false so that
+// RenderWidgetHost::KeyPressEventCallback listeners are invoked (unlike
+// content::SimulateKeyPress, which sets skip_if_unhandled = true).
+void ForwardEnterKeyPress(content::RenderWidgetHost* widget_host,
+                          int modifiers);
 
 class MockStreamProvider : public StreamProvider {
  public:

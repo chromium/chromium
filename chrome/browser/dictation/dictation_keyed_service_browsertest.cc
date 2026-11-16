@@ -48,6 +48,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -58,6 +59,7 @@
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -817,6 +819,74 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   // followed by the additional typed character, followed by the transcription
   // (separated by a space due to whitespace insertion behavior).
   EXPECT_EDITABLE_TEXT_EQ("#text_id", "ab c");
+}
+
+IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+                       EnterInEditableEndsStreamWithoutNewline) {
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+  content::MainThreadFrameObserver frame_observer(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  frame_observer.Wait();
+
+  // Focus the textarea so that keyboard input and dictation target it.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "text_id");
+
+  // Type an initial character into the textarea.
+  content::SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('a'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+  EXPECT_EDITABLE_TEXT_EQ("#text_id", "a");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return web_contents()->IsFocusedElementEditable(); }));
+
+  std::optional<int> dom_node_id =
+      content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text_id");
+  ASSERT_TRUE(dom_node_id.has_value());
+
+  // Start a dictation session for the textarea.
+  StartSession(TargetDetails(content::GlobalDOMNodeId{
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(dom_node_id.value())}));
+
+  SessionController* controller = session_controller();
+  ASSERT_NE(controller, nullptr);
+  ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
+      controller->attached_stream_provider());
+  ASSERT_NE(provider, nullptr);
+  auto stream_id = provider->stream_id_for_testing();
+
+  ExtensionWaitForStreamStart(profile(), stream_id);
+  ExtensionSendStreamStateUpdate(profile(), stream_id,
+                                 ExtensionStreamState::kTranscribing);
+  ASSERT_EQ(controller->GetState(), SessionState::kTranscribing);
+
+  // While transcribing, press Enter.
+  ForwardEnterKeyPress(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::kNoModifiers);
+
+  // Verify that pressing Enter causes the stream to finalize.
+  WaitForSessionState(SessionState::kFinalizing);
+  EXPECT_EQ(controller->attached_stream_provider(), nullptr);
+
+  ExtensionWaitForStreamEnd(profile(), stream_id);
+  SimulateSpeechRecognition(provider, ExtensionTranscriptionType::kFinal, "c");
+  ExtensionSendStreamStateUpdate(profile(), stream_id,
+                                 ExtensionStreamState::kComplete);
+
+  WaitForSessionState(SessionState::kInactive);
+
+  // Verify no newline was inserted into the textarea by the Enter key press.
+  EXPECT_EDITABLE_TEXT_EQ("#text_id", "a c");
+
+  // After dictation ends, pressing Enter should insert a newline as normal.
+  ForwardEnterKeyPress(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::kNoModifiers);
+  EXPECT_EDITABLE_TEXT_EQ("#text_id", "a c\n");
 }
 
 IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,

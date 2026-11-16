@@ -298,6 +298,7 @@ void ListenerStreamProvider::RecordExitMetric(
   switch (trigger) {
     case DictationStreamEndTrigger::kDoneButton:
     case DictationStreamEndTrigger::kEscapeKey:
+    case DictationStreamEndTrigger::kEnterKey:
     case DictationStreamEndTrigger::kHotkeyToggle:
       status = DictationStreamExitStatus::kUserDone;
       break;

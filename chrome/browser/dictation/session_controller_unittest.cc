@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,9 +22,11 @@
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -47,6 +50,28 @@ using ::testing::Return;
 namespace dictation {
 
 namespace {
+
+class ScopedMockInputEventObserver
+    : public content::RenderWidgetHost::InputEventObserver {
+ public:
+  explicit ScopedMockInputEventObserver(content::RenderWidgetHost* host)
+      : host_(host) {
+    host_->AddInputEventObserver(this);
+  }
+  ~ScopedMockInputEventObserver() override {
+    host_->RemoveInputEventObserver(this);
+  }
+
+  MOCK_METHOD(void,
+              OnInputEvent,
+              (const content::RenderWidgetHost& host,
+               const blink::WebInputEvent& event,
+               InputEventSource source),
+              (override));
+
+ private:
+  raw_ptr<content::RenderWidgetHost> host_;
+};
 
 class DictationSessionControllerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -822,6 +847,148 @@ TEST_F(DictationSessionControllerTest, DoNotEndStreamOnModifiersOrNonText) {
   controller_->DidGetUserInteraction(focus_popup_event);
   EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
   EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+}
+
+TEST_F(DictationSessionControllerTest, EndStreamOnEnterInEditable) {
+  SimulateElementInFrameFocused(main_rfh());
+
+  auto mock_stream_provider =
+      std::make_unique<testing::NiceMock<MockStreamProvider>>();
+  MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
+      .WillOnce(Return(std::move(mock_stream_provider)));
+
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  ScopedMockInputEventObserver input_observer(rwh);
+
+  controller_->StartDictationStream(TargetDetails(MockTargetInMainFrame(1)),
+                                    DictationStreamStartTrigger::kSessionStart,
+                                    base::TimeTicks::Now());
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+
+  // Pressing Enter while dictating in an editable element should end the stream
+  // with kEnterKey and suppress the RawKeyDown, Char, and KeyUp events.
+  EXPECT_CALL(*stream_provider_ptr, Stop(DictationStreamEndTrigger::kEnterKey));
+  EXPECT_CALL(input_observer, OnInputEvent(_, _, _)).Times(0);
+  ForwardEnterKeyPress(rwh, blink::WebInputEvent::kNoModifiers);
+
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
+  testing::Mock::VerifyAndClearExpectations(&input_observer);
+
+  // Once the stream has ended, subsequent Enter presses should be forwarded.
+  EXPECT_CALL(input_observer, OnInputEvent(_, _, _)).Times(3);
+  ForwardEnterKeyPress(rwh, blink::WebInputEvent::kNoModifiers);
+}
+
+TEST_F(DictationSessionControllerTest, EndStreamOnNumpadEnterInEditable) {
+  SimulateElementInFrameFocused(main_rfh());
+
+  auto mock_stream_provider =
+      std::make_unique<testing::NiceMock<MockStreamProvider>>();
+  MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
+      .WillOnce(Return(std::move(mock_stream_provider)));
+
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  ScopedMockInputEventObserver input_observer(rwh);
+
+  controller_->StartDictationStream(TargetDetails(MockTargetInMainFrame(1)),
+                                    DictationStreamStartTrigger::kSessionStart,
+                                    base::TimeTicks::Now());
+
+  // Non-key modifier flags like kIsKeyPad and lock states should still end the
+  // stream and suppress the Enter press.
+  EXPECT_CALL(*stream_provider_ptr, Stop(DictationStreamEndTrigger::kEnterKey));
+  EXPECT_CALL(input_observer, OnInputEvent(_, _, _)).Times(0);
+  ForwardEnterKeyPress(rwh, blink::WebInputEvent::kIsKeyPad |
+                                blink::WebInputEvent::kCapsLockOn |
+                                blink::WebInputEvent::kNumLockOn);
+
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
+}
+
+TEST_F(DictationSessionControllerTest,
+       DoNotEndStreamOrSuppressModifiedOrNonEnterKey) {
+  SimulateElementInFrameFocused(main_rfh());
+
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  ScopedMockInputEventObserver input_observer(rwh);
+
+  controller_->StartDictationStream(TargetDetails(MockTargetInMainFrame(1)),
+                                    DictationStreamStartTrigger::kSessionStart,
+                                    base::TimeTicks::Now());
+
+  for (int modifier :
+       {blink::WebInputEvent::kShiftKey, blink::WebInputEvent::kControlKey,
+        blink::WebInputEvent::kAltKey, blink::WebInputEvent::kMetaKey}) {
+    EXPECT_CALL(input_observer, OnInputEvent(_, _, _)).Times(3);
+    ForwardEnterKeyPress(rwh, modifier);
+    EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+    EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+    testing::Mock::VerifyAndClearExpectations(&input_observer);
+  }
+
+  // Non-Enter keys should not be consumed by the key press callback.
+  input::NativeWebKeyboardEvent arrow_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  arrow_event.windows_key_code = ui::VKEY_RIGHT;
+  arrow_event.skip_if_unhandled = false;
+  EXPECT_CALL(input_observer, OnInputEvent(_, _, _)).Times(1);
+  rwh->ForwardKeyboardEvent(arrow_event);
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+  EXPECT_NE(controller_->attached_stream_provider(), nullptr);
+}
+
+TEST_F(DictationSessionControllerTest,
+       KeyPressCallbackUnregisteredWhenStreamCompletes) {
+  SimulateElementInFrameFocused(main_rfh());
+
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  ScopedMockInputEventObserver input_observer(rwh);
+
+  // Start stream 1 and complete it directly via stream state update.
+  auto mock_stream_provider_1 =
+      std::make_unique<testing::NiceMock<MockStreamProvider>>();
+  MockStreamProvider* stream_provider_1_ptr = mock_stream_provider_1.get();
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
+      .WillOnce(Return(std::move(mock_stream_provider_1)));
+  controller_->StartDictationStream(TargetDetails(MockTargetInMainFrame(1)),
+                                    DictationStreamStartTrigger::kSessionStart,
+                                    base::TimeTicks::Now());
+
+  EXPECT_CALL(*stream_provider_1_ptr, GetState())
+      .WillRepeatedly(Return(StreamProvider::StreamState::kComplete));
+  controller_->DidUpdateStreamProviderState(
+      *stream_provider_1_ptr, StreamProvider::StreamState::kTranscribing);
+  EXPECT_EQ(controller_->GetState(), SessionState::kInactive);
+
+  // Enter should be forwarded when no stream is active.
+  EXPECT_CALL(input_observer, OnInputEvent(_, _, _)).Times(3);
+  ForwardEnterKeyPress(rwh, blink::WebInputEvent::kNoModifiers);
+  testing::Mock::VerifyAndClearExpectations(&input_observer);
+
+  // Starting a second stream on the same frame should cleanly re-register the
+  // callback and suppress Enter.
+  auto mock_stream_provider_2 =
+      std::make_unique<testing::NiceMock<MockStreamProvider>>();
+  MockStreamProvider* stream_provider_2_ptr = mock_stream_provider_2.get();
+  EXPECT_CALL(mock_delegate_, CreateStreamProvider(_))
+      .WillOnce(Return(std::move(mock_stream_provider_2)));
+  controller_->StartDictationStream(
+      TargetDetails(MockTargetInMainFrame(1)),
+      DictationStreamStartTrigger::kContextMenuExistingSession,
+      base::TimeTicks::Now());
+
+  EXPECT_CALL(*stream_provider_2_ptr,
+              Stop(DictationStreamEndTrigger::kEnterKey));
+  EXPECT_CALL(input_observer, OnInputEvent(_, _, _)).Times(0);
+  ForwardEnterKeyPress(rwh, blink::WebInputEvent::kNoModifiers);
+  EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
+  EXPECT_EQ(controller_->attached_stream_provider(), nullptr);
 }
 
 TEST_F(DictationSessionControllerTest, EscapeEndsActiveStreamElseEndsSession) {

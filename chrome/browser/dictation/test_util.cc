@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
@@ -19,11 +20,17 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registry_test_helper.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace dictation {
 
@@ -415,6 +422,42 @@ ScopedFakeGlobalAcceleratorListener::~ScopedFakeGlobalAcceleratorListener() {
   if (SessionController* const controller = service_->session_controller()) {
     controller->EndSessionSynchronously();
   }
+}
+
+void ForwardEnterKeyPress(content::RenderWidgetHost* widget_host,
+                          int modifiers) {
+  const ui::DomCode dom_code = (modifiers & blink::WebInputEvent::kIsKeyPad)
+                                   ? ui::DomCode::NUMPAD_ENTER
+                                   : ui::DomCode::ENTER;
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  input::NativeWebKeyboardEvent key_down(
+      blink::WebInputEvent::Type::kRawKeyDown, modifiers, now);
+  key_down.windows_key_code = ui::VKEY_RETURN;
+  key_down.dom_code = static_cast<int>(dom_code);
+  key_down.dom_key = ui::DomKey::ENTER;
+  key_down.text[0] = ui::VKEY_RETURN;
+  key_down.unmodified_text[0] = ui::VKEY_RETURN;
+  key_down.skip_if_unhandled = false;
+  widget_host->ForwardKeyboardEvent(key_down);
+
+  input::NativeWebKeyboardEvent char_event(blink::WebInputEvent::Type::kChar,
+                                           modifiers, now);
+  char_event.windows_key_code = ui::VKEY_RETURN;
+  char_event.dom_code = static_cast<int>(dom_code);
+  char_event.dom_key = ui::DomKey::ENTER;
+  char_event.text[0] = ui::VKEY_RETURN;
+  char_event.unmodified_text[0] = ui::VKEY_RETURN;
+  char_event.skip_if_unhandled = false;
+  widget_host->ForwardKeyboardEvent(char_event);
+
+  input::NativeWebKeyboardEvent key_up(blink::WebInputEvent::Type::kKeyUp,
+                                       modifiers, now);
+  key_up.windows_key_code = ui::VKEY_RETURN;
+  key_up.dom_code = static_cast<int>(dom_code);
+  key_up.dom_key = ui::DomKey::ENTER;
+  key_up.skip_if_unhandled = false;
+  widget_host->ForwardKeyboardEvent(key_up);
 }
 
 }  // namespace dictation

@@ -21,10 +21,12 @@
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -239,6 +241,21 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                                     base::TimeTicks::Now());
   esc_event.windows_key_code = ui::VKEY_ESCAPE;
   session_controller()->DidGetUserInteraction(esc_event);
+
+  histogram_tester.ExpectUniqueSample(kStreamExitReasonHistogramName,
+                                      DictationStreamExitStatus::kUserDone, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordMetricsOnStreamExitUserDoneEnterKey) {
+  base::HistogramTester histogram_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+
+  ForwardEnterKeyPress(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+      blink::WebInputEvent::kNoModifiers);
 
   histogram_tester.ExpectUniqueSample(kStreamExitReasonHistogramName,
                                       DictationStreamExitStatus::kUserDone, 1);

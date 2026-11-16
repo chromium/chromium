@@ -18,6 +18,7 @@ enum class DictationStreamEndTrigger {
   kCancelButton,         // User clicked 'Cancel'/'X' in the bubble UI.
   kHotkeyToggle,         // User pressed the dictation toggle hotkey.
   kEscapeKey,            // User pressed Esc.
+  kEnterKey,             // User pressed Enter.
   kUserTyping,           // User typed text into an editable element.
   kFocusChange,          // Focus changed away or to a non-editable element.
   kNewSessionTriggered,  // A new session/stream was started elsewhere.

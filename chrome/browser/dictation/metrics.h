@@ -98,7 +98,7 @@ enum class DictationStreamStartTrigger {
 // LINT.IfChange(DictationStreamExitStatus)
 enum class DictationStreamExitStatus {
   // Explicit user completion (clicked 'Done', toggled hotkey off, or
-  // pressed Esc during listening state).
+  // pressed Esc or Enter during listening state).
   kUserDone = 0,
 
   // Explicit user cancellation (clicked 'X' / 'Cancel').
