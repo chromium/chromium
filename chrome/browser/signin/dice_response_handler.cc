@@ -17,7 +17,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -278,19 +280,17 @@ void DiceResponseHandler::DiceSigninSession::NotifySessionComplete() {
   }
   session_completed_notified_ = true;
 
-  if (IsMultiAccount() && !session_duration_recorded_ &&
-      !session_start_time_.is_null()) {
-    session_duration_recorded_ = true;
+  if (IsMultiAccount() && !session_start_time_.is_null()) {
     base::UmaHistogramMediumTimes(
         kDiceLinkedAccountsLatencyTotalSessionDuration,
         base::TimeTicks::Now() - session_start_time_);
+    RecordSessionResult();
   }
 
   std::vector<CoreAccountId> secondary_accounts;
-  const auto* initiator = signin_info_.GetInitiator();
-  if (initiator) {
+  if (signin_info_.GetInitiator()) {
     for (const auto& account : signin_info_.accounts()) {
-      if (account.account_info.gaia_id != initiator->account_info.gaia_id) {
+      if (!IsInitiator(account.account_info.gaia_id)) {
         secondary_accounts.push_back(
             handler_->identity_manager_->PickAccountIdForAccount(
                 account.account_info.gaia_id, account.account_info.email));
@@ -298,6 +298,11 @@ void DiceResponseHandler::DiceSigninSession::NotifySessionComplete() {
     }
   }
   delegate_->OnDiceSigninSessionComplete(std::move(secondary_accounts));
+}
+
+bool DiceResponseHandler::DiceSigninSession::IsInitiator(
+    const GaiaId& gaia_id) const {
+  return gaia_id == signin_info_.GetInitiator()->account_info.gaia_id;
 }
 
 DiceResponseHandler::DiceSigninSession::FetchMode
@@ -312,6 +317,57 @@ DiceResponseHandler::DiceSigninSession::GetFetchMode() const {
                  signin::Tribool::kTrue
              ? FetchMode::kAll
              : FetchMode::kInitiatorFirst;
+}
+
+void DiceResponseHandler::DiceSigninSession::RecordSessionResult() const {
+  static constexpr char kDiceLinkedAccountsSessionResult[] =
+      "Signin.Dice.LinkedAccounts.SessionResult";
+  LinkedAccountsSessionResult result = GetSessionResult();
+  base::UmaHistogramEnumeration(kDiceLinkedAccountsSessionResult, result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kDiceLinkedAccountsSessionResult, GetFetchModeSuffix()}),
+      result);
+}
+
+DiceResponseHandler::LinkedAccountsSessionResult
+DiceResponseHandler::DiceSigninSession::GetSessionResult() const {
+  if (initiator_failed_) {
+    return LinkedAccountsSessionResult::kInitiatorFailed;
+  }
+  if (initiator_succeeded_ && secondary_failed_) {
+    return LinkedAccountsSessionResult::kInitiatorSucceededSecondariesPartial;
+  }
+  if (fetch_cancelled_) {
+    return LinkedAccountsSessionResult::kCancelled;
+  }
+  // Fetches can only be pending if the session is destroyed before they
+  // complete.
+  if (!token_fetchers_.empty()) {
+    return LinkedAccountsSessionResult::kAborted;
+  }
+  return LinkedAccountsSessionResult::kAllSucceeded;
+}
+
+void DiceResponseHandler::DiceSigninSession::MarkFetchFailed(
+    const GaiaId& gaia_id) {
+  if (IsInitiator(gaia_id)) {
+    initiator_failed_ = true;
+  } else {
+    secondary_failed_ = true;
+  }
+}
+
+std::string_view DiceResponseHandler::DiceSigninSession::GetFetchModeSuffix()
+    const {
+  // LINT.IfChange(GetFetchModeSuffix)
+  switch (GetFetchMode()) {
+    case FetchMode::kAll:
+      return ".All";
+    case FetchMode::kInitiatorFirst:
+      return ".InitiatorFirst";
+  }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:DiceLinkedAccountsFetchMode)
+  NOTREACHED();
 }
 
 void DiceResponseHandler::DiceSigninSession::StartTokenFetches() {
@@ -353,6 +409,7 @@ void DiceResponseHandler::DiceSigninSession::FetchTokenForAccount(
 
   if (account.no_authorization_code) {
     handler_->OnNoAuthorizationCode(account_id);
+    MarkFetchFailed(account.account_info.gaia_id);
     return;
   }
 
@@ -410,13 +467,12 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeSuccess(
       signin::TokenBindingInfo(wrapped_binding_key,
                                fetcher->mtls_token_binding()));
 
-  bool is_initiator =
-      (fetcher->gaia_id() == signin_info_.GetInitiator()->account_info.gaia_id);
-
   handler_->about_signin_internals_->OnRefreshTokenReceived("Successful",
                                                             account_id);
 
-  if (is_initiator) {
+  if (IsInitiator(gaia_id)) {
+    initiator_succeeded_ = true;
+
     if (IsMultiAccount() && !session_start_time_.is_null()) {
       base::UmaHistogramMediumTimes(
           kDiceLinkedAccountsLatencyInitiatorTokenFetch,
@@ -437,7 +493,7 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeSuccess(
     if (GetFetchMode() == FetchMode::kInitiatorFirst) {
       // Initiator succeeded in initiator-first mode. Now fetch secondaries.
       for (const auto& account : signin_info_.accounts()) {
-        if (account.account_info.gaia_id != fetcher->gaia_id()) {
+        if (!IsInitiator(account.account_info.gaia_id)) {
           FetchTokenForAccount(account);
         }
       }
@@ -457,10 +513,9 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeFailure(
   handler_->about_signin_internals_->OnRefreshTokenReceived("Failure",
                                                             account_id);
 
-  bool is_initiator =
-      (fetcher->gaia_id() == signin_info_.GetInitiator()->account_info.gaia_id);
+  MarkFetchFailed(fetcher->gaia_id());
 
-  if (is_initiator) {
+  if (IsInitiator(fetcher->gaia_id())) {
     delegate_->HandleTokenExchangeFailure(email, error);
   }
 
@@ -489,6 +544,7 @@ bool DiceResponseHandler::DiceSigninSession::CancelFetchForAccount(
       });
 
   if (delete_count > 0) {
+    fetch_cancelled_ = true;
     // Note: If the initiator account fetch is cancelled while in
     // kInitiatorFirst mode, any waiting secondary account fetches in this
     // session will be cancelled when the session is deleted (when

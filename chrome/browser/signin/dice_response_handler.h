@@ -121,6 +121,29 @@ class DiceResponseHandler : public KeyedService {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceTokenBindingOutcome)
 
+  // Final outcome of a multi-account DICE Linked Accounts sign-in session.
+  // When several values apply, the first one in this order is recorded:
+  // `kInitiatorFailed`, `kInitiatorSucceededSecondariesPartial`, `kCancelled`,
+  // `kAborted`, `kAllSucceeded`.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Public for testing.
+  // LINT.IfChange(DiceLinkedAccountsSessionResult)
+  enum class LinkedAccountsSessionResult {
+    kInitiatorFailed = 0,
+    kInitiatorSucceededSecondariesPartial = 1,
+    // At least one fetch was cancelled by a newer sign-in or by a sign-out of
+    // the same account.
+    kCancelled = 2,
+    // The session was destroyed while fetches were still pending (e.g. at
+    // profile shutdown).
+    kAborted = 3,
+    kAllSucceeded = 4,
+    kMaxValue = kAllSucceeded,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceLinkedAccountsSessionResult)
+
   DiceResponseHandler(SigninClient* signin_client,
                       signin::IdentityManager* identity_manager,
                       AccountReconcilor* account_reconcilor,
@@ -256,6 +279,17 @@ class DiceResponseHandler : public KeyedService {
     FetchMode GetFetchMode() const;
     void NotifySessionComplete();
     bool IsMultiAccount() const { return signin_info_.accounts().size() > 1; }
+    bool IsInitiator(const GaiaId& gaia_id) const;
+
+    // Records the LinkedAccounts session result metrics. Must only be called
+    // once, when the session completes.
+    void RecordSessionResult() const;
+    LinkedAccountsSessionResult GetSessionResult() const;
+    // Returns the histogram suffix for the fetch mode.
+    std::string_view GetFetchModeSuffix() const;
+    // Records that the token of `gaia_id` could not be fetched (fetch failure,
+    // timeout or missing authorization code).
+    void MarkFetchFailed(const GaiaId& gaia_id);
 
     const raw_ptr<DiceResponseHandler> handler_;
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
@@ -265,7 +299,12 @@ class DiceResponseHandler : public KeyedService {
 
     // Performance telemetry:
     base::TimeTicks session_start_time_;
-    bool session_duration_recorded_ = false;
+
+    // Session result telemetry:
+    bool initiator_succeeded_ = false;
+    bool initiator_failed_ = false;
+    bool secondary_failed_ = false;
+    bool fetch_cancelled_ = false;
   };
 
   // Deletes the session.

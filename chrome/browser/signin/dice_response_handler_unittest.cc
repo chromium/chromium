@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -2666,6 +2667,231 @@ TEST_F(DiceResponseHandlerTest,
       "Signin.Dice.LinkedAccounts.MultiAccountCount", 0);
 
   EXPECT_THAT(signin_client_.GetAndClearConsumer(), testing::NotNull());
+}
+
+using LinkedAccountsSessionResult =
+    DiceResponseHandler::LinkedAccountsSessionResult;
+
+constexpr char kSessionResultHistogram[] =
+    "Signin.Dice.LinkedAccounts.SessionResult";
+
+// Tests for the LinkedAccounts session result metrics. The initiator is the
+// first account, and the token fetches are started in the order of the
+// accounts.
+class DiceResponseHandlerSessionResultTest : public DiceResponseHandlerTest {
+ protected:
+  // Starts a session in initiator-first mode: the secondary account tokens are
+  // fetched only after the initiator token is fetched.
+  void StartInitiatorFirstSession(int account_count) {
+    dice_response_handler_->ProcessDiceHeader(
+        MakeMultiSigninDiceParams(
+            DiceAction::SIGNIN, account_count,
+            /*primary_is_connected=*/signin::Tribool::kFalse,
+            /*eligible_for_token_binding=*/false),
+        std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  }
+
+  // Starts a session in all mode: all tokens are fetched in parallel.
+  void StartAllSession(int account_count) {
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "primary@gmail.com", signin::ConsentLevel::kSignin);
+    dice_response_handler_->ProcessDiceHeader(
+        MakeMultiSigninDiceParams(
+            DiceAction::SIGNIN, account_count,
+            /*primary_is_connected=*/signin::Tribool::kTrue,
+            /*eligible_for_token_binding=*/false),
+        std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  }
+
+  void SimulateNextFetchSuccess() {
+    GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+    ASSERT_THAT(consumer, testing::NotNull());
+    consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+        "refresh_token", "access_token", /*expires_in_secs=*/10,
+        /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+  }
+
+  void SimulateNextFetchFailure() {
+    GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+    ASSERT_THAT(consumer, testing::NotNull());
+    consumer->OnClientOAuthFailure(
+        GoogleServiceAuthError::FromServiceError("error"));
+  }
+
+  // Leaves the next fetch pending, until it is cancelled or aborted.
+  void LeaveNextFetchPending() {
+    ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::NotNull());
+  }
+
+  // Checks that `result` is recorded once, in the base histogram and in the
+  // `fetch_mode_suffix` variant.
+  void ExpectSessionResult(std::string_view fetch_mode_suffix,
+                           LinkedAccountsSessionResult result) {
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamplesForPrefix(kSessionResultHistogram),
+        testing::UnorderedElementsAre(
+            testing::Pair(kSessionResultHistogram,
+                          base::BucketsAre(base::Bucket(result, /*count=*/1))),
+            testing::Pair(
+                base::StrCat({kSessionResultHistogram, fetch_mode_suffix}),
+                base::BucketsAre(base::Bucket(result, /*count=*/1)))));
+  }
+};
+
+TEST_F(DiceResponseHandlerSessionResultTest, InitiatorFirstAllSucceeded) {
+  StartInitiatorFirstSession(/*account_count=*/3);
+  SimulateNextFetchSuccess();  // Initiator.
+  SimulateNextFetchSuccess();
+  SimulateNextFetchSuccess();
+
+  ExpectSessionResult(/*fetch_mode_suffix=*/".InitiatorFirst",
+                      LinkedAccountsSessionResult::kAllSucceeded);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest, InitiatorFirstSecondariesPartial) {
+  StartInitiatorFirstSession(/*account_count=*/3);
+  SimulateNextFetchSuccess();  // Initiator.
+  SimulateNextFetchSuccess();
+  SimulateNextFetchFailure();
+
+  ExpectSessionResult(
+      /*fetch_mode_suffix=*/".InitiatorFirst",
+      LinkedAccountsSessionResult::kInitiatorSucceededSecondariesPartial);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest, InitiatorFirstInitiatorFailed) {
+  StartInitiatorFirstSession(/*account_count=*/3);
+  SimulateNextFetchFailure();  // Initiator.
+
+  // The secondary accounts are not fetched.
+  EXPECT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
+  ExpectSessionResult(/*fetch_mode_suffix=*/".InitiatorFirst",
+                      LinkedAccountsSessionResult::kInitiatorFailed);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest,
+       InitiatorFirstSecondaryNoAuthorizationCode) {
+  DiceResponseParams dice_params;
+  DiceResponseParams::SigninInfo* signin_info =
+      &dice_params.data.emplace<DiceResponseParams::SigninInfo>();
+  DiceResponseParams::AccountInfo initiator =
+      GetDiceResponseParamsAccountInfo("initiator@gmail.com");
+  signin_info->AddAccount({initiator, kAuthorizationCode,
+                           /*no_authorization_code=*/false, std::string(),
+                           /*mtls_token_binding=*/false});
+  signin_info->AddAccount(
+      {GetDiceResponseParamsAccountInfo("secondary@gmail.com"), std::string(),
+       /*no_authorization_code=*/true, std::string(),
+       /*mtls_token_binding=*/false});
+  signin::DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata;
+  metadata.initiator_id = initiator.gaia_id;
+  metadata.primary_is_connected = signin::Tribool::kFalse;
+  signin_info->set_linked_accounts_metadata(std::move(metadata));
+
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  SimulateNextFetchSuccess();  // Initiator.
+
+  // The token of the secondary account can't be fetched without an
+  // authorization code.
+  ExpectSessionResult(
+      /*fetch_mode_suffix=*/".InitiatorFirst",
+      LinkedAccountsSessionResult::kInitiatorSucceededSecondariesPartial);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest,
+       InitiatorFirstCancelledByNewSignin) {
+  StartInitiatorFirstSession(/*account_count=*/2);
+  LeaveNextFetchPending();  // Initiator.
+
+  // A new sign-in with the initiator account cancels its fetch.
+  dice_response_handler_->ProcessDiceHeader(
+      MakeDiceParams(DiceAction::SIGNIN, /*eligible_for_token_binding=*/false),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  ExpectSessionResult(/*fetch_mode_suffix=*/".InitiatorFirst",
+                      LinkedAccountsSessionResult::kCancelled);
+
+  // The new single-account session records nothing.
+  SimulateNextFetchSuccess();
+  histogram_tester_.ExpectTotalCount(kSessionResultHistogram, 1);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest, InitiatorFirstAborted) {
+  StartInitiatorFirstSession(/*account_count=*/2);
+  LeaveNextFetchPending();  // Initiator.
+
+  // Destroy the handler with pending fetches, like at profile shutdown.
+  dice_response_handler_.reset();
+
+  ExpectSessionResult(/*fetch_mode_suffix=*/".InitiatorFirst",
+                      LinkedAccountsSessionResult::kAborted);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest, AllAllSucceeded) {
+  StartAllSession(/*account_count=*/2);
+  SimulateNextFetchSuccess();  // Initiator.
+  SimulateNextFetchSuccess();
+
+  ExpectSessionResult(/*fetch_mode_suffix=*/".All",
+                      LinkedAccountsSessionResult::kAllSucceeded);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest, AllSecondariesPartial) {
+  StartAllSession(/*account_count=*/3);
+  SimulateNextFetchSuccess();  // Initiator.
+  SimulateNextFetchFailure();
+  SimulateNextFetchSuccess();
+
+  ExpectSessionResult(
+      /*fetch_mode_suffix=*/".All",
+      LinkedAccountsSessionResult::kInitiatorSucceededSecondariesPartial);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest, AllInitiatorFailed) {
+  StartAllSession(/*account_count=*/3);
+  SimulateNextFetchFailure();  // Initiator.
+  // The secondary account fetches continue after the initiator failure.
+  SimulateNextFetchSuccess();
+  SimulateNextFetchFailure();
+
+  ExpectSessionResult(/*fetch_mode_suffix=*/".All",
+                      LinkedAccountsSessionResult::kInitiatorFailed);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest, AllCancelledBySignout) {
+  StartAllSession(/*account_count=*/2);
+  LeaveNextFetchPending();  // Initiator.
+  SimulateNextFetchSuccess();
+
+  // A Gaia sign-out of the initiator account cancels its fetch.
+  dice_response_handler_->ProcessDiceHeader(
+      MakeDiceParams(DiceAction::SIGNOUT),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  ExpectSessionResult(/*fetch_mode_suffix=*/".All",
+                      LinkedAccountsSessionResult::kCancelled);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest,
+       AllInitiatorFailureTakesPrecedenceOverAbort) {
+  StartAllSession(/*account_count=*/2);
+  SimulateNextFetchFailure();  // Initiator.
+  LeaveNextFetchPending();
+
+  dice_response_handler_.reset();
+
+  ExpectSessionResult(/*fetch_mode_suffix=*/".All",
+                      LinkedAccountsSessionResult::kInitiatorFailed);
+}
+
+TEST_F(DiceResponseHandlerSessionResultTest, NotRecordedForSingleAccount) {
+  dice_response_handler_->ProcessDiceHeader(
+      MakeDiceParams(DiceAction::SIGNIN, /*eligible_for_token_binding=*/false),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  SimulateNextFetchFailure();
+
+  histogram_tester_.ExpectTotalCount(kSessionResultHistogram, 0);
 }
 
 }  // namespace

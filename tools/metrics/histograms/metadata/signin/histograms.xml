@@ -2243,6 +2243,32 @@ prefs when the profile is loaded.  -->
   <token key="AccountCount" variants="NewProfileOAuthMultiLoginAccountCount"/>
 </histogram>
 
+<histogram name="Signin.Dice.LinkedAccounts.SessionResult{FetchMode}"
+    enum="DiceLinkedAccountsSessionResult" expires_after="2027-04-01">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the final outcome of the token fetches of a multi-account DICE
+    Linked Accounts sign-in session ({FetchMode}). Recorded once per session,
+    when all token fetches have completed or have been cancelled, or when the
+    session is destroyed with fetches still pending (e.g. at profile shutdown).
+    Fetch timeouts count as failures, see Signin.DiceTokenFetchResult for
+    timeouts.
+  </summary>
+<!-- LINT.IfChange(DiceLinkedAccountsFetchMode) -->
+
+  <token key="FetchMode">
+    <variant name="" summary="all fetch modes"/>
+    <variant name=".All"
+        summary="accounts connected to the primary account, all tokens
+                 fetched in parallel"/>
+    <variant name=".InitiatorFirst"
+        summary="initiator token fetched first, then the secondary accounts"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/signin/dice_response_handler.cc:GetFetchModeSuffix) -->
+
+</histogram>
+
 <histogram name="Signin.DiceAuthorizationCode" enum="BooleanPresent"
     expires_after="never">
 <!-- expires-never: used to monitor OAuth outages in Dice.  -->

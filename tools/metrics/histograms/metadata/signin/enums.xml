@@ -621,6 +621,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/signin/dice_intercepted_session_startup_helper.h:DiceLinkedAccountsNewProfileOAuthMultiLoginResult) -->
 
+<!-- LINT.IfChange(DiceLinkedAccountsSessionResult) -->
+
+<enum name="DiceLinkedAccountsSessionResult">
+  <int value="0" label="InitiatorFailed"/>
+  <int value="1" label="InitiatorSucceededSecondariesPartial"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Aborted"/>
+  <int value="4" label="AllSucceeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/dice_response_handler.h:DiceLinkedAccountsSessionResult) -->
+
 <!-- LINT.IfChange(DiceTokenBindingOutcome) -->
 
 <enum name="DiceTokenBindingOutcome">
