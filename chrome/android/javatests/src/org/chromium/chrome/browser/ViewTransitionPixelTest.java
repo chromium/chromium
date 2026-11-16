@@ -264,6 +264,19 @@ public class ViewTransitionPixelTest {
         JavaScriptUtils.executeJavaScriptAndWaitForResult(getWebContents(), "animateToEndState();");
     }
 
+    // Starts the transition animation, awaits transition.ready so pseudo-elements
+    // and animations are generated and paused, waits for the initial transition frame
+    // to be presented, advances animations to the final incoming state, and waits
+    // for the end-state frames to be presented before returning.
+    private void startTransitionAndAnimateToEndState() throws Throwable {
+        startTransitionAnimation();
+        waitForTransitionReady();
+        mViewportTestUtils.waitForFramePresented();
+        animateToEndState();
+        mViewportTestUtils.waitForFramePresented();
+        mViewportTestUtils.waitForFramePresented();
+    }
+
     // Finishes all animations which also finishes the view transition.
     private void finishAnimations() throws Throwable {
         JavaScriptUtils.executeJavaScriptAndWaitForResult(getWebContents(), "finishAnimations();");
@@ -403,9 +416,7 @@ public class ViewTransitionPixelTest {
         // Start the animation. The "animation" simply displays the old transition for the full
         // duration of the test. This test is interested in how the <dialog> element is positioned.
         // Since that's in the end-state, skip straight to that.
-        startTransitionAnimation();
-        animateToEndState();
-        mViewportTestUtils.waitForFramePresented();
+        startTransitionAndAnimateToEndState();
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "incoming_dialog_element");
@@ -434,9 +445,7 @@ public class ViewTransitionPixelTest {
         // Start the animation. The "animation" simply displays the old transition for the full
         // duration of the test. This test is interested in how the <dialog> element is positioned.
         // Since that's in the end-state, skip straight to that.
-        startTransitionAnimation();
-        animateToEndState();
-        mViewportTestUtils.waitForFramePresented();
+        startTransitionAndAnimateToEndState();
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "wider-than-icb");
@@ -486,6 +495,7 @@ public class ViewTransitionPixelTest {
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "window.scrollTo(0, " + oldPageScrollOffset + ")");
 
+        mViewportTestUtils.waitForBrowserControlsState(/* shown= */ true);
         mViewportTestUtils.waitForFramePresented();
         mViewportTestUtils.waitForFramePresented();
         Bitmap newState = takeScreenshot();
@@ -578,6 +588,7 @@ public class ViewTransitionPixelTest {
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(), "window.scrollTo(0, " + oldPageScrollOffset + ")");
 
+        mViewportTestUtils.waitForBrowserControlsState(/* shown= */ true);
         mViewportTestUtils.waitForFramePresented();
         mViewportTestUtils.waitForFramePresented();
         Bitmap newState = takeScreenshot();
