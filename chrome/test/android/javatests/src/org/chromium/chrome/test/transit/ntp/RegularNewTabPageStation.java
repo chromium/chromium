@@ -16,6 +16,7 @@ import org.chromium.base.test.transit.OptionalViewElement;
 import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.search.SearchBoxContainerView;
@@ -39,10 +40,14 @@ public class RegularNewTabPageStation extends CtaPageStation {
     public ViewElement<View> searchBoxElement;
     public OptionalViewElement<View> ntpMicButtonElement;
     public ViewElement<UrlBar> urlBarElement;
-    public ViewElement<View> logoElement;
+    public @Nullable ViewElement<View> logoElement;
     public Element<NewTabPage> nativePageElement;
 
     public RegularNewTabPageStation(Config config, boolean nativeNtp) {
+        this(config, nativeNtp, /* expectLogo= */ true);
+    }
+
+    public RegularNewTabPageStation(Config config, boolean nativeNtp, boolean expectLogo) {
         super(
                 config.withIncognito(false)
                         .withExpectedUrlSubstring(
@@ -61,7 +66,11 @@ public class RegularNewTabPageStation extends CtaPageStation {
                 });
 
         if (nativeNtp) {
-            logoElement = declareView(withId(R.id.search_provider_logo));
+            if (expectLogo) {
+                logoElement = declareView(withId(R.id.search_provider_logo));
+            } else {
+                declareNoView(withId(R.id.search_provider_logo));
+            }
             // Scoped to the NTP's own fakebox class: R.id.search_box is also used by the Hub
             // toolbar (and by bookmarks and settings search boxes), and an unscoped matcher
             // here would match the Hub's search box while leaving the NTP for the Hub.
@@ -94,6 +103,13 @@ public class RegularNewTabPageStation extends CtaPageStation {
 
     public static Builder<RegularNewTabPageStation> newNativeNtpBuilder() {
         return new Builder<>(c -> new RegularNewTabPageStation(c, /* nativeNtp= */ true));
+    }
+
+    public static Builder<RegularNewTabPageStation> newNativeNtpWithoutLogoBuilder() {
+        return new Builder<>(
+                c ->
+                        new RegularNewTabPageStation(
+                                c, /* nativeNtp= */ true, /* expectLogo= */ false));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
