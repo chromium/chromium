@@ -18,20 +18,27 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -120,6 +127,49 @@ ResolvedTaskInfo ResolveTaskInfoForWebContents(
   }
 
   return info;
+}
+
+void OnImageRetrievedForAskGoogle(
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+        chrome_render_frame,
+    base::WeakPtr<content::WebContents> web_contents,
+    std::string image_title,
+    const std::vector<uint8_t>& thumbnail_data,
+    const gfx::Size& original_size,
+    const gfx::Size& downscaled_size,
+    const std::string& mime_type,
+    const std::vector<lens::mojom::LatencyLogPtr>) {
+  if (thumbnail_data.empty() || !web_contents) {
+    return;
+  }
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents.get());
+  if (!tab || !tab->IsActivated() || !tab->GetBrowserWindowInterface()) {
+    return;
+  }
+  auto* controller =
+      ContextualTasksPanelController::From(tab->GetBrowserWindowInterface());
+  if (!controller) {
+    return;
+  }
+  content::WebContents* panel_contents = controller->GetActiveWebContents();
+  if (!panel_contents) {
+    return;
+  }
+  std::string file_name = image_title.empty() ? "image.png" : image_title;
+  std::string resolved_mime_type = mime_type.empty() ? "image/png" : mime_type;
+  std::string bytes(reinterpret_cast<const char*>(thumbnail_data.data()),
+                    thumbnail_data.size());
+  if (auto* web_ui_interface = GetWebUiInterface(panel_contents)) {
+    web_ui_interface->AddImageContextFromBytes(
+        std::move(file_name), std::move(resolved_mime_type), std::move(bytes));
+  } else {
+    ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+        panel_contents)
+        ->SetPendingImageContext(std::move(file_name),
+                                 std::move(resolved_mime_type),
+                                 std::move(bytes));
+  }
 }
 
 }  // namespace
@@ -236,6 +286,33 @@ void ContextualTasksBridge::ToggleAskGoogleSidePanel(
     return;
   }
   OpenAskGoogleAboutThisPage(web_contents, invocation_source);
+}
+
+// static
+void ContextualTasksBridge::OpenAskGoogleAboutThisImage(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
+    const std::string& image_title) {
+  if (!ShouldShowAskGoogleEntryPoints(web_contents)) {
+    return;
+  }
+  if (render_frame_host) {
+    constexpr int kMaxImageDimensionPx = 2048;
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+        chrome_render_frame;
+    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+        &chrome_render_frame);
+    auto* thumbnail_capturer_proxy = chrome_render_frame.get();
+    thumbnail_capturer_proxy->RequestImageForContextNode(
+        kMaxImageDimensionPx * kMaxImageDimensionPx,
+        gfx::Size(kMaxImageDimensionPx, kMaxImageDimensionPx),
+        chrome::mojom::ImageFormat::PNG, chrome::mojom::kDefaultQuality,
+        base::BindOnce(&OnImageRetrievedForAskGoogle,
+                       std::move(chrome_render_frame),
+                       web_contents->GetWeakPtr(), image_title));
+  }
+  OpenAskGoogleAboutThisPage(web_contents,
+                             InvocationSource::kContentAreaContextMenuImage);
 }
 
 void ContextualTasksBridge::Destroy() {

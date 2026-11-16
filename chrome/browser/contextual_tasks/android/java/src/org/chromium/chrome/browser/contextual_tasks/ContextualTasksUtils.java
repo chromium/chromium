@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -117,6 +118,25 @@ public final class ContextualTasksUtils {
     }
 
     /**
+     * Opens the Contextual Tasks side panel for the given {@link Tab} and attaches the clicked
+     * image node (alongside the current tab) as context in the composebox.
+     *
+     * @param tab The current {@link Tab}.
+     * @param renderFrameHost The {@link RenderFrameHost} containing the context menu image node.
+     * @param imageTitle The title or filename of the image.
+     */
+    public static void openAskGoogleAboutThisImage(
+            @Nullable Tab tab,
+            @Nullable RenderFrameHost renderFrameHost,
+            @Nullable String imageTitle) {
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
+        if (webContents == null) return;
+        ContextualTasksUtilsJni.get()
+                .openAskGoogleAboutThisImage(
+                        webContents, renderFrameHost, imageTitle != null ? imageTitle : "");
+    }
+
+    /**
      * Fulfills a contextual omnibox suggestion with the given tab attached as context. On Desktop
      * Android the AI Mode answer is shown in the Contextual Tasks side panel; when the contextual
      * flow is unavailable the suggestion URL is loaded in the tab instead.
@@ -150,5 +170,10 @@ public final class ContextualTasksUtils {
         void issueOmniboxContextualQuery(
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("GURL") GURL suggestionUrl);
+
+        void openAskGoogleAboutThisImage(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("content::RenderFrameHost*") @Nullable RenderFrameHost renderFrameHost,
+                @JniType("std::string") String imageTitle);
     }
 }

@@ -161,6 +161,12 @@ class ContextualTasksUIInterface : public TaskInfoDelegate,
   virtual void SetComposeboxHandler(
       ContextualTasksComposeboxHandlerInterface* handler) = 0;
 
+  // Attaches an image context from in-memory bytes to the composebox, queuing
+  // it until the composebox handler is initialized if necessary.
+  virtual void AddImageContextFromBytes(std::string file_name,
+                                        std::string mime_type,
+                                        std::string bytes) {}
+
   // Helpers.
 
   // Returns the URL of the page currently embedded in the WebUI's <webview>.

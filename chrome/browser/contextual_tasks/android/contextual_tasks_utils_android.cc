@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
+#include "base/android/jni_string.h"
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_bridge.h"
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_omnibox_query_helper.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -47,6 +51,14 @@ static void JNI_ContextualTasksUtils_IssueOmniboxContextualQuery(
     const GURL& suggestion_url) {
   contextual_tasks::ContextualTasksOmniboxQueryHelper::Start(web_contents,
                                                              suggestion_url);
+}
+
+static void JNI_ContextualTasksUtils_OpenAskGoogleAboutThisImage(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
+    std::string image_title) {
+  contextual_tasks::ContextualTasksBridge::OpenAskGoogleAboutThisImage(
+      web_contents, render_frame_host, image_title);
 }
 
 DEFINE_JNI(ContextualTasksUtils)

@@ -101,6 +101,10 @@ class ContextualTasksComposeboxHandler
   void SetAimThreadRestoredTabs(
       std::vector<searchbox::mojom::TabInfoPtr> tabs) override;
 
+  void AddFileContextFromBytes(std::string file_name,
+                               std::string mime_type,
+                               std::string bytes) override;
+
   void AddFileContextFromBrowser(
       searchbox::mojom::SelectedFileInfoPtr file_info,
       AddFileContextCallback callback);

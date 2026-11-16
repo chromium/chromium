@@ -238,6 +238,9 @@ class ContextualTasksUI
   void SetComposeboxHandler(
       contextual_tasks::ContextualTasksComposeboxHandlerInterface* handler)
       override;
+  void AddImageContextFromBytes(std::string file_name,
+                                std::string mime_type,
+                                std::string bytes) override;
   mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() override;
   contextual_tasks_toolbar::mojom::Page* GetToolbarPageRemote() override;
   const GURL& GetInnerFrameUrl() const override;

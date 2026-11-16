@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link ContextualTasksUtils}. */
@@ -35,6 +36,7 @@ public class ContextualTasksUtilsUnitTest {
 
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
+    @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private ContextualTasksUtils.Natives mNatives;
 
     @Test
@@ -127,5 +129,14 @@ public class ContextualTasksUtilsUnitTest {
         verify(mNatives)
                 .toggleAskGoogleSidePanel(
                         mWebContents, LensOverlayInvocationSource.COBROWSE_TOOLBAR_BUTTON);
+    }
+
+    @Test
+    public void testOpenAskGoogleAboutThisImage() {
+        ContextualTasksUtilsJni.setInstanceForTesting(mNatives);
+        doReturn(mWebContents).when(mTab).getWebContents();
+
+        ContextualTasksUtils.openAskGoogleAboutThisImage(mTab, mRenderFrameHost, "photo.png");
+        verify(mNatives).openAskGoogleAboutThisImage(mWebContents, mRenderFrameHost, "photo.png");
     }
 }
