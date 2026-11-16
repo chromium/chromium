@@ -72,6 +72,8 @@ class DrawingBufferTest : public Test {
  protected:
   void SetUp() override { Init(kDisableMultisampling); }
 
+  void TearDown() override { SharedGpuContext::Reset(); }
+
   void Init(UseMultisampling use_multisampling) {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
     InitializeSharedGpuContext(test_context_provider_.get());
