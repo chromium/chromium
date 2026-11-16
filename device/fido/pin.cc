@@ -69,7 +69,7 @@ PINEntryError ValidatePIN(const std::u16string& pin16,
                           uint32_t min_pin_length,
                           std::optional<std::string> current_pin) {
   std::string pin;
-  if (!base::UTF16ToUTF8(pin16.c_str(), pin16.size(), &pin)) {
+  if (!base::UTF16ToUTF8(pin16, &pin)) {
     return pin::PINEntryError::kInvalidCharacters;
   }
   return ValidatePIN(std::move(pin), min_pin_length, std::move(current_pin));
