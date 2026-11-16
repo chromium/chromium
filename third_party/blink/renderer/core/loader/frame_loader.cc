@@ -1207,8 +1207,16 @@ void FrameLoader::CommitNavigation(
   //   with regards to the last commit.
   // In this rare case, we intentionally proceed as cross-document.
 
-  if (!CancelProvisionalLoaderForNewNavigation())
-    return;
+  {
+    // CancelProvisionalLoaderForNewNavigation() calls Document::Abort(), which
+    // can synchronously fire readystatechange. Disable navigations and
+    // re-entrant commits while aborting the previous document, matching
+    // DetachDocument() below.
+    FrameNavigationDisabler navigation_disabler(*frame_);
+    if (!CancelProvisionalLoaderForNewNavigation()) {
+      return;
+    }
+  }
 
   FillStaticResponseIfNeeded(navigation_params.get(), frame_);
   AssertCanNavigate(navigation_params.get(), frame_);
