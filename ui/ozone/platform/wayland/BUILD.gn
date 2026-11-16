@@ -352,6 +352,7 @@ source_set("wayland") {
       "//third_party/minigbm",
       "//ui/gfx:memory_buffer",
       "//ui/gfx/linux:gbm",
+      "//ui/gl",
     ]
   }
 
