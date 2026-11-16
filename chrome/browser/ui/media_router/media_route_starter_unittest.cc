@@ -1003,4 +1003,69 @@ TEST_F(MediaRouteStarterTest, InitiatorWebContentsDestroyed) {
                          cast_sink().id(), MediaCastMode::DESKTOP_MIRROR));
 }
 
+TEST_F(MediaRouteStarterTest, StartPresentationContext_CancelledOnBFCache) {
+  NavigateAndCommit(GURL(kStartOriginUrl));
+  content::PresentationRequest request(
+      main_rfh()->GetGlobalId(), {GURL(kStartPresentationUrl)},
+      url::Origin::Create(GURL(kStartOriginUrl)));
+  CreateStarter(MediaRouterUIParameters(
+      kDefaultModes, web_contents(), CreateStartPresentationContext(request)));
+  UpdateSinks({cast_sink().sink()}, {request.frame_origin});
+  ASSERT_TRUE(media_route_starter()->CreateRouteParameters(
+      cast_sink().id(), MediaCastMode::PRESENTATION));
+
+  EXPECT_CALL(*this, RequestError(testing::Field(
+                         &blink::mojom::PresentationError::error_type,
+                         blink::mojom::PresentationErrorType::
+                             PRESENTATION_REQUEST_CANCELLED)));
+  media_route_starter()->RenderFrameHostStateChanged(
+      main_rfh(), content::RenderFrameHost::LifecycleState::kActive,
+      content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  EXPECT_FALSE(media_route_starter()->CreateRouteParameters(
+      cast_sink().id(), MediaCastMode::PRESENTATION));
+}
+
+TEST_F(MediaRouteStarterTest,
+       StartPresentationContext_CancelledOnCrossOriginNavigation) {
+  NavigateAndCommit(GURL(kStartOriginUrl));
+  content::PresentationRequest request(
+      main_rfh()->GetGlobalId(), {GURL(kStartPresentationUrl)},
+      url::Origin::Create(GURL(kStartOriginUrl)));
+  CreateStarter(MediaRouterUIParameters(
+      kDefaultModes, web_contents(), CreateStartPresentationContext(request)));
+  UpdateSinks({cast_sink().sink()}, {request.frame_origin});
+  ASSERT_TRUE(media_route_starter()->CreateRouteParameters(
+      cast_sink().id(), MediaCastMode::PRESENTATION));
+
+  EXPECT_CALL(*this, RequestError(testing::Field(
+                         &blink::mojom::PresentationError::error_type,
+                         blink::mojom::PresentationErrorType::
+                             PRESENTATION_REQUEST_CANCELLED)));
+  NavigateAndCommit(GURL("https://victim.example/"));
+  EXPECT_FALSE(media_route_starter()->CreateRouteParameters(
+      cast_sink().id(), MediaCastMode::PRESENTATION));
+}
+
+TEST_F(MediaRouteStarterTest,
+       StartPresentationContext_ClearedOnNavigationAfterStartRoute) {
+  NavigateAndCommit(GURL(kStartOriginUrl));
+  content::PresentationRequest request(
+      main_rfh()->GetGlobalId(), {GURL(kStartPresentationUrl)},
+      url::Origin::Create(GURL(kStartOriginUrl)));
+  CreateStarter(MediaRouterUIParameters(
+      kDefaultModes, web_contents(), CreateStartPresentationContext(request)));
+  UpdateSinks({cast_sink().sink()}, {request.frame_origin});
+  auto params = media_route_starter()->CreateRouteParameters(
+      cast_sink().id(), MediaCastMode::PRESENTATION);
+  ASSERT_TRUE(params);
+  EXPECT_CALL(*media_router(), CreateRoute(_, _, _, _, _, _))
+      .WillOnce(testing::Return());
+  EXPECT_CALL(*this, RequestError(_));
+  media_route_starter()->StartRoute(std::move(params));
+
+  NavigateAndCommit(GURL("https://victim.example/"));
+  EXPECT_FALSE(media_route_starter()->CreateRouteParameters(
+      cast_sink().id(), MediaCastMode::PRESENTATION));
+}
+
 }  // namespace media_router

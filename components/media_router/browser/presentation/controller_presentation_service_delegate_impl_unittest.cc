@@ -836,4 +836,35 @@ TEST_F(ControllerPresentationServiceDelegateImplTest,
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       StartPresentation_InactiveFrameTerminatesRoute) {
+  std::unique_ptr<StartPresentationContext> context;
+  delegate_impl_->set_start_presentation_cb(base::BindRepeating(
+      [](std::unique_ptr<StartPresentationContext>* out,
+         std::unique_ptr<StartPresentationContext> ctx) {
+        *out = std::move(ctx);
+      },
+      &context));
+
+  base::MockCallback<content::PresentationConnectionCallback> success_cb;
+  base::MockCallback<content::PresentationConnectionErrorCallback> error_cb;
+  EXPECT_CALL(success_cb, Run(_)).Times(0);
+  EXPECT_CALL(*router_, TerminateRoute("route_id")).Times(1);
+  EXPECT_CALL(
+      error_cb,
+      Run(testing::Field(
+          &blink::mojom::PresentationError::error_type,
+          blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED)))
+      .Times(1);
+
+  delegate_impl_->StartPresentation(
+      content::PresentationRequest({999, 999}, {presentation_url1_},
+                                   frame_origin_),
+      success_cb.Get(), error_cb.Get());
+  ASSERT_TRUE(context);
+  MediaRoute route("route_id", source1_, "mediaSinkId", "description", true);
+  context->HandleRouteResponse(
+      nullptr, *RouteRequestResult::FromSuccess(route, kPresentationId));
+}
+
 }  // namespace media_router

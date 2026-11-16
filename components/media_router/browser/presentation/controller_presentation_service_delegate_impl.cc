@@ -14,6 +14,7 @@
 
 #include "base/containers/small_map.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -38,6 +39,7 @@
 #include "content/public/browser/presentation_screen_availability_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/gurl.h"
@@ -72,6 +74,32 @@ bool ArePresentationRequestsEqual(
          request1.presentation_urls == request2.presentation_urls &&
          ((request1.frame_origin.opaque() && request2.frame_origin.opaque()) ||
           (request1.frame_origin == request2.frame_origin));
+}
+
+void HandleStartPresentationResponse(
+    base::WeakPtr<content::BrowserContext> browser_context,
+    content::WeakDocumentPtr initiator_document,
+    const url::Origin& frame_origin,
+    StartPresentationContext::PresentationConnectionCallback on_succeeded_cb,
+    content::PresentationConnectionErrorCallback error_cb,
+    const PresentationInfo& new_presentation_info,
+    mojom::RoutePresentationConnectionPtr connection,
+    const MediaRoute& route) {
+  auto* rfh = initiator_document.AsRenderFrameHostIfValid();
+  if (on_succeeded_cb.IsCancelled() || !rfh || !rfh->IsActive() ||
+      (!rfh->GetLastCommittedURL().is_empty() &&
+       rfh->GetLastCommittedOrigin() != frame_origin)) {
+    if (auto* router = MediaRouterFactory::GetApiForBrowserContextIfExists(
+            browser_context.get())) {
+      router->TerminateRoute(route.media_route_id());
+    }
+    std::move(error_cb).Run(
+        PresentationError(PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
+                          "The requesting frame is no longer active."));
+    return;
+  }
+  std::move(on_succeeded_cb)
+      .Run(new_presentation_info, std::move(connection), route);
 }
 
 }  // namespace
@@ -479,13 +507,22 @@ void ControllerPresentationServiceDelegateImpl::StartPresentation(
                           "Invalid presentation URL."));
     return;
   }
+  auto* initiator_rfh = content::RenderFrameHost::FromID(render_frame_host_id);
+  content::WeakDocumentPtr initiator_document =
+      initiator_rfh ? initiator_rfh->GetWeakDocumentPtr()
+                    : content::WeakDocumentPtr();
+  auto [context_error_cb, late_error_cb] =
+      base::SplitOnceCallback(std::move(error_cb));
+  auto on_succeeded_cb = base::BindOnce(
+      &ControllerPresentationServiceDelegateImpl::OnStartPresentationSucceeded,
+      weak_factory_.GetWeakPtr(), render_frame_host_id, std::move(success_cb));
   auto presentation_context = std::make_unique<StartPresentationContext>(
       request,
-      base::BindOnce(&ControllerPresentationServiceDelegateImpl::
-                         OnStartPresentationSucceeded,
-                     weak_factory_.GetWeakPtr(), render_frame_host_id,
-                     std::move(success_cb)),
-      std::move(error_cb));
+      base::BindOnce(&HandleStartPresentationResponse,
+                     GetWebContents().GetBrowserContext()->GetWeakPtr(),
+                     initiator_document, request.frame_origin,
+                     std::move(on_succeeded_cb), std::move(late_error_cb)),
+      std::move(context_error_cb));
   if (start_presentation_cb_) {
     start_presentation_cb_.Run(std::move(presentation_context));
     return;

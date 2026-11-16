@@ -25,7 +25,9 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/presentation_request.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -331,6 +333,58 @@ void MediaRouteStarter::OnDefaultPresentationChanged(
   }
 }
 
+void MediaRouteStarter::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  if (new_state != content::RenderFrameHost::LifecycleState::kActive) {
+    MaybeCancelForFrame(render_frame_host->GetGlobalId());
+  }
+}
+
+void MediaRouteStarter::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->HasCommitted() &&
+      !navigation_handle->IsSameDocument()) {
+    if (auto* rfh = navigation_handle->GetRenderFrameHost()) {
+      MaybeCancelForFrame(rfh->GetGlobalId());
+    }
+    MaybeCancelForFrame(navigation_handle->GetPreviousRenderFrameHostId());
+  }
+}
+
+void MediaRouteStarter::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  MaybeCancelForFrame(render_frame_host->GetGlobalId());
+}
+
+void MediaRouteStarter::MaybeCancelForFrame(
+    content::GlobalRenderFrameHostId rfh_id) {
+  if (start_presentation_rfh_id_ == rfh_id) {
+    CancelStartPresentationContext();
+  }
+}
+
+void MediaRouteStarter::CancelStartPresentationContext() {
+  if (!start_presentation_rfh_id_) {
+    return;
+  }
+  start_presentation_rfh_id_.reset();
+  Observe(nullptr);
+  auto context = std::move(start_presentation_context_);
+  if (start_presentation_is_remote_playback_) {
+    GetQueryResultManager()->RemoveSourcesForCastMode(
+        MediaCastMode::REMOTE_PLAYBACK);
+  } else {
+    OnDefaultPresentationChanged(nullptr);
+  }
+  if (context) {
+    context->InvokeErrorCallback(blink::mojom::PresentationError(
+        blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
+        "The requesting frame is no longer active."));
+  }
+}
+
 void MediaRouteStarter::InitPresentationSources(
     const CastModeSet& initial_modes) {
   if (!IsCastModeAvailable(initial_modes, MediaCastMode::PRESENTATION)) {
@@ -338,18 +392,28 @@ void MediaRouteStarter::InitPresentationSources(
     return;
   }
   if (start_presentation_context_) {
-    auto media_source =
-        MediaSource(start_presentation_context_->presentation_request()
-                        .presentation_urls[0]);
-    if (media_source.IsRemotePlaybackSource()) {
+    const auto& request = start_presentation_context_->presentation_request();
+    start_presentation_rfh_id_ = request.render_frame_host_id;
+    auto media_source = MediaSource(request.presentation_urls[0]);
+    start_presentation_is_remote_playback_ =
+        media_source.IsRemotePlaybackSource();
+    if (auto* rfh =
+            content::RenderFrameHost::FromID(request.render_frame_host_id);
+        rfh && (!rfh->IsActive() ||
+                (!rfh->GetLastCommittedURL().is_empty() &&
+                 rfh->GetLastCommittedOrigin() != request.frame_origin))) {
+      CancelStartPresentationContext();
+      return;
+    }
+    Observe(GetWebContents());
+    if (start_presentation_is_remote_playback_) {
       media_source.AppendTabIdToRemotePlaybackUrlQuery(
           sessions::SessionTabHelper::IdForTab(GetWebContents()).id());
       GetQueryResultManager()->SetSourcesForCastMode(
           MediaCastMode::REMOTE_PLAYBACK, {media_source},
           url::Origin::Create(GURL()));
     } else {
-      OnDefaultPresentationChanged(
-          &start_presentation_context_->presentation_request());
+      OnDefaultPresentationChanged(&request);
     }
   } else if (presentation_manager_ &&
              presentation_manager_->HasDefaultPresentationRequest()) {

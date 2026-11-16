@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,10 +20,13 @@
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/common/issue.h"
 #include "content/public/browser/presentation_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
 
 namespace content {
 class BrowserContext;
+class NavigationHandle;
+class RenderFrameHost;
 struct PresentationRequest;
 class WebContents;
 }  // namespace content
@@ -36,7 +38,8 @@ struct MediaRouterUIParameters;
 
 // Provides cast services (lists of sinks, routes, start & terminate route) to
 // UI controllers
-class MediaRouteStarter : public content::PresentationObserver {
+class MediaRouteStarter : public content::PresentationObserver,
+                          public content::WebContentsObserver {
  public:
   explicit MediaRouteStarter(MediaRouterUIParameters params);
   MediaRouteStarter(const MediaRouteStarter&) = delete;
@@ -100,16 +103,22 @@ class MediaRouteStarter : public content::PresentationObserver {
     return query_result_manager_.get();
   }
 
+  // content::PresentationObserver:
+  void OnDefaultPresentationChanged(
+      const content::PresentationRequest* presentation_request) override;
+
+  // content::WebContentsObserver:
+  void RenderFrameHostStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost::LifecycleState old_state,
+      content::RenderFrameHost::LifecycleState new_state) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+
  private:
   friend class MediaRouteStarterTest;
   friend class MediaRouterViewsUITest;
-  FRIEND_TEST_ALL_PREFIXES(MediaRouteStarterTest,
-                           OnPresentationRequestSourceRemoved);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouteStarterTest,
-                           OnPresentationRequestSourceUpdated);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouteStarterTest, GetScreenCapturePermission);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, SetDialogHeader);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, RouteCreationTimeout);
 
   void InitPresentationSources(const CastModeSet& initial_modes);
   void InitMirroringSources(const CastModeSet& initial_modes);
@@ -132,9 +141,8 @@ class MediaRouteStarter : public content::PresentationObserver {
   // as supported for the service when initialized.
   static bool IsCastModeAvailable(const CastModeSet& modes, MediaCastMode mode);
 
-  // content::PresentationObserver:
-  void OnDefaultPresentationChanged(
-      const content::PresentationRequest* presentation_request) override;
+  void CancelStartPresentationContext();
+  void MaybeCancelForFrame(content::GlobalRenderFrameHostId rfh_id);
 
   void set_start_presentation_context_for_test(
       std::unique_ptr<StartPresentationContext> start_presentation_context) {
@@ -154,6 +162,8 @@ class MediaRouteStarter : public content::PresentationObserver {
   // If set, then the result of the next presentation route request will
   // be handled by this object instead of |presentation_manager_|
   std::unique_ptr<StartPresentationContext> start_presentation_context_;
+  std::optional<content::GlobalRenderFrameHostId> start_presentation_rfh_id_;
+  bool start_presentation_is_remote_playback_ = false;
 
   // |presentation_manager_| notifies |this| whenever there is an update to the
   // default PresentationRequest or MediaRoutes associated with
