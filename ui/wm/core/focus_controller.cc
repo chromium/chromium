@@ -256,8 +256,9 @@ void FocusController::FocusAndActivateWindow(
   } else {
     // Only allow the focused window to change, *not* the active window if
     // called reentrantly.
-    CHECK(!activatable || activatable == pending_activation_.value(),
-          base::NotFatalUntil::M163);
+    // TODO(crbug.com/585428676): CHECK-exclusion: Convert to a CHECK once
+    // we are confident it won't be triggered.
+    DCHECK(!activatable || activatable == pending_activation_.value());
   }
 
   // If the window's ActivationChangeObserver shifted focus to a valid window,
@@ -269,14 +270,17 @@ void FocusController::FocusAndActivateWindow(
     const bool activation_changed_focus =
         last_focused_window != focused_window_;
     if (!activation_changed_focus || !focused_window_) {
-      if (new_active_window && focusable)
-        CHECK(new_active_window->Contains(focusable),
-              base::NotFatalUntil::M163);
+      if (new_active_window && focusable) {
+        // TODO(crbug.com/585428676): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK(new_active_window->Contains(focusable));
+      }
       SetFocusedWindow(focusable);
     }
     if (new_active_window && focused_window_)
-      CHECK(new_active_window->Contains(focused_window_),
-            base::NotFatalUntil::M163);
+      // TODO(crbug.com/585428676): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK(new_active_window->Contains(focused_window_));
   }
 }
 
