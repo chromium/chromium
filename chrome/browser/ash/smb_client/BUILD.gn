@@ -52,8 +52,8 @@ static_library("smb_client") {
   deps = [
     ":constants",
     "//ash/constants",
+    "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser:primitives",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/profiles",

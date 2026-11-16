@@ -6,6 +6,7 @@
 
 #include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/extended_updates_resources.h"
 #include "chrome/grit/extended_updates_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_service_registry.h"

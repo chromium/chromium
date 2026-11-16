@@ -19,8 +19,8 @@ static_library("hats") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:resources",
     "//chrome/browser/ash/policy/core",

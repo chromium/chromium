@@ -15,8 +15,8 @@ static_library("tpm") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/settings",

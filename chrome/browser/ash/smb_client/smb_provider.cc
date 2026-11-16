@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/smb_client/smb_file_system.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 

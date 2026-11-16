@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/video_conference",
-  "+chrome/grit",
 
   "+ui/message_center/message_center.h",
 ]

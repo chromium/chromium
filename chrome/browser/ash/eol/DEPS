@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/extended_updates",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/test",
-  "+chrome/grit",
   "+chrome/test/base",
 
   "+ui/message_center/message_center.h",

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
-#include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"

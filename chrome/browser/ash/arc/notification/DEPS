@@ -24,9 +24,6 @@ specific_include_rules = {
   "arc_management_transition_notification_unittest\\.cc": [
     "+chrome/app/vector_icons",
   ],
-  "arc_boot_error_notification\\.cc": [
-    "+chrome/grit",
-  ],
 
   "arc_management_transition_notification\\.cc": [
     "+chrome/grit",

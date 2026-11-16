@@ -21,6 +21,7 @@ source_set("help") {
     public_deps += [ "//chromeos/ash/components/dbus/update_engine" ]
     deps += [
       "//ash/constants",
+      "//ash/strings",
       "//chrome/app:generated_resources_grit",
       "//chrome/browser:browser_process",
       "//chrome/browser/ash/ownership",

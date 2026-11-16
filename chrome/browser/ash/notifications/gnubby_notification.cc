@@ -8,9 +8,9 @@
 
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_is_test.h"
 #include "base/location.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"

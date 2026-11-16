@@ -27,8 +27,8 @@ static_library("power") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/dbus/power",

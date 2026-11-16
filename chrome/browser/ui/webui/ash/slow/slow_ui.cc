@@ -9,10 +9,10 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/slow_resources.h"
 #include "chrome/grit/slow_resources_map.h"
 #include "components/prefs/pref_change_registrar.h"

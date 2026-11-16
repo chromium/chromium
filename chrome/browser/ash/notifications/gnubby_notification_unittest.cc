@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
-#include "chrome/grit/generated_resources.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"

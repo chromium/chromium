@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/smb_shares",
-  "+chrome/grit",
   "+chrome/test/base",
 ]
 

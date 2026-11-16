@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

@@ -21,7 +21,6 @@ static_library("notification") {
     "//ash/strings",
     "//ash/webui/settings/public/constants",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc:arc_util",

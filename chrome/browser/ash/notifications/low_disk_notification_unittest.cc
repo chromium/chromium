@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/settings/cros_settings.h"

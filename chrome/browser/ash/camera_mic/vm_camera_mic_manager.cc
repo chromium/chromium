@@ -27,7 +27,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"

@@ -22,8 +22,6 @@ static_library("camera_mic") {
     "//ash/public/cpp",
     "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/app:generated_resources",
-    "//chrome/app:generated_resources_grit",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ui:chrome_pages",

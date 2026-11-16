@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/ownership",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/extended_updates",
-  "+chrome/grit",
 
   "+ui/message_center/message_center.h",
 ]

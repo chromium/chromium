@@ -34,8 +34,8 @@ static_library("extended_updates") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/strings",
     "//ash/webui/common:trusted_types_util",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/extended_updates",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ash/extended_updates:resources",

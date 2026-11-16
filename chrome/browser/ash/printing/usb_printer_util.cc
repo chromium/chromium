@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
@@ -23,7 +24,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/usb_printer_id.h"
 #include "components/device_event_log/device_event_log.h"
