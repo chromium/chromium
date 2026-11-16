@@ -492,10 +492,8 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
     bool is_multipart) {
   TRACE_EVENT0("blink", "ImageResourceContent::updateImage");
 
-#if DCHECK_IS_ON()
-  DCHECK(!is_update_image_being_called_);
+  CHECK(!is_update_image_being_called_);
   base::AutoReset<bool> scope(&is_update_image_being_called_, true);
-#endif
 
   // Clears the existing image, if instructed by |updateImageOption|.
   switch (update_image_option) {
@@ -522,7 +520,10 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
         if (!image_)
           image_ = CreateImage(is_multipart);
         DCHECK(image_);
-        size_available_ = image_->SetData(std::move(data), all_data_received);
+        // Hold a local reference across `SetData()` as defense-in-depth in
+        // case `image_` is cleared before `SetData()` returns.
+        scoped_refptr<Image> image = image_;
+        size_available_ = image->SetData(std::move(data), all_data_received);
         DCHECK(all_data_received ||
                size_available_ !=
                    Image::kSizeAvailableAndLoadingAsynchronously);
