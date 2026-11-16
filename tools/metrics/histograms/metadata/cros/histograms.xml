@@ -22,18 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Cros.CrOSActionRecorderEvent" enum="CrOSActionRecorderEvent"
-    expires_after="2022-05-01">
-  <owner>charleszhao@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
-  <summary>
-    This histogram is emitted each time when CrOSAction is recorded by the
-    CrOSActionRecorder. For each CrOSAction multiple values can be emitted,
-    corresponding to different events happened during the action processing by
-    CrOSActionRecorder.
-  </summary>
-</histogram>
-
 <histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
     expires_after="2027-04-11">
   <owner>simmonsjosh@google.com</owner>

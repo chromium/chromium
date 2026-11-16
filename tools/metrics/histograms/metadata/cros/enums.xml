@@ -26,17 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="CrOSActionRecorderEvent">
-  <int value="0" label="Disabled"/>
-  <int value="1" label="RecordAction"/>
-  <int value="2" label="FlushToDisk"/>
-  <int value="3" label="ReadFromFileFail"/>
-  <int value="4" label="ParseFromStringFail"/>
-  <int value="5" label="CreateDirectoryFail"/>
-  <int value="6" label="WriteFileAtomicallyFail"/>
-  <int value="7" label="StructuredMetricsLogged"/>
-</enum>
-
 <enum name="CrosDisksArchiveType">
   <int value="0" label="Unknown"/>
   <int value="1" label="ZIP"/>
