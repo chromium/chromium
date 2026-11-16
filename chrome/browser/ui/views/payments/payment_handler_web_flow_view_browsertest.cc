@@ -58,6 +58,7 @@
 #include "media/base/media_switches.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -842,6 +843,42 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
           GetActiveWebContents(),
           content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
   ASSERT_TRUE(WaitForObservedEvent());
+}
+
+// Test that cancelling from the payment app sheet closes the dialog and rejects
+// the payment request with AbortError.
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
+                       CancelFromPaymentApp) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  // Look up CANCEL_BUTTON on the top view because the hidden initial payment
+  // sheet below it on the stack also defines a CANCEL_BUTTON.
+  views::View* cancel_button =
+      GetChildByDialogViewID(top_view, DialogViewID::CANCEL_BUTTON);
+  ASSERT_NE(nullptr, cancel_button);
+  ClickOnDialogViewAndWait(cancel_button, /*wait_for_animation=*/false);
+
+  EXPECT_THAT(
+      content::EvalJs(GetActiveWebContents(), "responsePromise").ExtractError(),
+      ::testing::HasSubstr("AbortError: User closed the Payment Request UI."));
 }
 
 class PaymentHandlerWebFlowViewMandatoryUiDisabledTest
