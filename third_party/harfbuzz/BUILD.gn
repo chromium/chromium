@@ -444,6 +444,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-subset-cff2-round.hh",
       "src/src/hb-subset-cff2-to-cff1.hh",
       "src/src/hb-subset-depend.h",
+      "src/src/hb-subset-hinting.hh",
       "src/src/hb-uniscribe.cc",
       "src/src/hb-uniscribe.h",
       "src/src/hb-vector-buf.hh",
@@ -508,6 +509,10 @@ if (use_system_harfbuzz) {
 
       # Buffer verification not used in production build.
       "HB_NO_BUFFER_VERIFY",
+
+      # Buffer debugging messages and OT glyph name lookups are not used.
+      "HB_NO_BUFFER_MESSAGE",
+      "HB_NO_OT_FONT_GLYPH_NAMES",
 
       # We're not using HarfBuzz' drawing functions or debug tools in this
       # build.
