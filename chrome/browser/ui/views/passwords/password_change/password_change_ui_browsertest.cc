@@ -15,8 +15,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -94,8 +97,7 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
     form.signon_realm = main_url.GetWithEmptyPath().spec();
     form.username_value = u"username";
     form.password_value = password_manager::PasswordString(u"password");
-    form.change_password_url = password_change_url;
-    CHECK(form.change_password_url.is_valid());
+    ASSERT_TRUE(password_change_url.is_valid());
     ManagePasswordsUIController::FromWebContents(
         browser()->GetTabStripModel()->GetActiveWebContents())
         ->OnCredentialLeak(password_manager::LeakedPasswordDetails(
@@ -105,7 +107,9 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
                 password_manager::IsSyncing(true),
                 password_manager::HasChangePasswordUrl(true)),
             std::move(form),
-            /*in_account_store=*/false));
+            /*in_account_store=*/false,
+            affiliations::AffiliationService::ChangePasswordUrlMatch(
+                password_change_url)));
   }
 
   ChromePasswordChangeService* password_change_service() {

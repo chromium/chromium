@@ -41,6 +41,8 @@
 namespace password_manager {
 namespace {
 
+using ChangePasswordUrlMatch =
+    affiliations::AffiliationService::ChangePasswordUrlMatch;
 using Logger = autofill::SavePasswordProgressLogger;
 
 std::unique_ptr<autofill::SavePasswordProgressLogger> GetLogger(
@@ -52,31 +54,30 @@ std::unique_ptr<autofill::SavePasswordProgressLogger> GetLogger(
   return nullptr;
 }
 
-std::variant<LeakedPasswordDetails, GURL> PassUrl(
-    std::optional<affiliations::AffiliationService::ChangePasswordUrlMatch>
-        result) {
-  return result ? std::move(result->change_password_url) : GURL();
+std::variant<LeakedPasswordDetails, std::optional<ChangePasswordUrlMatch>>
+PassFetchResult(std::optional<ChangePasswordUrlMatch> result) {
+  return result;
 }
 
 LeakedPasswordDetails MergeResponses(
-    std::vector<std::variant<LeakedPasswordDetails, GURL>> results) {
+    std::vector<std::variant<LeakedPasswordDetails,
+                             std::optional<ChangePasswordUrlMatch>>> results) {
   CHECK_EQ(2u, results.size());
 
   std::optional<LeakedPasswordDetails> details;
-  GURL url;
+  std::optional<ChangePasswordUrlMatch> fetch_result;
 
   for (auto& result : results) {
     if (std::holds_alternative<LeakedPasswordDetails>(result)) {
       details = std::move(std::get<LeakedPasswordDetails>(result));
-      continue;
+    } else {
+      fetch_result =
+          std::move(std::get<std::optional<ChangePasswordUrlMatch>>(result));
     }
-
-    CHECK(std::holds_alternative<GURL>(result));
-    url = std::move(std::get<GURL>(result));
   }
 
   CHECK(details.has_value());
-  details->credentials.change_password_url = std::move(url);
+  details->change_password_url_match = std::move(fetch_result);
   return std::move(*details);
 }
 
@@ -172,10 +173,10 @@ void LeakDetectionDelegate::OnLeakDetectionDone(
                      weak_ptr_factory_.GetWeakPtr(), check_start_time,
                      is_non_password_login_detected);
 
-  auto barrier_callback =
-      base::BarrierCallback<std::variant<LeakedPasswordDetails, GURL>>(
-          /*num_callbacks=*/2,
-          base::BindOnce(&MergeResponses).Then(std::move(notify_callback)));
+  auto barrier_callback = base::BarrierCallback<std::variant<
+      LeakedPasswordDetails, std::optional<ChangePasswordUrlMatch>>>(
+      /*num_callbacks=*/2,
+      base::BindOnce(&MergeResponses).Then(std::move(notify_callback)));
 
   affiliations::AffiliationService* affiliation_service =
       client_->GetAffiliationService();
@@ -183,9 +184,10 @@ void LeakDetectionDelegate::OnLeakDetectionDone(
       base::FeatureList::IsEnabled(
           features::kFetchChangePasswordUrlForPasswordChange)) {
     affiliation_service->FetchChangePasswordURL(
-        credentials.url, base::BindOnce(&PassUrl).Then(barrier_callback));
+        credentials.url,
+        base::BindOnce(&PassFetchResult).Then(barrier_callback));
   } else {
-    barrier_callback.Run(GURL());
+    barrier_callback.Run(std::nullopt);
   }
 
   if (base::FeatureList::IsEnabled(features::kMarkAllCredentialsAsLeaked)) {
@@ -242,10 +244,6 @@ LeakedPasswordDetails LeakDetectionDelegate::PrepareLeakDetails(
 #endif
   }
 
-  // Clear change password URL, to avoid reusing stale change password URL from
-  // cache.
-  credentials.change_password_url = GURL();
-
   CredentialLeakType leak_type = CreateLeakType(
       IsSaved(in_stores != PasswordForm::Store::kNotSet), is_reused, is_syncing,
       HasChangePasswordUrl(false), is_saved_as_backup);
@@ -264,7 +262,7 @@ void LeakDetectionDelegate::NotifyUserCredentialsWereLeaked(
   HasChangePasswordUrl has_change_url(
       client_->GetPasswordChangeService() &&
       client_->GetPasswordChangeService()->IsPasswordChangeSupported(
-          details.credentials, is_non_password_login_detected));
+          details, is_non_password_login_detected));
   if (has_change_url) {
     details.leak_type |= CredentialLeakFlags::kHasChangePasswordUrl;
   }

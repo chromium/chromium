@@ -29,12 +29,16 @@ using metrics_util::LeakDialogType;
 constexpr char kPasswordCheckupURL[] =
     "https://passwords.google.com/checkup/start?hideExplanation=true";
 
-LeakedPasswordDetails::LeakedPasswordDetails(CredentialLeakType leak_type,
-                                             PasswordForm credentials,
-                                             bool in_account_store)
+LeakedPasswordDetails::LeakedPasswordDetails(
+    CredentialLeakType leak_type,
+    PasswordForm credentials,
+    bool in_account_store,
+    std::optional<affiliations::AffiliationService::ChangePasswordUrlMatch>
+        change_password_url_match)
     : leak_type(leak_type),
       credentials(std::move(credentials)),
-      in_account_store(in_account_store) {}
+      in_account_store(in_account_store),
+      change_password_url_match(std::move(change_password_url_match)) {}
 LeakedPasswordDetails::LeakedPasswordDetails(const LeakedPasswordDetails&) =
     default;
 LeakedPasswordDetails::LeakedPasswordDetails(LeakedPasswordDetails&& other) =

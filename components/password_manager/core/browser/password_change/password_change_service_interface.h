@@ -14,7 +14,7 @@
 namespace password_manager {
 
 class PasswordChangeCredentialsProvider;
-struct PasswordForm;
+struct LeakedPasswordDetails;
 enum class LogInWithChangedPasswordOutcome;
 
 // Abstract interface for high level interaction related to password change.
@@ -23,10 +23,9 @@ class PasswordChangeServiceInterface {
   // Checks whether current user is eligible to use password change.
   virtual bool IsPasswordChangeAvailable() const = 0;
 
-  // Checks whether password change is eligible for a given `form` and
-  // `page_language`.
+  // Checks whether password change is supported for `details`.
   virtual bool IsPasswordChangeSupported(
-      const PasswordForm& form,
+      const LeakedPasswordDetails& details,
       bool is_non_password_login_detected) const = 0;
 
   // Records the outcome of the first login attempt

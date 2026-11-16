@@ -25,7 +25,9 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -141,13 +143,13 @@ void ChromePasswordChangeService::RecordLoginAttemptQuality(
 }
 
 bool ChromePasswordChangeService::IsPasswordChangeSupported(
-    const password_manager::PasswordForm& form,
+    const password_manager::LeakedPasswordDetails& details,
     bool is_non_password_login_detected) const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   PasswordChangeAvailability availability =
-      GetPerSiteAvailability(form, is_non_password_login_detected);
+      GetPerSiteAvailability(details, is_non_password_login_detected);
   base::UmaHistogramEnumeration("PasswordManager.PasswordChangeAvailability",
                                 availability);
 
@@ -210,8 +212,8 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
     content::WebContents* originator) {
 #if !BUILDFLAG(IS_ANDROID)
   GURL change_pwd_url = GetChangePasswordURLOverride(details.credentials.url);
-  if (!change_pwd_url.is_valid()) {
-    change_pwd_url = details.credentials.change_password_url;
+  if (!change_pwd_url.is_valid() && details.change_password_url_match) {
+    change_pwd_url = details.change_password_url_match->change_password_url;
   }
 
   CHECK(change_pwd_url.is_valid() ||
@@ -393,7 +395,7 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
 }
 
 PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
-    const password_manager::PasswordForm& form,
+    const password_manager::LeakedPasswordDetails& details,
     bool is_non_password_login_detected) const {
   auto [log_manager, logger] = CreateLoggerPair(log_router_);
 
@@ -402,6 +404,7 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
     return general_availability;
   }
 
+  const password_manager::PasswordForm& form = details.credentials;
   if (form.IsLikelySignupForm() || form.new_password_element_renderer_id) {
     if (logger) {
       logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_SIGNUP_FORM);
@@ -416,7 +419,9 @@ PasswordChangeAvailability ChromePasswordChangeService::GetPerSiteAvailability(
     return PasswordChangeAvailability::kAvailable;
   }
 
-  const bool has_change_url = form.change_password_url.is_valid();
+  const bool has_change_url =
+      details.change_password_url_match.has_value() &&
+      details.change_password_url_match->change_password_url.is_valid();
   base::UmaHistogramBoolean(kHasPasswordChangeUrlHistogram, has_change_url);
   if (logger) {
     logger->LogBoolean(Logger::STRING_PASSWORD_CHANGE_URL_AVAILABLE,

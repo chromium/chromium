@@ -118,7 +118,7 @@ class MockPasswordChangeService : public PasswordChangeServiceInterface {
   MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const, override));
   MOCK_METHOD(bool,
               IsPasswordChangeSupported,
-              (const PasswordForm&, bool),
+              (const LeakedPasswordDetails&, bool),
               (const, override));
   MOCK_METHOD(void,
               RecordLoginAttemptQuality,

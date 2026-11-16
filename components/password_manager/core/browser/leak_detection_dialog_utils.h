@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_DIALOG_UTILS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_DIALOG_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <type_traits>
 
 #include "base/types/strong_alias.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -45,9 +47,12 @@ using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 // Structure to combine all the information required to display a warning about
 // a leaked password.
 struct LeakedPasswordDetails {
-  LeakedPasswordDetails(CredentialLeakType leak_type,
-                        PasswordForm credentials,
-                        bool in_account_store);
+  LeakedPasswordDetails(
+      CredentialLeakType leak_type,
+      PasswordForm credentials,
+      bool in_account_store,
+      std::optional<affiliations::AffiliationService::ChangePasswordUrlMatch>
+          change_password_url_match = std::nullopt);
 
   LeakedPasswordDetails(const LeakedPasswordDetails&);
   LeakedPasswordDetails(LeakedPasswordDetails&& other);
@@ -64,6 +69,8 @@ struct LeakedPasswordDetails {
   CredentialLeakType leak_type;
   PasswordForm credentials;
   bool in_account_store;
+  std::optional<affiliations::AffiliationService::ChangePasswordUrlMatch>
+      change_password_url_match;
 };
 
 using IsSaved = base::StrongAlias<class IsSavedTag, bool>;

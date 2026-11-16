@@ -15,7 +15,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_change/password_change_service_interface.h"
-#include "components/password_manager/core/browser/password_form.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/password_change/password_change_from_checkup_delegate.h"
@@ -119,7 +118,7 @@ class ChromePasswordChangeService
   // PasswordChangeServiceInterface implementation.
   bool IsPasswordChangeAvailable() const override;
   bool IsPasswordChangeSupported(
-      const password_manager::PasswordForm& form,
+      const password_manager::LeakedPasswordDetails& details,
       bool is_non_password_login_detected) const override;
   void RecordLoginAttemptQuality(
       password_manager::LogInWithChangedPasswordOutcome login_outcome,
@@ -144,7 +143,7 @@ class ChromePasswordChangeService
   bool HasChangePasswordUrlOverride() const;
   GURL GetChangePasswordURLOverride(const GURL& url) const;
   PasswordChangeAvailability GetPerSiteAvailability(
-      const password_manager::PasswordForm& form,
+      const password_manager::LeakedPasswordDetails& details,
       bool is_non_password_login_detected = false) const;
 
   // Destroys `delegate` once its flow is stopped.
