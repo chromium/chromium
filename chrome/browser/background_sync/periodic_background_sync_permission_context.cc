@@ -89,9 +89,10 @@ PeriodicBackgroundSyncPermissionContext::GetContentSettingStatusInternal(
   auto content_setting = host_content_settings_map->GetContentSetting(
       requesting_origin, embedding_origin,
       ContentSettingsType::BACKGROUND_SYNC);
-  CHECK(content_setting == CONTENT_SETTING_BLOCK ||
-            content_setting == CONTENT_SETTING_ALLOW,
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/584978616): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(content_setting == CONTENT_SETTING_BLOCK ||
+         content_setting == CONTENT_SETTING_ALLOW);
   return content_setting;
 }
 
