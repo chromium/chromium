@@ -169,7 +169,10 @@ template("generate_installer") {
     libs = [ "setupapi.lib" ]
 
     if (!is_asan) {
-      ldflags = [ "/DEPENDENTLOADFLAG:0x800" ]
+      ldflags = [
+        "/DELAYLOAD:secur32.dll",
+        "/DEPENDENTLOADFLAG:0x800",
+      ]
     }
 
     deps = [
