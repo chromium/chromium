@@ -377,7 +377,9 @@ void PinStorageCryptohome::TryAuthenticateWithAuthSession(
     std::optional<AuthenticationError> error) {
   CHECK_EQ(key.GetKeyType(), Key::KEY_TYPE_PASSWORD_PLAIN,
            base::NotFatalUntil::M161);
-  CHECK(user_exists, base::NotFatalUntil::M161);
+  // TODO(crbug.com/580885949): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(user_exists);
 
   if (error.has_value()) {
     std::move(callback).Run(std::move(user_context), std::move(error));
