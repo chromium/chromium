@@ -11,14 +11,10 @@ namespace blink {
 
 class ExceptionState;
 
-// This enum is used in UMA. Do not delete or re-order entries. New entries
-// should only be added at the end. Please keep in sync with
-// "CompressionStreamsFormat" in //tools/metrics/histograms/enums.xml.
 enum class CompressionFormat {
-  kGzip = 0,
-  kDeflate = 1,
-  kDeflateRaw = 2,
-  kMaxValue = kDeflateRaw,
+  kGzip,
+  kDeflate,
+  kDeflateRaw,
 };
 
 // Converts the JavaScript name |format| to the equivalent enum value. If the

@@ -232,12 +232,6 @@ chromium-metrics-reviews@google.com.
              value"/>
 </enum>
 
-<enum name="CompressionStreamsFormat">
-  <int value="0" label="gzip"/>
-  <int value="1" label="deflate"/>
-  <int value="2" label="deflate-raw"/>
-</enum>
-
 <enum name="CookieCacheLookupResult">
   <int value="0" label="kCacheMissFirstAccess"/>
   <int value="1" label="kCacheHitAfterGet"/>

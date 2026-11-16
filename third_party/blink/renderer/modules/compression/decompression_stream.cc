@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/compression/decompression_stream.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/modules/compression/compression_format.h"
 #include "third_party/blink/renderer/modules/compression/inflate_transformer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -39,9 +38,6 @@ DecompressionStream::DecompressionStream(ScriptState* script_state,
       LookupCompressionFormat(format, exception_state);
   if (exception_state.HadException())
     return;
-
-  UMA_HISTOGRAM_ENUMERATION("Blink.Compression.DecompressionStream.Format",
-                            inflate_format);
 
   transform_ = TransformStream::Create(
       script_state,

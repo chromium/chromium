@@ -959,30 +959,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Compression.CompressionStream.Format"
-    enum="CompressionStreamsFormat" expires_after="2023-03-26">
-  <owner>ricea@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
-  <summary>
-    Compression format passed to the constructor of the JavaScript API
-    &quot;CompressionStream&quot;, which is used for lossless compression of
-    arbitrary binary data. Recorded once per call to the constructor. This
-    measures which compression formats are most commonly used in the wild.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Compression.DecompressionStream.Format"
-    enum="CompressionStreamsFormat" expires_after="2023-03-26">
-  <owner>ricea@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
-  <summary>
-    Compression format passed to the constructor of the JavaScript API
-    &quot;DecompressionStream&quot;, which is used for lossless decompression of
-    arbitrary binary data. Recorded once per call to the constructor. This
-    measures which compression formats are most commonly used in the wild.
-  </summary>
-</histogram>
-
 <histogram
     name="Blink.ContentDocumentUpdate.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2027-03-14">

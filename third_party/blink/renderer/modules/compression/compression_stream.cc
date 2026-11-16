@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/compression/compression_stream.h"
 
 #include "base/debug/crash_logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/modules/compression/compression_format.h"
 #include "third_party/blink/renderer/modules/compression/deflate_transformer.h"
@@ -46,9 +45,6 @@ CompressionStream::CompressionStream(ScriptState* script_state,
       LookupCompressionFormat(format, exception_state);
   if (exception_state.HadException())
     return;
-
-  UMA_HISTOGRAM_ENUMERATION("Blink.Compression.CompressionStream.Format",
-                            deflate_format);
 
   // default level is hardcoded for now.
   // TODO(arenevier): Make level configurable
