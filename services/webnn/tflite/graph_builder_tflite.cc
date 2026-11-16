@@ -9587,8 +9587,7 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
 
     ASSIGN_OR_RETURN(
         const TensorInfo output_tensor_info,
-        SerializeOutputTensorInfo(dequantize_linear.output_operand_id,
-                                  quantize_params.value_or(0)));
+        SerializeOutputTensorInfo(dequantize_linear.output_operand_id));
 
     return SerializeBinaryOperation(
         ::tflite::BuiltinOperator_MUL, output_tensor_index_of_sub,
