@@ -219,8 +219,6 @@ public class WebContentsAccessibilityTest {
             "node should have a Spannable with spelling correction for given text.";
     private static final String INPUT_RANGE_VALUE_MISMATCH =
             "Value for <input type='range'> is incorrect, did you honor 'step' value?";
-    private static final String INPUT_RANGE_EVENT_ERROR =
-            "TYPE_WINDOW_CONTENT_CHANGED event not received before timeout.";
     private static final String CACHING_ERROR = "AccessibilityNodeInfo cache has stale data";
     private static final String NODE_EXTRAS_UNCLIPPED_ERROR =
             "AccessibilityNodeInfo object should have unclipped bounds in extras bundle";
@@ -482,19 +480,28 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Helper method to perform a scroll action on a range node and wait for the event.
+     * Helper method to perform a scroll action on a range node and wait for the value to be
+     * updated.
      *
      * @param viewId int virtualViewId of the node.
      * @param scrollAction AccessibilityActionCompat scroll action to perform.
      */
-    private void scrollRangeAndWaitForEvent(
+    private void scrollRange(
             int viewId, AccessibilityNodeInfoCompat.AccessibilityActionCompat scrollAction)
-            throws ExecutionException {
-        mTestData.setTypeWindowContentChangedCount(0);
-        performActionOnUiThread(viewId, scrollAction, new Bundle());
-        CriteriaHelper.pollUiThread(
-            () -> mTestData.getTypeWindowContentChangedCount() > 0,
-            INPUT_RANGE_EVENT_ERROR);
+            throws Throwable {
+        float initialValue = createAccessibilityNodeInfo(viewId).getRangeInfo().getCurrent();
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        viewId,
+                        scrollAction,
+                        new Bundle(),
+                        () -> {
+                            AccessibilityNodeInfoCompat nodeInfo =
+                                    createAccessibilityNodeInfo(viewId);
+                            return nodeInfo != null
+                                    && nodeInfo.getRangeInfo() != null
+                                    && nodeInfo.getRangeInfo().getCurrent() != initialValue;
+                        }));
     }
 
     private ClipboardManager getClipboardManager() {
@@ -3219,8 +3226,8 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider increments and check results.
         for (int i = 1; i <= 10; i++) {
-            // Increment our slider using action, and poll until we receive the event.
-            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
+            // Perform scroll action on the UI thread to increment the slider.
+            scrollRange(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
 
             // Refresh our node info to get the latest RangeInfo child object.
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
@@ -3235,8 +3242,8 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider decrements and check results.
         for (int i = 1; i <= 20; i++) {
-            // Decrement our slider using action, and poll until we receive the event.
-            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
+            // Perform scroll action on the UI thread to decrement the slider.
+            scrollRange(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
 
             // Refresh our node info to get the latest RangeInfo child object.
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
@@ -3255,7 +3262,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/584777695")
     public void testNodeInfo_inputTypeRangeSmall() throws Throwable {
         // Create a basic input range, and find the associated |AccessibilityNodeInfo| object.
         setupTestWithHTML("<input type='range' min='0' max='10' value='0'>");
@@ -3269,7 +3275,7 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider increments and check results.
         for (int i = 1; i <= 10; i++) {
-            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
+            scrollRange(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH, i, mNodeInfo.getRangeInfo().getCurrent(), 0.001);
@@ -3277,7 +3283,7 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider decrements and check results.
         for (int i = 1; i <= 10; i++) {
-            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
+            scrollRange(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH,
@@ -3303,7 +3309,7 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider increments and check results.
         for (int i = 1; i <= 10; i++) {
-            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
+            scrollRange(inputNodeVirtualViewId, ACTION_SCROLL_FORWARD);
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH,
@@ -3314,7 +3320,7 @@ public class WebContentsAccessibilityTest {
 
         // Perform a series of slider decrements and check results.
         for (int i = 1; i <= 20; i++) {
-            scrollRangeAndWaitForEvent(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
+            scrollRange(inputNodeVirtualViewId, ACTION_SCROLL_BACKWARD);
             mNodeInfo = createAccessibilityNodeInfo(inputNodeVirtualViewId);
             Assert.assertEquals(
                     INPUT_RANGE_VALUE_MISMATCH,
