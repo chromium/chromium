@@ -7,7 +7,7 @@
     RuntimeEnabled=ContainerTiming
 ] interface PerformanceContainerTiming : PerformanceEntry {
     [Measure] readonly attribute DOMRectReadOnly intersectionRect;
-    [Measure] readonly attribute double size;
+    [Measure] readonly attribute unsigned long long size;
     [Measure] readonly attribute HTMLElement? rootElement;
     [Measure] readonly attribute DOMString identifier;
     [Measure] readonly attribute Element? lastPaintedElement;

@@ -15,7 +15,7 @@ namespace blink {
 // static
 PerformanceContainerTiming* PerformanceContainerTiming::Create(
     const gfx::Rect& intersection_rect,
-    double size,
+    uint64_t size,
     HTMLElement* root_element,
     const AtomicString& identifier,
     Element* last_painted_element,
@@ -27,7 +27,7 @@ PerformanceContainerTiming* PerformanceContainerTiming::Create(
 
 PerformanceContainerTiming::PerformanceContainerTiming(
     const gfx::Rect& intersection_rect,
-    double size,
+    uint64_t size,
     HTMLElement* root_element,
     const AtomicString& identifier,
     Element* last_painted_element,
@@ -102,7 +102,7 @@ std::unique_ptr<TracedValue> PerformanceContainerTiming::ToTracedValue() const {
   traced_value->SetDouble("rectTop", intersection_rect_->top());
   traced_value->SetDouble("rectWidth", intersection_rect_->width());
   traced_value->SetDouble("rectHeight", intersection_rect_->height());
-  traced_value->SetDouble("size", size_);
+  traced_value->SetDouble("size", static_cast<double>(size_));
   traced_value->SetString("identifier", identifier_);
   return traced_value;
 }
@@ -111,7 +111,7 @@ void PerformanceContainerTiming::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.Add("intersectionRect", intersection_rect_.Get());
-  builder.AddNumber("size", size_);
+  builder.AddInteger("size", size_);
   builder.AddString("identifier", identifier_);
   builder.AddNumber("firstRenderTime", first_render_time_);
 }

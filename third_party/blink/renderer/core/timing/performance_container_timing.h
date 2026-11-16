@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_CONTAINER_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_CONTAINER_TIMING_H_
 
+#include <stdint.h>
+
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
@@ -26,13 +28,13 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
   // Created at paint time. The timing is set by FinalizeEntry() once the frame
   // is presented.
   static PerformanceContainerTiming* Create(const gfx::Rect& intersection_rect,
-                                            double size,
+                                            uint64_t size,
                                             HTMLElement* root_element,
                                             const AtomicString& identifier,
                                             Element* last_painted_element,
                                             DOMWindow* source);
   PerformanceContainerTiming(const gfx::Rect& intersection_rect,
-                             double size,
+                             uint64_t size,
                              HTMLElement* root_element,
                              const AtomicString& identifier,
                              Element* last_painted_element,
@@ -49,7 +51,7 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
                      DOMHighResTimeStamp first_render_time);
 
   DOMRectReadOnly* intersectionRect() const { return intersection_rect_.Get(); }
-  double size() const { return size_; }
+  uint64_t size() const { return size_; }
   HTMLElement* rootElement() const;
   AtomicString identifier() const { return identifier_; }
   Element* lastPaintedElement() const;
@@ -65,7 +67,7 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
   Member<DOMRectReadOnly> intersection_rect_;
-  double size_;
+  uint64_t size_;
   WeakMember<HTMLElement> root_element_;
   AtomicString identifier_;
   WeakMember<Element> last_painted_element_;
