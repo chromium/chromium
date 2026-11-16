@@ -904,6 +904,17 @@ void BlockNode::StoreResultInLayoutBox(const LayoutResult* result,
   const auto& fragment = To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   wtf_size_t fragment_idx = 0;
 
+  // If the "is hidden due to layout" flag changed, we must mark this on the
+  // layout object.
+  if (!break_token && !box_->IsFragmentLessBox()) {
+    const auto& previous_fragment =
+        box_->GetLayoutResult(0)->GetPhysicalFragment();
+    if (fragment.IsHiddenDueToLayout() !=
+        previous_fragment.IsHiddenDueToLayout()) {
+      box_->MarkIsHiddenDueToLayoutChanged();
+    }
+  }
+
   if (fragment.IsOnlyForNode()) {
     box_->SetCachedLayoutResult(std::move(result), 0);
   } else {

@@ -17,7 +17,8 @@ enum class PrePaintSubtreeWalkReason {
   kBlockingWheelEventHandler,
   kSoftNavigationContext,
   kContainerTimingContext,
-  kMaxValue = kContainerTimingContext,
+  kIsHiddenDueToLayout,
+  kMaxValue = kIsHiddenDueToLayout,
 };
 
 inline constexpr unsigned kPrePaintSubtreeWalkReasonBits =
@@ -30,7 +31,8 @@ inline PrePaintSubtreeWalkReasons CrossFramePrePaintSubtreeWalkReasons(
     PrePaintSubtreeWalkReasons reasons) {
   return base::Intersection(
       reasons, {PrePaintSubtreeWalkReason::kEffectiveAllowedTouchAction,
-                PrePaintSubtreeWalkReason::kBlockingWheelEventHandler});
+                PrePaintSubtreeWalkReason::kBlockingWheelEventHandler,
+                PrePaintSubtreeWalkReason::kIsHiddenDueToLayout});
 }
 
 }  // namespace blink

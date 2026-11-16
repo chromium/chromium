@@ -224,7 +224,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   bool HasVisibleContent() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
-    return has_visible_content_;
+    return has_visible_content_ && !is_hidden_due_to_layout_;
   }
 
   bool HasVisibleSelfPaintingDescendant() const {
@@ -341,6 +341,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool IsUnderSVGHiddenContainer() const {
     return is_under_svg_hidden_container_;
   }
+
+  void SetIsHiddenDueToLayout(bool value) { is_hidden_due_to_layout_ = value; }
 
   bool PaintsWithFilters() const;
 
@@ -783,6 +785,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // True if the current subtree is underneath a LayoutSVGHiddenContainer
   // ancestor.
   unsigned is_under_svg_hidden_container_ : 1;
+
+  unsigned is_hidden_due_to_layout_ : 1 = false;
 
   unsigned has_self_painting_layer_descendant_ : 1;
 

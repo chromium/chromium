@@ -112,6 +112,10 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // Whether we are inside an active unbounded element.
     bool inside_active_unbounded = false;
 
+    bool is_hidden_due_to_layout = false;
+    bool is_abspos_container_hidden_due_to_layout = false;
+    bool is_fixedpos_container_hidden_due_to_layout = false;
+
     const PhysicalBoxFragment* current_container;
     const PhysicalBoxFragment* absolute_positioned_container;
     const PhysicalBoxFragment* fixed_positioned_container;

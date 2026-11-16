@@ -5790,6 +5790,12 @@ void LayoutObject::MarkContainerTimingChanged() {
       {PrePaintSubtreeWalkReason::kContainerTimingContext});
 }
 
+void LayoutObject::MarkIsHiddenDueToLayoutChanged() {
+  NOT_DESTROYED();
+  SetNeedsPrePaintSubtreeWalk(
+      {PrePaintSubtreeWalkReason::kIsHiddenDueToLayout});
+}
+
 // Note about ::first-letter pseudo-element:
 //   When an element has ::first-letter pseudo-element, first letter characters
 //   are taken from |Text| node and first letter characters are considered

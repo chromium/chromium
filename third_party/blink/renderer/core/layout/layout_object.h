@@ -3106,6 +3106,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     should_inherit_container_timing_root_ = should_inherit;
   }
 
+  // The value of PhysicalFragment::IsHiddenDueToLayout() has changed for this
+  // object’s fragments.
+  void MarkIsHiddenDueToLayoutChanged();
+
   // Painters can use const methods only, except for these explicitly declared
   // methods.
   class CORE_EXPORT MutableForPainting {

@@ -15,13 +15,16 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/pre_paint_subtree_walk_reasons.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -2301,6 +2304,47 @@ TEST_F(LayoutObjectTest, MAYBE_Depth) {
     object = object->SlowFirstChild();
     ++depth;
   }
+}
+
+TEST_F(LayoutObjectTest, MarkIsHiddenForPaintChanged) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #clamp { line-clamp: 2; }
+    </style>
+    <div id=clamp>
+      Line 1 <br>
+      Line 2
+      <div id=target>
+        Line 3
+      </div>
+    </div>
+  )HTML");
+
+  const LayoutObject* clamp = GetLayoutObjectByElementId("clamp");
+  const LayoutObject* target = GetLayoutObjectByElementId("target");
+
+  To<Element>(clamp->GetNode())
+      ->setAttribute(html_names::kStyleAttr, AtomicString("line-clamp: 3"));
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(
+      To<LayoutBox>(target)->GetPhysicalFragment(0)->IsHiddenDueToLayout());
+  EXPECT_TRUE(target->GetPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kIsHiddenDueToLayout));
+  EXPECT_TRUE(clamp->GetDescendantPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kIsHiddenDueToLayout));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  To<Element>(clamp->GetNode())->removeAttribute(html_names::kStyleAttr);
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(
+      To<LayoutBox>(target)->GetPhysicalFragment(0)->IsHiddenDueToLayout());
+  EXPECT_TRUE(target->GetPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kIsHiddenDueToLayout));
+  EXPECT_TRUE(clamp->GetDescendantPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kIsHiddenDueToLayout));
 }
 
 }  // namespace blink

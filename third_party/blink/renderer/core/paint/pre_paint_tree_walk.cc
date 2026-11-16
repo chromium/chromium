@@ -643,9 +643,17 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
   if (!object.CanContainAbsolutePositionObjects())
     return;
 
+  CHECK(context.is_hidden_due_to_layout || !fragment ||
+        !fragment->IsHiddenDueToLayout());
+
   context.absolute_positioned_container = context.current_container;
-  if (object.CanContainFixedPositionObjects())
+  context.is_abspos_container_hidden_due_to_layout =
+      context.is_hidden_due_to_layout;
+  if (object.CanContainFixedPositionObjects()) {
     context.fixed_positioned_container = context.absolute_positioned_container;
+    context.is_fixedpos_container_hidden_due_to_layout =
+        context.is_hidden_due_to_layout;
+  }
 }
 
 void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
@@ -765,6 +773,11 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     property_tree_builder->IssueInvalidationsAfterUpdate();
     needs_invalidate_chrome_client_and_intersection_ |=
         property_tree_builder->PropertiesChanged();
+  }
+
+  if (object == &paint_invalidator_context.painting_layer->GetLayoutObject()) {
+    paint_invalidator_context.painting_layer->SetIsHiddenDueToLayout(
+        context.is_hidden_due_to_layout);
   }
 }
 
@@ -1489,6 +1502,35 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
 
   PrePaintTreeWalkContext context(parent_context,
                                   needs_tree_builder_context_update);
+
+  if (object.IsOutOfFlowPositioned()) {
+    context.is_hidden_due_to_layout =
+        object.IsFixedPositioned()
+            ? context.is_fixedpos_container_hidden_due_to_layout
+            : context.is_abspos_container_hidden_due_to_layout;
+  }
+
+  if (!context.is_hidden_due_to_layout) {
+    // We only need to check `LayoutBox`es for the `IsHiddenDueToLayout` flag
+    // because `LayoutInline`s can't create new formatting contexts in layout.
+    // Storing this flag in the `PrePaintTreeWalkContext` is only done to deal
+    // with cases where layout can't easily track it through nested formatting
+    // contexts; so there's no need to do this for inlines too.
+    if (auto* box = DynamicTo<LayoutBox>(&object)) {
+      if (!box->IsFragmentLessBox()) {
+        context.is_hidden_due_to_layout =
+            box->GetPhysicalFragment(0)->IsHiddenDueToLayout();
+#if DCHECK_IS_ON()
+        // Make sure that all fragments agree on whether the layout object is
+        // hidden due to layout.
+        for (wtf_size_t i = 1; i < box->PhysicalFragmentCount(); i++) {
+          DCHECK_EQ(box->GetPhysicalFragment(i)->IsHiddenDueToLayout(),
+                    context.is_hidden_due_to_layout);
+        }
+#endif
+      }
+    }
+  }
 
   WalkInternal(object, context, pre_paint_info);
 
