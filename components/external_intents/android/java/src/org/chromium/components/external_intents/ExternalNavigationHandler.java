@@ -1908,13 +1908,19 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             GURL browserFallbackUrl,
             MutableBoolean canLaunchExternalFallbackResult) {
 
-        sanitizeQueryIntentActivitiesIntent(targetIntent);
-
         // Any subsequent navigations should cancel the existing dialog.
         cancelDialogs();
 
         // Don't allow external fallback URLs by default.
         canLaunchExternalFallbackResult.set(false);
+
+        if (ExternalIntentFilter.shouldBlockOrSanitize(targetIntent)) {
+            if (debug()) Log.i(TAG, "Blocked by ExternalIntentFilter.");
+            isHiddenCrossFrameRenavigation(params);
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
+        sanitizeQueryIntentActivitiesIntent(targetIntent);
 
         if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
 
