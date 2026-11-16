@@ -46,7 +46,7 @@ export class SharePasswordGroupAvatarElement extends CrLitElement {
 
   protected getProfileImageUrl_(index: number): string {
     if (index < this.members.length) {
-      return this.members[index].profileImageUrl;
+      return this.members[index]!.profileImageUrl;
     }
     return '';
   }

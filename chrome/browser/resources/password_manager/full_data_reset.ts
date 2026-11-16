@@ -113,16 +113,16 @@ export class FullDataResetElement extends FullDataResetElementBase {
       case 0:
         return '';
       case 1:
-        return this.i18n('fullResetDomainsDisplayOne', sitesArray[0]);
+        return this.i18n('fullResetDomainsDisplayOne', sitesArray[0]!);
       case 2:
         return this.i18n(
-            'fullResetDomainsDisplayTwo', sitesArray[0], sitesArray[1]);
+            'fullResetDomainsDisplayTwo', sitesArray[0]!, sitesArray[1]!);
       default:
         const moreCount = sites.size - 2;
         const container = await this.getFormattedCountString(
             'fullResetDomainsDisplayTwoAndXMore', moreCount);
-        return container.replace('$1', sitesArray[0])
-            .replace('$2', sitesArray[1]);
+        return container.replace('$1', sitesArray[0]!)
+            .replace('$2', sitesArray[1]!);
     }
   }
 

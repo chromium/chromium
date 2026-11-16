@@ -15,7 +15,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
 
 import type {CredentialFieldElement} from './credential_field.js';
 import {getCss} from './passkey_details_card.css.js';
@@ -55,7 +55,8 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
     };
   }
 
-  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
   protected accessor showEditPasskeyDialog_: boolean = false;
   protected accessor showDeletePasskeyDialog_: boolean = false;
 
@@ -110,7 +111,7 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   protected getInfoLabelText_() {
     if (this.passkey.hidden) {
       return this.i18nAdvanced('passkeyHiddenInfoLabel', {
-        substitutions: [this.passkey.affiliatedDomains[0].name],
+        substitutions: [this.passkey.affiliatedDomains[0]!.name],
         tags: ['a'],
       });
     }

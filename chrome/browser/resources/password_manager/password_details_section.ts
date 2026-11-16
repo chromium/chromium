@@ -55,8 +55,8 @@ export class PasswordDetailsSectionElement extends
 
   private savedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
-  private passwordManagerAuthTimeoutListener_: () => void;
-  private visibilityChangedListener_: () => void;
+  private passwordManagerAuthTimeoutListener_: (() => void)|null = null;
+  private visibilityChangedListener_: (() => void)|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -82,8 +82,11 @@ export class PasswordDetailsSectionElement extends
           this.savedPasswordsListener_);
       this.savedPasswordsListener_ = null;
     }
+    assert(this.passwordManagerAuthTimeoutListener_);
     PasswordManagerImpl.getInstance().removePasswordManagerAuthTimeoutListener(
         this.passwordManagerAuthTimeoutListener_);
+    this.passwordManagerAuthTimeoutListener_ = null;
+    this.removeVisibilityChangedListener_();
   }
 
   override currentRouteChanged(route: Route, _: Route): void {
@@ -155,6 +158,14 @@ export class PasswordDetailsSectionElement extends
         this.savedPasswordsListener_);
   }
 
+  private removeVisibilityChangedListener_() {
+    if (this.visibilityChangedListener_) {
+      document.removeEventListener(
+          'visibilitychange', this.visibilityChangedListener_);
+      this.visibilityChangedListener_ = null;
+    }
+  }
+
   /*
    * Requests passwords and notes for all credentials from a group. If page
    * isn't visible the request will be postponed until tab becomes focused
@@ -162,14 +173,14 @@ export class PasswordDetailsSectionElement extends
    */
   private updateShownCredentials(
       group: chrome.passwordsPrivate.CredentialGroup): Promise<void> {
+    this.removeVisibilityChangedListener_();
     if (document.visibilityState === 'visible') {
       return this.requestShownCredentials_(group);
     }
     return new Promise((resolve, reject) => {
       this.visibilityChangedListener_ = () => {
         if (document.visibilityState === 'visible') {
-          document.removeEventListener(
-              'visibilitychange', this.visibilityChangedListener_);
+          this.removeVisibilityChangedListener_();
           this.requestShownCredentials_(group).then(resolve).catch(reject);
         }
       };

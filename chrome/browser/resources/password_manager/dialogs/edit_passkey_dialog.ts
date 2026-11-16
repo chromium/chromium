@@ -12,7 +12,7 @@ import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl} from '../password_manager_proxy.js';
 
 import {getCss} from './edit_passkey_dialog.css.js';
 import {getHtml} from './edit_passkey_dialog.html.js';
@@ -50,7 +50,8 @@ export class EditPasskeyDialogElement extends EditPasskeyDialogElementBase {
     };
   }
 
-  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
   protected accessor username_: string = '';
   protected accessor displayName_: string = '';
 

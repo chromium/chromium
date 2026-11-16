@@ -37,7 +37,7 @@ export class ReusedPasswordInfo {
   }
 
   credentials: chrome.passwordsPrivate.PasswordUiEntry[];
-  title: string;
+  title: string = '';
 }
 
 export interface CheckupDetailsSectionElement {

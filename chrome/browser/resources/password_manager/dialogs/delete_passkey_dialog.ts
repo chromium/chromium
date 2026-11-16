@@ -12,7 +12,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl} from '../password_manager_proxy.js';
 
 import {getCss} from './delete_passkey_dialog.css.js';
 import {getHtml} from './delete_passkey_dialog.html.js';
@@ -46,7 +46,8 @@ export class DeletePasskeyDialogElement extends DeletePasskeyDialogElementBase {
     };
   }
 
-  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor passkey: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -18,7 +18,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordManagerProxy} from '../password_manager_proxy.js';
-import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl} from '../password_manager_proxy.js';
 
 import {getHtml} from './share_password_flow.html.js';
 
@@ -56,7 +56,8 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
 
   accessor passwordName: string = '';
   accessor iconUrl: string = '';
-  accessor password: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor password: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
   accessor flowState: ShareFlowState = ShareFlowState.NO_DIALOG;
   protected accessor recipients_: chrome.passwordsPrivate.RecipientInfo[] = [];
   protected accessor fetchResults_: chrome.passwordsPrivate.FamilyFetchResults|

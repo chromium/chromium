@@ -79,7 +79,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     };
   }
 
-  accessor focusConfig: FocusConfig;
+  accessor focusConfig: FocusConfig = new Map();
   private accessor groups_: chrome.passwordsPrivate.CredentialGroup[]|null =
       null;
   protected accessor filteredGroups_:

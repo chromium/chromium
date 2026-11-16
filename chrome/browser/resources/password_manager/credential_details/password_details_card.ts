@@ -28,7 +28,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordsMovedEvent, ValueCopiedEvent} from '../password_manager_app.js';
-import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
 import {MoveToAccountStoreTrigger, PasswordSharingActions, recordMoveToAccountStoreAccepted, recordPasswordSharingInteraction} from '../sharing/metrics_utils.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
@@ -100,9 +100,10 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     };
   }
 
-  accessor password: chrome.passwordsPrivate.PasswordUiEntry;
-  accessor groupName: string;
-  accessor iconUrl: string;
+  accessor password: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
+  accessor groupName: string = '';
+  accessor iconUrl: string = '';
   accessor isUsingAccountStore: boolean = false;
   /* This is set by the parent element, to only show help buble on the first
    * card on the page. */
@@ -263,10 +264,12 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         'movePasswordsToAccountDetailsCardSubtitle', this.accountEmail);
   }
 
+  // <if expr="_google_chrome">
   private computeShowShareButton_(): boolean {
     return !this.isFederated_() &&
         (this.isSyncingPasswords || this.isAccountStoreUser);
   }
+  // </if>
 
   private getCredentialTypeString_(): string {
     return this.isFederated_() ? this.i18n(

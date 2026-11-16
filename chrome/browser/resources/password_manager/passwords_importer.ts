@@ -449,13 +449,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     }
   }
 
-  private getSuccessTipHtml_(): TrustedHTML {
-    assert(this.results_);
-    return this.i18nAdvanced(
-        'importPasswordsSuccessTip',
-        {attrs: ['class'], substitutions: [this.results_.fileName]});
-  }
-
   protected getCheckboxLabelHtml_(): TrustedHTML {
     assert(this.results_);
     return this.i18nAdvanced(

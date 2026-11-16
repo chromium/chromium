@@ -17,7 +17,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ValueCopiedEvent} from '../password_manager_app.js';
-import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 
 import {getCss} from './backup_password_details_card.css.js';
@@ -69,7 +69,8 @@ export class BackupPasswordDetailsCardElement extends
     };
   }
 
-  accessor password: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor password: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

@@ -60,7 +60,11 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
     };
   }
 
-  accessor item: chrome.passwordsPrivate.CredentialGroup;
+  accessor item: chrome.passwordsPrivate.CredentialGroup = {
+    name: '',
+    iconUrl: '',
+    entries: [],
+  };
   accessor isAccountStoreUser: boolean = false;
   accessor first: boolean = false;
   accessor searchTerm: string = '';

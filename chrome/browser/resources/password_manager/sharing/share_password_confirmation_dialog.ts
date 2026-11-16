@@ -16,7 +16,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {PasswordManagerProxy} from '../password_manager_proxy.js';
-import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl} from '../password_manager_proxy.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {PasswordSharingActions, recordPasswordSharingInteraction} from './metrics_utils.js';
@@ -73,7 +73,8 @@ export class SharePasswordConfirmationDialogElement extends
     };
   }
 
-  accessor password: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor password: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
   accessor passwordName: string = '';
   accessor iconUrl: string = '';
   accessor recipients: chrome.passwordsPrivate.RecipientInfo[] = [];
@@ -155,7 +156,7 @@ export class SharePasswordConfirmationDialogElement extends
     return this.i18nAdvanced(
         'sharePasswordConfirmationDescriptionSingleRecipient', {
           substitutions: [
-            this.recipients[0].displayName,
+            this.recipients[0]!.displayName,
             this.passwordName,
           ],
         });

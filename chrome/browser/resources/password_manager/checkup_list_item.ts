@@ -19,7 +19,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './checkup_list_item.css.js';
 import {getHtml} from './checkup_list_item.html.js';
 import {PasswordAutomaticChangeState} from './password_manager.mojom-webui.js';
-import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {ShowPasswordMixinInterface} from './show_password_mixin.js';
 import {ShowPasswordMixin} from './show_password_mixin.js';
 
@@ -63,7 +63,8 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
     };
   }
 
-  accessor item: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor item: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
   accessor group: chrome.passwordsPrivate.CredentialGroup|undefined;
   accessor first: boolean = false;
   accessor showDetails: boolean = false;

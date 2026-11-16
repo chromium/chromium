@@ -924,4 +924,16 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 }
 
+export function createEmptyPasswordUiEntry():
+    chrome.passwordsPrivate.PasswordUiEntry {
+  return {
+    isPasskey: false,
+    affiliatedDomains: [],
+    username: '',
+    id: -1,
+    storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+    hidden: false,
+  };
+}
+
 let instance: PasswordManagerProxy|null = null;

@@ -103,7 +103,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     };
   }
 
-  accessor focusConfig: FocusConfig;
+  accessor focusConfig: FocusConfig = new Map();
   protected accessor checkedPasswordsText_: string = '';
   private accessor compromisedPasswordsText_: string = '';
   protected accessor reusedPasswordsText_: string = '';

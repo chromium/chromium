@@ -20,7 +20,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl} from '../password_manager_proxy.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getCss} from './multi_store_delete_password_dialog.css.js';
@@ -67,7 +67,8 @@ export class MultiStoreDeletePasswordDialogElement extends
     };
   }
 
-  accessor duplicatedPassword: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor duplicatedPassword: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
   protected accessor removeFromAccountChecked_: boolean = true;
   protected accessor removeFromDeviceChecked_: boolean = true;
 

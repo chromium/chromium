@@ -18,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {createEmptyPasswordUiEntry, PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 
@@ -97,7 +97,8 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
     };
   }
 
-  accessor credential: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor credential: chrome.passwordsPrivate.PasswordUiEntry =
+      createEmptyPasswordUiEntry();
   accessor showRedirect: boolean = false;
   protected accessor username_: string = '';
   protected accessor password_: string = '';
