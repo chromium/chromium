@@ -503,7 +503,9 @@ INSTANTIATE_TEST_SUITE_P(
 // Checks that Any and AnyCritical are correctly recorded for different process
 // and thread types.
 // TODO(crbug.com/446160865): Re-enable this test.
-#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/424376542): Flaky on Android, where tests share a process and
+// an earlier test can leave the histogram registry in a bad state.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_AnyCriticalThreadHung DISABLED_AnyCriticalThreadHung
 #else
 #define MAYBE_AnyCriticalThreadHung AnyCriticalThreadHung
