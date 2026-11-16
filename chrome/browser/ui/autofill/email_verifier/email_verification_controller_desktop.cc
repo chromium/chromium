@@ -30,6 +30,7 @@ EmailVerificationControllerDesktop::~EmailVerificationControllerDesktop() =
 void EmailVerificationControllerDesktop::ShowPopupImpl(
     const gfx::RectF& element_bounds,
     const url::Origin& issuer_origin,
+    const gfx::Image& issuer_logo,
     const std::u16string& email,
     base::OnceCallback<void(
         AutofillClient::EmailVerificationPermissionUiStatus)> decision_callback,
@@ -37,8 +38,9 @@ void EmailVerificationControllerDesktop::ShowPopupImpl(
   const gfx::Rect client_area = web_contents().GetContainerBounds();
   const gfx::RectF bounds_in_screen_space =
       element_bounds + client_area.OffsetFromOrigin();
-  popup_controller_.Show(bounds_in_screen_space, issuer_origin, email,
-                         std::move(decision_callback), std::move(on_dismissed));
+  popup_controller_.Show(bounds_in_screen_space, issuer_origin, issuer_logo,
+                         email, std::move(decision_callback),
+                         std::move(on_dismissed));
 }
 
 void EmailVerificationControllerDesktop::HidePopupImpl() {

@@ -20,6 +20,10 @@
 #include "ui/views/input_event_activation_protector.h"
 #include "url/origin.h"
 
+namespace gfx {
+class Image;
+}
+
 namespace ui {
 class Event;
 }
@@ -50,6 +54,7 @@ class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,
       const url::Origin& issuer_origin,
+      const gfx::Image& issuer_logo,
       const std::u16string& email,
       base::OnceCallback<void(bool)> callback);
 
@@ -57,6 +62,7 @@ class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,
       const url::Origin& issuer_origin,
+      const gfx::Image& issuer_logo,
       const std::u16string& email,
       base::OnceCallback<void(bool)> callback);
   EmailVerificationPopupViewImpl(const EmailVerificationPopupViewImpl&) =

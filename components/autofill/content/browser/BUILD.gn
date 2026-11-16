@@ -162,6 +162,7 @@ source_set("unit_tests") {
     "//services/service_manager/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }
 

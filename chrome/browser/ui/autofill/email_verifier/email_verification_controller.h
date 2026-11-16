@@ -23,6 +23,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
 namespace autofill {
 
 // Coordinates the Email Verification Protocol (EVP) UI flows across Desktop and
@@ -55,8 +59,11 @@ class EmailVerificationController {
   virtual ~EmailVerificationController();
 
   // Shows the permission prompt popup anchored to the element bounds.
+  // `issuer_logo` is the logo advertised by the issuer, or empty if it has
+  // none.
   void ShowPopup(const gfx::RectF& element_bounds,
                  const url::Origin& issuer_origin,
+                 const gfx::Image& issuer_logo,
                  const std::u16string& email,
                  base::OnceCallback<
                      void(AutofillClient::EmailVerificationPermissionUiStatus)>
@@ -87,6 +94,7 @@ class EmailVerificationController {
   virtual void ShowPopupImpl(
       const gfx::RectF& element_bounds,
       const url::Origin& issuer_origin,
+      const gfx::Image& issuer_logo,
       const std::u16string& email,
       base::OnceCallback<
           void(AutofillClient::EmailVerificationPermissionUiStatus)>

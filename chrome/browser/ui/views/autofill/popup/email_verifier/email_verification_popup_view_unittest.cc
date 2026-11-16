@@ -94,8 +94,8 @@ TEST_F(EmailVerificationPopupViewTest, NoInitialButtonFocus) {
       std::make_unique<EmailVerificationPopupController>(web_contents());
   auto view = std::make_unique<EmailVerificationPopupViewImpl>(
       controller->GetWeakPtr(), widget_.get(),
-      url::Origin::Create(GURL("https://issuer.com")), u"user@example.com",
-      base::DoNothing());
+      url::Origin::Create(GURL("https://issuer.com")), gfx::Image(),
+      u"user@example.com", base::DoNothing());
 
   views::MdTextButton* cancel_button = views::AsViewClass<views::MdTextButton>(
       view->GetViewByID(static_cast<int>(
@@ -119,8 +119,8 @@ TEST_F(EmailVerificationPopupViewTest, ShowLoadingStateRealView) {
   base::WeakPtr<EmailVerificationPopupViewImpl> view =
       EmailVerificationPopupViewImpl::Show(
           controller->GetWeakPtr(), widget_.get(),
-          url::Origin::Create(GURL("https://example.com")), u"user@example.com",
-          base::DoNothing());
+          url::Origin::Create(GURL("https://example.com")), gfx::Image(),
+          u"user@example.com", base::DoNothing());
 
   ASSERT_TRUE(view);
   ASSERT_TRUE(view->confirm_button_for_testing());
@@ -197,7 +197,7 @@ TEST_F(EmailVerificationPopupViewTest, LoadsFaviconUsingIssuerOrigin) {
       std::make_unique<EmailVerificationPopupController>(web_contents());
   auto view = std::make_unique<EmailVerificationPopupViewImpl>(
       controller->GetWeakPtr(), widget_.get(),
-      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      url::Origin::Create(GURL("https://accounts.issuer.com")), gfx::Image(),
       u"user@example.com", base::DoNothing());
 
   ASSERT_TRUE(view->icon_view_for_testing());
@@ -230,7 +230,7 @@ TEST_F(EmailVerificationPopupViewTest, KeepsStaticIconIfNoFavicon) {
       std::make_unique<EmailVerificationPopupController>(web_contents());
   auto view = std::make_unique<EmailVerificationPopupViewImpl>(
       controller->GetWeakPtr(), widget_.get(),
-      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      url::Origin::Create(GURL("https://accounts.issuer.com")), gfx::Image(),
       u"user@example.com", base::DoNothing());
   ASSERT_TRUE(saved_callback);
 
@@ -238,6 +238,112 @@ TEST_F(EmailVerificationPopupViewTest, KeepsStaticIconIfNoFavicon) {
       .Run(favicon_base::LargeIconResult(
           std::make_unique<favicon_base::FallbackIconStyle>()));
   EXPECT_TRUE(view->icon_view_for_testing()->GetImageModel().IsVectorIcon());
+}
+
+// Tests that the issuer logo is shown in the 20 DIP headline icon instead of
+// the favicon, and that a 40px logo provides a full-resolution 2x
+// representation instead of being upscaled from 1x.
+TEST_F(EmailVerificationPopupViewTest, ShowsIssuerLogoInsteadOfFavicon) {
+  MockLargeIconService* mock_large_icon_service =
+      SetUpMockLargeIconService(&profile_);
+  EXPECT_CALL(*mock_large_icon_service,
+              GetIconRawBitmapOrFallbackStyleForPageUrl)
+      .Times(0);
+
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+  auto view = std::make_unique<EmailVerificationPopupViewImpl>(
+      controller->GetWeakPtr(), widget_.get(),
+      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      gfx::test::CreateImage(40, 40), u"user@example.com", base::DoNothing());
+
+  ASSERT_TRUE(view->icon_view_for_testing());
+  const ui::ImageModel& image_model =
+      view->icon_view_for_testing()->GetImageModel();
+  ASSERT_TRUE(image_model.IsImage());
+  EXPECT_EQ(image_model.Size(), gfx::Size(20, 20));
+  const gfx::ImageSkia image = image_model.GetImage().AsImageSkia();
+  EXPECT_EQ(image.GetRepresentation(1.0f).pixel_size(), gfx::Size(20, 20));
+  EXPECT_EQ(image.GetRepresentation(2.0f).pixel_size(), gfx::Size(40, 40));
+}
+
+// Tests that a non-square logo is not shown, since it would be distorted, and
+// the favicon is requested instead.
+TEST_F(EmailVerificationPopupViewTest, IgnoresNonSquareIssuerLogo) {
+  MockLargeIconService* mock_large_icon_service =
+      SetUpMockLargeIconService(&profile_);
+  EXPECT_CALL(*mock_large_icon_service,
+              GetIconRawBitmapOrFallbackStyleForPageUrl(_, 20, _, _))
+      .WillOnce(testing::Return(base::CancelableTaskTracker::kBadTaskId));
+
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+  auto view = std::make_unique<EmailVerificationPopupViewImpl>(
+      controller->GetWeakPtr(), widget_.get(),
+      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      gfx::test::CreateImage(40, 20), u"user@example.com", base::DoNothing());
+
+  ASSERT_TRUE(view->icon_view_for_testing());
+  EXPECT_TRUE(view->icon_view_for_testing()->GetImageModel().IsVectorIcon());
+}
+
+// Tests that a square logo smaller than the 20 DIP headline icon is not shown,
+// since it would be upscaled, and the favicon is requested instead.
+TEST_F(EmailVerificationPopupViewTest, IgnoresUndersizedIssuerLogo) {
+  MockLargeIconService* mock_large_icon_service =
+      SetUpMockLargeIconService(&profile_);
+  EXPECT_CALL(*mock_large_icon_service,
+              GetIconRawBitmapOrFallbackStyleForPageUrl(_, 20, _, _));
+
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+  auto view = std::make_unique<EmailVerificationPopupViewImpl>(
+      controller->GetWeakPtr(), widget_.get(),
+      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      gfx::test::CreateImage(16, 16), u"user@example.com", base::DoNothing());
+
+  ASSERT_TRUE(view->icon_view_for_testing());
+  EXPECT_TRUE(view->icon_view_for_testing()->GetImageModel().IsVectorIcon());
+}
+
+// Tests that a logo larger than the 1024 px limit is not shown, since it would
+// be resized on the UI thread and kept in memory, and the favicon is requested
+// instead.
+TEST_F(EmailVerificationPopupViewTest, IgnoresOversizedIssuerLogo) {
+  MockLargeIconService* mock_large_icon_service =
+      SetUpMockLargeIconService(&profile_);
+  EXPECT_CALL(*mock_large_icon_service,
+              GetIconRawBitmapOrFallbackStyleForPageUrl(_, 20, _, _));
+
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+  auto view = std::make_unique<EmailVerificationPopupViewImpl>(
+      controller->GetWeakPtr(), widget_.get(),
+      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      gfx::test::CreateImage(1025, 1025), u"user@example.com",
+      base::DoNothing());
+
+  ASSERT_TRUE(view->icon_view_for_testing());
+  EXPECT_TRUE(view->icon_view_for_testing()->GetImageModel().IsVectorIcon());
+}
+
+// Tests that a logo of exactly the 20 DIP headline icon size is tagged as a 1x
+// representation instead of an unscaled one, so that a HiDPI display resamples
+// it instead of painting the 1x bitmap as is.
+TEST_F(EmailVerificationPopupViewTest, IconSizedIssuerLogoIsNotUnscaled) {
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+  auto view = std::make_unique<EmailVerificationPopupViewImpl>(
+      controller->GetWeakPtr(), widget_.get(),
+      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      gfx::test::CreateImage(20, 20), u"user@example.com", base::DoNothing());
+
+  ASSERT_TRUE(view->icon_view_for_testing());
+  const ui::ImageModel& image_model =
+      view->icon_view_for_testing()->GetImageModel();
+  ASSERT_TRUE(image_model.IsImage());
+  EXPECT_FALSE(
+      image_model.GetImage().AsImageSkia().GetRepresentation(2.0f).unscaled());
 }
 
 // Runs the popup on a display with a device scale factor of 2.
@@ -282,7 +388,7 @@ TEST_F(EmailVerificationPopupViewHighDpiTest, LoadsFaviconAtDeviceScaleFactor) {
       std::make_unique<EmailVerificationPopupController>(web_contents());
   auto view = std::make_unique<EmailVerificationPopupViewImpl>(
       controller->GetWeakPtr(), widget_.get(),
-      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      url::Origin::Create(GURL("https://accounts.issuer.com")), gfx::Image(),
       u"user@example.com", base::DoNothing());
   ASSERT_TRUE(saved_callback);
 

@@ -57,6 +57,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -442,9 +443,13 @@ void EmailVerifierDelegate::OnIsVerifiable(
     return;
   }
 
-  url::Origin issuer_origin = result->issuer_origin;
+  const url::Origin issuer_origin = result->issuer_origin;
+  // Nothing reads `brand_icon` after the prompt is shown, so it is moved out
+  // of `result` rather than kept alive by the callback below.
+  const gfx::Image issuer_logo = std::move(result->brand_icon);
   manager->client().ShowEmailVerificationPopup(
-      email_field_bounds, issuer_origin, base::UTF8ToUTF16(normalized_email),
+      email_field_bounds, issuer_origin, issuer_logo,
+      base::UTF8ToUTF16(normalized_email),
       base::BindOnce(&EmailVerifierDelegate::OnEmailVerificationDecision,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
                      request_id, email_utf8, nonce, std::move(*result)));

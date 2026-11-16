@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -22,6 +23,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,7 +36,9 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -57,12 +61,39 @@ namespace autofill {
 namespace {
 constexpr int kDesiredIconSize = 20;
 constexpr int kEmailVerificationMaxWidth = 400;
+
+// The largest issuer logo, in pixels, that the header shows. A logo is resized
+// on the UI thread when the icon is first painted, and its bitmap is kept alive
+// while the popup is open, so an unreasonably large one is not used.
+constexpr int kMaxIssuerLogoSize = 1024;
+
+// Returns the issuer logo resized to the header icon size, or nullopt if the
+// issuer did not provide a usable one.
+std::optional<ui::ImageModel> CreateIssuerLogoIcon(
+    const gfx::Image& issuer_logo) {
+  // A logo is used only if it is square, so that it is not distorted, covers
+  // the icon at 1x, and does not exceed the size limit.
+  if (issuer_logo.IsEmpty() || issuer_logo.Width() != issuer_logo.Height() ||
+      issuer_logo.Width() < kDesiredIconSize ||
+      issuer_logo.Width() > kMaxIssuerLogoSize) {
+    return std::nullopt;
+  }
+  // The decoded logo is an unscaled bitmap, which `views::ImageView` paints as
+  // is. Tag it as 1x so that a HiDPI display resamples it, and resize lazily
+  // per display scale so that a 2x display samples the full-resolution bitmap.
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          gfx::ImageSkia::CreateFromBitmap(issuer_logo.AsBitmap(), 1.0f),
+          skia::ImageOperations::RESIZE_BEST,
+          gfx::Size(kDesiredIconSize, kDesiredIconSize)));
+}
 }  // namespace
 
 EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
     base::WeakPtr<EmailVerificationPopupController> controller,
     views::Widget* parent_widget,
     const url::Origin& issuer_origin,
+    const gfx::Image& issuer_logo,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback)
     : PopupBaseView(controller,
@@ -88,7 +119,7 @@ EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
           net::SchemefulSite(issuer_origin).GetURL(),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 
-  // Headline: Email Icon + Title (horizontal)
+  // Headline: Issuer Logo + Title (horizontal)
   auto* headline = AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -104,7 +135,11 @@ EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
           vector_icons::kMarkEmailReadIcon, ui::kColorIcon, kDesiredIconSize)));
   icon_view_->SetImageSize(gfx::Size(kDesiredIconSize, kDesiredIconSize));
 
-  if (controller && controller->GetWebContents()) {
+  // Prefer the logo advertised by the issuer, and fall back to the issuer
+  // site's favicon otherwise.
+  if (std::optional<ui::ImageModel> logo = CreateIssuerLogoIcon(issuer_logo)) {
+    icon_view_->SetImage(*std::move(logo));
+  } else if (controller && controller->GetWebContents()) {
     Profile* profile = Profile::FromBrowserContext(
         controller->GetWebContents()->GetBrowserContext());
     if (auto* favicon_service =
@@ -295,10 +330,12 @@ base::WeakPtr<EmailVerificationPopupView> EmailVerificationPopupView::Show(
     base::WeakPtr<EmailVerificationPopupController> controller,
     views::Widget* parent_widget,
     const url::Origin& issuer_origin,
+    const gfx::Image& issuer_logo,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback) {
-  return EmailVerificationPopupViewImpl::Show(
-      controller, parent_widget, issuer_origin, email, std::move(callback));
+  return EmailVerificationPopupViewImpl::Show(controller, parent_widget,
+                                              issuer_origin, issuer_logo, email,
+                                              std::move(callback));
 }
 
 // static
@@ -307,10 +344,12 @@ EmailVerificationPopupViewImpl::Show(
     base::WeakPtr<EmailVerificationPopupController> controller,
     views::Widget* parent_widget,
     const url::Origin& issuer_origin,
+    const gfx::Image& issuer_logo,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback) {
-  auto* view = new EmailVerificationPopupViewImpl(
-      controller, parent_widget, issuer_origin, email, std::move(callback));
+  auto* view = new EmailVerificationPopupViewImpl(controller, parent_widget,
+                                                  issuer_origin, issuer_logo,
+                                                  email, std::move(callback));
   view->Show();
   return view->weak_ptr_factory_.GetWeakPtr();
 }

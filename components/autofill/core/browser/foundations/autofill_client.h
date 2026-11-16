@@ -59,6 +59,10 @@ class DeviceAuthAvailabilityChecker;
 class DeviceAuthenticator;
 }  // namespace device_reauth
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -1030,12 +1034,14 @@ class AutofillClient {
 
   // Shows a yes/no prompt asking the user to confirm that they want to verify
   // their email. The prompt is anchored on the field at `element_bounds`.
-  // `issuer_origin` is the origin that issued the assertion.
+  // `issuer_origin` is the origin that issued the assertion. `issuer_logo` is
+  // the logo the issuer advertises, or empty if it has none.
   // `callback` is called with the permission UI status
   // (`EmailVerificationPermissionUiStatus`).
   virtual void ShowEmailVerificationPopup(
       const gfx::RectF& element_bounds,
       const url::Origin& issuer_origin,
+      const gfx::Image& issuer_logo,
       const std::u16string& email,
       base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback);
 

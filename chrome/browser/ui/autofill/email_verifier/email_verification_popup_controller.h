@@ -28,6 +28,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
 namespace autofill {
 
 class EmailVerificationPopupView;
@@ -45,10 +49,13 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   ~EmailVerificationPopupController() override;
 
   // Shows the email verification popup anchored to the element bounds.
+  // `issuer_logo` is shown in the popup header if the view can use it; see
+  // `EmailVerificationPopupView::Show()`.
   // `callback` is invoked with the permission UI decision or dismissal status
   // (`AutofillClient::EmailVerificationPermissionUiStatus`).
   void Show(const gfx::RectF& element_bounds,
             const url::Origin& issuer_origin,
+            const gfx::Image& issuer_logo,
             const std::u16string& email,
             base::OnceCallback<void(
                 AutofillClient::EmailVerificationPermissionUiStatus)> callback,
@@ -83,6 +90,7 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
           base::WeakPtr<EmailVerificationPopupController> delegate,
           views::Widget* parent_widget,
           const url::Origin& issuer_origin,
+          const gfx::Image& issuer_logo,
           const std::u16string& email,
           base::OnceCallback<void(bool)> callback)>;
 

@@ -105,6 +105,7 @@ source_set("unit_tests") {
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
   ]

@@ -55,6 +55,8 @@
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
@@ -148,6 +150,7 @@ class MockAutofillClient : public TestContentAutofillClient {
               ShowEmailVerificationPopup,
               (const gfx::RectF&,
                const url::Origin&,
+               const gfx::Image&,
                const std::u16string&,
                base::OnceCallback<
                    void(AutofillClient::EmailVerificationPermissionUiStatus)>),
@@ -369,7 +372,7 @@ class EmailVerifierDelegateTestBase
     EXPECT_CALL(client(), ShowEmailVerificationPopup)
         .WillOnce(
             DoAll(base::test::RunClosure(popup_shown_run_loop_.QuitClosure()),
-                  RunOnceCallback<3>(ui_status)));
+                  RunOnceCallback<4>(ui_status)));
   }
 
  protected:
@@ -725,7 +728,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
               base::Milliseconds(50))));
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
-      .WillOnce(RunOnceCallback<3>(
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
   // Simulating token verification failure by returning std::nullopt and
@@ -1279,7 +1282,7 @@ TEST_F(EmailVerifierDelegateTest, NullStrikeDatabase_Safe) {
             blink::mojom::EmailVerificationRequestResult::kSuccess,
             base::Milliseconds(100)));
     EXPECT_CALL(client(), ShowEmailVerificationPopup)
-        .WillOnce(RunOnceCallback<3>(
+        .WillOnce(RunOnceCallback<4>(
             AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
     EXPECT_CALL(email_verifier(), Verify).Times(0);
 
@@ -1333,7 +1336,7 @@ TEST_F(EmailVerifierDelegateTest,
   base::RunLoop run_loop;
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
       .WillOnce([&](const gfx::RectF&, const url::Origin& issuer_origin,
-                    const std::u16string&,
+                    const gfx::Image&, const std::u16string&,
                     base::OnceCallback<void(
                         AutofillClient::EmailVerificationPermissionUiStatus)>
                         callback) {
@@ -1343,6 +1346,32 @@ TEST_F(EmailVerifierDelegateTest,
             AutofillClient::EmailVerificationPermissionUiStatus::kDeclined);
         run_loop.Quit();
       });
+
+  TriggerDefaultFormFill(*form);
+
+  run_loop.Run();
+}
+
+// Verifies that the issuer logo returned by CheckIfVerifiable() is forwarded
+// to the permission prompt.
+TEST_F(EmailVerifierDelegateTest, ShowPopupReceivesIssuerLogo) {
+  FormStructure* form = SetUpValidForm();
+
+  const gfx::Image kLogo = gfx::test::CreateImage(40, 40);
+
+  EmailVerifier::Result result = CreateVerifiableResult();
+  result.brand_icon = kLogo;
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
+      .WillOnce(RunOnceCallback<2>(
+          result, blink::mojom::EmailVerificationRequestResult::kSuccess,
+          base::Milliseconds(100)));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(client(), ShowEmailVerificationPopup(_, _, kLogo, _, _))
+      .WillOnce(DoAll(
+          base::test::RunClosure(run_loop.QuitClosure()),
+          RunOnceCallback<4>(
+              AutofillClient::EmailVerificationPermissionUiStatus::kDeclined)));
 
   TriggerDefaultFormFill(*form);
 
@@ -1469,7 +1498,8 @@ TEST_F(EmailVerifierDelegateTest, DriverInactiveBeforeDecision) {
       saved_decision_callback;
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
       .WillOnce(
-          [&](const gfx::RectF&, const url::Origin&, const std::u16string&,
+          [&](const gfx::RectF&, const url::Origin&, const gfx::Image&,
+              const std::u16string&,
               base::OnceCallback<void(
                   AutofillClient::EmailVerificationPermissionUiStatus)>
                   callback) { saved_decision_callback = std::move(callback); });
@@ -1508,7 +1538,7 @@ TEST_F(EmailVerifierDelegateTest, DriverInactiveBeforeResponse) {
           base::Milliseconds(100)));
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
-      .WillOnce(RunOnceCallback<3>(
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
   // Capture the verification response callback.
@@ -1614,7 +1644,7 @@ TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringVerification) {
           base::Milliseconds(100)));
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
-      .WillOnce(RunOnceCallback<3>(
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
   // Capture the verification response callback and keep it in-flight.
@@ -1977,7 +2007,7 @@ TEST_F(EmailVerifierDelegateTest, FlowResultFailed) {
       });
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
-      .WillOnce(RunOnceCallback<3>(
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
   EXPECT_CALL(client(), HideEmailVerificationPopup);
   EXPECT_CALL(client(), ShowEmailVerificationErrorToast);
@@ -2025,8 +2055,8 @@ TEST_F(EmailVerifierDelegateTest,
           blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
   EXPECT_CALL(client(), ShowEmailVerificationPopup(
-                            _, _, base::UTF8ToUTF16(normalized_email), _))
-      .WillOnce(RunOnceCallback<3>(
+                            _, _, _, base::UTF8ToUTF16(normalized_email), _))
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
   EXPECT_CALL(email_verifier(), Verify).Times(0);
 
@@ -2151,8 +2181,8 @@ TEST_F(EmailVerifierDelegateTest,
           base::Milliseconds(100)));
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup(
-                            _, _, base::UTF8ToUTF16(normalized_email), _))
-      .WillOnce(RunOnceCallback<3>(
+                            _, _, _, base::UTF8ToUTF16(normalized_email), _))
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
   EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
@@ -2197,8 +2227,8 @@ TEST_F(EmailVerifierDelegateTest,
           base::Milliseconds(100)));
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup(
-                            _, _, base::UTF8ToUTF16(normalized_email), _))
-      .WillOnce(RunOnceCallback<3>(
+                            _, _, _, base::UTF8ToUTF16(normalized_email), _))
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
   EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
@@ -2382,8 +2412,8 @@ TEST_F(EmailVerifierDelegateTest, AlreadyAllowedForDifferentIssuerShowsPopup) {
   EXPECT_CALL(client(), ShowEmailVerificationLoadingToast).Times(0);
   EXPECT_CALL(client(),
               ShowEmailVerificationPopup(
-                  _, url::Origin::Create(GURL("https://example.com")), _, _))
-      .WillOnce(RunOnceCallback<3>(
+                  _, url::Origin::Create(GURL("https://example.com")), _, _, _))
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
   EXPECT_CALL(email_verifier(), Verify).Times(0);
   EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
@@ -2411,7 +2441,7 @@ TEST_F(EmailVerifierDelegateTest, AlreadyAllowedWithoutIssuerSiteShowsPopup) {
 
   EXPECT_CALL(client(), ShowEmailVerificationLoadingToast).Times(0);
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
-      .WillOnce(RunOnceCallback<3>(
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
   EXPECT_CALL(email_verifier(), Verify).Times(0);
   EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
@@ -2511,7 +2541,7 @@ TEST_F(EmailVerifierDelegateTest, HideEmailVerificationPopupOnTokenFailure) {
       });
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
-      .WillOnce(RunOnceCallback<3>(
+      .WillOnce(RunOnceCallback<4>(
           AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
   EXPECT_CALL(client(), HideEmailVerificationPopup);
   EXPECT_CALL(client(), ShowEmailVerificationErrorToast);

@@ -25,6 +25,7 @@ EmailVerificationController::~EmailVerificationController() = default;
 void EmailVerificationController::ShowPopup(
     const gfx::RectF& element_bounds,
     const url::Origin& issuer_origin,
+    const gfx::Image& issuer_logo,
     const std::u16string& email,
     base::OnceCallback<
         void(AutofillClient::EmailVerificationPermissionUiStatus)>
@@ -47,7 +48,7 @@ void EmailVerificationController::ShowPopup(
   hide_active_ui_callback_ =
       base::BindOnce(&EmailVerificationController::HidePopupImpl, GetWeakPtr());
   ShowPopupImpl(
-      element_bounds, issuer_origin, email,
+      element_bounds, issuer_origin, issuer_logo, email,
       base::BindOnce(
           [](base::WeakPtr<EmailVerificationController> self,
              base::OnceCallback<void(

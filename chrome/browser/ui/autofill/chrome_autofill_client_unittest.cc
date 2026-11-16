@@ -105,6 +105,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1475,7 +1476,7 @@ TEST_F(ChromeAutofillClientTest,
   EXPECT_CALL(*bridge_ptr, ShowJavaBottomSheet);
   client()->ShowEmailVerificationPopup(
       gfx::RectF(0, 0, 10, 10), url::Origin::Create(GURL("https://google.com")),
-      u"user@example.com", base::DoNothing());
+      gfx::Image(), u"user@example.com", base::DoNothing());
 
   EXPECT_CALL(*bridge_ptr, HideJavaBottomSheet);
   client()->HideEmailVerificationPopup();

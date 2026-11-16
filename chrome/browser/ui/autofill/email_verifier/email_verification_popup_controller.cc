@@ -74,6 +74,7 @@ EmailVerificationPopupController::~EmailVerificationPopupController() {
 void EmailVerificationPopupController::Show(
     const gfx::RectF& element_bounds,
     const url::Origin& issuer_origin,
+    const gfx::Image& issuer_logo,
     const std::u16string& email,
     base::OnceCallback<
         void(AutofillClient::EmailVerificationPermissionUiStatus)> callback,
@@ -121,10 +122,10 @@ void EmailVerificationPopupController::Show(
   base::WeakPtr<EmailVerificationPopupView> view =
       view_factory_for_testing_
           ? view_factory_for_testing_.Run(GetWeakPtr(), parent_widget,
-                                          issuer_origin, email,
+                                          issuer_origin, issuer_logo, email,
                                           std::move(on_view_decision))
           : EmailVerificationPopupView::Show(GetWeakPtr(), parent_widget,
-                                             issuer_origin, email,
+                                             issuer_origin, issuer_logo, email,
                                              std::move(on_view_decision));
   if (!view || !callback_) {
     if (view) {

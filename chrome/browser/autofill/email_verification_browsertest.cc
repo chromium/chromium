@@ -40,6 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/gfx/image/image.h"
 
 namespace autofill {
 
@@ -102,6 +103,7 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
                 ShowEmailVerificationPopup,
                 (const gfx::RectF&,
                  const url::Origin&,
+                 const gfx::Image&,
                  const std::u16string&,
                  base::OnceCallback<void(
                      AutofillClient::EmailVerificationPermissionUiStatus)>),
@@ -262,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
 
   base::RunLoop popup_run_loop;
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
-      .WillOnce([&](const gfx::RectF&, const url::Origin&,
+      .WillOnce([&](const gfx::RectF&, const url::Origin&, const gfx::Image&,
                     const std::u16string&,
                     base::OnceCallback<void(
                         AutofillClient::EmailVerificationPermissionUiStatus)>
@@ -357,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   base::RunLoop popup_run_loop1;
 
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
-      .WillOnce([&](const gfx::RectF&, const url::Origin&,
+      .WillOnce([&](const gfx::RectF&, const url::Origin&, const gfx::Image&,
                     const std::u16string&,
                     base::OnceCallback<void(
                         AutofillClient::EmailVerificationPermissionUiStatus)>
@@ -396,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
           base::Milliseconds(100)));
 
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
-      .WillOnce([&](const gfx::RectF&, const url::Origin&,
+      .WillOnce([&](const gfx::RectF&, const url::Origin&, const gfx::Image&,
                     const std::u16string&,
                     base::OnceCallback<void(
                         AutofillClient::EmailVerificationPermissionUiStatus)>
@@ -498,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowAutocomplete) {
 
   base::RunLoop popup_run_loop;
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
-      .WillOnce([&](const gfx::RectF&, const url::Origin&,
+      .WillOnce([&](const gfx::RectF&, const url::Origin&, const gfx::Image&,
                     const std::u16string&,
                     base::OnceCallback<void(
                         AutofillClient::EmailVerificationPermissionUiStatus)>
@@ -750,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   TestEmailVerificationAutofillClient* mock_client = client();
   base::RunLoop popup_run_loop;
   EXPECT_CALL(*mock_client, ShowEmailVerificationPopup)
-      .WillOnce([&](const gfx::RectF&, const url::Origin&,
+      .WillOnce([&](const gfx::RectF&, const url::Origin&, const gfx::Image&,
                     const std::u16string&,
                     base::OnceCallback<void(
                         AutofillClient::EmailVerificationPermissionUiStatus)>

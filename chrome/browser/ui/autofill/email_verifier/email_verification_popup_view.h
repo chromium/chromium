@@ -10,6 +10,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
+namespace gfx {
+class Image;
+}
+
 namespace url {
 class Origin;
 }
@@ -34,11 +38,16 @@ class EmailVerificationPopupView {
   virtual ~EmailVerificationPopupView() = default;
 
   // Creates the popup view and shows it. Returns a `WeakPtr` because its
-  // lifetime is controlled by its hosting widget.
+  // lifetime is controlled by its hosting widget. `issuer_logo` is shown in the
+  // header if it is non-empty, square, at least as large as the header icon at
+  // 1x (the display's scale factor is not taken into account) and not larger
+  // than the limit the view imposes; otherwise the issuer site's favicon is
+  // shown, or a generic email icon if there is none.
   static base::WeakPtr<EmailVerificationPopupView> Show(
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,
       const url::Origin& issuer_origin,
+      const gfx::Image& issuer_logo,
       const std::u16string& email,
       base::OnceCallback<void(bool)> callback);
 

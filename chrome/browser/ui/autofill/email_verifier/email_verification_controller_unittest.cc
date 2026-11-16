@@ -31,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -81,7 +82,8 @@ class EmailVerificationControllerTest : public ChromeRenderViewHostTestHarness {
         [](std::unique_ptr<MockEmailVerificationPopupView>* mock_view_ptr,
            base::WeakPtr<EmailVerificationPopupController> delegate,
            views::Widget* parent_widget, const url::Origin& issuer_origin,
-           const std::u16string& email, base::OnceCallback<void(bool)> callback)
+           const gfx::Image& issuer_logo, const std::u16string& email,
+           base::OnceCallback<void(bool)> callback)
             -> base::WeakPtr<EmailVerificationPopupView> {
           *mock_view_ptr = std::make_unique<MockEmailVerificationPopupView>();
           (*mock_view_ptr)->set_decision_callback(std::move(callback));
@@ -108,8 +110,8 @@ TEST_F(EmailVerificationControllerTest, ConfirmPromptTransitionsToLoading) {
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, ShowLoadingState);
@@ -129,8 +131,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, Hide);
@@ -149,8 +151,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, ShowLoadingState);
@@ -183,8 +185,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, ShowLoadingState);
@@ -208,8 +210,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, Hide);
@@ -309,8 +311,8 @@ TEST_F(EmailVerificationControllerTest,
   std::unique_ptr<MockEmailVerificationPopupView> mock_view;
   SetupMockViewFactory(mock_view);
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
   EXPECT_FALSE(test_api(controller()).is_hide_popup_timer_running());
   EXPECT_FALSE(test_api(controller()).loading_start_time().has_value());
@@ -386,8 +388,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
   EXPECT_CALL(*mock_view, ShowLoadingState);
   mock_view->RunDecisionCallback(true);
@@ -416,8 +418,8 @@ TEST_F(EmailVerificationControllerTest,
   std::unique_ptr<MockEmailVerificationPopupView> mock_view;
   SetupMockViewFactory(mock_view);
   TestFuture<EmailVerificationPermissionUiStatus> popup_future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         popup_future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, popup_future.GetCallback());
 
   EXPECT_TRUE(cancel_future.IsReady());
 
@@ -450,8 +452,8 @@ TEST_F(EmailVerificationControllerTest, ShowLoadingToastHidesPendingPopup) {
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
   EXPECT_CALL(*mock_view, ShowLoadingState);
   mock_view->RunDecisionCallback(true);
@@ -476,8 +478,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, Hide);
@@ -552,8 +554,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, ShowLoadingState);
@@ -631,8 +633,8 @@ TEST_F(EmailVerificationControllerTest, NewPopupCancelsPendingHidePopupTimer) {
   SetupMockViewFactory(first_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> first_future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         first_future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, first_future.GetCallback());
   ASSERT_TRUE(first_view);
 
   EXPECT_CALL(*first_view, ShowLoadingState);
@@ -652,7 +654,8 @@ TEST_F(EmailVerificationControllerTest, NewPopupCancelsPendingHidePopupTimer) {
 
   TestFuture<EmailVerificationPermissionUiStatus> second_future;
   controller().ShowPopup(gfx::RectF(20, 20, 10, 10), DefaultOrigin(),
-                         kDefaultEmail, second_future.GetCallback());
+                         gfx::Image(), kDefaultEmail,
+                         second_future.GetCallback());
   ASSERT_TRUE(new_mock_view);
 
   // ShowPopup must have cancelled the pending hide timer and reset state.
@@ -680,8 +683,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(first_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> first_future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         first_future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, first_future.GetCallback());
   ASSERT_TRUE(first_view);
 
   std::unique_ptr<MockEmailVerificationPopupView> second_view;
@@ -690,7 +693,8 @@ TEST_F(EmailVerificationControllerTest,
 
   TestFuture<EmailVerificationPermissionUiStatus> second_future;
   controller().ShowPopup(gfx::RectF(20, 20, 10, 10), DefaultOrigin(),
-                         u"second@example.com", second_future.GetCallback());
+                         gfx::Image(), u"second@example.com",
+                         second_future.GetCallback());
 
   ASSERT_TRUE(first_future.IsReady());
   EXPECT_EQ(first_future.Get(), EmailVerificationPermissionUiStatus::kOther);
@@ -714,8 +718,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> first_future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         first_future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, first_future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, ShowLoadingState);
@@ -731,7 +735,8 @@ TEST_F(EmailVerificationControllerTest,
   EXPECT_CALL(*mock_view, Hide).Times(0);
   TestFuture<EmailVerificationPermissionUiStatus> second_future;
   controller().ShowPopup(gfx::RectF(20, 20, 10, 10), DefaultOrigin(),
-                         u"second@example.com", second_future.GetCallback());
+                         gfx::Image(), u"second@example.com",
+                         second_future.GetCallback());
 
   EXPECT_EQ(second_future.Get(),
             EmailVerificationPermissionUiStatus::kOverlappingPrompt);
@@ -760,8 +765,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, Hide);
@@ -781,8 +786,8 @@ TEST_F(EmailVerificationControllerTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   EXPECT_CALL(*mock_view, ShowLoadingState);
@@ -861,8 +866,8 @@ TEST_F(EmailVerificationControllerFocusTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
 
   ASSERT_TRUE(mock_view);
   EXPECT_CALL(*mock_view, ShowLoadingState);
@@ -888,8 +893,8 @@ TEST_F(EmailVerificationControllerFocusTest,
   SetupMockViewFactory(mock_view);
 
   TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), kDefaultEmail,
-                         future.GetCallback());
+  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                         kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
 
   const int focus_count_before = focus_count();

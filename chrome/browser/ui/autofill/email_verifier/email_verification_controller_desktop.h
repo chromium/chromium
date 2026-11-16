@@ -43,6 +43,7 @@ class EmailVerificationControllerDesktop final
   // EmailVerificationController:
   void ShowPopupImpl(const gfx::RectF& element_bounds,
                      const url::Origin& issuer_origin,
+                     const gfx::Image& issuer_logo,
                      const std::u16string& email,
                      base::OnceCallback<void(
                          AutofillClient::EmailVerificationPermissionUiStatus)>

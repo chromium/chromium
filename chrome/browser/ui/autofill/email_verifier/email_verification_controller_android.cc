@@ -55,6 +55,8 @@ void EmailVerificationControllerAndroid::HideLoadingToastImpl() {
 void EmailVerificationControllerAndroid::ShowPopupImpl(
     const gfx::RectF& /*element_bounds*/,
     const url::Origin& issuer_origin,
+    // TODO(crbug.com/576739997): Show the issuer logo in the bottom sheet.
+    const gfx::Image& /*issuer_logo*/,
     const std::u16string& email,
     base::OnceCallback<void(
         AutofillClient::EmailVerificationPermissionUiStatus)> decision_callback,

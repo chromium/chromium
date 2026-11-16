@@ -29,6 +29,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -100,7 +101,8 @@ class EmailVerificationControllerAndroidTest
     EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
     evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
                                url::Origin::Create(GURL("https://google.com")),
-                               u"user@example.com", std::move(ui_callback));
+                               gfx::Image(), u"user@example.com",
+                               std::move(ui_callback));
   }
 
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
@@ -283,9 +285,9 @@ TEST_F(EmailVerificationControllerAndroidTest,
   testing::InSequence s;
   EXPECT_CALL(*bridge_, HideJavaBottomSheet);
   EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
-  evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
-                             url::Origin::Create(GURL("https://google.com")),
-                             u"other@example.com", base::DoNothing());
+  evp_controller_->ShowPopup(
+      gfx::RectF(0, 0, 10, 10), url::Origin::Create(GURL("https://google.com")),
+      gfx::Image(), u"other@example.com", base::DoNothing());
   EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
 }
 
@@ -308,9 +310,9 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(second_callback,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::
                       kOverlappingPrompt));
-  evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
-                             url::Origin::Create(GURL("https://google.com")),
-                             u"other@example.com", second_callback.Get());
+  evp_controller_->ShowPopup(
+      gfx::RectF(0, 0, 10, 10), url::Origin::Create(GURL("https://google.com")),
+      gfx::Image(), u"other@example.com", second_callback.Get());
 
   // The active first sheet's loading timer must still be preserved.
   EXPECT_TRUE(test_api(*evp_controller_).loading_start_time().has_value());
@@ -351,9 +353,9 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(first_ui_callback,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
   EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
-  evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
-                             url::Origin::Create(GURL("https://google.com")),
-                             u"other@example.com", base::DoNothing());
+  evp_controller_->ShowPopup(
+      gfx::RectF(0, 0, 10, 10), url::Origin::Create(GURL("https://google.com")),
+      gfx::Image(), u"other@example.com", base::DoNothing());
 }
 
 TEST_F(EmailVerificationControllerAndroidTest,
