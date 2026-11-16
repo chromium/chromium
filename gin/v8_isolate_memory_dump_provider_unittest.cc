@@ -80,6 +80,39 @@ TEST_F(V8MemoryDumpProviderTest, DumpStatistics) {
   ASSERT_TRUE(did_dump_objects_stats);
 }
 
+// Checks that the fragmentation of the whole heap and of the old generation
+// are dumped as percentages on the heap dump.
+TEST_F(V8MemoryDumpProviderTest, DumpHeapFragmentation) {
+  base::trace_event::MemoryDumpArgs dump_args = {
+      base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
+  auto process_memory_dump =
+      std::make_unique<base::trace_event::ProcessMemoryDump>(dump_args);
+  instance_->isolate_memory_dump_provider_for_testing()->OnMemoryDump(
+      dump_args, process_memory_dump.get());
+  const base::trace_event::ProcessMemoryDump::AllocatorDumpsMap&
+      allocator_dumps = process_memory_dump->allocator_dumps();
+
+  const auto heap_dump = allocator_dumps.find("v8/main/heap");
+  ASSERT_NE(allocator_dumps.end(), heap_dump);
+
+  bool did_dump_fragmentation = false;
+  bool did_dump_old_generation_fragmentation = false;
+  for (const base::trace_event::MemoryAllocatorDump::Entry& entry :
+       heap_dump->second->entries()) {
+    if (entry.name == "fragmentation") {
+      EXPECT_EQ("percent", entry.units);
+      EXPECT_LE(entry.value_uint64, 100u);
+      did_dump_fragmentation = true;
+    } else if (entry.name == "old_generation_fragmentation") {
+      EXPECT_EQ("percent", entry.units);
+      EXPECT_LE(entry.value_uint64, 100u);
+      did_dump_old_generation_fragmentation = true;
+    }
+  }
+  EXPECT_TRUE(did_dump_fragmentation);
+  EXPECT_TRUE(did_dump_old_generation_fragmentation);
+}
+
 TEST_F(V8MemoryDumpProviderTest, DumpGlobalHandlesSize) {
   base::trace_event::MemoryDumpArgs dump_args = {
       base::trace_event::MemoryDumpLevelOfDetail::kBackground};

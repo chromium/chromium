@@ -6,6 +6,10 @@
 
 #include <inttypes.h>
 #include <stddef.h>
+#include <stdint.h>
+
+#include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -128,6 +132,23 @@ void DumpContextStatistics(
       number_of_detached_contexts);
 }
 
+// Returns whether the heap space with the given name is part of the young
+// generation.
+bool IsYoungGenerationSpace(std::string_view space_name) {
+  return space_name == "new_space" || space_name == "new_large_object_space";
+}
+
+// Returns the percentage of `physical_size` that is not used by objects.
+uint64_t GetFragmentation(size_t physical_size, size_t used_size) {
+  // The sizes are sampled while background threads may still allocate, so the
+  // used size is not guaranteed to be below the physical size. This also
+  // covers an empty heap, where the physical size is 0.
+  if (used_size >= physical_size) {
+    return 0;
+  }
+  return uint64_t{100} * (physical_size - used_size) / physical_size;
+}
+
 std::string IsolateTypeString(IsolateHolder::IsolateType isolate_type) {
   switch (isolate_type) {
     case IsolateHolder::IsolateType::kBlinkMainThread:
@@ -186,6 +207,9 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
 
   size_t known_spaces_size = 0;
   size_t known_spaces_physical_size = 0;
+  size_t known_spaces_used_size = 0;
+  size_t old_generation_physical_size = 0;
+  size_t old_generation_used_size = 0;
   size_t number_of_spaces = isolate_holder_->isolate()->NumberOfHeapSpaces();
   for (size_t space = 0; space < number_of_spaces; space++) {
     v8::HeapSpaceStatistics space_statistics;
@@ -197,6 +221,11 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
 
     known_spaces_size += space_size;
     known_spaces_physical_size += space_physical_size;
+    known_spaces_used_size += space_used_size;
+    if (!IsYoungGenerationSpace(space_statistics.space_name())) {
+      old_generation_physical_size += space_physical_size;
+      old_generation_used_size += space_used_size;
+    }
 
     std::string space_dump_name = dump_base_name + "/heap/" +
                                   space_statistics.space_name() +
@@ -214,6 +243,23 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
     space_dump->AddScalar("allocated_objects_size",
                           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                           space_used_size);
+  }
+
+  // Dump the fragmentation of the whole heap and of the old generation only.
+  // The unused memory of the young generation is mostly the semi-space that is
+  // reserved for the next scavenge, which the old generation value leaves out.
+  // Isolate types that can have multiple isolates only have per-isolate dumps
+  // for the individual spaces, so this is limited to isolate types with a
+  // single heap dump.
+  if (!CanHaveMultipleIsolates(isolate_type)) {
+    auto* heap_dump =
+        process_memory_dump->CreateAllocatorDump(dump_base_name + "/heap");
+    heap_dump->AddScalar(
+        "fragmentation", "percent",
+        GetFragmentation(known_spaces_physical_size, known_spaces_used_size));
+    heap_dump->AddScalar("old_generation_fragmentation", "percent",
+                         GetFragmentation(old_generation_physical_size,
+                                          old_generation_used_size));
   }
 
   // Sanity check that all spaces are accounted for in GetHeapSpaceStatistics.

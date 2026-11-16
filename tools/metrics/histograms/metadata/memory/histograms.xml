@@ -2233,6 +2233,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Memory.Experimental.{Process}2.V8.Main.Heap{Scope}.Fragmentation"
+    units="%" expires_after="2027-05-12">
+  <owner>dinfuehr@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Fragmentation of {Scope} of the V8 main thread heap in {Process}: the
+    percentage of its physical size that is not used by allocated objects, as
+    reported by the memory instrumentation service.
+
+    On platforms where V8 tracks which system pages of a heap page are in use
+    (e.g. Linux, Android and macOS), the physical size excludes unused system
+    pages. On other platforms (e.g. Windows) it is the full committed size, so
+    values are not directly comparable across platforms. Objects that are
+    unreachable but were not collected yet count as allocated.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+  </summary>
+  <token key="Process">
+    <variant name="Extension" summary="extension processes"/>
+    <variant name="Renderer" summary="renderer processes"/>
+  </token>
+  <token key="Scope">
+    <variant name=""
+        summary="all spaces, including the unused part of the new space such
+                 as the semi-space reserved for the next scavenge,"/>
+    <variant name=".OldGeneration"
+        summary="the old generation, i.e. all spaces except the new space and
+                 the new large object space,"/>
+  </token>
+</histogram>
+
 <histogram name="Memory.Extension.PrivateMemoryFootprint" units="MB"
     expires_after="2027-03-21">
   <owner>erikchen@chromium.org</owner>
