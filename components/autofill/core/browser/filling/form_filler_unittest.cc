@@ -16,11 +16,14 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -36,6 +39,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/filling/form_filler_test_api.h"
 #include "components/autofill/core/browser/filling/test_form_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -3825,9 +3829,22 @@ TEST_F(FormFillerTest, FillOrPreviewForm_LogsPreFillState) {
                                  "autofilled: 0->1.")));
 }
 
+// Runs the post-fill bookkeeping of fills synchronously or, if the parameter
+// is true, in a separate task.
+// TODO(crbug.com/582269824) Merge with FormFillerTest.
+class FormFillerPostFillTest : public base::test::WithFeatureOverride,
+                               public FormFillerTest {
+ public:
+  FormFillerPostFillTest()
+      : base::test::WithFeatureOverride(
+            features::kAutofillPostTaskAfterFillOrPreviewForm) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormFillerPostFillTest);
+
 // Tests that previews neither record undo history nor update the cache, but
 // notify observers synchronously.
-TEST_F(FormFillerTest, FillOrPreviewForm_PreviewNotifiesObserversOnly) {
+TEST_P(FormFillerPostFillTest, FillOrPreviewForm_PreviewNotifiesObserversOnly) {
   FormData form =
       FormSeen({.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}});
   const FieldGlobalId first_name_id = form.fields()[0].global_id();
@@ -3868,6 +3885,7 @@ TEST_F(FormFillerTest, FillOrPreviewForm_PreviewNotifiesObserversOnly) {
       /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
       FormFiller::RefillOptions::NotRefill());
   check.Call();
+  EXPECT_FALSE(test_api(form_filler()).has_pending_post_fill_tasks());
 
   EXPECT_EQ(form_structure->field(0)->last_modifier(), std::nullopt);
   EXPECT_EQ(form_structure->field(1)->last_modifier(), std::nullopt);
@@ -3877,6 +3895,324 @@ TEST_F(FormFillerTest, FillOrPreviewForm_PreviewNotifiesObserversOnly) {
   EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
                                   form.global_id(), first_name_id);
+}
+
+// Tests that the post-fill bookkeeping of a fill runs synchronously if
+// `features::kAutofillPostTaskAfterFillOrPreviewForm` is disabled and in a
+// separate task otherwise, and that it has the same result in both cases.
+// In the async case, cache updates, undo history, and
+// `Observer::OnFillOrPreviewForm` are deferred until the bookkeeping task runs,
+// while `ApplyFormAction` happens immediately.
+// TODO(crbug.com/582269824) Update test description when launching
+// `features::kAutofillPostTaskAfterFillOrPreviewForm`.
+TEST_P(FormFillerPostFillTest, FillOrPreviewForm_PostFillBookkeeping) {
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST, .value = u"OldFirst"},
+                           {.role = NAME_LAST, .value = u""}}});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&autofill_manager());
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    if (IsParamFeatureEnabled()) {
+      EXPECT_CALL(check, Call);
+      EXPECT_CALL(observer, OnFillOrPreviewForm);
+    } else {
+      EXPECT_CALL(observer, OnFillOrPreviewForm);
+      EXPECT_CALL(check, Call);
+    }
+  }
+
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+
+  // `ApplyFormAction` has executed, so `form` received the filled values.
+  ASSERT_THAT(form.fields()[0],
+              AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
+  ASSERT_THAT(form.fields()[1],
+              AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
+
+  EXPECT_EQ(test_api(form_filler()).has_pending_post_fill_tasks(),
+            IsParamFeatureEnabled());
+  if (IsParamFeatureEnabled()) {
+    // Before the posted task runs, the cache, undo history and observers have
+    // not been updated yet.
+    EXPECT_EQ(form_structure->field(0)->last_modifier(), std::nullopt);
+    EXPECT_EQ(form_structure->field(1)->last_modifier(), std::nullopt);
+
+    EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
+    form_filler().UndoAutofill(mojom::ActionPersistence::kFill, *form_structure,
+                               form.fields()[0].global_id(),
+                               FillingProduct::kAddress);
+    testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+  }
+
+  // Simulate the renderer reporting the filled values and run the pending
+  // task, if any.
+  test_api(*form_structure).UpdateFormData(form);
+  check.Call();
+  test_api(form_filler()).RunPendingPostFillTasks();
+  EXPECT_FALSE(test_api(form_filler()).has_pending_post_fill_tasks());
+  EXPECT_THAT(form_structure->field(0), AutofilledWithProfile(profile));
+  EXPECT_THAT(form_structure->field(1), AutofilledWithProfile(profile));
+
+  form = UndoAutofill(form, form.fields()[0]);
+  EXPECT_EQ(form.fields()[0].value(), u"OldFirst");
+  EXPECT_EQ(form.fields()[1].value(), u"");
+}
+
+// The following tests run the post-fill bookkeeping in a separate task and
+// simulate events that happen after `FillOrPreviewForm` has returned but before
+// the bookkeeping task runs.
+// TODO(crbug.com/582269824) Merge with FormFillerTest when
+// kAutofillPostTaskAfterFillOrPreviewForm is enabled by default.
+class FormFillerAsyncTest : public FormFillerTest {
+ protected:
+  // Runs the tasks posted to the current default `SequencedTaskRunner` so far,
+  // including cancelled ones (which are dropped): The runner is FIFO, so they
+  // are dispatched before the quit task posted here.
+  void FlushPostedTasks() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillPostTaskAfterFillOrPreviewForm};
+};
+
+// Tests that `FormFiller::Reset()` cancels a pending `OnAfterFillForm()` task.
+// In production, `FormFiller::Reset()` is called by
+// `BrowserAutofillManager::Reset()` (e.g., on navigation), which also clears
+// the form cache. This test calls only `FormFiller::Reset()` and keeps the
+// form cached so that the task, if it wrongly ran, would observably update the
+// cache and notify the observer. Later fills still run their bookkeeping.
+TEST_F(FormFillerAsyncTest, FillOrPreviewForm_AsyncCancelledOnReset) {
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST, .value = u"OldFirst"},
+                           {.role = NAME_LAST, .value = u""}}});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&autofill_manager());
+  EXPECT_CALL(observer, OnFillOrPreviewForm).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+
+  ASSERT_TRUE(test_api(form_filler()).has_pending_post_fill_tasks());
+  form_filler().Reset();
+  EXPECT_FALSE(test_api(form_filler()).has_pending_post_fill_tasks());
+  FlushPostedTasks();
+
+  EXPECT_EQ(form_structure->field(0)->last_modifier(), std::nullopt);
+  EXPECT_EQ(form_structure->field(1)->last_modifier(), std::nullopt);
+
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
+  form_filler().UndoAutofill(mojom::ActionPersistence::kFill, *form_structure,
+                             form.fields()[0].global_id(),
+                             FillingProduct::kAddress);
+  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // `Reset()` does not prevent the bookkeeping of later fills.
+  EXPECT_CALL(observer, OnFillOrPreviewForm);
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+  test_api(form_filler()).RunPendingPostFillTasks();
+  EXPECT_THAT(form_structure->field(0), AutofilledWithProfile(profile));
+}
+
+// Tests that destroying the caller-owned payload and mutating the cached form
+// (updating post-fill values, removing a filled field, and adding a new field)
+// after `FillOrPreviewForm` has returned but before the `OnAfterFillForm` task
+// runs completes cleanly and preserves the pre-fill undo history.
+TEST_F(FormFillerAsyncTest,
+       FillOrPreviewForm_AsyncPayloadDestroyedAndFormMutatedWhilePending) {
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST, .value = u"OldFirst"},
+                           {.role = NAME_LAST, .value = u""},
+                           {.role = EMAIL_ADDRESS, .value = u""}}});
+  const FieldGlobalId first_name_id = form.fields()[0].global_id();
+  const FieldGlobalId last_name_id = form.fields()[1].global_id();
+
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&autofill_manager());
+  EXPECT_CALL(observer, OnFillOrPreviewForm(
+                            _, form.global_id(), first_name_id,
+                            mojom::ActionPersistence::kFill,
+                            ElementsAre(first_name_id, last_name_id), _, _));
+
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+
+  const AutofillProfile expected_profile = test::GetFullProfile();
+  {
+    AutofillProfile stack_local_profile = expected_profile;
+    FormStructure* form_structure = GetFormStructure(form);
+    ASSERT_TRUE(form_structure);
+    form_filler().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, FillingProduct::kAddress,
+        &stack_local_profile, *form_structure, *form_structure->field(0),
+        AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
+        /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+  }
+
+  // While the task is still pending (and `stack_local_profile` is out of
+  // scope), update the cached `FormStructure` with post-fill values, a removed
+  // filled field, and a newly added field.
+  test_api(form).Remove(2);
+  test_api(form).Append(test::CreateTestFormField("Added", "added", "",
+                                                  FormControlType::kInputText));
+  test_api(*GetFormStructure(form)).UpdateFormData(form);
+
+  test_api(form_filler()).RunPendingPostFillTasks();
+
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+  ASSERT_EQ(form_structure->field_count(), 3u);
+  EXPECT_THAT(form_structure->field(0),
+              AutofilledWithProfile(expected_profile));
+  EXPECT_THAT(form_structure->field(1),
+              AutofilledWithProfile(expected_profile));
+  EXPECT_TRUE(form_structure->field(2)->field_log_events().empty());
+
+  form = UndoAutofill(form, form.fields()[0]);
+  EXPECT_EQ(form.fields()[0].value(), u"OldFirst");
+  EXPECT_EQ(form.fields()[1].value(), u"");
+}
+
+// Tests that the bookkeeping returns early without notifying observers if the
+// form is removed from the cache before the bookkeeping task runs.
+TEST_F(FormFillerAsyncTest, FillOrPreviewForm_AsyncFormRemovedWhilePending) {
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&autofill_manager());
+  EXPECT_CALL(observer, OnFillOrPreviewForm).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+
+  FormsRemoved({form.global_id()});
+  test_api(form_filler()).RunPendingPostFillTasks();
+}
+
+// Tests that if the trigger field is removed from the cached `FormStructure`
+// before the bookkeeping task runs, the bookkeeping still logs fill events,
+// records undo history and updates the cache for the remaining filled fields,
+// but skips the notifications that require the trigger field.
+TEST_F(FormFillerAsyncTest,
+       FillOrPreviewForm_AsyncTriggerFieldRemovedWhilePending) {
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&autofill_manager());
+  EXPECT_CALL(observer, OnFillOrPreviewForm).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+
+  test_api(form).Remove(0);
+  test_api(*form_structure).UpdateFormData(form);
+  test_api(form_filler()).RunPendingPostFillTasks();
+
+  ASSERT_EQ(form_structure->field_count(), 1u);
+  EXPECT_THAT(form_structure->field(0), AutofilledWithProfile(profile));
+  EXPECT_TRUE(std::ranges::any_of(
+      form_structure->field(0)->field_log_events(), [](const auto& event) {
+        return std::holds_alternative<FillFieldLogEvent>(event);
+      }));
+  EXPECT_TRUE(form_structure->last_filling_timestamp().has_value());
+
+  form = UndoAutofill(form, form.fields()[0]);
+  EXPECT_EQ(form.fields()[0].value(), u"");
+}
+
+// Tests that the bookkeeping of an asynchronous refill uses its own copy of the
+// payload, which is owned by the `RefillContext` that `TriggerRefill()`
+// destroys right after starting the refill. (`TestFormFiller::ScheduleRefill()`
+// triggers the refill synchronously.)
+TEST_F(FormFillerAsyncTest,
+       FillOrPreviewForm_AsyncRefillOutlivesRefillContext) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "address-line1"},
+                  {.role = ADDRESS_HOME_LINE2,
+                   .autocomplete_attribute = "address-line2"}}});
+  FormFieldData line2_field = form.fields()[2];
+  test_api(form).Resize(2);
+  FormsSeen({form});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  AutofillProfile profile = test::GetFullProfile();
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+  test_api(form_filler()).RunPendingPostFillTasks();
+  testing::Mock::VerifyAndClearExpectations(&autofill_driver());
+
+  // A dynamic form change triggers a refill.
+  test_api(form).Append(line2_field);
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).WillOnce(FillInto(form));
+  FormsSeen({form});
+  test_api(form_filler()).RunPendingPostFillTasks();
+
+  form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+  ASSERT_EQ(form_structure->field_count(), 3u);
+  EXPECT_THAT(form_structure->field(2), AutofilledWithProfile(profile));
 }
 
 }  // namespace autofill

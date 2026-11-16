@@ -135,7 +135,8 @@ class FormFiller {
       AutofillTriggerSource trigger_source,
       AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
-  // Resets states that FormFiller holds and maintains.
+  // Resets states that FormFiller holds and maintains, and cancels pending
+  // `OnAfterFillForm()` tasks.
   void Reset();
 
   base::TimeDelta limit_before_automatic_refill() const {
@@ -367,6 +368,10 @@ class FormFiller {
 
   const raw_ref<BrowserAutofillManager> manager_;
 
+  // Only bound to posted `OnAfterFillForm()` tasks, so that `Reset()` can
+  // cancel them by invalidating the WeakPtrs.
+  // `FormFillerTestApi::RunPendingPostFillTasks()` relies on this.
+  base::WeakPtrFactory<FormFiller> post_fill_weak_ptr_factory_{this};
   base::WeakPtrFactory<FormFiller> weak_ptr_factory_{this};
 };
 

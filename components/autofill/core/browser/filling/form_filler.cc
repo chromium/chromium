@@ -39,6 +39,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -641,6 +642,13 @@ LogManager* FormFiller::log_manager() {
 void FormFiller::Reset() {
   refill_context_.clear();
   form_autofill_history_.Reset();
+  // Drop pending `OnAfterFillForm()` tasks. `FormFiller::Reset()` is called by
+  // `BrowserAutofillManager::Reset()`, which also clears the form cache, so
+  // their bookkeeping could not complete anyway. As
+  // `BrowserAutofillManager::Reset()` processes the field log events before,
+  // the field log events, metrics and use counts of a fill that is pending at
+  // that time are lost.
+  post_fill_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 // static
@@ -986,6 +994,12 @@ void FormFiller::FillOrPreviewForm(
               return std::pair(field->global_id(),
                                FormAutofillHistory::FieldFillingEntry(*field));
             });
+    // Set `last_filling_timestamp` before `ApplyFormAction()` (rather than in
+    // `OnAfterFillForm()`) so that
+    // `BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue()` can
+    // detect JavaScript clearing an autofilled field even before the post-fill
+    // bookkeeping has run.
+    form.set_last_filling_timestamp(base::TimeTicks::Now());
   }
 
   base::flat_set<FieldGlobalId> safe_filled_field_ids =
@@ -1029,8 +1043,29 @@ void FormFiller::FillOrPreviewForm(
       .skip_reasons = std::move(skip_reasons),
       .pre_fill_field_states = std::move(pre_fill_field_states),
   };
-  OnAfterFillForm(std::move(pending_fill_data),
-                  std::move(safe_filled_field_ids));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPostTaskAfterFillOrPreviewForm)) {
+    // Note that other tasks (e.g., renderer messages on task queues of higher
+    // priority) may run before this task.
+    //
+    // TODO(crbug.com/582269824): Some race conditions may occur:
+    // 1) Another fill of the same form while this task is pending computes its
+    // skip reasons from the not yet updated cache (e.g., it does not skip the
+    // fields filled by this operation as `kAlreadyAutofilled`). Besides the
+    // user, `ActorFormFillingServiceImpl` fills forms in a synchronous loop;
+    // its fills normally don't overlap because they target different sections
+    // or are kept apart by `blocked_fields`. Consider queuing the pending
+    // bookkeeping and running it before the next operation on the form.
+    // 2) A form submission may occur while `OnAfterFillForm()` is pending.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&FormFiller::OnAfterFillForm,
+                                  post_fill_weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(pending_fill_data),
+                                  std::move(safe_filled_field_ids)));
+  } else {
+    OnAfterFillForm(std::move(pending_fill_data),
+                    std::move(safe_filled_field_ids));
+  }
 }
 
 void FormFiller::OnAfterFillForm(
@@ -1041,8 +1076,6 @@ void FormFiller::OnAfterFillForm(
   if (!form) {
     return;
   }
-
-  form->set_last_filling_timestamp(base::TimeTicks::Now());
 
   // The trigger field may have been removed from `form` while other fields were
   // filled. In that case, the bookkeeping below still runs, and only the

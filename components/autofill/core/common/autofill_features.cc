@@ -1059,6 +1059,18 @@ BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
 // TODO(crbug.com/524084900): Remove when launched.
 BASE_FEATURE(kAutofillPopupUseDeleteSoon, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `FormFiller::FillOrPreviewForm()` runs the bookkeeping of fills
+// after `AutofillDriver::ApplyFormAction()` (cache updates, undo history, fill
+// log events, metrics and observer notifications) in a separate task instead of
+// synchronously. Previews always notify observers synchronously. Disabled by
+// default because observers are then notified about fills
+// (`AutofillManager::Observer::OnFillOrPreviewForm()`) one task later, e.g.,
+// after the suggestions were hidden.
+// TODO(crbug.com/582269824): Remove when the asynchronous bookkeeping has
+// launched.
+BASE_FEATURE(kAutofillPostTaskAfterFillOrPreviewForm,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether iframe subqueries use their host form's structural
 // signature and omit main-form-only metadata.
 BASE_FEATURE(kAutofillQueryPerIframeStructuralSignatures,
