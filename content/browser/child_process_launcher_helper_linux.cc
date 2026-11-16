@@ -93,7 +93,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     base::ProcessHandle handle = zygote_handle->ForkRequest(
         command_line()->argv(), files_to_register->GetMapping(),
         GetProcessType());
-    *launch_result = handle ? LAUNCH_RESULT_SUCCESS : LAUNCH_RESULT_FAILURE;
+    *launch_result = LAUNCH_RESULT_SUCCESS;
 
 #if !BUILDFLAG(IS_OPENBSD)
     if (handle) {
