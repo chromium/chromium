@@ -104,6 +104,7 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
             "learning models."
           data: "A list of models supported by the client."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "optimizationguide-pa.googleapis.com"
         }
          policy {
           cookies_allowed: NO

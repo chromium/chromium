@@ -39,6 +39,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           description: "Create a wallpaper with AI for custom themes."
           trigger: "User opens a new tab and clicks Customize Chrome."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelexecution-pa.googleapis.com"
           data:
             "User selected characteristics of the theme such as subject, mood,"
             " visual style and color."
@@ -73,6 +74,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "reviews or emails."
           trigger: "User right-clicks on a text box and clicks Help me write."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelexecution-pa.googleapis.com"
           data:
             "User written input text, title, URL, and content of the page"
           internal {
@@ -111,6 +113,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "User logged-in with a compromised credential and accepted "
             "an option from the dialog to change password automatically."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelexecution-pa.googleapis.com"
           data:
             "Title, URL, and content of the page, which may "
             "potentially contain user input."
@@ -153,6 +156,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       trigger: "User encounters a web form on page load and the Autofill "
                "server has selected the form as relevant for model execution."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "chromemodelexecution-pa.googleapis.com"
       data: "Title, URL, and content of the page."
       internal {
         contacts {
@@ -194,6 +198,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         "User opens Gemini in Chrome via browser entrypoint, OS entrypoint, or"
         " hot key."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "chromemodelexecution-pa.googleapis.com"
       data:
         "Title, URL, and content of the page, which may potentially contain "
         "user input. The access token is also sent to verify user is of "
@@ -238,6 +243,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         "User navigates to a checkout page on a supported merchant website "
         "and selects bnpl option."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "chromemodelexecution-pa.googleapis.com"
       data:
         "The text content of the checkout page, which may include the page "
         "URL, and user-input data in the checkout form."
@@ -280,6 +286,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       trigger:
         "User navigates to a suspicious web page."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "chromemodelexecution-pa.googleapis.com"
       data:
         "The text content of the suspicious page."
       internal {
@@ -320,6 +327,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         trigger:
           "The user interacts with a feature that refines a skill. "
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "chromemodelexecution-pa.googleapis.com"
         data:
           "The current page content or user-provided text relevant to skills."
         internal {
@@ -360,6 +368,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         "User navigates to a suspicious web page and force request client side "
         "detection ping is triggered."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "chromemodelexecution-pa.googleapis.com"
       data:
         "The URL and visible text content of the suspicious page the user is "
         "currently visiting."
@@ -403,6 +412,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "The only way for end-users to access finds is by opting into the "
             "feature when prompted."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelexecution-pa.googleapis.com"
           data:
             "The user's browsing history over the past week, including URLs, "
             "page titles, and visit timestamps."
@@ -451,6 +461,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "User navigates to a page that is a part of one of the target "
             "CUJs (ex: shopping and education)."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelexecution-pa.googleapis.com"
           data:
             "Title and URL of the main frame page the user has navigated too."
           internal {
@@ -495,6 +506,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           trigger:
             "User triggers the Read Aloud conversational playback mode."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelexecution-pa.googleapis.com"
           data:
             "The webpage title, main distilled content segments, and "
             "sanitized page URL."
@@ -536,6 +548,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "User plays or seeks in Read Aloud playback mode, or when "
             "pre-fetching the next audio segment."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromemodelexecution-pa.googleapis.com"
           data:
             "The text chunk to be synthesized, target voice identifier, and "
             "BCP-47 language code."

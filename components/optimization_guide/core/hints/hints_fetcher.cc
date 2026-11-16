@@ -298,6 +298,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
             "have a valid hint for the current page load."
           data: "The URL and host of the current page load."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "optimizationguide-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO

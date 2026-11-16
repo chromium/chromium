@@ -81,6 +81,7 @@ const net::NetworkTrafficAnnotationTag
           data: "The URL provided by the Optimization Guide Service to fetch "
             "an updated model. No user information is sent."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "optimizationguide-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
