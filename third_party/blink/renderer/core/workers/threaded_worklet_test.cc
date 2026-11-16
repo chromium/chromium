@@ -182,7 +182,7 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
   bool IsOwningBackingThread() const final { return false; }
 
   ThreadType GetThreadType() const override {
-    return ThreadType::kUnspecifiedWorkerThread;
+    return ThreadType::kTestThread;
   }
 };
 

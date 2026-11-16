@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/compositor_thread_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_base.h"
 
 namespace base {

@@ -184,7 +184,7 @@ class WorkerThreadForTest : public WorkerThread {
 
  private:
   ThreadType GetThreadType() const override {
-    return ThreadType::kUnspecifiedWorkerThread;
+    return ThreadType::kTestThread;
   }
 
   std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
