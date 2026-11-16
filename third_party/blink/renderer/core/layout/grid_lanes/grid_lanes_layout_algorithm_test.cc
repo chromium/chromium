@@ -3347,6 +3347,70 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRowStackingAxisOverflow) {
   EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(91));
 }
 
+TEST_F(GridLanesLayoutAlgorithmTest,
+       GapDecorationsInkOverflowWithColumnMainGap) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #grid-lanes {
+        display: grid-lanes;
+        grid-template-columns: 200px 200px;
+        column-gap: 20px;
+        column-rule: 4px solid blue;
+        row-rule-width: 0;
+        width: 420px;
+        height: 20px;
+      }
+      #grid-lanes > div { height: 10px; }
+    </style>
+    <div id="grid-lanes"><div></div><div></div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const PhysicalBoxFragment* fragment =
+      GetLayoutBoxByElementId("grid-lanes")->GetPhysicalFragment(0);
+  ASSERT_NE(fragment, nullptr);
+  const GapGeometry* gaps = fragment->GetGapGeometry();
+  ASSERT_NE(gaps, nullptr);
+  ASSERT_EQ(gaps->MainGapCount(), 1u);
+  EXPECT_EQ(fragment->SelfInkOverflowRect().Bottom(), LayoutUnit(20));
+}
+
+TEST_F(GridLanesLayoutAlgorithmTest,
+       GapDecorationsInkOverflowWithNegativeMarginCrossGap) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #grid-lanes {
+        display: grid-lanes;
+        grid-template-columns: 400px;
+        height: 20px;
+        row-gap: 600px;
+        row-rule: 200px solid red;
+      }
+      #first {
+        height: 10px;
+        margin-bottom: -610px;
+      }
+      #second {
+        height: 10px;
+      }
+    </style>
+    <div id="grid-lanes">
+      <div id="first"></div>
+      <div id="second"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const PhysicalBoxFragment* fragment =
+      GetLayoutBoxByElementId("grid-lanes")->GetPhysicalFragment(0);
+  ASSERT_NE(fragment, nullptr);
+  const PhysicalRect self_ink_overflow = fragment->SelfInkOverflowRect();
+  EXPECT_LE(self_ink_overflow.offset.top, LayoutUnit(-400));
+  EXPECT_TRUE(self_ink_overflow.Contains(PhysicalRect(
+      LayoutUnit(0), LayoutUnit(-400), LayoutUnit(400), LayoutUnit(200))));
+}
+
 TEST_F(GridLanesLayoutAlgorithmTest, PopulateGridLanesBreakTokenData) {
   SetBodyInnerHTML(R"HTML(
     <div id="grid-lanes" style="display: grid-lanes; height: 200px;

@@ -6551,6 +6551,47 @@ TEST_F(ColumnLayoutAlgorithmTest, GapDecorationBasic) {
 }
 
 TEST_F(ColumnLayoutAlgorithmTest,
+       GapDecorationsInkOverflowWithNegativeMarginSpanner) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #multicol {
+        width: 200px;
+        column-count: 2;
+        column-gap: 20px;
+        column-rule: 4px solid blue;
+      }
+      #before { height: 600px; }
+      #spanner {
+        column-span: all;
+        height: 0;
+        margin-top: -290px;
+      }
+      #after { height: 10px; }
+    </style>
+    <div id="multicol">
+      <div id="before"></div>
+      <div id="spanner"></div>
+      <div id="after"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const PhysicalBoxFragment* fragment =
+      GetLayoutBoxByElementId("multicol")->GetPhysicalFragment(0);
+  ASSERT_NE(fragment, nullptr);
+  const GapGeometry* gaps = fragment->GetGapGeometry();
+  ASSERT_NE(gaps, nullptr);
+  ASSERT_EQ(gaps->MainGapCount(), 2u);
+  const MainGap& spanner_start = gaps->GetMainGaps()[0];
+  ASSERT_TRUE(spanner_start.IsStartSpannerMainGap());
+  ASSERT_GT(spanner_start.GetGapOffset(), gaps->GetContentBlockEnd());
+  const PhysicalRect gap_overflow = gaps->ComputeInkOverflowForGaps(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr}, fragment->Size(),
+      LayoutUnit(4), LayoutUnit(), {});
+  EXPECT_GE(gap_overflow.Bottom(), spanner_start.GetGapOffset());
+}
+
+TEST_F(ColumnLayoutAlgorithmTest,
        GapDecorationContentEndPastContainer) {
   SetBodyInnerHTML(R"HTML(
     <style>

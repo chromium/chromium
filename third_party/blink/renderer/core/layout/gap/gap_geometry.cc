@@ -22,6 +22,8 @@ bool GapGeometry::operator==(const GapGeometry& other) const {
       inline_gap_size_ != other.inline_gap_size_ ||
       block_gap_size_ != other.block_gap_size_ ||
       main_gaps_ != other.main_gaps_ || cross_gaps_ != other.cross_gaps_ ||
+      min_gap_offset_ != other.min_gap_offset_ ||
+      max_gap_offset_ != other.max_gap_offset_ ||
       spanner_main_gap_count_ != other.spanner_main_gap_count_ ||
       gap_placement_reversal_ != other.gap_placement_reversal_ ||
       content_inline_start_ != other.content_inline_start_ ||
@@ -252,6 +254,48 @@ wtf_size_t GapGeometry::DecorationValueIndexForCrossGap(
   return decoration_value_index;
 }
 
+void GapGeometry::UpdateGapBounds(LayoutUnit offset,
+                                  GridTrackSizingDirection direction) {
+  if (direction == kForColumns) {
+    min_gap_offset_.inline_offset =
+        std::min(min_gap_offset_.inline_offset, offset);
+    max_gap_offset_.inline_offset =
+        std::max(max_gap_offset_.inline_offset, offset);
+  } else {
+    min_gap_offset_.block_offset =
+        std::min(min_gap_offset_.block_offset, offset);
+    max_gap_offset_.block_offset =
+        std::max(max_gap_offset_.block_offset, offset);
+  }
+}
+
+void GapGeometry::UpdateCrossGapBounds(const CrossGap& gap) {
+  // Artificial cross gaps (grid-lanes item/spanner boundaries) are never
+  // painted as cross rules, so they can't overflow.
+  if (gap.IsArtificial()) {
+    return;
+  }
+  const GridTrackSizingDirection cross_direction =
+      OppositeDirection(main_direction_);
+  UpdateGapBounds(gap.GetGapOffset(cross_direction), cross_direction);
+  // Flex and multicol store a rule endpoint in the other coordinate. Grid
+  // leaves it unused, and grid-lanes stores a lane coordinate instead.
+  if (container_type_ == kFlex || container_type_ == kMultiColumn) {
+    UpdateGapBounds(gap.GetGapOffset(main_direction_), main_direction_);
+  }
+}
+
+void GapGeometry::RecomputeGapBounds() {
+  min_gap_offset_ = {LayoutUnit::Max(), LayoutUnit::Max()};
+  max_gap_offset_ = {LayoutUnit::Min(), LayoutUnit::Min()};
+  for (const MainGap& gap : main_gaps_) {
+    UpdateGapBounds(gap.GetGapOffset(), main_direction_);
+  }
+  for (const CrossGap& gap : cross_gaps_) {
+    UpdateCrossGapBounds(gap);
+  }
+}
+
 PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
     WritingDirectionMode writing_direction,
     const PhysicalSize& container_size,
@@ -263,23 +307,41 @@ PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
   // gap geometry.
   CHECK(!main_gaps_.empty() || !cross_gaps_.empty());
 
-  LayoutUnit inline_start = content_inline_start_;
-  LayoutUnit inline_size = content_inline_end_ - content_inline_start_;
-  LayoutUnit block_start = content_block_start_;
-  LayoutUnit block_size = content_block_end_ - content_block_start_;
+  const LayoutUnit inline_min =
+      std::min({content_inline_start_, content_inline_end_,
+                min_gap_offset_.inline_offset});
+  const LayoutUnit inline_max =
+      std::max({content_inline_start_, content_inline_end_,
+                max_gap_offset_.inline_offset});
+  const LayoutUnit block_min = std::min(
+      {content_block_start_, content_block_end_, min_gap_offset_.block_offset});
+  const LayoutUnit block_max = std::max(
+      {content_block_start_, content_block_end_, max_gap_offset_.block_offset});
 
   // Inflate the bounds to account for the gap decorations thickness and any
   // negative insets that push decorations past the content box edges.
-  inline_start -= inline_thickness / 2 + outsets.inline_start;
-  inline_size += inline_thickness + outsets.InlineOutsetThickness();
-  block_start -= block_thickness / 2 + outsets.block_start;
-  block_size += block_thickness + outsets.BlockOutsetThickness();
+  const LayoutUnit inline_start =
+      inline_min - (inline_thickness / 2 + outsets.inline_start);
+  const LayoutUnit inline_end = inline_max +
+                                (inline_thickness - inline_thickness / 2) +
+                                outsets.inline_end;
+  const LayoutUnit block_start =
+      block_min - (block_thickness / 2 + outsets.block_start);
+  const LayoutUnit block_end =
+      block_max + (block_thickness - block_thickness / 2) + outsets.block_end;
 
-  LogicalRect logical_rect(inline_start, block_start, inline_size, block_size);
   WritingModeConverter converter(writing_direction, container_size);
-  PhysicalRect physical_rect = converter.ToPhysical(logical_rect);
-
-  return physical_rect;
+  PhysicalRect overflow(
+      converter.ToPhysical(LogicalOffset(inline_start, block_start),
+                           PhysicalSize()),
+      PhysicalSize());
+  // Unite opposite physical corners directly so saturated bounds favor physical
+  // right/bottom across RTL and vertical writing modes.
+  overflow.UniteEvenIfEmpty(
+      PhysicalRect(converter.ToPhysical(LogicalOffset(inline_end, block_end),
+                                        PhysicalSize()),
+                   PhysicalSize()));
+  return overflow;
 }
 
 LayoutUnit GapGeometry::GetCrossingGapSize(

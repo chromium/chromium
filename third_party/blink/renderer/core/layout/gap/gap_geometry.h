@@ -120,11 +120,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     LayoutUnit inline_end;
     LayoutUnit block_start;
     LayoutUnit block_end;
-
-    LayoutUnit InlineOutsetThickness() const {
-      return inline_start + inline_end;
-    }
-    LayoutUnit BlockOutsetThickness() const { return block_start + block_end; }
   };
 
   // Computes the physical bounding rect for gap decorations ink overflow.
@@ -181,6 +176,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       CHECK_EQ(container_type_, ContainerType::kMultiColumn);
       ++spanner_main_gap_count_;
     }
+    UpdateGapBounds(offset, main_direction_);
     main_gaps_.emplace_back(offset, type);
     return main_gaps_.back();
   }
@@ -188,13 +184,15 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   CrossGap& AddCrossGap(LogicalOffset offset,
                         CrossGap::Type type = CrossGap::Type::kGutter) {
     cross_gaps_.emplace_back(offset, type);
+    UpdateCrossGapBounds(cross_gaps_.back());
     return cross_gaps_.back();
   }
 
   CrossGap& AddCrossGap(LogicalOffset offset,
                         CrossGap::EdgeIntersectionState state) {
-    cross_gaps_.emplace_back(offset, state);
-    return cross_gaps_.back();
+    CrossGap& gap = AddCrossGap(offset);
+    gap.SetEdgeIntersectionState(state);
+    return gap;
   }
 
   void RemoveLastMainGap() {
@@ -204,6 +202,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       --spanner_main_gap_count_;
     }
     main_gaps_.pop_back();
+    RecomputeGapBounds();
   }
 
   MainGap& MainGapAt(wtf_size_t index) {
@@ -294,6 +293,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                              wtf_size_t gap_slot_count) const;
 
   void SetMainDirection(GridTrackSizingDirection direction) {
+    CHECK(direction == main_direction_ ||
+          (main_gaps_.empty() && cross_gaps_.empty()));
     main_direction_ = direction;
   }
 
@@ -501,7 +502,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
         content_inline_end_(other.content_inline_end_),
         content_block_start_(new_content_block_start),
         content_block_end_(new_content_block_end),
-        main_direction_(other.main_direction_) {}
+        main_direction_(other.main_direction_) {
+    RecomputeGapBounds();
+  }
 
   // Fills `intersections` for a grid or multicol main gap.
   // Kept in the base class because both containers have identical behavior.
@@ -603,6 +606,13 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   static wtf_size_t CountSpannerMainGaps(const MainGaps& main_gaps);
 
+  void UpdateGapBounds(LayoutUnit offset, GridTrackSizingDirection direction);
+  void UpdateCrossGapBounds(const CrossGap& gap);
+
+  // Rebuilds cached bounds after removing a gap or replacing main gaps with
+  // fragment-relative gaps. These changes can invalidate the stored extrema.
+  void RecomputeGapBounds();
+
   // Returns whether a cross-gap intersection is adjacent to a synthetic main
   // gap that represents a spanner boundary.
   bool IsSpannerBoundaryIntersection(wtf_size_t intersection_index,
@@ -672,6 +682,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
+
+  // Bounds of gap offsets used by paint, including spanner endpoints, separate
+  // from the content endpoints. Empty axes must not expand the content bounds.
+  LogicalOffset min_gap_offset_{LayoutUnit::Max(), LayoutUnit::Max()};
+  LogicalOffset max_gap_offset_{LayoutUnit::Min(), LayoutUnit::Min()};
 
   // Number of main gaps created for spanner boundaries. Only multicol creates
   // these gaps. They are not painted and do not consume decoration values.

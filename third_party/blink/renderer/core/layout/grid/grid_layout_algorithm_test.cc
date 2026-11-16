@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/gap/grid_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
@@ -285,6 +286,40 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
   EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit());
   EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(318));
   EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(506));
+}
+
+TEST_F(GridLayoutAlgorithmTest,
+       GapDecorationsInkOverflowWithFragmentGapOffsets) {
+  auto* geometry = MakeGarbageCollected<GridGapGeometry>();
+  geometry->SetContentInlineOffsets(LayoutUnit(20), LayoutUnit(100));
+  geometry->SetContentBlockOffsets(LayoutUnit(), LayoutUnit(500));
+  geometry->AddMainGap(LayoutUnit(450));
+  geometry->AddCrossGap(LogicalOffset(LayoutUnit(60), LayoutUnit()));
+
+  MainGaps fragment_gaps = {MainGap(LayoutUnit(-30)), MainGap(LayoutUnit(140))};
+  auto* fragment_geometry = MakeGarbageCollected<GridGapGeometry>(
+      *geometry, std::move(fragment_gaps), LayoutUnit(), LayoutUnit(100));
+  EXPECT_EQ(fragment_geometry->ComputeInkOverflowForGaps(
+                {WritingMode::kHorizontalTb, TextDirection::kLtr},
+                PhysicalSize(100, 100), LayoutUnit(10), LayoutUnit(10), {}),
+            PhysicalRect(15, -35, 90, 180));
+}
+
+TEST_F(GridLayoutAlgorithmTest, GapDecorationsInkOverflowSaturatedRtl) {
+  auto* geometry = MakeGarbageCollected<GridGapGeometry>();
+  geometry->SetContentInlineOffsets(LayoutUnit(-20000000),
+                                    LayoutUnit(20000000));
+  geometry->SetContentBlockOffsets(LayoutUnit(), LayoutUnit(100));
+  geometry->AddCrossGap(LogicalOffset(LayoutUnit(-20000000), LayoutUnit()));
+
+  const PhysicalRect overflow = geometry->ComputeInkOverflowForGaps(
+      {WritingMode::kHorizontalTb, TextDirection::kRtl}, PhysicalSize(100, 100),
+      LayoutUnit(4), LayoutUnit(), {});
+
+  // In RTL, the column rule's physical center is 100 - (-20000000).
+  const PhysicalRect painted_rule(LayoutUnit(20000098), LayoutUnit(),
+                                  LayoutUnit(4), LayoutUnit(100));
+  EXPECT_TRUE(overflow.Contains(painted_rule));
 }
 
 TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItems) {

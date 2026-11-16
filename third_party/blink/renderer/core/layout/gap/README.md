@@ -20,6 +20,15 @@ traversing) and **Cross Gaps** (the orthogonal axis that intersects
 mains). Intersections are computed (not stored) based on container edges
 plus the set of orthogonal gaps that intersect a given gap.
 
+#### Ink Overflow Bounds
+`AddMainGap` and `AddCrossGap` maintain bounds for gap offsets used by paint.
+Ink overflow combines these bounds with the content bounds, rule thickness,
+and outward insets in constant time. Spanner main gaps expand the bounds because
+they define column-rule endpoints. Artificial cross gaps do not expand the
+bounds. Set the main direction before adding gaps. Removing a main gap or
+replacing main gaps for fragmentation rebuilds the bounds. Content endpoints
+used by paint stay separate.
+
 #### Intersection Point
 This is where a gap intersects either the container’s content edge or a gap in
 the orthogonal direction. Decorations can break at these points.

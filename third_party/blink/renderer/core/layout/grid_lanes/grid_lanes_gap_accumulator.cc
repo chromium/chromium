@@ -213,6 +213,9 @@ void GridLanesGapAccumulator::BuildMainGaps(
     const GridLayoutTrackCollection& grid_axis_tracks) {
   collapsed_track_indexes_ = &grid_axis_tracks.CollapsedTrackIndexes();
   raw_track_count_ = grid_axis_tracks.EndLineOfImplicitGrid();
+  const GridTrackSizingDirection grid_axis_direction =
+      grid_axis_tracks.Direction();
+  gap_geometry_->SetMainDirection(grid_axis_direction);
   const GridTrackGapData gap_data = BuildGridTrackGapData(
       grid_axis_tracks, GridTrackGapType::kMain, *gap_geometry_);
   const wtf_size_t track_count = UncollapsedTrackCount();
@@ -222,9 +225,6 @@ void GridLanesGapAccumulator::BuildMainGaps(
 
   const LayoutUnit gutter_size = grid_axis_tracks.GutterSize();
 
-  const GridTrackSizingDirection grid_axis_direction =
-      grid_axis_tracks.Direction();
-  gap_geometry_->SetMainDirection(grid_axis_direction);
   if (grid_axis_direction == kForColumns) {
     gap_geometry_->SetInlineGapSize(gutter_size);
     gap_geometry_->SetContentInlineOffsets(gap_data.content_start,

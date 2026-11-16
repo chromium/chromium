@@ -161,10 +161,7 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   const bool is_first_line = fragment_relative_line_index == 0;
   const bool single_line = is_first_line && is_last_line;
 
-  if (single_line && is_first_item) {
-    CHECK(!need_to_add_main_gap);
-    SetContentStartOffsetsIfNeeded(item_offset, line_cross_start);
-  }
+  SetContentStartOffsetsIfNeeded(item_offset, line_cross_start);
 
   if (!is_fragmented_column && is_last_line && is_first_item) {
     content_cross_end_ = line_cross_end;
@@ -173,7 +170,6 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   if (need_to_add_main_gap) {
     // We set the `MainGap` start offset when we process the first item in a
     // line, and nothing else. The last line does not have any `MainGap`s.
-    SetContentStartOffsetsIfNeeded(item_offset, line_cross_start);
     PopulateMainGapForFirstItem(line_cross_end);
     // For row flex containers, row gaps are the gaps between its flex lines. We
     // store a single entry for the whole fragment and build up its

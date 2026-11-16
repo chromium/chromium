@@ -17,7 +17,9 @@ ColumnGapAccumulator::ColumnGapAccumulator(LayoutUnit column_gap_size,
       row_gap_size_(row_gap_size),
       specified_column_count_(specified_column_count),
       has_auto_column_count_(has_auto_column_count),
-      gap_geometry_(MakeGarbageCollected<MulticolGapGeometry>()) {}
+      gap_geometry_(MakeGarbageCollected<MulticolGapGeometry>()) {
+  gap_geometry_->SetMainDirection(kForRows);
+}
 
 void ColumnGapAccumulator::AddMainGap(LayoutUnit block_offset,
                                       SpannerMainGapType gap_type) {
@@ -151,8 +153,6 @@ const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
                                          content_inline_end);
   gap_geometry_->SetContentBlockOffsets(first_column_offset_->block_offset,
                                         content_block_end);
-
-  gap_geometry_->SetMainDirection(kForRows);
 
   return gap_geometry_;
 }
