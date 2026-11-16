@@ -4,6 +4,8 @@
 
 #include "content/public/browser/webui_config_map.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -108,7 +110,7 @@ void WebUIConfigMap::AddWebUIConfigImpl(std::unique_ptr<WebUIConfig> config) {
 
 WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
                                        const GURL& url) {
-  WebUIConfig* config = FindConfig(url);
+  WebUIConfig* config = GetRegisteredConfig(url);
   if (!config || !config->IsWebUIEnabled(browser_context) ||
       !config->ShouldHandleURL(url)) {
     return nullptr;
@@ -117,11 +119,16 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
   return config;
 }
 
-const WebUIConfig* WebUIConfigMap::GetRegisteredConfig(const GURL& url) const {
-  return FindConfig(url);
+std::optional<std::string_view> WebUIConfigMap::GetProcessLockHost(
+    const GURL& url) const {
+  const WebUIConfig* config = GetRegisteredConfig(url);
+  if (!config) {
+    return std::nullopt;
+  }
+  return config->process_lock_host();
 }
 
-WebUIConfig* WebUIConfigMap::FindConfig(const GURL& url) const {
+WebUIConfig* WebUIConfigMap::GetRegisteredConfig(const GURL& url) const {
   // "filesystem:" and "blob:" get dropped by url::Origin::Create() below. We
   // don't want navigations to these URLs to have WebUI bindings, e.g.
   // chrome.send() or Mojo.bindInterface(), since some WebUIs currently expose

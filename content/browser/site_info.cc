@@ -30,7 +30,6 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -80,12 +79,12 @@ std::optional<GURL> GetWebUIProcessLockURL(const GURL& url) {
   }
 #endif
 
-  const WebUIConfig* config =
-      WebUIConfigMap::GetInstance().GetRegisteredConfig(url);
-  if (!config || !config->process_lock_host().has_value()) {
+  std::optional<std::string_view> lock_host =
+      WebUIConfigMap::GetInstance().GetProcessLockHost(url);
+  if (!lock_host.has_value()) {
     return std::nullopt;
   }
-  return SchemeAndHostToSite(kChromeUIScheme, *config->process_lock_host());
+  return SchemeAndHostToSite(kChromeUIScheme, *lock_host);
 }
 
 // Figure out which origin to use for computing site and process lock URLs for
