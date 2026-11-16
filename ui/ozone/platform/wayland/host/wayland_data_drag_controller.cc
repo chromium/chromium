@@ -247,6 +247,7 @@ void WaylandDataDragController::StartSessionInternal(
     // can be used here (as well as in UpdateDragImage) instead. Original
     // reasoning: latched state is what is currently displayed to the user.
     icon_surface_buffer_scale_ = origin_window_->applied_state().window_scale;
+    icon_surface_ui_scale_ = origin_window_->applied_state().ui_scale;
     icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
     // Icon surface do not need input.
     const std::vector<gfx::Rect> kEmptyRegionPx{{}};
@@ -254,15 +255,15 @@ void WaylandDataDragController::StartSessionInternal(
     icon_surface_->ApplyPendingState();
 
     if (!icon_image_.isNull()) {
-      auto icon_offset =
-          -GetOfferedExchangeDataProvider()->GetDragImageOffset();
-      pending_icon_offset_ = {icon_offset.x(), icon_offset.y()};
+      pending_icon_offset_ = GetIconSurfaceOffset(
+          GetOfferedExchangeDataProvider()->GetDragImageOffset());
       current_icon_offset_ = {0, 0};
     }
   } else {
     LOG(ERROR) << "Failed to create drag icon surface.";
     icon_surface_.reset();
     icon_surface_buffer_scale_ = 1.0f;
+    icon_surface_ui_scale_ = 1.0f;
   }
 
   // Starts the wayland drag session setting |this| object as delegate.
@@ -315,11 +316,12 @@ void WaylandDataDragController::UpdateDragImage(const gfx::ImageSkia& image,
 
   if (icon_surface_ && window_) {
     icon_surface_buffer_scale_ = window_->applied_state().window_scale;
+    icon_surface_ui_scale_ = window_->applied_state().ui_scale;
     icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
     icon_surface_->ApplyPendingState();
   }
 
-  pending_icon_offset_ = {-offset.x(), -offset.y()};
+  pending_icon_offset_ = GetIconSurfaceOffset(offset);
 
   DrawIconInternal();
 }
@@ -389,6 +391,14 @@ void WaylandDataDragController::OnDragSurfaceFrame(void* data,
   self->DrawIconInternal();
   self->icon_frame_callback_.reset();
   self->connection_->Flush();
+}
+
+gfx::Point WaylandDataDragController::GetIconSurfaceOffset(
+    const gfx::Vector2d& offset) const {
+  // `offset` is in UI DIP, ie: scaled by `ui_scale`, whereas the icon surface
+  // offset must be in surface-local coordinates, ie: Wayland DIP.
+  return gfx::ToRoundedPoint(gfx::ScalePoint(
+      gfx::PointF(-offset.x(), -offset.y()), icon_surface_ui_scale_));
 }
 
 SkBitmap WaylandDataDragController::GetIconBitmap() {
@@ -961,6 +971,7 @@ void WaylandDataDragController::Reset() {
   icon_buffer_.reset();
   icon_surface_.reset();
   icon_surface_buffer_scale_ = 1.0f;
+  icon_surface_ui_scale_ = 1.0f;
   icon_image_ = gfx::ImageSkia();
   pending_icon_offset_.SetPoint(0, 0);
   current_icon_offset_.SetPoint(0, 0);

@@ -29,6 +29,8 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
@@ -42,6 +44,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
@@ -185,6 +188,11 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
 
   WaylandDataOffer* data_offer() const {
     return drag_controller()->data_offer_.get();
+  }
+
+  uint32_t drag_icon_surface_id() const {
+    CHECK(drag_controller()->icon_surface_);
+    return drag_controller()->icon_surface_->get_surface_id();
   }
 
   MockDropHandler* drop_handler() { return drop_handler_.get(); }
@@ -2043,6 +2051,53 @@ TEST_P(WaylandDataDragControllerTest, ScaleEnterAndMotionEventsLocation) {
   Mock::VerifyAndClearExpectations(drop_handler_.get());
 
   SendDndLeave();
+}
+
+// Verifies that the drag icon offset, which is in UI DIP, is converted to
+// surface-local coordinates, ie: Wayland DIP, when ui_scale != 1, eg: with
+// GNOME's "Large Text" accessibility setting. Otherwise, the drag icon is
+// shifted relative to the cursor.
+TEST_P(WaylandDataDragControllerTest, UiScale_DragIconOffset) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(1);
+  connection_->window_manager()->SetFontScale(1.25f);
+  Mock::VerifyAndClearExpectations(&delegate_);
+  ASSERT_EQ(1.25f, window_->applied_state().ui_scale);
+  ASSERT_EQ(1.0f, window_->applied_state().window_scale);
+
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // A 100x40 UI DIP drag image, rendered at the 1.25 device scale factor.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(125, 50);
+  bitmap.eraseColor(SK_ColorRED);
+  const gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.25f);
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetString(sample_text_for_dnd());
+  os_exchange_data.provider().SetDragImage(image, gfx::Vector2d(80, 20));
+  ASSERT_TRUE(drag_controller()->StartSession(
+      os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
+      window()));
+  WaylandTestBase::SyncDisplay();
+
+  // The drag image offset is 80,20 in UI DIP, ie: 100,25 in Wayland DIP.
+  const uint32_t icon_surface_id = drag_icon_surface_id();
+  PostToServerAndWait([icon_surface_id](wl::TestWaylandServerThread* server) {
+    auto* icon_surface = server->GetObject<wl::MockSurface>(icon_surface_id);
+    ASSERT_TRUE(icon_surface);
+    EXPECT_EQ(gfx::Vector2d(-100, -25), icon_surface->attach_offset());
+  });
+
+  // Ensure the offset passed to UpdateDragImage() also gets converted: 40,8 in
+  // UI DIP is 50,10 in Wayland DIP. wl_surface.attach's x and y are relative
+  // to the current offset, ie: -100,-25.
+  drag_controller()->UpdateDragImage(image, gfx::Vector2d(40, 8));
+  WaylandTestBase::SyncDisplay();
+  PostToServerAndWait([icon_surface_id](wl::TestWaylandServerThread* server) {
+    auto* icon_surface = server->GetObject<wl::MockSurface>(icon_surface_id);
+    ASSERT_TRUE(icon_surface);
+    EXPECT_EQ(gfx::Vector2d(50, 15), icon_surface->attach_offset());
+  });
 }
 
 TEST_P(WaylandDataDragControllerTest,

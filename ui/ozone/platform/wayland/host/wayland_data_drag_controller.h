@@ -278,6 +278,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   uint32_t DispatchEvent(const PlatformEvent& event) override;
 
   SkBitmap GetIconBitmap();
+  // Returns the drag icon surface offset, relative to the cursor, for the
+  // given drag image `offset`, ie: the cursor location within the image in UI
+  // DIP.
+  gfx::Point GetIconSurfaceOffset(const gfx::Vector2d& offset) const;
   void DrawIconInternal();
   static void OnDragSurfaceFrame(void* data,
                                  struct wl_callback* callback,
@@ -341,6 +345,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Drag icon related variables.
   std::unique_ptr<WaylandSurface> icon_surface_;
   float icon_surface_buffer_scale_ = 1.0f;
+  // The ui_scale of the window the drag icon is drawn for. Used to convert the
+  // drag image offset, which is in UI DIP, into surface-local coordinates.
+  float icon_surface_ui_scale_ = 1.0f;
   std::unique_ptr<WaylandShmBuffer> icon_buffer_;
   gfx::ImageSkia icon_image_;
   // pending_icon_offset_ is the offset from the image to the cursor to be

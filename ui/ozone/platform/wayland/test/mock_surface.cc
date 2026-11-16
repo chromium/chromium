@@ -155,6 +155,7 @@ void MockSurface::AttachNewBuffer(wl_resource* buffer_resource,
   if (attached_buffer_)
     prev_attached_buffer_ = attached_buffer_;
   attached_buffer_ = buffer_resource;
+  attach_offset_ = {x, y};
 
   Attach(buffer_resource, x, y);
 }

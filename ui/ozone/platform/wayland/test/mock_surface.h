@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
@@ -106,6 +107,8 @@ class MockSurface : public ServerObject {
 
   wl_resource* attached_buffer() const { return attached_buffer_; }
   wl_resource* prev_attached_buffer() const { return prev_attached_buffer_; }
+  // The x and y arguments of the latest wl_surface.attach request.
+  const gfx::Vector2d& attach_offset() const { return attach_offset_; }
 
   bool has_role() const { return !!xdg_surface_ || !!sub_surface_; }
 
@@ -141,6 +144,7 @@ class MockSurface : public ServerObject {
   raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> attached_buffer_ = nullptr;
   raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> prev_attached_buffer_ =
       nullptr;
+  gfx::Vector2d attach_offset_;
 
   int32_t buffer_scale_ = -1;
   base::WeakPtrFactory<MockSurface> weak_ptr_factory_{this};
