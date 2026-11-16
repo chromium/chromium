@@ -55,6 +55,9 @@ public class AcknowledgeGroupedCredentialSheetController {
 
     public void dismiss() {
         assumeNonNull(mView);
+        // The sheet may be queued or still animating. Stop observing so that nothing is reported
+        // for a sheet that was dismissed already.
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mView, true);
     }
 

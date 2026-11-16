@@ -43,7 +43,12 @@ class JniDelegateImpl : public JniDelegate {
   }
 
   void Dismiss() override {
+    if (!java_bridge_) {
+      return;
+    }
+    // Dismissing a Java bridge whose sheet was resolved already is a no-op.
     java_bridge_->dismiss(base::android::AttachCurrentThread());
+    java_bridge_.Reset();
   }
 
  private:
@@ -75,10 +80,6 @@ AcknowledgeGroupedCredentialSheetBridge::
 
 AcknowledgeGroupedCredentialSheetBridge::
     ~AcknowledgeGroupedCredentialSheetBridge() {
-  // If `Show` was never called, just return.
-  if (!closure_callback_) {
-    return;
-  }
   jni_delegate_->Dismiss();
 }
 
@@ -90,6 +91,10 @@ void AcknowledgeGroupedCredentialSheetBridge::Show(
   if (!window) {
     return;
   }
+  // A sheet from a previous call may still be queued or showing. Its Java
+  // bridge holds a pointer to `this`, so it must be dismissed before the
+  // reference to it is dropped by `Create()`.
+  jni_delegate_->Dismiss();
   closure_callback_ = std::move(closure_callback);
   jni_delegate_->Create(window, this);
   jni_delegate_->Show(current_hostname, credential_hostname);
