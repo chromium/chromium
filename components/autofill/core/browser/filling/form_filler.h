@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -228,6 +229,16 @@ class FormFiller {
   struct AugmentedFillingPayload;
   struct PendingFillData;
 
+  // The state of a field captured before a filling operation.
+  struct FieldSnapshot {
+    // The state that an undo operation restores.
+    FormAutofillHistory::FieldFillingEntry filling_entry;
+    // Used to detect whether the field was modified (e.g., edited by the user
+    // or filled by another operation) before the post-fill bookkeeping runs.
+    uint32_t field_modifiers_generation = 0;
+  };
+  // Maps fields to their state captured before a filling operation.
+  using FieldSnapshots = base::flat_map<FieldGlobalId, FieldSnapshot>;
   // Stores a refill `context` for `form_id`. If `context` is null, erases the
   // entry corresponding to `form_id`.
   void SetRefillContext(FormGlobalId form_id,
@@ -236,11 +247,24 @@ class FormFiller {
   RefillContext* GetRefillContext(FormGlobalId form_id);
   RefillContext* GetRefillContext(const FillId& fill_id);
 
-  // Schedules a call of TriggerRefill. Virtual for testing.
-  virtual void ScheduleRefill(const FormGlobalId& form_id,
-                              RefillContext& refill_context,
-                              AutofillTriggerSource trigger_source,
-                              RefillTriggerReason refill_trigger_reason);
+  // Schedules a refill of the form with `form_id`. Until the initial fill's
+  // bookkeeping has run, `ScheduleRefill()` stores the trigger in
+  // `refill_context.refill_state` (replacing an older deferred trigger), and
+  // `OnAfterFillForm()` calls `ScheduleRefill()` again once the initial fill
+  // is complete. Otherwise, `ScheduleRefill()` calls `StartRefillTimer()`. In
+  // both cases, the latest trigger wins.
+  void ScheduleRefill(const FormGlobalId& form_id,
+                      RefillContext& refill_context,
+                      AutofillTriggerSource trigger_source,
+                      RefillTriggerReason refill_trigger_reason);
+
+  // Starts or restarts the timer in `refill_context.refill_state`, which calls
+  // `TriggerRefill()` after `kWaitTimeForDynamicForms`. Virtual for testing:
+  // `TestFormFiller` calls `TriggerRefill()` synchronously instead.
+  virtual void StartRefillTimer(const FormGlobalId& form_id,
+                                RefillContext& refill_context,
+                                AutofillTriggerSource trigger_source,
+                                RefillTriggerReason refill_trigger_reason);
 
   // Attempts to refill the form with corresponding `form_id`.
   void TriggerRefill(const FormGlobalId& form_id,
@@ -287,8 +311,10 @@ class FormFiller {
   // still cached, updates cached field states, undo history, fill log events,
   // and metrics. If the trigger field is no longer cached, its
   // `TriggerFillFieldLogEvent` and `OnDidFillOrPreviewForm()` (observers, key
-  // metrics, use counts) are skipped. (Previews complete synchronously in
-  // `FillOrPreviewForm()`.)
+  // metrics, use counts) are skipped. Fields that were removed from the form
+  // or modified (e.g., edited by the user) since `FillOrPreviewForm()` called
+  // `ApplyFormAction()` are treated as not filled by this operation. (Previews
+  // complete synchronously in `FillOrPreviewForm()`.)
   void OnAfterFillForm(PendingFillData pending_fill_data,
                        base::flat_set<FieldGlobalId> safe_filled_field_ids);
 
@@ -306,16 +332,20 @@ class FormFiller {
 
   // Appends `TriggerFillFieldLogEvent` and `FillFieldLogEvents` to the relevant
   // fields in the `form` if there was a filling operation.
-  // `pre_fill_field_states` contains the field states captured prior to
-  // filling; fields absent from `pre_fill_field_states` (i.e., fields added to
-  // `form` after the snapshot was taken) are skipped. `trigger_field` is null
-  // if it was removed from `form` before the bookkeeping ran; then only its
-  // `TriggerFillFieldLogEvent` is skipped.
+  // `field_snapshots` contains the field states captured prior to filling.
+  // Fields absent from `field_snapshots` (i.e., fields added to `form` after
+  // the snapshot was taken) and fields in
+  // `field_ids_modified_before_bookkeeping` (i.e., fields modified before the
+  // bookkeeping ran, see `OnAfterFillForm()`) get no fill log event.
+  // `trigger_field` is null if it was removed from `form` before the
+  // bookkeeping ran; then only its `TriggerFillFieldLogEvent` is skipped.
   void AppendFillLogEvents(
       FormStructure& form,
       AutofillField* trigger_field,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
-      const FormAutofillHistory::PreFillFieldStates& pre_fill_field_states,
+      const base::flat_set<FieldGlobalId>&
+          field_ids_modified_before_bookkeeping,
+      const FieldSnapshots& field_snapshots,
       const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
           skip_reasons,
       const FillingPayload& filling_payload,

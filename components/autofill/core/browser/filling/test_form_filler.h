@@ -15,11 +15,11 @@ class TestFormFiller : public FormFiller {
   using FormFiller::FormFiller;
 
  private:
-  // Directly calls TriggerRefill.
-  void ScheduleRefill(const FormGlobalId& form_id,
-                      RefillContext& refill_context,
-                      AutofillTriggerSource trigger_source,
-                      RefillTriggerReason refill_trigger_reason) override;
+  // Calls `TriggerRefill()` synchronously instead of starting a timer.
+  void StartRefillTimer(const FormGlobalId& form_id,
+                        RefillContext& refill_context,
+                        AutofillTriggerSource trigger_source,
+                        RefillTriggerReason refill_trigger_reason) override;
 };
 
 }  // namespace autofill

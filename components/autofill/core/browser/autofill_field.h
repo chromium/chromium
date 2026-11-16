@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -247,6 +248,16 @@ class AutofillField : public FormFieldData {
   void set_field_modifiers(std::vector<FieldModifier> field_modifiers,
                            base::PassKey<FormFiller>) {
     field_modifiers_ = std::move(field_modifiers);
+    ++field_modifiers_generation_;
+  }
+
+  // Returns a counter that is incremented whenever the field's modifiers are
+  // written, even if the sequence of modifiers stays the same (e.g., on a
+  // repeated user edit). Comparing two values of the same field tells whether
+  // the field was modified in between. Copies of the field keep the value.
+  // Fields whose modifiers were never written return 0.
+  uint32_t field_modifiers_generation() const {
+    return field_modifiers_generation_;
   }
 
   void set_only_fill_when_focused(bool fill_when_focused) {
@@ -620,6 +631,9 @@ class AutofillField : public FormFieldData {
   //   `blink::WebFormControlElement`'s `WebAutofillState` at form extraction
   //   time in the renderer process.
   std::vector<FieldModifier> field_modifiers_;
+
+  // See `field_modifiers_generation()`.
+  uint32_t field_modifiers_generation_ = 0;
 
   // Whether the field should be filled when it is not the highlighted field.
   bool only_fill_when_focused_ = false;

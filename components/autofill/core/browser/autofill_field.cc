@@ -896,11 +896,13 @@ std::optional<FieldModifier> AutofillField::last_modifier() const {
 void AutofillField::AddFieldModifier(FieldModifier modifier) {
   std::erase(field_modifiers_, modifier);
   field_modifiers_.push_back(modifier);
+  ++field_modifiers_generation_;
 }
 
 void AutofillField::RemoveFieldModifier(FieldModifier modifier,
                                         base::PassKey<FormFiller> pass_key) {
   std::erase(field_modifiers_, modifier);
+  ++field_modifiers_generation_;
 }
 
 }  // namespace autofill

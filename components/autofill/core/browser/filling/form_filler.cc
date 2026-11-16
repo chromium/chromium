@@ -86,6 +86,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
@@ -388,6 +389,7 @@ struct FormFiller::PendingFillData {
   OwnedFillingPayload filling_payload;
   FormGlobalId form_id;
   FieldGlobalId trigger_field_id;
+  FillId fill_id;
   AutofillTriggerSource trigger_source;
   // Set if and only if the operation is a refill.
   std::optional<RefillTriggerReason> refill_trigger_reason;
@@ -396,7 +398,7 @@ struct FormFiller::PendingFillData {
   base::flat_set<FieldGlobalId> emptied_field_ids;
   absl::flat_hash_map<FieldGlobalId, FieldType> filled_field_types;
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons;
-  FormAutofillHistory::PreFillFieldStates pre_fill_field_states;
+  FieldSnapshots field_snapshots;
 };
 
 // Keeps track of the filling context for a form, used to make refill
@@ -461,10 +463,28 @@ struct FormFiller::RefillContext {
   // TODO(crbug.com/41490871): Remove in favor of
   // FormStructure::last_filling_timestamp_.
   const base::TimeTicks original_fill_time;
+  // The initial fill's bookkeeping (`OnAfterFillForm()`) has not run yet and
+  // no refill was triggered in the meantime.
+  struct InitialFillInProgress {};
+  // The latest refill trigger that `ScheduleRefill()` received before the
+  // initial fill's bookkeeping ran. `OnAfterFillForm()` passes the trigger to
+  // `ScheduleRefill()` once the initial fill is complete.
+  struct DeferredRefillTrigger {
+    AutofillTriggerSource trigger_source;
+    RefillTriggerReason refill_trigger_reason;
+  };
+  // Refills must not run before the initial fill's bookkeeping because the
+  // refill's bookkeeping would otherwise be ordered before the initial
+  // fill's. Until `OnAfterFillForm()` of the initial fill has completed the
+  // bookkeeping (or found that the form is gone), `refill_state` is
+  // `InitialFillInProgress` or `DeferredRefillTrigger`. Afterwards,
+  // `refill_state` holds the timer used to trigger a refill. The timer is
+  // neither movable nor copyable, so `refill_state` only enters the timer
+  // state via `emplace<base::OneShotTimer>()`.
+  std::variant<InitialFillInProgress, DeferredRefillTrigger, base::OneShotTimer>
+      refill_state;
   // Whether refills caused by DOM changes are allowed.
   bool allows_automatic_refill = true;
-  // The timer used to trigger a refill.
-  base::OneShotTimer on_refill_timer;
   // The field types that were initially filled.
   const FieldTypeSet types_originally_filled;
   // If populated, this map determines which values will be filled into a
@@ -915,27 +935,25 @@ void FormFiller::FillOrPreviewForm(
   const bool allow_payments_swapping_fill = AllowPaymentsSwappingFill(
       trigger_field, refill_options.is_refill(), filling_product);
 
-  const auto filling_content =
-      base::MakeFlatMap<FieldGlobalId,
-                        base::expected<ValueAndTypeAndOverride, std::string>>(
-          form.fields(), {}, [&](const std::unique_ptr<AutofillField>& field) {
-            using Pair =
-                std::pair<const FieldGlobalId,
-                          base::expected<ValueAndTypeAndOverride, std::string>>;
+  const auto filling_content = base::MakeFlatMap<
+      FieldGlobalId, base::expected<ValueAndTypeAndOverride, std::string>>(
+      form.fields(), {}, [&](const std::unique_ptr<AutofillField>& field) {
+        using Pair =
+            std::pair<const FieldGlobalId,
+                      base::expected<ValueAndTypeAndOverride, std::string>>;
 
-            std::string failure_to_fill;
-            if (std::optional<ValueAndTypeAndOverride> filling_content =
-                    GetFieldFillingData(
-                        *field, augmented_filling_payload, forced_fill_values,
-                        action_persistence,
-                        /*allow_suggestion_swapping=*/
-                        allow_payments_swapping_fill &&
-                            AllowPaymentsSwappingOnField(*field),
-                        &failure_to_fill)) {
-              return Pair(field->global_id(), std::move(*filling_content));
-            }
-            return Pair(field->global_id(), base::unexpected(failure_to_fill));
-          });
+        std::string failure_to_fill;
+        if (std::optional<ValueAndTypeAndOverride> filling_content =
+                GetFieldFillingData(*field, augmented_filling_payload,
+                                    forced_fill_values, action_persistence,
+                                    /*allow_suggestion_swapping=*/
+                                    allow_payments_swapping_fill &&
+                                        AllowPaymentsSwappingOnField(*field),
+                                    &failure_to_fill)) {
+          return Pair(field->global_id(), std::move(*filling_content));
+        }
+        return Pair(field->global_id(), base::unexpected(failure_to_fill));
+      });
 
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
       GetFieldFillingSkipReasons(
@@ -981,19 +999,21 @@ void FormFiller::FillOrPreviewForm(
   LogFillingInternal(action_persistence, form, refill_options, filling_product,
                      filling_content, skip_reasons);
 
-  // Snapshot pre-fill field states before `ApplyFormAction()`, as cached
+  // Snapshot the fields before `ApplyFormAction()`, as cached
   // `AutofillField`s may be updated with post-fill values before post-fill
-  // bookkeeping runs. Only fills need the snapshot (for the fill log events
-  // and the undo history).
-  FormAutofillHistory::PreFillFieldStates pre_fill_field_states;
+  // bookkeeping runs. Only fills need the snapshot (for the fill log events,
+  // the undo history and to detect fields modified before the bookkeeping).
+  FieldSnapshots field_snapshots;
   if (action_persistence == mojom::ActionPersistence::kFill) {
-    pre_fill_field_states =
-        base::MakeFlatMap<FieldGlobalId,
-                          FormAutofillHistory::FieldFillingEntry>(
-            form.fields(), {}, [](const std::unique_ptr<AutofillField>& field) {
-              return std::pair(field->global_id(),
-                               FormAutofillHistory::FieldFillingEntry(*field));
-            });
+    field_snapshots = base::MakeFlatMap<FieldGlobalId, FieldSnapshot>(
+        form.fields(), {}, [](const std::unique_ptr<AutofillField>& field) {
+          return std::pair(
+              field->global_id(),
+              FieldSnapshot{.filling_entry =
+                                FormAutofillHistory::FieldFillingEntry(*field),
+                            .field_modifiers_generation =
+                                field->field_modifiers_generation()});
+        });
     // Set `last_filling_timestamp` before `ApplyFormAction()` (rather than in
     // `OnAfterFillForm()`) so that
     // `BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue()` can
@@ -1036,12 +1056,13 @@ void FormFiller::FillOrPreviewForm(
       .filling_payload = ToOwnedFillingPayload(filling_payload),
       .form_id = form.global_id(),
       .trigger_field_id = trigger_field.global_id(),
+      .fill_id = fill_id,
       .trigger_source = trigger_source,
       .refill_trigger_reason = refill_options.reason(),
       .emptied_field_ids = std::move(emptied_field_ids),
       .filled_field_types = std::move(filled_field_types),
       .skip_reasons = std::move(skip_reasons),
-      .pre_fill_field_states = std::move(pre_fill_field_states),
+      .field_snapshots = std::move(field_snapshots),
   };
   if (base::FeatureList::IsEnabled(
           features::kAutofillPostTaskAfterFillOrPreviewForm)) {
@@ -1051,10 +1072,12 @@ void FormFiller::FillOrPreviewForm(
     // TODO(crbug.com/582269824): Some race conditions may occur:
     // 1) Another fill of the same form while this task is pending computes its
     // skip reasons from the not yet updated cache (e.g., it does not skip the
-    // fields filled by this operation as `kAlreadyAutofilled`). Besides the
-    // user, `ActorFormFillingServiceImpl` fills forms in a synchronous loop;
-    // its fills normally don't overlap because they target different sections
-    // or are kept apart by `blocked_fields`. Consider queuing the pending
+    // fields filled by this operation as `kAlreadyAutofilled`). Once this task
+    // has run, the other fill's bookkeeping treats the fields updated by this
+    // task as modified and skips them. Besides the user,
+    // `ActorFormFillingServiceImpl` fills forms in a synchronous loop; its
+    // fills normally don't overlap because they target different sections or
+    // are kept apart by `blocked_fields`. Consider queuing the pending
     // bookkeeping and running it before the next operation on the form.
     // 2) A form submission may occur while `OnAfterFillForm()` is pending.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1071,6 +1094,43 @@ void FormFiller::FillOrPreviewForm(
 void FormFiller::OnAfterFillForm(
     PendingFillData pending_fill_data,
     base::flat_set<FieldGlobalId> safe_filled_field_ids) {
+  // Once the bookkeeping of an initial fill is done, `complete_initial_fill`
+  // unblocks refills and schedules any refill that was triggered in the
+  // meantime.
+  absl::Cleanup complete_initial_fill = [&] {
+    // `pending_fill_data.is_refill()` is true only if the fill whose
+    // bookkeeping is running is itself a refill. (A refill that was deferred
+    // while the initial fill was in progress is stored in
+    // `RefillContext::refill_state` instead.) Only the bookkeeping of the
+    // initial fill completes the initial fill; a refill only starts after
+    // that has happened.
+    if (pending_fill_data.is_refill()) {
+      return;
+    }
+    // No `RefillContext` exists for `fill_id` if the fill does not support
+    // refills (see `MaybeInitializeRefillContext()`) or if a newer fill of the
+    // same form replaced it.
+    RefillContext* refill_context = GetRefillContext(pending_fill_data.fill_id);
+    if (!refill_context) {
+      return;
+    }
+    // Copy the deferred refill trigger (if any) before replacing the
+    // `DeferredRefillTrigger` in `refill_state` with the timer.
+    std::optional<RefillContext::DeferredRefillTrigger> trigger;
+    if (const RefillContext::DeferredRefillTrigger* deferred_trigger =
+            std::get_if<RefillContext::DeferredRefillTrigger>(
+                &refill_context->refill_state)) {
+      trigger = *deferred_trigger;
+    }
+    refill_context->refill_state.emplace<base::OneShotTimer>();
+    if (trigger) {
+      // `ScheduleRefill()` may destroy `refill_context` if
+      // `StartRefillTimer()` refills synchronously (as in `TestFormFiller`).
+      ScheduleRefill(refill_context->filled_form.global_id(), *refill_context,
+                     trigger->trigger_source, trigger->refill_trigger_reason);
+    }
+  };
+
   FormStructure* form =
       manager_->FindCachedFormById(pending_fill_data.form_id, /*pass_key=*/{});
   if (!form) {
@@ -1083,18 +1143,39 @@ void FormFiller::OnAfterFillForm(
   AutofillField* trigger_field =
       form->GetFieldById(pending_fill_data.trigger_field_id);
 
-  // Drop any field IDs that were removed from `form` since filling started.
+  // Drop the IDs of fields that were removed from `form` since filling
+  // started.
   base::EraseIf(safe_filled_field_ids, [&](FieldGlobalId field_id) {
     return !form->GetFieldById(field_id);
+  });
+  // Also drop the IDs of fields that were modified in the meantime, e.g.,
+  // because the user edited them or another filling operation filled them. All
+  // bookkeeping below (fill log events, undo history, cache update, observers
+  // and metrics) treats them as not filled by this operation, so that the
+  // bookkeeping neither overwrites their newer state nor supersedes a newer
+  // undo entry.
+  base::flat_set<FieldGlobalId> field_ids_modified_before_bookkeeping;
+  for (FieldGlobalId field_id : safe_filled_field_ids) {
+    // `safe_filled_field_ids` is a subset of the snapshotted fields.
+    if (pending_fill_data.field_snapshots.at(field_id)
+            .field_modifiers_generation !=
+        CHECK_DEREF(form->GetFieldById(field_id))
+            .field_modifiers_generation()) {
+      field_ids_modified_before_bookkeeping.insert(
+          field_ids_modified_before_bookkeeping.end(), field_id);
+    }
+  }
+  base::EraseIf(safe_filled_field_ids, [&](FieldGlobalId field_id) {
+    return field_ids_modified_before_bookkeeping.contains(field_id);
   });
   const FillingPayload filling_payload =
       AsFillingPayload(pending_fill_data.filling_payload);
   const bool is_refill = pending_fill_data.is_refill();
 
-  AppendFillLogEvents(*form, trigger_field, safe_filled_field_ids,
-                      pending_fill_data.pre_fill_field_states,
-                      pending_fill_data.skip_reasons, filling_payload,
-                      is_refill);
+  AppendFillLogEvents(
+      *form, trigger_field, safe_filled_field_ids,
+      field_ids_modified_before_bookkeeping, pending_fill_data.field_snapshots,
+      pending_fill_data.skip_reasons, filling_payload, is_refill);
 
   // Save filling history to support undoing it later if needed.
   if (ShouldRecordFillingHistory(pending_fill_data.filling_product)) {
@@ -1105,8 +1186,8 @@ void FormFiller::OnAfterFillForm(
             [&](FieldGlobalId field_id) {
               return std::pair(
                   field_id,
-                  std::move(
-                      pending_fill_data.pre_fill_field_states.at(field_id)));
+                  std::move(pending_fill_data.field_snapshots.at(field_id)
+                                .filling_entry));
             }),
         pending_fill_data.emptied_field_ids, pending_fill_data.filling_product,
         is_refill);
@@ -1122,7 +1203,8 @@ void FormFiller::OnAfterFillForm(
   // the trigger field.
   if (trigger_field) {
     // This holds the cached versions of the fields in `safe_filled_field_ids`.
-    // The `CHECK_DEREF` cannot fail because of the `EraseIf` above.
+    // The `CHECK_DEREF` cannot fail because the IDs of removed fields were
+    // dropped from `safe_filled_field_ids` above.
     std::vector<const AutofillField*> safe_filled_fields =
         base::ToVector(safe_filled_field_ids,
                        [&](FieldGlobalId field_id) -> const AutofillField* {
@@ -1141,7 +1223,16 @@ void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {
   if (!refill_context) {
     return;
   }
-  refill_context->on_refill_timer.Stop();
+  if (base::OneShotTimer* timer =
+          std::get_if<base::OneShotTimer>(&refill_context->refill_state)) {
+    timer->Stop();
+  } else if (std::holds_alternative<RefillContext::DeferredRefillTrigger>(
+                 refill_context->refill_state)) {
+    // Like the timer, drop a refill trigger that waits for the initial fill to
+    // complete.
+    refill_context->refill_state
+        .emplace<RefillContext::InitialFillInProgress>();
+  }
   refill_context->allows_automatic_refill = false;
 }
 
@@ -1157,32 +1248,16 @@ void FormFiller::MaybeScheduleProgrammaticRefill(const FillId& fill_id) {
     return;
   }
 
-  // If a timer for the refill was already running, it means another
-  // RequestRefill() message arrived, perhaps from another frame. In that case,
-  // we restart the timer.
-  refill_context->on_refill_timer.Start(
-      FROM_HERE, kWaitTimeForDynamicForms,
-      base::BindRepeating(
-          [](base::WeakPtr<FormFiller> self, const FormGlobalId& form_id) {
-            if (!self) {
-              return;
-            }
-            // Taking the form from the cache is not entirely correct until the
-            // AutofillField::is_autofilled() semantics is fixed:
-            // crbug.com/393114125.
-            // TODO(crbug.com/466333215): Make sure crbug.com/393114125 is fixed
-            // before programmatic refills move beyond prototyping.
-            const FormStructure* form =
-                self->manager_->FindCachedFormById(form_id);
-            if (!form) {
-              return;
-            }
-            self->TriggerRefill(form->global_id(),
-                                AutofillTriggerSource::kProgrammaticRefill,
-                                RefillTriggerReason::kProgrammaticRefill);
-          },
-          weak_ptr_factory_.GetWeakPtr(),
-          refill_context->filled_form.global_id()));
+  // Another `RequestRefill()` message may have arrived before, perhaps from
+  // another frame. `ScheduleRefill()` then replaces the earlier pending refill.
+  // `TriggerRefill()` takes the form from the cache, which is not entirely
+  // correct until the AutofillField::is_autofilled() semantics is fixed:
+  // crbug.com/393114125.
+  // TODO(crbug.com/466333215): Make sure crbug.com/393114125 is fixed
+  // before programmatic refills move beyond prototyping.
+  ScheduleRefill(refill_context->filled_form.global_id(), *refill_context,
+                 AutofillTriggerSource::kProgrammaticRefill,
+                 RefillTriggerReason::kProgrammaticRefill);
 }
 
 void FormFiller::MaybeScheduleAutomaticRefill(
@@ -1259,13 +1334,35 @@ void FormFiller::ScheduleRefill(const FormGlobalId& form_id,
                                 RefillContext& refill_context,
                                 AutofillTriggerSource trigger_source,
                                 RefillTriggerReason refill_trigger_reason) {
-  // If a timer for the refill was already running, it means the form
-  // changed again. In that case, we restart the timer.
-  refill_context.on_refill_timer.Start(
-      FROM_HERE, kWaitTimeForDynamicForms,
-      base::BindRepeating(&FormFiller::TriggerRefill,
-                          weak_ptr_factory_.GetWeakPtr(), form_id,
-                          trigger_source, refill_trigger_reason));
+  if (std::holds_alternative<base::OneShotTimer>(refill_context.refill_state)) {
+    StartRefillTimer(form_id, refill_context, trigger_source,
+                     refill_trigger_reason);
+    return;
+  }
+  // A refill must not run before `OnAfterFillForm()` of the initial fill,
+  // which may be delayed (e.g., by an asynchronous step between
+  // `ApplyFormAction()` and the bookkeeping). Otherwise, the refill would
+  // record its undo entry and cache updates before the initial fill's.
+  // Therefore, store the trigger (replacing an older one);
+  // `OnAfterFillForm()` passes the trigger to `ScheduleRefill()` once the
+  // initial fill is complete.
+  refill_context.refill_state.emplace<RefillContext::DeferredRefillTrigger>(
+      RefillContext::DeferredRefillTrigger{
+          .trigger_source = trigger_source,
+          .refill_trigger_reason = refill_trigger_reason});
+}
+
+void FormFiller::StartRefillTimer(const FormGlobalId& form_id,
+                                  RefillContext& refill_context,
+                                  AutofillTriggerSource trigger_source,
+                                  RefillTriggerReason refill_trigger_reason) {
+  // If the timer was already running, the form changed again. Restarting
+  // the timer makes the latest trigger win.
+  std::get<base::OneShotTimer>(refill_context.refill_state)
+      .Start(FROM_HERE, kWaitTimeForDynamicForms,
+             base::BindRepeating(&FormFiller::TriggerRefill,
+                                 weak_ptr_factory_.GetWeakPtr(), form_id,
+                                 trigger_source, refill_trigger_reason));
 }
 
 void FormFiller::TriggerRefill(const FormGlobalId& form_id,
@@ -1283,6 +1380,10 @@ void FormFiller::TriggerRefill(const FormGlobalId& form_id,
     // here.
     return;
   }
+  // `TriggerRefill()` only runs through `StartRefillTimer()`, which requires
+  // the timer state.
+  CHECK(
+      std::holds_alternative<base::OneShotTimer>(refill_context->refill_state));
 
   // Try to find the field from which the original fill originated.
   // The precedence for the look up is the following:
@@ -1526,7 +1627,8 @@ void FormFiller::AppendFillLogEvents(
     FormStructure& form,
     AutofillField* trigger_field,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
-    const FormAutofillHistory::PreFillFieldStates& pre_fill_field_states,
+    const base::flat_set<FieldGlobalId>& field_ids_modified_before_bookkeeping,
+    const FieldSnapshots& field_snapshots,
     const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
         skip_reasons,
     const FillingPayload& filling_payload,
@@ -1548,17 +1650,23 @@ void FormFiller::AppendFillLogEvents(
 
   for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     const FieldGlobalId field_id = field->global_id();
-    const FormAutofillHistory::FieldFillingEntry* pre_fill_state =
-        base::FindOrNull(pre_fill_field_states, field_id);
-    if (!pre_fill_state) {
-      // `field` was added to `form` after the pre-fill snapshot was taken, so
-      // it was not part of this filling operation.
+    const FieldSnapshot* field_snapshot =
+        base::FindOrNull(field_snapshots, field_id);
+    if (!field_snapshot) {
+      // `field` was added to `form` after the snapshot was taken, so `field`
+      // was not part of this filling operation.
       continue;
     }
-    // `skip_reasons` was built from the same fields as `pre_fill_field_states`.
+    if (field_ids_modified_before_bookkeeping.contains(field_id)) {
+      // `field` was modified before the bookkeeping ran (see
+      // `OnAfterFillForm()`), so this filling operation logs no event for
+      // `field`.
+      continue;
+    }
+    // `skip_reasons` was built from the same fields as `field_snapshots`.
     const DenseSet<FieldFillingSkipReason>& field_skip_reasons =
         CHECK_DEREF(base::FindOrNull(skip_reasons, field_id));
-    const bool has_value_before = !pre_fill_state->value.empty();
+    const bool has_value_before = !field_snapshot->filling_entry.value.empty();
     const FieldFillingSkipReason skip_reason =
         field_skip_reasons.empty() ? FieldFillingSkipReason::kNotSkipped
                                    : *field_skip_reasons.begin();

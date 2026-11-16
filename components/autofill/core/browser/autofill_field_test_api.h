@@ -28,6 +28,7 @@ class AutofillFieldTestApi {
 
   void set_field_modifiers(std::vector<FieldModifier> modifiers) {
     autofill_field_->field_modifiers_ = std::move(modifiers);
+    ++autofill_field_->field_modifiers_generation_;
   }
 
   const std::array<FieldType,

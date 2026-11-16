@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 
+#include <cstdint>
 #include <optional>
 #include <variant>
 
@@ -1024,6 +1025,30 @@ TEST_F(AutofillFieldTest, IsUserEdited) {
 
   field.AddFieldModifier(FieldModifier::kAutofill);
   EXPECT_TRUE(field.all_modifiers().contains(FieldModifier::kUser));
+}
+
+// Tests that `field_modifiers_generation()` changes whenever the modifiers are
+// written, even if the sequence of modifiers stays the same.
+TEST_F(AutofillFieldTest, FieldModifiersGeneration) {
+  AutofillField field;
+  const uint32_t initial_generation = field.field_modifiers_generation();
+  EXPECT_EQ(initial_generation, 0u);
+
+  field.AddFieldModifier(FieldModifier::kUser);
+  const uint32_t generation_after_user_edit =
+      field.field_modifiers_generation();
+  EXPECT_NE(generation_after_user_edit, initial_generation);
+
+  // Adding the last modifier again does not change the modifiers but bumps
+  // the generation.
+  field.AddFieldModifier(FieldModifier::kUser);
+  EXPECT_EQ(field.last_modifier(), FieldModifier::kUser);
+  EXPECT_NE(field.field_modifiers_generation(), generation_after_user_edit);
+
+  // Overwriting the modifiers bumps the generation, too.
+  const uint32_t generation_before_set = field.field_modifiers_generation();
+  test_api(field).set_field_modifiers({FieldModifier::kUser});
+  EXPECT_NE(field.field_modifiers_generation(), generation_before_set);
 }
 
 }  // namespace
