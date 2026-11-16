@@ -531,7 +531,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6319856120645568262">Kailangan ng Chrome ng pahintulot na imapa ang paligid mo at i-track ang iyong mga kamay</translation>
 <translation id="6321592572353357376">Gusto ng extension na "<ph name="EXTENSION_NAME" />" na mag-sign in ka sa Chrome</translation>
 <translation id="6326175484149238433">Alisin sa Chrome</translation>
-<translation id="6334815226785304306">Gawing default browser ang Google Chrome at i-pin ito sa taskbar</translation>
 <translation id="6339888439788291743">Bagong icon, parehong shortcut: I-click para magtanong habang nagba-browse ka gamit ang AI Mode ng Google Search.</translation>
 <translation id="6349304688246983183">Madaling makapagtanong habang nagba-browse ka gamit ang Google Search</translation>
 <translation id="63540178978900677">Hindi na Chrome ang iyong default browser. Gawing default browser ang Chrome?</translation>
@@ -858,6 +857,5 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="973195869036269770">Hindi ma-save ng ChromeOS ang data ng Chrome sa iyong Google Account dahil luma na ang mga detalye sa pag-sign in sa account mo</translation>
 <translation id="983803489796659991">Hindi na-install dahil walang anumang data ng hash para sa application ang server ng update.</translation>
-<translation id="989369509083708165">Google Chrome ang iyong default na browser</translation>
 <translation id="989816563149873169">Puwedeng magpalipat-lipat sa mga profile sa Chrome sa pamamagitan ng <ph name="SHORTCUT" /></translation>
 </translationbundle>

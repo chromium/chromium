@@ -14,7 +14,6 @@
 <translation id="1098493699368672217">Mostrar busca con Chromium na bandexa do sistema e activar atallo de teclado</translation>
 <translation id="1104942323762546749">Chromium quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="112640046208448578">Identifica obxectos ou lugares, e copia ou traduce texto. Cando usas a busca de imaxes, envíase unha captura de pantalla da páxina ao servidor. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium é o teu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Hai # ventás do modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="1153368717515616349">Fai clic no menú de Chromium</translation>
@@ -751,7 +750,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8813277370772331957">Lembrarmo máis tarde</translation>
 <translation id="8816416449795340678">Comparte este documento con Gemini en Chromium para obter un resumo rápido e facer preguntas adicionais</translation>
 <translation id="8818550178040858407">Queres iniciar sesión en Chromium?</translation>
-<translation id="8823401858233292222">Definir Chromium como o navegador predeterminado e fixalo na barra de tarefas</translation>
 <translation id="8826492472752484139">Fai clic no xestor de contrasinais</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8852026904190808918">Este é o idioma no que se mostran os menús, as opcións de configuración, as alertas e outros textos en Chromium</translation>

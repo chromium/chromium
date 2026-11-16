@@ -531,7 +531,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6319856120645568262">Chrome necesita permiso para analizar o que te rodea e facer un seguimento das mans</translation>
 <translation id="6321592572353357376">A extensión \"<ph name="EXTENSION_NAME" />\" quere que inicies sesión en Chrome</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
-<translation id="6334815226785304306">Definir Google Chrome como o navegador predeterminado e fixalo na barra de tarefas</translation>
 <translation id="6339888439788291743">Icona nova, mesmo atallo: Fai clic para facer preguntas mentres navegas co modo IA da Busca de Google.</translation>
 <translation id="6349304688246983183">Fai preguntas facilmente mentres navegas coa Busca de Google</translation>
 <translation id="63540178978900677">Chrome xa non é o teu navegador predeterminado. Queres que Chrome sexa o navegador predeterminado?</translation>
@@ -858,6 +857,5 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="973195869036269770">ChromeOS non puido gardar os datos de Chrome na túa Conta de Google porque tes a información de inicio de sesión desactualizada</translation>
 <translation id="983803489796659991">Produciuse un erro na instalación porque o servidor de actualizacións non ten ningún dato de hash para a aplicación.</translation>
-<translation id="989369509083708165">Google Chrome é o teu navegador predeterminado</translation>
 <translation id="989816563149873169">O atallo <ph name="SHORTCUT" /> permite cambiar entre perfís de Chrome</translation>
 </translationbundle>

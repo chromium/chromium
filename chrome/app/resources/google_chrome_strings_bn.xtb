@@ -527,7 +527,6 @@
 <translation id="6319856120645568262">আপনার আশপাশ সম্পর্কে জানতে ও হাত ট্র্যাক করতে Chrome-এর অনুমতি প্রয়োজন</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" এক্সটেনশন ব্যবহার করতে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="6326175484149238433">Chrome থেকে সরান</translation>
-<translation id="6334815226785304306">Google Chrome-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করে টাস্কবারে পিন করুন</translation>
 <translation id="6339888439788291743">নতুন আইকন, একই শর্টকাট: Google Search AI মোডের সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="6349304688246983183">Google Search-এর সাহায্যে ব্রাউজ করার সময় সহজেই প্রশ্ন জিজ্ঞাসা করুন</translation>
 <translation id="63540178978900677">Chrome আর আপনার ডিফল্ট ব্রাউজার নেই। Chrome-কে ডিফল্ট ব্রাউজার হিসেবে সেট করবেন?</translation>
@@ -853,6 +852,5 @@
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="973195869036269770">আপনার অ্যাকাউন্টের সাইন-ইন করার বিবরণ পুরনো হয়ে যাওয়ার কারণে ChromeOS আপনার Google অ্যাকাউন্টে Chrome ডেটা সেভ করতে পারেনি</translation>
 <translation id="983803489796659991">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের অ্যাপ্লিকেশনের জন্য কোনও হ্যাশ ডেটা নেই।</translation>
-<translation id="989369509083708165">Google Chrome আপনার ডিফল্ট ব্রাউজার</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> ব্যবহার করে একটি Chrome প্রোফাইল থেকে আরেকটিতে পাল্টানো যায়</translation>
 </translationbundle>

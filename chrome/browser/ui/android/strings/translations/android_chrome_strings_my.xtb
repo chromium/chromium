@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1003917207516838287">မကြာသေးမီက ဒေါင်းလုဒ်မှတ်တမ်း</translation>
 <translation id="1007349221964075684">ဖွင့်ထားသော ‘ရုပ်ဖျက်ဝင်းဒိုးများ’ ကို ကြည့်ရန် စခရင်လော့ခ် သုံးနိုင်သည်</translation>
 <translation id="1010283278930414892">ဤစက်တွင် သိမ်းထားသောစကားဝှက် မရှိပါ</translation>
 <translation id="1011749477052068769">ဤနေရာသို့ ရွှေ့ရန်</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">လျှို့ဝှက်ကီးအတည်ပြုခြင်း စာမျက်နှာကို ပိတ်ထားသည်</translation>
 <translation id="1197933394627598677">စာဖတ်မုဒ် ပြပါ</translation>
 <translation id="1197935538609051549">ရပ်ရန်</translation>
-<translation id="119944043368869598">အားလုံးထုတ်ပစ်ရန်</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1202892408424955784">စောင့်ကြည့်ထားသည့် ထုတ်ကုန်များ</translation>
 <translation id="1204037785786432551">လင့်ခ်ကို ဒေါင်းလုဒ်လုပ်ရန်</translation>
@@ -1441,6 +1441,7 @@
 <translation id="657480975869429144">Chrome ဗားရှင်းအသစ် ရနိုင်ပါပြီ</translation>
 <translation id="658099107946526506">မလိုလားအပ်သော ဝင်ရောက်မှုများကို တားဆီးရန် သင်၏ ကိုယ်ဖျောက်မုဒ်ဖြင့် ဝင်ရောက်ကြည့်ရှုမှုကို ပင်နံပါတ်ဖြင့် ကာကွယ်ပါ</translation>
 <translation id="6583199322650523874">လက်ရှိစာမျက်နှာကို စာညှပ်အဖြစ်သိမ်းရန်</translation>
+<translation id="6583902294974160967">ပံ့ပိုးကူညီရန်</translation>
 <translation id="6588043302623806746">လုံခြုံသော DNS ကို အသုံးပြုပါ</translation>
 <translation id="6590471736817333463">ဒေတာ ၆၀ ရာခိုင်နှုန်းအထိ ချွေတာရန်</translation>
 <translation id="6593061639179217415">ဒက်စ်တော့ဝဘ်ဆိုက်</translation>
@@ -1743,6 +1744,7 @@
 <translation id="7656862631699126784">‘ရုပ်ဖျက်လော့ခ်’ ဖွင့်ရန်</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7663320421139257046">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့် <ph name="FIELDS_STRING" /> ကို ဤဝဘ်ဆိုက်နှင့် မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> ကိုကြည့်ပါ။</translation>
+<translation id="7665445336029073980">ဒေါင်းလုဒ်မှတ်တမ်း အပြည့်အစုံ</translation>
 <translation id="766587987807204883">သင်အော့ဖ်လိုင်းဖြစ်နေသော်လည်း ဤနေရာရှိ ဆောင်းပါးများကို ဖတ်နိုင်သည်</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> ကို ပိတ်လိုက်သည်</translation>
 <translation id="767157537088426800">သင့်စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများ ရယူရန် ဤဝဘ်ဆိုက်နှင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>

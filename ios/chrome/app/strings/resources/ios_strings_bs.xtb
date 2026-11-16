@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Obavijestit ćemo vas ako vaše lozinke postanu ugrožene</translation>
 <translation id="4489536976005181779">{count,plural, =1{Stranica je dodana na listu za čitanje na računu {email}}one{Stranice su dodane na listu za čitanje na računu {email}}few{Stranice su dodane na listu za čitanje na računu {email}}other{Stranice su dodane na listu za čitanje na računu {email}}}</translation>
 <translation id="4493604894403585654">Prijavljeni ste kao <ph name="USER_EMAIL" />. Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
-<translation id="4495251723189610737">Vaši chatovi će se pohranjivati u historiji u Geminiju. Historija uključuje zvuk, videozapise i dijeljenja ekrana iz Gemini Livea, sadržaj koji dijelite s Geminijem (kao što su upiti, <ph name="BEGIN_LINK" />otpremanja<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />ekrani<ph name="END_LINK" />), Geminijeve odgovore, zadatke i pozive alata, povratne informacije, informacije s web lokacija koje posjetite putem Geminija, podatke o korištenju proizvoda, opću lokaciju uređaja, IP adresu i kućnu ili poslovnu adresu na Google računu. Može uključivati i podatke iz aplikacija koje povežete s Geminijem.</translation>
 <translation id="4502423230170890588">Ukloni s ovog uređaja</translation>
 <translation id="4508486880075514067">Proširivanje preko cijelog ekrana</translation>
 <translation id="4508750114462689118">Zatvaranje promocije za prijavu</translation>

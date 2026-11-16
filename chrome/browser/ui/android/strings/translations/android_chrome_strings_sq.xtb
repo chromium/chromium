@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1003917207516838287">Historiku i shkarkimeve të fundit</translation>
 <translation id="1007349221964075684">Përdor kyçjen e ekranit për të parë dritaret e fshehta të hapura</translation>
 <translation id="1010283278930414892">Nuk ka fjalëkalime të ruajtura në këtë pajisje</translation>
 <translation id="1011749477052068769">Zhvendose këtu</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Fleta e konfirmimit të çelësit të kalimit u mbyll</translation>
 <translation id="1197933394627598677">Shfaq "Modalitetin e leximit"</translation>
 <translation id="1197935538609051549">Çaktivizo</translation>
-<translation id="119944043368869598">Pastroji të gjitha</translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1202892408424955784">Produktet e monitoruara</translation>
 <translation id="1204037785786432551">Lidhja e shkarkimit</translation>
@@ -1442,6 +1442,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="657480975869429144">Ofrohet një version i ri i Chrome</translation>
 <translation id="658099107946526506">Mbro shfletimin tënd privat me një kod PIN për të parandaluar qasjen e padëshiruar</translation>
 <translation id="6583199322650523874">Shëno si faqeshënues faqen aktuale</translation>
+<translation id="6583902294974160967">Mbështetja</translation>
 <translation id="6588043302623806746">Përdor DNS-në e sigurt</translation>
 <translation id="6590471736817333463">Kurse deri në 60% të të dhënave</translation>
 <translation id="6593061639179217415">Sajti për desktop</translation>
@@ -1744,6 +1745,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7656862631699126784">Aktivizo kyçin e modalitetit "të fshehtë"</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7663320421139257046">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë <ph name="FIELDS_STRING" /> me këtë sajt. Shiko <ph name="BEGIN_LINK1" />politikën e privatësisë<ph name="END_LINK1" /> të këtij sajti.</translation>
+<translation id="7665445336029073980">Historiku i plotë i shkarkimeve</translation>
 <translation id="766587987807204883">Këtu shfaqen artikujt, të cilët mund t'i lexosh edhe kur je offline</translation>
 <translation id="7666185984446444960">U mbyllën: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Identifikohu në këtë sajt dhe në Chrome për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua</translation>

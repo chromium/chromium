@@ -531,7 +531,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6319856120645568262">„Chrome“ reikia leidimo susieti jūsų aplinką ir stebėti jūsų rankas</translation>
 <translation id="6321592572353357376">Norint naudoti plėtinį „<ph name="EXTENSION_NAME" />“, reikia prisijungti prie „Chrome“</translation>
 <translation id="6326175484149238433">Pašalinti iš „Chrome“</translation>
-<translation id="6334815226785304306">Padaryti „Google Chrome“ numatytąja naršykle ir prisegti prie užduočių juostos</translation>
 <translation id="6339888439788291743">Nauja piktograma, tas pats spartusis klavišas: spustelėkite, kad naršydami galėtumėte užduoti klausimų naudodami „Google“ paieškos DI režimą.</translation>
 <translation id="6349304688246983183">Naršydami lengvai užduokite klausimų naudodami „Google“ paiešką</translation>
 <translation id="63540178978900677">„Chrome“ nebėra numatytoji naršyklė. Padaryti „Chrome“ numatytąja naršykle?</translation>
@@ -858,6 +857,5 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="973195869036269770">„ChromeOS“ nepavyko išsaugoti „Chrome“ duomenų „Google“ paskyroje, nes išsami paskyros prisijungimo informacija pasenusi</translation>
 <translation id="983803489796659991">Įdiegti nepavyko, nes atnaujinimo serveryje nėra jokių programos maišos duomenų.</translation>
-<translation id="989369509083708165">„Google Chrome“ yra numatytoji naršyklė</translation>
 <translation id="989816563149873169">Naudojant spartųjį klavišą <ph name="SHORTCUT" /> galima perjungti „Chrome“ profilius</translation>
 </translationbundle>

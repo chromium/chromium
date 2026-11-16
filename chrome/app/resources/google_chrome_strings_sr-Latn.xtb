@@ -531,7 +531,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6319856120645568262">Chrome-u treba dozvola za mapiranje okruženja i praćenje ruku</translation>
 <translation id="6321592572353357376">Dodatak <ph name="EXTENSION_NAME" /> želi da se prijavite u Chrome</translation>
 <translation id="6326175484149238433">Ukloni iz Chrome-a</translation>
-<translation id="6334815226785304306">Podesite Google Chrome kao podrazumevani pregledač i zakačite ga na traku zadataka</translation>
 <translation id="6339888439788291743">Nova ikona, ista prečica: Kliknite da biste postavljali pitanja dok pregledate pomoću AI režima Google pretrage.</translation>
 <translation id="6349304688246983183">Lako postavljajte pitanja dok pregledate pomoću Google pretrage</translation>
 <translation id="63540178978900677">Chrome više nije podrazumevani pregledač. Želite da podesite Chrome kao podrazumevani pregledač?</translation>
@@ -858,6 +857,5 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="973195869036269770">ChromeOS ne može da sačuva Chrome podatke na Google nalogu zato što su podaci za prijavljivanje na nalog zastareli</translation>
 <translation id="983803489796659991">Instalacija nije uspela zato što server za ažuriranje nema nikakve heširane podatke za aplikaciju.</translation>
-<translation id="989369509083708165">Google Chrome je podrazumevani pregledač</translation>
 <translation id="989816563149873169">Pomoću prečice <ph name="SHORTCUT" /> možete da prelazite sa jednog Chrome profila na drugi</translation>
 </translationbundle>

@@ -530,7 +530,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6319856120645568262">Chrome ka nevojë për leje për të krijuar një hartë të ambientit rrethues dhe për të ndjekur duart e tua</translation>
 <translation id="6321592572353357376">Shtesa "<ph name="EXTENSION_NAME" />" kërkon që të identifikohesh në Chrome</translation>
 <translation id="6326175484149238433">Hiqe nga Chrome</translation>
-<translation id="6334815226785304306">Bëje Google Chrome shfletuesin e parazgjedhur dhe gozhdoje te shiriti i veglave</translation>
 <translation id="6339888439788291743">Ikonë e re, e njëjta shkurtore: Kliko për të bërë pyetje ndërkohë që shfleton me "Modalitetin e IA-së" të "Kërko në Google".</translation>
 <translation id="6349304688246983183">Bëj me lehtësi pyetje ndërkohë që shfleton me "Kërko në Google"</translation>
 <translation id="63540178978900677">Chrome nuk është më shfletuesi yt i parazgjedhur. Të bëhet Chrome shfletuesi i parazgjedhur?</translation>
@@ -855,6 +854,5 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="973195869036269770">ChromeOS nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" sepse detajet e identifikimit të llogarisë janë të papërditësuara</translation>
 <translation id="983803489796659991">Instalimi dështoi sepse serveri i përditësimit nuk ka të dhëna të hash-it për aplikacionin.</translation>
-<translation id="989369509083708165">Google Chrome është shfletuesi yt i parazgjedhur</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> mund të kalojë nga një profil i Chrome te një tjetër</translation>
 </translationbundle>

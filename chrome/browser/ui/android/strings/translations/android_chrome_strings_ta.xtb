@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1003917207516838287">சமீபத்தில் பதிவிறக்கியவை</translation>
 <translation id="1007349221964075684">திறந்துள்ள மறைநிலைச் சாளரங்களைப் பார்க்க திரைப் பூட்டு அம்சத்தைப் பயன்படுத்தவும்</translation>
 <translation id="1010283278930414892">இந்தச் சாதனத்தில் சேமிக்கப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை</translation>
 <translation id="1011749477052068769">இங்கு நகர்த்து</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">கடவுச்சாவியை உறுதிப்படுத்துவதற்கான தாள் மூடப்பட்டது</translation>
 <translation id="1197933394627598677">படிக்கும் பயன்முறையைக் காட்டு</translation>
 <translation id="1197935538609051549">முடக்கு</translation>
-<translation id="119944043368869598">அனைத்தையும் அழி</translation>
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1202892408424955784">கண்காணிக்கப்படும் தயாரிப்புகள்</translation>
 <translation id="1204037785786432551">இணைப்பைப் பதிவிறக்கு</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Chrome புதிய பதிப்பு கிடைக்கிறது</translation>
 <translation id="658099107946526506">தேவையற்ற அணுகலைத் தடுக்க பின் மூலம் உங்கள் மறைநிலை பிரவுசிங்கைப் பாதுகாக்கலாம்</translation>
 <translation id="6583199322650523874">தற்போதைய பக்கத்தைப் புத்தகக்குறியிடும்</translation>
+<translation id="6583902294974160967">ஆதரவு</translation>
 <translation id="6588043302623806746">பாதுகாப்பான DNSஸைப் பயன்படுத்து</translation>
 <translation id="6590471736817333463">60% வரை டேட்டாவைச் சேமியுங்கள்</translation>
 <translation id="6593061639179217415">டெஸ்க்டாப் தளம்</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">மறைநிலை லாக்கை இயக்கு</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7663320421139257046">தொடர, உங்களின் <ph name="FIELDS_STRING" /> ஆகியவற்றை இந்தத் தளத்துடன் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும். இந்தத் தளத்தின் <ph name="BEGIN_LINK1" />தனியுரிமைக் கொள்கையைப்<ph name="END_LINK1" /> பாருங்கள்.</translation>
+<translation id="7665445336029073980">இதுவரை பதிவிறக்கிய அனைத்தும்</translation>
 <translation id="766587987807204883">செய்திகளை இங்கே பார்க்கலாம், ஆஃப்லைனில் இருந்தாலும்கூட அவற்றைப் படிக்கலாம்</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> மூடப்பட்டன</translation>
 <translation id="767157537088426800">உங்கள் சாதனங்கள் அனைத்திலும் உங்கள் கடவுச்சொற்கள் மற்றும் பலவற்றைப் பெற இந்தத் தளத்திலும் Chrome பிரவுசரிலும் உள்நுழையுங்கள்</translation>

@@ -788,6 +788,7 @@
 <translation id="1802687198411089702">გვერდი არ რეაგირებს. შეგიძლიათ დაელოდოთ ან გამოხვიდეთ.</translation>
 <translation id="1803287124763873748">გსურთ ტელეფონში შესვლა?</translation>
 <translation id="1803531841600994172">ენა, რომელზეც უნდა ითარგმნოს</translation>
+<translation id="1803703903842028149">საკრედიტო და სადებეტო ბარათები და IBAN-ები</translation>
 <translation id="180441032496361123">დააწკაპუნეთ, <ph name="SEARCH_ENGINE_NAME" /> რომ გაააქტიუროთ</translation>
 <translation id="1805738995123446102">ფონური ჩანართი იყენებს თქვენს მიკროფონს</translation>
 <translation id="1805822111539868586">ხედების შემოწმება</translation>
@@ -2084,6 +2085,7 @@
 <translation id="310671807099593501">საიტი იყენებს Bluetooth-კავშირს</translation>
 <translation id="3108122610701115301">ნაგულისხმევად დაყენება</translation>
 <translation id="3108931485517391283">მიღება ვერ მოხერხდა</translation>
+<translation id="3109161228145689140">პირადი, ანონიმური, ფარული, საიდუმლო, უსაფრთხოება, თვალყურის დევნებისგან დაცვა, ქუქი-ჩანაწერები, გასუფთავება, ქეში, ინკოგნიტო ფანჯრის გახსნა</translation>
 <translation id="3109206895301430738">ჩანართების შენახული ჯგუფები</translation>
 <translation id="3109724472072898302">აკეცილი</translation>
 <translation id="3112378005171663295">აკეცვა</translation>
@@ -2179,6 +2181,7 @@
 <translation id="3195773549050092642">Gemini შეწყვეტს ამოცანაზე მუშაობას</translation>
 <translation id="3199637719075529971">ეს ჩანართი დაკავშირებულია თანმიმდევრულ პორტთან</translation>
 <translation id="3201237270673604992">ჰ-დან ა-მდე</translation>
+<translation id="3201749168732432347">შეთავაზებები და ერთგული კლიენტის ბარათები</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" />-ზე ეკრანის ტრანსლირების დაპაუზება</translation>
 <translation id="3202578601642193415">უახლესი</translation>
 <translation id="3207344462385471911">თქვენ ხედავთ შემოთავაზებულ ძიებებსა და საყიდლებთან დაკავშირებულ ფასდაკლებებს, რომლებმაც, შესაძლოა, დაგაინტერესოთ თვენი ბოლოდროინდელი აქტივობის მიხედვით.
@@ -2261,6 +2264,7 @@
 <translation id="326911502853238749">არ გამოჩნდეს <ph name="MODULE_NAME" /></translation>
 <translation id="3269612321104318480">ღია ფირუზისფერი და თეთრი</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
+<translation id="3270303798509728461"><ph name="VOICE_NAME" />-ის გადახედვა</translation>
 <translation id="3270965368676314374">ფოტოების, მუსიკის და კომპიუტერის სხვა მედიის წაკითხვა, შეცვლა და წაშლა</translation>
 <translation id="3275464924531706548"><ph name="HEADER" />-ის ჩაკეცვა</translation>
 <translation id="3275778913554317645">გახსნა ფანჯარაში</translation>
@@ -3467,6 +3471,7 @@
 <translation id="4449247303975391730">ნებართვების მართვა</translation>
 <translation id="4453946976636652378">წამოიწყეთ „<ph name="SEARCH_ENGINE_NAME" />“-ის ძიება, ან აკრიფეთ URL</translation>
 <translation id="4460014764210899310">დაჯგუფების გაუქმება</translation>
+<translation id="4460297284484740408">არა</translation>
 <translation id="4461483878391246134">დაამატეთ ენები, რომელთა თარგმნაც არასოდეს შემოგთავაზოთ</translation>
 <translation id="4466922176191762830">+ <ph name="NUM" /> სხვა</translation>
 <translation id="4467373268340082204">PIN-კოდი არასწორია</translation>
@@ -4762,6 +4767,7 @@
 <translation id="5820751560028604030">ლოკალური ჩამოტვირთვა დაიბლოკა</translation>
 <translation id="5821565227679781414">მალსახმობის შექმნა</translation>
 <translation id="5826993284769733527">ნახევრადგამჭვირვალე</translation>
+<translation id="5827056944126565928">პრომო-კოდები და ერთგული კლიენტის ბარათები</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5827835011646404677">უნარები ინახება თქვენს Google ანგარიშში</translation>
 <translation id="5828181959764767444">დაისი</translation>
@@ -5187,6 +5193,7 @@
 <translation id="6253801023880399036">პაროლები შეინახება სექციაში „<ph name="GOOGLE_PASSWORD_MANAGER" />“.</translation>
 <translation id="6254503684448816922">გასაღების კომპრომეტაცია</translation>
 <translation id="6254892857036829079">იდეალური</translation>
+<translation id="6255253900817321392">მოიძიეთ უფრო სწრაფად, თქვენი Mac-ის ნებისმიერი ადგილიდან, ახალი ჩანართის გახსნის გარეშე</translation>
 <translation id="6257602895346497974">სინქრონიზაციის ჩართვა...</translation>
 <translation id="6258818697161346451">თქვენი წვდომის გასაღებების გამოყენება ამ მოწყობილობაზე</translation>
 <translation id="6259776178973198997">Wi-Fi Direct მფლობელების ინფორმაციის განახლება</translation>
@@ -6968,6 +6975,7 @@
 <translation id="8033958968890501070">დრო ამოიწურა</translation>
 <translation id="8034697324150621782">ზედა ხედის ჩანაცვლება</translation>
 <translation id="8035059678007243127">ქეშირებული ინკოგნიტო გვერდი უკან-წინ გადასვლის შესაძლებლობით: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8035129145306910594">დიახ</translation>
 <translation id="8036143516314698610">ჩანართების შენახული ჯგუფების ჩვენების ღილაკი</translation>
 <translation id="8036193484521570992">დაგვეხმარეთ, გავაუმჯობესოთ ავტომატური შევსება</translation>
 <translation id="803639495237134713">კლავიატურის მალსახმობის მორგება</translation>
@@ -7884,6 +7892,7 @@
 <translation id="895347679606913382">იწყება…</translation>
 <translation id="8954796993367253220">სტუმრის რეჟიმის ისტორიის წასაშლელად დახურეთ სტუმრის ყველა ფანჯარა.</translation>
 <translation id="8955174612586215829">თემების პოვნა</translation>
+<translation id="8957049369099630820">მოიძიეთ უფრო სწრაფად, თქვენი კომპიუტერის ნებისმიერი ადგილიდან, ახალი ჩანართის გახსნის გარეშე</translation>
 <translation id="8957656266859671822">აირჩიეთ თქვენი ანგარიში</translation>
 <translation id="8957757410289731985">პროფილის მორგება</translation>
 <translation id="8959144235813727886">საიტები ან აპები</translation>

@@ -523,7 +523,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6319856120645568262">Chrome skal have tilladelse til at registrere dine omgivelser og håndbevægelser</translation>
 <translation id="6321592572353357376">Udvidelsen "<ph name="EXTENSION_NAME" />" vil have dig til at logge ind i Chrome</translation>
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
-<translation id="6334815226785304306">Gør Google Chrome til din standardbrowser, og fastgør den til proceslinjen</translation>
 <translation id="6339888439788291743">Nyt ikon, samme genvej: Klik for at stille spørgsmål, mens du browser, med AI-tilstand i Google Søgning.</translation>
 <translation id="6349304688246983183">Stil nemt spørgsmål, mens du browser, med Google Søgning</translation>
 <translation id="63540178978900677">Chrome er ikke længere din standardbrowser. Vil du gøre Chrome til din standardbrowser?</translation>
@@ -850,6 +849,5 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="973195869036269770">ChromeOS kunne ikke gemme Chrome-data på din Google-konto, fordi loginoplysningerne til din konto er forældede</translation>
 <translation id="983803489796659991">Installationen mislykkedes, fordi opdateringsserveren ikke har nogen hash-data for appen.</translation>
-<translation id="989369509083708165">Google Chrome er din standardbrowser</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> kan skifte mellem Chrome-profiler</translation>
 </translationbundle>

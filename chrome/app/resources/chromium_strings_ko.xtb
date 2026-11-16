@@ -14,7 +14,6 @@
 <translation id="1098493699368672217">작업 표시줄에 Chromium으로 검색 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="1104942323762546749">Chromium에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="112640046208448578">사물 또는 장소를 식별하고 텍스트를 복사하거나 번역합니다. 이미지 검색을 사용하면 페이지의 스크린샷이 서버로 전송됩니다. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium이 기본 브라우저로 설정되어 있습니다.</translation>
 <translation id="1131805035311359397">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{관리자의 요구에 따라 이 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 이 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="1153368717515616349">Chromium 메뉴를 클릭합니다</translation>
@@ -750,7 +749,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8813277370772331957">나중에 알림</translation>
 <translation id="8816416449795340678">Chromium의 Gemini와 이 문서를 공유하여 간략한 개요를 확인하고 후속 질문을 하세요</translation>
 <translation id="8818550178040858407">Chromium에 로그인하시겠습니까?</translation>
-<translation id="8823401858233292222">Chromium을 기본 브라우저로 설정하고 작업 표시줄에 고정합니다.</translation>
 <translation id="8826492472752484139">'비밀번호 관리자'를 클릭합니다</translation>
 <translation id="8833697763442816810">ChromiumOS 시스템</translation>
 <translation id="8852026904190808918">Chromium에서 메뉴, 설정, 알림, 기타 텍스트를 표시하는 데 사용되는 언어입니다</translation>

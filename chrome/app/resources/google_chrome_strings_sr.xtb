@@ -531,7 +531,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6319856120645568262">Chrome-у треба дозвола за мапирање окружења и праћење руку</translation>
 <translation id="6321592572353357376">Додатак <ph name="EXTENSION_NAME" /> жели да се пријавите у Chrome</translation>
 <translation id="6326175484149238433">Уклони из Chrome-а</translation>
-<translation id="6334815226785304306">Подесите Google Chrome као подразумевани прегледач и закачите га на траку задатака</translation>
 <translation id="6339888439788291743">Нова икона, иста пречица: Кликните да бисте постављали питања док прегледате помоћу AI режима Google претраге.</translation>
 <translation id="6349304688246983183">Лако постављајте питања док прегледате помоћу Google претраге</translation>
 <translation id="63540178978900677">Chrome више није подразумевани прегледач. Желите да подесите Chrome као подразумевани прегледач?</translation>
@@ -858,6 +857,5 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="973195869036269770">ChromeOS не може да сачува Chrome податке на Google налогу зато што су подаци за пријављивање на налог застарели</translation>
 <translation id="983803489796659991">Инсталација није успела зато што сервер за ажурирање нема никакве хеширане податке за апликацију.</translation>
-<translation id="989369509083708165">Google Chrome је подразумевани прегледач</translation>
 <translation id="989816563149873169">Помоћу пречице <ph name="SHORTCUT" /> можете да прелазите са једног Chrome профила на други</translation>
 </translationbundle>

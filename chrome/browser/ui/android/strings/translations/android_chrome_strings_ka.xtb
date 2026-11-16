@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1003917207516838287">ბოლოდროინდელი ჩამოტვირთვის ისტორია</translation>
 <translation id="1007349221964075684">გახსნილი ინკოგნიტო ფანჯრების სანახავად გამოიყენეთ ეკრანის დაბლოკვა</translation>
 <translation id="1010283278930414892">ამ მოწყობილობაში შენახული პაროლები არ არის</translation>
 <translation id="1011749477052068769">აქ გადმოტანა</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">წვდომის გასაღების დადასტურების ფურცელი დახურულია</translation>
 <translation id="1197933394627598677">წაკითხვის რეჟიმის ჩვენება</translation>
 <translation id="1197935538609051549">დეაქტივაცია</translation>
-<translation id="119944043368869598">ყველაფრის გასუფთავება</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
 <translation id="1202892408424955784">პროდუქტები, რომლებსაც თვალს ადევნებთ</translation>
 <translation id="1204037785786432551">ბმულის ჩამოტვირთვა</translation>
@@ -1099,6 +1099,7 @@
 <translation id="5257142004843671642">გვერდითი პანელის ზომის შეცვლა</translation>
 <translation id="5264813352784073502">ბოლო 24 საათში</translation>
 <translation id="5267572070504076962">ჩართეთ Safe Browsing, სახიფათო საიტებისგან დაცვით რომ ისარგებლოთ</translation>
+<translation id="526760395289305534">ვერტიკალური ჩანართების გაშლა ან ჩაკეცვა</translation>
 <translation id="5273031377282080577">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="5284295735376057059">დოკუმენტის მახასიათებლები</translation>
 <translation id="5286907366254680517">ამოცნობილია</translation>
@@ -1442,6 +1443,7 @@
 <translation id="657480975869429144">ხელმისაწვდომია Chrome-ის ახალი ვერსია</translation>
 <translation id="658099107946526506">დაიცავით თქვენი კონფიდენციალური დათვალიერება PIN-კოდით, რათა თავიდან აიცილოთ მასზე არასასურველი წვდომა</translation>
 <translation id="6583199322650523874">მიმდინარე გვერდის სანიშნეებში დამატება</translation>
+<translation id="6583902294974160967">მხარდაჭერა</translation>
 <translation id="6588043302623806746">დაცული DNS-ის გამოყენება</translation>
 <translation id="6590471736817333463">დაზოგეთ მონაცემების 60%-მდე</translation>
 <translation id="6593061639179217415">დესკტოპის საიტი</translation>
@@ -1744,6 +1746,7 @@
 <translation id="7656862631699126784">ინკოგნიტოს ჩაკეტვის ჩართვა</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7663320421139257046">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს შემდეგ მონაცემებს: <ph name="FIELDS_STRING" />. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებას<ph name="END_LINK1" />.</translation>
+<translation id="7665445336029073980">ჩამოტვირთვის სრული ისტორია</translation>
 <translation id="766587987807204883">აქ გამოჩნდება სტატიები, რომელთა წაკითხვაც ხაზგარეშე რეჟიმშიც შეგიძლიათ</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> დაიხურა</translation>
 <translation id="767157537088426800">შედით ამ საიტსა და Chrome-ში, რომ გამოიყენოთ თქვენი პაროლები და სხვა მონაცემები ყველა თქვენს მოწყობილობაზე</translation>

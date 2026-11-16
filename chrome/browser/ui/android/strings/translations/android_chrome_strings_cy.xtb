@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="1003917207516838287">Hanes lawrlwytho diweddar</translation>
 <translation id="1007349221964075684">Defnyddio clo sgrîn i weld ffenestri Anhysbys sydd ar agor</translation>
 <translation id="1010283278930414892">Dim cyfrineiriau wedi'u cadw ar y ddyfais hon</translation>
 <translation id="1011749477052068769">Symud yma</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Dalen cadarnhau cod pas ar gau</translation>
 <translation id="1197933394627598677">Dangos y Modd darllen</translation>
 <translation id="1197935538609051549">Dadweithredu</translation>
-<translation id="119944043368869598">Clirio popeth</translation>
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1202892408424955784">Cynhyrchion sy'n cael eu dilyn</translation>
 <translation id="1204037785786432551">Dolen lawrlwytho</translation>
@@ -1444,6 +1444,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="657480975869429144">Mae fersiwn newydd o Chrome ar gael</translation>
 <translation id="658099107946526506">Diogelwch eich pori preifat gyda phin i atal mynediad diangen</translation>
 <translation id="6583199322650523874">Creu nod tudalen ar gyfer y dudalen hon</translation>
+<translation id="6583902294974160967">Cymorth</translation>
 <translation id="6588043302623806746">Defnyddio DNS diogel</translation>
 <translation id="6590471736817333463">Arbedwch hyd at 60% o ddata</translation>
 <translation id="6593061639179217415">Gwefan bwrdd gwaith</translation>
@@ -1746,6 +1747,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7656862631699126784">Troi Clo anhysbys ymlaen</translation>
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7663320421139257046">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu'ch <ph name="FIELDS_STRING" /> â'r wefan hon. Gweld <ph name="BEGIN_LINK1" />polisi preifatrwydd<ph name="END_LINK1" /> y wefan hon.</translation>
+<translation id="7665445336029073980">Hanes lawrlwytho llawn</translation>
 <translation id="766587987807204883">Mae erthyglau yn ymddangos yma, y gallwch eu darllen hyd yn oed pan fyddwch all-lein</translation>
 <translation id="7666185984446444960">Cafodd <ph name="TAB_GROUPS_AND_TABS_PART" /> eu cau</translation>
 <translation id="767157537088426800">Mewngofnodwch i'r wefan hon a Chrome i gael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau</translation>

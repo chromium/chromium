@@ -14,7 +14,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1098493699368672217">Mostrar la búsqueda con Chromium en la bandeja del sistema y activar la combinación de teclas</translation>
 <translation id="1104942323762546749">Chromium quiere exportar tus contraseñas. Escribe tu contraseña de Windows para permitirlo.</translation>
 <translation id="112640046208448578">Identifica objetos o lugares y copia o traduce texto. Al usar la búsqueda por imágenes, se envía una captura de pantalla de la página al servidor. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium es tu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar si tus contraseñas han sufrido quiebras de seguridad de datos u otros problemas de seguridad, <ph name="BEGIN_LINK" />inicia sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Tu administrador pide que reinicies Chromium para aplicar esta actualización. Hay una ventana de Incógnito o aislada abierta. No se volverá a abrir después del reinicio.}other{Tu administrador pide que reinicies Chromium para aplicar esta actualización. Hay # ventanas de Incógnito y aisladas abiertas en los perfiles. No se volverán a abrir después del reinicio.}}</translation>
 <translation id="1153368717515616349">Haz clic en el menú de Chromium</translation>
@@ -751,7 +750,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8813277370772331957">Recordar más tarde</translation>
 <translation id="8816416449795340678">Comparte este documento con Gemini en Chromium para obtener un resumen rápido y hacer preguntas de seguimiento</translation>
 <translation id="8818550178040858407">¿Iniciar sesión en Chromium?</translation>
-<translation id="8823401858233292222">Establecer Chromium como navegador predeterminado y fijarlo en la barra de tareas</translation>
 <translation id="8826492472752484139">Haz clic en Gestor de contraseñas</translation>
 <translation id="8833697763442816810">Sistema ChromiumOS</translation>
 <translation id="8852026904190808918">Los menús, ajustes, alertas y otros textos de Chromium se muestran en este idioma</translation>

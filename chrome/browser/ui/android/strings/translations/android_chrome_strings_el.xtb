@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
+<translation id="1003917207516838287">Ιστορικό πρόσφατων λήψεων</translation>
 <translation id="1007349221964075684">Χρήση του κλειδώματος οθόνης για εμφάνιση των ανοιχτών παραθύρων για ανώνυμη περιήγηση</translation>
 <translation id="1010283278930414892">Δεν υπάρχουν αποθηκευμένοι κωδικοί πρόσβασης σε αυτή τη συσκευή</translation>
 <translation id="1011749477052068769">Μετακίνηση εδώ</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Το φύλλο επιβεβαίωσης κλειδιού πρόσβασης έκλεισε</translation>
 <translation id="1197933394627598677">Εμφάνιση λειτουργίας Ανάγνωσης</translation>
 <translation id="1197935538609051549">Απενεργοποίηση</translation>
-<translation id="119944043368869598">Διαγραφή όλων</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1202892408424955784">Προϊόντα παρακολούθησης</translation>
 <translation id="1204037785786432551">Σύνδεσμος λήψης</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Υπάρχει διαθέσιμη μια νέα έκδοση του Chrome</translation>
 <translation id="658099107946526506">Προστατέψτε την ιδιωτική περιήγησή σας με PIN για να αποτρέψετε την ανεπιθύμητη πρόσβαση</translation>
 <translation id="6583199322650523874">Προσθήκη σελιδοδείκτη στην τρέχουσα σελίδα</translation>
+<translation id="6583902294974160967">Υποστήριξη</translation>
 <translation id="6588043302623806746">Χρήση ασφαλούς DNS</translation>
 <translation id="6590471736817333463">Εξοικονομήστε έως και το 60% των δεδομένων</translation>
 <translation id="6593061639179217415">Για υπολογιστή</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">Ενεργοποίηση κλειδώματος ανώνυμης περιήγησης</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7663320421139257046">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το <ph name="FIELDS_STRING" /> σε αυτόν τον ιστότοπο. Δείτε την <ph name="BEGIN_LINK1" />πολιτική απορρήτου<ph name="END_LINK1" /> αυτού του ιστοτόπου.</translation>
+<translation id="7665445336029073980">Πλήρες ιστορικό λήψεων</translation>
 <translation id="766587987807204883">Εδώ εμφανίζονται άρθρα τα οποία μπορείτε να διαβάσετε ακόμη και εκτός σύνδεσης</translation>
 <translation id="7666185984446444960">Η ομάδα καρτελών <ph name="TAB_GROUPS_AND_TABS_PART" /> εκλεισε</translation>
 <translation id="767157537088426800">Συνδεθείτε σε αυτόν τον ιστότοπο και στο Chrome για να μεταφέρετε τους κωδικούς πρόσβασης σας και πολλά ακόμη σε όλες τις συσκευές σας</translation>

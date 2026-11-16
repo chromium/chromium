@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1003917207516838287">Najnowsza historia pobierania</translation>
 <translation id="1007349221964075684">Aby zobaczyć otwarte okna incognito, użyj blokady ekranu</translation>
 <translation id="1010283278930414892">Na tym urządzeniu nie ma zapisanych haseł</translation>
 <translation id="1011749477052068769">Przenieś tutaj</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Arkusz potwierdzenia klucza dostępu został zamknięty</translation>
 <translation id="1197933394627598677">Pokaż Tryb czytania</translation>
 <translation id="1197935538609051549">Wyłącz</translation>
-<translation id="119944043368869598">Wyczyść wszystko</translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1202892408424955784">Obserwowane produkty</translation>
 <translation id="1204037785786432551">Pobierz link</translation>
@@ -1442,6 +1442,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="657480975869429144">Jest dostępna nowa wersja Chrome.</translation>
 <translation id="658099107946526506">Chroń tryb przeglądania prywatnego za pomocą kodu PIN, aby zapobiec niepożądanemu dostępowi</translation>
 <translation id="6583199322650523874">Dodaj bieżącą stronę do zakładek</translation>
+<translation id="6583902294974160967">Pomoc</translation>
 <translation id="6588043302623806746">Użyj bezpiecznego serwera DNS</translation>
 <translation id="6590471736817333463">Oszczędź nawet 60% danych</translation>
 <translation id="6593061639179217415">Wersja na komputer</translation>
@@ -1744,6 +1745,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7656862631699126784">Włącz blokadę incognito</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7663320421139257046">Aby można było kontynuować, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni tej witrynie Twoje <ph name="FIELDS_STRING" />. Zapoznaj się z jej <ph name="BEGIN_LINK1" />polityką prywatności<ph name="END_LINK1" />.</translation>
+<translation id="7665445336029073980">Pełna historia pobierania</translation>
 <translation id="766587987807204883">Tutaj pojawiają się artykuły, które możesz czytać, nawet gdy jesteś offline</translation>
 <translation id="7666185984446444960">Zamknięto <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Zaloguj się na tej stronie i w Chrome, aby mieć dostęp do zakładek oraz innych danych na wszystkich swoich urządzeniach.</translation>

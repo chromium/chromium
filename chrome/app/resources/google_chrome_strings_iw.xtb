@@ -517,7 +517,6 @@
 <translation id="6319856120645568262">‏ל-Chrome נדרשת הרשאה כדי למפות את הסביבה שלך ולעקוב אחרי תנועות הידיים</translation>
 <translation id="6321592572353357376">‏התוסף "<ph name="EXTENSION_NAME" />" מבקש ממך להיכנס ל-Chrome</translation>
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
-<translation id="6334815226785304306">‏הגדרת Google Chrome כדפדפן ברירת המחדל והצמדה שלו לסרגל המשימות</translation>
 <translation id="6339888439788291743">‏אותו קיצור דרך, עם סמל חדש: כדי לשאול שאלות במהלך הגלישה בחיפוש Google במצב AI, עליך ללחוץ עליו.</translation>
 <translation id="63540178978900677">‏‫Chrome לא מוגדר יותר כדפדפן ברירת המחדל. אני רוצה ש-Chrome יהיה דפדפן ברירת המחדל</translation>
 <translation id="6357670763064300993">‏‫Gemini Enterprise ב-Chrome</translation>
@@ -841,6 +840,5 @@
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="973195869036269770">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS כי פרטי הכניסה לחשבון לא מעודכנים</translation>
 <translation id="983803489796659991">‏ההתקנה נכשלה כי שרת העדכון לא מכיל נתוני גיבוב (hash) של האפליקציה.</translation>
-<translation id="989369509083708165">‏Google Chrome הוא דפדפן ברירת המחדל</translation>
 <translation id="989816563149873169">‏ניתן לעבור בין פרופילים של Chrome באמצעות <ph name="SHORTCUT" /></translation>
 </translationbundle>

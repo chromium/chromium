@@ -12757,15 +12757,6 @@ Các nguồn gốc phải tương ứng với các ứng dụng web là Ứng d�
 <translation id="8854571659927427063">Nếu bạn đặt chính sách này thành Bật, thì dấu trang trên trình duyệt mặc định trước sẽ được nhập trong lần chạy đầu tiên. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì dấu trang sẽ không được nhập trong lần chạy đầu tiên.
 
       Người dùng có thể kích hoạt hộp thoại nhập. Ngoài ra, hộp đánh dấu dấu trang sẽ được đánh dấu/bỏ đánh dấu tương ứng với giá trị của chính sách này.</translation>
-<translation id="8857793979935465678">Chính sách này kiểm soát việc chế độ bảo vệ tiêu chuẩn của tính năng Duyệt web an toàn có được phép gửi một phần hàm băm của các URL đến Google thông qua proxy Oblivious HTTP nhằm xác định độ an toàn khi truy cập các URL này hay không.
-
-Proxy này cho phép trình duyệt tải một phần hàm băm của các URL lên Google mà không cần liên kết các URL đó với địa chỉ IP của người dùng. Chính sách này cũng cho phép trình duyệt tải một phần hàm băm của các URL lên thường xuyên hơn để Duyệt web an toàn mang lại chất lượng bảo vệ tốt hơn.
-
-Chính sách này sẽ bị bỏ qua nếu bạn tắt hoặc đặt Duyệt web an toàn ở chế độ bảo vệ nâng cao.
-
-Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì hệ thống sẽ cho phép hoạt động tra cứu qua proxy với khả năng bảo vệ cao hơn.
-
-Nếu bạn đặt chính sách này thành Tắt, thì hệ thống sẽ không cho phép hoạt động tra cứu qua proxy với khả năng bảo vệ cao hơn. Một phần hàm băm của các URL sẽ được tải trực tiếp lên Google với tần suất thấp hơn hẳn, do đó làm giảm khả năng bảo vệ.</translation>
 <translation id="8860342862142842017">Tắt mục cài đặt buộc thực thi Tính minh bạch của chứng chỉ cho một danh sách hàm băm subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Người dùng có thể định cấu hình kênh phát hành <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Chính sách này cho phép thiết lập một danh sách DLC (Nội dung tải xuống được) cần tải xuống sớm nhất có thể. Sau đó, tất cả người dùng trên thiết bị có thể sử dụng DLC đã tải xuống.

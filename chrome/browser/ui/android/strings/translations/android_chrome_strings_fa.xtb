@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1003917207516838287">سابقه بارگیری‌های اخیر</translation>
 <translation id="1007349221964075684">برای دیدن پنجره‌های «ناشناس» باز از قفل صفحه استفاده می‌شود</translation>
 <translation id="1010283278930414892">گذرواژه‌ای در این دستگاه ذخیره نشده است</translation>
 <translation id="1011749477052068769">انتقال به اینجا</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">برگ تأیید گذرکلید بسته شد</translation>
 <translation id="1197933394627598677">نشان دادن «حالت خواندن»</translation>
 <translation id="1197935538609051549">غیرفعال کردن</translation>
-<translation id="119944043368869598">پاک کردن همه</translation>
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1202892408424955784">محصولات پیگیری‌شده</translation>
 <translation id="1204037785786432551">بارگیری پیوند</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">‏نسخه جدیدی از Chrome دردسترس است</translation>
 <translation id="658099107946526506">برای جلوگیری از دسترسی ناخواسته، از مرور خصوصی خود با یک پین محافظت کنید</translation>
 <translation id="6583199322650523874">نشانک‌گذاری صفحه کنونی</translation>
+<translation id="6583902294974160967">پشتیبانی</translation>
 <translation id="6588043302623806746">استفاده از ساناد امن</translation>
 <translation id="6590471736817333463">تا ۶۰٪ در مصرف داده صرفه‌جویی کنید</translation>
 <translation id="6593061639179217415">سایت مخصوص رایانه</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">روشن کردن قفل ناشناس</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7663320421139257046">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> شما را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK1" />خط‌مشی رازداری<ph name="END_LINK1" /> این سایت را بررسی کنید.</translation>
+<translation id="7665445336029073980">سابقه کامل بارگیری‌ها</translation>
 <translation id="766587987807204883">مقاله‌ها اینجا نشان داده می‌شوند و حتی درحالت آفلاین هم می‌توانید آن‌ها را بخوانید.</translation>
 <translation id="7666185984446444960">‫<ph name="TAB_GROUPS_AND_TABS_PART" /> بسته شد</translation>
 <translation id="767157537088426800">‏برای گرفتن نشانک‌ها و موارد دیگر در همه دستگاه‌ها، به سیستم این سایت و Chrome وارد شوید</translation>

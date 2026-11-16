@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1003917207516838287">Aktueller Downloadverlauf</translation>
 <translation id="1007349221964075684">Zum Anzeigen geöffneter Inkognitofenster Displaysperre zum Entsperren verwenden</translation>
 <translation id="1010283278930414892">Keine gespeicherten Passwörter auf diesem Gerät</translation>
 <translation id="1011749477052068769">Hierhin verschieben</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Passkey-Bestätigungsansicht geschlossen</translation>
 <translation id="1197933394627598677">Lesemodus anzeigen</translation>
 <translation id="1197935538609051549">Deaktivieren</translation>
-<translation id="119944043368869598">Alle entfernen</translation>
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1202892408424955784">Beobachtete Produkte</translation>
 <translation id="1204037785786432551">Link herunterladen</translation>
@@ -1433,6 +1433,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="657480975869429144">Eine neue Chrome-Version ist verfügbar</translation>
 <translation id="658099107946526506">Private Browsersitzung mit einer PIN schützen, um unerwünschten Zugriff zu verhindern</translation>
 <translation id="6583199322650523874">Aktuelle Seite als Lesezeichen speichern</translation>
+<translation id="6583902294974160967">Hilfe</translation>
 <translation id="6588043302623806746">Sicheres DNS verwenden</translation>
 <translation id="6590471736817333463">Bis zu 60 % Daten sparen</translation>
 <translation id="6593061639179217415">Desktopwebsite</translation>
@@ -1730,6 +1731,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7656862631699126784">Inkognitosperre aktivieren</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7663320421139257046"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website. Lies die <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> dieser Website.</translation>
+<translation id="7665445336029073980">Vollständiger Downloadverlauf</translation>
 <translation id="766587987807204883">Artikel erscheinen hier und können auch gelesen werden, wenn du offline bist</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> geschlossen</translation>
 <translation id="767157537088426800">Melde dich in dieser Website und Chrome an, um auf deine Passwörter und mehr auf allen deinen Geräten zuzugreifen</translation>

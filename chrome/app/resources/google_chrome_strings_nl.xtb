@@ -528,7 +528,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6319856120645568262">Chrome heeft rechten nodig om je omgeving in kaart te brengen en je handen te volgen</translation>
 <translation id="6321592572353357376">De extensie <ph name="EXTENSION_NAME" /> wil dat je inlogt bij Chrome</translation>
 <translation id="6326175484149238433">Verwijderen uit Chrome</translation>
-<translation id="6334815226785304306">Google Chrome instellen als de standaardbrowser en vastzetten op de taakbalk</translation>
 <translation id="6339888439788291743">Nieuw icoon, dezelfde snelkoppeling: klik om vragen te stellen terwijl je browst met de AI-modus van Google Zoeken.</translation>
 <translation id="6349304688246983183">Stel makkelijk vragen terwijl je browst met Google Zoeken</translation>
 <translation id="63540178978900677">Chrome is niet meer je standaardbrowser. Chrome instellen als de standaardbrowser?</translation>
@@ -855,6 +854,5 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="973195869036269770">ChromeOS kan Chrome-gegevens niet opslaan in je Google-account omdat de inloggegevens voor je account zijn verouderd</translation>
 <translation id="983803489796659991">De installatie is mislukt omdat de updateserver geen hash-gegevens voor de app heeft.</translation>
-<translation id="989369509083708165">Google Chrome is je standaardbrowser</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> kan schakelen tussen Chrome-profielen</translation>
 </translationbundle>

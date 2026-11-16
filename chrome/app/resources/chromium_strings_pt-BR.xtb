@@ -12,7 +12,6 @@
 <translation id="1098493699368672217">Mostrar a pesquisa com o Chromium na bandeja do sistema e ativar o atalho do teclado</translation>
 <translation id="1104942323762546749">O Chromium quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="112640046208448578">Identifique itens ou lugares e copie ou traduza textos. Quando você usa a pesquisa por imagens, uma captura de tela da página é enviada ao servidor. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">O Chromium é seu navegador padrão</translation>
 <translation id="1131805035311359397">Para verificar se suas senhas estão protegidas contra violações de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />faça login no Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Há uma janela anônima ou isolada aberta. Ela não será reaberta após a reinicialização.}one{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Há # janela anônima e isolada aberta em todos os perfis. Ela não será reaberta após a reinicialização.}other{Seu administrador pede que você reinicie o Chromium para que esta atualização seja feita. Há # janelas anônimas e isoladas abertas em todos os perfis. Elas não serão reabertas após a reinicialização.}}</translation>
 <translation id="1153368717515616349">Clique no menu do Chromium</translation>
@@ -743,7 +742,6 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8816416449795340678">Compartilhe este documento com o Gemini no Chromium para obter uma visão geral rápida e fazer perguntas complementares</translation>
 <translation id="8818550178040858407">Fazer login no Chromium?</translation>
-<translation id="8823401858233292222">Definir o Chromium como navegador padrão e fixar na barra de tarefas</translation>
 <translation id="8826492472752484139">Clique em "Gerenciador de senhas"</translation>
 <translation id="8833697763442816810">Sistema ChromiumOS</translation>
 <translation id="8852026904190808918">Este idioma é usado para mostrar menus, configurações, alertas e outros textos no Chromium</translation>

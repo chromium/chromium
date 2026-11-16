@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Si se vulneran tus contraseñas, te avisaremos</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página añadida a la lista de lectura de tu cuenta ({email})}other{Páginas añadidas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="4493604894403585654">Has iniciado sesión como <ph name="USER_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
-<translation id="4495251723189610737">Tus conversaciones se guardarán en tu historial de Gemini. El historial incluye tus grabaciones de audio, vídeos de Gemini Live y pantallas compartidas, lo que compartes con Gemini (como peticiones, <ph name="BEGIN_LINK" />subidas<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />pantallas<ph name="END_LINK" />), las respuestas de Gemini, las tareas y las llamadas a herramientas, tus comentarios, información de los sitios web que visitas con Gemini, datos de uso de productos, la ubicación general de tu dispositivo, la dirección IP y las direcciones de casa o del trabajo de tu cuenta de Google. También puede incluir datos de las aplicaciones que conectes a Gemini.</translation>
 <translation id="4502423230170890588">Eliminar del dispositivo</translation>
 <translation id="4508486880075514067">Ampliar a pantalla completa</translation>
 <translation id="4508750114462689118">Cierra el inicio de sesión en la promoción</translation>

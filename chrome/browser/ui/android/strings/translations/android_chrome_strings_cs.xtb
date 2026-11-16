@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1003917207516838287">Nedávná historie stahování</translation>
 <translation id="1007349221964075684">K zobrazení otevřených anonymních oken vyžadovat zámek obrazovky</translation>
 <translation id="1010283278930414892">V tomto zařízení nejsou uložena žádná hesla</translation>
 <translation id="1011749477052068769">Přesunout sem</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Byla zavřena tabulka k potvrzení přístupového klíče</translation>
 <translation id="1197933394627598677">Zobrazit režim čtení</translation>
 <translation id="1197935538609051549">Deaktivovat</translation>
-<translation id="119944043368869598">Vymazat vše</translation>
 <translation id="1201402288615127009">Další</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="1204037785786432551">Stáhnout odkaz</translation>
@@ -1442,6 +1442,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="657480975869429144">K dispozici je nová verze prohlížeče Chrome</translation>
 <translation id="658099107946526506">Chraňte své anonymní prohlížení pomocí PINu, který zabrání nechtěnému přístupu</translation>
 <translation id="6583199322650523874">Přidat aktuální stránku do záložek</translation>
+<translation id="6583902294974160967">Podpora</translation>
 <translation id="6588043302623806746">Používat zabezpečené DNS</translation>
 <translation id="6590471736817333463">Ušetřete až 60 % dat</translation>
 <translation id="6593061639179217415">Stránky pro počítač</translation>
@@ -1744,6 +1745,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7656862631699126784">Zapnout zámek anonymního režimu</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7663320421139257046">Aby bylo možné pokračovat, bude <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> s tímto webem sdílet tyto vaše údaje: <ph name="FIELDS_STRING" />. Přečtěte si <ph name="BEGIN_LINK1" />zásady ochrany soukromí<ph name="END_LINK1" /> tohoto webu.</translation>
+<translation id="7665445336029073980">Úplná historie stahování</translation>
 <translation id="766587987807204883">Zde se zobrazují články, které si můžete číst i offline</translation>
 <translation id="7666185984446444960">Zavřeno: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Když se na tenhle web a do Chromu přihlásíte, budete mít svá hesla a další položky k dispozici na všech svých zařízeních</translation>

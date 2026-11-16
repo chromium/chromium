@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="1003917207516838287">Нядаўняя гісторыя спампоўвання</translation>
 <translation id="1007349221964075684">Для прагляду адкрытых вокнаў у рэжыме інкогніта трэба будзе скарыстаць сродак разблакіроўкі экрана</translation>
 <translation id="1010283278930414892">На прыладзе няма захаваных пароляў</translation>
 <translation id="1011749477052068769">Перамясціць сюды</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Аркуш з просьбай пацвердзіць стварэнне ключа доступу закрыты</translation>
 <translation id="1197933394627598677">Паказаць у рэжыме чытання</translation>
 <translation id="1197935538609051549">Выключыць</translation>
-<translation id="119944043368869598">Выдаліць усё</translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1202892408424955784">Адсочванне тавараў</translation>
 <translation id="1204037785786432551">Спампаваць па спасылцы</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Выйшла новая версія Chrome</translation>
 <translation id="658099107946526506">Абараніце прыватны прагляд з дапамогай PIN-кода, каб прадухіліць непажаданы доступ</translation>
 <translation id="6583199322650523874">Дадаць бягучую старонку ў закладкі</translation>
+<translation id="6583902294974160967">Падтрымка</translation>
 <translation id="6588043302623806746">Выкарыстоўваць абароненую DNS</translation>
 <translation id="6590471736817333463">Эканомце да 60% трафіка</translation>
 <translation id="6593061639179217415">Версія для ПК</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">Уключыць блакіроўку ўкладак у рэжыме інкогніта</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7663320421139257046">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць з гэтым сайтам наступныя даныя: <ph name="FIELDS_STRING" />. Азнаёмцеся з <ph name="BEGIN_LINK1" />палітыкай прыватнасці<ph name="END_LINK1" /> сайта.</translation>
+<translation id="7665445336029073980">Поўная гісторыя спампоўвання</translation>
 <translation id="766587987807204883">Тут паказваюцца артыкулы, якія можна чытаць нават па-за сеткай</translation>
 <translation id="7666185984446444960">Закрыта: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Увайдзіце на сайт і ў Chrome, каб карыстацца паролямі і іншым змесцівам на ўсіх сваіх прыладах</translation>

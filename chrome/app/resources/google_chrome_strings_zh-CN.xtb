@@ -523,7 +523,6 @@
 <translation id="6319856120645568262">Chrome 需要获得权限，才能绘制您周边环境的地图并跟踪您的双手</translation>
 <translation id="6321592572353357376">“<ph name="EXTENSION_NAME" />”扩展程序需要您登录 Chrome</translation>
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
-<translation id="6334815226785304306">将 Google Chrome 设为默认浏览器并固定到任务栏</translation>
 <translation id="6339888439788291743">图标焕新，快捷方式不变：点击即可在浏览时通过 Google 搜索 AI 模式提问。</translation>
 <translation id="6349304688246983183">在浏览时通过 Google 搜索轻松提问</translation>
 <translation id="63540178978900677">Chrome 不再是默认浏览器。要将 Chrome 设为默认浏览器吗？</translation>
@@ -850,6 +849,5 @@
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="973195869036269770">由于您的账号登录详细信息已过期，ChromeOS 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="983803489796659991">更新服务器没有应用的任何哈希数据，因此安装失败。</translation>
-<translation id="989369509083708165">Google Chrome 是您的默认浏览器</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可用于切换 Chrome 个人资料</translation>
 </translationbundle>

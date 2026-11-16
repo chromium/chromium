@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1003917207516838287">Վերջին ներբեռնումների պատմությունը</translation>
 <translation id="1007349221964075684">Օգտագործել էկրանի կողպումը՝ բացված ինկոգնիտո պատուհանները տեսնելու համար</translation>
 <translation id="1010283278930414892">Այս սարքում պահված գաղտնաբառեր չկան</translation>
 <translation id="1011749477052068769">Տեղափոխել այստեղ</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Մուտքի բանալու հաստատման թերթը փակված է</translation>
 <translation id="1197933394627598677">Բացել Ընթերցման ռեժիմը</translation>
 <translation id="1197935538609051549">Ապակտիվացնել</translation>
-<translation id="119944043368869598">Մաքրել բոլորը</translation>
 <translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1202892408424955784">Ապրանքներ, որոնց գներին հետևում եք</translation>
 <translation id="1204037785786432551">Ներբեռնել հղումը</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Chrome-ի նոր տարբերակ է հասանելի</translation>
 <translation id="658099107946526506">Պաշտպանեք ձեր ինկոգնիտո ռեժիմը PIN կոդով՝ անցանկալի մուտքը կանխելու համար</translation>
 <translation id="6583199322650523874">Էջանշել ընթացիկ էջը</translation>
+<translation id="6583902294974160967">Օգնություն</translation>
 <translation id="6588043302623806746">Օգտագործել ապահով DNS</translation>
 <translation id="6590471736817333463">Տնտեսեք թրաֆիկի մինչև 60%-ը</translation>
 <translation id="6593061639179217415">Համակարգչային տարբերակ</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">Միացնել ինկոգնիտո ներդիրների կողպումը</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7663320421139257046">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" />։</translation>
+<translation id="7665445336029073980">Ներբեռնումների ամբողջ պատմությունը</translation>
 <translation id="766587987807204883">Հոդվածները ցուցադրվում են այստեղ։ Դրանք կարող եք կարդալ նույնիսկ անցանց ռեժիմում։</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> փակվեց</translation>
 <translation id="767157537088426800">Մտեք հաշիվ այս կայքում և Chrome-ում՝ ձեր գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>

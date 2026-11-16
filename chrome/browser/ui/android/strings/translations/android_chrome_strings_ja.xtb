@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1003917207516838287">最近のダウンロード履歴</translation>
 <translation id="1007349221964075684">開いているシークレット ウィンドウを表示するには、画面ロックを使用します</translation>
 <translation id="1010283278930414892">このデバイスに保存されているパスワードはありません</translation>
 <translation id="1011749477052068769">ここに移動</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">パスキー確認シートを閉じました</translation>
 <translation id="1197933394627598677">リーディング モード</translation>
 <translation id="1197935538609051549">無効にする</translation>
-<translation id="119944043368869598">すべて削除</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1202892408424955784">トラッキングしている商品</translation>
 <translation id="1204037785786432551">リンクをダウンロード</translation>
@@ -1442,6 +1442,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="657480975869429144">Chrome の新しいバージョンを利用できます</translation>
 <translation id="658099107946526506">PIN を使ってシークレット ブラウジングを保護し、不要なアクセスを防ぎます</translation>
 <translation id="6583199322650523874">現在のページをブックマークする</translation>
+<translation id="6583902294974160967">サポート</translation>
 <translation id="6588043302623806746">セキュア DNS を使用する</translation>
 <translation id="6590471736817333463">最大 60% のデータを節約</translation>
 <translation id="6593061639179217415">PC 版サイト</translation>
@@ -1744,6 +1745,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7656862631699126784">シークレット ロックをオンにする</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7663320421139257046">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />を確認してください。</translation>
+<translation id="7665445336029073980">すべてのダウンロード履歴</translation>
 <translation id="766587987807204883">記事がここに表示されます。これらの記事はオフラインでも読むことができます</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> を閉じました</translation>
 <translation id="767157537088426800">このサイトと Chrome にログインすると、どのデバイスでもパスワードなどを使用できます</translation>

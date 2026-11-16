@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1003917207516838287">Сүүлийн үеийн таталтын түүх</translation>
 <translation id="1007349221964075684">Нээлттэй нууцлалтай цонхыг харахын тулд дэлгэцийн түгжээг ашиглана уу</translation>
 <translation id="1010283278930414892">Энэ төхөөрөмж дээр хадгалсан ямар ч нууц үг байхгүй</translation>
 <translation id="1011749477052068769">Ийш зөөх</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Нэвтрэх түлхүүрийн баталгаажуулалтын хүснэгтийг хаасан</translation>
 <translation id="1197933394627598677">Унших горимыг харуулах</translation>
 <translation id="1197935538609051549">Идэвхгүй болгох</translation>
-<translation id="119944043368869598">Бүгдийг арилгах</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1202892408424955784">Хянаж буй бүтээгдэхүүнүүд</translation>
 <translation id="1204037785786432551">Холбоос татах</translation>
@@ -1443,6 +1443,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="657480975869429144">Chrome-н шинэ хувилбар бэлэн байна</translation>
 <translation id="658099107946526506">Хүсээгүй хандалтаас сэргийлэхийн тулд хувийн хөтчөө пин кодоор хамгаалаарай</translation>
 <translation id="6583199322650523874">Одоогийн хуудсыг тэмдэглэх</translation>
+<translation id="6583902294974160967">Дэмжлэг</translation>
 <translation id="6588043302623806746">Найдвартай DNS ашиглана уу</translation>
 <translation id="6590471736817333463">Датагаа 60% хүртэл хэмнээрэй</translation>
 <translation id="6593061639179217415">Дэлгэцийн сайт</translation>
@@ -1745,6 +1746,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7656862631699126784">Нууцлалтай түгжээг асаах</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7663320421139257046">Үргэлжлүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны <ph name="FIELDS_STRING" />-г энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />Нууцлалын бодлогыг<ph name="END_LINK1" /> харна уу.</translation>
+<translation id="7665445336029073980">Таталтын бүтэн түүх</translation>
 <translation id="766587987807204883">Офлайн үедээ ч унших боломжтой нийтлэлүүд энд харагддаг</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" />-г хаасан</translation>
 <translation id="767157537088426800">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд энэ сайт, Chrome-д нэвтэрнэ үү</translation>

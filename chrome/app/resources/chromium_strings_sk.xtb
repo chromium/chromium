@@ -14,7 +14,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1098493699368672217">Zobrazovať vyhľadávanie pomocou prehliadača Chromium v oblasti oznámení a zapnúť klávesovú skratku</translation>
 <translation id="1104942323762546749">Prehliadač Chromium sa pokúša exportovať vaše heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="112640046208448578">Identifikujte veci alebo miesta a skopírujte či preložte text. Pri používaní vyhľadávania podľa obrázkov sa snímka obrazovky stránky sa odošle na server. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium je vaším predvoleným prehliadačom</translation>
 <translation id="1131805035311359397">Ak chcete skontrolovať, či sú vaše heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do prehliadača Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Správca vás žiada, aby ste na použitie tejto aktualizácie znova spustili Chromium. Je otvorené okno inkognito alebo izolované okno. Po opätovnom spustení sa znova neotvorí.}few{Správca vás žiada, aby ste na použitie tejto aktualizácie znova spustili Chromium. V rámci profilov sú otvorené # okná inkognito a izolované okná. Po opätovnom spustení sa znova neotvoria.}many{Your administrator asks that you relaunch Chromium to apply this update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{Správca vás žiada, aby ste na použitie tejto aktualizácie znova spustili Chromium. V rámci profilov je otvorených # okien inkognito a izolovaných okien. Po opätovnom spustení sa znova neotvoria.}}</translation>
 <translation id="1153368717515616349">Kliknite na ponuku prehliadača Chromium</translation>
@@ -750,7 +749,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8813277370772331957">Pripomenúť neskôr</translation>
 <translation id="8816416449795340678">Zdieľajte tento dokument s Gemini v prehliadači Chromium, získajte rýchly prehľad a klaďte doplňujúce otázky</translation>
 <translation id="8818550178040858407">Chcete sa prihlásiť do prehliadača Chromium?</translation>
-<translation id="8823401858233292222">Nastavte si Chromium ako predvolený prehliadač a pripnite ho na panel aplikácií</translation>
 <translation id="8826492472752484139">Kliknite na položku Správca hesiel</translation>
 <translation id="8833697763442816810">Systém Chromium OS</translation>
 <translation id="8852026904190808918">V tomto jazyku sa zobrazujú ponuky, nastavenia, upozornenia a ďalší text v prehliadači Chromium</translation>

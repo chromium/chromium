@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1003917207516838287">Logg over nylige nedlastinger</translation>
 <translation id="1007349221964075684">Bruk skjermlås for å se åpne inkognitovinduer</translation>
 <translation id="1010283278930414892">Ingen lagrede passord på denne enheten</translation>
 <translation id="1011749477052068769">Flytt hit</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Arket for passnøkkelbekreftelse er lukket</translation>
 <translation id="1197933394627598677">Vis lesemodus</translation>
 <translation id="1197935538609051549">Deaktiver</translation>
-<translation id="119944043368869598">Fjern alle</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1202892408424955784">Sporede produkter</translation>
 <translation id="1204037785786432551">Last ned linken</translation>
@@ -1442,6 +1442,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="657480975869429144">En ny versjon av Google Chrome er tilgjengelig</translation>
 <translation id="658099107946526506">Beskytt privat surfing med en PIN-kode for å forhindre uønsket tilgang</translation>
 <translation id="6583199322650523874">Sett den aktive siden som bokmerke</translation>
+<translation id="6583902294974160967">Brukerstøtte</translation>
 <translation id="6588043302623806746">Bruk sikker DNS</translation>
 <translation id="6590471736817333463">Spar opptil 60 % data</translation>
 <translation id="6593061639179217415">Side for datamaskiner</translation>
@@ -1744,6 +1745,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7656862631699126784">Slå på inkognitolås</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7663320421139257046">Før du kan fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele <ph name="FIELDS_STRING" /> med dette nettstedet. Se nettstedets <ph name="BEGIN_LINK1" />personvernregler<ph name="END_LINK1" />.</translation>
+<translation id="7665445336029073980">Fullstendig nedlastingslogg</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> ble lukket</translation>
 <translation id="767157537088426800">Logg på dette nettstedet og Chrome for å få passordene dine med mer på alle enhetene dine</translation>

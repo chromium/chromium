@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1003917207516838287">Recent download history</translation>
 <translation id="1007349221964075684">Use screen lock to see open Incognito windows</translation>
 <translation id="1010283278930414892">No saved passwords on this device</translation>
 <translation id="1011749477052068769">Move here</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Passkey confirmation sheet closed</translation>
 <translation id="1197933394627598677">Show Reading mode</translation>
 <translation id="1197935538609051549">Deactivate</translation>
-<translation id="119944043368869598">Clear all</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1202892408424955784">Tracked products</translation>
 <translation id="1204037785786432551">Download link</translation>
@@ -1442,6 +1442,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="657480975869429144">A new version of Chrome is available</translation>
 <translation id="658099107946526506">Protect your private browsing with a PIN to prevent unwanted access</translation>
 <translation id="6583199322650523874">Bookmark the current page</translation>
+<translation id="6583902294974160967">Support</translation>
 <translation id="6588043302623806746">Use secure DNS</translation>
 <translation id="6590471736817333463">Save up to 60% data</translation>
 <translation id="6593061639179217415">Desktop site</translation>
@@ -1744,6 +1745,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7656862631699126784">Turn on Incognito lock</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7663320421139257046">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your <ph name="FIELDS_STRING" /> with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" />.</translation>
+<translation id="7665445336029073980">Full download history</translation>
 <translation id="766587987807204883">Articles appear here, which you can read even when you're offline</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> closed</translation>
 <translation id="767157537088426800">Sign in to this site and Chrome to get your passwords and more on all your devices</translation>

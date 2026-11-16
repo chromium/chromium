@@ -797,6 +797,7 @@
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
 <translation id="1803287124763873748">휴대전화에서 로그인하시겠습니까?</translation>
 <translation id="1803531841600994172">번역 타겟 언어</translation>
+<translation id="1803703903842028149">신용카드, 체크카드, IBAN</translation>
 <translation id="180441032496361123">클릭하여 <ph name="SEARCH_ENGINE_NAME" /> 활성화</translation>
 <translation id="1805738995123446102">배경 탭에서 마이크를 사용 중입니다.</translation>
 <translation id="1805822111539868586">뷰 검사</translation>
@@ -2097,6 +2098,7 @@
 <translation id="310671807099593501">사이트에서 블루투스를 사용하고 있습니다.</translation>
 <translation id="3108122610701115301">기본으로 설정</translation>
 <translation id="3108931485517391283">수신할 수 없습니다.</translation>
+<translation id="3109161228145689140">비공개, 익명, 스텔스, 비밀, 안전, 추적 방지, 쿠키, 삭제, 캐시, 시크릿 창 열기</translation>
 <translation id="3109206895301430738">저장된 탭 그룹</translation>
 <translation id="3109724472072898302">접힘</translation>
 <translation id="3112378005171663295">접기</translation>
@@ -2192,6 +2194,7 @@
 <translation id="3195773549050092642">Gemini가 작업을 중지합니다</translation>
 <translation id="3199637719075529971">이 탭은 직렬 포트에 연결되어 있습니다</translation>
 <translation id="3201237270673604992">알파벳 역순</translation>
+<translation id="3201749168732432347">혜택 및 포인트 카드</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> 기기로의 화면 전송 일시중지</translation>
 <translation id="3202578601642193415">날짜순</translation>
 <translation id="3207344462385471911">최근 활동을 바탕으로 내가 관심을 가질 만한 추천 검색어 및 쇼핑 할인이 표시됩니다.
@@ -2274,6 +2277,7 @@
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> 표시 안함</translation>
 <translation id="3269612321104318480">연한 청록색 및 흰색</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{파일}other{파일 #개}}</translation>
+<translation id="3270303798509728461"><ph name="VOICE_NAME" /> 미리 듣기</translation>
 <translation id="3270965368676314374">컴퓨터에서 사진, 음악, 기타 미디어 조회, 변경, 삭제</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> 접기</translation>
 <translation id="3275778913554317645">창으로 열기</translation>
@@ -3478,6 +3482,7 @@
 <translation id="4449247303975391730">권한 관리</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />에서 검색하거나 URL을 입력하세요.</translation>
 <translation id="4460014764210899310">그룹 해제</translation>
+<translation id="4460297284484740408">아니요</translation>
 <translation id="4461483878391246134">번역을 제공하지 않을 언어 추가</translation>
 <translation id="4466922176191762830">+ <ph name="NUM" />개</translation>
 <translation id="4467373268340082204">잘못된 PIN</translation>
@@ -3605,6 +3610,7 @@
 <translation id="4600978165652322776">네트워크 오류가 발생했습니다. 인터넷 연결 및 네트워크 설정을 확인하세요.</translation>
 <translation id="4601095002996233687">의심스러운 다운로드 항목을 심층 스캔합니다.</translation>
 <translation id="4601426376352205922">읽지 않은 상태로 표시</translation>
+<translation id="4601626093626178957">아래 옵션을 선택하세요</translation>
 <translation id="460190672235687855">비밀번호 보기</translation>
 <translation id="4602466770786743961"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 항상 허용</translation>
 <translation id="4602776638371779614">이 탭은 현재 블루투스 기기를 검사하고 있습니다</translation>
@@ -4773,6 +4779,7 @@
 <translation id="5820751560028604030">로컬 다운로드 차단됨</translation>
 <translation id="5821565227679781414">바로가기 만들기</translation>
 <translation id="5826993284769733527">반투명</translation>
+<translation id="5827056944126565928">프로모션 코드 및 포인트 카드</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5827835011646404677">스킬이 Google 계정에 저장됩니다</translation>
 <translation id="5828181959764767444">일몰</translation>
@@ -5198,6 +5205,7 @@
 <translation id="6253801023880399036">비밀번호가 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="6254503684448816922">키 손상</translation>
 <translation id="6254892857036829079">완벽함</translation>
+<translation id="6255253900817321392">새 탭을 열지 않고도 Mac 어디에서나 더 빠르게 검색하세요.</translation>
 <translation id="6257602895346497974">동기화 사용...</translation>
 <translation id="6258818697161346451">이 기기에서 패스키 사용하기</translation>
 <translation id="6259776178973198997">Wi-Fi Direct 소유자 정보 새로고침</translation>
@@ -5403,6 +5411,7 @@
 <translation id="6466936665940546351">비밀번호를 추가하고 Google 계정으로 모든 기기에서 사용하려면 본인 인증을 진행하세요.</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> 스캔</translation>
 <translation id="6467304607960172345">전체 화면 동영상 최적화</translation>
+<translation id="6467327465309816244">Gemini를 신중하고 <ph name="BEGIN_LINK1" />안전하게<ph name="LINK_END1" /> 사용하세요. 실수를 저지르거나 구매와 같은 <ph name="BEGIN_LINK2" />예상치 못한 결과<ph name="LINK_END2" />를 초래할 수 있습니다.</translation>
 <translation id="6468485451923838994">글꼴</translation>
 <translation id="6468773105221177474">파일 <ph name="FILE_COUNT" />개</translation>
 <translation id="6469702164109431067">비밀번호 및 패스키</translation>
@@ -5757,6 +5766,7 @@
 <translation id="6815376457351236663">무시하고 열기</translation>
 <translation id="6815787852028615386">사기성 파일이므로 기기가 예기치 않게 변경될 수 있습니다.</translation>
 <translation id="6816443526270499804">사용 가능한 eSIM 프로필 찾는 중</translation>
+<translation id="6816637904848970547">위쪽 및 아래쪽 화살표 키를 사용하여 목록을 탐색하세요.</translation>
 <translation id="6818198425579322765">페이지 번역 출발어</translation>
 <translation id="6820107710950761542">자세한 내용은 관리자에게 문의하거나 <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" />에서 확인하세요.</translation>
 <translation id="6821439254917412979"><ph name="EXTENSION_NAME" /> 고정 해제</translation>
@@ -6980,6 +6990,7 @@
 <translation id="8033958968890501070">시간 초과</translation>
 <translation id="8034697324150621782">상단 뷰와 바꾸기</translation>
 <translation id="8035059678007243127">시크릿 모드 뒤로-앞으로 캐시 페이지: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8035129145306910594">예</translation>
 <translation id="8036143516314698610">저장된 탭 그룹 버튼 표시</translation>
 <translation id="8036193484521570992">자동 완성 개선에 참여하기</translation>
 <translation id="803639495237134713">키보드 단축키 맞춤설정</translation>
@@ -7896,6 +7907,7 @@
 <translation id="895347679606913382">다운로드 시작...</translation>
 <translation id="8954796993367253220">게스트 모드 기록을 삭제하려면 게스트 창을 모두 닫으세요.</translation>
 <translation id="8955174612586215829">테마 찾기</translation>
+<translation id="8957049369099630820">새 탭을 열지 않고도 컴퓨터 어디에서나 더 빠르게 검색하세요.</translation>
 <translation id="8957656266859671822">계정 선택</translation>
 <translation id="8957757410289731985">프로필 맞춤설정</translation>
 <translation id="8959144235813727886">사이트 및 앱</translation>

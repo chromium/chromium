@@ -12,7 +12,6 @@
 <translation id="1098493699368672217">Afișează căutarea cu Chromium în bara de sistem și activează comanda rapidă de la tastatură</translation>
 <translation id="1104942323762546749">Chromium vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
 <translation id="112640046208448578">Identifică lucruri sau locuri și copiază sau tradu text. Când folosești Căutarea de imagini, se trimite la server o captură de ecran a paginii. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium este browserul prestabilit</translation>
 <translation id="1131805035311359397">Ca să verifici dacă parolele sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Administratorul solicită să relansezi Chromium pentru a aplica această actualizare. Există o fereastră incognito sau izolată deschisă. Nu se va redeschide după relansare.}few{Administratorul solicită să relansezi Chromium pentru a aplica această actualizare. Există # ferestre incognito și izolate deschise în toate profilurile. Nu se vor redeschide după relansare.}other{Administratorul solicită să relansezi Chromium pentru a aplica această actualizare. Există # de ferestre incognito și izolate deschise în toate profilurile. Nu se vor redeschide după relansare.}}</translation>
 <translation id="1153368717515616349">Dă clic pe meniul Chromium</translation>
@@ -749,7 +748,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8813277370772331957">Amintește-mi mai târziu</translation>
 <translation id="8816416449795340678">Trimite acest document la Gemini în Chromium pentru a obține o prezentare generală rapidă și a pune întrebări suplimentare</translation>
 <translation id="8818550178040858407">Te conectezi la Chromium?</translation>
-<translation id="8823401858233292222">Setează Chromium ca browser prestabilit și fixează-l în bara de activități</translation>
 <translation id="8826492472752484139">Dă clic pe Manager de parole</translation>
 <translation id="8833697763442816810">Sistemul de operare Chromium</translation>
 <translation id="8852026904190808918">Această limbă se folosește pentru a afișa meniuri, setări, alerte și alte texte în Chromium</translation>

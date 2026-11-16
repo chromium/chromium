@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1003917207516838287">היסטוריית ההורדות מהתקופה האחרונה</translation>
 <translation id="1007349221964075684">שימוש בשיטה לפתיחת הנעילה כדי לראות חלונות פרטיים פתוחים</translation>
 <translation id="1010283278930414892">אין במכשיר הזה סיסמאות שמורות</translation>
 <translation id="1011749477052068769">העברה לכאן</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">גיליון האישור של מפתח הגישה סגור</translation>
 <translation id="1197933394627598677">הצגת מצב הקריאה</translation>
 <translation id="1197935538609051549">השבתה</translation>
-<translation id="119944043368869598">ניקוי הכול</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1202892408424955784">מוצרים במעקב</translation>
 <translation id="1204037785786432551">הורדת קישור</translation>
@@ -1434,6 +1434,7 @@
 <translation id="657480975869429144">‏גרסה חדשה של Chrome זמינה להורדה</translation>
 <translation id="658099107946526506">כדי למנוע גישה לא רצויה, אפשר להגן על הגלישה הפרטית באמצעות קוד אימות</translation>
 <translation id="6583199322650523874">סימון הדף הנוכחי בסימנייה</translation>
+<translation id="6583902294974160967">תמיכה</translation>
 <translation id="6588043302623806746">‏שימוש ב-DNS מאובטח</translation>
 <translation id="6590471736817333463">חיסכון של עד 60% בשימוש בחבילת הגלישה</translation>
 <translation id="6593061639179217415">אתר מותאם למחשב</translation>
@@ -1731,6 +1732,7 @@
 <translation id="7656862631699126784">הפעלה של נעילת הכרטיסיות הפרטיות</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7663320421139257046">כדי להמשיך, פרטים מסוימים (<ph name="FIELDS_STRING" />) ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK1" />כאן מפורטת מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
+<translation id="7665445336029073980">היסטוריית ההורדות המלאה</translation>
 <translation id="766587987807204883">כאן יוצגו מאמרים, ואפשר לקרוא אותם גם במצב אונליין</translation>
 <translation id="7666185984446444960">‫<ph name="TAB_GROUPS_AND_TABS_PART" /> נסגרו</translation>
 <translation id="767157537088426800">‏רוצה שסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך? עליך להיכנס לאתר הזה ול-Chrome</translation>

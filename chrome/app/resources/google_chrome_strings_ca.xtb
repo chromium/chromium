@@ -523,7 +523,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6319856120645568262">Chrome necessita permís per mapar el teu entorn i fer un seguiment de les teves mans</translation>
 <translation id="6321592572353357376">L'extensió "<ph name="EXTENSION_NAME" />" vol que iniciïs la sessió a Chrome</translation>
 <translation id="6326175484149238433">Suprimeix de Chrome</translation>
-<translation id="6334815226785304306">Fes que Google Chrome sigui el navegador predeterminat i fixa'l a la barra de tasques</translation>
 <translation id="6339888439788291743">Nova icona, mateixa drecera: fes clic per fer preguntes mentre navegues amb el mode IA de la Cerca de Google.</translation>
 <translation id="6349304688246983183">Fes preguntes fàcilment mentre navegues amb la Cerca de Google</translation>
 <translation id="63540178978900677">Chrome ja no és el teu navegador predeterminat. Vols establir Chrome com a navegador predeterminat?</translation>
@@ -850,6 +849,5 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="945522503751344254">Envia comentaris</translation>
 <translation id="973195869036269770">ChromeOS no ha pogut desar les dades de Chrome al teu Compte de Google perquè els detalls d'inici de sessió del compte no estan actualitzats</translation>
 <translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de dades de valor resum per a l'aplicació.</translation>
-<translation id="989369509083708165">Google Chrome és el navegador predeterminat</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permet canviar entre perfils de Chrome</translation>
 </translationbundle>

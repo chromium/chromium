@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Pasahitzak arriskuan badaude, horren berri emango dizugu</translation>
 <translation id="4489536976005181779">{count,plural, =1{Gehitu da orria zure kontuaren ({email}) irakurketa-zerrendan}other{Gehitu dira orriak zure kontuaren ({email}) irakurketa-zerrendan}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> gisa hasi duzu saioa. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
-<translation id="4495251723189610737">Gemini-ko historian gordeko dira elkarrizketak. Datu hauek sartzen dira historian: audioak, Gemini Live-ko bideoak eta pantaila-partekatzeak, Gemini-rekin partekatzen duzuna (hala nola eskaera-mezuak, <ph name="BEGIN_LINK" />kargatutako fitxategiak<ph name="END_LINK" /> eta <ph name="BEGIN_LINK" />pantailak<ph name="END_LINK" />), Gemini-ren erantzunak, zereginak eta tresna-abiarazteak, oharrak, Gemini-rekin bisitatzen dituzun webguneei buruzko informazioa, produktuen erabilera-datuak, gailuaren kokapen zehaztugabea, IP helbidea, eta Google-ko kontuan gordeta daukazun etxeko edo laneko helbidea. Baliteke Gemini-rekin konektatzen dituzun aplikazioetako datuak ere sartzea.</translation>
 <translation id="4502423230170890588">Kendu gailu honetatik</translation>
 <translation id="4508486880075514067">Zabaldu pantaila osoan ikusteko</translation>
 <translation id="4508750114462689118">Itxi saioa hasteko promozioa</translation>

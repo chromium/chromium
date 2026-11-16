@@ -531,7 +531,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6319856120645568262">თქვენი გარემოს მოსანიშნად და თქვენი ხელებისთვის თვალის მიდევნებისთვის Chrome საჭრიროებს ნებართვას</translation>
 <translation id="6321592572353357376">„<ph name="EXTENSION_NAME" />“ გაფართოების გამოსაყენებლად შედით Chrome-ში</translation>
 <translation id="6326175484149238433">Chrome-იდან წაშლა</translation>
-<translation id="6334815226785304306">დააყენეთ Google Chrome ნაგულისხმევ ბრაუზერად და ჩაამაგრეთ ის ამოცანათა ზოლში</translation>
 <translation id="6339888439788291743">ახალი ხატულა, იგივე მალსახმობი: დააწკაპუნეთ, რომ Google Search-ის ხელოვნური ინტელექტის რეჟიმით დათვალიერებისას დასვათ შეკითხვები.</translation>
 <translation id="6349304688246983183">მარტივად დასვით შეკითხვები Google Search-ით დათვალიერებისას</translation>
 <translation id="63540178978900677">Chrome აღარ არის თქვენი ნაგულისხმევი ბრაუზერი. გახდეს Chrome ნაგულისხმევი ბრაუზერი?</translation>
@@ -858,6 +857,5 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="973195869036269770">ChromeOS-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში, რადგან თქვენი ანგარიშის შესვლის დეტალები მოძველებულია</translation>
 <translation id="983803489796659991">ინსტალაცია ვერ მოხერხდა, რადგან განახლების სერვერს არ აქვს ამ აპლიკაციის ჰეშ-მონაცემები.</translation>
-<translation id="989369509083708165">Google Chrome თქვენი ნაგულისხმევი ბრაუზერია</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> გადართავს Chrome პროფილებს</translation>
 </translationbundle>

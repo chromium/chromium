@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1003917207516838287">ఇటీవలి డౌన్‌లోడ్ హిస్టరీ</translation>
 <translation id="1007349221964075684">తెరిచి ఉన్న అజ్ఞాత విండోలను చూడటానికి స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
 <translation id="1010283278930414892">ఈ పరికరంలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
 <translation id="1011749477052068769">ఇక్కడకు తరలించండి</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">పాస్-కీ నిర్ధారణ షీట్ మూసివేయబడింది</translation>
 <translation id="1197933394627598677">రీడింగ్ మోడ్‌ను చూడండి</translation>
 <translation id="1197935538609051549">డీయాక్టివేట్ చేయండి</translation>
-<translation id="119944043368869598">అన్నీ క్లియర్ చేయండి</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1202892408424955784">ట్రాక్ చేసిన ప్రోడక్ట్‌లు</translation>
 <translation id="1204037785786432551">లింక్‌ను డౌన్‌లోడ్ చేయి</translation>
@@ -1440,6 +1440,7 @@
 <translation id="657480975869429144">Chrome కొత్త వెర్షన్ అందుబాటులో ఉంది</translation>
 <translation id="658099107946526506">అవాంఛిత యాక్సెస్‌ను నిరోధించడానికి PIN ద్వారా మీ ప్రైవేట్ బ్రౌజింగ్‌ను సురక్షితం చేసుకోండి</translation>
 <translation id="6583199322650523874">ప్రస్తుత పేజీని బుక్‌మార్క్ చేయండి</translation>
+<translation id="6583902294974160967">సపోర్ట్</translation>
 <translation id="6588043302623806746">సెక్యూర్ DNSను ఉపయోగించండి</translation>
 <translation id="6590471736817333463">60% వరకు డేటాను ఆదా చేయండి</translation>
 <translation id="6593061639179217415">డెస్క్‌టాప్ సైట్</translation>
@@ -1742,6 +1743,7 @@
 <translation id="7656862631699126784">'అజ్ఞాత మోడ్ లాక్'‌ను ఆన్ చేయండి</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7663320421139257046">కొనసాగించడానికి, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో మీ <ph name="FIELDS_STRING" />‌ను షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీని<ph name="END_LINK1" /> చూడండి.</translation>
+<translation id="7665445336029073980">పూర్తి డౌన్‌లోడ్ హిస్టరీ</translation>
 <translation id="766587987807204883">కథనాలు ఇక్కడ కనిపిస్తాయి, మీరు ఆఫ్‌లైన్‌లో ఉన్నప్పటికీ కూడా వీటిని చదవవచ్చు</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> మూసివేయబడ్డాయి</translation>
 <translation id="767157537088426800">మీ డివైజ్‌లన్నింటిలో మీ పాస్‌వర్డ్‌లతో పాటు, ఇంకా మరెన్నో వివరాలను పొందడానికి ఈ సైట్‌కు, Chromeకు సైన్ ఇన్ చేయండి</translation>

@@ -1118,7 +1118,6 @@
 <translation id="4488754974567924717">Vi meddelar dig om dina lösenord är utsatta</translation>
 <translation id="4489536976005181779">{count,plural, =1{Sidan har lagts till i läslistan i kontot {email}}other{Sidorna har lagts till i läslistan i kontot {email}}}</translation>
 <translation id="4493604894403585654">Du är inloggad som <ph name="USER_EMAIL" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
-<translation id="4495251723189610737">Dina chattar sparas i Gemini-historiken. Historiken omfattar ljud, Gemini Live-videor och delade skärmar, vad du delar med Gemini (som promptar, <ph name="BEGIN_LINK" />uppladdningar<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />skärmar<ph name="END_LINK" />), Geminis svar, uppgifter och verktygsanrop, feedback, information från webbplatser du besöker med Gemini, produktanvändningsdata, enhetens ungefärliga plats, IP-adress och hem- eller jobbadresser i Google-kontot. Det kan även omfatta data från appar som du ansluter till Gemini.</translation>
 <translation id="4502423230170890588">Ta bort från den här enheten</translation>
 <translation id="4508486880075514067">Utöka till helskärm</translation>
 <translation id="4508750114462689118">Stäng inloggningskampanj</translation>

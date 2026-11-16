@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1003917207516838287">Недавна историја преузимања</translation>
 <translation id="1007349221964075684">Користите откључавање екрана да бисте видели отворене прозоре без архивирања</translation>
 <translation id="1010283278930414892">Нема сачуваних лозинки на овом уређају</translation>
 <translation id="1011749477052068769">Премести овде</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Табела за потврду приступног кључа је затворена</translation>
 <translation id="1197933394627598677">Прикажи Режим читања</translation>
 <translation id="1197935538609051549">Деактивирај</translation>
-<translation id="119944043368869598">Обриши све</translation>
 <translation id="1201402288615127009">Даље</translation>
 <translation id="1202892408424955784">Производи које пратите</translation>
 <translation id="1204037785786432551">Преузми линк</translation>
@@ -1443,6 +1443,7 @@ Google налог можда има друге облике историје п�
 <translation id="657480975869429144">Доступна је нова верзија Chrome-а</translation>
 <translation id="658099107946526506">Заштитите приватно прегледање помоћу PIN-а да бисте спречили нежељени приступ</translation>
 <translation id="6583199322650523874">Обележавање тренутне странице</translation>
+<translation id="6583902294974160967">Подршка</translation>
 <translation id="6588043302623806746">Користи безбедни DNS</translation>
 <translation id="6590471736817333463">Уштедите и до 60% података</translation>
 <translation id="6593061639179217415">Верзија сајта за рачунар</translation>
@@ -1745,6 +1746,7 @@ Google налог можда има друге облике историје п�
 <translation id="7656862631699126784">Укључи закључавање картица без архивирања</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7663320421139257046">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити <ph name="FIELDS_STRING" /> са овим сајтом. Погледајте <ph name="BEGIN_LINK1" />политику приватности<ph name="END_LINK1" /> овог сајта.</translation>
+<translation id="7665445336029073980">Комплетна историја преузимања</translation>
 <translation id="766587987807204883">Овде се појављују чланци, које можете да читате чак и када сте офлајн</translation>
 <translation id="7666185984446444960">Затворено: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Пријавите се на овај сајт и у Chrome да би вам лозинке и други садржај били доступни на свим уређајима</translation>

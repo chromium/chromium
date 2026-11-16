@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1003917207516838287">Oxirgi yuklab olish tarixi</translation>
 <translation id="1007349221964075684">Ochiq Inkognito oynalarni koʻrish uchun ekran qulfidan foydalaning</translation>
 <translation id="1010283278930414892">Bu qurilmaga parol saqlanmagan</translation>
 <translation id="1011749477052068769">Bu yerga koʻchirish</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Parolni tasdiqlash varaqasi yopildi</translation>
 <translation id="1197933394627598677">Oʻqish rejimini chiqarish</translation>
 <translation id="1197935538609051549">Faolsizlantirish</translation>
-<translation id="119944043368869598">Barchasini tozalash</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1202892408424955784">Kuzatiladigan mahsulotlar</translation>
 <translation id="1204037785786432551">Havola kontentini yuklab olish</translation>
@@ -1442,6 +1442,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="657480975869429144">Chromening yangi versiyasi chiqdi</translation>
 <translation id="658099107946526506">Ruxsatsiz kirishning oldini olish uchun maxfiy brauzeringizni PIN kod bilan himoyalang</translation>
 <translation id="6583199322650523874">Joriy sahifani xatcho‘plarga qo‘shish</translation>
+<translation id="6583902294974160967">Yordam</translation>
 <translation id="6588043302623806746">Xavfsiz DNS ishlatish</translation>
 <translation id="6590471736817333463">60% gacha trafik tejang</translation>
 <translation id="6593061639179217415">Desktop versiya</translation>
@@ -1744,6 +1745,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7656862631699126784">Inkognito qulfni yoqish</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7663320421139257046">Davom etish uchun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> maʼlumotlaringizni (<ph name="FIELDS_STRING" />) bu saytga ulashadi. Bu saytning <ph name="BEGIN_LINK1" />maxfiylik siyosati<ph name="END_LINK1" /> bilan tanishing.</translation>
+<translation id="7665445336029073980">Toʻliq yuklab olish tarixi</translation>
 <translation id="766587987807204883">Hatto oflayn boʻlsangiz ham oʻqishingiz mumkin boʻlgan maqolalar shu yerda chiqadi</translation>
 <translation id="7666185984446444960">Yopildi: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Barcha qurilmalarda parollar va boshqalarni olish uchun bu sayt va Chromega Google hisobingizdan kiring</translation>

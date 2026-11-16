@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1003917207516838287">Naujausia atsisiuntimų istorija</translation>
 <translation id="1007349221964075684">Naudokite ekrano užraktą, kad peržiūrėtumėte atidarytus inkognito langus</translation>
 <translation id="1010283278930414892">Šiame įrenginyje nėra išsaugotų slaptažodžių</translation>
 <translation id="1011749477052068769">Perkelti čia</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Prieigos rakto patvirtinimo lapas uždarytas</translation>
 <translation id="1197933394627598677">Rodyti Teksto perskaitymo režimą</translation>
 <translation id="1197935538609051549">Išaktyvinti</translation>
-<translation id="119944043368869598">Valyti viską</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1202892408424955784">Stebimi produktai</translation>
 <translation id="1204037785786432551">Atsisiųsti nuorodą</translation>
@@ -1442,6 +1442,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="657480975869429144">Yra nauja „Chrome“ versija</translation>
 <translation id="658099107946526506">Apsaugokite privatų naršymą naudodami PIN kodą, kad išvengtumėte nepageidaujamos prieigos</translation>
 <translation id="6583199322650523874">Pažymėti dabartinį puslapį</translation>
+<translation id="6583902294974160967">Palaikymas</translation>
 <translation id="6588043302623806746">Naudoti saugią DNS</translation>
 <translation id="6590471736817333463">Sutaupykite iki 60 proc. duomenų</translation>
 <translation id="6593061639179217415">Svetainė kompiuteriams</translation>
@@ -1744,6 +1745,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7656862631699126784">Įjungti inkognito užraktą</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7663320421139257046">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų <ph name="FIELDS_STRING" /> su šia svetaine. Žr. šios svetainės <ph name="BEGIN_LINK1" />privatumo politiką<ph name="END_LINK1" />.</translation>
+<translation id="7665445336029073980">Visa atsisiuntimų istorija</translation>
 <translation id="766587987807204883">Čia rodomi straipsniai, kuriuos galima skaityti net neprisijungus</translation>
 <translation id="7666185984446444960">Uždaryta: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Prisijunkite prie šios svetainės ir „Chrome“, kad gautumėte slaptažodžius ir kt. visuose savo įrenginiuose</translation>

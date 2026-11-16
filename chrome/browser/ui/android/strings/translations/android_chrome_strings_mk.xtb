@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1003917207516838287">Неодамнешна историја на преземања</translation>
 <translation id="1007349221964075684">Користете го заклучувањето екран за да ги гледате отворените картички „Инкогнито“</translation>
 <translation id="1010283278930414892">Нема зачувани лозинки на уредов</translation>
 <translation id="1011749477052068769">Премести тука</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Листот за потврдување на криптографскиот клуч е затворен</translation>
 <translation id="1197933394627598677">Прикажи го „Режимот за читање“</translation>
 <translation id="1197935538609051549">Деактивирај</translation>
-<translation id="119944043368869598">Избриши ги сите</translation>
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1202892408424955784">Следени производи</translation>
 <translation id="1204037785786432551">Преземи линк</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Достапна е нова верзија на Chrome</translation>
 <translation id="658099107946526506">Заштитете го приватното прелистување со PIN за да спречите несакан пристап</translation>
 <translation id="6583199322650523874">Ставете обележувач на тековната страница</translation>
+<translation id="6583902294974160967">Поддршка</translation>
 <translation id="6588043302623806746">Користете безбеден DNS</translation>
 <translation id="6590471736817333463">Заштедете до 60 % мобилен интернет</translation>
 <translation id="6593061639179217415">Сајт за компјутер</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">Вклучи заклучување „Инкогнито“</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7663320421139257046">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето <ph name="FIELDS_STRING" /> со сајтов. Погледнете ја <ph name="BEGIN_LINK1" />Политиката за приватност<ph name="END_LINK1" /> на сајтов.</translation>
+<translation id="7665445336029073980">Целосна историја на преземања</translation>
 <translation id="766587987807204883">Статиите се појавуваат тука, а може да се читаат кога сте офлајн</translation>
 <translation id="7666185984446444960">Затворени: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Најавете се на сајтов и на Chrome за да ги добиете лозинките и друго на сите ваши уреди</translation>

@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Vi gir deg beskjed hvis passordene dine blir utsatt for sikkerhetsbrudd</translation>
 <translation id="4489536976005181779">{count,plural, =1{Siden er lagt til på leselisten i kontoen din, {email}}other{Sidene er lagt til på leselisten i kontoen din, {email}}}</translation>
 <translation id="4493604894403585654">Du er pålogget som <ph name="USER_EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
-<translation id="4495251723189610737">Chattene lagres i Gemini-loggen. Loggen inkluderer lyd, Gemini Live-videoer og -skjermdelinger, det du deler med Gemini (for eksempel forespørsler, <ph name="BEGIN_LINK" />opplastinger<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />skjermbilder<ph name="END_LINK" />), Geminis svar, oppgaver og verktøykall, tilbakemeldinger, informasjon fra nettsteder du besøker med Gemini, data om produktbruk, enhetens generelle posisjon, IP-adresse og hjemme- eller jobbadressen i Google-kontoen. Den kan også inneholde data fra apper du knytter til Gemini.</translation>
 <translation id="4502423230170890588">Fjern fra denne enheten</translation>
 <translation id="4508486880075514067">Utvid til fullskjerm</translation>
 <translation id="4508750114462689118">Lukk påloggingskampanjen</translation>

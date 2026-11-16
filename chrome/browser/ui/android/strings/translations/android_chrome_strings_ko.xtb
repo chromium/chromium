@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1003917207516838287">최근 다운로드 기록</translation>
 <translation id="1007349221964075684">화면 잠금을 사용해 열려 있는 시크릿 창을 봅니다.</translation>
 <translation id="1010283278930414892">이 기기에 저장된 비밀번호 없음</translation>
 <translation id="1011749477052068769">여기로 이동</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">패스키 확인 시트 닫힘</translation>
 <translation id="1197933394627598677">읽기 모드 표시</translation>
 <translation id="1197935538609051549">비활성화</translation>
-<translation id="119944043368869598">모두 삭제</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1202892408424955784">추적 중인 제품</translation>
 <translation id="1204037785786432551">링크 다운로드</translation>
@@ -1099,6 +1099,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5257142004843671642">측면 패널 크기 조절</translation>
 <translation id="5264813352784073502">지난 24시간</translation>
 <translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호받으세요.</translation>
+<translation id="526760395289305534">세로 탭 펼치기 또는 접기</translation>
 <translation id="5273031377282080577">관리자가 이 설정을 관리합니다.</translation>
 <translation id="5284295735376057059">문서 속성</translation>
 <translation id="5286907366254680517">감지됨</translation>
@@ -1442,6 +1443,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="657480975869429144">Chrome의 새 버전을 사용할 수 있습니다</translation>
 <translation id="658099107946526506">PIN으로 시크릿 브라우징을 보호하여 원치 않는 액세스를 방지하세요</translation>
 <translation id="6583199322650523874">현재 페이지 북마크</translation>
+<translation id="6583902294974160967">지원</translation>
 <translation id="6588043302623806746">보안 DNS 사용</translation>
 <translation id="6590471736817333463">데이터 최대 60% 절약</translation>
 <translation id="6593061639179217415">데스크톱 사이트</translation>
@@ -1744,6 +1746,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7656862631699126784">시크릿 모드 탭 잠금 사용 설정</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7663320421139257046">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />를 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />을 확인하세요.</translation>
+<translation id="7665445336029073980">전체 다운로드 기록</translation>
 <translation id="766587987807204883">기사가 여기 표시되며 오프라인 상태에서도 읽을 수 있습니다.</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> 닫힘</translation>
 <translation id="767157537088426800">모든 기기에서 비밀번호 등을 사용하려면 이 사이트 및 Chrome에 로그인하세요</translation>

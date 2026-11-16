@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="1003917207516838287">Nedavna historija preuzimanja</translation>
 <translation id="1007349221964075684">Koristite zaključavanje ekrana da vidite otvorene anonimne prozore</translation>
 <translation id="1010283278930414892">Nema sačuvanih lozinki na uređaju</translation>
 <translation id="1011749477052068769">Premjesti ovdje</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Tabela za potvrdu pristupnog ključa je zatvorena</translation>
 <translation id="1197933394627598677">Prikaži način rada za čitanje</translation>
 <translation id="1197935538609051549">Deaktiviraj</translation>
-<translation id="119944043368869598">Obriši sve</translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
 <translation id="1204037785786432551">Link za preuzimanje</translation>
@@ -1442,6 +1442,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="657480975869429144">Dostupna je nova verzija Chromea</translation>
 <translation id="658099107946526506">Zaštitite privatno pregledavanje PIN-om da spriječite neželjeni pristup</translation>
 <translation id="6583199322650523874">Označavanje trenutne stranice</translation>
+<translation id="6583902294974160967">Podrška</translation>
 <translation id="6588043302623806746">Koristite siguran DNS</translation>
 <translation id="6590471736817333463">Uštedite do 60% podataka</translation>
 <translation id="6593061639179217415">Web lokacija za računar</translation>
@@ -1744,6 +1745,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7656862631699126784">Uključi zaključavanje anonimnog načina rada</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7663320421139257046">Da nastavite, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će dijeliti vaše <ph name="FIELDS_STRING" /> s ovom web lokacijom. Pogledajte <ph name="BEGIN_LINK1" />pravila privatnosti<ph name="END_LINK1" /> ove web lokacije.</translation>
+<translation id="7665445336029073980">Cijela historija preuzimanja</translation>
 <translation id="766587987807204883">Članci se prikazuju ovdje i možete ih čitati čak i kada ste van mreže</translation>
 <translation id="7666185984446444960">Zatvoreno: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Prijavite se na ovu web lokaciju i u Chrome da dobijete lozinke i druge stavke na svim svojim uređajima</translation>

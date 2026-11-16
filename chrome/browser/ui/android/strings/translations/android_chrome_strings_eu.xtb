@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1003917207516838287">Azkenaldiko deskargen historia</translation>
 <translation id="1007349221964075684">Erabili pantailaren blokeoa ezkutuko moduko fitxa irekiak ikusteko</translation>
 <translation id="1010283278930414892">Ez da pasahitzik gorde gailu honetan</translation>
 <translation id="1011749477052068769">Ekarri hona</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Itxi da sarbide-gakoa berresteko orria</translation>
 <translation id="1197933394627598677">Erakutsi irakurtzeko modua</translation>
 <translation id="1197935538609051549">Desaktibatu</translation>
-<translation id="119944043368869598">Garbitu guztiak</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1202892408424955784">Jarraipena egiten diezun produktuak</translation>
 <translation id="1204037785786432551">Deskargatu estekako edukia</translation>
@@ -1442,6 +1442,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="657480975869429144">Chrome-ren bertsio berri bat erabilgarri dago</translation>
 <translation id="658099107946526506">Babestu arakatze pribatua PIN batekin, nahi ez den sarbidea ekiditeko</translation>
 <translation id="6583199322650523874">Egin oraingo orriaren laster-marka</translation>
+<translation id="6583902294974160967">Laguntza-zerbitzua</translation>
 <translation id="6588043302623806746">Erabili DNS segurua</translation>
 <translation id="6590471736817333463">Aurreztu datuen % 60raino</translation>
 <translation id="6593061639179217415">Ordenagailuetarako webgunea</translation>
@@ -1744,6 +1745,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7656862631699126784">Aktibatu ezkutuko moduko fitxak blokeatzeko ezarpena</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7663320421139257046">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure <ph name="FIELDS_STRING" /> partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />pribatutasun-gidalerroak<ph name="END_LINK1" />.</translation>
+<translation id="7665445336029073980">Deskargen historia osoa</translation>
 <translation id="766587987807204883">Artikuluak agertuko dira hemen, nahi duzunean irakur ditzazun, baita konektatuta ez bazaude ere</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> itxi dira</translation>
 <translation id="767157537088426800">Hasi saioa webgune honetan eta Chrome-n, zure laster-markak eta bestelako elementuak gailu guztietan eduki ditzazun</translation>

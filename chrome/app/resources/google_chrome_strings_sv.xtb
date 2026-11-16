@@ -531,7 +531,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6319856120645568262">Chrome behöver behörighet för att kartlägga din omgivning och spåra dina händer</translation>
 <translation id="6321592572353357376">Tillägget <ph name="EXTENSION_NAME" /> vill att du ska logga in i Chrome</translation>
 <translation id="6326175484149238433">Ta bort från Chrome</translation>
-<translation id="6334815226785304306">Ställ in Google Chrome som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="6339888439788291743">Ny ikon, samma genväg: Klicka för att ställa frågor medan du surfar med AI-läget i Google Sök.</translation>
 <translation id="6349304688246983183">Ställ enkelt frågor medan du surfar med Google Sök</translation>
 <translation id="63540178978900677">Chrome är inte längre din standardwebbläsare. Vill du använda Chrome som standardwebbläsare?</translation>
@@ -858,6 +857,5 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="973195869036269770">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS eftersom inloggningsuppgifterna för kontot är inaktuella</translation>
 <translation id="983803489796659991">Installationen misslyckades eftersom uppdateringsservern inte har någon hashdata för appen.</translation>
-<translation id="989369509083708165">Google Chrome är din standardwebbläsare</translation>
 <translation id="989816563149873169">Du kan använda <ph name="SHORTCUT" /> för att byta mellan Chrome-profiler</translation>
 </translationbundle>

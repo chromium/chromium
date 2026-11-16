@@ -14,7 +14,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1098493699368672217">Prikaži pretraživanje putem Chromiuma na sistemskoj traci i uključi prečicu na tastaturi</translation>
 <translation id="1104942323762546749">Chromium želi izvesti vaše lozinke. Unesite svoju lozinku za Windows da to dozvolite.</translation>
 <translation id="112640046208448578">Identificirajte stvari ili mjesta i kopirajte ili prevedite tekst. Kada upotrijebite pretraživanje pomoću slika, snimak ekrana stranice će se poslati na server. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium je vaš zadani preglednik</translation>
 <translation id="1131805035311359397">Da provjerite jesu li vaše lozinke zaštićene od narušavanja podataka i drugih sigurnosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Vaš administrator traži da ponovo pokrenete Chromium radi primjene ovog ažuriranja. Otvoren je anonimni ili izolirani prozor. Neće se ponovo otvoriti nakon ponovnog pokretanja.}one{Vaš administrator traži da ponovo pokrenete Chromium radi primjene ovog ažuriranja. Otvoren je # anonimni i izolirani prozor na svim profilima. Neće se ponovo otvoriti nakon ponovnog pokretanja.}few{Vaš administrator traži da ponovo pokrenete Chromium radi primjene ovog ažuriranja. Otvorena su # anonimna i izolirana prozora na svim profilima. Neće se ponovo otvoriti nakon ponovnog pokretanja.}other{Vaš administrator traži da ponovo pokrenete Chromium radi primjene ovog ažuriranja. Otvoreno je # anonimnih i izoliranih prozora na svim profilima. Neće se ponovo otvoriti nakon ponovnog pokretanja.}}</translation>
 <translation id="1153368717515616349">Kliknite na meni Chromiuma</translation>
@@ -751,7 +750,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8813277370772331957">Podsjeti me kasnije</translation>
 <translation id="8816416449795340678">Podijelite ovaj dokument s Geminijem u Chromiumu da dobijete brzi pregled i postavljate dodatna pitanja</translation>
 <translation id="8818550178040858407">Prijaviti se u Chromium?</translation>
-<translation id="8823401858233292222">Postavite Chromium kao zadani preglednik i zakačite ga na traku zadataka</translation>
 <translation id="8826492472752484139">Kliknite na "Upravitelj lozinki"</translation>
 <translation id="8833697763442816810">Sistem ChromiumOS</translation>
 <translation id="8852026904190808918">Ovaj jezik se koristi za prikaz menija, postavki, obavještenja i drugog teksta u Chromiumu</translation>

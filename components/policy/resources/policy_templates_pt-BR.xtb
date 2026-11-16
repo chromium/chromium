@@ -13016,22 +13016,6 @@ Para saber mais sobre padrões de <ph name="URL_LABEL" /> válidos (da versão 1
 <translation id="8854571659927427063">Se a política for definida como ativada, os favoritos serão importados do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhum favorito será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção dos favoritos estará marcada ou desmarcada de acordo com o valor da política.</translation>
-<translation id="8857793979935465678">Isso controla se o modo de proteção padrão do Navegação segura pode enviar hashes parciais de URLs ao Google por meio de um proxy via HTTP Oblivious para determinar se eles são seguros.
-
-O proxy permite que os navegadores façam o upload de hashes parciais de URLs para o Google
-sem que eles estejam vinculados ao endereço IP do usuário. A política também permite
-que os navegadores façam o upload dos hashes parciais de URLs com maior frequência para
-melhorar a qualidade da proteção do Navegação segura.
-
-Esta política será ignorada se a Navegação segura estiver desativada ou definida como
-o modo de proteção avançada.
-
-Se a política for definida como ativada ou não for definida, as pesquisas por
-proxy com maior proteção poderão ser usadas.
-
-Se a política for definida como desativada, as pesquisas por proxy com maior proteção não
-serão permitidas. Os hashes parciais dos URLs serão enviados diretamente para o Google com uma frequência
-muito menor, o que vai prejudicar a proteção.</translation>
 <translation id="8860342862142842017">Desativar a aplicação da Transparência dos certificados para uma lista de hashes subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Os usuários podem configurar o canal de lançamento do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Esta política permite configurar uma lista de Conteúdos baixados para download o mais rápido possível. Depois do download, o conteúdo fica disponível para todos os usuários no dispositivo.

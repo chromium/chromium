@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Si les teves contrasenyes estan en perill, t'avisarem</translation>
 <translation id="4489536976005181779">{count,plural, =1{La pàgina s'ha afegit a la llista de lectura del teu compte, {email}}other{Les pàgines s'han afegit a la llista de lectura del teu compte, {email}}}</translation>
 <translation id="4493604894403585654">Has iniciat la sessió com a <ph name="USER_EMAIL" />. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
-<translation id="4495251723189610737">Els teus xats es desaran a l'historial de Gemini. L'historial inclou els teus àudios, els vídeos i les comparticions de pantalla de Gemini Live, el contingut que comparteixes amb Gemini (com ara indicacions, <ph name="BEGIN_LINK" />pujades<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />pantalles<ph name="END_LINK" />), les respostes de Gemini, les tasques i les crides a eines, els comentaris, la informació dels llocs web que visites amb Gemini, les dades d'ús del producte, la ubicació general del dispositiu, l'adreça IP i les adreces de casa o de la feina que tinguis al teu Compte de Google. També pot incloure dades de les aplicacions que connectis a Gemini.</translation>
 <translation id="4502423230170890588">Suprimeix d'aquest dispositiu</translation>
 <translation id="4508486880075514067">Amplia a pantalla completa</translation>
 <translation id="4508750114462689118">Tanca la promoció d'inici de sessió</translation>

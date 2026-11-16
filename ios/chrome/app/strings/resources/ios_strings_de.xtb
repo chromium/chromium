@@ -1116,7 +1116,6 @@
 <translation id="4488754974567924717">Wenn deine Passwörter gehackt werden, informieren wir dich darüber</translation>
 <translation id="4489536976005181779">{count,plural, =1{Die Seite wurde der Leseliste in deinem Konto {email} hinzugefügt}other{Die Seiten wurden der Leseliste in deinem Konto {email} hinzugefügt}}</translation>
 <translation id="4493604894403585654">Du bist als <ph name="USER_EMAIL" /> angemeldet. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
-<translation id="4495251723189610737">Deine Chats werden in deinem Gemini-Verlauf gespeichert. Der Verlauf umfasst deine Audioaufnahmen, Gemini Live-Videos und ‑Bildschirmfreigaben, Inhalte, die du mit Gemini teilst (z. B. Prompts, <ph name="BEGIN_LINK" />Uploads<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Bildschirme<ph name="END_LINK" />), Antworten von Gemini, Aufgaben und Toolaufrufe, Feedback, Informationen von Websites, die du mit Gemini besuchst, Daten zur Produktnutzung, den ungefähren Ort deines Geräts, deine IP-Adresse sowie die in deinem Google-Konto hinterlegte Privat- oder Arbeitsadresse. Es können auch Daten aus Apps enthalten sein, die du mit Gemini verbindest.</translation>
 <translation id="4502423230170890588">Von diesem Gerät entfernen</translation>
 <translation id="4508486880075514067">Auf Vollbild maximieren</translation>
 <translation id="4508750114462689118">Anmeldeangebot schließen</translation>

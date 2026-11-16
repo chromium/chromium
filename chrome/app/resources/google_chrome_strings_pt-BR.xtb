@@ -523,7 +523,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6319856120645568262">O Chrome precisa de permissão para mapear o ambiente ao seu redor e acompanhar suas mãos</translation>
 <translation id="6321592572353357376">A extensão "<ph name="EXTENSION_NAME" />" quer que você faça login no Chrome</translation>
 <translation id="6326175484149238433">Remover do Google Chrome</translation>
-<translation id="6334815226785304306">Definir o Google Chrome como navegador padrão e fixar na barra de tarefas</translation>
 <translation id="6339888439788291743">Novo ícone, mesmo atalho: clique para fazer perguntas enquanto navega com o Modo IA da Pesquisa Google.</translation>
 <translation id="6349304688246983183">Faça perguntas com facilidade enquanto navega com a Pesquisa Google</translation>
 <translation id="63540178978900677">O Chrome não é mais seu navegador padrão. Definir o Chrome como navegador padrão?</translation>
@@ -850,6 +849,5 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="973195869036269770">O ChromeOS não pôde salvar dados do Chrome na sua Conta do Google porque as informações de login dela estão desatualizadas</translation>
 <translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem o hash dos dados para o aplicativo.</translation>
-<translation id="989369509083708165">O Google Chrome é seu navegador padrão</translation>
 <translation id="989816563149873169">O atalho <ph name="SHORTCUT" /> permite alternar entre os perfis do Chrome</translation>
 </translationbundle>

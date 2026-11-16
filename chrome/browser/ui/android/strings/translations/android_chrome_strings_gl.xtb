@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1003917207516838287">Historial de descargas recente</translation>
 <translation id="1007349221964075684">Utiliza o bloqueo de pantalla para acceder ás ventás do modo de incógnito que estean abertas</translation>
 <translation id="1010283278930414892">Non hai ningún contrasinal gardado neste dispositivo</translation>
 <translation id="1011749477052068769">Mover aquí</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Pechouse a folla de confirmación da clave de acceso</translation>
 <translation id="1197933394627598677">Mostrar modo de lectura</translation>
 <translation id="1197935538609051549">Desactivar</translation>
-<translation id="119944043368869598">Borrar todo</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1202892408424955784">Produtos dos que se fai un seguimento</translation>
 <translation id="1204037785786432551">Descargar ligazón</translation>
@@ -1099,6 +1099,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5257142004843671642">Cambiar o tamaño do panel lateral</translation>
 <translation id="5264813352784073502">últimas 48 horas</translation>
 <translation id="5267572070504076962">Activa Navegación segura para obter protección contra os sitios perigosos</translation>
+<translation id="526760395289305534">Despregar ou contraer pestanas verticais</translation>
 <translation id="5273031377282080577">A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="5284295735376057059">Propiedades do documento</translation>
 <translation id="5286907366254680517">Detectado</translation>
@@ -1442,6 +1443,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="657480975869429144">Hai unha nova versión de Chrome dispoñible</translation>
 <translation id="658099107946526506">Protexe a túa navegación privada cun PIN para evitar o acceso non desexado</translation>
 <translation id="6583199322650523874">Engadir aos marcadores a páxina actual</translation>
+<translation id="6583902294974160967">Asistencia</translation>
 <translation id="6588043302623806746">Usar DNS seguro</translation>
 <translation id="6590471736817333463">Aforra ata un 60 % de datos</translation>
 <translation id="6593061639179217415">Sitio para ordenadores</translation>
@@ -1744,6 +1746,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7656862631699126784">Activar bloqueo no modo de incógnito</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7663320421139257046">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá con este sitio os seguintes datos: <ph name="FIELDS_STRING" />. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> do sitio.</translation>
+<translation id="7665445336029073980">Historial de descargas completo</translation>
 <translation id="766587987807204883">Aquí aparecen os artigos e podes lelos mesmo cando esteas sen conexión</translation>
 <translation id="7666185984446444960">Elementos pechados: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Inicia sesión neste sitio e en Chrome para acceder aos teus contrasinais e moito máis en todos os teus dispositivos</translation>

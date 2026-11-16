@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1003917207516838287">Histori download terbaru</translation>
 <translation id="1007349221964075684">Gunakan kunci layar untuk melihat jendela Samaran yang terbuka</translation>
 <translation id="1010283278930414892">Tidak ada sandi tersimpan di perangkat ini</translation>
 <translation id="1011749477052068769">Pindahkan ke sini</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Sheet konfirmasi kunci sandi ditutup</translation>
 <translation id="1197933394627598677">Tampilkan Mode Baca</translation>
 <translation id="1197935538609051549">Nonaktifkan</translation>
-<translation id="119944043368869598">Hapus semua</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1202892408424955784">Produk yang dipantau</translation>
 <translation id="1204037785786432551">Download link</translation>
@@ -1442,6 +1442,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="657480975869429144">Versi baru Chrome tersedia</translation>
 <translation id="658099107946526506">Lindungi penjelajahan rahasia Anda dengan PIN untuk mencegah akses yang tidak diinginkan</translation>
 <translation id="6583199322650523874">Membookmark halaman saat ini</translation>
+<translation id="6583902294974160967">Dukungan</translation>
 <translation id="6588043302623806746">Gunakan DNS aman</translation>
 <translation id="6590471736817333463">Hemat data hingga 60%</translation>
 <translation id="6593061639179217415">Situs desktop</translation>
@@ -1744,6 +1745,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7656862631699126784">Aktifkan kunci Samaran</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7663320421139257046">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan <ph name="FIELDS_STRING" /> Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> situs ini.</translation>
+<translation id="7665445336029073980">Histori download lengkap</translation>
 <translation id="766587987807204883">Artikel ditampilkan di sini, yang dapat Anda baca bahkan saat offline</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> ditutup</translation>
 <translation id="767157537088426800">Login ke situs ini dan Chrome untuk mendapatkan sandi dan data lainnya di semua perangkat Anda</translation>

@@ -12,7 +12,6 @@
 <translation id="1098493699368672217">Mostra la cerca amb Chromium a la safata del sistema i activa les tecles de drecera</translation>
 <translation id="1104942323762546749">Chromium vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
 <translation id="112640046208448578">Identifica coses o llocs i copia o tradueix text. Quan utilitzes la cerca d'imatges, s'envia al servidor una captura de pantalla de la pàgina. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium és el navegador predeterminat</translation>
 <translation id="1131805035311359397">Per comprovar si les teves contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="1153368717515616349">Fes clic al menú de Chromium</translation>
@@ -749,7 +748,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8813277370772331957">Recorda-m'ho més tard</translation>
 <translation id="8816416449795340678">Comparteix aquest document amb Gemini a Chromium per obtenir-ne una visió general ràpida i fer preguntes de seguiment</translation>
 <translation id="8818550178040858407">Vols iniciar la sessió a Chromium?</translation>
-<translation id="8823401858233292222">Fes que Chromium sigui el navegador predeterminat i fixa'l a la barra de tasques</translation>
 <translation id="8826492472752484139">Fes clic a Gestor de contrasenyes</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8852026904190808918">Aquest idioma s'utilitza per mostrar menús, opcions de configuració, alertes i altres textos a Chromium</translation>

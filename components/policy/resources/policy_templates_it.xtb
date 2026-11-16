@@ -12718,15 +12718,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi (dalla v
 <translation id="8854571659927427063">Se la policy viene impostata su Attivata, i preferiti del precedente browser predefinito verranno importati alla prima esecuzione. Se la policy viene impostata su Disattivata o se non viene configurata, i preferiti non verranno importati alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo dei preferiti verrà selezionata o deselezionata in modo che corrisponda al valore della policy.</translation>
-<translation id="8857793979935465678">Questa policy consente di stabilire se la modalità Protezione standard di Navigazione sicura può inviare a Google hash parziali degli URL tramite un proxy con Oblivious HTTP per stabilire se è sicuro visitare gli URL.
-
-Il proxy consente ai browser di caricare hash parziali di URL su Google senza che vengano collegati all'indirizzo IP dell'utente. La policy consente inoltre ai browser di caricare gli hash parziali degli URL con maggiore frequenza per una protezione di Navigazione sicura di migliore qualità.
-
-Questa policy verrà ignorata se la funzionalità Navigazione sicura viene disattivata o se viene impostata la modalità Protezione avanzata.
-
-Se la policy viene attivata o se non viene configurata, le ricerche trasferite al proxy con una protezione maggiore saranno consentite.
-
-Se la policy viene disattivata, le ricerche trasferite al proxy con una protezione maggiore non saranno consentite. Gli hash parziali degli URL verranno caricati direttamente su Google con una frequenza molto inferiore, il che diminuirà la protezione.</translation>
 <translation id="8860342862142842017">Disattiva l'applicazione di Certificate Transparency per un elenco di hash subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Gli utenti possono configurare il canale di rilascio di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Questa policy consente di impostare un elenco di contenuti scaricabili (DLC) da scaricare il prima possibile. I contenuti scaricati saranno poi disponibili per tutti gli utenti sul dispositivo.

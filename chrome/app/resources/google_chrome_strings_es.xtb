@@ -531,7 +531,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6319856120645568262">Chrome necesita permiso para mapear tu entorno y hacer un seguimiento de tus manos</translation>
 <translation id="6321592572353357376">La extensión "<ph name="EXTENSION_NAME" />" quiere que inicies sesión en Chrome</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
-<translation id="6334815226785304306">Establecer Google Chrome como navegador predeterminado y fijarlo en la barra de tareas</translation>
 <translation id="6339888439788291743">Nuevo icono, mismo acceso directo: haz clic para hacer preguntas mientras navegas con el Modo IA de la Búsqueda de Google.</translation>
 <translation id="6349304688246983183">Haz preguntas fácilmente mientras navegas con la Búsqueda de Google</translation>
 <translation id="63540178978900677">Chrome ya no es tu navegador predeterminado. ¿Establecer Chrome como navegador predeterminado?</translation>
@@ -858,6 +857,5 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="973195869036269770">ChromeOS no ha podido guardar los datos de Chrome en tu cuenta de Google porque la información de inicio de sesión de tu cuenta no está actualizada</translation>
 <translation id="983803489796659991">No se ha podido realizar la instalación porque el servidor de actualizaciones no tiene datos hash de la aplicación.</translation>
-<translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
 <translation id="989816563149873169">Usa <ph name="SHORTCUT" /> para cambiar de un perfil de Chrome a otro</translation>
 </translationbundle>

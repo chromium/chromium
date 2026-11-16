@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1003917207516838287">Sejarah muat turun terbaharu</translation>
 <translation id="1007349221964075684">Gunakan kunci skrin untuk melihat tetingkap Inkognito yang terbuka</translation>
 <translation id="1010283278930414892">Tiada kata laluan yang disimpan pada peranti ini</translation>
 <translation id="1011749477052068769">Alihkan ke sini</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Helaian pengesahan kunci laluan ditutup</translation>
 <translation id="1197933394627598677">Tunjukkan Mod membaca</translation>
 <translation id="1197935538609051549">Nyahaktifkan</translation>
-<translation id="119944043368869598">Kosongkan semua</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1202892408424955784">Produk yang dijejaki</translation>
 <translation id="1204037785786432551">Muat turun pautan</translation>
@@ -530,6 +530,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Dapatkan bantuan<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Menjejaki harga</translation>
 <translation id="3037517125981011456">Memaparkan gesaan untuk log masuk ke Chrome</translation>
+<translation id="3038505649933066250">Tapis mengikut tarikh</translation>
 <translation id="3044436568790455247">"Pilih peranti" dibuka pada ketinggian penuh.</translation>
 <translation id="3057938290530993634">Ketik dan tahan untuk menyematkan laman web yang paling kerap anda lawati untuk akses mudah pada masa hadapan</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> penanda halaman}other{<ph name="BOOKMARKS_COUNT_MANY" /> penanda halaman}}</translation>
@@ -1443,6 +1444,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="657480975869429144">Versi baharu Chrome tersedia</translation>
 <translation id="658099107946526506">Lindungi penyemakan imbas peribadi anda dengan PIN untuk mengelakkan akses yang tidak diingini</translation>
 <translation id="6583199322650523874">Tandai halaman semasa</translation>
+<translation id="6583902294974160967">Sokongan</translation>
 <translation id="6588043302623806746">Gunakan DNS selamat</translation>
 <translation id="6590471736817333463">Jimat sehingga 60% data</translation>
 <translation id="6593061639179217415">Tapak desktop</translation>
@@ -1745,6 +1747,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7656862631699126784">Hidupkan kunci Inkognito</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7663320421139257046">Untuk meneruskan pendaftaran, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi <ph name="FIELDS_STRING" /> anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />dasar privasi<ph name="END_LINK1" /> laman ini.</translation>
+<translation id="7665445336029073980">Sejarah muat turun penuh</translation>
 <translation id="766587987807204883">Artikel dipaparkan di sini, yang boleh anda baca walaupun semasa anda luar talian</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> ditutup</translation>
 <translation id="767157537088426800">Log masuk ke laman ini dan Chrome untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda</translation>

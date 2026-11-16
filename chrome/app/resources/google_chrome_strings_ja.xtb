@@ -520,7 +520,6 @@
 <translation id="6319856120645568262">Chrome にシーン認識とハンド トラッキングを許可する必要があります</translation>
 <translation id="6321592572353357376">拡張機能「<ph name="EXTENSION_NAME" />」が Chrome へのログインを求めています</translation>
 <translation id="6326175484149238433">Chrome から削除</translation>
-<translation id="6334815226785304306">Google Chrome を既定のブラウザに設定してタスクバーに固定する</translation>
 <translation id="6339888439788291743">新しいアイコン、同じショートカット: クリックすると、ブラウジング中に Google 検索の AI モードで質問できます。</translation>
 <translation id="6349304688246983183">ブラウジング中に Google 検索を使用して簡単に質問できます</translation>
 <translation id="63540178978900677">Chrome は既定のブラウザではなくなりました。Chrome を既定のブラウザにしますか？</translation>
@@ -847,6 +846,5 @@
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="973195869036269770">アカウントのログイン情報が最新でないため、ChromeOS は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="983803489796659991">更新サーバーにアプリケーションのハッシュデータがないため、インストールできませんでした。</translation>
-<translation id="989369509083708165">既定のブラウザは Google Chrome です</translation>
 <translation id="989816563149873169">Chrome プロフィールを切り替えるには、<ph name="SHORTCUT" /> を使用します</translation>
 </translationbundle>

@@ -522,7 +522,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6319856120645568262">Chrome deve avere l'autorizzazione per mappare l'ambiente circostante e monitorare le tue mani</translation>
 <translation id="6321592572353357376">L'estensione "<ph name="EXTENSION_NAME" />" richiede l'accesso a Chrome</translation>
 <translation id="6326175484149238433">Rimuovi da Chrome</translation>
-<translation id="6334815226785304306">Imposta Google Chrome come browser predefinito e aggiungilo alla barra delle applicazioni</translation>
 <translation id="6339888439788291743">Nuova icona, stessa scorciatoia: fai clic per fare domande mentre navighi con AI Mode di Ricerca Google.</translation>
 <translation id="6349304688246983183">Fai domande in tutta semplicità mentre navighi con la Ricerca Google</translation>
 <translation id="63540178978900677">Chrome non è più il browser predefinito. Impostare Chrome come browser predefinito?</translation>
@@ -848,6 +847,5 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="973195869036269770">ChromeOS non ha potuto salvare i dati di Chrome nel tuo Account Google perché i dati di accesso dell'account non sono aggiornati</translation>
 <translation id="983803489796659991">Installazione non riuscita perché il server di aggiornamento non dispone di dati di hashing per l'applicazione.</translation>
-<translation id="989369509083708165">Google Chrome è il tuo browser predefinito</translation>
 <translation id="989816563149873169">La scorciatoia <ph name="SHORTCUT" /> consente di passare da un profilo Chrome all'altro</translation>
 </translationbundle>

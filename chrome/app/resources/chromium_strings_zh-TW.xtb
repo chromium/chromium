@@ -12,7 +12,6 @@
 <translation id="1098493699368672217">在系統匣顯示「使用 Chromium 搜尋」，並開啟鍵盤快速鍵</translation>
 <translation id="1104942323762546749">Chromium 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
 <translation id="112640046208448578">可以辨識物品或地點，也可複製或翻譯文字。使用圖片搜尋時，系統會將網頁的螢幕截圖傳送到伺服器。<ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium 是你的預設瀏覽器</translation>
 <translation id="1131805035311359397">如要檢查你的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{系統管理員要求你重新啟動 Chromium，以套用這項更新。目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chromium，以套用這項更新。各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
 <translation id="1153368717515616349">按一下「Chromium」選單</translation>
@@ -746,7 +745,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8816416449795340678">與 Chromium 內建 Gemini 分享這份文件，就能快速取得摘要並提出後續問題</translation>
 <translation id="8818550178040858407">要登入 Chromium 嗎？</translation>
-<translation id="8823401858233292222">將 Chromium 設為預設瀏覽器，並固定到工作列</translation>
 <translation id="8826492472752484139">按一下「密碼管理工具」</translation>
 <translation id="8833697763442816810">Chromium OS 系統</translation>
 <translation id="8852026904190808918">這個語言會用於顯示 Chromium 中的選單、設定、快訊和其他文字</translation>

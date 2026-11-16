@@ -528,7 +528,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6319856120645568262">Chrome potrebuje povolenie mapovať vaše okolie a sledovať vaše ruky</translation>
 <translation id="6321592572353357376">Rozšírenie <ph name="EXTENSION_NAME" /> žiada, aby ste sa prihlásili do Chromu</translation>
 <translation id="6326175484149238433">Odstrániť z Chromu</translation>
-<translation id="6334815226785304306">Nastaviť Google Chrome ako predvolený prehliadač a pripnúť ho na panel aplikácií</translation>
 <translation id="6339888439788291743">Nová ikona, rovnaký odkaz: Kliknutím môžete klásť otázky pri prehliadaní v režime AI vo Vyhľadávaní Google.</translation>
 <translation id="6349304688246983183">Pri prehliadaní pomocou Vyhľadávania Google môžete jednoducho klásť otázky</translation>
 <translation id="63540178978900677">Chrome už nie je váš predvolený prehliadač. Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
@@ -855,6 +854,5 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="973195869036269770">Systému ChromeOS sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože vaše prihlasovacie údaje účtu sú zastarané</translation>
 <translation id="983803489796659991">Nepodarilo sa nainštalovať, pretože aktualizačný server nemá žiadne údaje o haši aplikácie.</translation>
-<translation id="989369509083708165">Google Chrome je vaším predvoleným prehliadačom</translation>
 <translation id="989816563149873169">Skratkou <ph name="SHORTCUT" /> môžete prepínať profily Chromu</translation>
 </translationbundle>

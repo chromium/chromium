@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1003917207516838287">近期下載記錄</translation>
 <translation id="1007349221964075684">使用螢幕鎖定功能查看開啟的無痕視窗</translation>
 <translation id="1010283278930414892">這部裝置上沒有儲存任何密碼</translation>
 <translation id="1011749477052068769">移至這裡</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">已關閉密碼金鑰確認工作表</translation>
 <translation id="1197933394627598677">顯示閱讀模式</translation>
 <translation id="1197935538609051549">停用</translation>
-<translation id="119944043368869598">全部清除</translation>
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1202892408424955784">已追蹤的產品</translation>
 <translation id="1204037785786432551">下載連結</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Chrome 已推出新版本</translation>
 <translation id="658099107946526506">使用 PIN 碼保護私密瀏覽，防止他人擅自存取</translation>
 <translation id="6583199322650523874">將目前的網頁加入書籤</translation>
+<translation id="6583902294974160967">支援</translation>
 <translation id="6588043302623806746">使用安全 DNS</translation>
 <translation id="6590471736817333463">節省高達 60% 的數據用量</translation>
 <translation id="6593061639179217415">電腦版網站</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">開啟無痕模式鎖定</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663320421139257046">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的<ph name="FIELDS_STRING" />提供給這個網站。詳情查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》。</translation>
+<translation id="7665445336029073980">完整下載記錄</translation>
 <translation id="766587987807204883">文章會顯示在這裡，並可供離線閱讀</translation>
 <translation id="7666185984446444960">已關閉 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">登入這個網站和 Chrome，即可在所有裝置上存取密碼和其他內容</translation>

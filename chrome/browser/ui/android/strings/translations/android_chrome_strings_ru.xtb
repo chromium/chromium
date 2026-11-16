@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1003917207516838287">Последние скачанные файлы</translation>
 <translation id="1007349221964075684">Чтобы посмотреть открытые окна в режиме инкогнито, нужно разблокировать экран</translation>
 <translation id="1010283278930414892">На устройстве нет сохраненных паролей</translation>
 <translation id="1011749477052068769">Переместить сюда</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Экран с просьбой подтвердить создание ключа доступа закрыт</translation>
 <translation id="1197933394627598677">Перейти в Режим чтения</translation>
 <translation id="1197935538609051549">Отключить</translation>
-<translation id="119944043368869598">Удалить все</translation>
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1202892408424955784">Отслеживаемые товары</translation>
 <translation id="1204037785786432551">Сохранить данные по ссылке</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Доступна новая версия Chrome.</translation>
 <translation id="658099107946526506">Защитите режим инкогнито с помощью PIN-кода, чтобы предотвратить несанкционированный доступ.</translation>
 <translation id="6583199322650523874">Добавить страницу в закладки</translation>
+<translation id="6583902294974160967">Помощь</translation>
 <translation id="6588043302623806746">Использовать безопасный DNS-сервер</translation>
 <translation id="6590471736817333463">Экономьте до 60 % трафика</translation>
 <translation id="6593061639179217415">Версия для ПК</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">Включить блокировку вкладок инкогнито</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7663320421139257046">Чтобы вы могли продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши <ph name="FIELDS_STRING" />. Ознакомьтесь с <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> сайта.</translation>
+<translation id="7665445336029073980">Все скачанные файлы</translation>
 <translation id="766587987807204883">Здесь появляются статьи, которые можно читать даже в офлайн-режиме.</translation>
 <translation id="7666185984446444960">Закрыты: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
 <translation id="767157537088426800">Войдите на этот сайт и в Chrome, чтобы получить доступ к паролям и другим данным на всех устройствах.</translation>

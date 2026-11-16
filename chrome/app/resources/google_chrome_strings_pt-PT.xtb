@@ -523,7 +523,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6319856120645568262">O Chrome precisa de autorização para mapear o ambiente à sua volta e acompanhar as suas mãos</translation>
 <translation id="6321592572353357376">A extensão "<ph name="EXTENSION_NAME" />" quer que inicie sessão no Chrome</translation>
 <translation id="6326175484149238433">Remover do Chrome</translation>
-<translation id="6334815226785304306">Defina o Google Chrome como o navegador predefinido e afixe-o à barra de tarefas</translation>
 <translation id="6339888439788291743">Novo ícone, mesmo atalho: clique para fazer perguntas enquanto navega com o Modo IA da Pesquisa Google.</translation>
 <translation id="6349304688246983183">Faça perguntas facilmente enquanto navega com a Pesquisa Google</translation>
 <translation id="63540178978900677">O Chrome já não é o seu navegador predefinido. Tornar o Chrome no navegador predefinido?</translation>
@@ -850,6 +849,5 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="973195869036269770">O ChromeOS não conseguiu guardar os dados do Chrome na sua Conta Google porque os detalhes de início de sessão da sua conta estão desatualizados</translation>
 <translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem dados hash para a aplicação.</translation>
-<translation id="989369509083708165">O Google Chrome é o seu navegador predefinido</translation>
 <translation id="989816563149873169">O atalho <ph name="SHORTCUT" /> permite alternar entre perfis do Chrome</translation>
 </translationbundle>

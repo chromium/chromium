@@ -530,7 +530,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6319856120645568262">Chrome a besoin d'une autorisation pour cartographier votre environnement et suivre vos mains</translation>
 <translation id="6321592572353357376">L'extension « <ph name="EXTENSION_NAME" /> » souhaite que vous vous connectiez à Chrome</translation>
 <translation id="6326175484149238433">Supprimer de Google Chrome</translation>
-<translation id="6334815226785304306">Faire de Google Chrome le navigateur par défaut et l'épingler à la barre des tâches</translation>
 <translation id="6339888439788291743">Nouvelle icône, même raccourci : cliquez pour poser des questions pendant que vous naviguez avec le mode IA de Recherche Google.</translation>
 <translation id="6349304688246983183">Posez facilement des questions pendant que vous naviguez avec Recherche Google</translation>
 <translation id="63540178978900677">Chrome n'est plus votre navigateur par défaut. Faire de Chrome le navigateur par défaut?</translation>
@@ -857,6 +856,5 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="973195869036269770">ChromeOS n'a pas pu enregistrer les données Chrome dans votre compte Google parce que les informations de connexion de votre compte ne sont plus à jour</translation>
 <translation id="983803489796659991">L'installation a échoué, car le serveur de mise à jour ne dispose pas de données de hachage pour cette application.</translation>
-<translation id="989369509083708165">Google Chrome est votre navigateur par défaut</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permet de basculer entre les profils Chrome</translation>
 </translationbundle>

@@ -12617,15 +12617,6 @@ Para consultar información detallada sobre los patrones de <ph name="URL_LABEL"
 <translation id="8854571659927427063">Si se asigna el valor "Habilitada" a esta política, se importarán los marcadores del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ningún marcador al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de marcadores aparecerá marcada o desmarcada en función del valor de esta política.</translation>
-<translation id="8857793979935465678">Controla si el modo Protección estándar de Navegación segura puede enviar hashes parciales de URLs a Google mediante un proxy, a través de Oblivious HTTP, para determinar si es seguro visitar las URLs.
-
-El proxy permite que los navegadores suban hashes parciales de URLs a Google sin vincularlos con la dirección IP del usuario. La política también permite que los navegadores suban hashes parciales de URLs con más frecuencia para mejorar la calidad de la protección de Navegación segura.
-
-Esta política se ignorará si se desactiva Navegación segura o si se le asigna el modo de protección mejorada.
-
-Si se habilita esta política o no se establece, se permitirán las consultas de mayor protección mediante proxy.
-
-Si se inhabilita esta política, no se permitirán las consultas de mayor protección mediante proxy. Los hashes parciales de las URLs se subirán directamente a Google con mucha menos frecuencia, lo que disminuirá la protección.</translation>
 <translation id="8860342862142842017">Inhabilitar los requisitos de la transparencia en los certificados en una lista de hashes subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Los usuarios pueden configurar el canal de lanzamiento de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Esta política permite crear una lista de DLCs (contenido descargable) para que se descarguen lo antes posible. Una vez se hayan descargado los DLCs, estarán disponibles para todos los usuarios del dispositivo.

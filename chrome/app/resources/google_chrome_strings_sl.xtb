@@ -531,7 +531,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6319856120645568262">Chrome potrebuje dovoljenje za ustvarjanje zemljevida vašega okolja in sledenje rokam</translation>
 <translation id="6321592572353357376">Razširitev »<ph name="EXTENSION_NAME" />« želi, da se prijavite v Chrome</translation>
 <translation id="6326175484149238433">Odstrani iz Chroma</translation>
-<translation id="6334815226785304306">Nastavite Google Chrome kot privzeti brskalnik in ga pripnite v opravilno vrstico</translation>
 <translation id="6339888439788291743">Nova ikona, ista bližnjica: Kliknite, če želite med brskanjem postavljati vprašanja z načinom umetne inteligence v Iskanju Google.</translation>
 <translation id="6349304688246983183">Med brskanjem z Iskanjem Google preprosto postavljajte vprašanja</translation>
 <translation id="63540178978900677">Chrome ni več privzeti brskalnik. Želite Chrome nastaviti kot privzeti brskalnik?</translation>
@@ -858,6 +857,5 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="973195869036269770">ChromeOS ni mogel shraniti podatkov v Chromu v račun Google, ker so podatki za prijavo v račun zastareli</translation>
 <translation id="983803489796659991">Namestitev ni uspela, ker strežnik za posodobitve nima podatkov o zgoščeni vrednosti za aplikacijo.</translation>
-<translation id="989369509083708165">Google Chrome je privzeti brskalnik</translation>
 <translation id="989816563149873169">Bližnjica <ph name="SHORTCUT" /> omogoča preklop med profili v Chromu</translation>
 </translationbundle>

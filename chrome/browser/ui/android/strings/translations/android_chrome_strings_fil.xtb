@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1003917207516838287">Kamakailang history ng pag-download</translation>
 <translation id="1007349221964075684">Gamitin ang screen lock para makita ang mga nakabukas na incognito window</translation>
 <translation id="1010283278930414892">Walang naka-save na password sa device na ito</translation>
 <translation id="1011749477052068769">Ilipat dito</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Isinara ang sheet ng pagkumpirma sa passkey</translation>
 <translation id="1197933394627598677">Ipakita ang Reading mode</translation>
 <translation id="1197935538609051549">I-deactivate</translation>
-<translation id="119944043368869598">I-clear lahat</translation>
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1202892408424955784">Mga sinusubaybayang produkto</translation>
 <translation id="1204037785786432551">Link sa pag-download</translation>
@@ -1442,6 +1442,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="657480975869429144">May available na bagong bersyon ng Chrome</translation>
 <translation id="658099107946526506">Protektahan ang iyong pribadong pagba-browse gamit ang isang pin para maiwasan ang hindi gustong pag-access</translation>
 <translation id="6583199322650523874">I-bookmark ang kasalukuyang page</translation>
+<translation id="6583902294974160967">Suporta</translation>
 <translation id="6588043302623806746">Gamitin ang secure na DNS</translation>
 <translation id="6590471736817333463">Magtipid ng hanggang 60% data</translation>
 <translation id="6593061639179217415">Desktop site</translation>
@@ -1744,6 +1745,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7656862631699126784">I-on ang lock ng Incognito</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7663320421139257046">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />patakaran sa privacy<ph name="END_LINK1" /> ng site na ito.</translation>
+<translation id="7665445336029073980">Buong history ng pag-download</translation>
 <translation id="766587987807204883">Lalabas dito ang mga artikulong mababasa mo kahit offline ka</translation>
 <translation id="7666185984446444960">Isinara ang <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Mag-sign in sa site na ito at sa Chrome para makuha ang iyong mga password at higit pa sa lahat ng device mo</translation>

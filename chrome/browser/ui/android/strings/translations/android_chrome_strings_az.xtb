@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1003917207516838287">Son endirmə tarixçəsi</translation>
 <translation id="1007349221964075684">Açıq Anonim pəncərələri görmək üçün ekran kilidindən istifadə edin</translation>
 <translation id="1010283278930414892">Bu cihazda yadda saxlanılmış parol yoxdur</translation>
 <translation id="1011749477052068769">Bura köçürün</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Giriş açarı təsdiqi üçün vərəq bağlandı</translation>
 <translation id="1197933394627598677">Oxu rejimini göstərin</translation>
 <translation id="1197935538609051549">Deaktiv edin</translation>
-<translation id="119944043368869598">Hamısını silin</translation>
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1202892408424955784">İzlənilən məhsullar</translation>
 <translation id="1204037785786432551">Linki endirin</translation>
@@ -1440,6 +1440,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="657480975869429144">Chrome-un yeni versiyası əlçatandır</translation>
 <translation id="658099107946526506">Arzuolunmaz girişin qarşısını almaq üçün şəxsi brauzinqi pin ilə qoruyun</translation>
 <translation id="6583199322650523874">Cari səhifəni əlfəcin olaraq qeyd edin</translation>
+<translation id="6583902294974160967">Dəstək</translation>
 <translation id="6588043302623806746">Güvənli DNS yoxdur</translation>
 <translation id="6590471736817333463">60%-ədək dataya qənaət edin</translation>
 <translation id="6593061639179217415">Masaüstü saytı</translation>
@@ -1742,6 +1743,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7656862631699126784">Anonim kilidini aktiv edin</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7663320421139257046">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />məxfilik siyasətinə<ph name="END_LINK1" /> baxın.</translation>
+<translation id="7665445336029073980">Tam endirmə tarixçəsi</translation>
 <translation id="766587987807204883">Məqalələr burada görünəcək. Onları oflayn olduqda belə oxuya bilərsiniz</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> bağlanıb</translation>
 <translation id="767157537088426800">Parolları və daha çoxunu bütün cihazlarda əldə etmək üçün bu sayta və Chrome-a daxil olun</translation>

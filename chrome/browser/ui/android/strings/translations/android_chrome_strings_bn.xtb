@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1003917207516838287">ডাউনলোডের সাম্প্রতিক ইতিহাস</translation>
 <translation id="1007349221964075684">খোলা ছদ্মবেশী উইন্ডো দেখতে স্ক্রিন লক ব্যবহার করুন</translation>
 <translation id="1010283278930414892">এই ডিভাইসে কোনও সেভ করা পাসওয়ার্ড নেই</translation>
 <translation id="1011749477052068769">এখানে সরান</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">পাসকী কনফার্মেশন শিট বন্ধ করা হয়েছে</translation>
 <translation id="1197933394627598677">রিডিং মোড দেখুন</translation>
 <translation id="1197935538609051549">বন্ধ করুন</translation>
-<translation id="119944043368869598">সব পরিষ্কার করুন</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1202892408424955784">যে প্রোডাক্টগুলি ট্র্যাক করা হয়েছে</translation>
 <translation id="1204037785786432551">লিঙ্ক ডাউনলোড করুন</translation>
@@ -1443,6 +1443,7 @@
 <translation id="657480975869429144">Chrome-এর একটি নতুন ভার্সন উপলভ্য রয়েছে</translation>
 <translation id="658099107946526506">অননুমোদিত অ্যাক্সেস আটকাতে পিন ব্যবহার করে আপনার ব্যক্তিগত ব্রাউজিং সুরক্ষিত রাখুন</translation>
 <translation id="6583199322650523874">বর্তমান পৃষ্ঠাটি বুকমার্ক করুন</translation>
+<translation id="6583902294974160967">সহায়তা</translation>
 <translation id="6588043302623806746">নিরাপদ ডিএনএস ব্যবহার করুন</translation>
 <translation id="6590471736817333463">সর্বাধিক ৬০ শতাংশ ডেটা সাশ্রয় করুন</translation>
 <translation id="6593061639179217415">ডেস্কটপ সাইট</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7656862631699126784">ছদ্মবেশী লক চালু করুন</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7663320421139257046">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> এই সাইটের সাথে আপনার <ph name="FIELDS_STRING" /> শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> দেখুন।</translation>
+<translation id="7665445336029073980">ডাউনলোডের সম্পূর্ণ ইতিহাস</translation>
 <translation id="766587987807204883">নিবন্ধগুলি এখানে দেখানো হয় এবং আপনি সেগুলি অফলাইনেও পড়তে পারেন</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> বন্ধ রয়েছে</translation>
 <translation id="767157537088426800">আপনার সব ডিভাইসে পাসওয়ার্ড ও আরও অনেক কিছু পেতে এই সাইট ও Chrome-এ সাইন-ইন করুন</translation>

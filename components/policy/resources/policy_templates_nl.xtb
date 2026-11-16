@@ -12466,15 +12466,6 @@ Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerd
 <translation id="8854571659927427063">Als je het beleid toepast, worden de bookmarks van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden de bookmarks niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor bookmarks aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
-<translation id="8857793979935465678">Hiermee bepaal je of de standaard beveiligingsmodus van Safe Browsing toestemming heeft om gedeeltelijke hashes van URL's via een proxy naar Google te sturen via Oblivious HTTP om te bepalen of ze veilig kunnen worden bezocht.
-
-Met de proxy kunnen browsers gedeeltelijke hashes van URL's uploaden naar Google zonder dat ze worden gekoppeld aan het IP-adres van de gebruiker. Met dit beleid kunnen browsers de gedeeltelijke hashes van URL's ook met een hogere frequentie uploaden voor betere Safe Browsing-bescherming.
-
-Dit beleid wordt genegeerd als Safe Browsing uitstaat of is ingesteld op de modus voor geoptimaliseerde beveiliging.
-
-Als je het beleid toepast of niet instelt, zijn de lookups via proxy met een betere beveiliging mogelijk.
-
-Als je het beleid niet toepast, zijn lookups via proxy met een betere beveiliging niet toegestaan. Gedeeltelijke hashes van URL's worden rechtstreeks naar Google geüpload met een veel lagere frequentie, waardoor de bescherming afneemt.</translation>
 <translation id="8860342862142842017">Handhaving van Certificaattransparantie voor een lijst met subjectPublicKeyInfo-hashes</translation>
 <translation id="8860894781631833477">Gebruikers kunnen het releasekanaal voor <ph name="PRODUCT_OS_NAME" /> instellen</translation>
 <translation id="8862086508140571198">Met dit beleid kun je een lijst met DLC's (downloadbare content) instellen die zo snel mogelijk moeten worden gedownload. De gedownloade DLC's zijn dan beschikbaar voor alle gebruikers op het apparaat.

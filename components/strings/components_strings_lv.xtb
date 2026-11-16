@@ -118,7 +118,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1195558154361252544">Paziņojumi tiek automātiski bloķēti visās vietnēs, izņemot tās, kurās atļāvāt to rādīšanu.</translation>
 <translation id="1197088940767939838">Oranža</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> noņēma cilni “<ph name="WEBSITE_TITLE" />”</translation>
-<translation id="119944043368869598">Notīrīt visu</translation>
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1201895884277373915">Vairāk no šīs vietnes</translation>
 <translation id="1204184165594298176">{0,plural, =1{Faila kopēšana ir bloķēta}zero{<ph name="FILE_COUNT" /> failu kopēšana ir bloķēta}one{<ph name="FILE_COUNT" /> faila kopēšana ir bloķēta}other{<ph name="FILE_COUNT" /> failu kopēšana ir bloķēta}}</translation>
@@ -2089,7 +2088,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4444062564459679679">Jau nosūtīta uz pārlūku Chrome jūsu ierīcē (<ph name="DEVICE_NAME" />).</translation>
 <translation id="4449116177348980384">Poga “Pārvaldīt vietnes iestatījumus”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu atļaujas un vietnēs glabātos datus.</translation>
 <translation id="4451135742916150903">Var pieprasīt atļauju veidot savienojumu ar HID ierīcēm</translation>
-<translation id="4452328064229197696">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Google paroļu pārvaldnieks iesaka pārbaudīt saglabātās paroles.</translation>
 <translation id="4454620051637646665">Nerādīt reklāmkarogu</translation>
 <translation id="4458013283022578512">Ievadiet jautājumu</translation>
 <translation id="4458516738555515761">Politikas izgūšana</translation>
@@ -3547,7 +3545,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="691046363691324218">Kompensācijas numurs</translation>
 <translation id="6915804003454593391">Lietotājs:</translation>
 <translation id="6916193791494646625">Norādiet lejupielādēšanas iemeslu (obligāti)</translation>
-<translation id="6917795328362592458">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Paroļu pārvaldnieks iesaka pārbaudīt saglabātās paroles.</translation>
 <translation id="6917873303492266709">Lai kopīgotu, pievienotos un sadarbotos ciļņu grupās, atveriet iestatījumus un ieslēdziet iestatījumu “Atļaut pierakstīšanos pārlūkā Chrome”.</translation>
 <translation id="6921197121276419421">Atļauts instalēt tīmekļa lietotnes</translation>
 <translation id="6922905531092220751">Noņemt attēla pielikumu</translation>

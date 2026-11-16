@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1003917207516838287">Cronologia dei download recenti</translation>
 <translation id="1007349221964075684">Utilizza il blocco schermo per vedere le finestre Incognito</translation>
 <translation id="1010283278930414892">Nessuna password salvata su questo dispositivo</translation>
 <translation id="1011749477052068769">Sposta qui</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Foglio di conferma della passkey chiuso</translation>
 <translation id="1197933394627598677">Mostra modalità Lettura</translation>
 <translation id="1197935538609051549">Disattiva</translation>
-<translation id="119944043368869598">Cancella tutto</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1202892408424955784">Prodotti monitorati</translation>
 <translation id="1204037785786432551">Scarica link</translation>
@@ -1442,6 +1442,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="657480975869429144">È disponibile una nuova versione di Chrome</translation>
 <translation id="658099107946526506">Proteggi la tua navigazione privata con un PIN per impedire l'accesso indesiderato</translation>
 <translation id="6583199322650523874">Aggiungi la pagina corrente ai Preferiti</translation>
+<translation id="6583902294974160967">Assistenza</translation>
 <translation id="6588043302623806746">Usa DNS sicuro</translation>
 <translation id="6590471736817333463">Risparmia fino al 60% di dati</translation>
 <translation id="6593061639179217415">Sito desktop</translation>
@@ -1744,6 +1745,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7656862631699126784">Attiva il blocco delle schede Incognito</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7663320421139257046">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo <ph name="FIELDS_STRING" /> con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> del sito.</translation>
+<translation id="7665445336029073980">Cronologia dei download completa</translation>
 <translation id="766587987807204883">Qui vengono visualizzati gli articoli che potrai leggere anche offline</translation>
 <translation id="7666185984446444960">Chiusi: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Accedi a questo sito e a Chrome per trovare le tue password e altri dati su tutti i tuoi dispositivi.</translation>

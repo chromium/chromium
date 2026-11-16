@@ -531,7 +531,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6319856120645568262">Chromeu je potrebno odobrenje da mapira okruženje i prati pokrete ruku</translation>
 <translation id="6321592572353357376">Ekstenzija "<ph name="EXTENSION_NAME" />" želi da se prijavite u Chrome</translation>
 <translation id="6326175484149238433">Ukloni iz Chromea</translation>
-<translation id="6334815226785304306">Postavite Google Chrome kao zadani preglednik i zakačite ga na traku zadataka</translation>
 <translation id="6339888439788291743">Nova ikona, ista prečica: kliknite da postavljate pitanja dok pregledate uz AI način rada u Google Pretraživanju.</translation>
 <translation id="6349304688246983183">Lako postavljajte pitanja dok pregledate putem Google Pretraživanja</translation>
 <translation id="63540178978900677">Chrome više nije zadani preglednik. Postaviti Chrome kao zadani preglednik?</translation>
@@ -858,6 +857,5 @@ Nove oznake se ne mogu sačuvati na vaš račun dok ne izbrišete neke. Ako se s
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="973195869036269770">ChromeOS nije mogao sačuvati podatke Chromea na Google računu jer su podaci za prijavu na račun zastarjeli</translation>
 <translation id="983803489796659991">Instalacija nije uspjela jer server za ažuriranje nema podatke o raspršivanju za aplikaciju.</translation>
-<translation id="989369509083708165">Google Chrome je vaš zadani preglednik</translation>
 <translation id="989816563149873169">Prečicom <ph name="SHORTCUT" /> možete prebacivati između Chrome profila</translation>
 </translationbundle>

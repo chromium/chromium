@@ -531,7 +531,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6319856120645568262">Chrome needs permission to map your surroundings and track your hands</translation>
 <translation id="6321592572353357376">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
-<translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
 <translation id="6339888439788291743">New icon, same shortcut: Click to ask questions as you browse with Google Search AI Mode.</translation>
 <translation id="6349304688246983183">Easily ask questions as you browse with Google Search</translation>
 <translation id="63540178978900677">Chrome is no longer your default browser. Make Chrome the default browser?</translation>
@@ -858,6 +857,5 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="973195869036269770">ChromeOS could not save Chrome data in your Google Account because your account sign-in details are out of date</translation>
 <translation id="983803489796659991">Installation failed because the update server does not have any hash data for the application.</translation>
-<translation id="989369509083708165">Google Chrome is your default browser</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> can switch between Chrome profiles</translation>
 </translationbundle>

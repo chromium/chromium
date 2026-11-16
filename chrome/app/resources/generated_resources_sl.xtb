@@ -3606,6 +3606,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4600978165652322776">Omrežna napaka. Preverite internetno povezavo in nastavitve omrežja.</translation>
 <translation id="4601095002996233687">Poglobljeni pregledi za sumljive prenose.</translation>
 <translation id="4601426376352205922">Označi kot neprebrano</translation>
+<translation id="4601626093626178957">Izberite spodnje možnosti</translation>
 <translation id="460190672235687855">Ogled gesel</translation>
 <translation id="4602466770786743961">Vedno omogoči gostitelju <ph name="HOST" /> dostop do kamere in mikrofona</translation>
 <translation id="4602776638371779614">Ta zavihek aktivno išče naprave Bluetooth</translation>
@@ -5405,6 +5406,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6466936665940546351">Potrdite, da ste to vi, da boste lahko dodajali gesla in jih imeli na voljo v vseh napravah z računom Google</translation>
 <translation id="6467230443178397264">Iskanje datoteke <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimiziranje celozaslonskih videoposnetkov</translation>
+<translation id="6467327465309816244">Geminija uporabljajte previdno in <ph name="BEGIN_LINK1" />varno<ph name="LINK_END1" />. Lahko se zmoti in ustvari <ph name="BEGIN_LINK2" />nepričakovane rezultate<ph name="LINK_END2" />, kot so nakupi.</translation>
 <translation id="6468485451923838994">Pisave</translation>
 <translation id="6468773105221177474">Št. datotek: <ph name="FILE_COUNT" /></translation>
 <translation id="6469702164109431067">Gesla in ključi za dostop</translation>
@@ -5765,6 +5767,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6815376457351236663">Vseeno odpri</translation>
 <translation id="6815787852028615386">Ta datoteka zavaja in lahko povzroči nepričakovane spremembe v napravi</translation>
 <translation id="6816443526270499804">Iskanje razpoložljivih profilov za e-SIM</translation>
+<translation id="6816637904848970547">Za pomikanje po seznamu uporabite puščični tipki gor in dol.</translation>
 <translation id="6818198425579322765">Jezik strani za prevajanje</translation>
 <translation id="6820107710950761542">Če želite več informacij, se obrnite na skrbnika ali odprite povezavo <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6821439254917412979">Odpni razširitev <ph name="EXTENSION_NAME" /></translation>

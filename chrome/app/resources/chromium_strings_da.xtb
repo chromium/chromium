@@ -12,7 +12,6 @@
 <translation id="1098493699368672217">Vis søgning med Chromium i systembakken, og aktivér tastaturgenvejen</translation>
 <translation id="1104942323762546749">Chromium anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="112640046208448578">Identificer ting eller steder, og kopiér eller oversæt tekst. Når du bruger billedsøgning, sendes der et screenshot af siden til serveren. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium er din standardbrowser</translation>
 <translation id="1131805035311359397">Du kan tjekke, om dine adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer ved at <ph name="BEGIN_LINK" />logge ind på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. Der er et åbent inkognitovindue eller isoleret vindue. Det åbnes ikke igen, når du har genstartet.}one{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. Der er # inkognitovindue og isoleret vindue åbent på tværs af profilerne. De åbnes ikke igen, når du har genstartet.}other{Din administrator anmoder om, at du genstarter Chromium for at anvende denne opdatering. Der er # inkognitovinduer og isolerede vinduer åbne på tværs af profilerne. De åbnes ikke igen, når du har genstartet.}}</translation>
 <translation id="1153368717515616349">Klik på Chromium-menuen</translation>
@@ -749,7 +748,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8813277370772331957">Påmind mig senere</translation>
 <translation id="8816416449795340678">Del dette dokument med Gemini i Chromium for at få en hurtig oversigt og stille opfølgende spørgsmål</translation>
 <translation id="8818550178040858407">Vil du logge ind i Chromium?</translation>
-<translation id="8823401858233292222">Gør Chromium til standardbrowser, og fastgør den til proceslinjen</translation>
 <translation id="8826492472752484139">Klik på "Adgangs­kode­admin­istrator"</translation>
 <translation id="8833697763442816810">Chromium OS-system</translation>
 <translation id="8852026904190808918">Dette sprog bruges i menuer, indstillinger, underretninger og anden tekst i Chromium</translation>

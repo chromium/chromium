@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">로그인하지 못했습니다. 나중에 다시 시도하세요.</translation>
 <translation id="2975761176769946178">URL을 입력해야 합니다.</translation>
 <translation id="297667759942911166">탭 그룹에서 공동작업하세요</translation>
+<translation id="2986080119218811913"><ph name="ACTOR_NAME" />(으)로 돌아가기</translation>
 <translation id="298696743524648170">Chrome의 Gemini를 사용하려면 Google 계정으로 Chrome에 로그인하세요.</translation>
 <translation id="2987670534697681860">이 기기에서 모든 비밀번호에 액세스하려면 본인 인증을 진행하세요.</translation>
 <translation id="2989523299700148168">최근 방문</translation>
@@ -1117,7 +1118,6 @@
 <translation id="4488754974567924717">비밀번호가 유출되면 알려드립니다</translation>
 <translation id="4489536976005181779">{count,plural, =1{페이지가 계정({email})의 읽기 목록에 추가됨}other{페이지가 계정({email})의 읽기 목록에 추가됨}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> 계정으로 로그인했습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
-<translation id="4495251723189610737">채팅이 Gemini 기록에 저장됩니다. 기록에는 오디오, Gemini Live 동영상 및 화면 공유, Gemini와 공유하는 내용(예: 프롬프트, <ph name="BEGIN_LINK" />업로드<ph name="END_LINK" />, <ph name="BEGIN_LINK" />화면<ph name="END_LINK" />), Gemini의 대답, 작업 및 도구 호출, 의견, Gemini를 통해 방문한 웹사이트의 정보, 제품 사용 데이터, 기기의 대략적인 위치, IP 주소, Google 계정의 집 또는 직장 주소가 포함됩니다. Gemini에 연결한 앱의 데이터도 포함될 수 있습니다.</translation>
 <translation id="4502423230170890588">이 기기에서 삭제</translation>
 <translation id="4508486880075514067">전체 화면으로 확장</translation>
 <translation id="4508750114462689118">로그인 프로모션 닫기</translation>
@@ -1291,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" />, <ph name="EMAIL" />, 조직에서 관리합니다.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">탭 그룹 색상: <ph name="COLOR" /></translation>
+<translation id="500126251490468002">Google 비밀번호 관리자에 이 사이트의 비밀번호가 없습니다. <ph name="ACTOR_NAME" />(으)로 돌아가 로그인하거나 Google 비밀번호 관리자에 비밀번호를 추가하세요</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5007392906805964215">검토</translation>
 <translation id="5009127379503001909">계속 둘러보기</translation>

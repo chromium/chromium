@@ -527,7 +527,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6319856120645568262">Chrome ətrafın xəritəsini çəkmək və əllərinizi izləmək üçün icazə tələb edir</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" artırması Chrome-a daxil olmağınızı istəyir</translation>
 <translation id="6326175484149238433">Chrome'dan silin</translation>
-<translation id="6334815226785304306">Chrome-u defolt brauzer edin və tapşırıqlar panelinə bərkidin</translation>
 <translation id="6339888439788291743">Yeni ikona, eyni qısayol: Google Axtarış üzrə Sİ rejimi ilə axtarış edərkən sual vermək üçün klikləyin.</translation>
 <translation id="6349304688246983183">Google Axtarış ilə axtarış edərkən asanlıqla suallar verin</translation>
 <translation id="63540178978900677">Chrome artıq defolt brauzeriniz deyil. Chrome defolt brauzer edilsin?</translation>
@@ -854,6 +853,5 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="973195869036269770">ChromeOS hesaba giriş məlumatlarınız köhnə olduğu üçün Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="983803489796659991">Yeniləmə serverində tətbiq heş datası olmadığı üçün quraşdırma alınmadı.</translation>
-<translation id="989369509083708165">Google Chrome defolt brauzerinizdir</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome profilləri arasında keçid edə bilər</translation>
 </translationbundle>

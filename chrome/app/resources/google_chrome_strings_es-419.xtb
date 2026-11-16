@@ -523,7 +523,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="6319856120645568262">Chrome necesita permiso para comprender tu entorno y hacer un seguimiento de tus manos</translation>
 <translation id="6321592572353357376">La extensión "<ph name="EXTENSION_NAME" />" quiere que accedas a Chrome</translation>
 <translation id="6326175484149238433">Quitar de Chrome</translation>
-<translation id="6334815226785304306">Establece Google Chrome como navegador predeterminado y fíjalo a la barra de tareas</translation>
 <translation id="6339888439788291743">Nuevo ícono, mismo acceso directo: Haz clic para hacer preguntas mientras navegas con el Modo IA de la Búsqueda de Google.</translation>
 <translation id="6349304688246983183">Haz preguntas fácilmente mientras navegas con la Búsqueda de Google</translation>
 <translation id="63540178978900677">Chrome ya no es tu navegador predeterminado. ¿Quieres establecer Chrome como el navegador predeterminado?</translation>
@@ -850,6 +849,5 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="973195869036269770">ChromeOS no pudo guardar los datos de Chrome en tu Cuenta de Google porque los detalles de acceso de la cuenta están desactualizados</translation>
 <translation id="983803489796659991">No se pudo completar la instalación porque el servidor de actualización no tiene ningún dato hash para la aplicación.</translation>
-<translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permite alternar de un perfil de Chrome a otro</translation>
 </translationbundle>

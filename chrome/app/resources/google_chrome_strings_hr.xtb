@@ -523,7 +523,6 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="6319856120645568262">Chrome treba dopuštenje za mapiranje vaše okoline i praćenje vaših ruku</translation>
 <translation id="6321592572353357376">Proširenje <ph name="EXTENSION_NAME" /> traži da se prijavite u Chrome</translation>
 <translation id="6326175484149238433">Ukloni iz Chromea</translation>
-<translation id="6334815226785304306">Postavite Google Chrome kao zadani preglednik i prikvačite ga na traku sa zadacima</translation>
 <translation id="6339888439788291743">Nova ikona, isti prečac: kliknite kako biste postavljali pitanja dok pregledavate pomoću AI načina Google pretraživanja.</translation>
 <translation id="6349304688246983183">Jednostavno postavljajte pitanja dok pregledavate pomoću Google pretraživanja</translation>
 <translation id="63540178978900677">Chrome više nije vaš zadani preglednik. Neka Chrome bude zadani preglednik?</translation>
@@ -850,6 +849,5 @@ Nove oznake ne mogu se spremiti na vaš račun dok neke ne izbrišete. Ako se sa
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="973195869036269770">ChromeOS nije mogao spremiti podatke iz Chromea na vaš Google račun jer su vaši podaci za prijavu na račun zastarjeli</translation>
 <translation id="983803489796659991">Instalacija nije uspjela jer poslužitelj za ažuriranje nema hashiranih podataka za aplikaciju.</translation>
-<translation id="989369509083708165">Google Chrome vaš je zadani preglednik</translation>
 <translation id="989816563149873169">Pomoću prečaca <ph name="SHORTCUT" /> možete se prebacivati između profila u Chromeu</translation>
 </translationbundle>

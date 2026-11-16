@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1003917207516838287">Recente downloadgeschiedenis</translation>
 <translation id="1007349221964075684">Gebruik schermvergrendeling om geopende incognitovensters te bekijken</translation>
 <translation id="1010283278930414892">Geen opgeslagen wachtwoorden op dit apparaat</translation>
 <translation id="1011749477052068769">Hierheen verplaatsen</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Bevestigingsblad voor toegangssleutel gesloten</translation>
 <translation id="1197933394627598677">Leesmodus tonen</translation>
 <translation id="1197935538609051549">Deactiveren</translation>
-<translation id="119944043368869598">Alles wissen</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1202892408424955784">Gevolgde producten</translation>
 <translation id="1204037785786432551">Link downloaden</translation>
@@ -1442,6 +1442,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="657480975869429144">Er is een nieuwe versie van Chrome beschikbaar</translation>
 <translation id="658099107946526506">Bescherm je privé browsen met een pincode om ongewenste toegang te voorkomen</translation>
 <translation id="6583199322650523874">Een bookmark toevoegen voor de huidige pagina</translation>
+<translation id="6583902294974160967">Support</translation>
 <translation id="6588043302623806746">Beveiligde DNS gebruiken</translation>
 <translation id="6590471736817333463">Bespaar tot 60% data</translation>
 <translation id="6593061639179217415">Desktopsite</translation>
@@ -1744,6 +1745,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7656862631699126784">Incognitovergrendeling aanzetten</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7663320421139257046"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je <ph name="FIELDS_STRING" /> met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> van deze site.</translation>
+<translation id="7665445336029073980">Volledige downloadgeschiedenis</translation>
 <translation id="766587987807204883">Hier zie je artikelen die je zelfs kunt lezen wanneer je offline bent</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> gesloten</translation>
 <translation id="767157537088426800">Log in op deze site en bij Chrome om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>

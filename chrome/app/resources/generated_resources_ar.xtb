@@ -789,6 +789,7 @@
 <translation id="1802687198411089702">الصفحة لا تستجيب. يمكنك الانتظار أو الخروج منها.</translation>
 <translation id="1803287124763873748">تسجيل الدخول على الهاتف؟</translation>
 <translation id="1803531841600994172">اللغة التي تريد الترجمة إليها</translation>
+<translation id="1803703903842028149">‏بطاقات الائتمان والسحب الآلي، وأرقام الحساب بصيغة IBAN</translation>
 <translation id="180441032496361123">انقر لتفعيل محرك البحث <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">هناك علامة تبويب خلفية تستخدم الميكروفون</translation>
 <translation id="1805822111539868586">فحص القراءات</translation>
@@ -2085,6 +2086,7 @@
 <translation id="310671807099593501">يستخدم الموقع الإلكتروني البلوتوث.</translation>
 <translation id="3108122610701115301">الضبط كمتصفّح تلقائي</translation>
 <translation id="3108931485517391283">يتعذّر تلقّي الملف</translation>
+<translation id="3109161228145689140">خاص، تصفّح خاص، خصوصية تامة، إخفاء هوية، التخفي، تخفٍ، وضع متخفٍ، وضع التخفي، سري، أمان، سلامة، الحماية من التتبع، ملفات تعريف الارتباط، كوكيز، محو، كاش، ذاكرة تخزين مؤقت، فتح نافذة تصفُّح متخفٍ</translation>
 <translation id="3109206895301430738">مجموعات علامات التبويب المحفوظة</translation>
 <translation id="3109724472072898302">مصغّر</translation>
 <translation id="3112378005171663295">تصغير</translation>
@@ -2180,6 +2182,7 @@
 <translation id="3195773549050092642">‏سيتوقف Gemini عن تنفيذ المهمة</translation>
 <translation id="3199637719075529971">علامة التبويب هذه متصلة بمنفذ تسلسلي.</translation>
 <translation id="3201237270673604992">من الياء إلى الألف</translation>
+<translation id="3201749168732432347">العروض الترويجية وبطاقات الولاء</translation>
 <translation id="3202499879214571401">إيقاف بث محتوى الشاشة مؤقتًا على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3202578601642193415">الصفحة الأحدث</translation>
 <translation id="3207344462385471911">‏استنادًا إلى نشاطك الأخير، تظهر لك خصومات تسوُّق وعمليات بحث مقترَحة قد تهمّك.
@@ -2262,6 +2265,7 @@
 <translation id="326911502853238749">عدم عرض <ph name="MODULE_NAME" /></translation>
 <translation id="3269612321104318480">الأزرق المخضر الفاتح والأبيض</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ملف واحد}zero{# ملف}two{ملفّان}few{# ملفّات}many{# ملفًّا}other{# ملف}}</translation>
+<translation id="3270303798509728461">معاينة "<ph name="VOICE_NAME" />"</translation>
 <translation id="3270965368676314374">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وتغييرها وحذفها</translation>
 <translation id="3275464924531706548">تصغير "<ph name="HEADER" />"</translation>
 <translation id="3275778913554317645">فتح كنافذة</translation>
@@ -3466,6 +3470,7 @@
 <translation id="4449247303975391730">إدارة الأذونات</translation>
 <translation id="4453946976636652378">‏البحث في <ph name="SEARCH_ENGINE_NAME" /> أو كتابة عنوان URL</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
+<translation id="4460297284484740408">لا</translation>
 <translation id="4461483878391246134">إضافة اللغات إلى قائمة "عدم اقتراح ترجمة المحتوى مطلقًا"</translation>
 <translation id="4466922176191762830">‫+ <ph name="NUM" /></translation>
 <translation id="4467373268340082204">رقم التعريف الشخصي غير صحيح</translation>
@@ -3593,6 +3598,7 @@
 <translation id="4600978165652322776">حدث خطأ في الشبكة. يُرجى التحقّق من اتصالك بالإنترنت وإعدادات الشبكة.</translation>
 <translation id="4601095002996233687">يفحص هذا الوضع عمليات التنزيل المريبة بشكل مفصَّل.</translation>
 <translation id="4601426376352205922">وضع علامة "غير مقروءة"</translation>
+<translation id="4601626093626178957">يُرجى تحديد الخيارات أدناه</translation>
 <translation id="460190672235687855">عرض كلمات المرور</translation>
 <translation id="4602466770786743961">إتاحة دخول <ph name="HOST" /> دومًا إلى الكاميرا والميكروفون التابعين لك</translation>
 <translation id="4602776638371779614">تبحث علامة التبويب هذه حاليًا عن أجهزة تتضمّن بلوتوث.</translation>
@@ -4761,6 +4767,7 @@
 <translation id="5820751560028604030">تم حظر التنزيل على الجهاز</translation>
 <translation id="5821565227679781414">إنشاء اختصار</translation>
 <translation id="5826993284769733527">شبه شفاف</translation>
+<translation id="5827056944126565928">الرموز الترويجية وبطاقات الولاء</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5827835011646404677">‏يتم حفظ المهارات في حسابك على Google</translation>
 <translation id="5828181959764767444">غروب</translation>
@@ -5186,6 +5193,7 @@
 <translation id="6253801023880399036">يتم حفظ كلمات المرور في <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">اختراق المفتاح</translation>
 <translation id="6254892857036829079">ممتاز</translation>
+<translation id="6255253900817321392">‏يمكنك البحث بشكل أسرع من أي مكان على جهاز Mac بدون فتح علامة تبويب جديدة</translation>
 <translation id="6257602895346497974">تفعيل المزامنة...</translation>
 <translation id="6258818697161346451">استخدام مفاتيح المرور على هذا الجهاز</translation>
 <translation id="6259776178973198997">‏إعادة تحميل معلومات مالكي Wi-Fi Direct</translation>
@@ -5391,6 +5399,7 @@
 <translation id="6466936665940546351">‏يجب إثبات هويتك لإضافة كلمات المرور والوصول إليها على جميع الأجهزة باستخدام حسابك على Google</translation>
 <translation id="6467230443178397264">مسح الملف "<ph name="FILE_NAME" />" ضوئيًا</translation>
 <translation id="6467304607960172345">تحسين الفيديوهات بملء الشاشة</translation>
+<translation id="6467327465309816244">‏ننصحك باستخدام Gemini بعناية مع مراعاة <ph name="BEGIN_LINK1" />عوامل الأمان<ph name="LINK_END1" />، فقد يرتكب أخطاءً ويقدّم <ph name="BEGIN_LINK2" />نتائج غير متوقّعة<ph name="LINK_END2" />، مثل عمليات الشراء.</translation>
 <translation id="6468485451923838994">الخطوط</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ملف</translation>
 <translation id="6469702164109431067">كلمات المرور ومفاتيح المرور</translation>
@@ -5753,6 +5762,7 @@
 <translation id="6815376457351236663">الفتح على أي حال</translation>
 <translation id="6815787852028615386">هذا الملف مُخادع وقد يُجري تغييرات غير متوقعة على جهازك.</translation>
 <translation id="6816443526270499804">‏جارٍ البحث عن الملفات الشخصية المتوفّرة لشرائح eSIM</translation>
+<translation id="6816637904848970547">يمكن استخدام مفتاحَي السهمين المتجهَين للأعلى وللأسفل للتنقّل في القائمة.</translation>
 <translation id="6818198425579322765">لغة الصفحة المُراد ترجمتها</translation>
 <translation id="6820107710950761542">يُرجى التواصل مع المشرف أو الاطّلاع على <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" /> للحصول على مزيد من المعلومات</translation>
 <translation id="6821439254917412979">إزالة تثبيت <ph name="EXTENSION_NAME" /></translation>
@@ -6977,6 +6987,7 @@
 <translation id="8033958968890501070">انتهاء المهلة</translation>
 <translation id="8034697324150621782">التبديل مع العرض العلوي</translation>
 <translation id="8035059678007243127">الصفحة المخزّنة من خلال ميزة "التخزين المؤقت للصفحات" في وضع "التصفّح المتخفي": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8035129145306910594">نعم</translation>
 <translation id="8036143516314698610">عرض زر مجموعات علامات التبويب المحفوظة</translation>
 <translation id="8036193484521570992">المساعدة على تحسين ميزة "الملء التلقائي"</translation>
 <translation id="803639495237134713">تخصيص اختصار لوحة المفاتيح</translation>
@@ -7894,6 +7905,7 @@
 <translation id="895347679606913382">بدء التحميل...</translation>
 <translation id="8954796993367253220">لحذف سجلّ "وضع الضيف"، أغلِق كل النوافذ المفتوحة في هذا الوضع.</translation>
 <translation id="8955174612586215829">البحث عن المظاهر</translation>
+<translation id="8957049369099630820">يمكنك البحث بشكل أسرع من أي مكان على الكمبيوتر بدون فتح علامة تبويب جديدة</translation>
 <translation id="8957656266859671822">اختيار حسابك</translation>
 <translation id="8957757410289731985">تخصيص الملف الشخصي</translation>
 <translation id="8959144235813727886">المواقع الإلكترونية والتطبيقات</translation>

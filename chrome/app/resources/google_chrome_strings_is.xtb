@@ -531,7 +531,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6319856120645568262">Chrome þarfnast heimildar til að kortleggja umhverfið þitt og rekja handahreyfingarnar þínar</translation>
 <translation id="6321592572353357376">Viðbótin „<ph name="EXTENSION_NAME" />“ vill að þú skráir þig inn á Chrome</translation>
 <translation id="6326175484149238433">Fjarlægja úr Chrome</translation>
-<translation id="6334815226785304306">Gera Google Chrome að sjálfgefnum vafra og festa við forritastikuna</translation>
 <translation id="6339888439788291743">Nýtt tákn, sama flýtileið: Smelltu til að spyrja spurninga á meðan þú vafrar með gervigreindarstillingu Google-leitar.</translation>
 <translation id="6349304688246983183">Spyrðu spurninga á einfaldan máta á meðan þú vafrar með Google-leit</translation>
 <translation id="63540178978900677">Chrome er ekki lengur sjálfgefni vafrinn þinn. Gera Chrome að sjálfgefnum vafra?</translation>
@@ -857,6 +856,5 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="973195869036269770">ChromeOS gat ekki vistað Chrome-gögn á Google-reikningnum þínum vegna þess að innskráningarupplýsingar reikningsins eru úreltar</translation>
 <translation id="983803489796659991">Uppsetning mistókst vegna þess að uppfærsluþjónninn er ekki með tætigögn fyrir forritið.</translation>
-<translation id="989369509083708165">Google Chrome er sjálfgefinn vafri</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> getur skipt á milli Chrome prófíla</translation>
 </translationbundle>

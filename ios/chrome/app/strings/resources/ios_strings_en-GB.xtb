@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">If your passwords are compromised, we'll let you know</translation>
 <translation id="4489536976005181779">{count,plural, =1{Page added to your reading list in your account, {email}}other{Pages added to your reading list in your account, {email}}}</translation>
 <translation id="4493604894403585654">You are signed in as <ph name="USER_EMAIL" />. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
-<translation id="4495251723189610737">Your chats will be saved in your Gemini history. History includes your audio, Gemini Live videos and screenshares, what you share with Gemini (like prompts, <ph name="BEGIN_LINK" />uploads<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />screens<ph name="END_LINK" />), Gemini's responses, tasks and tool calls, feedback, info from websites that you visit with Gemini, product usage data, your device's general location, IP address and home or work addresses in your Google Account. It can also include data from apps that you connect to Gemini.</translation>
 <translation id="4502423230170890588">Remove from this device</translation>
 <translation id="4508486880075514067">Expand to full screen</translation>
 <translation id="4508750114462689118">Close sign-in promo</translation>

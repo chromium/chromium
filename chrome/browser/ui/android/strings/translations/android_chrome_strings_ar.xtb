@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1003917207516838287">سجلّ عمليات التنزيل الأخيرة</translation>
 <translation id="1007349221964075684">استخدام قفل الشاشة لتفقّد نوافذ التصفّح المتخفي المفتوحة</translation>
 <translation id="1010283278930414892">ما مِن كلمات مرور محفوظة على هذا الجهاز</translation>
 <translation id="1011749477052068769">النقل إلى هنا</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">تم إغلاق ورقة تأكيد مفتاح المرور.</translation>
 <translation id="1197933394627598677">عرض "وضع القراءة"</translation>
 <translation id="1197935538609051549">إيقاف</translation>
-<translation id="119944043368869598">محو الكل</translation>
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1202892408424955784">المنتجات التي يتم تتبُّع أسعارها</translation>
 <translation id="1204037785786432551">تنزيل الرابط</translation>
@@ -1100,6 +1100,7 @@
 <translation id="5257142004843671642">تغيير حجم اللوحة الجانبية</translation>
 <translation id="5264813352784073502">آخر 24 ساعة</translation>
 <translation id="5267572070504076962">يُرجى تفعيل إعداد "التصفُّح الآمن" للحصول على حماية من المواقع الإلكترونية الخطيرة</translation>
+<translation id="526760395289305534">توسيع علامات التبويب العمودية أو تصغيرها</translation>
 <translation id="5273031377282080577">يدير المشرف هذا الإعداد.</translation>
 <translation id="5284295735376057059">خصائص المستند</translation>
 <translation id="5286907366254680517">تمّ رصد اللغة</translation>
@@ -1443,6 +1444,7 @@
 <translation id="657480975869429144">‏يتوفّر إصدار جديد من Chrome</translation>
 <translation id="658099107946526506">يمكنك حماية جلسات التصفح المتخفي باستخدام رقم تعريف شخصي لمنع الوصول إليها بشكل غير مصرح به</translation>
 <translation id="6583199322650523874">وضع إشارة مرجعية على الصفحة الحالية</translation>
+<translation id="6583902294974160967">الدعم</translation>
 <translation id="6588043302623806746">‏استخدام "نظام أسماء النطاقات" (DNS) الآمن</translation>
 <translation id="6590471736817333463">توفير ما يصل إلى 60% من البيانات</translation>
 <translation id="6593061639179217415">موقع مصمَّم للكمبيوتر</translation>
@@ -1747,6 +1749,7 @@
 <translation id="7656862631699126784">تفعيل قفل علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7663320421139257046">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني. ويُرجى الاطّلاع على <ph name="BEGIN_LINK1" />سياسة الخصوصية<ph name="END_LINK1" /> لهذا الموقع الإلكتروني.</translation>
+<translation id="7665445336029073980">سجلّ التنزيل بالكامل</translation>
 <translation id="766587987807204883">تظهر المقالات هنا، ويمكنك الاطّلاع عليها حتى عندما لا يكون الجهاز متّصلًا بالإنترنت.</translation>
 <translation id="7666185984446444960">تم إغلاق <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">‏يمكنك تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome للوصول إلى كلمات المرور وغيرها على جميع أجهزتك</translation>

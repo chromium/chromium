@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1003917207516838287">Nedavna istorija preuzimanja</translation>
 <translation id="1007349221964075684">Koristite otključavanje ekrana da biste videli otvorene prozore bez arhiviranja</translation>
 <translation id="1010283278930414892">Nema sačuvanih lozinki na ovom uređaju</translation>
 <translation id="1011749477052068769">Premesti ovde</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Tabela za potvrdu pristupnog ključa je zatvorena</translation>
 <translation id="1197933394627598677">Prikaži Režim čitanja</translation>
 <translation id="1197935538609051549">Deaktiviraj</translation>
-<translation id="119944043368869598">Obriši sve</translation>
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1202892408424955784">Proizvodi koje pratite</translation>
 <translation id="1204037785786432551">Preuzmi link</translation>
@@ -1443,6 +1443,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="657480975869429144">Dostupna je nova verzija Chrome-a</translation>
 <translation id="658099107946526506">Zaštitite privatno pregledanje pomoću PIN-a da biste sprečili neželjeni pristup</translation>
 <translation id="6583199322650523874">Obeležavanje trenutne stranice</translation>
+<translation id="6583902294974160967">Podrška</translation>
 <translation id="6588043302623806746">Koristi bezbedni DNS</translation>
 <translation id="6590471736817333463">Uštedite i do 60% podataka</translation>
 <translation id="6593061639179217415">Verzija sajta za računar</translation>
@@ -1745,6 +1746,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7656862631699126784">Uključi zaključavanje kartica bez arhiviranja</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7663320421139257046">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti <ph name="FIELDS_STRING" /> sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK1" />politiku privatnosti<ph name="END_LINK1" /> ovog sajta.</translation>
+<translation id="7665445336029073980">Kompletna istorija preuzimanja</translation>
 <translation id="766587987807204883">Ovde se pojavljuju članci, koje možete da čitate čak i kada ste oflajn</translation>
 <translation id="7666185984446444960">Zatvoreno: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Prijavite se na ovaj sajt i u Chrome da bi vam lozinke i drugi sadržaj bili dostupni na svim uređajima</translation>

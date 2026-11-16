@@ -526,7 +526,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="6319856120645568262">Chrome को आपके आस-पास की जगहों को मैप करने और आपके हाथों को ट्रैक करने की अनुमति चाहिए</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" एक्सटेंशन का इस्तेमाल करने के लिए, आपको Chrome में साइन इन करना होगा</translation>
 <translation id="6326175484149238433">Chrome से हटाएं</translation>
-<translation id="6334815226785304306">Google Chrome को डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करें और इसे टास्कबार पर पिन करें</translation>
 <translation id="6339888439788291743">नया आइकॉन, वही शॉर्टकट: Google Search के एआई मोड की मदद से, ब्राउज़ करते समय सवाल पूछने के लिए क्लिक करें.</translation>
 <translation id="6349304688246983183">Google Search की मदद से ब्राउज़ करते समय आसानी से सवाल पूछें</translation>
 <translation id="63540178978900677">Chrome अब आपका डिफ़ॉल्ट ब्राउज़र नहीं है. क्या Chrome को डिफ़ॉल्ट ब्राउज़र बनाना है?</translation>
@@ -853,6 +852,5 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="973195869036269770">ChromeOS आपके Google खाते में Chrome का डेटा सेव नहीं कर सका, क्योंकि आपके खाते में साइन-इन करने से जुड़ी जानकारी पुरानी हो चुकी है</translation>
 <translation id="983803489796659991">अपडेट सर्वर में ऐप्लिकेशन के लिए हैश डेटा मौजूद नहीं होने की वजह से इंस्टॉल नहीं हो सका.</translation>
-<translation id="989369509083708165">Google Chrome आपका डिफ़ॉल्ट ब्राउज़र है</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> दबाकर Chrome प्रोफ़ाइलों के बीच स्विच किया जा सकता है</translation>
 </translationbundle>

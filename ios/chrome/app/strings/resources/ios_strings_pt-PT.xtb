@@ -1118,7 +1118,6 @@
 <translation id="4488754974567924717">Informamos se as suas palavras-passe estiverem comprometidas</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à sua Lista de leitura na sua conta, {email}}other{Páginas adicionadas à sua Lista de leitura na sua conta, {email}}}</translation>
 <translation id="4493604894403585654">Tem sessão iniciada como <ph name="USER_EMAIL" />. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
-<translation id="4495251723189610737">Os seus chats vão ser guardados no seu histórico do Gemini. O histórico inclui o seu áudio, vídeos e partilhas de ecrã do Gemini Live, o que partilha com o Gemini (como comandos, <ph name="BEGIN_LINK" />carregamentos<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />ecrãs<ph name="END_LINK" />), respostas do Gemini, tarefas e chamadas de ferramentas, feedback, informações de Websites que visita com o Gemini, dados de utilização de produtos, a localização geral do seu dispositivo, o endereço IP e as moradas de casa ou do trabalho na sua Conta Google. Também pode incluir dados de apps que associa ao Gemini.</translation>
 <translation id="4502423230170890588">Remover deste dispositivo</translation>
 <translation id="4508486880075514067">Expandir para ecrã inteiro</translation>
 <translation id="4508750114462689118">Fechar a promoção de início de sessão</translation>

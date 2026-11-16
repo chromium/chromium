@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Ti informeremo se le tue password vengono compromesse</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura nel tuo account, {email}}other{Pagine aggiunte al tuo elenco di lettura nel tuo account, {email}}}</translation>
 <translation id="4493604894403585654">Hai eseguito l'accesso come <ph name="USER_EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
-<translation id="4495251723189610737">Le tue chat verranno salvate nella cronologia di Gemini. La cronologia include i tuoi audio, i video e le condivisioni dello schermo di Gemini Live, i contenuti che condividi con Gemini (come prompt, <ph name="BEGIN_LINK" />caricamenti<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />schermate<ph name="END_LINK" />), le risposte di Gemini, le attività e le chiamate agli strumenti, i feedback, le informazioni dai siti web che visiti con Gemini, i dati sull'utilizzo dei prodotti, la posizione generica del tuo dispositivo, l'indirizzo IP e gli indirizzi di casa o di lavoro nel tuo Account Google. Può anche includere dati delle app che connetti a Gemini.</translation>
 <translation id="4502423230170890588">Rimuovi da questo dispositivo</translation>
 <translation id="4508486880075514067">Espandi a schermo intero</translation>
 <translation id="4508750114462689118">Chiudi promo accesso</translation>

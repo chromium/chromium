@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1003917207516838287">Onlangse aflaaigeskiedenis</translation>
 <translation id="1007349221964075684">Gebruik skermslot om oop Incognito-vensters te sien</translation>
 <translation id="1010283278930414892">Geen gestoorde wagwoorde op hierdie toestel nie</translation>
 <translation id="1011749477052068769">Skuif hierheen</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Toegangsleutelbevestigingsblad is toegemaak</translation>
 <translation id="1197933394627598677">Wys Leesmodus</translation>
 <translation id="1197935538609051549">Deaktiveer</translation>
-<translation id="119944043368869598">Vee alles uit</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1202892408424955784">Nagespoorde produkte</translation>
 <translation id="1204037785786432551">Laai skakel af</translation>
@@ -530,6 +530,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kry hulp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Spoor tans prys na</translation>
 <translation id="3037517125981011456">Wys porboodskappe om by Chrome aan te meld.</translation>
+<translation id="3038505649933066250">Filtreer volgens datum</translation>
 <translation id="3044436568790455247">“Kies ’n toestel” is teen volle hoogte oopgemaak.</translation>
 <translation id="3057938290530993634">Tik en hou om jou mees besoekte webwerwe vas te speld vir maklike toegang volgende keer</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> boekmerk}other{<ph name="BOOKMARKS_COUNT_MANY" /> boekmerke}}</translation>
@@ -1099,6 +1100,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5257142004843671642">Verander grootte van kantpaneel</translation>
 <translation id="5264813352784073502">afgelope 24 uur</translation>
 <translation id="5267572070504076962">Skakel Veiligblaai aan om beskerming teen gevaarlike werwe te kry</translation>
+<translation id="526760395289305534">Vou vertikale oortjies uit of in</translation>
 <translation id="5273031377282080577">Jou admin bestuur hierdie instelling.</translation>
 <translation id="5284295735376057059">Dokumenteienskappe</translation>
 <translation id="5286907366254680517">Bespeur</translation>
@@ -1442,6 +1444,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="657480975869429144">’n Nuwe weergawe van Chrome is beskikbaar</translation>
 <translation id="658099107946526506">Beskerm jou privaat blaai met ’n PIN om ongewenste toegang te verhoed</translation>
 <translation id="6583199322650523874">Boekmerk die huidige bladsy</translation>
+<translation id="6583902294974160967">Steundiens</translation>
 <translation id="6588043302623806746">Gebruik beveiligde DNS</translation>
 <translation id="6590471736817333463">Bespaar tot 60% data</translation>
 <translation id="6593061639179217415">Werkskermwerf</translation>
@@ -1744,6 +1747,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7656862631699126784">Skakel Incognito-slot aan</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7663320421139257046">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou <ph name="FIELDS_STRING" /> met hierdie werf deel. Sien hierdie werf se <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="END_LINK1" />.</translation>
+<translation id="7665445336029073980">Volledige aflaaigeskiedenis</translation>
 <translation id="766587987807204883">Artikels verskyn hier, wat jy kan lees selfs wanneer jy vanlyn is</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> is toegemaak</translation>
 <translation id="767157537088426800">Meld by hierdie werf en Chrome aan om jou wagwoorde en meer op al jou toestelle te kry</translation>

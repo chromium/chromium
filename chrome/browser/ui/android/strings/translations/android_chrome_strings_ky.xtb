@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1003917207516838287">Акыркы жүктөп алуу таржымалы</translation>
 <translation id="1007349221964075684">Ачылып турган Жашыруун терезелерди көрүү үчүн экрандын кулпусун колдонуңуз</translation>
 <translation id="1010283278930414892">Бул түзмөктө сакталган сырсөздөр жок</translation>
 <translation id="1011749477052068769">Бул жерге жылдыруу</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Киргизүүчү ачкычты ырастоо бети жабылды</translation>
 <translation id="1197933394627598677">Окуу режимин көрсөтүү</translation>
 <translation id="1197935538609051549">Өчүрүп коюу</translation>
-<translation id="119944043368869598">Баарын тазалоо</translation>
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1202892408424955784">Көз салынган товарлар</translation>
 <translation id="1204037785786432551">Жүктөп алуу шилтемеси</translation>
@@ -1442,6 +1442,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="657480975869429144">Chrome'дун жаңы версиясы жеткиликтүү</translation>
 <translation id="658099107946526506">Жекече серептөөнү PIN код менен коргоп, башкалардын киришине жол бербеңиз</translation>
 <translation id="6583199322650523874">Учурдагы баракчаны кыстарып коюу</translation>
+<translation id="6583902294974160967">Колдоо</translation>
 <translation id="6588043302623806746">Коопсуз DNS'ти колдонуу</translation>
 <translation id="6590471736817333463">60% чейин трафик үнөмдөңүз</translation>
 <translation id="6593061639179217415">Компьютер версиясы</translation>
@@ -1744,6 +1745,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7656862631699126784">Жашыруун өтмөктөрдү кулпулоону күйгүзүү</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7663320421139257046">Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> ушул сайт менен бөлүшөт. Бул сайттын <ph name="BEGIN_LINK1" />купуялык эрежелерин<ph name="END_LINK1" /> караңыз.</translation>
+<translation id="7665445336029073980">Жүктөп алуу аракеттеринин толук таржымалы</translation>
 <translation id="766587987807204883">Оффлайн режиминде да окула турган макалалар ушул жерде көрүнөт</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> жабылды</translation>
 <translation id="767157537088426800">Сырсөздөрдү жана башкаларды бардык түзмөктөрүңүздө колдонуу үчүн ушул сайтка жана Chrome'го кириңиз</translation>

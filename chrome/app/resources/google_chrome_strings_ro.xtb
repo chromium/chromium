@@ -523,7 +523,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6319856120645568262">Chrome are nevoie de permisiune pentru a mapa împrejurimile și a-ți urmări mâinile</translation>
 <translation id="6321592572353357376">Extensia <ph name="EXTENSION_NAME" /> solicită să te conectezi la Chrome</translation>
 <translation id="6326175484149238433">Eliminați din Chrome</translation>
-<translation id="6334815226785304306">Setează Google Chrome ca browser prestabilit și fixează-l în bara de activități</translation>
 <translation id="6339888439788291743">Pictogramă nouă, aceeași comandă rapidă: dă clic pentru a pune întrebări în timp ce navighezi cu Modul AI în Căutarea Google.</translation>
 <translation id="6349304688246983183">Pune cu ușurință întrebări în timp ce navighezi cu Căutarea Google</translation>
 <translation id="63540178978900677">Chrome nu mai este browserul prestabilit. Setezi Chrome ca browser prestabilit?</translation>
@@ -850,6 +849,5 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="973195869036269770">ChromeOS nu a putut salva datele Chrome în Contul Google, deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
 <translation id="983803489796659991">Nu s-a instalat deoarece serverul de actualizare nu are date hash pentru aplicație.</translation>
-<translation id="989369509083708165">Google Chrome este browserul prestabilit</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> poate comuta între profilurile Chrome</translation>
 </translationbundle>

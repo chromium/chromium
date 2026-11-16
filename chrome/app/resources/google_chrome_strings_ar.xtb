@@ -527,7 +527,6 @@
 <translation id="6319856120645568262">‏يحتاج Chrome إلى إذن لتتبُّع اليدين وإنشاء خريطة للبيئة المحيطة بك</translation>
 <translation id="6321592572353357376">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chrome</translation>
 <translation id="6326175484149238433">‏إزالة من Chrome</translation>
-<translation id="6334815226785304306">‏يمكنك جعل Google Chrome المتصفّح التلقائي وتثبيته في شريط التطبيقات</translation>
 <translation id="6339888439788291743">‏رمز جديد للاختصار نفسه: يمكنك النقر لطرح الأسئلة أثناء التصفّح باستخدام "وضع AI" في "بحث Google".</translation>
 <translation id="6349304688246983183">‏يمكنك طرح الأسئلة بسهولة أثناء التصفّح باستخدام "بحث Google"</translation>
 <translation id="63540178978900677">‏لم يعُد Chrome متصفّحك التلقائي. جعل Chrome المتصفّح التلقائي؟</translation>
@@ -854,6 +853,5 @@
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="973195869036269770">‏تعذَّر على ChromeOS حفظ بيانات Chrome في حسابك على Google لأنّ تفاصيل تسجيل الدخول إلى حسابك قديمة</translation>
 <translation id="983803489796659991">تعذَّر تثبيت التطبيق لعدم وجود أي بيانات تجزئة للتطبيق في خادم التحديث.</translation>
-<translation id="989369509083708165">‏Google Chrome هو متصفحك التلقائي</translation>
 <translation id="989816563149873169">‏يعمل الاختصار <ph name="SHORTCUT" /> على التبديل بين الملفات الشخصية على Chrome.</translation>
 </translationbundle>

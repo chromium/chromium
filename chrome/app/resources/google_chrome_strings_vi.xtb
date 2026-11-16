@@ -527,7 +527,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6319856120645568262">Chrome cần có quyền tạo bản đồ về các khu vực xung quanh và theo dõi tay bạn</translation>
 <translation id="6321592572353357376">Tiện ích "<ph name="EXTENSION_NAME" />" muốn bạn đăng nhập vào Chrome</translation>
 <translation id="6326175484149238433">Xóa khỏi Chrome</translation>
-<translation id="6334815226785304306">Đặt Google Chrome làm trình duyệt mặc định và ghim vào thanh tác vụ</translation>
 <translation id="6339888439788291743">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Chế độ AI của Google Tìm kiếm.</translation>
 <translation id="6349304688246983183">Dễ dàng đặt câu hỏi trong khi duyệt web bằng Google Tìm kiếm</translation>
 <translation id="63540178978900677">Chrome không còn là trình duyệt mặc định của bạn. Đặt Chrome làm trình duyệt mặc định?</translation>
@@ -854,6 +853,5 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="973195869036269770">ChromeOS không thể lưu dữ liệu Chrome vào Tài khoản Google của bạn vì thông tin đăng nhập tài khoản đã lỗi thời</translation>
 <translation id="983803489796659991">Không cài đặt được do máy chủ cập nhật không có dữ liệu băm nào cho ứng dụng.</translation>
-<translation id="989369509083708165">Google Chrome là trình duyệt mặc định của bạn</translation>
 <translation id="989816563149873169">Phím tắt <ph name="SHORTCUT" /> có thể giúp chuyển đổi giữa các hồ sơ trên Chrome</translation>
 </translationbundle>

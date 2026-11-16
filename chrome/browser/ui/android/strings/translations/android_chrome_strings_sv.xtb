@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1003917207516838287">Senaste nedladdningshistoriken</translation>
 <translation id="1007349221964075684">Använd skärmlåset för att se öppna inkognitofönster</translation>
 <translation id="1010283278930414892">Inga lösenord har sparats på den här enheten</translation>
 <translation id="1011749477052068769">Flytta hit</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Bekräftelseark för nyckel har stängts</translation>
 <translation id="1197933394627598677">Visa läsläget</translation>
 <translation id="1197935538609051549">Inaktivera</translation>
-<translation id="119944043368869598">Ta bort alla</translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1202892408424955784">Bevakade produkter</translation>
 <translation id="1204037785786432551">Ladda ned länk</translation>
@@ -1444,6 +1444,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="657480975869429144">Det finns en ny version av Chrome</translation>
 <translation id="658099107946526506">Skydda din privata surfning med en pinkod för att förhindra oönskad åtkomst</translation>
 <translation id="6583199322650523874">Infoga ett bokmärke för den aktuella sidan</translation>
+<translation id="6583902294974160967">Support</translation>
 <translation id="6588043302623806746">Använd säker DNS</translation>
 <translation id="6590471736817333463">Spara upp till 60 % data</translation>
 <translation id="6593061639179217415">Datoranpassad webbplats</translation>
@@ -1746,6 +1747,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7656862631699126784">Aktivera inkognitolås</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7663320421139257046"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />integritetspolicy<ph name="END_LINK1" />.</translation>
+<translation id="7665445336029073980">Fullständig nedladdningshistorik</translation>
 <translation id="766587987807204883">Artiklar som du kan läsa även när du är offline visas här</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> har stängts</translation>
 <translation id="767157537088426800">Logga in på den här webbplatsen och i Chrome om du vill få dina lösenord med mera på alla dina enheter</translation>

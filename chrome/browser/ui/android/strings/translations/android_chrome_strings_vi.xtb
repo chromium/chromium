@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1003917207516838287">Nhật ký tải xuống gần đây</translation>
 <translation id="1007349221964075684">Dùng phương thức khoá màn hình để xem các cửa sổ ẩn danh đang mở</translation>
 <translation id="1010283278930414892">Không có mật khẩu nào được lưu trên thiết bị này</translation>
 <translation id="1011749477052068769">Chuyển đến đây</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Đã đóng trang xác nhận khoá truy cập</translation>
 <translation id="1197933394627598677">Hiện Chế độ đọc</translation>
 <translation id="1197935538609051549">Tắt</translation>
-<translation id="119944043368869598">Xoá tất cả</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1202892408424955784">Các sản phẩm bạn theo dõi</translation>
 <translation id="1204037785786432551">Tải đường liên kết xuống</translation>
@@ -1442,6 +1442,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="657480975869429144">Đã có phiên bản Chrome mới</translation>
 <translation id="658099107946526506">Bảo vệ hoạt động duyệt web ở chế độ riêng tư bằng mã PIN để ngăn chặn hành vi truy cập không mong muốn</translation>
 <translation id="6583199322650523874">Đánh dấu trang hiện tại</translation>
+<translation id="6583902294974160967">Hỗ trợ</translation>
 <translation id="6588043302623806746">Sử dụng DNS bảo mật</translation>
 <translation id="6590471736817333463">Tiết kiệm tới 60% dữ liệu</translation>
 <translation id="6593061639179217415">Trang cho máy tính</translation>
@@ -1744,6 +1745,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7656862631699126784">Bật chế độ Khoá thẻ ẩn danh</translation>
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7663320421139257046">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ <ph name="FIELDS_STRING" /> của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> của trang web này.</translation>
+<translation id="7665445336029073980">Toàn bộ nhật ký tải xuống</translation>
 <translation id="766587987807204883">Các bài viết xuất hiện ở đây và bạn có thể đọc ngay cả khi không có kết nối mạng</translation>
 <translation id="7666185984446444960">Đã đóng <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Đăng nhập vào trang web này và Chrome để sử dụng mật khẩu và các nội dung khác trên tất cả thiết bị của bạn</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1003917207516838287">Ferill nýlegs niðurhals</translation>
 <translation id="1007349221964075684">Nota skjálás til að sjá opna huliðsglugga</translation>
 <translation id="1010283278930414892">Engin vistuð aðgangsorð í þessu tæki</translation>
 <translation id="1011749477052068769">Flytja hingað</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Staðfestingarblað aðgangslykils lokað</translation>
 <translation id="1197933394627598677">Sýna lesstillingu</translation>
 <translation id="1197935538609051549">Slökkva</translation>
-<translation id="119944043368869598">Hreinsa allt</translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1202892408424955784">Vaktaðar vörur</translation>
 <translation id="1204037785786432551">Hlaða niður tengli</translation>
@@ -1442,6 +1442,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="657480975869429144">Ný útgáfa af Chrome er í boði</translation>
 <translation id="658099107946526506">Verndaðu óskráða vefnotkun með PIN-númeri til að koma í veg fyrir óæskilegan aðgang</translation>
 <translation id="6583199322650523874">Bókamerkja þessa síðu</translation>
+<translation id="6583902294974160967">Aðstoð</translation>
 <translation id="6588043302623806746">Nota öruggt DNS</translation>
 <translation id="6590471736817333463">Sparaðu allt að 60% af gögnum</translation>
 <translation id="6593061639179217415">Tölvuvefsvæði</translation>
@@ -1744,6 +1745,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7656862631699126784">Kveikja á læsingu huliðsstillingar</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7663320421139257046"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> mun deila <ph name="FIELDS_STRING" /> með þessu vefsvæði til að geta haldið áfram. Sjá <ph name="BEGIN_LINK1" />persónuverndarstefnu<ph name="END_LINK1" /> vefsvæðisins.</translation>
+<translation id="7665445336029073980">Heildarferill niðurhals</translation>
 <translation id="766587987807204883">Greinar birtast hér. Þú getur lesið þær jafnvel þótt nettenging sé ekki til staðar</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> lokað</translation>
 <translation id="767157537088426800">Skráðu þig inn á þetta vefsvæði og Chrome til að fá aðgangsorðin þín og fleira í öll tækin þín.</translation>

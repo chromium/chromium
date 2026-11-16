@@ -797,6 +797,7 @@
 <translation id="1802687198411089702">ໜ້ານີ້ບໍ່ຕອບສະໜອງ. ທ່ານສາມາດລໍຖ້າມັນ ຫຼື ອອກໄດ້.</translation>
 <translation id="1803287124763873748">ເຂົ້າສູ່ລະບົບຢູ່ໂທລະສັບບໍ?</translation>
 <translation id="1803531841600994172">ພາສາທີ່ຈະແປເປັນ</translation>
+<translation id="1803703903842028149">ບັດເຄຣດິດ, ບັດເດບິດ ແລະ IBAN</translation>
 <translation id="180441032496361123">ຄລິກເພື່ອເປີດນຳໃຊ້ <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="1805738995123446102">ແຖບໃນພື້ນຫຼັງກຳລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="1805822111539868586">ກວດເບິ່ງມຸມມອງ</translation>
@@ -2096,6 +2097,7 @@
 <translation id="310671807099593501">ເວັບໄຊກຳລັງໃຊ້ bluetooth</translation>
 <translation id="3108122610701115301">ຕັ້ງເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="3108931485517391283">ບໍ່ສາມາດຮັບໄດ້</translation>
+<translation id="3109161228145689140">ສ່ວນຕົວ, ບໍ່ລະບຸຕົວຕົນ, ເຊື່ອງ, ລັບ, ຄວາມປອດໄພ, ການປ້ອງກັນການຕິດຕາມ, ຄຸກກີ້, ລຶບລ້າງ, ແຄສ, ເປີດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="3109206895301430738">ກຸ່ມແຖບທີ່ບັນທຶກໄວ້</translation>
 <translation id="3109724472072898302">ຫຍໍ້ລົງ</translation>
 <translation id="3112378005171663295">ຍຸບລົງ</translation>
@@ -2191,6 +2193,7 @@
 <translation id="3195773549050092642">Gemini ຈະຢຸດໜ້າວຽກ</translation>
 <translation id="3199637719075529971">ແຖບນີ້ເຊື່ອມຕໍ່ກັບຜອດຊີຣຽວ</translation>
 <translation id="3201237270673604992">Z ຫາ A</translation>
+<translation id="3201749168732432347">ຂໍ້ສະເໜີ ແລະ ບັດສະມາຊິກ</translation>
 <translation id="3202499879214571401">ຢຸດສົ່ງສັນຍານໜ້າຈໍໄປຫາ <ph name="DEVICE_NAME" /> ຊົ່ວຄາວ</translation>
 <translation id="3202578601642193415">ໃໝ່ສຸດ</translation>
 <translation id="3207344462385471911">ທ່ານກຳລັງເຫັນການຊອກຫາ ແລະ ສ່ວນຫຼຸດການຊື້ເຄື່ອງທີ່ແນະນຳທີ່ອາດສົນໃຈທ່ານໂດຍອ້າງອີງຈາກການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານ.
@@ -2273,6 +2276,7 @@
 <translation id="326911502853238749">ຢ່າສະແດງ <ph name="MODULE_NAME" /></translation>
 <translation id="3269612321104318480">ສີຂຽວອົມຟ້າ ແລະ ສີຂາວ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ໄຟລ໌}other{# ໄຟລ໌}}</translation>
+<translation id="3270303798509728461">ສະແດງຕົວຢ່າງ <ph name="VOICE_NAME" /></translation>
 <translation id="3270965368676314374">ອ່ານ​, ​ປ່ຽນ​ແປງ​ ແລະ​ ລຶບ​ຮູບ​, ເພງ​, ​ແລະ ມີເດຍ​ອື່ນໆ​ຈາກ​ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານ</translation>
 <translation id="3275464924531706548">ຫຍໍ້ <ph name="HEADER" /> ລົງ</translation>
 <translation id="3275778913554317645">ເປີດເປັນໜ້າຕ່າງ</translation>
@@ -3479,6 +3483,7 @@
 <translation id="4449247303975391730">ຈັດການການອະນຸຍາດ</translation>
 <translation id="4453946976636652378">ຊອກຫາ <ph name="SEARCH_ENGINE_NAME" /> ຫຼື ພິມ URL</translation>
 <translation id="4460014764210899310">ຍົກເລີກການຈັດກຸ່ມ</translation>
+<translation id="4460297284484740408">ບໍ່</translation>
 <translation id="4461483878391246134">ເພີ່ມພາສາເພື່ອບໍ່ໃຫ້ມີຂໍ້ສະເໜີໃນການແປອີກ</translation>
 <translation id="4466922176191762830">ແລະ ອີກ <ph name="NUM" /> ລາຍການ</translation>
 <translation id="4467373268340082204">PIN ບໍ່ຖືກຕ້ອງ</translation>
@@ -4775,6 +4780,7 @@
 <translation id="5820751560028604030">ບລັອກການດາວໂຫຼດໃນເຄື່ອງແລ້ວ</translation>
 <translation id="5821565227679781414">ສ້າງ​ທາງ​ລັດ</translation>
 <translation id="5826993284769733527">ເຄິ່ງໂປ່ງແສງ</translation>
+<translation id="5827056944126565928">ລະຫັດການສົ່ງເສີມ ແລະ ບັດສະມາຊິກ</translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5827835011646404677">ລະບົບຈະບັນທຶກທັກສະໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="5828181959764767444">ຕາເວັນຕົກ</translation>
@@ -5200,6 +5206,7 @@
 <translation id="6253801023880399036">ບັນທຶກລະຫັດຜ່ານໄປໃສ່ <ph name="GOOGLE_PASSWORD_MANAGER" /> ແລ້ວ.</translation>
 <translation id="6254503684448816922">ລະຫັດ​ເສ​ຍຫາຍ</translation>
 <translation id="6254892857036829079">ສົມບູນແບບ</translation>
+<translation id="6255253900817321392">ຊອກຫາໄດ້ໄວຂຶ້ນຈາກທຸກບ່ອນໃນ Mac ຂອງທ່ານ ໂດຍບໍ່ຕ້ອງເປີດແຖບໃໝ່</translation>
 <translation id="6257602895346497974">ເປີດການຊິ້ງຂໍ້ມູນ...</translation>
 <translation id="6258818697161346451">ໃຊ້ກະແຈຜ່ານຂອງທ່ານໃນອຸປະກອນນີ້</translation>
 <translation id="6259776178973198997">ໂຫຼດຂໍ້ມູນເຈົ້າຂອງ Wi-Fi Direct ຄືນໃໝ່</translation>
@@ -6983,6 +6990,7 @@
 <translation id="8033958968890501070">ໝົດເວລາ</translation>
 <translation id="8034697324150621782">ສະຫຼັບກັບມຸມມອງທາງເທິງ</translation>
 <translation id="8035059678007243127">ໜ້າແຄສຍ້ອນຫຼັງແບບບໍ່ເປີດເຜີຍຕົວຕົນ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8035129145306910594">ແມ່ນ</translation>
 <translation id="8036143516314698610">ສະແດງປຸ່ມກຸ່ມແຖບທີ່ບັນທຶກໄວ້</translation>
 <translation id="8036193484521570992">ຊ່ວຍປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="803639495237134713">ປັບແຕ່ງຄີລັດ</translation>
@@ -7899,6 +7907,7 @@
 <translation id="895347679606913382">ກໍາລັງເລີ່ມຕົ້ນ...</translation>
 <translation id="8954796993367253220">ເພື່ອລຶບປະຫວັດໃນໂໝດແຂກ, ໃຫ້ປິດໜ້າຈໍແຂກທັງໝົດ.</translation>
 <translation id="8955174612586215829">ຊອກຫາຮູບແບບສີສັນ</translation>
+<translation id="8957049369099630820">ຊອກຫາໄດ້ໄວຂຶ້ນຈາກທຸກບ່ອນໃນຄອມພິວເຕີຂອງທ່ານ ໂດຍບໍ່ຕ້ອງເປີດແຖບໃໝ່</translation>
 <translation id="8957656266859671822">ເລືອກບັນຊີຂອງທ່ານ</translation>
 <translation id="8957757410289731985">ປັບແຕ່ງໂປຣໄຟລ໌</translation>
 <translation id="8959144235813727886">ເວັບໄຊ ແລະ ແອັບ</translation>

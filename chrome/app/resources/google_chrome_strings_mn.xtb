@@ -531,7 +531,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6319856120645568262">Таны орчин тойрныг зураглаж, гарыг тань тандахад Chrome-д зөвшөөрөл шаардлагатай</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" өргөтгөл таныг Chrome-д нэвтрэхийг хүсэж байна</translation>
 <translation id="6326175484149238433">Chrome-оос устга</translation>
-<translation id="6334815226785304306">Google Chrome-г өгөгдмөл хөтчөө болгож ажлын хэсэг дээрээ бэхэлнэ үү</translation>
 <translation id="6339888439788291743">Шинэ дүрс тэмдэг, ижил товчлол: Google Хайлтын ХОУ-ы горимоор үзэх явцдаа асуулт асуухын тулд товшино уу.</translation>
 <translation id="6349304688246983183">Google Хайлтаар үзэх явцдаа хялбархан асуулт асуугаарай</translation>
 <translation id="63540178978900677">Chrome таны өгөгдмөл хөтөч биш болсон байна. Chrome-г өгөгдмөл хөтөч болгох уу?</translation>
@@ -856,6 +855,5 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="973195869036269770">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул ChromiumOS таны Google Бүртгэлд Chrome-н өгөгдлийг хадгалж чадсангүй</translation>
 <translation id="983803489796659991">Шинэчлэлтийн серверт аппликэйшнд зориулсан ямар нэг хэш өгөгдөл байгаагүй тул суулгалт амжилтгүй болсон.</translation>
-<translation id="989369509083708165">Google Chrome таны өгөгдмөл хөтөч байна</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome-н профайлууд хооронд сэлгэх боломжтой</translation>
 </translationbundle>

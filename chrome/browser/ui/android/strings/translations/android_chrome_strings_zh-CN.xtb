@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1003917207516838287">近期的下载记录</translation>
 <translation id="1007349221964075684">需使用屏幕解锁方式解锁才能查看打开的无痕式窗口</translation>
 <translation id="1010283278930414892">此设备上没有任何保存的密码</translation>
 <translation id="1011749477052068769">移至这里</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">已关闭通行密钥确认工作表</translation>
 <translation id="1197933394627598677">显示阅读模式</translation>
 <translation id="1197935538609051549">停用</translation>
-<translation id="119944043368869598">全部清除</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1202892408424955784">跟踪的商品</translation>
 <translation id="1204037785786432551">下载链接</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">有新版 Chrome 可用</translation>
 <translation id="658099107946526506">使用 PIN 码保护无痕浏览，防止他人未经授权访问</translation>
 <translation id="6583199322650523874">为当前网页添加书签</translation>
+<translation id="6583902294974160967">支持</translation>
 <translation id="6588043302623806746">使用安全 DNS</translation>
 <translation id="6590471736817333463">节省高达 60% 的数据流量</translation>
 <translation id="6593061639179217415">桌面版网站</translation>
@@ -1742,6 +1743,7 @@
 <translation id="7656862631699126784">开启无痕模式锁定</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663320421139257046">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />。</translation>
+<translation id="7665445336029073980">完整的下载记录</translation>
 <translation id="766587987807204883">报道会显示在此处，即使在离线状态下也可以阅读</translation>
 <translation id="7666185984446444960">已关闭 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">登录此网站和 Chrome，即可在自己的所有设备上获取密码等信息</translation>

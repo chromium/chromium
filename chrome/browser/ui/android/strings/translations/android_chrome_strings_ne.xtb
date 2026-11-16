@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1003917207516838287">हालसालैको डाउनलोड हिस्ट्री</translation>
 <translation id="1007349221964075684">तपाईं हाल खोलिएका इन्कोग्निटो विन्डोहरू हेर्न चाहनुहुन्छ भने स्क्रिन लक प्रयोग गर्नुहोस्</translation>
 <translation id="1010283278930414892">यो डिभाइसमा कुनै पनि पासवर्ड सेभ गरिएको छैन</translation>
 <translation id="1011749477052068769">सारेर यहाँ ल्याउनुहोस्</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">पासकी पुष्टि गर्ने पाना बन्द गरिएको छ</translation>
 <translation id="1197933394627598677">रिडिङ मोड देखाउनुहोस्</translation>
 <translation id="1197935538609051549">डिएक्टिभेट गर्नुहोस्</translation>
-<translation id="119944043368869598">सबै सफा गर्नुहोस्</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1202892408424955784">ट्र्याक गरिएका उत्पादनहरू</translation>
 <translation id="1204037785786432551">डाउनलोड लिंक</translation>
@@ -1441,6 +1441,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="657480975869429144">Chrome को नयाँ संस्करण उपलब्ध छ</translation>
 <translation id="658099107946526506">आफ्नो निजी ब्राउजिङ अनधिकृत रूपमा एक्सेस हुन नदिन PIN प्रयोग गरी सुरक्षित राख्नुहोस्</translation>
 <translation id="6583199322650523874">हालको पृष्ठलाई पुस्तक चिन्ह लगाउनुहोस्</translation>
+<translation id="6583902294974160967">सहायता प्रदान गर्ने सेवा</translation>
 <translation id="6588043302623806746">सुरक्षित DNS प्रयोग गर्नुहोस्</translation>
 <translation id="6590471736817333463">६०% सम्म डेटा बचत गर्नुहोस्</translation>
 <translation id="6593061639179217415">डेस्कटप साइट</translation>
@@ -1743,6 +1744,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7656862631699126784">इन्कोग्निटो लक अन गर्नुहोस्</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7663320421139257046">साइन अप गर्ने प्रक्रिया जारी राख्न <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले यो साइटसँग तपाईंको <ph name="FIELDS_STRING" /> सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />गोपनीयता नीति<ph name="END_LINK1" /> हेर्नुहोस्।</translation>
+<translation id="7665445336029073980">पूर्ण डाउनलोड हिस्ट्री</translation>
 <translation id="766587987807204883">लेखहरू यहाँ देखिन्छन् र तपाईं ती लेखहरू अफलाइन भएका बेलामा पनि पढ्न सक्नुहुन्छ</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> बन्द गरियो</translation>
 <translation id="767157537088426800">आफ्ना सबै डिभाइसका पासवर्डलगायतका कुराहरू प्राप्त गर्न यो साइट र Chrome मा साइन इन गर्नुहोस्</translation>

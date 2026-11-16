@@ -12764,20 +12764,6 @@ Geçerli <ph name="URL_LABEL" /> kalıpları (sürüm 127'den itibaren) hakkınd
 <translation id="8854571659927427063">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıdan yer işaretleri ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yer işaretleri ilk çalıştırmada içe aktarılmaz.
 
       Kullanıcılar içe aktarma iletişim kutusunu tetikleyebilir ve yer işaretleri onay kutusu, bu politikanın değerine uyacak şekilde işaretlenir veya işareti kaldırılır.</translation>
-<translation id="8857793979935465678">Bu politika, URL'nin ziyaret edilmesinin güvenli olup olmadığını belirlemek için
-Güvenli Tarama'nın standart koruma modunun, URL'nin kısmi karmalarını habersiz
-HTTP üzerinden proxy aracılığıyla Google'a göndermesine izin verilip verilmediğini kontrol eder.
-
-Proxy; tarayıcıların, kullanıcının IP adresine bağlanmadan URL'lerin kısmi karmalarını Google'a yüklemesine olanak tanır. Politika ayrıca Güvenli Tarama korumasının daha iyi olması için tarayıcıların URL'lerin kısmi karmalarını daha yüksek sıklıkta yüklemesine olanak tanır.
-
-Güvenli Tarama devre dışıysa veya gelişmiş koruma moduna ayarlanmışsa bu
-politika yoksayılır.
-
-Politika, Etkin olarak ayarlanır veya ayarlanmadan bırakılırsa daha yüksek
-korumalı proxy kullanan aramalara izin verilir.
-
-Politika, Devre Dışı olarak ayarlanırsa daha yüksek korumalı proxy kullanan aramalara izin
-verilmez. URL'lerin kısmi karmaları doğrudan Google'a çok daha düşük sıklıkta yüklenir. Bu da korumanın kalitesini düşürür.</translation>
 <translation id="8860342862142842017">subjectPublicKeyInfo karma listesi için Sertifika Şeffaflığı uygulamasını devre dışı bırak</translation>
 <translation id="8860894781631833477">Kullanıcılar <ph name="PRODUCT_OS_NAME" /> sürüm kanalını yapılandırabilir</translation>
 <translation id="8862086508140571198">Bu politika, mümkün olan en kısa sürede indirilecek DLC (İndirilebilir İçerik) listesinin ayarlanmasına olanak tanır. İndirilen DLC'ler sonrasında cihazdaki tüm kullanıcılar tarafından kullanılabilir.

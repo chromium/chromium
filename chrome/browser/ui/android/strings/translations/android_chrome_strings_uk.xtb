@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1003917207516838287">Нещодавня історія завантажень</translation>
 <translation id="1007349221964075684">Використовувати спосіб розблокування екрана, щоб переглядати відкриті анонімні вікна</translation>
 <translation id="1010283278930414892">На цьому пристрої немає збережених паролів</translation>
 <translation id="1011749477052068769">Перемістити сюди</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Екран підтвердження ключа доступу закрито</translation>
 <translation id="1197933394627598677">Показати в режимі читання</translation>
 <translation id="1197935538609051549">Вимкнути</translation>
-<translation id="119944043368869598">Очистити все</translation>
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1202892408424955784">Відстежувані товари</translation>
 <translation id="1204037785786432551">Завантажити дані за посиланням</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Доступна нова версія Chrome</translation>
 <translation id="658099107946526506">Захистіть режим анонімного перегляду за допомогою PIN-коду, щоб запобігти небажаному доступу</translation>
 <translation id="6583199322650523874">Зробити закладку поточної сторінки</translation>
+<translation id="6583902294974160967">Підтримка</translation>
 <translation id="6588043302623806746">Використовувати захищений DNS-сервер</translation>
 <translation id="6590471736817333463">Заощаджуйте до 60% трафіку</translation>
 <translation id="6593061639179217415">Версія для комп’ютера</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">Увімкнути функцію блокування анонімних вкладок</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7663320421139257046">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть цьому сайту таку інформацію: <ph name="FIELDS_STRING" />. Перегляньте <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" /> цього сайту.</translation>
+<translation id="7665445336029073980">Уся історія завантажень</translation>
 <translation id="766587987807204883">Тут з'являються статті, які можна читати навіть у режимі офлайн</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> закрито</translation>
 <translation id="767157537088426800">Увійдіть в облікові записи цього сайту й Chrome, щоб мати доступ до паролів і інших даних на всіх своїх пристроях</translation>

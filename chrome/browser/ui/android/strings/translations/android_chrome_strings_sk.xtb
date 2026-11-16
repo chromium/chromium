@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1003917207516838287">Nedávna história sťahovania</translation>
 <translation id="1007349221964075684">Zobrazovať otvorené okná inkognito pomocou zámky obrazovky</translation>
 <translation id="1010283278930414892">V tomto zariadení nie sú uložené žiadne heslá</translation>
 <translation id="1011749477052068769">Presunúť sem</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Zavretý hárok s potvrdením prístupového kľúča</translation>
 <translation id="1197933394627598677">Zobraziť režim čítania</translation>
 <translation id="1197935538609051549">Deaktivovať</translation>
-<translation id="119944043368869598">Vymazať všetko</translation>
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="1204037785786432551">Stiahnuť odkaz</translation>
@@ -1442,6 +1442,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="657480975869429144">K dispozícii je nová verzia prehliadača Chrome</translation>
 <translation id="658099107946526506">Chráňte svoje anonymné prehliadanie kódom PIN, aby ste zabránili nežiaducemu prístupu</translation>
 <translation id="6583199322650523874">Pridanie aktuálnej stránky medzi záložky</translation>
+<translation id="6583902294974160967">Podpora</translation>
 <translation id="6588043302623806746">Používať zabezpečené DNS</translation>
 <translation id="6590471736817333463">Ušetrite až 60 % dát</translation>
 <translation id="6593061639179217415">Web pre počítače</translation>
@@ -1744,6 +1745,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7656862631699126784">Zapnúť zámku inkognito</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7663320421139257046">Ak chcete pokračovať, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bude s týmto webom zdieľať vaše <ph name="FIELDS_STRING" />. Pozrite si <ph name="BEGIN_LINK1" />pravidlá ochrany súkromia<ph name="END_LINK1" /> tohto webu.</translation>
+<translation id="7665445336029073980">Celá história sťahovania</translation>
 <translation id="766587987807204883">Tu sa zobrazia články, ktoré môžete čítať dokonca aj offline</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> boli zavreté</translation>
 <translation id="767157537088426800">Prihláste sa na tomto webe a v Chrome, aby ste mali svoje heslá a ďalšie položky vo všetkých svojich zariadeniach</translation>

@@ -653,6 +653,7 @@
 <translation id="2969979262385602596">Erro ao iniciar sesión. Téntao de novo máis tarde.</translation>
 <translation id="2975761176769946178">Necesítase un URL</translation>
 <translation id="297667759942911166">Colabora en grupos de pestanas</translation>
+<translation id="2986080119218811913">Volver a <ph name="ACTOR_NAME" /></translation>
 <translation id="298696743524648170">Para usar Gemini en Chrome, inicia sesión en Chrome coa túa Conta de Google</translation>
 <translation id="2987670534697681860">Verifica a túa identidade para acceder a todos os teus contrasinais neste dispositivo.</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
@@ -1117,7 +1118,6 @@
 <translation id="4488754974567924717">Avisarémoste se se vulneran os teus contrasinais</translation>
 <translation id="4489536976005181779">{count,plural, =1{Engadiuse a páxina á túa lista de lectura da conta {email}}other{Engadíronse as páxinas á túa lista de lectura da conta {email}}}</translation>
 <translation id="4493604894403585654">Tes a sesión iniciada como <ph name="USER_EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
-<translation id="4495251723189610737">Os teus chats gardaranse no teu historial de Gemini. Este inclúe o teu audio, as pantallas compartidas e os vídeos de Gemini Live, o que compartes con Gemini (como as solicitudes, as <ph name="BEGIN_LINK" />cousas que cargas<ph name="END_LINK" /> e as <ph name="BEGIN_LINK" />pantallas<ph name="END_LINK" />), as respostas de Gemini, as tarefas e as chamadas a ferramentas, os comentarios, a información dos sitios web que visitas con Gemini, os datos de uso de produtos, a localización xeral do teu dispositivo, o enderezo IP e os enderezos particular ou do traballo que teñas na túa Conta de Google. Así mesmo, pode abranguer datos das aplicacións que conectes a Gemini.</translation>
 <translation id="4502423230170890588">Quitar deste dispositivo</translation>
 <translation id="4508486880075514067">Despregar a pantalla completa</translation>
 <translation id="4508750114462689118">Pecha a promoción de inicio de sesión</translation>
@@ -1291,6 +1291,7 @@
 <translation id="499122600724363620"><ph name="NAME" /> (<ph name="EMAIL" />), perfil xestionado pola túa organización.</translation>
 <translation id="4991383000638469704"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="AI_TIER" />.</translation>
 <translation id="4992255726304765516">Tocar a cor do grupo <ph name="COLOR" /></translation>
+<translation id="500126251490468002">O xestor de contrasinais de Google non ten ningún contrasinal para este sitio. Volve a <ph name="ACTOR_NAME" /> para iniciar sesión ou engade un contrasinal a ese xestor.</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5009127379503001909">Seguir explorando</translation>

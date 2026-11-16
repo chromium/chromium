@@ -14,7 +14,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1098493699368672217">Afficher la recherche avec Chromium dans la barre d'état système et activer le raccourci-clavier</translation>
 <translation id="1104942323762546749">Chromium veut exporter vos mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="112640046208448578">Identifiez des objets ou des lieux et copiez ou traduisez du texte. Lorsque vous utilisez la recherche d'images, une capture d'écran de la page est envoyée au serveur. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium est votre navigateur par défaut</translation>
 <translation id="1131805035311359397">Pour vérifier si vos mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Votre administrateur vous demande de relancer Chromium pour appliquer cette mise à jour. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne se rouvrira pas après la relance.}one{Votre administrateur vous demande de relancer Chromium pour appliquer cette mise à jour. Il y a une fenêtre de navigation privée ou une fenêtre isolée (#) ouverte dans les profils. Elles ne se rouvriront pas après la relance.}other{Votre administrateur vous demande de relancer Chromium pour appliquer cette mise à jour. Il y a # fenêtres de navigation privée et isolées ouvertes dans les profils. Elles ne se rouvriront pas après la relance.}}</translation>
 <translation id="1153368717515616349">Cliquez sur le menu Chromium</translation>
@@ -750,7 +749,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8813277370772331957">Me le rappeler plus tard</translation>
 <translation id="8816416449795340678">Partagez ce document avec Gemini dans Chromium pour obtenir un aperçu rapide et poser des questions de suivi</translation>
 <translation id="8818550178040858407">Vous connecter à Chromium?</translation>
-<translation id="8823401858233292222">Faire de Chromium le navigateur par défaut et l'épingler à la barre des tâches</translation>
 <translation id="8826492472752484139">Cliquez sur « Gestionnaire de mots de passe »</translation>
 <translation id="8833697763442816810">Système Chromium OS</translation>
 <translation id="8852026904190808918">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chromium</translation>

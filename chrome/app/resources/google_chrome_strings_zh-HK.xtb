@@ -530,7 +530,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6319856120645568262">Chrome 需要適當權限，才能繪製周遭環境並進行手部追蹤</translation>
 <translation id="6321592572353357376">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chrome</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
-<translation id="6334815226785304306">將 Google Chrome 設定為預設瀏覽器並固定到工作列</translation>
 <translation id="6339888439788291743">全新圖示，捷徑不變：按一下即可透過「Google 搜尋 AI 模式」，在瀏覽時提問。</translation>
 <translation id="6349304688246983183">透過「Google 搜尋」，在瀏覽時輕鬆提問</translation>
 <translation id="63540178978900677">Chrome 不再是你的預設瀏覽器。要將 Chrome 設定為預設瀏覽器嗎？</translation>
@@ -857,6 +856,5 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="973195869036269770">你的帳戶登入詳細資料尚未更新，因此 ChromeOS 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="983803489796659991">由於更新伺服器沒有應用程式的任何雜湊資料，因此無法安裝。</translation>
-<translation id="989369509083708165">Google Chrome 現為您的預設瀏覽器</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可以轉換唔同嘅 Chrome 設定檔</translation>
 </translationbundle>

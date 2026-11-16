@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1003917207516838287">Соңғы жүктеп алу тарихы</translation>
 <translation id="1007349221964075684">Ашылған инкогнито терезелерін көру үшін экран құлпын пайдалану</translation>
 <translation id="1010283278930414892">Бұл құрылғыда сақталған құпия сөздер жоқ</translation>
 <translation id="1011749477052068769">Мұнда жылжыту</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Кіру кілтін растау парағы жабылды.</translation>
 <translation id="1197933394627598677">Оқу режимін көрсету</translation>
 <translation id="1197935538609051549">Өшіріп қою</translation>
-<translation id="119944043368869598">Барлығын өшіру</translation>
 <translation id="1201402288615127009">Келесі</translation>
 <translation id="1202892408424955784">Бақыланатын өнімдер</translation>
 <translation id="1204037785786432551">Сілтемедегі деректі жүктеп алу</translation>
@@ -1442,6 +1442,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="657480975869429144">Chrome-ның жаңа нұсқасы қолжетімді.</translation>
 <translation id="658099107946526506">Құпия шарлауды PIN кодымен қорғап, рұқсатсыз кірудің алдын алыңыз.</translation>
 <translation id="6583199322650523874">Ағымдағы бетке бетбелгі жасау</translation>
+<translation id="6583902294974160967">Қолдау қызметі</translation>
 <translation id="6588043302623806746">Қауіпсіз DNS пайдалану</translation>
 <translation id="6590471736817333463">Деректер трафигін 60%-ға дейін үнемдеңіз</translation>
 <translation id="6593061639179217415">Компьютерге арналған сайт</translation>
@@ -1744,6 +1745,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7656862631699126784">Инкогнито құлпын қосу</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7663320421139257046">Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> сіздің <ph name="FIELDS_STRING" /> деректеріңізді осы сайтпен бөліседі. Осы сайттың <ph name="BEGIN_LINK1" />Құпиялық саясатын<ph name="END_LINK1" /> қараңыз.</translation>
+<translation id="7665445336029073980">Толық жүктеп алу тарихы</translation>
 <translation id="766587987807204883">Мақалалар осы жерде тұрады. Оларды, интернетіңіз жоқ болса да, оқи аласыз.</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> жабылды.</translation>
 <translation id="767157537088426800">Барлық құрылғыдағы құпия сөздер мен басқа деректерді алу үшін осы сайтқа және Chrome-ға кіріңіз.</translation>

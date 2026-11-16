@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
+<translation id="1003917207516838287">ប្រវត្តិ​ទាញយក​ថ្មីៗ</translation>
 <translation id="1007349221964075684">ប្រើ​ការចាក់សោអេក្រង់ ដើម្បី​មើលឃើញ​ផ្ទាំងឯកជន​ដែលបើក</translation>
 <translation id="1010283278930414892">គ្មាន​ពាក្យសម្ងាត់​ដែលបាន​រក្សាទុក​នៅលើ​ឧបករណ៍​នេះទេ</translation>
 <translation id="1011749477052068769">ផ្លាស់ទីមកទីនេះ</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">បានបិទ​សន្លឹក​បញ្ជាក់​កូដសម្ងាត់</translation>
 <translation id="1197933394627598677">បង្ហាញ​មុខងារ​អាន</translation>
 <translation id="1197935538609051549">បិទ​ដំណើរការ</translation>
-<translation id="119944043368869598">ជម្រះទាំងអស់</translation>
 <translation id="1201402288615127009">បន្ទាប់</translation>
 <translation id="1202892408424955784">ផលិតផល​ដែលតាមដាន</translation>
 <translation id="1204037785786432551">ទាញយកតំណ</translation>
@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ទទួលជំនួយ<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">កំពុងតាមដាន​តម្លៃ</translation>
 <translation id="3037517125981011456">បង្ហាញ​សារសម្រាប់​ចូល Chrome</translation>
+<translation id="3038505649933066250">ត្រងតាមកាលបរិច្ឆេទ</translation>
 <translation id="3044436568790455247">បានបើក "ជ្រើសរើសឧបករណ៍" ពេញអេក្រង់។</translation>
 <translation id="3057938290530993634">ចុចឱ្យជាប់ ដើម្បីខ្ទាស់គេហទំព័រដែលអ្នកចូលមើលញឹកញាប់បំផុត ដើម្បីងាយស្រួលចូលមើលនៅលើកក្រោយ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{ចំណាំ <ph name="BOOKMARKS_COUNT_ONE" />}other{ចំណាំ <ph name="BOOKMARKS_COUNT_MANY" />}}</translation>
@@ -1443,6 +1444,7 @@
 <translation id="657480975869429144">មាន​កំណែ Chrome ថ្មី​ហើយ</translation>
 <translation id="658099107946526506">ការពារការរុករកលក្ខណៈឯកជនរបស់អ្នកដោយប្រើកូដ pin ដើម្បីទប់ស្កាត់ការចូលប្រើដែលមិនចង់បាន</translation>
 <translation id="6583199322650523874">ចំណាំទំព័របច្ចុប្បន្ននេះ</translation>
+<translation id="6583902294974160967">ជំនួយ</translation>
 <translation id="6588043302623806746">ប្រើ DNS សុវត្ថិភាព</translation>
 <translation id="6590471736817333463">សន្សំសំចៃទិន្នន័យ​បានរហូតដល់ 60%</translation>
 <translation id="6593061639179217415">ទំព័រ​អេក្រង់​កុំព្យូទ័រ</translation>
@@ -1745,6 +1747,7 @@
 <translation id="7656862631699126784">បើក​សោ​ឯកជន</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7663320421139257046">ដើម្បី​បន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹង​ចែករំលែក<ph name="FIELDS_STRING" />របស់អ្នក​ជាមួយ​គេហទំព័រ​នេះ។ សូមមើល<ph name="BEGIN_LINK1" />គោលការណ៍​ឯកជនភាព<ph name="END_LINK1" />របស់​គេហទំព័រ​នេះ។</translation>
+<translation id="7665445336029073980">ប្រវត្តិ​ទាញយក​ពេញលេញ</translation>
 <translation id="766587987807204883">អត្ថបទបង្ហាញ​នៅទីនេះ ដែលអ្នកអាច​អានបាន ទោះបីជាគ្មាន​អ៊ីនធឺណិត​ក៏ដោយ</translation>
 <translation id="7666185984446444960">បានបិទ <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">ចូលគណនីគេហទំព័រនេះ និង Chrome ដើម្បីទទួលបានពាក្យសម្ងាត់របស់អ្នក និងអ្វីៗជាច្រើនទៀតនៅលើឧបករណ៍ទាំងអស់របស់អ្នក</translation>

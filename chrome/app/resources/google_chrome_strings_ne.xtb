@@ -527,7 +527,6 @@ Google Chrome ले तपाईंको सेटिङहरू पुन: �
 <translation id="6319856120645568262">Chrome लाई तपाईंका वरिपरिको नक्सा बनाउने र तपाईंका हातको चाल ट्र्याक गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" एक्स्टेन्सनले तपाईंलाई Chrome मा साइन गर्न अनुरोध गरिरहेको छ</translation>
 <translation id="6326175484149238433">Chrome बाट हटाउनुहोस्</translation>
-<translation id="6334815226785304306">Google Chrome लाई डिफल्ट ब्राउजर बनाउनुहोस् र यसलाई टास्कबारमा पिन गर्नुहोस्</translation>
 <translation id="6339888439788291743">नयाँ आइकन, उही सर्टकट: Google Search AI मोड प्रयोग गरी ब्राउज गर्दै गर्दा प्रश्नहरू सोध्न क्लिक गर्नुहोस्।</translation>
 <translation id="6349304688246983183">Google Search प्रयोग गरी ब्राउज गर्दै गर्दा सजिलैसँग प्रश्नहरू सोध्नुहोस्</translation>
 <translation id="63540178978900677">Chrome अब तपाईंको डिफल्ट ब्राउजर होइन। Chrome लाई डिफल्ट ब्राउजर बनाउने हो?</translation>
@@ -853,6 +852,5 @@ Google Chrome ले तपाईंको सेटिङहरू पुन: �
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="973195869036269770">तपाईंको खाताको साइन इनसम्बन्धी विवरण पुरानो भएकाले ChromeOS ले तपाईंको Google खातामा Chrome को डेटा सेभ गर्न सकेन</translation>
 <translation id="983803489796659991">अपडेट सर्भरमा यो एपको कुनै पनि ह्यास डेटा नभएकाले उक्त एप इन्स्टल गर्न सकिएन।</translation>
-<translation id="989369509083708165">Google Chrome तपाईंको डिफल्ट ब्राउजर हो</translation>
 <translation id="989816563149873169">तपाईं <ph name="SHORTCUT" /> थिचेर Chrome मा एक प्रोफाइलबाट अर्को प्रोफाइलमा जान सक्नुहुन्छ</translation>
 </translationbundle>

@@ -14,7 +14,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1098493699368672217">Zoeken met Chromium tonen in systeemvak en sneltoets aanzetten</translation>
 <translation id="1104942323762546749">Chromium wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="112640046208448578">Herken voorwerpen of plaatsen en kopieer of vertaal tekst. Als je Zoeken met afbeelding gebruikt, wordt een screenshot van de pagina naar de server gestuurd. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium is je standaardbrowser</translation>
 <translation id="1131805035311359397">Als je wilt checken of je wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren. Er is een incognito- of geïsoleerd venster geopend. Het wordt niet opnieuw geopend na de herstart.}other{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren. Er zijn # incognito- en geïsoleerde vensters geopend in verschillende profielen. Ze worden niet opnieuw geopend na de herstart.}}</translation>
 <translation id="1153368717515616349">Klik op het Chromium-menu</translation>
@@ -750,7 +749,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8813277370772331957">Later herinneren</translation>
 <translation id="8816416449795340678">Deel dit document met Gemini in Chromium om een snel overzicht te krijgen en follow-upvragen te stellen</translation>
 <translation id="8818550178040858407">Inloggen bij Chromium?</translation>
-<translation id="8823401858233292222">Chromium instellen als standaardbrowser en vastzetten op de taakbalk</translation>
 <translation id="8826492472752484139">Klik op Wachtwoordmanager</translation>
 <translation id="8833697763442816810">Chromium OS-systeem</translation>
 <translation id="8852026904190808918">Deze taal wordt gebruikt om menu's, instellingen, meldingen en andere tekst in Chromium weer te geven</translation>

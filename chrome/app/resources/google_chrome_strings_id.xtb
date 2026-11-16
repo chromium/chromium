@@ -523,7 +523,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6319856120645568262">Chrome memerlukan izin untuk memetakan lingkungan dan melacak tangan Anda</translation>
 <translation id="6321592572353357376">Ekstensi "<ph name="EXTENSION_NAME" />" ingin Anda login ke Chrome</translation>
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
-<translation id="6334815226785304306">Jadikan Google Chrome sebagai browser default dan sematkan ke taskbar</translation>
 <translation id="6339888439788291743">Ikon baru, pintasan tetap sama: Klik untuk mengajukan pertanyaan saat menjelajah dengan Mode AI Google Penelusuran.</translation>
 <translation id="6349304688246983183">Ajukan pertanyaan dengan mudah saat Anda menjelajah dengan Google Penelusuran</translation>
 <translation id="63540178978900677">Chrome bukan lagi browser default Anda. Jadikan Chrome browser default?</translation>
@@ -848,6 +847,5 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="973195869036269770">ChromeOS tidak dapat menyimpan data Chrome di Akun Google Anda karena detail login akun Anda sudah tidak berlaku</translation>
 <translation id="983803489796659991">Penginstalan gagal karena server update tidak memiliki data hash apa pun untuk aplikasi.</translation>
-<translation id="989369509083708165">Google Chrome adalah browser default Anda</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chrome</translation>
 </translationbundle>

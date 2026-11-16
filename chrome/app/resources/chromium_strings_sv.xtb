@@ -14,7 +14,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1098493699368672217">Visa Sök med Chromium i systemfältet och aktivera kortkommandot</translation>
 <translation id="1104942323762546749">Lösenorden exporteras från Chromium. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
 <translation id="112640046208448578">Identifiera saker eller platser och kopiera eller översätt text. När du använder bildsökning skickas en skärmbild av sidan till servern. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium är din standardwebbläsare</translation>
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Administratören meddelar att du bör starta om Chromium så att uppdateringen tillämpas. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Administratören meddelar att du bör starta om Chromium så att uppdateringen tillämpas. Det finns # inkognitofönster eller isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="1153368717515616349">Klicka på Chromium-menyn</translation>
@@ -751,7 +750,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8813277370772331957">Påminn mig senare</translation>
 <translation id="8816416449795340678">Dela det här dokumentet med Gemini i Chromium för att få en snabb översikt och ställa uppföljningsfrågor</translation>
 <translation id="8818550178040858407">Vill du logga in i Chromium?</translation>
-<translation id="8823401858233292222">Ställ in Chromium som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="8826492472752484139">Klicka på Lösenordshantering</translation>
 <translation id="8833697763442816810">Chromium OS-system</translation>
 <translation id="8852026904190808918">Menyer, inställningar, varningar och annan text i Chromium visas på det här språket</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="1003917207516838287">അടുത്തിടെയുള്ള ഡൗൺലോഡുകളുടെ ചരിത്രം</translation>
 <translation id="1007349221964075684">തുറന്നിരിക്കുന്ന അദൃശ്യ വിൻഡോകൾ കാണാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുക</translation>
 <translation id="1010283278930414892">ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ച പാസ്‌വേഡുകളൊന്നുമില്ല</translation>
 <translation id="1011749477052068769">ഇവിടേക്ക് നീക്കുക</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">പാസ്‌കീ സ്ഥിരീകരിക്കൽ ഷീറ്റ് അടച്ചു</translation>
 <translation id="1197933394627598677">റീഡിംഗ് മോഡ് കാണിക്കുക</translation>
 <translation id="1197935538609051549">നിഷ്‌ക്രിയമാക്കുക</translation>
-<translation id="119944043368869598">എല്ലാം നീക്കുക</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
 <translation id="1202892408424955784">ട്രാക്ക് ചെയ്യുന്ന ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="1204037785786432551">ലിങ്ക് ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Chrome-ന്റെ പുതിയൊരു പതിപ്പ് ലഭ്യമാണ്</translation>
 <translation id="658099107946526506">അനാവശ്യ ആക്‌സസ് തടയാൻ പിൻ ഉപയോഗിച്ച് നിങ്ങളുടെ സ്വകാര്യ ബ്രൗസിംഗ് പരിരക്ഷിക്കൂ</translation>
 <translation id="6583199322650523874">നിലവിലെ പേജ് ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
+<translation id="6583902294974160967">പിന്തുണ</translation>
 <translation id="6588043302623806746">സുരക്ഷിത DNS ഉപയോഗിക്കുക</translation>
 <translation id="6590471736817333463">60% വരെ ഡാറ്റ ലാഭിക്കൂ</translation>
 <translation id="6593061639179217415">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ്</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">അദൃശ്യ മോഡിനുള്ള ലോക്ക് ഓണാക്കുക</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7663320421139257046">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയം<ph name="END_LINK1" /> കാണുക.</translation>
+<translation id="7665445336029073980">ഡൗൺലോഡുകളുടെ പൂർണ്ണ ചരിത്രം</translation>
 <translation id="766587987807204883">ഇവിടെ ദൃശ്യമാകുന്ന ലേഖനങ്ങൾ നിങ്ങൾ ഓഫ്‌ലൈൻ ആകുന്ന സമയത്ത് പോലും വായിക്കാം</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> അടച്ചു</translation>
 <translation id="767157537088426800">നിങ്ങളുടെ പാസ്‌വേഡുകളും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും ലഭിക്കാൻ ഈ സൈറ്റിലേക്കും Chrome-ലേക്കും സൈൻ ഇൻ ചെയ്യുക</translation>

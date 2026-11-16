@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1003917207516838287">તાજેતરનો ડાઉનલોડ ઇતિહાસ</translation>
 <translation id="1007349221964075684">ખુલ્લી 'છૂપી વિન્ડો' જોવા માટે, સ્ક્રીન લૉકનો ઉપયોગ કરો</translation>
 <translation id="1010283278930414892">આ ડિવાઇસ પર સાચવેલો કોઈ પાસવર્ડ નથી</translation>
 <translation id="1011749477052068769">અહીં ખસેડો</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">પાસકી કન્ફર્મેશન શીટ બંધ છે</translation>
 <translation id="1197933394627598677">વાંચન મોડ બતાવો</translation>
 <translation id="1197935538609051549">નિષ્ક્રિય કરો</translation>
-<translation id="119944043368869598">બધા દૂર કરો</translation>
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1202892408424955784">ટ્રૅક કરેલી પ્રોડક્ટ</translation>
 <translation id="1204037785786432551">ડાઉનલોડ કરવાની લિંક</translation>
@@ -1442,6 +1442,7 @@
 <translation id="657480975869429144">Chromeનું નવું વર્ઝન ઉપલબ્ધ છે</translation>
 <translation id="658099107946526506">વણજોઈતા ઍક્સેસને રોકવા માટે પિન વડે તમારા ખાનગી બ્રાઉઝિંગને સુરક્ષિત કરો</translation>
 <translation id="6583199322650523874">વર્તમાન પેજને બુકમાર્ક કરો</translation>
+<translation id="6583902294974160967">સહાય</translation>
 <translation id="6588043302623806746">સુરક્ષિત DNSનો ઉપયોગ કરો</translation>
 <translation id="6590471736817333463">60% જેટલો ડેટા બચાવો</translation>
 <translation id="6593061639179217415">ડેસ્કટૉપ સાઇટ</translation>
@@ -1744,6 +1745,7 @@
 <translation id="7656862631699126784">છૂપી ટૅબને લૉક કરવાનો મોડ ચાલુ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7663320421139257046">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું <ph name="FIELDS_STRING" /> આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />પ્રાઇવસી પૉલિસી<ph name="END_LINK1" /> જુઓ.</translation>
+<translation id="7665445336029073980">સંપૂર્ણ ડાઉનલોડ ઇતિહાસ</translation>
 <translation id="766587987807204883">લેખો અહીં દેખાય છે, જે તમે ઑફલાઇન હો ત્યારે પણ વાંચી શકો છો</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> બંધ છે</translation>
 <translation id="767157537088426800">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ અને બીજું ઘણું મેળવવા માટે, આ સાઇટ અને Chromeમાં સાઇન ઇન કરો</translation>

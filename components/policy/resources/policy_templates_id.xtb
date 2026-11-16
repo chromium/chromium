@@ -13048,24 +13048,6 @@ Untuk mengetahui informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yan
 <translation id="8854571659927427063">Jika kebijakan disetel ke Aktif, bookmark akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada bookmark yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kotak centang bookmark akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
-<translation id="8857793979935465678">Kebijakan ini mengontrol apakah mode perlindungan standar Safe Browsing diizinkan
-untuk mengirim hash sebagian dari URL ke Google melalui proxy via Oblivious HTTP
-untuk menentukan apakah URL aman untuk dibuka atau tidak.
-
-Proxy memungkinkan browser mengupload hash sebagian dari URL ke Google
-tanpa dikaitkan ke alamat IP pengguna. Kebijakan ini juga memungkinkan
-browser mengupload hash sebagian dari URL dengan frekuensi yang lebih tinggi untuk
-kualitas perlindungan Safe Browsing yang lebih baik.
-
-Kebijakan ini akan diabaikan jika Safe Browsing dinonaktifkan atau disetel ke mode
-perlindungan yang ditingkatkan.
-
-Jika kebijakan ini disetel ke Aktif atau tidak disetel, pemeriksaan
-lewat proxy dengan perlindungan yang lebih tinggi akan diizinkan.
-
-Jika kebijakan ini disetel ke Nonaktif, pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi
-tidak akan diizinkan. Hash sebagian dari URL akan diupload ke Google secara langsung dengan frekuensi
-yang jauh lebih rendah, yang akan menurunkan perlindungan.</translation>
 <translation id="8860342862142842017">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar hash subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Pengguna dapat mengonfigurasi saluran rilis <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Dengan kebijakan ini, Anda dapat menetapkan daftar DLC (Konten yang Dapat Didownload) untuk didownload sesegera mungkin. DLC yang telah didownload akan tersedia untuk semua pengguna di perangkat.

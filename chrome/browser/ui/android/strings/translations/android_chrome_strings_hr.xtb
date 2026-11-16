@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1003917207516838287">Nedavna povijest preuzimanja</translation>
 <translation id="1007349221964075684">Upotrijebite zaključavanje zaslona za prikaz otvorenih anonimnih prozora</translation>
 <translation id="1010283278930414892">Na ovom uređaju nema spremljenih zaporki</translation>
 <translation id="1011749477052068769">Premjesti ovdje</translation>
@@ -64,7 +65,6 @@
 <translation id="1197761954713363183">Zatvoren je list za potvrdu pristupnog ključa</translation>
 <translation id="1197933394627598677">Prikaži prozor za čitanje</translation>
 <translation id="1197935538609051549">Deaktiviraj</translation>
-<translation id="119944043368869598">Očisti sve</translation>
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
 <translation id="1204037785786432551">Preuzmi vezu</translation>
@@ -1442,6 +1442,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="657480975869429144">Dostupna je nova verzija preglednika Google Chrome</translation>
 <translation id="658099107946526506">Zaštitite svoje anonimno pregledavanje PIN-om da biste spriječili neželjeni pristup</translation>
 <translation id="6583199322650523874">Označavanje trenutačne stranice</translation>
+<translation id="6583902294974160967">Podrška</translation>
 <translation id="6588043302623806746">Koristi siguran DNS</translation>
 <translation id="6590471736817333463">Uštedite do 60% podataka</translation>
 <translation id="6593061639179217415">Klasični prikaz</translation>
@@ -1744,6 +1745,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7656862631699126784">Uključite anonimno zaključavanje</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7663320421139257046">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će podijeliti vaše podatke, odnosno <ph name="FIELDS_STRING" /> s ovom web-lokacijom. Pogledajte <ph name="BEGIN_LINK1" />pravila o privatnosti<ph name="END_LINK1" /> ove web-lokacije.</translation>
+<translation id="7665445336029073980">Cijela povijest preuzimanja</translation>
 <translation id="766587987807204883">Ovdje će se prikazivati članci koje možete čitati i offline</translation>
 <translation id="7666185984446444960">Zatvoreno: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="767157537088426800">Prijavite se na ovu web-lokaciju i u Chrome da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima</translation>

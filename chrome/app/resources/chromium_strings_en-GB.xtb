@@ -14,7 +14,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1098493699368672217">Show search with Chromium in system tray and turn on keyboard shortcut</translation>
 <translation id="1104942323762546749">Chromium wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="112640046208448578">Identify things or places and copy or translate text. When you use image search, a screenshot of the page is sent to the server. <ph name="LEARN_MORE" /></translation>
-<translation id="113122355610423240">Chromium is your default browser</translation>
 <translation id="1131805035311359397">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
 <translation id="1145158441928281100">{COUNT,plural, =1{Your administrator asks that you relaunch Chromium to apply this update. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Your administrator asks that you relaunch Chromium to apply this update. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="1153368717515616349">Click the Chromium menu</translation>
@@ -751,7 +750,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8813277370772331957">Remind me later</translation>
 <translation id="8816416449795340678">Share this document with Gemini in Chromium to get a quick overview and ask follow-up questions</translation>
 <translation id="8818550178040858407">Sign in to Chromium?</translation>
-<translation id="8823401858233292222">Make Chromium the default browser and pin to the taskbar</translation>
 <translation id="8826492472752484139">Click 'Password Manager'</translation>
 <translation id="8833697763442816810">Chromium OS system</translation>
 <translation id="8852026904190808918">This language is used to display menus, settings, alerts and other text in Chromium</translation>
