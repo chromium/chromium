@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/features.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +38,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#import "ui/base/page_transition_types.h"
 
 typedef void (^BlockWithViewController)(UIViewController*);
 
@@ -533,4 +537,80 @@ TEST_F(MiniMapCoordinatorTest, TestNativePreviewFooterButtons) {
   // Verify that the correct preference was disabled!
   EXPECT_FALSE(
       profile_->GetPrefs()->GetBoolean(prefs::kIosMiniMapShowNativeMap));
+}
+
+// Tests that when Native Preview fails asynchronously after presentation,
+// `MiniMapCoordinator` opens the fallback URL in the WebState.
+TEST_F(MiniMapCoordinatorTest, TestNativePreviewFailureFallbackToURL) {
+  base::HistogramTester histogram_tester;
+  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
+  factory_.controller = mini_map_controller;
+
+  class RecordingFakeWebState : public web::FakeWebState {
+   public:
+    void OpenURL(const web::WebState::OpenURLParams& params) override {
+      last_open_url_params_ =
+          std::make_unique<web::WebState::OpenURLParams>(params);
+    }
+    web::WebState::OpenURLParams* last_open_url_params() {
+      return last_open_url_params_.get();
+    }
+
+   private:
+    std::unique_ptr<web::WebState::OpenURLParams> last_open_url_params_;
+  };
+
+  auto web_state = std::make_unique<RecordingFakeWebState>();
+  RecordingFakeWebState* web_state_ptr = web_state.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  NSURL* url =
+      [NSURL URLWithString:
+                 @"https://maps.google.com/maps/foo?utm_campaign=as-npt-bling"];
+
+  __block ProceduralBlock failure_completion_block;
+
+  coordinator_ = [[MiniMapCoordinator alloc]
+      initWithBaseViewController:root_view_controller_
+                         browser:browser_.get()
+                            text:nil
+                             URL:url
+                         withIPH:NO
+                            mode:MiniMapMode::kMapNativePreviewURL];
+  OCMExpect([mini_map_controller configureURL:url]);
+  OCMExpect([mini_map_controller configureIncognito:NO]);
+  OCMExpect([mini_map_controller configureCompletion:[OCMArg any]]);
+  OCMExpect(
+      [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
+  OCMExpect([mini_map_controller
+      configureFailureCompletion:AssignValueToVariable(
+                                     failure_completion_block)]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
+
+  OCMExpect([mini_map_controller
+      presentMapsNativePreviewWithPresentingViewController:[OCMArg any]]);
+
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(mini_map_controller);
+
+  ASSERT_NE(nil, failure_completion_block);
+  OCMExpect([mock_mini_map_command_handler_ hideMiniMap]);
+  failure_completion_block();
+
+  histogram_tester.ExpectBucketCount("IOS.MiniMap.Link.Outcome",
+                                     7 /*kFallbackToURL*/, 1);
+  web::WebState::OpenURLParams* params = web_state_ptr->last_open_url_params();
+  ASSERT_TRUE(params);
+  EXPECT_EQ(params->url.spec(),
+            "https://maps.google.com/maps/foo?utm_campaign=as-npt-bling");
+  EXPECT_EQ(params->disposition, ui::mojom::WindowOpenDisposition::kCurrentTab);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(params->transition,
+                                           ui::PAGE_TRANSITION_LINK));
+  EXPECT_FALSE(params->is_renderer_initiated);
 }

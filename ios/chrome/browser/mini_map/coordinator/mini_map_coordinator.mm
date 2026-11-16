@@ -9,7 +9,6 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator.h"
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator_delegate.h"
-#import "ios/chrome/browser/mini_map/model/mini_map_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -30,8 +29,8 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/base/page_transition_types.h"
-#import "ui/base/window_open_disposition.h"
 
 @interface MiniMapCoordinator () <MiniMapMediatorDelegate>
 
@@ -161,15 +160,6 @@
       [self.miniMapController
           presentMapsNativePreviewWithPresentingViewController:
               self.baseViewController];
-      // Resolve the deferred navigation policy decision as canceled immediately
-      // since the UI presentation succeeded.
-      if (self.webState.get()) {
-        MiniMapTabHelper* tabHelper =
-            MiniMapTabHelper::FromWebState(self.webState.get());
-        if (tabHelper) {
-          tabHelper->OnMiniMapSuccess();
-        }
-      }
       break;
     case MiniMapMode::kDirections:
       [self.miniMapController presentDirectionsWithPresentingViewController:
@@ -301,17 +291,17 @@
                                    sender:UserFeedbackSender::MiniMap];
 }
 
-// Handles failure by allowing the intercepted navigation to proceed.
+// Handles failure by opening the fallback URL in the WebState.
 - (void)fallbackToOriginalURL {
   _showingMap = NO;
   if (self.webState.get()) {
     [self.mediator miniMapFallbackToURL];
 
-    MiniMapTabHelper* tabHelper =
-        MiniMapTabHelper::FromWebState(self.webState.get());
-    if (tabHelper) {
-      tabHelper->OnMiniMapFailure();
-    }
+    web::WebState::OpenURLParams params(
+        net::GURLWithNSURL(_URL), web::Referrer(),
+        ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
+        /*is_renderer_initiated=*/false);
+    self.webState->OpenURL(params);
   }
   [self workflowEnded];
 }
