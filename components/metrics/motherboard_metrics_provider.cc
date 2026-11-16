@@ -22,19 +22,9 @@ std::unique_ptr<Motherboard> GetMotherboard() {
 }  // namespace
 
 MotherboardMetricsProvider::MotherboardMetricsProvider() = default;
-
 MotherboardMetricsProvider::~MotherboardMetricsProvider() = default;
 
-void MotherboardMetricsProvider::ProvideSystemProfileMetricsFromCache(
-    const SystemProfileProto& cached_system_profile,
-    SystemProfileProto* system_profile) {
-  if (cached_system_profile.hardware().has_motherboard()) {
-    *system_profile->mutable_hardware()->mutable_motherboard() =
-        cached_system_profile.hardware().motherboard();
-  }
-}
-
-void MotherboardMetricsProvider::ProvideSystemProfileMetricsNormal(
+void MotherboardMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile) {
   // If motherboard_info_ has not yet been initialized, skip metrics.
   if (!motherboard_info_) {
