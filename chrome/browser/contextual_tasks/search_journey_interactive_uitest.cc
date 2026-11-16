@@ -26,10 +26,8 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_onboarding_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
@@ -69,7 +67,6 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
 
 constexpr char16_t kQuery[] = u"how do tides work";
 constexpr char kMstk[] = "test_mstk";
-constexpr char kCueIconName[] = "CueIcon";
 
 // Returns whether `url` is the AI page restoring the AI Overview of the search
 // for `kQuery`. Browser tests cover the rest of the restore URL.
@@ -94,7 +91,7 @@ bool IsRestoreUrl(const GURL& url) {
 // Contextual Tasks side panel. Runs with the side panel rearchitecture both
 // enabled and disabled.
 class SearchJourneyInteractiveUiTest
-    : public ContextualTasksInteractiveTestBase,
+    : public PageActionInteractiveTestMixin<ContextualTasksInteractiveTestBase>,
       public testing::WithParamInterface<bool> {
  public:
   void SetUpFeatureList() override {
@@ -231,17 +228,6 @@ class SearchJourneyInteractiveUiTest
         InstrumentNonTabWebView(kSidePanelContentsId,
                                 "SidePanelContentWebViewName"),
         InstrumentInnerWebContents(kAiPageContentsId, kSidePanelContentsId, 0));
-  }
-
-  // Names the cue's icon in the omnibox `kCueIconName`. It shows the collapsed
-  // cue as a chip, and the expanded cue is anchored to it.
-  MultiStep NameCueIcon() {
-    return Steps(NameViewRelative(
-        kLocationBarElementId, kCueIconName,
-        [](LocationBarView* location_bar) -> views::View* {
-          return location_bar->page_action_container()->GetPageActionView(
-              kActionAnchoredContextualCue);
-        }));
   }
 
   // Checks that the side panel suggests Tab A as context for follow-ups, and
@@ -453,17 +439,12 @@ IN_PROC_BROWSER_TEST_P(SearchJourneyInteractiveUiTest,
   base::UserActionTester user_action_tester;
   RunTestSequence(
       StartJourney(), SelectTab(kTabStripElementId, 0), WaitForCue(),
-      NameCueIcon(), PressButton(kCueIconName),
+      InvokePageAction(kActionAnchoredContextualCue),
       WaitForHide(
           page_actions::AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
       // The cue collapses into the icon's chip rather than hiding.
-      CheckView(
-          kCueIconName,
-          [](page_actions::PageActionView* icon) {
-            return icon->IsChipVisible();
-          },
-          true),
-      PressButton(kCueIconName), WaitForCue(),
+      WaitForPageActionChipVisible(kActionAnchoredContextualCue),
+      InvokePageAction(kActionAnchoredContextualCue), WaitForCue(),
       CheckResult(
           [&]() {
             return user_action_tester.GetActionCount(
