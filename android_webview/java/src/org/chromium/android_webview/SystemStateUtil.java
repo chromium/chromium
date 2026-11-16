@@ -5,8 +5,6 @@
 package org.chromium.android_webview;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -19,7 +17,6 @@ import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
@@ -50,26 +47,15 @@ public class SystemStateUtil {
     }
 
     @CalledByNative
-    @SuppressWarnings("DiscouragedPrivateApi")
     public static @PrimaryCpuAbiBitness int getPrimaryCpuAbiBitness() {
-        ApplicationInfo applicationInfo = null;
-        String packageName = ApkInfo.getPackageName();
-        try {
-            applicationInfo =
-                    ContextUtils.getApplicationContext()
-                            .getPackageManager()
-                            .getPackageInfo(packageName, 0)
-                            .applicationInfo;
-            Field primaryCpuAbiField = ApplicationInfo.class.getDeclaredField("primaryCpuAbi");
-            String primaryCpuAbi = (String) primaryCpuAbiField.get(applicationInfo);
-            if (primaryCpuAbi != null) {
-                if (Set.of(Build.SUPPORTED_32_BIT_ABIS).contains(primaryCpuAbi)) {
-                    return PrimaryCpuAbiBitness.k32bit;
-                } else if (Set.of(Build.SUPPORTED_64_BIT_ABIS).contains(primaryCpuAbi)) {
-                    return PrimaryCpuAbiBitness.k64bit;
-                }
-            }
-        } catch (NameNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+        String primaryCpuAbi = ApkInfo.getPrimaryCpuAbi();
+        if (primaryCpuAbi == null) {
+            return PrimaryCpuAbiBitness.UNKNOWN;
+        }
+        if (Set.of(Build.SUPPORTED_32_BIT_ABIS).contains(primaryCpuAbi)) {
+            return PrimaryCpuAbiBitness.k32bit;
+        } else if (Set.of(Build.SUPPORTED_64_BIT_ABIS).contains(primaryCpuAbi)) {
+            return PrimaryCpuAbiBitness.k64bit;
         }
         return PrimaryCpuAbiBitness.UNKNOWN;
     }

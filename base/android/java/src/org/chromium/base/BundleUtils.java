@@ -418,16 +418,11 @@ public class BundleUtils {
         if (apkPath == null) {
             return null;
         }
-
-        try {
-            ApplicationInfo info = ContextUtils.getApplicationContext().getApplicationInfo();
-            String primaryCpuAbi = (String) info.getClass().getField("primaryCpuAbi").get(info);
-            // This matches the logic LoadedApk.java uses to construct library paths.
-            return apkPath + "!/lib/" + primaryCpuAbi + "/" + System.mapLibraryName(libraryName);
-        } catch (ReflectiveOperationException e) {
-            throw JavaUtils.throwUnchecked(e);
+        String primaryCpuAbi = ApkInfo.getPrimaryCpuAbi();
+        if (primaryCpuAbi == null) {
+            return null;
         }
+        // This matches the logic LoadedApk.java uses to construct library paths.
+        return apkPath + "!/lib/" + primaryCpuAbi + "/" + System.mapLibraryName(libraryName);
     }
-
 }
-

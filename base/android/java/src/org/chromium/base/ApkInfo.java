@@ -20,6 +20,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.reflect.Field;
+
 /**
  * AndroidInfo is a utility class to access the APK-related information.
  *
@@ -71,7 +73,8 @@ public final class ApkInfo {
                         /* installerPackageName= */ info.installerPackageName,
                         /* isDebugApp= */ info.isDebugApp,
                         /* isSystemApp= */ info.isSystemApp,
-                        /* targetSdkVersion= */ info.targetSdkVersion);
+                        /* targetSdkVersion= */ info.targetSdkVersion,
+                        /* primaryCpuAbi= */ info.primaryCpuAbi);
     }
 
     public static IApkInfo getAidlInfo() {
@@ -112,6 +115,11 @@ public final class ApkInfo {
 
     public static boolean isDebugApp() {
         return getInstance().mIApkInfo.isDebugApp;
+    }
+
+    /** Returns the primary CPU ABI of Chrome/WebView or null if it can't be retrieved. */
+    public static @Nullable String getPrimaryCpuAbi() {
+        return getInstance().mIApkInfo.primaryCpuAbi;
     }
 
     /**
@@ -200,6 +208,7 @@ public final class ApkInfo {
         mBrowserApplicationInfo = ContextUtils.getApplicationContext().getApplicationInfo();
     }
 
+    @SuppressWarnings("DiscouragedPrivateApi")
     private ApkInfo() {
         sInitialized = true;
         mIApkInfo = new IApkInfo();
@@ -260,6 +269,12 @@ public final class ApkInfo {
             mBrowserApplicationInfo = appInfo;
         }
         assert mBrowserApplicationInfo != null;
+        try {
+            Field primaryCpuAbiField = ApplicationInfo.class.getDeclaredField("primaryCpuAbi");
+            mIApkInfo.primaryCpuAbi = (String) primaryCpuAbiField.get(mBrowserApplicationInfo);
+        } catch (NoSuchFieldException | IllegalAccessException _) {
+            mIApkInfo.primaryCpuAbi = null;
+        }
 
         mIApkInfo.installerPackageName =
                 nullToEmpty(pm.getInstallerPackageName(appInstalledPackageName));
@@ -298,6 +313,7 @@ public final class ApkInfo {
                 @JniType("std::string") String installerPackageName,
                 boolean isDebugApp,
                 boolean isSystemApp,
-                int targetSdkVersion);
+                int targetSdkVersion,
+                @JniType("std::string") String primaryCpuAbi);
     }
 }

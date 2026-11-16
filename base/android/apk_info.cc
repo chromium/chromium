@@ -41,6 +41,7 @@ struct IApkInfo {
   const std::string packageVersionCode;
   const std::string packageVersionName;
   int targetSdkVersion;
+  const std::string primaryCpuAbi;
 };
 #endif
 
@@ -80,7 +81,8 @@ static void JNI_ApkInfo_FillFields(JNIEnv* env,
                                    const std::string& installerPackageName,
                                    bool isDebugApp,
                                    bool isSystemApp,
-                                   int32_t targetSdkVersion) {
+                                   int32_t targetSdkVersion,
+                                   const std::string& primaryCpuAbi) {
   Set(IApkInfo{.hostPackageLabel = hostPackageLabel,
                .hostPackageName = hostPackageName,
                .hostVersionCode = hostVersionCode,
@@ -90,7 +92,8 @@ static void JNI_ApkInfo_FillFields(JNIEnv* env,
                .packageName = packageName,
                .packageVersionCode = packageVersionCode,
                .packageVersionName = packageVersionName,
-               .targetSdkVersion = targetSdkVersion});
+               .targetSdkVersion = targetSdkVersion,
+               .primaryCpuAbi = primaryCpuAbi});
 }
 
 const std::string& host_package_name() {
@@ -131,6 +134,10 @@ bool is_system_app() {
 
 int target_sdk_version() {
   return get_apk_info().targetSdkVersion;
+}
+
+const std::string& primary_cpu_abi() {
+  return get_apk_info().primaryCpuAbi;
 }
 
 std::string host_signing_cert_sha256() {

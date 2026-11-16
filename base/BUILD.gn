@@ -5491,6 +5491,7 @@ if (is_android) {
     srcjar_deps = [ ":bundle_utils_jni" ]
     sources = [ "android/java/src/org/chromium/base/BundleUtils.java" ]
     deps = [
+      ":build_info_java",
       ":log_java",
       ":metrics_java",
       ":resetters_java",

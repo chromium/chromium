@@ -50,6 +50,8 @@ BASE_EXPORT bool is_system_app();
 
 BASE_EXPORT int target_sdk_version();
 
+BASE_EXPORT const std::string& primary_cpu_abi();
+
 BASE_EXPORT std::string host_signing_cert_sha256();
 
 BASE_EXPORT void Set(const IApkInfo& info);

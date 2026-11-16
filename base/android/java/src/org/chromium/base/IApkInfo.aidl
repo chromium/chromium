@@ -43,4 +43,6 @@ parcelable IApkInfo {
   /** The versionName of Chrome/WebView. Use application context for host app versionName. */
   String packageVersionName;
   int targetSdkVersion;
+  /** Primary CPU ABI of Chrome/WebView rather than the host app. */
+  String primaryCpuAbi;
 }
