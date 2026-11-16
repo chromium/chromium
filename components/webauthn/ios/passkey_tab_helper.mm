@@ -1197,11 +1197,11 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
                             passkey, std::move(client_data_json), params.RpId(),
                             extension_input_data, did_complete_uv);
 
-  // TODO(crbug.com/460485333): Update the passkey's last used time to
-  // base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds().
   // TODO(crbug.com/460485333): Wait until success message from TypeScript code?
 
   if (assertion_data.has_value()) {
+    passkey_model_->UpdatePasskeyTimestamp(credential_id, base::Time::Now());
+
     // Resolve the PublicKeyCredential promise.
     PasskeyJavaScriptFeature::GetInstance()->ResolveAssertionRequest(
         web_frame, passkey_request_id, credential_id,

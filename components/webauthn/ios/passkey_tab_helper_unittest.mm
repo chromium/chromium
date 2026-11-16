@@ -1954,6 +1954,23 @@ TEST_F(PasskeyTabHelperTest,
       1);
 }
 
+// Tests that a successful passkey assertion updates the passkey's last used
+// time.
+TEST_F(PasskeyTabHelperTest, StartPasskeyAssertionSuccessUpdatesLastUsedTime) {
+  sync_pb::WebauthnCredentialSpecifics passkey = AddValidPasskey();
+  ASSERT_FALSE(GetPasskey(passkey.credential_id())
+                   .has_last_used_time_windows_epoch_micros());
+
+  task_environment_.FastForwardBy(base::Minutes(1));
+  HandleGetRequestAndStartAssertion(passkey.credential_id());
+
+  EXPECT_NE(GetLastJavaScriptCall().find(kResolveAssertionRequestJsCall),
+            std::u16string::npos);
+  EXPECT_EQ(
+      GetPasskey(passkey.credential_id()).last_used_time_windows_epoch_micros(),
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+}
+
 // Test that `PasswordManager.BrowserAssistedLogin.Type` is not logged when a
 // passkey assertion request fails.
 TEST_F(PasskeyTabHelperTest,
