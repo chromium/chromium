@@ -372,10 +372,16 @@ void Canvas::DrawImageInt(const ImageSkia& image,
   float bitmap_scale = image_rep.scale();
 
   ScopedCanvas scoper(this);
+  const Vector2dF snap = GetDevicePixelSnapAdjustment(x, y);
   canvas_->scale(SkFloatToScalar(1.0f / bitmap_scale),
                  SkFloatToScalar(1.0f / bitmap_scale));
-  canvas_->translate(SkFloatToScalar(std::round(x * bitmap_scale)),
-                     SkFloatToScalar(std::round(y * bitmap_scale)));
+  if (device_pixel_snap_offset_) {
+    canvas_->translate(SkFloatToScalar((x + snap.x()) * bitmap_scale),
+                       SkFloatToScalar((y + snap.y()) * bitmap_scale));
+  } else {
+    canvas_->translate(SkFloatToScalar(std::round(x * bitmap_scale)),
+                       SkFloatToScalar(std::round(y * bitmap_scale)));
+  }
   canvas_->saveLayer(flags);
   canvas_->drawPicture(image_rep.GetPaintRecord());
   canvas_->restore();
@@ -542,6 +548,28 @@ bool Canvas::IntersectsClipRect(const SkRect& rect) const {
   return canvas_->getLocalClipBounds(&clip) && clip.intersects(rect);
 }
 
+Vector2dF Canvas::GetDevicePixelSnapAdjustment(int x, int y) const {
+  if (!device_pixel_snap_offset_) {
+    return Vector2dF();
+  }
+  const SkMatrix matrix = canvas_->getLocalToDevice().asM33();
+  if (!matrix.isScaleTranslate() || matrix.getScaleX() == 0 ||
+      matrix.getScaleY() == 0) {
+    return Vector2dF();
+  }
+  // The position of (x, y) in device pixels, relative to the pixel-aligned
+  // origin of the surface this canvas is recorded into.
+  const SkPoint point =
+      matrix.mapPoint(SkPoint::Make(SkIntToScalar(x), SkIntToScalar(y)));
+  const float device_x =
+      (point.x() + device_pixel_snap_offset_->x()) * image_scale_;
+  const float device_y =
+      (point.y() + device_pixel_snap_offset_->y()) * image_scale_;
+  return Vector2dF(
+      (std::round(device_x) - device_x) / image_scale_ / matrix.getScaleX(),
+      (std::round(device_y) - device_y) / image_scale_ / matrix.getScaleY());
+}
+
 void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
                                 int src_x,
                                 int src_y,
@@ -569,6 +597,11 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   if (!IntersectsClipRect(dest_rect))
     return;
 
+  // When recording in DIPs, move the image so that it starts on a whole device
+  // pixel.
+  const Vector2dF snap = GetDevicePixelSnapAdjustment(dest_x, dest_y);
+  dest_rect.offset(snap.x(), snap.y());
+
   float user_scale_x = static_cast<float>(dest_w) / src_w;
   float user_scale_y = static_cast<float>(dest_h) / src_h;
 
@@ -587,7 +620,10 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   // canvas' rounding logic.
   // TODO(crbug.com/41344902): Using image_scale_ isn't 100% accurate. It should
   // use the scale applied to the canvas instead (which isn't available now).
-  if (features::IsPixelCanvasRecordingEnabled()) {
+  if (device_pixel_snap_offset_) {
+    shader_scale.postTranslate(SkFloatToScalar(dest_x + snap.x()),
+                               SkFloatToScalar(dest_y + snap.y()));
+  } else if (features::IsPixelCanvasRecordingEnabled()) {
     shader_scale.postTranslate(
         SkFloatToScalar(std::round(dest_x * image_scale_) / image_scale_),
         SkFloatToScalar(std::round(dest_y * image_scale_) / image_scale_));

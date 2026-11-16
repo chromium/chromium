@@ -10,6 +10,7 @@
 #include "cc/paint/paint_record.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace ui {
 class PaintContext;
@@ -36,7 +37,9 @@ class COMPOSITOR_EXPORT PaintCache {
   // Only PaintRecorder can modify these.
   friend PaintRecorder;
 
-  void SetPaintRecord(cc::PaintRecord record, float device_scale_factor);
+  void SetPaintRecord(cc::PaintRecord record,
+                      float device_scale_factor,
+                      const gfx::Vector2d& offset);
 
   // Stored in an sk_sp because PaintOpBuffer requires this to append the cached
   // items into it.
@@ -47,6 +50,11 @@ class COMPOSITOR_EXPORT PaintCache {
   // then we can reject it instead of returning the incorrect cache entry.
   // See https://crbug.com/834114 for details.
   float device_scale_factor_ = 0.f;
+
+  // The offset from the paint root (the layer) that the record was painted
+  // at. Without pixel canvas recording, images in the record are moved to land
+  // on whole device pixels for this offset.
+  gfx::Vector2d offset_;
 };
 
 }  // namespace ui

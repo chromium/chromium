@@ -22,6 +22,8 @@
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_text_property_value.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/platform_font.h"
 #include "ui/gfx/text_constants.h"
@@ -474,7 +476,21 @@ class COMPONENT_EXPORT(GFX) Canvas {
   cc::PaintCanvas* sk_canvas() { return canvas_; }
   float image_scale() const { return image_scale_; }
 
+  // Sets the offset, in DIPs, from the origin of this canvas to the origin of
+  // the surface it is recorded into, which must lie on a whole device pixel
+  // (e.g. a ui::Layer). Only for canvases that record in DIPs (i.e. without
+  // pixel canvas recording). When set, images are drawn at whole device pixels
+  // so that they aren't blurred or deformed at fractional scale factors.
+  void set_device_pixel_snap_offset(const Vector2d& offset) {
+    device_pixel_snap_offset_ = offset;
+  }
+
  private:
+  // Returns how far, in local coordinates, the point (|x|, |y|) needs to move
+  // to land on a whole device pixel. Returns a zero vector when no snap offset
+  // was set or the current transform isn't a scale and translation.
+  Vector2dF GetDevicePixelSnapAdjustment(int x, int y) const;
+
   // Helper for the DrawImageInt functions declared above. The
   // |remove_image_scale| parameter indicates if the scale of the |image_rep|
   // should be removed when drawing the image, to avoid double-scaling it.
@@ -496,6 +512,9 @@ class COMPONENT_EXPORT(GFX) Canvas {
   // An additional scale can be applied via Canvas::Scale(). However,
   // Canvas::Scale() does not affect |image_scale_|.
   float image_scale_;
+
+  // See set_device_pixel_snap_offset().
+  std::optional<Vector2d> device_pixel_snap_offset_;
 
   // canvas_ is our active canvas object. Sometimes we are also the owner,
   // in which case bitmap_ and owned_canvas_ will be set. Other times we are

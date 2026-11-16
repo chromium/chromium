@@ -13,9 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "cc/paint/paint_record.h"
+#include "cc/paint/record_paint_canvas.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
@@ -23,6 +26,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_elider.h"
 
@@ -240,6 +244,105 @@ TEST_F(CanvasTest, DrawImageIntClampsFilteredEdges) {
         << "Right edge wrapped green at scale " << scale;
     EXPECT_EQ(0u, SkColorGetG(result.getColor(mid_px, last_px)))
         << "Bottom edge wrapped green at scale " << scale;
+  }
+}
+
+TEST_F(CanvasTest, DrawImageIntSnapsToDevicePixelsWithSnapOffset) {
+  constexpr float kScale = 1.25f;
+  constexpr int kPixelSize = 20;
+  constexpr int kDipSize = 16;
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kPixelSize, kPixelSize);
+  for (int y = 0; y < kPixelSize; ++y) {
+    for (int x = 0; x < kPixelSize; ++x) {
+      SkColor color = ((x + y) % 2 == 0) ? SK_ColorRED : SK_ColorBLUE;
+      *bitmap.getAddr32(x, y) = SkPreMultiplyColor(color);
+    }
+  }
+  ImageSkia image = ImageSkia::CreateFromBitmap(bitmap, kScale);
+
+  auto raster_at_offset = [](cc::PaintRecord record, const Vector2d& offset) {
+    SkBitmap out;
+    out.allocN32Pixels(64, 64);
+    out.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas sk_canvas(out);
+    sk_canvas.scale(kScale, kScale);
+    sk_canvas.translate(SkIntToScalar(offset.x()), SkIntToScalar(offset.y()));
+    record.Playback(&sk_canvas);
+    return out;
+  };
+
+  // Layer offset (10, 10) DIPs + local (1, 0) DIPs lands at (13.75, 12.5)
+  // device pixels at 1.25x, which blurs a filtered checkerboard without
+  // snapping.
+  const Vector2d kLayerOffset(10, 10);
+  {
+    cc::InspectableRecordPaintCanvas record_canvas(Size(64, 64));
+    Canvas canvas(&record_canvas, kScale);
+    canvas.DrawImageInt(image, 0, 0, kDipSize, kDipSize, 1, 0, kDipSize,
+                        kDipSize, /*filter=*/true);
+    SkBitmap unsnapped =
+        raster_at_offset(record_canvas.ReleaseAsRecord(), kLayerOffset);
+    SkColor sample = unsnapped.getColor(15, 15);
+    EXPECT_NE(SK_ColorRED, sample);
+    EXPECT_NE(SK_ColorBLUE, sample);
+  }
+
+  // With the snap offset set, (13.75, 12.5) snaps to (14, 13) device pixels
+  // and preserves every pixel of the 20x20 checkerboard under bilinear
+  // filtering.
+  {
+    cc::InspectableRecordPaintCanvas record_canvas(Size(64, 64));
+    Canvas canvas(&record_canvas, kScale);
+    canvas.set_device_pixel_snap_offset(kLayerOffset);
+    canvas.DrawImageInt(image, 0, 0, kDipSize, kDipSize, 1, 0, kDipSize,
+                        kDipSize, /*filter=*/true);
+    SkBitmap snapped =
+        raster_at_offset(record_canvas.ReleaseAsRecord(), kLayerOffset);
+    for (int y = 0; y < kPixelSize; ++y) {
+      for (int x = 0; x < kPixelSize; ++x) {
+        EXPECT_EQ(bitmap.getColor(x, y), snapped.getColor(14 + x, 13 + y))
+            << "Mismatch at (" << x << ", " << y << ")";
+      }
+    }
+  }
+
+  // The 3-arg DrawImageInt(image, x, y) overload also snaps to (14, 13).
+  {
+    cc::InspectableRecordPaintCanvas record_canvas(Size(64, 64));
+    Canvas canvas(&record_canvas, kScale);
+    canvas.set_device_pixel_snap_offset(kLayerOffset);
+    canvas.DrawImageInt(image, 1, 0);
+    SkBitmap snapped =
+        raster_at_offset(record_canvas.ReleaseAsRecord(), kLayerOffset);
+    for (int y = 0; y < kPixelSize; ++y) {
+      for (int x = 0; x < kPixelSize; ++x) {
+        EXPECT_EQ(bitmap.getColor(x, y), snapped.getColor(14 + x, 13 + y))
+            << "Mismatch at (" << x << ", " << y << ")";
+      }
+    }
+  }
+
+  // Mirrored canvas transforms (such as RTL flipping) also snap to whole
+  // device pixels: local x=1 after Translate(20, 0) + Scale(-1, 1) maps to
+  // layer DIP 10 + (20 - 1) = 29 -> 36.25 -> 36, spanning [16, 36) in x.
+  {
+    cc::InspectableRecordPaintCanvas record_canvas(Size(64, 64));
+    Canvas canvas(&record_canvas, kScale);
+    canvas.set_device_pixel_snap_offset(kLayerOffset);
+    canvas.Translate(Vector2d(20, 0));
+    canvas.Scale(-1, 1);
+    canvas.DrawImageInt(image, 0, 0, kDipSize, kDipSize, 1, 0, kDipSize,
+                        kDipSize, /*filter=*/true);
+    SkBitmap snapped =
+        raster_at_offset(record_canvas.ReleaseAsRecord(), kLayerOffset);
+    for (int y = 0; y < kPixelSize; ++y) {
+      for (int x = 0; x < kPixelSize; ++x) {
+        EXPECT_EQ(bitmap.getColor(x, y), snapped.getColor(35 - x, 13 + y))
+            << "Mirrored mismatch at (" << x << ", " << y << ")";
+      }
+    }
   }
 }
 

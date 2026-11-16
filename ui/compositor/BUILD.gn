@@ -270,6 +270,7 @@ test("compositor_unittests") {
     "layer_owner_unittest.cc",
     "layer_tree_owner_unittest.cc",
     "layer_unittest.cc",
+    "paint_cache_unittest.cc",
     "presentation_time_recorder_unittest.cc",
     "run_all_unittests.cc",
     "scoped_layer_request_unittest.cc",
