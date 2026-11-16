@@ -38,12 +38,6 @@ class SkSurface;
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 
-namespace gpu::raster {
-
-class RasterInterface;
-
-}  // namespace gpu::raster
-
 namespace blink {
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
@@ -110,20 +104,8 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 
   explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
 
-  virtual const gfx::HDRMetadata& GetHdrMetadata() const = 0;
-  virtual viz::TransferableResource::ResourceSource
-  GetTransferableResourceSource() const {
-    return viz::TransferableResource::ResourceSource::kCanvas;
-  }
-
   const base::PlatformThreadRef owning_thread_ref_;
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
-
-  friend class WebGPUMailboxTexture;
-  friend class ExportedCanvasResource;
-
-  // Returns true if the resource is rastered via the GPU.
-  virtual bool UsesAcceleratedRaster() const = 0;
 };
 
 // Resource type for SharedImage
@@ -147,7 +129,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       const gfx::ColorSpace& color_space,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       bool is_software,
-      bool is_accelerated,
       base::WeakPtr<Client>,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
@@ -159,12 +140,10 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void Initialize(base::WeakPtr<Client> client,
                   base::WeakPtr<WebGraphicsContext3DProviderWrapper>
                       context_provider_wrapper,
-                  const gfx::HDRMetadata& hdr_metadata,
-                  bool is_accelerated);
+                  const gfx::HDRMetadata& hdr_metadata);
   bool IsInitialized() const { return is_initialized_; }
 
   void OnRefReturned(scoped_refptr<CanvasResource> resource) final;
-  const gfx::HDRMetadata& GetHdrMetadata() const final { return hdr_metadata_; }
 
   // Save (and wait on) this sync token on the context used by this resource for
   // rendering.
@@ -190,12 +169,9 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // Should be called only if the resource is using software raster.
   void UploadSoftwareRenderingResults(SkSurface* sk_surface);
 
-  bool UsesAcceleratedRaster() const final { return is_accelerated_; }
-
   ~CanvasResourceSharedImage() override;
 
   SkImageInfo CreateSkImageInfo() const;
-  gpu::raster::RasterInterface* RasterInterface() const;
 
   // These members are either only accessed on the owning thread, or are only
   // updated on the owning thread and then are read on a different thread.
@@ -209,7 +185,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   gpu::SyncToken acquire_sync_token_;
 
   // Accessed on any thread.
-  bool is_accelerated_ = false;
   bool is_initialized_ = false;
   gfx::HDRMetadata hdr_metadata_;
   base::WeakPtr<Client> client_;

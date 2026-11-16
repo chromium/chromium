@@ -111,7 +111,6 @@ void CanvasResourceSharedImage::InitializeSoftware(
   DCHECK(shared_image_interface_provider);
 
   client_ = std::move(client);
-  is_accelerated_ = false;
   hdr_metadata_ = hdr_metadata;
 
   // This class doesn't currently have a way of verifying the sync token for
@@ -131,8 +130,7 @@ void CanvasResourceSharedImage::InitializeSoftware(
 void CanvasResourceSharedImage::Initialize(
     base::WeakPtr<Client> client,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    const gfx::HDRMetadata& hdr_metadata,
-    bool is_accelerated) {
+    const gfx::HDRMetadata& hdr_metadata) {
   DCHECK(GetSharedImage());
   DCHECK(!is_initialized_);
   DCHECK(context_provider_wrapper);
@@ -140,7 +138,6 @@ void CanvasResourceSharedImage::Initialize(
 
   client_ = std::move(client);
   context_provider_wrapper_ = std::move(context_provider_wrapper);
-  is_accelerated_ = is_accelerated;
   hdr_metadata_ = hdr_metadata;
 
   // Wait for the mailbox to be ready to be used.
@@ -157,7 +154,6 @@ CanvasResourceSharedImage::CreateForTesting(
     const gfx::ColorSpace& color_space,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     bool is_software,
-    bool is_accelerated,
     base::WeakPtr<Client> client,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
@@ -174,12 +170,11 @@ CanvasResourceSharedImage::CreateForTesting(
 
   auto canvas_resource = image_pool->GetImage();
   if (is_software) {
-    DCHECK(!is_accelerated);
     canvas_resource->InitializeSoftware(
         client, std::move(shared_image_interface_provider), gfx::HDRMetadata());
   } else {
     canvas_resource->Initialize(client, context_provider_wrapper,
-                                gfx::HDRMetadata(), is_accelerated);
+                                gfx::HDRMetadata());
   }
   return canvas_resource;
 }

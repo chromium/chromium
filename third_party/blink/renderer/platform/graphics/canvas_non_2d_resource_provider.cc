@@ -295,7 +295,7 @@ CanvasNon2DResourceProvider::NewOrRecycledResource() {
           CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
     } else {
       resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                           hdr_metadata_, !is_software_);
+                           hdr_metadata_);
     }
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_) {

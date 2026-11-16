@@ -336,7 +336,7 @@ BaseRenderingContext2D::NewOrRecycledResource() {
     } else {
       resource->Initialize(resource_client_weak_ptr_factory_.GetWeakPtr(),
                            context_provider_wrapper_,
-                           color_params_.GetGfxHdrMetadata(), is_accelerated_);
+                           color_params_.GetGfxHdrMetadata());
     }
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_) {
