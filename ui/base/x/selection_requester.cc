@@ -22,6 +22,7 @@ namespace ui {
 namespace {
 
 const char kChromeSelection[] = "CHROME_SELECTION";
+const char kChromeSelectionAlt[] = "CHROME_SELECTION_ALT";
 
 // The amount of time to wait for the selection owner to make progress on the
 // in-flight request before aborting it. Requests are processed serially, so
@@ -51,7 +52,8 @@ SelectionRequester::SelectionRequester(x11::Window x_window,
                                        XClipboardHelper* helper)
     : x_window_(x_window),
       helper_(helper),
-      x_property_(x11::Connection::Get()->GetAtom(kChromeSelection)) {}
+      x_properties_({x11::Connection::Get()->GetAtom(kChromeSelection),
+                     x11::Connection::Get()->GetAtom(kChromeSelectionAlt)}) {}
 
 SelectionRequester::~SelectionRequester() = default;
 
@@ -119,18 +121,26 @@ void SelectionRequester::OnSelectionNotify(
   Request* request = GetCurrentRequest();
   x11::Atom event_property = selection.property;
   if (!request || request->selection != selection.selection ||
-      request->target != selection.target) {
-    // ICCCM requires us to delete the property passed into SelectionNotify.
-    if (event_property != x11::Atom::None) {
+      request->target != selection.target ||
+      (event_property != x11::Atom::None &&
+       event_property != request->property)) {
+    // This is not the reply to the current request. For example, some
+    // selection owners (e.g. xsel) send an extra SelectionNotify after an INCR
+    // transfer completes, which may arrive after the next request was sent.
+    // ICCCM requires deleting the property passed into SelectionNotify, but
+    // the current request's property is left alone since it may already hold
+    // the reply to the current request.
+    if (event_property != x11::Atom::None &&
+        (!request || event_property != request->property)) {
       x11::Connection::Get()->DeleteProperty(x_window_, event_property);
     }
     return;
   }
 
   bool success = false;
-  if (event_property == x_property_) {
+  if (event_property == request->property) {
     scoped_refptr<base::RefCountedMemory> out_data;
-    success = ui::GetRawBytesOfProperty(x_window_, x_property_, &out_data,
+    success = ui::GetRawBytesOfProperty(x_window_, request->property, &out_data,
                                         &request->out_type);
     if (success) {
       request->out_data.clear();
@@ -155,21 +165,23 @@ void SelectionRequester::OnSelectionNotify(
 
 bool SelectionRequester::CanDispatchPropertyEvent(
     const x11::PropertyNotifyEvent& prop) {
-  return prop.window == x_window_ && prop.atom == x_property_ &&
+  return prop.window == x_window_ &&
+         std::ranges::contains(x_properties_, prop.atom) &&
          prop.state == x11::Property::NewValue;
 }
 
 void SelectionRequester::OnPropertyEvent(
     const x11::PropertyNotifyEvent& event) {
   Request* request = GetCurrentRequest();
-  if (!request || !request->data_sent_incrementally) {
+  if (!request || !request->data_sent_incrementally ||
+      event.atom != request->property) {
     return;
   }
 
   scoped_refptr<base::RefCountedMemory> out_data;
   x11::Atom out_type = x11::Atom::None;
-  bool success =
-      ui::GetRawBytesOfProperty(x_window_, x_property_, &out_data, &out_type);
+  bool success = ui::GetRawBytesOfProperty(x_window_, request->property,
+                                           &out_data, &out_type);
   if (!success) {
     // Note: `this` may be deleted after this call.
     CompleteCurrentRequest(false);
@@ -186,7 +198,7 @@ void SelectionRequester::OnPropertyEvent(
   request->out_type = out_type;
 
   // Delete the property to tell the selection owner to send the next chunk.
-  x11::Connection::Get()->DeleteProperty(x_window_, x_property_);
+  x11::Connection::Get()->DeleteProperty(x_window_, request->property);
 
   if (!out_data->size()) {
     // Note: `this` may be deleted after this call.
@@ -232,11 +244,14 @@ void SelectionRequester::ConvertSelectionForCurrentRequest() {
     return;
   }
 
+  request->property = x_properties_[next_property_index_];
+  next_property_index_ = (next_property_index_ + 1) % x_properties_.size();
+
   x11::Connection::Get()->ConvertSelection({
       .requestor = x_window_,
       .selection = request->selection,
       .target = request->target,
-      .property = x_property_,
+      .property = request->property,
       .time = x11::Time::CurrentTime,
   });
   x11::Connection::Get()->Flush();

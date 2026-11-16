@@ -66,6 +66,14 @@ class SelectionRequesterTest : public testing::Test {
             future.GetCallback()));
   }
 
+  // Returns the property passed into the XConvertSelection() request for the
+  // in-flight request.
+  x11::Atom CurrentProperty() {
+    SelectionRequester::Request* request = requestor_->GetCurrentRequest();
+    CHECK(request);
+    return request->property;
+  }
+
   // Responds to the SelectionRequester's XConvertSelection() request by
   // - Setting the property passed into the XConvertSelection() request to
   //   `value`.
@@ -73,12 +81,16 @@ class SelectionRequesterTest : public testing::Test {
   void SendSelectionNotify(x11::Atom selection,
                            x11::Atom target,
                            const std::string& value) {
-    connection_->SetStringProperty(requestor_->x_window_,
-                                   requestor_->x_property_, x11::Atom::STRING,
-                                   value);
-    connection_->Sync();
+    SetCurrentProperty(value);
+    SendSelectionNotifyFailure(selection, target, CurrentProperty());
+  }
 
-    SendSelectionNotifyFailure(selection, target, requestor_->x_property_);
+  // Sets the property passed into the in-flight XConvertSelection() request to
+  // `value` without sending a SelectionNotify event.
+  void SetCurrentProperty(const std::string& value) {
+    connection_->SetStringProperty(requestor_->x_window_, CurrentProperty(),
+                                   x11::Atom::STRING, value);
+    connection_->Sync();
   }
 
   void SendSelectionNotifyFailure(x11::Atom selection,
@@ -95,24 +107,22 @@ class SelectionRequesterTest : public testing::Test {
   // Responds to the SelectionRequester's XConvertSelection() request by
   // starting an INCR transfer.
   void SendIncrStart(x11::Atom selection, x11::Atom target) {
-    connection_->SetProperty<uint32_t>(requestor_->x_window_,
-                                       requestor_->x_property_,
+    connection_->SetProperty<uint32_t>(requestor_->x_window_, CurrentProperty(),
                                        connection_->GetAtom(kIncr), 1024);
     connection_->Sync();
 
-    SendSelectionNotifyFailure(selection, target, requestor_->x_property_);
+    SendSelectionNotifyFailure(selection, target, CurrentProperty());
   }
 
   // Sends a chunk of an INCR transfer. An empty `value` ends the transfer.
   void SendIncrChunk(const std::string& value) {
-    connection_->SetStringProperty(requestor_->x_window_,
-                                   requestor_->x_property_, x11::Atom::STRING,
-                                   value);
+    connection_->SetStringProperty(requestor_->x_window_, CurrentProperty(),
+                                   x11::Atom::STRING, value);
     connection_->Sync();
 
     requestor_->OnPropertyEvent({
         .window = requestor_->x_window_,
-        .atom = requestor_->x_property_,
+        .atom = CurrentProperty(),
         .state = x11::Property::NewValue,
     });
   }
@@ -302,6 +312,68 @@ TEST_F(SelectionRequesterTest, StalledIncrTransferTimesOut) {
   task_environment_.FastForwardBy(base::Seconds(10));
   ASSERT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get().success);
+}
+
+// Test that a stale SelectionNotify for a completed INCR transfer is not
+// mistaken for the reply to the next request for the same target. xsel sends
+// such an event after it finishes an INCR transfer.
+TEST_F(SelectionRequesterTest, StaleSelectionNotifyAfterIncrSameTarget) {
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
+  x11::Atom target = connection_->GetAtom("TARGET");
+
+  ConvertSelectionFuture future1;
+  ConvertSelectionFuture future2;
+  PerformConvertSelection(selection, target, future1);
+  PerformConvertSelection(selection, target, future2);
+
+  x11::Atom incr_property = CurrentProperty();
+  SendIncrStart(selection, target);
+  SendIncrChunk("Data1");
+  SendIncrChunk("");
+  ASSERT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future1.Get().success);
+  EXPECT_EQ("Data1", base::as_string_view(future1.Get().data));
+
+  // The owner confirms the finished INCR transfer after the second request was
+  // sent, but before replying to it.
+  SendSelectionNotifyFailure(selection, target, incr_property);
+  EXPECT_FALSE(future2.IsReady());
+
+  SendSelectionNotify(selection, target, "Data2");
+  ASSERT_TRUE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().success);
+  EXPECT_EQ("Data2", base::as_string_view(future2.Get().data));
+}
+
+// Test that a stale SelectionNotify for a completed INCR transfer does not
+// delete the reply to the next request for a different target.
+TEST_F(SelectionRequesterTest, StaleSelectionNotifyAfterIncrOtherTarget) {
+  x11::Atom selection = connection_->GetAtom("FAKE_SELECTION");
+  x11::Atom target1 = connection_->GetAtom("TARGET1");
+  x11::Atom target2 = connection_->GetAtom("TARGET2");
+
+  ConvertSelectionFuture future1;
+  ConvertSelectionFuture future2;
+  PerformConvertSelection(selection, target1, future1);
+  PerformConvertSelection(selection, target2, future2);
+
+  x11::Atom incr_property = CurrentProperty();
+  SendIncrStart(selection, target1);
+  SendIncrChunk("Data1");
+  SendIncrChunk("");
+  ASSERT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future1.Get().success);
+
+  // The owner has already written the reply to the second request when the
+  // stale confirmation of the INCR transfer is processed.
+  SetCurrentProperty("Data2");
+  SendSelectionNotifyFailure(selection, target1, incr_property);
+  EXPECT_FALSE(future2.IsReady());
+
+  SendSelectionNotifyFailure(selection, target2, CurrentProperty());
+  ASSERT_TRUE(future2.IsReady());
+  EXPECT_TRUE(future2.Get().success);
+  EXPECT_EQ("Data2", base::as_string_view(future2.Get().data));
 }
 
 }  // namespace ui

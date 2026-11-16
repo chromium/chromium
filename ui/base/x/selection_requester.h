@@ -5,6 +5,7 @@
 #ifndef UI_BASE_X_SELECTION_REQUESTER_H_
 #define UI_BASE_X_SELECTION_REQUESTER_H_
 
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <vector>
@@ -79,6 +80,10 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
     x11::Atom selection;
     x11::Atom target;
 
+    // The property on `x_window_` passed into the XConvertSelection()
+    // request. Set when the request is sent to the selection owner.
+    x11::Atom property = x11::Atom::None;
+
     // Whether the result of the XConvertSelection() request is being sent
     // incrementally.
     bool data_sent_incrementally;
@@ -123,9 +128,14 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
   // Not owned.
   const raw_ptr<XClipboardHelper> helper_;
 
-  // The property on |x_window_| set by the selection owner with the value of
-  // the selection.
-  const x11::Atom x_property_;
+  // The properties on `x_window_` set by the selection owner with the value of
+  // the selection. Consecutive requests alternate between them, so that a
+  // stale SelectionNotify for one request can't be mistaken for the reply to
+  // the next one, even if both have the same selection and target.
+  const std::array<x11::Atom, 2> x_properties_;
+
+  // Index into `x_properties_` of the property to use for the next request.
+  size_t next_property_index_ = 0;
 
   // Pending requests. Only the request at the front has been sent to the
   // selection owner.

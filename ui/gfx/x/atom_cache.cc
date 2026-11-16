@@ -45,6 +45,7 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "Abs Y",
     "CHECK",
     "CHROME_SELECTION",
+    "CHROME_SELECTION_ALT",
     "CHROMIUM_COMPOSITE_WINDOW",
     "CHROMIUM_TIMESTAMP",
     "CLIPBOARD",
