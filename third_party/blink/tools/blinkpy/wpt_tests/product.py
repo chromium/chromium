@@ -491,6 +491,12 @@ class ChromeAndroid(ChromeAndroidBase):
     name = 'chrome_android'
     aliases = ['clank']
 
+    def update_runner_options(self, options: argparse.Namespace):
+        super().update_runner_options(options)
+        options.binary_args.append(
+            '--force-online-connection-state-for-indicator'
+        )
+
     @property
     def default_browser_apk(self):
         return self._port.build_path('apks', 'ChromePublic.apk')
