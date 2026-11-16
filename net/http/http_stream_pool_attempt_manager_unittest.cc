@@ -9161,4 +9161,175 @@ TEST_F(HttpStreamPoolAltSvcQuicPreconnectTest,
   EXPECT_TRUE(quic_session);
 }
 
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       QuicSessionFallbackIpv4AddressFromServiceEndpoint) {
+  AddScopedFeatureList().InitWithFeatures(
+      {net::features::kAsyncQuicSession,
+       net::features::kEnableQuicV6ToV4Migration},
+      {});
+
+  MockConnectCompleter quic_completer;
+  AddQuicData(/*host=*/kDefaultDestination, &quic_completer);
+
+  // Make concurrent TCP attempts stalled forever while testing QUIC attempt.
+  SequencedSocketData tcp_data1;
+  tcp_data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data1);
+  SequencedSocketData tcp_data2;
+  tcp_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data2);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+
+  // 1. AAAA arrives first; QUIC attempt starts on IPv6.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v6("2001:db8::1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  // 2. A record arrives while the QUIC attempt is in flight.
+  endpoint_request
+      ->set_endpoints({ServiceEndpointBuilder()
+                           .add_v6("2001:db8::1")
+                           .add_v4("192.0.2.1")
+                           .endpoint()})
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  quic_completer.Complete(OK);
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+
+  QuicSessionAliasKey quic_key =
+      requester.GetStreamKey().CalculateQuicSessionAliasKey();
+  QuicChromiumClientSession* quic_session =
+      quic_session_pool()->FindExistingSession(quic_key.session_key(),
+                                               quic_key.destination());
+  ASSERT_TRUE(quic_session);
+  EXPECT_TRUE(quic_session->peer_address().host().IsIPv6());
+  ASSERT_TRUE(quic_session->fallback_ipv4_peer_address().has_value());
+  EXPECT_EQ(quic_session->fallback_ipv4_peer_address()->host().ToString(),
+            "192.0.2.1");
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       FallbackIpv4AddressPopulatedWhenDualEndpointAvailableAtAttemptStart) {
+  AddScopedFeatureList().InitWithFeatures(
+      {net::features::kAsyncQuicSession,
+       net::features::kEnableQuicV6ToV4Migration},
+      {});
+
+  MockConnectCompleter quic_completer;
+  AddQuicData(/*host=*/kDefaultDestination, &quic_completer);
+
+  // Make concurrent TCP attempts stalled forever while testing QUIC attempt.
+  SequencedSocketData tcp_data1;
+  tcp_data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data1);
+  SequencedSocketData tcp_data2;
+  tcp_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data2);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+
+  // Dual-stack ServiceEndpoint is already available when QUIC attempt starts.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v6("2001:db8::1")
+                         .add_v4("192.0.2.1")
+                         .endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  quic_completer.Complete(OK);
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+
+  QuicSessionAliasKey quic_key =
+      requester.GetStreamKey().CalculateQuicSessionAliasKey();
+  QuicChromiumClientSession* quic_session =
+      quic_session_pool()->FindExistingSession(quic_key.session_key(),
+                                               quic_key.destination());
+  ASSERT_TRUE(quic_session);
+  EXPECT_TRUE(quic_session->peer_address().host().IsIPv6());
+  ASSERT_TRUE(quic_session->fallback_ipv4_peer_address().has_value());
+  EXPECT_EQ(quic_session->fallback_ipv4_peer_address()->host().ToString(),
+            "192.0.2.1");
+}
+
+// Tests that a QUIC attempt that completes after its AttemptManager started
+// draining (and therefore reset its ServiceEndpointRequest) still creates a
+// session, but without a fallback IPv4 address.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       FallbackIpv4AddressNotSetWhenAttemptManagerIsDraining) {
+  AddScopedFeatureList().InitWithFeatures(
+      {net::features::kAsyncQuicSession,
+       net::features::kEnableQuicV6ToV4Migration},
+      {});
+
+  MockConnectCompleter quic_completer;
+  AddQuicData(/*host=*/kDefaultDestination, &quic_completer);
+
+  // Make concurrent TCP attempts stalled forever while testing QUIC attempt.
+  SequencedSocketData tcp_data1;
+  tcp_data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data1);
+  SequencedSocketData tcp_data2;
+  tcp_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data2);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+
+  // Dual-stack ServiceEndpoint is already available when QUIC attempt starts.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_v6("2001:db8::1")
+                         .add_v4("192.0.2.1")
+                         .endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  // Cancel the request while the QUIC attempt is in flight and not slow. The
+  // AttemptManager starts draining, which resets its ServiceEndpointRequest
+  // but keeps the QUIC attempt.
+  requester.ResetRequest();
+  ASSERT_TRUE(requester.associated_attempt_manager()->is_shutting_down());
+  ASSERT_FALSE(endpoint_request);
+
+  // The draining AttemptManager completes once the QUIC attempt completes.
+  base::RunLoop run_loop;
+  requester.associated_attempt_manager()->SetOnCompleteCallbackForTesting(
+      run_loop.QuitClosure());
+  quic_completer.Complete(OK);
+  run_loop.Run();
+
+  QuicSessionAliasKey quic_key =
+      requester.GetStreamKey().CalculateQuicSessionAliasKey();
+  QuicChromiumClientSession* quic_session =
+      quic_session_pool()->FindExistingSession(quic_key.session_key(),
+                                               quic_key.destination());
+  ASSERT_TRUE(quic_session);
+  EXPECT_TRUE(quic_session->peer_address().host().IsIPv6());
+  EXPECT_FALSE(quic_session->fallback_ipv4_peer_address().has_value());
+}
+
 }  // namespace net

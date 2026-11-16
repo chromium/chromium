@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_quic_attempt.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "net/http/http_stream_pool_group.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/address_utils.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_attempt_manager.h"
 #include "net/quic/quic_session_attempt_request.h"
@@ -173,6 +175,26 @@ void HttpStreamPool::QuicAttempt::OnSessionAttemptComplete(int rv) {
     outcome.error_details = request_->error_details();
   }
   request_.reset();
+
+  if (rv == OK && outcome.session &&
+      quic_endpoint_.ip_endpoint.address().IsIPv6() &&
+      !outcome.session->fallback_ipv4_peer_address().has_value() &&
+      ToIPEndPoint(outcome.session->peer_address()) ==
+          quic_endpoint_.ip_endpoint &&
+      manager_->service_endpoint_request()) {
+    for (const auto& endpoint :
+         manager_->service_endpoint_request()->GetEndpointResults()) {
+      if (endpoint.metadata == quic_endpoint_.metadata &&
+          std::ranges::contains(endpoint.ipv6_endpoints,
+                                quic_endpoint_.ip_endpoint) &&
+          !endpoint.ipv4_endpoints.empty()) {
+        outcome.session->set_fallback_ipv4_peer_address(
+            ToQuicSocketAddress(endpoint.ipv4_endpoints.front()));
+        break;
+      }
+    }
+  }
+
   manager_->OnQuicAttemptComplete(std::move(outcome));
   // `this` is deleted.
 }
