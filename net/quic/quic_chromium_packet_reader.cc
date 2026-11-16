@@ -155,16 +155,27 @@ bool QuicChromiumPacketReader::ProcessReadResult(int result) {
                                   /*packet_headers=*/nullptr,
                                   /*headers_length=*/0,
                                   /*owns_header_buffer=*/false, ecn);
+  return DispatchPacket(packet);
+}
+
+bool QuicChromiumPacketReader::DispatchPacket(
+    const quic::QuicReceivedPacket& packet) {
   IPEndPoint local_address;
   IPEndPoint peer_address;
   socket_->GetLocalAddress(&local_address);
   socket_->GetPeerAddress(&peer_address);
   auto self = weak_factory_.GetWeakPtr();
+  is_dispatching_packet_ = true;
   // Notifies the visitor that |this| reader gets a new packet, which may delete
   // |this| if |this| is a connectivity probing reader.
-  return visitor_->OnPacket(packet, ToQuicSocketAddress(local_address),
-                            ToQuicSocketAddress(peer_address)) &&
-         self;
+  const bool packet_handled =
+      visitor_->OnPacket(packet, ToQuicSocketAddress(local_address),
+                         ToQuicSocketAddress(peer_address));
+  if (!self) {
+    return false;
+  }
+  is_dispatching_packet_ = false;
+  return packet_handled;
 }
 
 bool QuicChromiumPacketReader::ShouldYield() {
@@ -285,15 +296,7 @@ bool QuicChromiumPacketReader::ProcessSingleDatagram(
       /*owns_buffer=*/false, /*ttl=*/0, /*ttl_valid=*/true,
       /*packet_headers=*/nullptr, /*headers_length=*/0,
       /*owns_header_buffer=*/false, ecn);
-
-  IPEndPoint local_address;
-  IPEndPoint peer_address;
-  socket_->GetLocalAddress(&local_address);
-  socket_->GetPeerAddress(&peer_address);
-  auto self = weak_factory_.GetWeakPtr();
-  return visitor_->OnPacket(packet, ToQuicSocketAddress(local_address),
-                            ToQuicSocketAddress(peer_address)) &&
-         self;
+  return DispatchPacket(packet);
 }
 
 }  // namespace net

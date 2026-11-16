@@ -161,9 +161,6 @@ namespace {
 
 using ::testing::ElementsAre;
 
-constexpr char kStartupLocalAddressCheckHistogram[] =
-    "Net.QuicSession.StartupLocalAddressCheck";
-
 // Run QuicSessionPoolTest instances with all values of version.
 struct TestParams {
   quic::ParsedQuicVersion version;
@@ -374,9 +371,10 @@ class MockQuicSessionPool : public QuicSessionPool {
   void FinishConnectAndConfigureSocket(ConnectAndConfigureCallback callback,
                                        DatagramClientSocket* socket,
                                        const SocketTag& socket_tag,
+                                       bool is_startup_check_socket,
                                        int rv) override {
-    QuicSessionPool::FinishConnectAndConfigureSocket(std::move(callback),
-                                                     socket, socket_tag, rv);
+    QuicSessionPool::FinishConnectAndConfigureSocket(
+        std::move(callback), socket, socket_tag, is_startup_check_socket, rv);
     MockFinishConnectAndConfigureSocket();
   }
 };
@@ -384,11 +382,130 @@ class MockQuicSessionPool : public QuicSessionPool {
 class QuicSessionPoolTest : public QuicSessionPoolTestBase,
                             public ::testing::TestWithParam<TestParams> {
  protected:
+  static constexpr char kStartupLocalAddressCheckHistogram[] =
+      "Net.QuicSession.StartupLocalAddressCheck";
+
   QuicSessionPoolTest()
       : QuicSessionPoolTestBase(GetParam().version),
         runner_(base::MakeRefCounted<TestTaskRunner>(context_.mock_clock())) {}
 
   void RunTestLoopUntilIdle();
+
+  // Uses up the persisted-address startup check on a throwaway socket and
+  // clears the pool's local address, so that the next session socket uses
+  // emulated connect and the pool can only learn its local address from
+  // received datagrams. Requires kPosixUdpEmulatedConnectForQuic.
+  void ConsumeEmulatedConnectStartupCheck() {
+    startup_socket_data_ = std::make_unique<MockQuicData>(version_);
+    startup_socket_data_->AddSocketDataToFactory(socket_factory_.get());
+    std::unique_ptr<DatagramClientSocket> startup_socket = pool_->CreateSocket(
+        handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source());
+    ASSERT_THAT(pool_->ConfigureSocket(
+                    startup_socket.get(),
+                    IPEndPoint(IPAddress::IPv4Localhost(), kDefaultServerPort),
+                    handles::kInvalidNetworkHandle, SocketTag(),
+                    /*is_startup_check_socket=*/true),
+                IsOk());
+    pool_->set_has_quic_ever_worked_on_current_network(false);
+    ASSERT_FALSE(pool_->has_local_address());
+  }
+
+  // Enables emulated connect for QUIC sockets. Must be called before
+  // Initialize().
+  void EnableEmulatedConnectForQuic() {
+    AddScopedFeatureList().InitAndEnableFeatureWithParameters(
+        features::kPosixUdpEmulatedConnect,
+        {{"PosixUdpEmulatedConnectForQuic", "true"}});
+  }
+
+  // Accessors for the local address that HttpServerProperties recorded the
+  // last time QUIC worked.
+  bool HasPersistedLocalAddress() const {
+    return http_server_properties_->HasLastLocalAddressWhenQuicWorked();
+  }
+  bool PersistedLocalAddressIs(const IPAddress& address) const {
+    return http_server_properties_->WasLastLocalAddressWhenQuicWorked(address);
+  }
+  [[nodiscard]] bool WaitForPersistedLocalAddress(const IPAddress& address) {
+    return base::test::RunUntil(
+        [&] { return PersistedLocalAddressIs(address); });
+  }
+
+  // Returns the mock socket that `session` is currently using.
+  static MockUDPClientSocket* DefaultMockSocket(
+      QuicChromiumClientSession* session) {
+    return const_cast<MockUDPClientSocket*>(
+        static_cast<const MockUDPClientSocket*>(session->GetDefaultSocket()));
+  }
+
+  // Create packet makers for a connection to `host` other than the one that
+  // `client_maker_` and `server_maker_` are used for.
+  QuicTestPacketMaker MakeClientMaker(std::string_view host,
+                                      quic::QuicConnectionId connection_id) {
+    return QuicTestPacketMaker(version_, connection_id, context_.clock(), host,
+                               quic::Perspective::IS_CLIENT,
+                               /*client_priority_uses_incremental=*/true,
+                               /*use_priority_header=*/true);
+  }
+  QuicTestPacketMaker MakeClientMaker(std::string_view host) {
+    return MakeClientMaker(host, quic::QuicUtils::CreateRandomConnectionId(
+                                     context_.random_generator()));
+  }
+  QuicTestPacketMaker MakeServerMaker(std::string_view host,
+                                      quic::QuicConnectionId connection_id) {
+    return QuicTestPacketMaker(version_, connection_id, context_.clock(), host,
+                               quic::Perspective::IS_SERVER,
+                               /*client_priority_uses_incremental=*/false,
+                               /*use_priority_header=*/true);
+  }
+  QuicTestPacketMaker MakeServerMaker(std::string_view host) {
+    return MakeServerMaker(host, quic::QuicUtils::CreateRandomConnectionId(
+                                     context_.random_generator()));
+  }
+
+  // Registers a GET request for kDefaultUrl with `stream` and initializes it.
+  // `request_info` must outlive `stream`.
+  void InitializeGetStream(HttpStream* stream, HttpRequestInfo* request_info) {
+    request_info->method = "GET";
+    request_info->url = GURL(kDefaultUrl);
+    request_info->traffic_annotation =
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+    stream->RegisterRequest(request_info);
+    EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                           CompletionOnceCallback()));
+  }
+
+  // Adds to `socket_data` the packets exchanged on the new path after a
+  // session whose only activity was sending one GET request (client packets 1
+  // and 2) migrates: the client retransmits packets 1 and 2, sends a ping and
+  // retires the old connection ID, the server sends the response headers, and
+  // the client cancels the stream when it is destroyed. `packet_number` is the
+  // number of the first client packet on the new path. `client_maker_` must
+  // already be using the new connection ID and have saved packets 1 and 2.
+  void AddMigratedGetRequestPackets(MockQuicData& socket_data,
+                                    int packet_number) {
+    const quic::QuicStreamId stream_id =
+        GetNthClientInitiatedBidirectionalStreamId(0);
+    socket_data.AddWrite(SYNCHRONOUS,
+                         client_maker_.MakeCombinedRetransmissionPacket(
+                             {1, 2}, packet_number++));
+    socket_data.AddWrite(
+        SYNCHRONOUS,
+        client_maker_.Packet(packet_number++).AddPingFrame().Build());
+    socket_data.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                          .AddRetireConnectionIdFrame(0u)
+                                          .Build());
+    socket_data.AddRead(ASYNC, ConstructOkResponsePacket(1, stream_id, false));
+    socket_data.AddReadPauseForever();
+    socket_data.AddWrite(
+        SYNCHRONOUS,
+        client_maker_.Packet(packet_number++)
+            .AddStreamFrame(GetQpackDecoderStreamId(), /*fin=*/false,
+                            StreamCancellationQpackDecoderInstruction(0))
+            .AddStopSendingFrame(stream_id, quic::QUIC_STREAM_CANCELLED)
+            .AddRstStreamFrame(stream_id, quic::QUIC_STREAM_CANCELLED)
+            .Build());
+  }
 
   void InitializeConnectionMigrationV2Test(
       NetworkChangeNotifier::NetworkList connected_networks);
@@ -467,6 +584,8 @@ class QuicSessionPoolTest : public QuicSessionPoolTestBase,
   }
 
   scoped_refptr<TestTaskRunner> runner_;
+  // Socket data for the socket used by ConsumeEmulatedConnectStartupCheck().
+  std::unique_ptr<MockQuicData> startup_socket_data_;
 };
 
 void QuicSessionPoolTest::RunTestLoopUntilIdle() {
@@ -1330,6 +1449,978 @@ TEST_P(QuicSessionPoolTest, DontRequireConfirmationFromSameIP) {
   EXPECT_TRUE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
 }
 
+TEST_P(QuicSessionPoolTest, PersistedSupportsQuicWithEmulatedConnect) {
+  EnableEmulatedConnectForQuic();
+
+  quic_params_->close_sessions_on_ip_change = true;
+  quic_params_->migrate_sessions_on_network_change_v2 = false;
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "192.168.0.1", "");
+  Initialize();
+  pool_->set_has_quic_ever_worked_on_current_network(false);
+  http_server_properties_->SetLastLocalAddressWhenQuicWorked(
+      IPAddress(192, 0, 2, 33));
+
+  const QuicSessionKey session_key(
+      kDefaultServerHostName, kDefaultServerPort, PRIVACY_MODE_DISABLED,
+      ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(10);
+  http_server_properties_->SetServerNetworkStats(
+      url::SchemeHostPort(GURL(kDefaultUrl)), NetworkAnonymizationKey(), stats);
+  EXPECT_FALSE(pool_->GetTimeDelayForWaitingJob(session_key).is_zero());
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Connect #1: First connect after startup does not use emulated connect.
+  // GetLocalAddress() succeeds in ConfigureSocket() even with paused reads,
+  // allowing 0-RTT without requiring handshake confirmation.
+  MockQuicData socket_data1(version_);
+  socket_data1.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  int packet_num = 1;
+  socket_data1.AddWrite(SYNCHRONOUS,
+                        ConstructInitialSettingsPacket(packet_num++));
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  socket_data1.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_num++)
+          .AddConnectionCloseFrame(quic::QUIC_IP_ADDRESS_CHANGED, "net error")
+          .Build());
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  QuicChromiumClientSession* session1 = GetActiveSession(kDefaultDestination);
+  EXPECT_FALSE(session1->require_confirmation());
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  EXPECT_TRUE(HasPersistedLocalAddress());
+
+  // Trigger an IP address change. This closes session1, resets whether QUIC has
+  // worked on the current network, and clears the persisted local address.
+  NotifyIPAddressChanged();
+  EXPECT_FALSE(pool_->has_quic_ever_worked_on_current_network());
+  EXPECT_FALSE(HasPersistedLocalAddress());
+  EXPECT_TRUE(pool_->GetTimeDelayForWaitingJob(session_key).is_zero());
+
+  // Connect #2: Subsequent connects use emulated connect. ConfigureSocket()
+  // does not call GetLocalAddress(); the local address is learned from the
+  // first authenticated datagram received after the handshake.
+  client_maker_.Reset();
+  server_maker_.Reset();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data2(version_);
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data2.AddRead(ASYNC,
+                       server_maker_.Packet(1).AddAckFrame(1, 1, 1).Build());
+  socket_data2.AddReadPause();
+  socket_data2.AddRead(ASYNC,
+                       server_maker_.Packet(2).AddPaddingFrame().Build());
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  TestCompletionCallback callback2;
+  RequestBuilder builder2(this);
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return socket_data2.GetSequencedSocketData()->IsPaused(); }));
+
+  // Before handshake confirmation, the local address is not yet persisted.
+  EXPECT_FALSE(pool_->has_quic_ever_worked_on_current_network());
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+
+  // The next datagram provides the local address, which is then persisted.
+  socket_data2.Resume();
+  ASSERT_TRUE(base::test::RunUntil([&] { return HasPersistedLocalAddress(); }));
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 33)));
+
+  socket_data1.ExpectAllDataConsumed();
+  socket_data2.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       EmulatedConnectProxiedSessionDoesNotOverwriteLocalAddress) {
+  EnableEmulatedConnectForQuic();
+
+  Initialize();
+
+  const GURL proxy(kProxy1Url);
+  const auto proxy_origin = url::SchemeHostPort(proxy);
+  const auto proxy_chain = ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::SCHEME_HTTPS, proxy_origin.host(), 443);
+  ASSERT_TRUE(proxy_chain.IsValid());
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_use_priority_header(false);
+
+  const quic::QuicConnectionId endpoint_cid =
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator());
+  QuicTestPacketMaker endpoint_maker =
+      MakeClientMaker(kDefaultServerHostName, endpoint_cid);
+  QuicTestPacketMaker server_endpoint_maker =
+      MakeServerMaker(kDefaultServerHostName, endpoint_cid);
+  server_endpoint_maker.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+
+  const uint64_t stream_id = GetNthClientInitiatedBidirectionalStreamId(0);
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  socket_data.AddWrite(
+      SYNCHRONOUS, ConstructConnectUdpRequestPacket(
+                       2, stream_id, proxy.GetHost(),
+                       "/.well-known/masque/udp/www.example.org/443/", false));
+  socket_data.AddRead(ASYNC, ConstructServerSettingsPacket(3));
+  socket_data.AddRead(ASYNC, ConstructOkResponsePacket(4, stream_id, true));
+  socket_data.AddWrite(ASYNC,
+                       client_maker_.Packet(3).AddAckFrame(3, 4, 3).Build());
+  socket_data.AddWrite(ASYNC, ConstructClientH3DatagramPacket(
+                                  4, stream_id, kConnectUdpContextId,
+                                  endpoint_maker.MakeInitialSettingsPacket(1)));
+  socket_data.AddReadPause();
+  socket_data.AddRead(
+      ASYNC, server_maker_.Packet(5)
+                 .AddMessageFrame(ConstructH3Datagram(
+                     stream_id, kConnectUdpContextId,
+                     server_endpoint_maker.Packet(1).AddPingFrame().Build()))
+                 .Build());
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  builder.proxy_chain = proxy_chain;
+  builder.http_user_agent_settings = &http_user_agent_settings_;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return socket_data.AllWriteDataConsumed(); }));
+
+  // The direct session to the proxy persists its socket's local address.
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 33)));
+
+  QuicChromiumClientSession* proxy_session = GetActiveSession(
+      proxy_origin, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      ProxyChain::Direct(), SessionUsage::kProxy,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/true);
+  ASSERT_TRUE(proxy_session);
+  QuicChromiumClientSession* proxied_session =
+      GetActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                       NetworkAnonymizationKey(), proxy_chain);
+  ASSERT_TRUE(proxied_session);
+  ASSERT_FALSE(proxied_session->quic_session_key().proxy_chain().is_direct());
+
+  // Update the pool's learned local address to 192.0.2.44 and mark the outer
+  // proxy session going away so its own OnPacket will not update the pool's
+  // local address. When the outer proxy socket delivers an H3 datagram,
+  // QuicProxyDatagramClientSocket::GetLocalAddress() still returns the
+  // 192.0.2.33 address captured during ConnectViaStream, and the inner proxied
+  // session's reader dispatches the decrypted inner packet to
+  // proxied_session->OnPacket(), which must not overwrite 192.0.2.44.
+  proxy_session->SetGoingAwayForTesting(true);
+  pool_->OnDatagramReceived(
+      ToQuicSocketAddress(IPEndPoint(IPAddress(192, 0, 2, 44), 12345)));
+  ASSERT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 44)));
+
+  socket_data.Resume();
+  ASSERT_EQ(1u, proxied_session->connection()->GetStats().packets_processed);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 44)));
+
+  socket_data.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       EmulatedConnectLocalAddressUpdatedOnMigrationWithoutProbing) {
+  EnableEmulatedConnectForQuic();
+
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+
+  QuicSessionPoolPeer::SetTaskRunner(pool_.get(), runner_.get());
+
+  int packet_number = 1;
+  QuicTestPacketMaker old_path_server_maker =
+      MakeServerMaker(kDefaultServerHostName);
+  old_path_server_maker.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_number++));
+  socket_data.AddWrite(
+      SYNCHRONOUS, ConstructGetRequestPacket(
+                       packet_number++,
+                       GetNthClientInitiatedBidirectionalStreamId(0), true));
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC,
+                      old_path_server_maker.Packet(2).AddPingFrame().Build());
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  ASSERT_TRUE(stream.get());
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 1)));
+
+  HttpRequestInfo request_info;
+  InitializeGetStream(stream.get(), &request_info);
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  MaybeMakeNewConnectionIdAvailableToSession(kNewCID, session);
+
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  MockQuicData socket_data1(version_);
+  client_maker_.set_connection_id(kNewCID);
+  AddMigratedGetRequestPackets(socket_data1, packet_number);
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Trigger unprobed migration onto kNewNetworkForTests (local IP 192.0.2.2).
+  // Until kNewNetworkForTests is made default, the persisted address for
+  // kDefaultNetworkForTests (192.0.2.1) is not overwritten.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 1)));
+
+  // Making the new network default resets
+  // has_quic_ever_worked_on_current_network and clears local_address_.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  // Reading the response packet on the migrated socket repopulates
+  // local_address_ with 192.0.2.2.
+  EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
+  runner_->RunNextTask();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 2)));
+
+  stream.reset();
+
+  // A late packet arriving on the old pre-migration reader (192.0.2.1) must not
+  // overwrite the migrated default socket's local address (192.0.2.2).
+  socket_data.Resume();
+  ASSERT_EQ(2u, session->connection()->GetStats().packets_processed);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 2)));
+  socket_data.ExpectAllDataConsumed();
+  socket_data1.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, EmulatedConnectRouteChangeAndGoingAwaySession) {
+  EnableEmulatedConnectForQuic();
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  ConsumeEmulatedConnectStartupCheck();
+
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, server_maker_.Packet(1).AddPingFrame().Build());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, server_maker_.Packet(2).AddPingFrame().Build());
+  socket_data.AddWrite(SYNCHRONOUS,
+                       client_maker_.Packet(2).AddAckFrame(1, 2, 1).Build());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, server_maker_.Packet(3).AddPingFrame().Build());
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  MockUDPClientSocket* socket = DefaultMockSocket(session);
+  ASSERT_TRUE(socket->allow_emulated_connect());
+  // No datagram has been read yet, so the local address is not known.
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  // Simulate an OS route change A (192.0.2.33) -> B (192.0.2.44) on the open
+  // socket.
+  socket->set_source_host(IPAddress(192, 0, 2, 44));
+  socket_data.Resume();
+  ASSERT_EQ(1u, session->connection()->GetStats().packets_processed);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 44)));
+
+  // Simulate an OS route change back B (192.0.2.44) -> A (192.0.2.33).
+  socket->set_source_host(IPAddress(192, 0, 2, 33));
+  socket_data.Resume();
+  ASSERT_EQ(2u, session->connection()->GetStats().packets_processed);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 33)));
+
+  // Once a session is going away, packets arriving on it must not overwrite the
+  // pool's tracked local address.
+  session->SetGoingAwayForTesting(true);
+  socket->set_source_host(IPAddress(192, 0, 2, 55));
+  socket_data.Resume();
+  ASSERT_EQ(3u, session->connection()->GetStats().packets_processed);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 33)));
+
+  socket_data.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       EmulatedConnectSessionFromBeforeIPChangeDoesNotUpdateLocalAddress) {
+  EnableEmulatedConnectForQuic();
+  host_resolver_->set_synchronous_mode(true);
+  quic_params_->goaway_sessions_on_ip_change = true;
+  quic_params_->migrate_sessions_on_network_change_v2 = false;
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  ConsumeEmulatedConnectStartupCheck();
+
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockConnectCompleter completer;
+  MockQuicData socket_data(version_);
+  socket_data.AddConnect(&completer);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, server_maker_.Packet(1).AddPingFrame().Build());
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+
+  // The IP address changes while the session's socket is connecting, so the
+  // socket may be bound to the old network.
+  pool_->OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
+  completer.Complete(OK);
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(DefaultMockSocket(session)->allow_emulated_connect());
+  EXPECT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+
+  // A datagram received by the session must not update the pool's local
+  // address.
+  socket_data.Resume();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return session->connection()->GetStats().packets_processed == 1u;
+  }));
+  EXPECT_FALSE(pool_->has_local_address());
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  socket_data.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       EmulatedConnectSyncSessionAfterIPChangeUpdatesLocalAddress) {
+  EnableEmulatedConnectForQuic();
+  AddScopedFeatureList().InitAndDisableFeature(features::kAsyncQuicSession);
+  host_resolver_->set_synchronous_mode(true);
+  quic_params_->goaway_sessions_on_ip_change = true;
+  quic_params_->migrate_sessions_on_network_change_v2 = false;
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  ConsumeEmulatedConnectStartupCheck();
+  pool_->OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
+
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, server_maker_.Packet(1).AddPingFrame().Build());
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // With kAsyncQuicSession disabled, the session is created synchronously after
+  // the IP address change, so its datagrams update the local address.
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsOk());
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(DefaultMockSocket(session)->allow_emulated_connect());
+
+  socket_data.Resume();
+  ASSERT_TRUE(WaitForPersistedLocalAddress(IPAddress(192, 0, 2, 33)));
+
+  socket_data.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       EmulatedConnectAlternateNetworkMigrationDoesNotOverwriteLocalAddress) {
+  EnableEmulatedConnectForQuic();
+
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+  QuicSessionPoolPeer::SetTaskRunner(pool_.get(), runner_.get());
+
+  int packet_number = 1;
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS,
+                       ConstructInitialSettingsPacket(packet_number++));
+  socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  ASSERT_TRUE(stream.get());
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 1)));
+
+  HttpRequestInfo request_info;
+  InitializeGetStream(stream.get(), &request_info);
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  MaybeMakeNewConnectionIdAvailableToSession(kNewCID, session);
+
+  MockQuicData socket_data1(version_);
+  client_maker_.set_connection_id(kNewCID);
+  ConstructGetRequestPacket(
+      packet_number++, GetNthClientInitiatedBidirectionalStreamId(0), true);
+  AddMigratedGetRequestPackets(socket_data1, packet_number);
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // SendRequest encounters ERR_ADDRESS_UNREACHABLE on kDefaultNetworkForTests
+  // (192.0.2.1), posting MigrateSessionOnWriteError to runner_.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+  // Run MigrateSessionOnWriteError -> CommitMigration onto kNewNetworkForTests
+  // (192.0.2.2) while kDefaultNetworkForTests remains the default network.
+  runner_->RunNextTask();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return session->GetCurrentNetwork() == kNewNetworkForTests; }));
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 1)));
+  EXPECT_FALSE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 2)));
+
+  // Execute WriteToNewSocket and read the response packet on the alternate
+  // network; the default network's persisted local address must not be
+  // overwritten.
+  EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
+  runner_->RunNextTask();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 1)));
+  EXPECT_FALSE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 2)));
+
+  stream.reset();
+  socket_data.ExpectAllDataConsumed();
+  socket_data1.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       EmulatedConnectDatagramRestoresLocalAddressWhenPoolLocalAddressEmpty) {
+  EnableEmulatedConnectForQuic();
+
+  InitializeConnectionMigrationV2Test({kDefaultNetworkForTests});
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data1(version_);
+  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data1.AddRead(ASYNC,
+                       server_maker_.Packet(1).AddPaddingFrame().Build());
+  socket_data1.AddReadPause();
+  socket_data1.AddRead(ASYNC,
+                       server_maker_.Packet(2).AddPaddingFrame().Build());
+  socket_data1.AddReadPauseForever();
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(WaitForPersistedLocalAddress(IPAddress(192, 0, 2, 1)));
+
+  // OnNetworkMadeDefault resets whether QUIC has worked on the current network,
+  // which clears pool_->local_address_, even though session 1 has already
+  // reported 192.0.2.1. Then mark QUIC as working while pool_->local_address_
+  // is still empty.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ASSERT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+  ASSERT_FALSE(HasPersistedLocalAddress());
+
+  // Receiving a packet on session 1 with the same 192.0.2.1 address must
+  // repopulate pool_->local_address_ and persist it to HttpServerProperties.
+  socket_data1.Resume();
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return socket_data1.AllReadDataConsumed(); }));
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 1)));
+
+  socket_data1.ExpectAllDataConsumed();
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    EmulatedConnectSynchronousHandshakeInProcessUdpPacketRecordsLocalAddress) {
+  EnableEmulatedConnectForQuic();
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  ConsumeEmulatedConnectStartupCheck();
+
+  // Deliver a CRYPTO frame that completes the TLS 1.3 handshake synchronously
+  // inside ProcessUdpPacket, as happens in production. The local address of
+  // the packet that completes the handshake is persisted.
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddRead(
+      ASYNC,
+      server_maker_.Packet(1)
+          .AddCryptoFrame(
+              quic::ENCRYPTION_FORWARD_SECURE, 0,
+              MockCryptoClientStream::GetDummyCHLOMessage().GetSerialized())
+          .Build());
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  EXPECT_TRUE(DefaultMockSocket(session)->allow_emulated_connect());
+
+  EXPECT_TRUE(session->OneRttKeysAvailable());
+  EXPECT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 33)));
+
+  socket_data.ExpectAllDataConsumed();
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    EmulatedConnectPreHandshakeAndUndecryptablePacketsDoNotUpdateLocalAddress) {
+  EnableEmulatedConnectForQuic();
+  AddScopedFeatureList().InitAndEnableFeature(features::kQuicUseReadMultiple);
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  ConsumeEmulatedConnectStartupCheck();
+
+  // Simulate the state after CheckPersistedSupportsQuic has restored
+  // has_quic_ever_worked_on_current_network_ = true and cleared
+  // HttpServerProperties.
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
+  ASSERT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+  ASSERT_FALSE(HasPersistedLocalAddress());
+
+  auto make_undecryptable_packet = [&](uint64_t packet_number) {
+    auto packet = server_maker_.Packet(packet_number).AddPaddingFrame().Build();
+    std::string data(packet->data(), packet->length());
+    data.back() ^= 0xff;
+    return std::make_unique<quic::QuicEncryptedPacket>(
+        quic::CopyBuffer(data.data(), data.length()), data.length(),
+        /*owns_buffer=*/true);
+  };
+
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, server_maker_.Packet(1).AddPaddingFrame().Build());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, make_undecryptable_packet(2));
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, make_undecryptable_packet(3));
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, server_maker_.Packet(4).AddPaddingFrame().Build());
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  MockUDPClientSocket* socket = DefaultMockSocket(session);
+  ASSERT_TRUE(socket->allow_emulated_connect());
+
+  // 1. A valid pre-handshake packet (192.0.2.33) must not update the pool's
+  // local address or persist it to HttpServerProperties.
+  socket_data.Resume();
+  ASSERT_EQ(1u, session->connection()->GetStats().packets_processed);
+  EXPECT_FALSE(session->OneRttKeysAvailable());
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  // 2. An undecryptable packet from a different source address (192.0.2.99)
+  // before handshake completion is dropped by ProcessUdpPacket.
+  socket->set_source_host(IPAddress(192, 0, 2, 99));
+  socket_data.Resume();
+  ASSERT_EQ(2u, session->connection()->GetStats().packets_received);
+  EXPECT_EQ(1u, session->connection()->GetStats().packets_processed);
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  // 3. Completing the handshake outside packet processing does not provide a
+  // local address.
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  // 4. A post-handshake undecryptable packet from 192.0.2.88 is also ignored.
+  socket->set_source_host(IPAddress(192, 0, 2, 88));
+  socket_data.Resume();
+  ASSERT_EQ(3u, session->connection()->GetStats().packets_received);
+  EXPECT_EQ(1u, session->connection()->GetStats().packets_processed);
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  // 5. A valid post-handshake packet from 192.0.2.33 updates the local address.
+  socket->set_source_host(IPAddress(192, 0, 2, 33));
+  socket_data.Resume();
+  ASSERT_EQ(2u, session->connection()->GetStats().packets_processed);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 33)));
+
+  socket_data.ExpectAllDataConsumed();
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    EmulatedConnectStartupCheckSkipsTargetNetworkAndConcurrentAsyncSessions) {
+  EnableEmulatedConnectForQuic();
+
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddRule(kServer2HostName, "127.0.0.2");
+  host_resolver_->rules()->AddRule(kServer3HostName, "127.0.0.3");
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  socket_factory_ = std::make_unique<TestConnectionMigrationSocketFactory>();
+  // Pre-seed the persisted address with 192.0.2.2, which will be assigned to
+  // the second socket (the first default-network socket).
+  http_server_properties_->SetLastLocalAddressWhenQuicWorked(
+      IPAddress(192, 0, 2, 2));
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Socket 1 (192.0.2.1): bound to target_network = kNewNetworkForTests.
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data1(version_);
+  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data1.AddReadPause();
+  socket_data1.AddRead(ASYNC,
+                       server_maker_.Packet(1).AddPaddingFrame().Build());
+  socket_data1.AddReadPauseForever();
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket 2 (192.0.2.2): first default-network session.
+  QuicTestPacketMaker client_maker2 = MakeClientMaker(kServer2HostName);
+  client_maker2.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  MockQuicData socket_data2(version_);
+  socket_data2.AddConnect(SYNCHRONOUS, OK);
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddWrite(SYNCHRONOUS,
+                        ConstructInitialSettingsPacket(client_maker2, 1));
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket 3 (192.0.2.3): second concurrent default-network session started
+  // while session 2's FinishCreateSession PostTask is still pending.
+  QuicTestPacketMaker client_maker3 = MakeClientMaker(kServer3HostName);
+  client_maker3.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  MockQuicData socket_data3(version_);
+  socket_data3.AddReadPauseForever();
+  socket_data3.AddWrite(SYNCHRONOUS,
+                        ConstructInitialSettingsPacket(client_maker3, 1));
+  socket_data3.AddSocketDataToFactory(socket_factory_.get());
+
+  base::HistogramTester histogram_tester;
+
+  // 1. A target_network-bound session at startup must use emulated connect and
+  // must not consume the default-network startup check.
+  RequestBuilder builder1(this);
+  builder1.target_network = kNewNetworkForTests;
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return socket_data1.AllWriteDataConsumed(); }));
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  QuicChromiumClientSession* session1 = GetActiveSession(
+      kDefaultDestination, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      ProxyChain::Direct(), SessionUsage::kDestination,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false, kNewNetworkForTests);
+  ASSERT_TRUE(session1);
+  EXPECT_TRUE(DefaultMockSocket(session1)->allow_emulated_connect());
+  histogram_tester.ExpectTotalCount(kStartupLocalAddressCheckHistogram, 0);
+
+  // A post-handshake datagram on the target_network session must not update
+  // the pool's local address or the persisted address.
+  socket_data1.Resume();
+  ASSERT_EQ(1u, session1->connection()->GetStats().packets_processed);
+  EXPECT_FALSE(pool_->has_local_address());
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 2)));
+
+  // Confirming session 1 marked QUIC as working. Reset that so that step 2
+  // shows the startup check setting it.
+  pool_->set_has_quic_ever_worked_on_current_network(false);
+  ASSERT_FALSE(pool_->has_quic_ever_worked_on_current_network());
+
+  // 2. Start default-network session 2: FinishConnectAndConfigureSocket runs
+  // CheckPersistedSupportsQuic synchronously (before the FinishCreateSession
+  // PostTask), matching 192.0.2.2 and setting
+  // has_quic_ever_worked_on_current_network_ = true immediately so concurrent
+  // default-network session 3 gets both emulated connect and 0-RTT (completing
+  // without waiting for 1-RTT confirmation).
+  const url::SchemeHostPort destination2(url::kHttpsScheme, kServer2HostName,
+                                         kDefaultServerPort);
+  TestCompletionCallback callback2;
+  RequestBuilder builder2(this);
+  builder2.destination = destination2;
+  builder2.url = GURL(kServer2Url);
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+  EXPECT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+  histogram_tester.ExpectUniqueSample(
+      kStartupLocalAddressCheckHistogram,
+      QuicSessionPool::StartupLocalAddressCheck::kMatch, 1);
+
+  const url::SchemeHostPort destination3(url::kHttpsScheme, kServer3HostName,
+                                         kDefaultServerPort);
+  TestCompletionCallback callback3;
+  RequestBuilder builder3(this);
+  builder3.destination = destination3;
+  builder3.url = GURL(kServer3Url);
+  builder3.callback = callback3.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder3.CallRequest());
+
+  // Both session 2 and session 3 complete in 0-RTT without 1-RTT confirmation.
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_THAT(callback3.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session2 = GetActiveSession(destination2);
+  ASSERT_TRUE(session2);
+  EXPECT_FALSE(session2->OneRttKeysAvailable());
+  EXPECT_FALSE(DefaultMockSocket(session2)->allow_emulated_connect());
+
+  QuicChromiumClientSession* session3 = GetActiveSession(destination3);
+  ASSERT_TRUE(session3);
+  EXPECT_FALSE(session3->OneRttKeysAvailable());
+  EXPECT_TRUE(DefaultMockSocket(session3)->allow_emulated_connect());
+  histogram_tester.ExpectUniqueSample(
+      kStartupLocalAddressCheckHistogram,
+      QuicSessionPool::StartupLocalAddressCheck::kMatch, 1);
+
+  socket_data1.ExpectAllDataConsumed();
+  socket_data2.ExpectAllDataConsumed();
+  socket_data3.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       EmulatedConnectSlowStartupConnectDoesNotClobberConfirmedAddress) {
+  EnableEmulatedConnectForQuic();
+
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddRule(kServer2HostName, "127.0.0.2");
+  socket_factory_ = std::make_unique<TestConnectionMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Session 1 starts connecting on 192.0.2.1, but its async Connect() is
+  // delayed.
+  MockConnectCompleter completer1;
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data1(version_);
+  socket_data1.AddConnect(&completer1);
+  socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data1.AddReadPause();
+  socket_data1.AddRead(ASYNC,
+                       server_maker_.Packet(1).AddPaddingFrame().Build());
+  socket_data1.AddReadPause();
+  socket_data1.AddRead(ASYNC,
+                       server_maker_.Packet(2).AddPaddingFrame().Build());
+  socket_data1.AddReadPauseForever();
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Session 2 connects concurrently on 192.0.2.2, completes the startup check,
+  // receives a server datagram, and confirms its handshake before session 1
+  // finishes connecting.
+  QuicTestPacketMaker client_maker2 = MakeClientMaker(kServer2HostName);
+  QuicTestPacketMaker server_maker2 = MakeServerMaker(kServer2HostName);
+  server_maker2.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  MockQuicData socket_data2(version_);
+  socket_data2.AddWrite(SYNCHRONOUS,
+                        ConstructInitialSettingsPacket(client_maker2, 1));
+  socket_data2.AddRead(ASYNC,
+                       server_maker2.Packet(1).AddPaddingFrame().Build());
+  socket_data2.AddReadPause();
+  socket_data2.AddRead(ASYNC,
+                       server_maker2.Packet(2).AddPaddingFrame().Build());
+  socket_data2.AddReadPauseForever();
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  base::HistogramTester histogram_tester;
+
+  RequestBuilder builder1(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+
+  const url::SchemeHostPort destination2(url::kHttpsScheme, kServer2HostName,
+                                         kDefaultServerPort);
+  TestCompletionCallback callback2;
+  RequestBuilder builder2(this);
+  builder2.destination = destination2;
+  builder2.url = GURL(kServer2Url);
+  builder2.callback = callback2.callback();
+  EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  ASSERT_TRUE(WaitForPersistedLocalAddress(IPAddress(192, 0, 2, 2)));
+  EXPECT_TRUE(pool_->has_quic_ever_worked_on_current_network());
+
+  // When session 1's delayed Connect() completes (on 192.0.2.1), it must not
+  // overwrite pool_->local_address_ (192.0.2.2) or emit a second
+  // StartupLocalAddressCheck.
+  completer1.Complete(OK);
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 2)));
+  histogram_tester.ExpectUniqueSample(
+      kStartupLocalAddressCheckHistogram,
+      QuicSessionPool::StartupLocalAddressCheck::kNoPersistedAddress, 1);
+
+  // Session 1's first received datagram (on 192.0.2.1) updates the persisted
+  // local address to 192.0.2.1.
+  socket_data1.Resume();
+  ASSERT_TRUE(WaitForPersistedLocalAddress(IPAddress(192, 0, 2, 1)));
+
+  // A subsequent steady-state datagram on session 2 (whose socket local address
+  // is still 192.0.2.2) must not overwrite the persisted address back to
+  // 192.0.2.2.
+  socket_data2.Resume();
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return socket_data2.AllReadDataConsumed(); }));
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 1)));
+
+  // Clearing HttpServerProperties while session 1 is open must not be undone by
+  // subsequent steady-state datagrams on session 1 with the same local address.
+  http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
+  socket_data1.Resume();
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return socket_data1.AllReadDataConsumed(); }));
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  socket_data1.ExpectAllDataConsumed();
+  socket_data2.ExpectAllDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       EmulatedConnectUnauthenticatedPacketDoesNotUpdateLocalAddress) {
+  EnableEmulatedConnectForQuic();
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  ConsumeEmulatedConnectStartupCheck();
+
+  server_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  QuicTestPacketMaker mismatched_cid_maker = MakeServerMaker(
+      kDefaultServerHostName, quic::test::TestConnectionId(0xdeadbeef));
+  // A long header packet type that cannot replace the server connection ID, so
+  // QuicConnection::OnUnauthenticatedPublicHeader() drops it.
+  mismatched_cid_maker.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, server_maker_.Packet(1).AddPaddingFrame().Build());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC,
+                      mismatched_cid_maker.Packet(2).AddPaddingFrame().Build());
+  socket_data.AddReadPauseForever();
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  MockUDPClientSocket* socket = DefaultMockSocket(session);
+  EXPECT_TRUE(socket->allow_emulated_connect());
+  EXPECT_FALSE(HasPersistedLocalAddress());
+
+  // 1. A valid decrypted packet from 192.0.2.33 records the local address.
+  socket_data.Resume();
+  ASSERT_TRUE(WaitForPersistedLocalAddress(IPAddress(192, 0, 2, 33)));
+
+  // 2. A packet with a mismatched Connection ID is dropped by
+  // OnUnauthenticatedPublicHeader without AEAD decryption (even though
+  // QuicConnection increments stats_.packets_processed) and must not update the
+  // local address to 192.0.2.99.
+  socket->set_source_host(IPAddress(192, 0, 2, 99));
+  socket_data.Resume();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return session->connection()->GetStats().packets_received == 2u;
+  }));
+  ASSERT_EQ(session->connection()->GetStats().packets_dropped, 1u);
+  EXPECT_TRUE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 33)));
+  EXPECT_FALSE(PersistedLocalAddressIs(IPAddress(192, 0, 2, 99)));
+
+  socket_data.ExpectAllDataConsumed();
+}
+
 TEST_P(QuicSessionPoolTest,
        StartupLocalAddressCheckHistogramNoPersistedAddress) {
   host_resolver_->rules()->AddRule(kServer2HostName, "127.0.0.2");
@@ -1352,12 +2443,7 @@ TEST_P(QuicSessionPoolTest,
       QuicSessionPool::StartupLocalAddressCheck::kNoPersistedAddress, 1);
 
   // Creating a second session on the same pool must not emit again.
-  QuicTestPacketMaker client_maker2(
-      version_,
-      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), kServer2HostName, quic::Perspective::IS_CLIENT,
-      /*client_priority_uses_incremental=*/true,
-      /*use_priority_header=*/true);
+  QuicTestPacketMaker client_maker2 = MakeClientMaker(kServer2HostName);
   MockQuicData socket_data2(version_);
   socket_data2.AddReadPauseForever();
   socket_data2.AddWrite(SYNCHRONOUS,
@@ -1374,10 +2460,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
   histogram_tester.ExpectTotalCount(kStartupLocalAddressCheckHistogram, 1);
 
-  socket_data1.ExpectAllReadDataConsumed();
-  socket_data1.ExpectAllWriteDataConsumed();
-  socket_data2.ExpectAllReadDataConsumed();
-  socket_data2.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllDataConsumed();
+  socket_data2.ExpectAllDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, StartupLocalAddressCheckHistogramMatch) {
@@ -1401,8 +2485,7 @@ TEST_P(QuicSessionPoolTest, StartupLocalAddressCheckHistogramMatch) {
       kStartupLocalAddressCheckHistogram,
       QuicSessionPool::StartupLocalAddressCheck::kMatch, 1);
 
-  socket_data.ExpectAllReadDataConsumed();
-  socket_data.ExpectAllWriteDataConsumed();
+  socket_data.ExpectAllDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, StartupLocalAddressCheckHistogramMismatch) {
@@ -1425,8 +2508,7 @@ TEST_P(QuicSessionPoolTest, StartupLocalAddressCheckHistogramMismatch) {
       kStartupLocalAddressCheckHistogram,
       QuicSessionPool::StartupLocalAddressCheck::kMismatch, 1);
 
-  socket_data.ExpectAllReadDataConsumed();
-  socket_data.ExpectAllWriteDataConsumed();
+  socket_data.ExpectAllDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, CachedInitialRtt) {

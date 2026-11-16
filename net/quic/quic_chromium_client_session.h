@@ -839,6 +839,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const quic::ParsedQuicVersion& version) override;
   void OnPathDegrading() override;
   void OnForwardProgressMadeAfterPathDegrading() override;
+  void OnPacketDecrypted(quic::EncryptionLevel level) override;
   void SendRetireConnectionId(uint64_t sequence_number) override;
   void OnKeyUpdate(quic::KeyUpdateReason reason) override;
   void CreateContextForMultiPortPath(
@@ -1035,6 +1036,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     enable_periodic_ping_ = enable_periodic_ping;
   }
 
+  // Records the pool's IP address change count at the time this session's
+  // socket was created. See ShouldUpdateSessionPoolLocalAddress().
+  void set_ip_address_change_generation(uint64_t generation) {
+    ip_address_change_generation_ = generation;
+  }
   void SetGoingAwayForTesting(bool going_away) { going_away_ = going_away; }
   void SetConnectionMigrationInformationForTesting(
       net::ConnectionMigrationInformation migration_info) {
@@ -1219,6 +1225,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // delete |this|.
   void NotifyFactoryOfSessionClosed();
 
+  // Returns true if datagrams received by this session may update the pool's
+  // local address. Only used when emulated connect is enabled for QUIC.
+  bool ShouldUpdateSessionPoolLocalAddress() const;
+
   // Called when default encryption level switches to forward secure.
   void OnCryptoHandshakeComplete();
 
@@ -1347,6 +1357,15 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool going_away_ = false;
   // True when a valid HTTP/3 GOAWAY frame has been received from the peer.
   bool http3_goaway_received_ = false;
+  // The pool's IP address change count when this session's socket was created.
+  uint64_t ip_address_change_generation_ = 0;
+  // The local address this session last passed to
+  // QuicSessionPool::OnDatagramReceived().
+  quic::QuicSocketAddress last_reported_local_address_;
+  // Set by OnPacketDecrypted() while OnPacket() is processing a datagram, so
+  // OnPacket() can tell whether any packet in the datagram was authenticated
+  // (decrypted with handshake or 1-RTT keys).
+  bool packet_decrypted_in_current_datagram_ = false;
   // Connection close source
   quic::ConnectionCloseSource source_ = quic::ConnectionCloseSource::FROM_SELF;
   // Connection close error. Set together with `source_`, before the pool is

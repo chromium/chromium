@@ -305,6 +305,7 @@ class QuicChromiumClientSessionTest
         socket_factory_.CreateDatagramClientSocket(
             DatagramSocket::DEFAULT_BIND, handles::kInvalidNetworkHandle,
             NetLog::Get(), NetLogSource());
+    socket->AllowEmulatedConnect(true);
     if (default_network_ != handles::kInvalidNetworkHandle) {
       socket->ConnectUsingNetwork(default_network_, kIpEndPoint);
     } else {
@@ -4549,6 +4550,53 @@ TEST_P(QuicChromiumClientSessionTest,
   }));
 
   EXPECT_EQ(session_->connection()->GetStats().packets_received, 2u);
+}
+
+TEST_P(QuicChromiumClientSessionTest, PacketReaderDeletedDuringOnPacket) {
+  AddScopedFeatureList().InitAndDisableFeature(features::kQuicUseReadMultiple);
+  socket_data_.reset();
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(1).AddPingFrame().Build());
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+
+  base::RunLoop run_loop;
+  session_->set_on_packet_callback(base::BindLambdaForTesting([&]() {
+    session_.reset();
+    run_loop.Quit();
+  }));
+
+  run_loop.Run();
+  EXPECT_FALSE(session_);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       PacketReaderDeletedDuringOnPacketWithReadMultiple) {
+  AddScopedFeatureList().InitAndEnableFeature(features::kQuicUseReadMultiple);
+  socket_data_.reset();
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, server_maker_.Packet(1).AddPingFrame().Build());
+  quic_data.AddRead(SYNCHRONOUS,
+                    server_maker_.Packet(2).AddPingFrame().Build());
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  CompleteCryptoHandshake();
+
+  base::RunLoop run_loop;
+  session_->set_on_packet_callback(base::BindLambdaForTesting([&]() {
+    session_.reset();
+    run_loop.Quit();
+  }));
+
+  run_loop.Run();
+  EXPECT_FALSE(session_);
 }
 
 // Test that, if EchMode is kDisabled, ECH GREASE is disabled in QuicSSLConfig.

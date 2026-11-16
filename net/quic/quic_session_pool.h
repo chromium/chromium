@@ -72,6 +72,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_socket_address.h"
 #include "url/scheme_host_port.h"
 
 namespace quic {
@@ -498,7 +499,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                                  DatagramClientSocket* socket,
                                  IPEndPoint addr,
                                  handles::NetworkHandle network,
-                                 const SocketTag& socket_tag);
+                                 const SocketTag& socket_tag,
+                                 bool is_startup_check_socket = false);
 
   // Helper method that configures a DatagramClientSocket once
   // DatagramClientSocket::ConnectAsync completes. Posts a task to run
@@ -508,6 +510,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       ConnectAndConfigureCallback callback,
       DatagramClientSocket* socket,
       const SocketTag& socket_tag,
+      bool is_startup_check_socket,
       int rv);
 
   void OnFinishConnectAndConfigureSocketError(
@@ -530,7 +533,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   int ConfigureSocket(DatagramClientSocket* socket,
                       IPEndPoint addr,
                       handles::NetworkHandle network,
-                      const SocketTag& socket_tag);
+                      const SocketTag& socket_tag,
+                      bool is_startup_check_socket = false);
 
   // Finds an alternative to |old_network| from the platform's list of connected
   // networks. Returns handles::kInvalidNetworkHandle if no
@@ -585,6 +589,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   void set_has_quic_ever_worked_on_current_network(
       bool has_quic_ever_worked_on_current_network);
+
+  bool emulated_connect_for_quic() const { return emulated_connect_for_quic_; }
+
+  uint64_t ip_address_change_count() const { return ip_address_change_count_; }
+
+  bool has_local_address() const { return !(local_address_ == IPEndPoint()); }
+
+  void OnDatagramReceived(const quic::QuicSocketAddress& local_address);
 
   // It returns the amount of time waiting job should be delayed.
   base::TimeDelta GetTimeDelayForWaitingJob(const QuicSessionKey& session_key);
@@ -784,6 +796,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       MultiplexedSessionCreationInitiator session_creation_initiator,
       QuicConnectionReuseDetails quic_connection_reuse_details,
       std::optional<ConnectionManagementConfig> connection_management_config,
+      uint64_t ip_address_change_count,
       int rv);
   // TODO(crbug.com/518753285): Stop accepting a `network` parameter. Instead,
   // rely on socket being already bound to the correct network.
@@ -929,10 +942,15 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   void CheckQuicSessionKeyMismatch(const QuicSessionKey& session_key,
                                    url::SchemeHostPort destination) const;
 
-  // Updates `local_address_` from `socket`. For the first socket configured
-  // after startup, also checks whether QUIC worked on this local address in a
-  // previous session.
-  void CheckPersistedSupportsQuic(DatagramClientSocket* socket);
+  bool IsForDefaultNetwork(handles::NetworkHandle target_network,
+                           handles::NetworkHandle network) const;
+
+  void CheckPersistedSupportsQuic(DatagramClientSocket* socket,
+                                  bool is_startup_check_socket);
+
+  bool ConfigureEmulatedConnectIfEnabled(DatagramClientSocket* socket,
+                                         handles::NetworkHandle target_network,
+                                         handles::NetworkHandle network);
 
   // Whether QUIC is known to have ever worked on current network. This is true
   // when QUIC is expected to work in general, rather than whether QUIC was
@@ -1031,12 +1049,20 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Otherwise, always set to NetworkChangeNotifier::kInvalidNetwork.
   handles::NetworkHandle default_network_;
 
-  // Local address of socket that was created in CreateSession.
+  // Local address of socket that was created in CreateSession, or learned from
+  // the first received datagram when `emulated_connect_for_quic_` is true.
   IPEndPoint local_address_;
   // True if we need to check HttpServerProperties if QUIC was supported last
   // time.
   bool need_to_check_persisted_supports_quic_ = true;
+  // Incremented on each IP address change, so that sessions whose socket was
+  // created before the change can be identified. Only used when emulated
+  // connect is enabled for QUIC.
+  uint64_t ip_address_change_count_ = 0;
   bool prefer_aes_gcm_recorded_ = false;
+  // Cached at construction time from `features::kPosixUdpEmulatedConnect` and
+  // `features::kPosixUdpEmulatedConnectForQuic`.
+  const bool emulated_connect_for_quic_;
 
   NetworkConnection network_connection_;
 

@@ -88,6 +88,10 @@ MockCryptoClientStream::~MockCryptoClientStream() = default;
 
 void MockCryptoClientStream::OnHandshakeMessage(
     const CryptoHandshakeMessage& message) {
+  if (!handshake_confirmed_) {
+    NotifySessionOneRttKeyAvailable();
+    return;
+  }
   OnUnrecoverableError(QUIC_CRYPTO_MESSAGE_AFTER_HANDSHAKE_COMPLETE,
                        "Forced mock failure");
 }

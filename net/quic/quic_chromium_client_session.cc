@@ -3330,6 +3330,16 @@ void QuicChromiumClientSession::OnForwardProgressMadeAfterPathDegrading() {
   }
 }
 
+void QuicChromiumClientSession::OnPacketDecrypted(quic::EncryptionLevel level) {
+  quic::QuicSpdyClientSessionBase::OnPacketDecrypted(level);
+  // Initial keys are derived from the connection ID, so only packets decrypted
+  // with handshake or 1-RTT keys are authenticated.
+  if (level == quic::ENCRYPTION_HANDSHAKE ||
+      level == quic::ENCRYPTION_FORWARD_SECURE) {
+    packet_decrypted_in_current_datagram_ = true;
+  }
+}
+
 void QuicChromiumClientSession::SendRetireConnectionId(
     uint64_t sequence_number) {
   RegisterQuicConnectionClosePayload();
@@ -4256,10 +4266,25 @@ bool QuicChromiumClientSession::OnPacket(
     const quic::QuicReceivedPacket& packet,
     const quic::QuicSocketAddress& local_address,
     const quic::QuicSocketAddress& peer_address) {
+  const bool is_from_default_reader =
+      packet_readers_.back()->TakeIsDispatchingPacket();
+  packet_decrypted_in_current_datagram_ = false;
   ProcessUdpPacket(local_address, peer_address, packet);
   if (!connection()->connected()) {
     NotifyFactoryOfSessionClosedLater();
     return false;
+  }
+  // With emulated connect, the pool learns its local address from datagrams
+  // that were authenticated and arrived on the session's default socket. Each
+  // session only reports when its own local address changes (or the pool has
+  // none), so that concurrent sessions with different local addresses don't
+  // repeatedly overwrite each other.
+  if (is_from_default_reader && packet_decrypted_in_current_datagram_ &&
+      ShouldUpdateSessionPoolLocalAddress() &&
+      (local_address != last_reported_local_address_ ||
+       !session_pool_->has_local_address())) {
+    last_reported_local_address_ = local_address;
+    session_pool_->OnDatagramReceived(local_address);
   }
   return true;
 }
@@ -4293,6 +4318,30 @@ void QuicChromiumClientSession::NotifyFactoryOfSessionClosed() {
   if (session_pool_) {
     session_pool_->OnSessionClosed(this);
   }
+}
+
+bool QuicChromiumClientSession::ShouldUpdateSessionPoolLocalAddress() const {
+  // Only sessions that are known to be using the pool's current network may
+  // update the pool's local address. A session whose socket was created before
+  // the most recent IP address change, or (where network handles are
+  // supported) whose current network is not the default network, may be bound
+  // to an old network. A session with a target network is bound to that
+  // network, which may not be the default network, and GetCurrentNetwork()
+  // doesn't reflect that because such sessions never migrate.
+  //
+  // Proxied sessions never update the local address, because their datagrams
+  // arrive over the proxy stream rather than a socket bound to the current
+  // network. Note that if QUIC proxy support ever ships, a proxied session
+  // carried over a session from before a network change can still call
+  // set_has_quic_ever_worked_on_current_network(true), as it could before
+  // emulated connect.
+  return session_pool_ && session_pool_->emulated_connect_for_quic() &&
+         session_key_.proxy_chain().is_direct() &&
+         session_key_.target_network() == handles::kInvalidNetworkHandle &&
+         OneRttKeysAvailable() && !going_away_ &&
+         ip_address_change_generation_ ==
+             session_pool_->ip_address_change_count() &&
+         GetCurrentNetwork() == default_network_;
 }
 
 void QuicChromiumClientSession::OnCryptoHandshakeComplete() {

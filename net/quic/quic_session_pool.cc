@@ -434,6 +434,11 @@ bool ShouldPromoteActiveQuicJobPriorityOnAttach() {
          features::kPromoteActiveQuicJobPriorityOnAttach.Get();
 }
 
+bool IsEmulatedConnectForQuicEnabled() {
+  return base::FeatureList::IsEnabled(features::kPosixUdpEmulatedConnect) &&
+         features::kPosixUdpEmulatedConnectForQuic.Get();
+}
+
 }  // namespace
 
 QuicSessionRequest::QuicSessionRequest(QuicSessionPool* pool) : pool_(pool) {}
@@ -778,6 +783,7 @@ QuicSessionPool::QuicSessionPool(
       yield_after_duration_(quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds)),
       default_network_(handles::kInvalidNetworkHandle),
+      emulated_connect_for_quic_(IsEmulatedConnectForQuicEnabled()),
       connectivity_monitor_(default_network_),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       tick_clock_(base::DefaultTickClock::GetInstance()),
@@ -1269,15 +1275,16 @@ void QuicSessionPool::ConnectAndConfigureSocket(
     DatagramClientSocket* socket,
     IPEndPoint addr,
     handles::NetworkHandle network,
-    const SocketTag& socket_tag) {
+    const SocketTag& socket_tag,
+    bool is_startup_check_socket) {
   socket->UseNonBlockingIO();
 
   int rv;
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  CompletionOnceCallback connect_callback =
-      base::BindOnce(&QuicSessionPool::FinishConnectAndConfigureSocket,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(split_callback.first), socket, socket_tag);
+  CompletionOnceCallback connect_callback = base::BindOnce(
+      &QuicSessionPool::FinishConnectAndConfigureSocket,
+      weak_factory_.GetWeakPtr(), std::move(split_callback.first), socket,
+      socket_tag, is_startup_check_socket);
   if (!params_.migrate_sessions_on_network_change_v2) {
     rv = socket->ConnectAsync(addr, std::move(connect_callback));
   } else if (network == handles::kInvalidNetworkHandle) {
@@ -1293,7 +1300,7 @@ void QuicSessionPool::ConnectAndConfigureSocket(
   // ERR_IO_PENDING.
   if (rv != ERR_IO_PENDING) {
     FinishConnectAndConfigureSocket(std::move(split_callback.second), socket,
-                                    socket_tag, rv);
+                                    socket_tag, is_startup_check_socket, rv);
   }
 }
 
@@ -1301,6 +1308,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
     ConnectAndConfigureCallback callback,
     DatagramClientSocket* socket,
     const SocketTag& socket_tag,
+    bool is_startup_check_socket,
     int rv) {
   if (rv != OK) {
     OnFinishConnectAndConfigureSocketError(std::move(callback),
@@ -1346,7 +1354,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
     socket->SetIOSNetworkServiceType(params_.ios_network_service_type);
   }
 
-  CheckPersistedSupportsQuic(socket);
+  CheckPersistedSupportsQuic(socket, is_startup_check_socket);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -1417,7 +1425,8 @@ void QuicSessionPool::DoConnectAndConfigureCallback(
 int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
                                      IPEndPoint addr,
                                      handles::NetworkHandle network,
-                                     const SocketTag& socket_tag) {
+                                     const SocketTag& socket_tag,
+                                     bool is_startup_check_socket) {
   socket->UseNonBlockingIO();
 
   int rv;
@@ -1468,12 +1477,37 @@ int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
     socket->SetIOSNetworkServiceType(params_.ios_network_service_type);
   }
 
-  CheckPersistedSupportsQuic(socket);
+  CheckPersistedSupportsQuic(socket, is_startup_check_socket);
 
   return OK;
 }
 
-void QuicSessionPool::CheckPersistedSupportsQuic(DatagramClientSocket* socket) {
+bool QuicSessionPool::IsForDefaultNetwork(
+    handles::NetworkHandle target_network,
+    handles::NetworkHandle network) const {
+  return target_network == handles::kInvalidNetworkHandle &&
+         (network == handles::kInvalidNetworkHandle ||
+          default_network_ == handles::kInvalidNetworkHandle ||
+          network == default_network_);
+}
+
+void QuicSessionPool::CheckPersistedSupportsQuic(DatagramClientSocket* socket,
+                                                 bool is_startup_check_socket) {
+  // Without emulated connect, the startup check runs on the first configured
+  // socket, as it always has. With emulated connect, it runs only on the
+  // startup check socket, which uses a real connect() so that its local address
+  // is known.
+  const bool run_startup_check =
+      need_to_check_persisted_supports_quic_ &&
+      (is_startup_check_socket || !emulated_connect_for_quic_);
+  if (emulated_connect_for_quic_ && !run_startup_check) {
+    // The socket may be emulated, so its local address may not be known yet.
+    // local_address_ is updated from the session's first datagram instead.
+    return;
+  }
+  // Note: When `emulated_connect_for_quic_` is false, `local_address_` is
+  // updated on every socket configuration (even for non-default-network,
+  // migration, or pre-IP-change sockets) to preserve existing behavior.
   int rv = socket->GetLocalAddress(&local_address_);
   // GetLocalAddress() can fail in broken environments, but should never fail on
   // try bots or on developers' machines.
@@ -1481,27 +1515,26 @@ void QuicSessionPool::CheckPersistedSupportsQuic(DatagramClientSocket* socket) {
     LOG(DFATAL) << "GetLocalAddress failed with " << ErrorToString(rv);
     // Fallthrough to preserve legacy behavior.
   }
-  if (!need_to_check_persisted_supports_quic_) {
-    return;
-  }
-  need_to_check_persisted_supports_quic_ = false;
-  StartupLocalAddressCheck check_result =
-      StartupLocalAddressCheck::kNoPersistedAddress;
-  if (http_server_properties_->HasLastLocalAddressWhenQuicWorked()) {
-    if (http_server_properties_->WasLastLocalAddressWhenQuicWorked(
-            local_address_.address())) {
-      check_result = StartupLocalAddressCheck::kMatch;
-      has_quic_ever_worked_on_current_network_ = true;
-      // Clear the persisted IP address, in case the network no longer supports
-      // QUIC so the next restart will require confirmation. It will be
-      // re-persisted when the first job completes successfully.
-      http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
-    } else {
-      check_result = StartupLocalAddressCheck::kMismatch;
+  if (run_startup_check) {
+    need_to_check_persisted_supports_quic_ = false;
+    StartupLocalAddressCheck check_result =
+        StartupLocalAddressCheck::kNoPersistedAddress;
+    if (http_server_properties_->HasLastLocalAddressWhenQuicWorked()) {
+      if (http_server_properties_->WasLastLocalAddressWhenQuicWorked(
+              local_address_.address())) {
+        check_result = StartupLocalAddressCheck::kMatch;
+        has_quic_ever_worked_on_current_network_ = true;
+        // Clear the persisted IP address, in case the network no longer
+        // supports QUIC so the next restart will require confirmation. It will
+        // be re-persisted when the first job completes successfully.
+        http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
+      } else {
+        check_result = StartupLocalAddressCheck::kMismatch;
+      }
     }
+    base::UmaHistogramEnumeration("Net.QuicSession.StartupLocalAddressCheck",
+                                  check_result);
   }
-  base::UmaHistogramEnumeration("Net.QuicSession.StartupLocalAddressCheck",
-                                check_result);
 }
 
 handles::NetworkHandle QuicSessionPool::FindAlternateNetwork(
@@ -1529,6 +1562,23 @@ std::unique_ptr<DatagramClientSocket> QuicSessionPool::CreateSocket(
   return socket;
 }
 
+bool QuicSessionPool::ConfigureEmulatedConnectIfEnabled(
+    DatagramClientSocket* socket,
+    handles::NetworkHandle target_network,
+    handles::NetworkHandle network) {
+  if (IsForDefaultNetwork(target_network, network) &&
+      need_to_check_persisted_supports_quic_) {
+    // While the startup check is pending, use a real connect() on
+    // default-network sockets so that the kernel-selected source address is
+    // available synchronously when Connect/ConnectAsync finishes.
+    return true;
+  }
+  if (emulated_connect_for_quic_) {
+    socket->AllowEmulatedConnect(true);
+  }
+  return false;
+}
+
 void QuicSessionPool::OnIPAddressChanged(
     NetworkChangeNotifier::IPAddressChangeType change_type) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_ON_IP_ADDRESS_CHANGED);
@@ -1548,6 +1598,7 @@ void QuicSessionPool::OnIPAddressChanged(
 
   connectivity_monitor_.OnIPAddressChanged();
 
+  ++ip_address_change_count_;
   set_has_quic_ever_worked_on_current_network(false);
   if (params_.close_sessions_on_ip_change) {
     CloseAllSessions(ERR_NETWORK_CHANGED, quic::QUIC_IP_ADDRESS_CHANGED);
@@ -1684,13 +1735,29 @@ void QuicSessionPool::set_has_quic_ever_worked_on_current_network(
     bool has_quic_ever_worked_on_current_network) {
   has_quic_ever_worked_on_current_network_ =
       has_quic_ever_worked_on_current_network;
-  if (!(local_address_ == IPEndPoint())) {
+  if (has_local_address()) {
     if (has_quic_ever_worked_on_current_network_) {
       http_server_properties_->SetLastLocalAddressWhenQuicWorked(
           local_address_.address());
     } else {
       http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
+      if (emulated_connect_for_quic_) {
+        local_address_ = IPEndPoint();
+      }
     }
+  }
+}
+
+void QuicSessionPool::OnDatagramReceived(
+    const quic::QuicSocketAddress& local_address) {
+  CHECK(emulated_connect_for_quic_);
+  if (!local_address.IsInitialized()) {
+    return;
+  }
+  local_address_ = ToIPEndPoint(local_address);
+  if (has_quic_ever_worked_on_current_network_) {
+    http_server_properties_->SetLastLocalAddressWhenQuicWorked(
+        local_address_.address());
   }
 }
 
@@ -1707,7 +1774,7 @@ base::TimeDelta QuicSessionPool::GetTimeDelayForWaitingJob(
   // if the current network is the last one where QUIC worked.
   // 2) Startup has been completed, and QUIC has not been used
   // successfully since startup, or on this network before.
-  if (!has_quic_ever_worked_on_current_network_) {
+  if (!has_quic_ever_worked_on_current_network()) {
     // If |need_to_check_persisted_supports_quic_| is false, this is case 1)
     // above. If HasLastLocalAddressWhenQuicWorked() is also true, then there's
     // a chance the current network is the last one on which QUIC worked. So
@@ -1919,7 +1986,7 @@ void QuicSessionPool::OnJobComplete(
     QuicChromiumClientSession* session = session_it->second;
     job->RecordCompleteTime(session);
 
-    if (!has_quic_ever_worked_on_current_network_) {
+    if (!has_quic_ever_worked_on_current_network()) {
       set_has_quic_ever_worked_on_current_network(true);
     }
 
@@ -2253,6 +2320,8 @@ int QuicSessionPool::CreateSessionSync(
   // endpoint.
   std::unique_ptr<DatagramClientSocket> socket(CreateSocket(
       key.session_key().target_network(), net_log.net_log(), net_log.source()));
+  const bool is_startup_check_socket = ConfigureEmulatedConnectIfEnabled(
+      socket.get(), key.session_key().target_network(), *network);
 
   // If migrate_sessions_on_network_change_v2 is on, passing in
   // handles::kInvalidNetworkHandle will bind the socket to the default network.
@@ -2261,7 +2330,7 @@ int QuicSessionPool::CreateSessionSync(
       // TODO(crbug.com/518753285): Stop setting the network that should be used
       // due to connection migration via ConfigureSocket. Instead, rely on the
       // new parameter in `CreateSocket`.
-      *network, key.session_key().socket_tag());
+      *network, key.session_key().socket_tag(), is_startup_check_socket);
   if (rv != OK) {
     return rv;
   }
@@ -2280,6 +2349,7 @@ int QuicSessionPool::CreateSessionSync(
   if (!result.has_value()) {
     return result.error();
   }
+  result->session->set_ip_address_change_generation(ip_address_change_count_);
 
   *session = result->session;
   *network = result->network;
@@ -2306,6 +2376,8 @@ int QuicSessionPool::CreateSessionAsync(
   // endpoint.
   std::unique_ptr<DatagramClientSocket> socket(CreateSocket(
       key.session_key().target_network(), net_log.net_log(), net_log.source()));
+  const bool is_startup_check_socket = ConfigureEmulatedConnectIfEnabled(
+      socket.get(), key.session_key().target_network(), network);
   DatagramClientSocket* socket_ptr = socket.get();
   ConnectAndConfigureCallback connect_and_configure_callback = base::BindOnce(
       [](CompletionOnceCallback cb, int rv,
@@ -2323,7 +2395,8 @@ int QuicSessionPool::CreateSessionAsync(
           // used due to connection migration via ConnectAndConfigureSocket.
           // Instead, rely on the new parameter in `CreateSocket`.
           network, std::move(socket), session_creation_initiator,
-          quic_connection_reuse_details, connection_management_config));
+          quic_connection_reuse_details, connection_management_config,
+          ip_address_change_count_));
 
   // If migrate_sessions_on_network_change_v2 is on, passing in
   // handles::kInvalidNetworkHandle will bind the socket to the default network.
@@ -2333,7 +2406,8 @@ int QuicSessionPool::CreateSessionAsync(
                             // network that should be used due to connection
                             // migration via ConnectAndConfigureSocket. Instead,
                             // rely on the new parameter in `CreateSocket`.
-                            network, key.session_key().socket_tag());
+                            network, key.session_key().socket_tag(),
+                            is_startup_check_socket);
   return ERR_IO_PENDING;
 }
 
@@ -2407,7 +2481,8 @@ int QuicSessionPool::CreateSessionOnProxyStream(
           // rely on the new parameter in `CreateSocket`.
           network, std::move(socket), session_creation_initiator,
           quic_connection_reuse_details,
-          /*connection_management_config=*/std::nullopt));
+          /*connection_management_config=*/std::nullopt,
+          ip_address_change_count_));
 
   int rv = socket_ptr->ConnectViaStream(
       std::move(local_address), std::move(proxy_peer_address),
@@ -2440,6 +2515,7 @@ void QuicSessionPool::FinishCreateSession(
     MultiplexedSessionCreationInitiator session_creation_initiator,
     QuicConnectionReuseDetails quic_connection_reuse_details,
     std::optional<ConnectionManagementConfig> connection_management_config,
+    uint64_t ip_address_change_count,
     int rv) {
   if (rv != OK) {
     CHECK_NE(rv, ERR_IO_PENDING);
@@ -2456,6 +2532,11 @@ void QuicSessionPool::FinishCreateSession(
           // instead rely on socket being already bound to the correct network.
           network, std::move(socket), session_creation_initiator,
           quic_connection_reuse_details, connection_management_config);
+  if (result.has_value()) {
+    // `ip_address_change_count` was recorded when socket creation started, so
+    // the session can tell whether its socket predates a network change.
+    result->session->set_ip_address_change_generation(ip_address_change_count);
+  }
   std::move(callback).Run(std::move(result));
 }
 
@@ -2606,7 +2687,7 @@ QuicSessionPool::CreateSessionHelper(
 
   // Wait for handshake confirmation before allowing streams to be created if
   // either this session or the pool require confirmation.
-  if (!has_quic_ever_worked_on_current_network_) {
+  if (!has_quic_ever_worked_on_current_network()) {
     require_confirmation = true;
   }
 
