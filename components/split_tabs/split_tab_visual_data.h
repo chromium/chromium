@@ -10,6 +10,7 @@ namespace split_tabs {
 // Orientation of a split view. Needs to be kept in sync with
 // tab_search::mojom::SplitTabLayout in
 // chrome/browser/ui/webui/tab_search/tab_search.mojom.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.split_tabs
 // LINT.IfChange(SplitTabLayout)
 enum class SplitTabLayout {
   // Two tabs will display next to each other, side-by-side.

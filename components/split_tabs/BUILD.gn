@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 source_set("split_tabs") {
   sources = [
     "split_tab_id.h",
@@ -13,4 +18,70 @@ source_set("split_tabs") {
     "//base",
     "//components/tab_groups",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/split_tab_id_jni_conversion.cc",
+      "android/split_tab_id_jni_conversion.h",
+      "android/split_tab_visual_data_jni_conversion.cc",
+      "android/split_tab_visual_data_jni_conversion.h",
+    ]
+    deps = [
+      ":split_tabs_jni_headers",
+      "//components/tab_groups:tab_groups_jni_headers",
+      "//third_party/jni_zero",
+    ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("java_enums") {
+    visibility = [ ":*" ]
+    sources = [ "split_tab_visual_data.h" ]
+  }
+
+  generate_jni("split_tabs_jni_headers") {
+    sources = [
+      "android/java/src/org/chromium/components/split_tabs/SplitTabId.java",
+      "android/java/src/org/chromium/components/split_tabs/SplitTabVisualData.java",
+    ]
+  }
+
+  android_library("split_tabs_java") {
+    sources = [
+      "android/java/src/org/chromium/components/split_tabs/SplitTabId.java",
+      "android/java/src/org/chromium/components/split_tabs/SplitTabVisualData.java",
+    ]
+    deps = [
+      "//base:token_java",
+      "//build/android:build_java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    srcjar_deps = [
+      ":java_enums",
+      ":split_tabs_jni_headers",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_android) {
+    sources += [
+      "android/split_tab_id_jni_conversion_unittest.cc",
+      "android/split_tab_visual_data_jni_conversion_unittest.cc",
+    ]
+    deps += [
+      ":split_tabs",
+      "//base",
+      "//testing/gtest",
+      "//third_party/jni_zero",
+    ]
+  }
 }
