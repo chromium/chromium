@@ -1327,6 +1327,38 @@ INSTANTIATE_TEST_SUITE_P(
     FormMutationFormControlElements,
     ::testing::Values("form", "input", "select", "option", "textarea"));
 
+// Tests that, when `kAutofillOptimizationFormSearchIos` is enabled, a formless
+// field without an `id` is identified by its renderer ID rather than its DOM
+// index, so its identifier remains accurate when the DOM mutates between two
+// focus events in the same task.
+TEST_F(FormActivityTabHelperTest, FormlessFieldIdentifierIsRendererIdBased) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillOptimizationFormSearchIos);
+  LoadHtml(@"<input><input>");
+  ASSERT_TRUE(WaitForMainFrame());
+
+  // Focus `a`, prepend a new `<input>` to shift DOM indices, and move focus to
+  // `b` within the same task. Because `sendMessageOnNextLoop` only keeps the
+  // last event in the same task, only the focus event for `b` is sent to the
+  // browser.
+  ExecuteJavaScript(@"const [a, b] = document.querySelectorAll('input');"
+                    @"a.focus();"
+                    @"a.dispatchEvent(new Event('focus', {bubbles: true}));"
+                    @"document.body.prepend(document.createElement('input'));"
+                    @"b.focus();"
+                    @"b.dispatchEvent(new Event('focus', {bubbles: true}));");
+
+  TestFormActivityObserver* block_observer = observer_.get();
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return block_observer->form_activity_info() != nullptr;
+  }));
+  const FormActivityParams& params =
+      observer_->form_activity_info()->form_activity;
+  EXPECT_EQ(FormActivityParams::ActivityType::kFocus, params.type);
+  EXPECT_EQ(FieldRendererId(2), params.field_renderer_id);
+  EXPECT_EQ("gChrome~field~rid~2", params.field_identifier);
+}
+
 // Test fixture for testing programmatic form submissions with/without Autofill
 // in the isolated world enabled.
 // TODO(crbug.com/359538514): Remove this fixture and move test back to

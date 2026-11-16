@@ -12,6 +12,7 @@
 #import "base/test/test_future.h"
 #import "base/test/test_timeouts.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/autofill_optimization_features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -457,8 +458,23 @@ TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsNames) {
   }
 }
 
+// Test fixture parameterized on whether `kAutofillOptimizationFormSearchIos`
+// is enabled.
+class AutofillJavaScriptFeatureFormSearchTest
+    : public AutofillJavaScriptFeatureTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  AutofillJavaScriptFeatureFormSearchTest() {
+    feature_list_.InitWithFeatureState(
+        autofill::features::kAutofillOptimizationFormSearchIos, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests the generation of the name of the fields.
-TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsIDs) {
+TEST_P(AutofillJavaScriptFeatureFormSearchTest, TestExtractedFieldsIDs) {
   NSString* HTML =
       @"<html><body><form name='testform' method='post'>"
        // Field with name and id
@@ -475,7 +491,8 @@ TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsIDs) {
        // Field with id
        "<input type='text' id='field5_id'/>"
        // Field without id, not in form and with name. Will be identified
-       // as 6th input field in document.
+       // as 6th input field in document (or by renderer ID when form search
+       // optimization is enabled).
        "<input type='text' name='field6_name'/>"
        // Field without id, not in form and without name. Will be
        // identified as 7th input field in document.
@@ -490,11 +507,18 @@ TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsIDs) {
   LoadHtml(HTML);
   NSArray* owned_expected_ids =
       @[ @"field0_id", @"field1_id", @"field2_name", @"gChrome~field~3" ];
-  NSArray* unowned_expected_ids = @[
-    @"field4_id", @"field5_id", @"gChrome~field~~INPUT~6",
-    @"gChrome~field~~INPUT~7", @"gChrome~field~~SELECT~0",
-    @"gChrome~field~#div_id~INPUT~0"
-  ];
+  NSArray* unowned_expected_ids =
+      GetParam()
+          ? @[
+              @"field4_id", @"field5_id", @"gChrome~field~rid~8",
+              @"gChrome~field~rid~9", @"gChrome~field~rid~10",
+              @"gChrome~field~rid~11"
+            ]
+          : @[
+              @"field4_id", @"field5_id", @"gChrome~field~~INPUT~6",
+              @"gChrome~field~~INPUT~7", @"gChrome~field~~SELECT~0",
+              @"gChrome~field~#div_id~INPUT~0"
+            ];
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
@@ -525,6 +549,10 @@ TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsIDs) {
     EXPECT_NSEQ(unowned_fields[i][@"identifier"], unowned_expected_ids[i]);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
+                         AutofillJavaScriptFeatureFormSearchTest,
+                         testing::Bool());
 
 // Tests form filling (fillForm:forceFillFieldIdentifier:forceFillFieldUniqueID:
 // :inFrame:completionHandler:) method.

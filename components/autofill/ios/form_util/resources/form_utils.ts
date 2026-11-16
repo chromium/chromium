@@ -29,28 +29,6 @@ const kNamelessFormIDPrefix = 'gChrome~form~';
 const kNamelessFieldIDPrefix = 'gChrome~field~';
 
 /**
- * Maps an Element to its position index under a specific tag.
- */
-type TagIndexCache = WeakMap<Element, number>;
-
-/**
- * Maps tag names (e.g., 'INPUT') to their corresponding element index
- * cache.
- */
-type AncestorTagCache = Map<string, TagIndexCache>;
-
-/**
- * Scoped cache mapping ancestors to their child element index cache.
- */
-type ElementIndexCache = WeakMap<Element|ParentNode, AncestorTagCache>;
-
-/**
- * Transient cache for element index by tag name lookup, cleared automatically
- * at the end of the current microtask.
- */
-let elementIndexCache: ElementIndexCache|null = null;
-
-/**
  * Returns true if autofill optimization form search is enabled.
  */
 function isAutofillOptimizationFormSearchEnabled(): boolean {
@@ -174,42 +152,6 @@ export function getIframeElements(root: Element|null): HTMLIFrameElement[] {
 }
 
 /**
- * Resolves the index of an `element` under a specific `ancestor` for its tag
- * name using a transient cache.
- */
-function getElementIndexByTagName(
-    ancestor: ParentNode, element: Element): number {
-  if (!elementIndexCache) {
-    elementIndexCache = new WeakMap();
-    // Automatically clear the cache at the end of the current synchronous
-    // execution block.
-    queueMicrotask(() => {
-      elementIndexCache = null;
-    });
-  }
-
-  let ancestorCache = elementIndexCache.get(ancestor);
-  if (!ancestorCache) {
-    ancestorCache = new Map();
-    elementIndexCache.set(ancestor, ancestorCache);
-  }
-
-  // Cache the index of each element with the given tag name under the ancestor.
-  const tagName = element.tagName;
-  let tagCache = ancestorCache.get(tagName);
-  if (!tagCache) {
-    tagCache = new WeakMap();
-    const descendants = ancestor.querySelectorAll(tagName);
-    for (let i = 0; i < descendants.length; i++) {
-      tagCache.set(descendants[i] as Element, i);
-    }
-    ancestorCache.set(tagName, tagCache);
-  }
-
-  return tagCache.get(element) ?? -1;
-}
-
-/**
  * Returns the field's `id` attribute if not space only; otherwise the
  * form's |name| attribute if the field is part of a form. Otherwise,
  * generate a technical identifier
@@ -222,7 +164,7 @@ function getElementIndexByTagName(
  * - the id of the element
  * - the name of the element if the element is part of a form
  * - the order of the element in the form if the element is part of the form.
- * - generate a xpath to the element and use it as an ID.
+ * - a technical identifier derived from the element's position or renderer ID.
  *
  * Note: if this method returns '', the field will not be accessible and
  * cannot be autofilled.
@@ -264,6 +206,11 @@ export function getFieldIdentifier(element: Element|null): string {
     }
   }
   // Element is not part of a form and has no name or id, or usable attribute.
+  // With form search optimization, use the renderer ID, which is stable across
+  // DOM changes and cheap to compute.
+  if (isAutofillOptimizationFormSearchEnabled()) {
+    return `${kNamelessFieldIDPrefix}rid~${getUniqueID(element)}`;
+  }
   // As best effort, try to find the closest ancestor with an id, then
   // check the index of the element in the descendants of the ancestors with
   // the same type.
@@ -280,19 +227,10 @@ export function getFieldIdentifier(element: Element|null): string {
   if (ancestor instanceof Element && ancestor.hasAttribute('id')) {
     ancestorId = '#' + trim(ancestor.id);
   }
-  if (isAutofillOptimizationFormSearchEnabled()) {
-    const index = getElementIndexByTagName(ancestor, element);
-    if (index !== -1) {
-      return `${kNamelessFieldIDPrefix}${ancestorId}~${element.tagName}~${
-          index}`;
-    }
-  } else {
-    const descendants = ancestor.querySelectorAll(element.tagName);
-    for (let idx = 0; idx < descendants.length; idx++) {
-      if (descendants[idx] === element) {
-        return `${kNamelessFieldIDPrefix}${ancestorId}~${element.tagName}~${
-            idx}`;
-      }
+  const descendants = ancestor.querySelectorAll(element.tagName);
+  for (let idx = 0; idx < descendants.length; idx++) {
+    if (descendants[idx] === element) {
+      return `${kNamelessFieldIDPrefix}${ancestorId}~${element.tagName}~${idx}`;
     }
   }
 

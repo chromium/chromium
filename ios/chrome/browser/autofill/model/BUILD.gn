@@ -266,6 +266,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
+    "//components/autofill/ios/common:autofill_optimization_features",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:autofill_form_features",
     "//components/autofill/ios/form_util:autofill_form_features_ts",
