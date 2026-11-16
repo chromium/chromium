@@ -171,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
       *mock_rules_manager_,
       IsRestrictedComponent(_, data_controls::Component::kOneDrive, _, _, _))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl),
-                         testing::SetArgPointee<4>(ruleMetadata),
+          testing::DoAll(testing::SetArgPointee<4>(ruleMetadata),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
   EXPECT_CALL(*mock_rules_manager_, GetReportingManager())
@@ -248,8 +247,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
       *mock_rules_manager_,
       IsRestrictedComponent(_, data_controls::Component::kOneDrive, _, _, _))
       .WillOnce(
-          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl),
-                         testing::SetArgPointee<4>(rule_metadata),
+          testing::DoAll(testing::SetArgPointee<4>(rule_metadata),
                          testing::Return(DlpRulesManager::Level::kBlock)));
 
   EXPECT_CALL(*mock_rules_manager_, GetReportingManager())

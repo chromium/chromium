@@ -209,7 +209,6 @@ class DlpFilesControllerAsh : public DlpFilesController,
       std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>
           files_levels,
       std::vector<FileDaemonInfo> warned_files_sources,
-      std::vector<std::string> warned_src_patterns,
       std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
       const DlpFileDestination& dst,
       dlp::FileAction files_action,
