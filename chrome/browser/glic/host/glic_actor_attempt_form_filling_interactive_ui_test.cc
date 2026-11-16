@@ -447,19 +447,21 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
   suggestion.title = "My Address";
 
   std::vector<autofill::ActorFormFillingRequest> requests;
-  // 0. Standard non-IDN domain.
+  // Standard non-IDN domain with trivial subdomain. Uses a known public suffix
+  // (.com) rather than reserved .test so subdomain stripping doesn't rely on
+  // unknown-registry fallback.
   requests.emplace_back().request_origin =
-      url::Origin::Create(GURL("https://www.example.test"));
+      url::Origin::Create(GURL("https://www.example.com"));
   requests.back().suggestions.push_back(suggestion);
 
-  // 1. IDN Chinese.
+  // IDN Chinese.
   requests.emplace_back().request_origin =
       url::Origin::Create(GURL("http://\xe4\xb8\xad\xe5\x9b\xbd.icom.museum"));
   requests.back().suggestions.push_back(suggestion);
 
-  // 2. IDN Hebrew RTL.
+  // IDN Hebrew RTL with trivial subdomain.
   requests.emplace_back().request_origin = url::Origin::Create(
-      GURL("http://\xd7\x90\xd7\x99\xd7\xa7\xd7\x95\xd7\xb4\xd7\x9d."
+      GURL("http://www.\xd7\x90\xd7\x99\xd7\xa7\xd7\x95\xd7\xb4\xd7\x9d."
            "\xd7\x99\xd7\xa9\xd7\xa8\xd7\x90\xd7\x9c.museum/"));
   requests.back().suggestions.push_back(suggestion);
 
@@ -484,8 +486,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
             return EncodeActionProto(actions);
           })),
       WaitForAutofillDialog(),
-      // Verify the formatted request origin does not contain the scheme.
-      CheckFormattedRequestOriginInGlic(/*form_index=*/0, "www.example.test"),
+      // Verify the formatted request origin omits scheme and trivial
+      // subdomains.
+      CheckFormattedRequestOriginInGlic(/*form_index=*/0, "example.com"),
       // Verify the Chinese IDN request origin is formatted to unicode.
       CheckFormattedRequestOriginInGlic(/*form_index=*/1, "中国.icom.museum"),
       // Verify the Hebrew RTL IDN request origin is formatted as punycode.

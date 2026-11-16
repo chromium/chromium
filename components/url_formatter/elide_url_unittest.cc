@@ -404,20 +404,32 @@ struct OriginTestData {
   const char16_t* const output;
   const char16_t* const output_omit_web_scheme;
   const char16_t* const output_omit_cryptographic_scheme;
+  // Expected outputs when omitting trivial subdomains. When null, tests fall
+  // back to the corresponding `output*` field above (for inputs where omitting
+  // trivial subdomains does not change the output).
+  const char16_t* const output_omit_trivial_subdomains = nullptr;
+  const char16_t* const output_omit_web_scheme_and_trivial_subdomains = nullptr;
+  const char16_t* const
+      output_omit_cryptographic_scheme_and_trivial_subdomains = nullptr;
 };
 
-// Common test data for both FormatUrlForSecurityDisplay() and
-// FormatOriginForSecurityDisplay()
+// Common test data for FormatUrlForSecurityDisplay(),
+// FormatOriginForSecurityDisplay(), and
+// FormatOriginForSecurityDisplayOmitTrivialSubdomains().
 const OriginTestData common_tests[] = {
     {"Empty URL", "", u"", u"", u""},
     {"HTTP URL", "http://www.google.com/", u"http://www.google.com",
-     u"www.google.com", u"http://www.google.com"},
+     u"www.google.com", u"http://www.google.com", u"http://google.com",
+     u"google.com", u"http://google.com"},
     {"HTTPS URL", "https://www.google.com/", u"https://www.google.com",
-     u"www.google.com", u"www.google.com"},
+     u"www.google.com", u"www.google.com", u"https://google.com", u"google.com",
+     u"google.com"},
     {"Standard HTTP port", "http://www.google.com:80/",
-     u"http://www.google.com", u"www.google.com", u"http://www.google.com"},
+     u"http://www.google.com", u"www.google.com", u"http://www.google.com",
+     u"http://google.com", u"google.com", u"http://google.com"},
     {"Standard HTTPS port", "https://www.google.com:443/",
-     u"https://www.google.com", u"www.google.com", u"www.google.com"},
+     u"https://www.google.com", u"www.google.com", u"www.google.com",
+     u"https://google.com", u"google.com", u"google.com"},
     {"Standard HTTP port, IDN Chinese",
      "http://\xe4\xb8\xad\xe5\x9b\xbd.icom.museum:80",
      u"http://中国.icom.museum", u"中国.icom.museum",
@@ -429,24 +441,40 @@ const OriginTestData common_tests[] = {
      u"http://xn--4dbklr2c8d.xn--4dbrk0ce.museum",
      u"xn--4dbklr2c8d.xn--4dbrk0ce.museum",
      u"http://xn--4dbklr2c8d.xn--4dbrk0ce.museum"},
+    {"HTTP URL, IDN Hebrew (RTL) with www",
+     "http://www."
+     "\xd7\x90\xd7\x99\xd7\xa7\xd7\x95\xd7\xb4\xd7\x9d."
+     "\xd7\x99\xd7\xa9\xd7\xa8\xd7\x90\xd7\x9c.museum/",
+     u"http://www.xn--4dbklr2c8d.xn--4dbrk0ce.museum",
+     u"www.xn--4dbklr2c8d.xn--4dbrk0ce.museum",
+     u"http://www.xn--4dbklr2c8d.xn--4dbrk0ce.museum",
+     u"http://xn--4dbklr2c8d.xn--4dbrk0ce.museum",
+     u"xn--4dbklr2c8d.xn--4dbrk0ce.museum",
+     u"http://xn--4dbklr2c8d.xn--4dbrk0ce.museum"},
     {"HTTP URL with query string, IDN Arabic (RTL)",
      "http://\xd9\x85\xd8\xb5\xd8\xb1.icom.museum/foo.html?yes=no",
      u"http://xn--wgbh1c.icom.museum", u"xn--wgbh1c.icom.museum",
      u"http://xn--wgbh1c.icom.museum"},
     {"Non-standard HTTP port", "http://www.google.com:9000/",
      u"http://www.google.com:9000", u"www.google.com:9000",
-     u"http://www.google.com:9000"},
+     u"http://www.google.com:9000", u"http://google.com:9000",
+     u"google.com:9000", u"http://google.com:9000"},
     {"Non-standard HTTPS port", "https://www.google.com:9000/",
      u"https://www.google.com:9000", u"www.google.com:9000",
-     u"www.google.com:9000"},
+     u"www.google.com:9000", u"https://google.com:9000", u"google.com:9000",
+     u"google.com:9000"},
     {"HTTP URL with path", "http://www.google.com/test.html",
-     u"http://www.google.com", u"www.google.com", u"http://www.google.com"},
+     u"http://www.google.com", u"www.google.com", u"http://www.google.com",
+     u"http://google.com", u"google.com", u"http://google.com"},
     {"HTTPS URL with path", "https://www.google.com/test.html",
-     u"https://www.google.com", u"www.google.com", u"www.google.com"},
+     u"https://www.google.com", u"www.google.com", u"www.google.com",
+     u"https://google.com", u"google.com", u"google.com"},
     {"Unusual secure scheme (wss)", "wss://www.google.com/",
-     u"wss://www.google.com", u"wss://www.google.com", u"www.google.com"},
+     u"wss://www.google.com", u"wss://www.google.com", u"www.google.com",
+     u"wss://google.com", u"wss://google.com", u"google.com"},
     {"Unusual non-secure scheme (ftp)", "ftp://www.google.com/",
-     u"ftp://www.google.com", u"ftp://www.google.com", u"ftp://www.google.com"},
+     u"ftp://www.google.com", u"ftp://www.google.com", u"ftp://www.google.com",
+     u"ftp://google.com", u"ftp://google.com", u"ftp://google.com"},
     {"Unlisted scheme (chrome)", "chrome://version", u"chrome://version",
      u"chrome://version", u"chrome://version"},
     {"HTTP IP address", "http://173.194.65.103", u"http://173.194.65.103",
@@ -473,11 +501,26 @@ const OriginTestData common_tests[] = {
     {"Invalid host 1", "https://www.cyber../wow.php", u"https://www.cyber..",
      u"www.cyber..", u"www.cyber.."},
     {"Invalid host 2", "https://www...cyber/wow.php", u"https://www...cyber",
-     u"www...cyber", u"www...cyber"},
+     u"www...cyber", u"www...cyber", u"https://..cyber", u"..cyber",
+     u"..cyber"},
     {"Invalid port 3", "https://173.194.65.103:/hello.aspx",
      u"https://173.194.65.103", u"173.194.65.103", u"173.194.65.103"},
     {"Trailing dot in DNS name", "https://www.example.com./get/goat",
-     u"https://www.example.com.", u"www.example.com.", u"www.example.com."}};
+     u"https://www.example.com.", u"www.example.com.", u"www.example.com.",
+     u"https://example.com.", u"example.com.", u"example.com."},
+    {"www as eTLD+1", "https://www.com/", u"https://www.com", u"www.com",
+     u"www.com"},
+    {"Reserved domain", "http://example.test/", u"http://example.test",
+     u"example.test", u"http://example.test"},
+    {"Reserved domain with www", "http://www.example.test/",
+     u"http://www.example.test", u"www.example.test",
+     u"http://www.example.test", u"http://example.test", u"example.test",
+     u"http://example.test"},
+    {"Intranet host", "http://internal/", u"http://internal", u"internal",
+     u"http://internal"},
+    {"Intranet host www", "http://www/", u"http://www", u"www", u"http://www"},
+    {"Intranet host with www", "http://www.internal/", u"http://www.internal",
+     u"www.internal", u"http://www.internal"}};
 
 TEST(TextEliderTest, FormatUrlForSecurityDisplay) {
   for (const auto& common_test : common_tests) {
@@ -672,6 +715,41 @@ TEST(TextEliderTest, FormatOriginForSecurityDisplay) {
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   EXPECT_EQ(std::u16string(), formatted_omit_scheme)
       << "Explicitly test the url::Origin which takes an empty, invalid URL";
+}
+
+TEST(TextEliderTest, FormatOriginForSecurityDisplayOmitTrivialSubdomains) {
+  for (const auto& common_test : common_tests) {
+    std::u16string formatted =
+        url_formatter::FormatOriginForSecurityDisplayOmitTrivialSubdomains(
+            url::Origin::Create(GURL(common_test.input)));
+    EXPECT_EQ(common_test.output_omit_trivial_subdomains
+                  ? common_test.output_omit_trivial_subdomains
+                  : common_test.output,
+              formatted)
+        << common_test.description;
+
+    std::u16string formatted_omit_web_scheme =
+        url_formatter::FormatOriginForSecurityDisplayOmitTrivialSubdomains(
+            url::Origin::Create(GURL(common_test.input)),
+            url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+    EXPECT_EQ(common_test.output_omit_web_scheme_and_trivial_subdomains
+                  ? common_test.output_omit_web_scheme_and_trivial_subdomains
+                  : common_test.output_omit_web_scheme,
+              formatted_omit_web_scheme)
+        << common_test.description;
+
+    std::u16string formatted_omit_cryptographic_scheme =
+        url_formatter::FormatOriginForSecurityDisplayOmitTrivialSubdomains(
+            url::Origin::Create(GURL(common_test.input)),
+            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+    EXPECT_EQ(
+        common_test.output_omit_cryptographic_scheme_and_trivial_subdomains
+            ? common_test
+                  .output_omit_cryptographic_scheme_and_trivial_subdomains
+            : common_test.output_omit_cryptographic_scheme,
+        formatted_omit_cryptographic_scheme)
+        << common_test.description;
+  }
 }
 
 TEST(TextEliderTest, FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains) {

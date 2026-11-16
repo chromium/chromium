@@ -98,6 +98,12 @@ std::u16string FormatOriginForSecurityDisplay(
     const url::Origin& origin,
     const SchemeDisplay scheme_display = SchemeDisplay::SHOW);
 
+// Same as FormatOriginForSecurityDisplay(), but also omits trivial subdomains
+// (such as "www.") unless part of the registrable domain.
+std::u16string FormatOriginForSecurityDisplayOmitTrivialSubdomains(
+    const url::Origin& origin,
+    const SchemeDisplay scheme_display = SchemeDisplay::SHOW);
+
 // This is a convenience function for formatting a URL in a concise and
 // human-friendly way, omitting the HTTP/HTTPS scheme, the username and
 // password, the path and removing trivial subdomains.

@@ -1068,8 +1068,8 @@ void GlicActorClientSession::RequestToShowAutofillSuggestionsDialog(
   for (const autofill::ActorFormFillingRequest& request : requests) {
     auto mojo_request = actor::webui::mojom::FormFillingRequest::New();
     mojo_request->requested_data = static_cast<int64_t>(request.requested_data);
-    mojo_request->formatted_request_origin =
-        base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+    mojo_request->formatted_request_origin = base::UTF16ToUTF8(
+        url_formatter::FormatOriginForSecurityDisplayOmitTrivialSubdomains(
             request.request_origin,
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
     mojo_request->section_label = request.section_label;

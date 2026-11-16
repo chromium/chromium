@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <string_view>
 
 #include "base/check_op.h"
@@ -124,11 +125,45 @@ bool ShouldShowScheme(std::string_view scheme,
 // the entire url with {LSI, PDI} and individual domain labels with {FSI, PDI}).
 // See http://crbug.com/650760 . For now, fall back to punycode if there's a
 // strong RTL character.
-std::u16string HostForDisplay(std::string_view host_in_puny) {
+std::u16string HostForDisplay(std::string_view host_in_puny,
+                              bool omit_trivial_subdomains) {
+  std::string stripped_host;
+  if (omit_trivial_subdomains) {
+    stripped_host = url_formatter::StripWWW(std::string(host_in_puny));
+    host_in_puny = stripped_host;
+  }
   std::u16string host = url_formatter::IDNToUnicode(host_in_puny);
   return base::i18n::StringContainsStrongRTLChars(host)
              ? base::ASCIIToUTF16(host_in_puny)
              : host;
+}
+
+std::u16string FormatOriginForSecurityDisplayWithOptions(
+    const url::Origin& origin,
+    const url_formatter::SchemeDisplay scheme_display,
+    bool omit_trivial_subdomains) {
+  std::string_view scheme = origin.scheme();
+  std::string_view host = origin.host();
+  if (scheme.empty() && host.empty()) {
+    return std::u16string();
+  }
+
+  constexpr std::u16string_view colon(u":");
+
+  std::u16string result;
+  if (ShouldShowScheme(scheme, scheme_display)) {
+    result = base::StrCat(
+        {base::UTF8ToUTF16(scheme), url::kStandardSchemeSeparator16});
+  }
+  result += HostForDisplay(host, omit_trivial_subdomains);
+
+  int port = static_cast<int>(origin.port());
+  const int default_port = url::DefaultPortForScheme(scheme);
+  if (port != 0 && port != default_port) {
+    result += base::StrCat({colon, base::NumberToString16(origin.port())});
+  }
+
+  return result;
 }
 
 }  // namespace
@@ -381,7 +416,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
     result = base::StrCat(
         {base::UTF8ToUTF16(scheme), url::kStandardSchemeSeparator16});
   }
-  result += HostForDisplay(host);
+  result += HostForDisplay(host, /*omit_trivial_subdomains=*/false);
 
   const int port = origin.IntPort();
   const int default_port = url::DefaultPortForScheme(scheme);
@@ -395,28 +430,15 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
 std::u16string FormatOriginForSecurityDisplay(
     const url::Origin& origin,
     const SchemeDisplay scheme_display) {
-  std::string_view scheme = origin.scheme();
-  std::string_view host = origin.host();
-  if (scheme.empty() && host.empty()) {
-    return std::u16string();
-  }
+  return FormatOriginForSecurityDisplayWithOptions(
+      origin, scheme_display, /*omit_trivial_subdomains=*/false);
+}
 
-  constexpr std::u16string_view colon(u":");
-
-  std::u16string result;
-  if (ShouldShowScheme(scheme, scheme_display)) {
-    result = base::StrCat(
-        {base::UTF8ToUTF16(scheme), url::kStandardSchemeSeparator16});
-  }
-  result += HostForDisplay(host);
-
-  int port = static_cast<int>(origin.port());
-  const int default_port = url::DefaultPortForScheme(scheme);
-  if (port != 0 && port != default_port) {
-    result += base::StrCat({colon, base::NumberToString16(origin.port())});
-  }
-
-  return result;
+std::u16string FormatOriginForSecurityDisplayOmitTrivialSubdomains(
+    const url::Origin& origin,
+    const SchemeDisplay scheme_display) {
+  return FormatOriginForSecurityDisplayWithOptions(
+      origin, scheme_display, /*omit_trivial_subdomains=*/true);
 }
 
 std::u16string FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
