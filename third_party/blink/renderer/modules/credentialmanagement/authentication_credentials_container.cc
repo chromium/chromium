@@ -2222,7 +2222,7 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
   }
 
   Mediation mediation = Mediation::MODAL;
-  if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
+  if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled(context) &&
       options->uiMode() == V8CredentialUiModeRequirement::Enum::kPassive &&
       options->mediation() ==
           V8CredentialMediationRequirement::Enum::kConditional) {

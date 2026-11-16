@@ -200,7 +200,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableTouchDragAndDrop, features::kTouchDragAndDrop},
           {wf::EnableTouchDragAndContextMenu,
            features::kTouchDragAndContextMenu},
-          {wf::EnableWebAuthenticationAmbient, device::kWebAuthnAmbientSignin},
+          // LINT.IfChange(WebAuthenticationAmbient)
+          {wf::EnableWebAuthenticationAmbient, device::kWebAuthnAmbientSignin,
+           kSetOnlyIfOverridden},
+          // LINT.ThenChange(//third_party/blink/renderer/platform/runtime_enabled_features.json5:WebAuthenticationAmbient)
           {wf::EnableWebAuthenticationCrossDeviceFallbackUrl,
            device::kWebAuthnCrossDeviceFallbackUrl},
           {wf::EnableWebAuthenticationRemoteClientDataJson,

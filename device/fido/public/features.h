@@ -82,8 +82,9 @@ BASE_DECLARE_FEATURE(kWebAuthnAmbientSignin);
 
 // Enables a magic timeout value (31415 ms) for Ambient sign-in requests that
 // launches the UI in chip-only mode for experimentation.
-// TODO(https://crbug.com/583727696): Must be disabled and removed before
-// `kWebAuthnAmbientSignin` is enabled by default.
+// TODO(https://crbug.com/583727696): Must be disabled and removed after the
+// Origin Trial, before `WebAuthenticationAmbient` is enabled by default in
+// Blink.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnAmbientChipOnlyTimeout);
 
