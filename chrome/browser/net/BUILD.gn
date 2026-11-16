@@ -180,6 +180,7 @@ source_set("impl") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/component_updater",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/dino",
     "//chrome/browser/domain_reliability",
     "//chrome/browser/glic/public:request_headers",
     "//chrome/browser/policy:path_parser",

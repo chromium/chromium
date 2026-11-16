@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/dino/dino_metrics.h"
 #include "chrome/browser/net/dns_probe_service.h"
 #include "chrome/browser/net/dns_probe_service_factory.h"
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/net_errors.h"
@@ -56,6 +58,30 @@ namespace {
 
 static NetErrorTabHelper::TestingState testing_state_ =
     NetErrorTabHelper::TESTING_DEFAULT;
+
+void MaybeRecordDinoImpressionSource(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsErrorPage()) {
+    return;
+  }
+
+  const GURL& url = navigation_handle->GetURL();
+  if (url.SchemeIs(content::kChromeUIScheme) &&
+      url.host() == content::kChromeUIDinoHost) {
+    dino::RecordDinoImpressionSource(
+        dino::GetDinoImpressionSourceFromTransition(
+            navigation_handle->GetPageTransition()));
+    return;
+  }
+
+  if (navigation_handle->GetNetErrorCode() == net::ERR_INTERNET_DISCONNECTED &&
+      !url.SchemeIs(content::kChromeUIScheme)) {
+    dino::RecordDinoImpressionSource(
+        dino::DinoImpressionSource::kNetworkErrorPage);
+  }
+}
 
 }  // namespace
 
@@ -134,8 +160,11 @@ void NetErrorTabHelper::RenderFrameCreated(
 
 void NetErrorTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()){
     return;
+  }
+
+  MaybeRecordDinoImpressionSource(navigation_handle);
 
   if (net::IsHostnameResolutionError(navigation_handle->GetNetErrorCode())) {
     dns_error_active_ = true;
