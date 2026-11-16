@@ -138,8 +138,8 @@
 -AudioContextManagerTest.AudioContextPlaybackRecorded
 -AudioContextManagerTest.AudioContextPlaybackTimeUkm
 -BackForwardCacheBrowserTest.VideoSuspendAndResume
--MSE_ClearKey/EncryptedMediaTest.ConfigChangeVideo_ClearToClear/0
--MSE_ClearKey/EncryptedMediaTest.Playback_Encryption_CENC/0
+-MSE_ClearKey/MseEncryptedMediaTest.ConfigChangeVideo_ClearToClear/0
+-MSE_ClearKey/MseEncryptedMediaTest.Playback_Encryption_CENC/0
 -MediaRedirectTest.CanPlayHiddenWebm
 -MediaSuspendTest.ForcedSrcSuspend
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/0
