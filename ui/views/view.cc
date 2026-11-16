@@ -1232,6 +1232,15 @@ void View::ConvertPointToTarget(const View* source,
     return;
   }
 
+  if (target->parent_ == source && !target->layer()) {
+    point->Offset(-target->GetMirroredX(), -target->y());
+    return;
+  }
+  if (source->parent_ == target && !source->layer()) {
+    point->Offset(source->GetMirroredX(), source->y());
+    return;
+  }
+
   const View* root = GetHierarchyRoot(target);
 #if BUILDFLAG(IS_MAC)
   // If the root views don't match make sure we are in the same widget tree.
@@ -1274,6 +1283,17 @@ void View::ConvertRectToTarget(const View* source,
   CHECK(source, base::NotFatalUntil::M163);
   CHECK(target, base::NotFatalUntil::M163);
   if (source == target) {
+    return;
+  }
+
+  if (target->parent_ == source && !target->layer()) {
+    rect->Offset(-static_cast<float>(target->GetMirroredX()),
+                 -static_cast<float>(target->y()));
+    return;
+  }
+  if (source->parent_ == target && !source->layer()) {
+    rect->Offset(static_cast<float>(source->GetMirroredX()),
+                 static_cast<float>(source->y()));
     return;
   }
 

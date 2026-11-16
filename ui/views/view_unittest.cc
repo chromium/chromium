@@ -8156,4 +8156,133 @@ TEST_F(ViewTest, PillBackground) {
   EXPECT_NE(nullptr, view->GetBackground());
 }
 
+// Tests conversions between a view and its direct child. As in production,
+// each view's mirroring is set before anything is positioned. Values are
+// given in logical coordinates (measured from each view's leading edge), so
+// the fully-LTR and fully-RTL hierarchies expect identical results. The
+// parameter scales ancestors of `child`, which must not affect the results.
+class ViewParentChildConversionTest : public ViewTest,
+                                      public testing::WithParamInterface<bool> {
+ protected:
+  // Builds root -> container -> parent -> child. `root`, `container` and
+  // `parent` are mirrored iff `parent_rtl`; `child` is mirrored iff
+  // `child_rtl`.
+  void Init(bool parent_rtl, bool child_rtl) {
+    root_ = std::make_unique<View>();
+    root_->SetMirrored(parent_rtl);
+    auto container = std::make_unique<View>();
+    container->SetMirrored(parent_rtl);
+    auto parent = std::make_unique<View>();
+    parent->SetMirrored(parent_rtl);
+    auto child = std::make_unique<View>();
+    child->SetMirrored(child_rtl);
+    if (GetParam()) {
+      container->SetTransform(gfx::Transform::MakeScale(2, 3));
+      parent->SetTransform(gfx::Transform::MakeScale(3, 2));
+    }
+
+    container_ = root_->AddChildView(std::move(container));
+    parent_ = container_->AddChildView(std::move(parent));
+    child_ = parent_->AddChildView(std::move(child));
+    root_->SetBounds(0, 0, 800, 600);
+    container_->SetBounds(50, 40, 300, 200);
+    parent_->SetBounds(20, 30, 200, 120);
+    child_->SetBounds(15, 25, 60, 40);
+  }
+
+  // Expects logical `in_child` to convert to logical `in_parent`, and back.
+  void ExpectConversions(const gfx::Point& in_child,
+                         const gfx::Point& in_parent) {
+    EXPECT_EQ(in_parent,
+              Flip(parent_, View::ConvertPointToTarget(
+                                child_, parent_, Flip(child_, in_child))));
+    EXPECT_EQ(in_child,
+              Flip(child_, View::ConvertPointToTarget(
+                               parent_, child_, Flip(parent_, in_parent))));
+  }
+  void ExpectConversions(const gfx::Rect& in_child,
+                         const gfx::Rect& in_parent) {
+    EXPECT_EQ(in_parent,
+              Flip(parent_, View::ConvertRectToTarget(child_, parent_,
+                                                      Flip(child_, in_child))));
+    EXPECT_EQ(in_child,
+              Flip(child_, View::ConvertRectToTarget(
+                               parent_, child_, Flip(parent_, in_parent))));
+  }
+  void ExpectConversions(const gfx::RectF& in_child,
+                         const gfx::RectF& in_parent) {
+    EXPECT_EQ(in_parent,
+              Flip(parent_, View::ConvertRectToTarget(child_, parent_,
+                                                      Flip(child_, in_child))));
+    EXPECT_EQ(in_child,
+              Flip(child_, View::ConvertRectToTarget(
+                               parent_, child_, Flip(parent_, in_parent))));
+  }
+
+  // `child` is at logical (15, 25) in `parent` in all cases.
+  void ExpectSameDirectionConversions() {
+    ExpectConversions(gfx::Point(10, 10), gfx::Point(25, 35));
+    ExpectConversions(gfx::Rect(10, 10, 12, 14), gfx::Rect(25, 35, 12, 14));
+    ExpectConversions(gfx::RectF(10.5f, 10.25f, 12.f, 14.f),
+                      gfx::RectF(25.5f, 35.25f, 12.f, 14.f));
+  }
+
+  // `child`'s leading edge is on the opposite side from `parent`'s, so a
+  // logical x in `child` is 15 + (60 - x) from `parent`'s leading edge.
+  void ExpectMixedDirectionConversions() {
+    ExpectConversions(gfx::Point(10, 10), gfx::Point(65, 35));
+    ExpectConversions(gfx::Rect(10, 10, 12, 14), gfx::Rect(53, 35, 12, 14));
+    ExpectConversions(gfx::RectF(10.5f, 10.25f, 12.f, 14.f),
+                      gfx::RectF(52.5f, 35.25f, 12.f, 14.f));
+  }
+
+ private:
+  // Converts between logical and physical coordinates in `view`.
+  static gfx::Point Flip(const View* view, const gfx::Point& point) {
+    return gfx::Point(view->GetMirroredXInView(point.x()), point.y());
+  }
+  static gfx::Rect Flip(const View* view, gfx::Rect rect) {
+    rect.set_x(view->GetMirroredXWithWidthInView(rect.x(), rect.width()));
+    return rect;
+  }
+  static gfx::RectF Flip(const View* view, gfx::RectF rect) {
+    if (view->GetMirrored()) {
+      rect.set_x(view->width() - rect.right());
+    }
+    return rect;
+  }
+
+  std::unique_ptr<View> root_;
+  raw_ptr<View> container_ = nullptr;
+  raw_ptr<View> parent_ = nullptr;
+  raw_ptr<View> child_ = nullptr;
+};
+
+TEST_P(ViewParentChildConversionTest, LTRParentLTRChild) {
+  Init(/*parent_rtl=*/false, /*child_rtl=*/false);
+  ExpectSameDirectionConversions();
+}
+
+TEST_P(ViewParentChildConversionTest, RTLParentRTLChild) {
+  Init(/*parent_rtl=*/true, /*child_rtl=*/true);
+  ExpectSameDirectionConversions();
+}
+
+TEST_P(ViewParentChildConversionTest, RTLParentLTRChild) {
+  Init(/*parent_rtl=*/true, /*child_rtl=*/false);
+  ExpectMixedDirectionConversions();
+}
+
+TEST_P(ViewParentChildConversionTest, LTRParentRTLChild) {
+  Init(/*parent_rtl=*/false, /*child_rtl=*/true);
+  ExpectMixedDirectionConversions();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ViewParentChildConversionTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Scaled" : "Unscaled";
+                         });
+
 }  // namespace views
