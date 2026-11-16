@@ -867,9 +867,7 @@ ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Convert the std::string search_text to string16.
-  std::u16string search_text;
-  base::UTF8ToUTF16(
-      params->search_text.c_str(), params->search_text.length(), &search_text);
+  std::u16string search_text = base::UTF8ToUTF16(params->search_text);
 
   // Set the find options to their default values.
   auto options = blink::mojom::FindOptions::New();

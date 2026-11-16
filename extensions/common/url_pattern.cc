@@ -672,10 +672,8 @@ bool URLPattern::MatchesPath(std::string_view test, bool case_sensitive) const {
   // different invalid byte sequences (e.g. %E1 and %E2) to falsely match.
   std::u16string test_u16;
   std::u16string pattern_u16;
-  if (base::UTF8ToUTF16(unescaped_test.data(), unescaped_test.size(),
-                        &test_u16) &&
-      base::UTF8ToUTF16(utf8_path_for_matching_.data(),
-                        utf8_path_for_matching_.size(), &pattern_u16)) {
+  if (base::UTF8ToUTF16(unescaped_test, &test_u16) &&
+      base::UTF8ToUTF16(utf8_path_for_matching_, &pattern_u16)) {
     test_u16 = base::i18n::FoldCase(test_u16);
     pattern_u16 = base::i18n::FoldCase(pattern_u16);
 
