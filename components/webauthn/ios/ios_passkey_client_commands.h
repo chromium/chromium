@@ -39,6 +39,20 @@
     (webauthn::IOSPasskeyClient::InterstitialCallback)callback;
 - (void)dismissPasskeyIncognitoInterstitial;
 
+// Shows the passkey embedded ReAuth flow for `packagedLookupToken`. `callback`
+// is invoked with the ReAuth proof token on success, or an empty string on
+// failure or dismissal.
+- (void)
+    showPasskeyEmbeddedReAuthWithPackagedLookupToken:
+        (NSString*)packagedLookupToken
+                                            callback:
+                                                (webauthn::IOSPasskeyClient::
+                                                     EmbeddedReAuthCallback)
+                                                    callback;
+
+// Dismisses the passkey embedded ReAuth flow.
+- (void)dismissPasskeyEmbeddedReAuth;
+
 // Cancels the passkey request matching the given `requestInfo`, dismissing any
 // active passkey UI.
 - (void)cancelPasskeyRequest:

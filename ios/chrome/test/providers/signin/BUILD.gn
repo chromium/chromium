@@ -39,7 +39,10 @@ source_set("device_identifier") {
 
 source_set("embedded_reauth") {
   testonly = true
-  sources = [ "test_embedded_reauth.mm" ]
+  sources = [
+    "test_embedded_reauth.h",
+    "test_embedded_reauth.mm",
+  ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/signin:embedded_reauth_api",

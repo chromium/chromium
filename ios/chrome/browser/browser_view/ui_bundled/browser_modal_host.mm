@@ -181,6 +181,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
+#import "ios/chrome/browser/webauthn/coordinator/passkey_embedded_reauth_coordinator.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_coordinator.h"
@@ -306,6 +307,7 @@ const char kContextPanelDismissedHistogram[] =
   PageInfoCoordinator* _pageInfoCoordinator;
   ParentAccessCoordinator* _parentAccessCoordinator;
   PasskeyCreationBottomSheetCoordinator* _passkeyCreationBottomSheetCoordinator;
+  PasskeyEmbeddedReAuthCoordinator* _passkeyEmbeddedReAuthCoordinator;
   PasskeyIncognitoInterstitialCoordinator* _passkeyIncognitoCoordinator;
   PasskeyWelcomeScreenCoordinator* _passkeyWelcomeScreenCoordinator;
   PassKitCoordinator* _passKitCoordinator;
@@ -409,6 +411,7 @@ const char kContextPanelDismissedHistogram[] =
   [self dismissPasskeySuggestions];
   [self stopPasskeyWelcomeScreenCoordinator];
   [self dismissPasskeyIncognitoInterstitial];
+  [self dismissPasskeyEmbeddedReAuth];
   [self stopPasswordBreach];
   [self dismissPasswordProtectionWarning];
   [self closePasswordSuggestion];
@@ -1625,6 +1628,27 @@ const char kContextPanelDismissedHistogram[] =
   _passkeyIncognitoCoordinator = nil;
 }
 
+- (void)
+    showPasskeyEmbeddedReAuthWithPackagedLookupToken:
+        (NSString*)packagedLookupToken
+                                            callback:
+                                                (webauthn::IOSPasskeyClient::
+                                                     EmbeddedReAuthCallback)
+                                                    callback {
+  [self dismissPasskeyEmbeddedReAuth];
+  _passkeyEmbeddedReAuthCoordinator = [[PasskeyEmbeddedReAuthCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser
+             packagedLookupToken:packagedLookupToken
+                        callback:std::move(callback)];
+  [_passkeyEmbeddedReAuthCoordinator start];
+}
+
+- (void)dismissPasskeyEmbeddedReAuth {
+  [_passkeyEmbeddedReAuthCoordinator stop];
+  _passkeyEmbeddedReAuthCoordinator = nil;
+}
+
 - (void)cancelPasskeyRequest:
     (webauthn::IOSPasskeyClient::RequestInfo)requestInfo {
   if ([_passkeyCreationBottomSheetCoordinator hasPendingRequest:requestInfo]) {
@@ -1640,6 +1664,11 @@ const char kContextPanelDismissedHistogram[] =
 
   if (_passkeyIncognitoCoordinator) {
     [self dismissPasskeyIncognitoInterstitial];
+  }
+
+  // TODO(crbug.com/586442316): Scope to the originating tab.
+  if (_passkeyEmbeddedReAuthCoordinator) {
+    [self dismissPasskeyEmbeddedReAuth];
   }
 }
 

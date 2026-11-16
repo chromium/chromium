@@ -4,6 +4,8 @@
 
 source_set("coordinator") {
   sources = [
+    "passkey_embedded_reauth_coordinator.h",
+    "passkey_embedded_reauth_coordinator.mm",
     "passkey_incognito_interstitial_coordinator.h",
     "passkey_incognito_interstitial_coordinator.mm",
     "passkey_welcome_screen_coordinator.h",
@@ -28,6 +30,7 @@ source_set("coordinator") {
     "//ios/chrome/common/credential_provider/ui",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ios/public/provider/chrome/browser/signin:embedded_reauth_api",
     "//ui/base",
   ]
 }
@@ -35,6 +38,7 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "passkey_embedded_reauth_coordinator_unittest.mm",
     "passkey_incognito_interstitial_coordinator_unittest.mm",
     "passkey_welcome_screen_coordinator_unittest.mm",
   ]
@@ -62,6 +66,8 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/providers/signin:embedded_reauth",
+    "//ios/public/provider/chrome/browser/signin:embedded_reauth_api",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

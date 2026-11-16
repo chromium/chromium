@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_IOS_PASSKEY_CLIENT_H_
 #define COMPONENTS_WEBAUTHN_IOS_IOS_PASSKEY_CLIENT_H_
 
-#include <cstdint>
+#import <cstdint>
 #import <optional>
-#include <string>
+#import <string>
 
+#import "base/functional/callback_forward.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/ios/passkey_types.h"
@@ -44,6 +45,9 @@ class IOSPasskeyClient {
   };
 
   using InterstitialCallback = base::OnceCallback<void(bool)>;
+  // Invoked with the ReAuth proof token on success, or an empty string on
+  // failure or cancellation.
+  using EmbeddedReAuthCallback = base::OnceCallback<void(std::string)>;
 
   virtual ~IOSPasskeyClient() = default;
 
