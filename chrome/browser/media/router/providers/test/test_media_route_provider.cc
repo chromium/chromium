@@ -230,8 +230,12 @@ void TestMediaRouteProvider::CaptureOffScreenTab(
     content::WebContents* web_contents,
     GURL source_urn,
     std::string& presentation_id) {
-  offscreen_tab_ =
-      std::make_unique<OffscreenTab>(this, web_contents->GetBrowserContext());
+  // Unretained is safe because `this` owns `offscreen_tab_`, which owns the
+  // callback.
+  offscreen_tab_ = std::make_unique<OffscreenTab>(
+      base::BindOnce(&TestMediaRouteProvider::DestroyOffscreenTab,
+                     base::Unretained(this)),
+      web_contents->GetBrowserContext());
   offscreen_tab_->Start(source_urn, gfx::Size(180, 180), presentation_id);
 }
 
@@ -247,10 +251,8 @@ void TestMediaRouteProvider::TearDown() {
   }
 }
 
-void TestMediaRouteProvider::DestroyTab(OffscreenTab* tab) {
-  if (offscreen_tab_ && offscreen_tab_.get() == tab) {
-    offscreen_tab_.reset();
-  }
+void TestMediaRouteProvider::DestroyOffscreenTab() {
+  offscreen_tab_.reset();
 }
 
 }  // namespace media_router

@@ -122,15 +122,16 @@ class OffscreenTab::WindowAdoptionAgent final : protected aura::WindowObserver {
 };
 #endif  // defined(USE_AURA)
 
-OffscreenTab::OffscreenTab(Owner* owner, content::BrowserContext* context)
-    : owner_(owner),
+OffscreenTab::OffscreenTab(base::OnceClosure destroy_callback,
+                           content::BrowserContext* context)
+    : destroy_callback_(std::move(destroy_callback)),
       otr_profile_(Profile::FromBrowserContext(context)->GetOffTheRecordProfile(
           Profile::OTRProfileID::CreateUniqueForMediaRouter(),
           /*create_if_needed=*/true)),
       content_capture_was_detected_(false),
       navigation_policy_(
           std::make_unique<media_router::DefaultNavigationPolicy>()) {
-  CHECK(owner_, base::NotFatalUntil::M161);
+  CHECK(destroy_callback_);
   otr_profile_->AddObserver(this);
 }
 
@@ -214,7 +215,7 @@ void OffscreenTab::CloseContents(WebContents* source) {
            base::NotFatalUntil::M161);
   // Javascript in the page called window.close().
   DVLOG(1) << "OffscreenTab for start_url=" << start_url_.spec() << " will die";
-  owner_->DestroyTab(this);
+  std::move(destroy_callback_).Run();
   // |this| is no longer valid.
 }
 
@@ -374,7 +375,7 @@ void OffscreenTab::DieIfContentCaptureEnded() {
     if (!offscreen_tab_web_contents_->IsBeingCaptured()) {
       DVLOG(2) << "Capture of OffscreenTab content has stopped for start_url="
                << start_url_.spec();
-      owner_->DestroyTab(this);
+      std::move(destroy_callback_).Run();
       return;  // |this| is no longer valid.
     } else {
       DVLOG(3) << "Capture of OffscreenTab content continues for start_url="
@@ -391,7 +392,7 @@ void OffscreenTab::DieIfContentCaptureEnded() {
     // resources.
     LOG(WARNING) << "Capture of OffscreenTab content did not start "
                  << "within timeout for start_url=" << start_url_.spec();
-    owner_->DestroyTab(this);
+    std::move(destroy_callback_).Run();
     return;  // |this| is no longer valid.
   }
 
@@ -405,5 +406,5 @@ void OffscreenTab::DieIfContentCaptureEnded() {
 void OffscreenTab::OnProfileWillBeDestroyed(Profile* profile) {
   CHECK(profile == otr_profile_, base::NotFatalUntil::M161);
   otr_profile_ = nullptr;
-  owner_->DestroyTab(this);
+  std::move(destroy_callback_).Run();
 }

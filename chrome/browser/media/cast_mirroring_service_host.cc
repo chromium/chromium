@@ -670,9 +670,8 @@ void CastMirroringServiceHost::SwitchMirroringSourceTab(
   mirroring_service_->SwitchMirroringSourceTab();
 }
 
-void CastMirroringServiceHost::DestroyTab(OffscreenTab* tab) {
-  if (offscreen_tab_ && (offscreen_tab_.get() == tab))
-    offscreen_tab_.reset();
+void CastMirroringServiceHost::DestroyOffscreenTab() {
+  offscreen_tab_.reset();
 }
 
 void CastMirroringServiceHost::OpenOffscreenTab(
@@ -680,7 +679,12 @@ void CastMirroringServiceHost::OpenOffscreenTab(
     const GURL& presentation_url,
     const std::string& presentation_id) {
   CHECK(!offscreen_tab_, base::NotFatalUntil::M161);
-  offscreen_tab_ = std::make_unique<OffscreenTab>(this, context);
+  // Unretained is safe because `this` owns `offscreen_tab_`, which owns the
+  // callback.
+  offscreen_tab_ = std::make_unique<OffscreenTab>(
+      base::BindOnce(&CastMirroringServiceHost::DestroyOffscreenTab,
+                     base::Unretained(this)),
+      context);
   offscreen_tab_->Start(presentation_url, GetCaptureResolutionConstraint(),
                         presentation_id);
   source_media_id_ = BuildMediaIdForWebContents(offscreen_tab_->web_contents());

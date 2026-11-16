@@ -23,8 +23,7 @@
 namespace media_router {
 
 // The Test MediaRouteProvider class is used for integration browser test.
-class TestMediaRouteProvider : public mojom::MediaRouteProvider,
-                               public OffscreenTab::Owner {
+class TestMediaRouteProvider : public mojom::MediaRouteProvider {
  public:
   static const mojom::MediaRouteProviderId kProviderId;
   TestMediaRouteProvider(
@@ -103,8 +102,9 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // OffscreenTab::Owner overrides
-  void DestroyTab(OffscreenTab* tab) override;
+  // Destroys `offscreen_tab_`. Passed to the OffscreenTab as its destroy
+  // callback.
+  void DestroyOffscreenTab();
 
   std::vector<MediaRoute> GetMediaRoutes();
   void SetSinks();

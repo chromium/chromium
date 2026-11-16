@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -47,17 +48,11 @@ class OffscreenTab final : public ProfileObserver,
                            protected content::WebContentsDelegate,
                            protected content::WebContentsObserver {
  public:
-  // TODO(crbug.com/40781745): Hold the OffscreenTab by a WeakPtr, then Owner
-  // can be deleted.
-  class Owner {
-   public:
-    virtual ~Owner() = default;
-
-    // |tab| is no longer valid after this call.
-    virtual void DestroyTab(OffscreenTab* tab) = 0;
-  };
-
-  OffscreenTab(Owner* owner, content::BrowserContext* context);
+  // `destroy_callback` is run when this OffscreenTab should be destroyed (see
+  // the class comment). The owner must synchronously destroy this
+  // OffscreenTab in response.
+  OffscreenTab(base::OnceClosure destroy_callback,
+               content::BrowserContext* context);
 
   OffscreenTab(const OffscreenTab&) = delete;
   OffscreenTab& operator=(const OffscreenTab&) = delete;
@@ -139,7 +134,9 @@ class OffscreenTab final : public ProfileObserver,
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  const raw_ptr<Owner> owner_;  // Outlives this class.
+  // Run when this OffscreenTab should be destroyed. The owner destroys `this`
+  // in response, so `this` must not be used after running it.
+  base::OnceClosure destroy_callback_;
 
   // The initial navigation URL, which may or may not match the current URL if
   // page-initiated navigations have occurred.
