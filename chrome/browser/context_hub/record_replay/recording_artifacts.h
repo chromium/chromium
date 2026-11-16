@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
+#include "url/gurl.h"
 
 namespace context_hub {
 
@@ -32,6 +33,8 @@ struct RecordedAction {
   // Time elapsed since the start of the recording session when the action
   // occurred.
   base::TimeDelta timestamp;
+  // Last committed URL of the observed tab when the action occurred.
+  GURL current_url;
   // Raw JPEG bytes of the viewport screenshot captured at the time of the
   // action, or empty if screenshot capture was unavailable or did not complete
   // before the session ended.

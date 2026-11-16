@@ -534,6 +534,9 @@ struct SkillRecordingAction {
   // Time elapsed since the start of the recording session when the action
   // occurred.
   mojo_base.mojom.TimeDelta timestamp;
+  // Last committed URL of the observed tab when the action occurred, or null
+  // if unavailable.
+  url.mojom.Url? current_url;
   // Base64-encoded `data:` URL containing the viewport screenshot captured at
   // the time of the action, or null if screenshot capture was unavailable or
   // did not complete before the session ended (`url.mojom.Url` is typemapped to

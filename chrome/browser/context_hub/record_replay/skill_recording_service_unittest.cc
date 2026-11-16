@@ -250,6 +250,7 @@ TEST_F(SkillRecordingServiceTest, OnScreenshotCapturedWithValidResult) {
   EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
   EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:10, Y:20");
   EXPECT_EQ(result.actions[0].timestamp, base::Milliseconds(150));
+  EXPECT_TRUE(result.actions[0].current_url.is_empty());
   EXPECT_EQ(result.actions[0].screenshot_jpeg_bytes,
             std::string("\x01\x02\x03\x04", 4));
 
@@ -423,6 +424,28 @@ TEST_F(SkillRecordingServiceTest, RecordsLeftMouseClicksOnHttpOrHttpsTab) {
   EXPECT_EQ(result.actions[0].type, SkillRecordingActionType::kLeftClick);
   EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:42, Y:84");
   EXPECT_EQ(result.actions[0].timestamp, base::Milliseconds(150));
+  EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/page"));
+}
+
+TEST_F(SkillRecordingServiceTest, SanitizesRecordedUrls) {
+  TestBrowserInstance browser(&profile_);
+  content::WebContents* tab = AddTab(
+      &browser, GURL("https://user:pass@example.com/page?q=secret#section"));
+
+  service_.StartRecording();
+  SimulateMouseDown(tab, 10.0f, 20.0f);
+
+  // Navigate to a URL whose path exceeds `kMaxRecordedUrlLength` (500 chars);
+  // the path should be cleared while preserving the origin.
+  content::WebContentsTester::For(tab)->NavigateAndCommit(
+      GURL("https://example.com/" + std::string(500, 'a')));
+  SimulateMouseDown(tab, 30.0f, 40.0f);
+
+  service_.StopRecording();
+  const RecordingArtifacts& result = service_.artifacts();
+  ASSERT_EQ(result.actions.size(), 2u);
+  EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/page"));
+  EXPECT_EQ(result.actions[1].current_url, GURL("https://example.com/"));
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresNonLeftMouseButtonClicks) {
@@ -505,7 +528,9 @@ TEST_F(SkillRecordingServiceTest,
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 2u);
   EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:33, Y:44");
+  EXPECT_EQ(result.actions[0].current_url, GURL("https://example.com/window2"));
   EXPECT_EQ(result.actions[1].description, "Mouse Clicked at X:77, Y:88");
+  EXPECT_EQ(result.actions[1].current_url, GURL("https://example.com/window1"));
 }
 
 TEST_F(SkillRecordingServiceTest, IgnoresClicksFromOtherProfiles) {
@@ -557,6 +582,8 @@ TEST_F(SkillRecordingServiceTest,
   const RecordingArtifacts& result = service_.artifacts();
   ASSERT_EQ(result.actions.size(), 1u);
   EXPECT_EQ(result.actions[0].description, "Mouse Clicked at X:50, Y:60");
+  EXPECT_EQ(result.actions[0].current_url,
+            GURL("https://example.com/replacement"));
 }
 
 TEST_F(SkillRecordingServiceTest, ForwardsTranscriptUpdatesToObservers) {

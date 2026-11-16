@@ -361,6 +361,10 @@ browser::context_hub::mojom::SkillRecordingSessionDataPtr ToMojoSessionData(
     mojo_action->type = action.type;
     mojo_action->description = action.description;
     mojo_action->timestamp = action.timestamp;
+    if (action.current_url.is_valid() &&
+        action.current_url.spec().size() <= url::kMaxURLChars) {
+      mojo_action->current_url = action.current_url;
+    }
     if (!action.screenshot_jpeg_bytes.empty()) {
       GURL data_url(
           base::StrCat({"data:image/jpeg;base64,",

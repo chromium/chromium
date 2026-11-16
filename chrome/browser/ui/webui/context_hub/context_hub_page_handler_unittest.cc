@@ -5099,13 +5099,16 @@ TEST_F(ContextHubPageHandlerTest, StartAndStopSkillRecording) {
             browser::context_hub::mojom::SkillRecordingActionType::kLeftClick);
   EXPECT_EQ(session_data->actions[0]->description,
             "Mouse Clicked at X:10, Y:20");
+  EXPECT_EQ(session_data->actions[0]->current_url, std::nullopt);
   EXPECT_EQ(session_data->actions[0]->screenshot_data_url,
             GURL("data:image/jpeg;base64,AQIDBA=="));
   EXPECT_EQ(session_data->actions[1]->description,
             "Mouse Clicked at X:30, Y:40");
+  EXPECT_EQ(session_data->actions[1]->current_url, std::nullopt);
   EXPECT_EQ(session_data->actions[1]->screenshot_data_url, std::nullopt);
   EXPECT_EQ(session_data->actions[2]->description,
             "Mouse Clicked at X:50, Y:60");
+  EXPECT_EQ(session_data->actions[2]->current_url, std::nullopt);
   EXPECT_EQ(session_data->actions[2]->screenshot_data_url, std::nullopt);
   EXPECT_FALSE(service->is_recording());
 }

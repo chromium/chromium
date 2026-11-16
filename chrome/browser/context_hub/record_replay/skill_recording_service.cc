@@ -27,12 +27,36 @@
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
+#include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 namespace context_hub {
 namespace {
 
 constexpr int32_t kMaxScreenshotWidth = 1280;
 constexpr int32_t kMaxScreenshotHeight = 1280;
+constexpr size_t kMaxRecordedUrlLength = 500;
+
+GURL SanitizeRecordedUrl(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return GURL();
+  }
+  GURL::Replacements replacements;
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  GURL sanitized = url.ReplaceComponents(replacements);
+  if (sanitized.spec().size() > kMaxRecordedUrlLength) {
+    GURL::Replacements clear_path;
+    clear_path.ClearPath();
+    sanitized = sanitized.ReplaceComponents(clear_path);
+    if (sanitized.spec().size() > kMaxRecordedUrlLength) {
+      return GURL();
+    }
+  }
+  return sanitized;
+}
 
 BrowserWindowInterface* GetLastActiveBrowser(Profile& profile) {
   ProfileBrowserCollection* collection =
@@ -106,13 +130,15 @@ void SkillRecordingService::CaptureAction(
     return;
   }
   const size_t action_index = artifacts_.actions.size();
-  artifacts_.actions.emplace_back(type, std::move(description),
-                                  base::TimeTicks::Now() - start_time_.value());
+  RecordedAction& action = artifacts_.actions.emplace_back(
+      type, std::move(description),
+      base::TimeTicks::Now() - start_time_.value());
 
   if (!tab_observer_ || !tab_observer_->web_contents()) {
     return;
   }
   content::WebContents* web_contents = tab_observer_->web_contents();
+  action.current_url = SanitizeRecordedUrl(web_contents->GetLastCommittedURL());
 
   page_content_annotations::ScreenshotOptions::ScreenshotCollectionOptions
       collection_options;
