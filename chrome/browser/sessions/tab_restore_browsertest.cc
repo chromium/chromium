@@ -84,6 +84,8 @@
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/sessions/core/tab_restore_types.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -3218,6 +3220,50 @@ class TabRestoreSavedGroupsTest : public TabRestoreTest {
         browser, url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
+
+  split_tabs::SplitTabId SplitFirstTwoTabsInGroup(
+      TabStripModel* model,
+      const tab_groups::TabGroupId& group_id) {
+    const gfx::Range tabs =
+        model->group_model()->GetTabGroup(group_id)->ListTabs();
+    CHECK_GE(tabs.length(), 2u);
+    const int lead_idx = static_cast<int>(tabs.start());
+    const int trail_idx = lead_idx + 1;
+    model->ActivateTabAt(lead_idx);
+    model->AddToNewSplit({trail_idx}, split_tabs::SplitTabVisualData(),
+                         split_tabs::SplitTabCreatedSource::kToolbarButton);
+    std::optional<split_tabs::SplitTabId> split_id =
+        model->GetTabAtIndex(lead_idx)->GetSplit();
+    CHECK(split_id.has_value());
+    EXPECT_EQ(split_id, model->GetTabAtIndex(trail_idx)->GetSplit());
+    return *split_id;
+  }
+
+  base::Uuid CreateAndCloseSplitSavedGroup(int num_group_tabs) {
+    AddHTTPSSchemeTabs(browser(), num_group_tabs);
+    TabStripModel* model = browser()->GetTabStripModel();
+    CHECK_EQ(1 + num_group_tabs, model->count());
+
+    std::vector<int> indices;
+    for (int i = 1; i <= num_group_tabs; ++i) {
+      indices.push_back(i);
+    }
+    const tab_groups::TabGroupId group_id = model->AddToNewGroup(indices);
+    tab_groups::TabGroupSyncService* sync_service =
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+            browser()->GetProfile());
+    CHECK(sync_service);
+    const std::optional<tab_groups::SavedTabGroup> saved_group =
+        sync_service->GetGroup(group_id);
+    CHECK(saved_group.has_value());
+    const base::Uuid saved_guid = saved_group->saved_guid();
+
+    SplitFirstTwoTabsInGroup(model, group_id);
+    CloseGroup(group_id);
+    CHECK_EQ(1, model->count());
+    CHECK(!sync_service->GetGroup(saved_guid)->local_group_id().has_value());
+    return saved_guid;
+  }
 };
 
 // Close a group, then restore it. The group should continue to be saved.
@@ -3932,6 +3978,173 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   // Verify the local group id exists in the TabGroupModel of the new browser.
   EXPECT_TRUE(
       group_model->ContainsTabGroup(saved_group.local_group_id().value()));
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
+                       RestoreWindowWithAlreadyOpenSplitSavedGroup) {
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(tab_restore_service);
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  ASSERT_TRUE(sync_service);
+
+  BrowserWindowInterface* const second_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_NE(browser(), second_browser);
+
+  AddHTTPSSchemeTabs(second_browser, 2);
+  TabStripModel* second_model = second_browser->GetTabStripModel();
+  ASSERT_EQ(3, second_model->count());
+
+  const tab_groups::TabGroupId closed_window_group_id =
+      second_model->AddToNewGroup({1, 2});
+  const std::optional<tab_groups::SavedTabGroup> saved_group =
+      sync_service->GetGroup(closed_window_group_id);
+  ASSERT_TRUE(saved_group.has_value());
+  const base::Uuid saved_guid = saved_group->saved_guid();
+
+  SplitFirstTwoTabsInGroup(second_model, closed_window_group_id);
+
+  CloseBrowserSynchronously(second_browser);
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_FALSE(
+      sync_service->GetGroup(saved_guid)->local_group_id().has_value());
+
+  const sessions::TabRestoreService::Entries& entries =
+      tab_restore_service->entries();
+  ASSERT_FALSE(entries.empty());
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entries.front()->type);
+
+  // Reopen the Saved Tab Group in the remaining window and put its tabs into a
+  // live Split View before restoring the closed window.
+  std::optional<tab_groups::LocalTabGroupID> reopened_group_id =
+      tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+          browser(), saved_guid,
+          tab_groups::OpeningSource::kOpenedFromRevisitUi);
+  ASSERT_TRUE(reopened_group_id.has_value());
+
+  TabStripModel* first_model = browser()->GetTabStripModel();
+  const split_tabs::SplitTabId live_split_id =
+      SplitFirstTwoTabsInGroup(first_model, *reopened_group_id);
+
+  ui_test_utils::BrowserCreatedObserver restored_browser_observer;
+  tab_restore_service->RestoreEntryById(
+      BrowserLiveTabContext::From(browser()), entries.front()->id,
+      WindowOpenDisposition::kNewForegroundTab);
+  BrowserWindowInterface* const restored_window =
+      restored_browser_observer.Wait();
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  TabStripModel* restored_model = restored_window->GetTabStripModel();
+  EXPECT_EQ(3, restored_model->count());
+  EXPECT_EQ(1, first_model->count());
+  const std::vector<tab_groups::TabGroupId> restored_groups =
+      restored_model->group_model()->ListTabGroups();
+  ASSERT_EQ(1u, restored_groups.size());
+  const gfx::Range restored_group_tabs = restored_model->group_model()
+                                             ->GetTabGroup(restored_groups[0])
+                                             ->ListTabs();
+  ASSERT_EQ(2u, restored_group_tabs.length());
+  const int lead_idx = static_cast<int>(restored_group_tabs.start());
+  const int trail_idx = lead_idx + 1;
+  EXPECT_EQ(live_split_id, restored_model->GetTabAtIndex(lead_idx)->GetSplit());
+  EXPECT_EQ(live_split_id,
+            restored_model->GetTabAtIndex(trail_idx)->GetSplit());
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
+                       RestoreGroupWithAlreadyOpenSplitSavedGroup) {
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(tab_restore_service);
+
+  const base::Uuid saved_guid = CreateAndCloseSplitSavedGroup(3);
+
+  const sessions::TabRestoreService::Entries& entries =
+      tab_restore_service->entries();
+  ASSERT_FALSE(entries.empty());
+  ASSERT_EQ(sessions::tab_restore::Type::GROUP, entries.front()->type);
+
+  // Reopen the 3-tab Saved Tab Group, recreate the live Split View, and
+  // restore the closed GROUP entry.
+  std::optional<tab_groups::LocalTabGroupID> reopened_group_id =
+      tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+          browser(), saved_guid,
+          tab_groups::OpeningSource::kOpenedFromRevisitUi);
+  ASSERT_TRUE(reopened_group_id.has_value());
+
+  TabStripModel* model = browser()->GetTabStripModel();
+  ASSERT_EQ(4, model->count());
+  const split_tabs::SplitTabId live_split_id =
+      SplitFirstTwoTabsInGroup(model, *reopened_group_id);
+
+  tab_restore_service->RestoreEntryById(
+      BrowserLiveTabContext::From(browser()), entries.front()->id,
+      WindowOpenDisposition::kNewForegroundTab);
+
+  EXPECT_EQ(4, model->count());
+  const gfx::Range group_tabs =
+      model->group_model()->GetTabGroup(*reopened_group_id)->ListTabs();
+  ASSERT_EQ(3u, group_tabs.length());
+  const int lead_idx = static_cast<int>(group_tabs.start());
+  EXPECT_EQ(live_split_id, model->GetTabAtIndex(lead_idx)->GetSplit());
+  EXPECT_EQ(live_split_id, model->GetTabAtIndex(lead_idx + 1)->GetSplit());
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
+                       RestoreGroupWithShrunkAlreadyOpenSplitSavedGroup) {
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(tab_restore_service);
+
+  const base::Uuid saved_guid = CreateAndCloseSplitSavedGroup(3);
+
+  const sessions::TabRestoreService::Entries& entries =
+      tab_restore_service->entries();
+  ASSERT_FALSE(entries.empty());
+  ASSERT_EQ(sessions::tab_restore::Type::GROUP, entries.front()->type);
+
+  // Reopen the 3-tab Saved Tab Group, close one tab inside the live group so
+  // `local_group_live_tabs.size() < group.tabs.size()`, place the remaining 2
+  // live tabs into a Split View, and restore the closed 3-tab GROUP entry.
+  std::optional<tab_groups::LocalTabGroupID> reopened_shrunk_group_id =
+      tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+          browser(), saved_guid,
+          tab_groups::OpeningSource::kOpenedFromRevisitUi);
+  ASSERT_TRUE(reopened_shrunk_group_id.has_value());
+
+  TabStripModel* model = browser()->GetTabStripModel();
+  ASSERT_EQ(4, model->count());
+  gfx::Range shrunk_tabs =
+      model->group_model()->GetTabGroup(*reopened_shrunk_group_id)->ListTabs();
+  ASSERT_EQ(3u, shrunk_tabs.length());
+  {
+    const int third_tab_index = static_cast<int>(shrunk_tabs.end() - 1);
+    content::WebContentsDestroyedWatcher destroyed_watcher(
+        model->GetWebContentsAt(third_tab_index));
+    model->CloseWebContentsAt(third_tab_index,
+                              TabCloseTypes::CLOSE_USER_GESTURE);
+    destroyed_watcher.Wait();
+  }
+  ASSERT_EQ(3, model->count());
+
+  const split_tabs::SplitTabId live_split_id =
+      SplitFirstTwoTabsInGroup(model, *reopened_shrunk_group_id);
+
+  tab_restore_service->RestoreEntryById(
+      BrowserLiveTabContext::From(browser()), entries.front()->id,
+      WindowOpenDisposition::kNewForegroundTab);
+
+  EXPECT_EQ(3, model->count());
+  shrunk_tabs =
+      model->group_model()->GetTabGroup(*reopened_shrunk_group_id)->ListTabs();
+  ASSERT_EQ(2u, shrunk_tabs.length());
+  const int lead_idx = static_cast<int>(shrunk_tabs.start());
+  EXPECT_EQ(live_split_id, model->GetTabAtIndex(lead_idx)->GetSplit());
+  EXPECT_EQ(live_split_id, model->GetTabAtIndex(lead_idx + 1)->GetSplit());
 }
 
 class TabRestoreVerticalTabsTest : public TabRestoreTest {

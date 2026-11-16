@@ -505,8 +505,13 @@ void BrowserLiveTabContext::ReconstructSplit(
   const int trailing_index = tab_strip_model_->GetIndexOfWebContents(
       &trailing_content_tab->GetWebContents());
 
+  // When restoring a window or group whose Saved Tab Group is already open,
+  // `AddRestoredTab()` moves the live group (and any active split within it)
+  // as-is. Do not attempt to recreate a split if either tab is already split.
   if (leading_index != TabStripModel::kNoTab &&
-      trailing_index != TabStripModel::kNoTab) {
+      trailing_index != TabStripModel::kNoTab &&
+      !tab_strip_model_->GetTabAtIndex(leading_index)->IsSplit() &&
+      !tab_strip_model_->GetTabAtIndex(trailing_index)->IsSplit()) {
     tab_strip_model_->RestoreSplit(split_id, {leading_index, trailing_index},
                                    visual_data);
   }

@@ -1239,8 +1239,10 @@ std::optional<std::vector<LiveTab*>> TabRestoreServiceHelper::RestoreEntryById(
               }
             }
 
-            for (size_t i = 0; i < group.tabs.size(); ++i) {
-              restored_tab_map[group.tabs[i]->id] = local_group_live_tabs[i];
+            if (local_group_live_tabs.size() == group.tabs.size()) {
+              for (size_t i = 0; i < group.tabs.size(); ++i) {
+                restored_tab_map[group.tabs[i]->id] = local_group_live_tabs[i];
+              }
             }
           }
         }
