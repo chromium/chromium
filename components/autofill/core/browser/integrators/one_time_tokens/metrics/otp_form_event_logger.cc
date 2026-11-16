@@ -5,23 +5,33 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/metrics/otp_form_event_logger.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/metrics/profile_metrics_service.h"
 
 namespace autofill::autofill_metrics {
 
@@ -40,6 +50,13 @@ void OtpFormEventLogger::OnDidShowSuggestions(
   FormEventLoggerBase::OnDidShowSuggestions(form, field, ONE_TIME_CODE,
                                             form_parsed_timestamp,
                                             off_the_record, suggestions);
+}
+
+void OtpFormEventLogger::OnDestroyed() {
+  if (!identified_form_types_.empty()) {
+    is_eligible_for_gmail_otps_ = IsEligibleForGmailOtps();
+  }
+  FormEventLoggerBase::OnDestroyed();
 }
 
 void OtpFormEventLogger::OnDidFillOtpSuggestion(const FormStructure& form,
@@ -88,6 +105,53 @@ DenseSet<FormTypeNameForLogging> OtpFormEventLogger::GetFormTypesForLogging(
     const FormStructure& form,
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
   return GetOneTimePasswordTypesForLogging(form, ac_unrecognized_behavior);
+}
+
+void OtpFormEventLogger::RecordFillingReadiness(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFillingReadiness(logs);
+  RecordGmailKeyMetric("FillingReadiness", HasLoggedDataToFillAvailable());
+}
+
+void OtpFormEventLogger::RecordFillingAcceptance(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFillingAcceptance(logs);
+  RecordGmailKeyMetric("FillingAcceptance",
+                       has_logged_form_filling_suggestion_filled_);
+}
+
+void OtpFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFillingCorrectness(logs);
+  RecordGmailKeyMetric("FillingCorrectness",
+                       !has_logged_edited_autofilled_field_);
+}
+
+void OtpFormEventLogger::RecordFillingAssistance(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFillingAssistance(logs);
+  RecordGmailKeyMetric("FillingAssistance",
+                       has_logged_form_filling_suggestion_filled_);
+}
+
+bool OtpFormEventLogger::IsEligibleForGmailOtps() const {
+  const AutofillClient& client = owner_->client();
+  const PrefService* prefs = client.GetPrefs();
+  return base::FeatureList::IsEnabled(
+             features::kAutofillShowGmailOtpSuggestions) &&
+         prefs && prefs::IsAutofillGmailOtpFillingEnabled(prefs) &&
+         client.GetGmailOtpBackend() &&
+         OtpMetricsTracker::IsEligibleForGmailOtps(client.GetIdentityManager());
+}
+
+void OtpFormEventLogger::RecordGmailKeyMetric(std::string_view metric,
+                                              bool value) const {
+  if (!is_eligible_for_gmail_otps_) {
+    return;
+  }
+  metrics::ProfileMetricsService* profile_metrics_service =
+      owner_->client().GetProfileMetricsService();
+  CHECK(profile_metrics_service);
+  profile_metrics_service->UmaHistogramBoolean(
+      base::StrCat({"Autofill.KeyMetrics.", metric,
+                    ".OneTimePassword.GmailEligibleClients"}),
+      value);
 }
 
 }  // namespace autofill::autofill_metrics
