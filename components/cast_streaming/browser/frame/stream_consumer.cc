@@ -15,6 +15,7 @@
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/media_util.h"
 #include "media/mojo/common/media_type_converters.h"
+#include "third_party/openscreen/src/platform/api/time.h"
 #include "third_party/openscreen/src/platform/base/span.h"
 
 namespace cast_streaming {
@@ -218,6 +219,9 @@ void StreamConsumer::MaybeSendNextFrame() {
 
   // Return the frame.
   is_read_pending_ = false;
+  receiver_->ReportPlayoutEvent(encoded_frame.frame_id,
+                                encoded_frame.rtp_timestamp,
+                                openscreen::Clock::now());
   frame_received_cb_.Run(media::mojom::DecoderBuffer::From(*pending_buffer_));
 
   // Wait for the mojo pipe to be writable if there is still pending data to

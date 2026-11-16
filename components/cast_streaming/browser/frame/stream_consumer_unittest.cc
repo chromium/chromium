@@ -225,5 +225,86 @@ TEST_F(StreamConsumerTest, FrameReallyTooBig) {
   EXPECT_EQ(result, MOJO_RESULT_FAILED_PRECONDITION);
 }
 
+TEST_F(StreamConsumerTest, ReportsPlayoutEventOnFrameRead) {
+  const size_t frame_size = 100;
+  const openscreen::cast::FrameId expected_frame_id =
+      openscreen::cast::FrameId::first() + 1;
+  const openscreen::cast::RtpTimeTicks expected_rtp_timestamp =
+      openscreen::cast::RtpTimeTicks() +
+      openscreen::cast::RtpTimeDelta::FromTicks(9000);
+
+  EXPECT_CALL(receiver_, AdvanceToNextFrame())
+      .WillOnce(Return(frame_size))
+      .WillRepeatedly(Return(std::nullopt));
+
+  openscreen::cast::EncodedFrame frame;
+  frame.frame_id = expected_frame_id;
+  frame.rtp_timestamp = expected_rtp_timestamp;
+  EXPECT_CALL(receiver_, ConsumeNextFrame(_))
+      .WillOnce(Return(std::move(frame)));
+  EXPECT_CALL(*decoder_buffer_factory_, ToDecoderBuffer(_, _))
+      .WillOnce(Return(base::MakeRefCounted<media::DecoderBuffer>(0)));
+  EXPECT_CALL(receiver_,
+              ReportPlayoutEvent(expected_frame_id, expected_rtp_timestamp, _))
+      .WillOnce(Return(openscreen::Error::None()));
+
+  consumer_->ReadFrame(base::DoNothing());
+}
+
+TEST_F(StreamConsumerTest, DoesNotReportPlayoutEventForSkippedFrames) {
+  const size_t frame_size = 100;
+  const openscreen::cast::FrameId skipped_frame_id =
+      openscreen::cast::FrameId::first();
+  const openscreen::cast::FrameId kept_frame_id =
+      openscreen::cast::FrameId::first() + 2;
+  const openscreen::cast::RtpTimeTicks kept_rtp_timestamp =
+      openscreen::cast::RtpTimeTicks() +
+      openscreen::cast::RtpTimeDelta::FromTicks(18000);
+
+  consumer_->FlushUntil(2);
+
+  EXPECT_CALL(receiver_, AdvanceToNextFrame())
+      .WillOnce(Return(frame_size))
+      .WillOnce(Return(frame_size))
+      .WillRepeatedly(Return(std::nullopt));
+
+  openscreen::cast::EncodedFrame skipped_frame;
+  skipped_frame.frame_id = skipped_frame_id;
+  openscreen::cast::EncodedFrame kept_frame;
+  kept_frame.frame_id = kept_frame_id;
+  kept_frame.rtp_timestamp = kept_rtp_timestamp;
+
+  EXPECT_CALL(receiver_, ConsumeNextFrame(_))
+      .WillOnce(Return(std::move(skipped_frame)))
+      .WillOnce(Return(std::move(kept_frame)));
+  EXPECT_CALL(*decoder_buffer_factory_, ToDecoderBuffer(_, _))
+      .WillOnce(Return(base::MakeRefCounted<media::DecoderBuffer>(0)));
+  EXPECT_CALL(receiver_, ReportPlayoutEvent(skipped_frame_id, _, _)).Times(0);
+  EXPECT_CALL(receiver_,
+              ReportPlayoutEvent(kept_frame_id, kept_rtp_timestamp, _))
+      .WillOnce(Return(openscreen::Error::None()));
+
+  consumer_->ReadFrame(base::DoNothing());
+}
+
+TEST_F(StreamConsumerTest,
+       DoesNotReportPlayoutEventWhenDecoderBufferCreationFails) {
+  const size_t frame_size = 100;
+
+  EXPECT_CALL(receiver_, AdvanceToNextFrame())
+      .WillOnce(Return(frame_size))
+      .WillRepeatedly(Return(std::nullopt));
+
+  openscreen::cast::EncodedFrame frame;
+  frame.frame_id = openscreen::cast::FrameId::first();
+  EXPECT_CALL(receiver_, ConsumeNextFrame(_))
+      .WillOnce(Return(std::move(frame)));
+  EXPECT_CALL(*decoder_buffer_factory_, ToDecoderBuffer(_, _))
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(receiver_, ReportPlayoutEvent(_, _, _)).Times(0);
+
+  consumer_->ReadFrame(base::DoNothing());
+}
+
 }  // namespace
 }  // namespace cast_streaming
