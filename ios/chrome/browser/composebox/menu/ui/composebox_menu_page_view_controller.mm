@@ -948,7 +948,9 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
 
 // The title used for the current tab item.
 - (NSString*)currentTabTitle {
-  return IsPlusButtonMenuStringUpdatesEnabled()
+  BOOL useUpdatedTabTitle = IsPlusButtonMenuStringUpdatesEnabled() ||
+                            IsComposeboxPlusButtonLargeCarousel();
+  return useUpdatedTabTitle
              ? l10n_util::GetNSString(
                    IDS_IOS_COMPOSEBOX_ASK_ABOUT_THIS_PAGE_ACTION)
              : l10n_util::GetNSString(
