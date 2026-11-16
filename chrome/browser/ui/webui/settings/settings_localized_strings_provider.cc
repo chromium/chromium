@@ -518,6 +518,12 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"onDeviceAiConsiderStorage", IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_STORAGE},
       {"onDeviceAiConsiderSitePrivacy",
        IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_SITE_PRIVACY},
+      {"onDeviceAiTurnOffDialogTitle",
+       IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_TITLE},
+      {"onDeviceAiTurnOffDialogBody",
+       IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_BODY},
+      {"onDeviceAiTurnOffDialogConfirmButton",
+       IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_CONFIRM_BUTTON},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

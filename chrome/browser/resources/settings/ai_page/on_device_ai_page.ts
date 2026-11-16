@@ -6,9 +6,12 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_page/settings_subpage.js';
+import '../simple_confirmation_dialog.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -50,6 +53,14 @@ export class SettingsOnDeviceAiPageElement extends
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      showTurnOffDialog_: {type: Boolean},
+    };
+  }
+
+  protected accessor showTurnOffDialog_: boolean = false;
+
   private onDeviceAiBrowserProxy_: OnDeviceAiBrowserProxy =
       OnDeviceAiBrowserProxyImpl.getInstance();
 
@@ -78,8 +89,37 @@ export class SettingsOnDeviceAiPageElement extends
   }
 
   protected onOnDeviceAiSettingsBooleanControlChange_(e: Event) {
-    const enabled = (e.target as SettingsToggleButtonElement).checked;
-    this.onDeviceAiBrowserProxy_.setOnDeviceAiEnabled(enabled);
+    const toggle = e.target as SettingsToggleButtonElement;
+    if (toggle.checked) {
+      // Turning on does not need confirmation.
+      this.applyToggleValue_(toggle);
+      return;
+    }
+
+    // Turning off removes downloaded models, so ask the user to confirm first.
+    // The toggle stays visually off until the dialog is resolved.
+    this.showTurnOffDialog_ = true;
+  }
+
+  protected onTurnOffDialogClose_() {
+    const dialog =
+        this.shadowRoot.querySelector('settings-simple-confirmation-dialog');
+    assert(dialog);
+    if (dialog.wasConfirmed()) {
+      this.applyToggleValue_(this.$.onDeviceAiToggle);
+    } else {
+      this.$.onDeviceAiToggle.resetToPrefValue();
+    }
+
+    this.showTurnOffDialog_ = false;
+    focusWithoutInk(this.$.onDeviceAiToggle);
+  }
+
+  // Commits the toggle's current `checked` state to the synthetic pref and to
+  // the browser.
+  private applyToggleValue_(toggle: SettingsToggleButtonElement) {
+    toggle.sendPrefChange();
+    this.onDeviceAiBrowserProxy_.setOnDeviceAiEnabled(toggle.checked);
   }
 
   private setOnDeviceAiPref_(onDeviceAiEnabled: OnDeviceAiEnabled) {

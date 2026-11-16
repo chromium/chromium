@@ -490,9 +490,12 @@
     Chromium downloads and updates these AI models automatically
   </message>
   <message name="IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_WHEN_OFF" translateable="false" desc="Bullet point in the 'Things to consider' column of the On-device AI settings subpage. Explains what happens when the setting is off.">
-    When off, Chromium removes on-device AI models and won't download them again. Some site features might not work
+    When off, Chromium removes on-device AI models and won't download them again. Some sites and Chromium features might not work
   </message>
   <message name="IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_STORAGE" translateable="false" desc="Bullet point in the 'Things to consider' column of the On-device AI settings subpage. Explains device storage usage and automatic cleanup of unused models.">
     Uses device storage. Chromium removes unused AI models after 45 days or when storage is low
+  </message>
+  <message name="IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_BODY" translateable="false" desc="Body text of the confirmation dialog shown when the user turns off the On-device AI toggle in the On-device AI settings subpage.">
+    Chromium will remove AI models from this device. Some sites and Chromium features might not work
   </message>
 </grit-part>

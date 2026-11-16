@@ -9,12 +9,14 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsOnDeviceAiPageElement} from 'chrome://settings/lazy_load.js';
 import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestOnDeviceAiBrowserProxy} from './test_on_device_ai_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
+const ON_DEVICE_AI_PREF_KEY = 'synthetic.settings.on_device_ai_enabled';
 
 suite('OnDeviceAiPage', function() {
   let testBrowserProxy: TestOnDeviceAiBrowserProxy;
@@ -56,16 +58,84 @@ suite('OnDeviceAiPage', function() {
     assertTrue(isVisible(page.$.onDeviceAiToggle));
     assertTrue(page.$.onDeviceAiToggle.checked);
 
+    // Turning off requires confirmation: the toggle flips visually, but
+    // nothing is committed until the dialog is confirmed.
     page.$.onDeviceAiToggle.click();
     await microtasksFinished();
     assertFalse(page.$.onDeviceAiToggle.checked);
-    assertFalse(await testBrowserProxy.whenCalled('setOnDeviceAiEnabled'));
+    assertEquals(0, testBrowserProxy.getCallCount('setOnDeviceAiEnabled'));
+    assertTrue(PrefService.getInstance()
+                   .getPref<boolean>(ON_DEVICE_AI_PREF_KEY)
+                   .value);
 
+    const dialog =
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.$.dialog.open);
+
+    const whenClosed = eventToPromise('close', dialog);
+    dialog.$.confirm.click();
+    await whenClosed;
+    assertFalse(await testBrowserProxy.whenCalled('setOnDeviceAiEnabled'));
+    await microtasksFinished();
+    assertFalse(page.$.onDeviceAiToggle.checked);
+    assertFalse(PrefService.getInstance()
+                    .getPref<boolean>(ON_DEVICE_AI_PREF_KEY)
+                    .value);
+    assertNull(
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog'));
+
+    // Turning back on does not need confirmation.
     testBrowserProxy.resetResolver('setOnDeviceAiEnabled');
     page.$.onDeviceAiToggle.click();
     await microtasksFinished();
     assertTrue(page.$.onDeviceAiToggle.checked);
+    assertNull(
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog'));
     assertTrue(await testBrowserProxy.whenCalled('setOnDeviceAiEnabled'));
+    assertTrue(PrefService.getInstance()
+                   .getPref<boolean>(ON_DEVICE_AI_PREF_KEY)
+                   .value);
+  });
+
+  test('turnOffDialogCancelKeepsOnDeviceAiOn', async function() {
+    page.$.onDeviceAiToggle.click();
+    await microtasksFinished();
+    assertFalse(page.$.onDeviceAiToggle.checked);
+    const dialog =
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
+    assertTrue(!!dialog);
+
+    const whenClosed = eventToPromise('close', dialog);
+    dialog.$.cancel.click();
+    await whenClosed;
+    await microtasksFinished();
+    assertTrue(page.$.onDeviceAiToggle.checked);
+    assertEquals(0, testBrowserProxy.getCallCount('setOnDeviceAiEnabled'));
+    assertTrue(PrefService.getInstance()
+                   .getPref<boolean>(ON_DEVICE_AI_PREF_KEY)
+                   .value);
+    assertNull(
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog'));
+  });
+
+  test('turnOffDialogEscapeKeepsOnDeviceAiOn', async function() {
+    page.$.onDeviceAiToggle.click();
+    await microtasksFinished();
+    const dialog =
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
+    assertTrue(!!dialog);
+
+    // Dismissing the dialog (e.g. with the Escape key) cancels the inner
+    // cr-dialog and closes it without confirming.
+    const whenClosed = eventToPromise('close', dialog);
+    dialog.$.dialog.cancel();
+    await whenClosed;
+    await microtasksFinished();
+    assertTrue(page.$.onDeviceAiToggle.checked);
+    assertEquals(0, testBrowserProxy.getCallCount('setOnDeviceAiEnabled'));
+    assertNull(
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog'));
   });
 
   test('disallowed by policy disables toggle', async function() {

@@ -13,11 +13,19 @@ export function getHtml(this: SettingsOnDeviceAiPageElement) {
   <settings-toggle-button id="onDeviceAiToggle"
       pref-key="synthetic.settings.on_device_ai_enabled"
       label="$i18n{onDeviceAiCapabilitiesLabel}"
-      sub-label-with-link="$i18n{onDeviceAiCapabilitiesSubLabel}"
+      sub-label-with-link="$i18n{onDeviceAiCapabilitiesSubLabel}" no-set-pref
       @sub-label-link-clicked="${this.onOnDeviceAiSubLabelLinkClicked_}"
       @settings-boolean-control-change="${
           this.onOnDeviceAiSettingsBooleanControlChange_}">
   </settings-toggle-button>
+  ${this.showTurnOffDialog_ ? html`
+    <settings-simple-confirmation-dialog id="turnOffDialog"
+        title-text="$i18n{onDeviceAiTurnOffDialogTitle}"
+        body-text="$i18n{onDeviceAiTurnOffDialogBody}"
+        confirm-text="$i18n{onDeviceAiTurnOffDialogConfirmButton}"
+        @close="${this.onTurnOffDialogClose_}">
+    </settings-simple-confirmation-dialog>
+  ` : ''}
   <div class="settings-columned-section">
     <div class="column">
       <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>

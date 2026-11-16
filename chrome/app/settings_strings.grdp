@@ -3701,6 +3701,12 @@
     <message name="IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_SITE_PRIVACY" translateable="false" desc="Bullet point in the 'Things to consider' column of the On-device AI settings subpage. Explains that sites have their own privacy policies.">
       Sites have their own privacy policies
     </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_TITLE" translateable="false" desc="Title of the confirmation dialog shown when the user turns off the On-device AI toggle in the On-device AI settings subpage.">
+      Turn off on-device AI?
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_TURN_OFF_DIALOG_CONFIRM_BUTTON" translateable="false" desc="Label of the button that confirms turning off on-device AI in the confirmation dialog of the On-device AI settings subpage.">
+      Turn off
+    </message>
 
     <message name="IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING" desc="This is the heading for the page not available for guest.">
       <ph name="PAGE_NAME">$1<ex>Bookmarks</ex></ph> is not available to Guest users.
