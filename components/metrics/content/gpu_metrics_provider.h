@@ -5,18 +5,12 @@
 #ifndef COMPONENTS_METRICS_CONTENT_GPU_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_CONTENT_GPU_METRICS_PROVIDER_H_
 
-#include "components/metrics/cached_metrics_provider.h"
-
-namespace gpu {
-struct GPUInfo;
-}
+#include "components/metrics/metrics_provider.h"
 
 namespace metrics {
 
-class SystemProfileProto;
-
 // GPUMetricsProvider provides GPU-related metrics.
-class GPUMetricsProvider : public CachedMetricsProvider {
+class GPUMetricsProvider : public MetricsProvider {
  public:
   GPUMetricsProvider();
 
@@ -26,19 +20,10 @@ class GPUMetricsProvider : public CachedMetricsProvider {
   ~GPUMetricsProvider() override;
 
   // MetricsProvider:
+  void ProvideSystemProfileMetrics(
+      SystemProfileProto* system_profile_proto) override;
   void ProvideCurrentSessionData(
       ChromeUserMetricsExtension* uma_proto) override;
-
- protected:
-  // CachedMetricsProvider:
-  void ProvideSystemProfileMetricsFromCache(
-      const SystemProfileProto& cached_system_profile,
-      SystemProfileProto* system_profile_proto) override;
-  void ProvideSystemProfileMetricsNormal(
-      SystemProfileProto* system_profile_proto) override;
-
-  // Virtual for testing.
-  virtual gpu::GPUInfo GetGPUInfo() const;
 };
 
 }  // namespace metrics

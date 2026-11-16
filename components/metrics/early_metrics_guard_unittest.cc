@@ -20,9 +20,9 @@ TEST(EarlyMetricsGuardTest, FlagState) {
   EXPECT_FALSE(EarlyMetricsGuard::IsEarlyMetricsRecordingActive());
 }
 
-TEST(EarlyMetricsGuardTest, NestedGuardsCheck) {
+TEST(EarlyMetricsGuardTest, NestedGuardsDcheck) {
   EarlyMetricsGuard guard1;
-  EXPECT_CHECK_DEATH({ EarlyMetricsGuard guard2; });
+  EXPECT_DCHECK_DEATH({ EarlyMetricsGuard guard2; });
 }
 
 }  // namespace metrics
