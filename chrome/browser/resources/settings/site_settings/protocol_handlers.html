@@ -47,7 +47,7 @@
       </div>
       <cr-radio-group
           id="protcolHandlersRadio"
-          selected$="[[handlersEnabled_]]"
+          selected="[[getSelectedValue_(handlersEnabled_)]]"
           on-selected-changed="onRadioGroupChange_"
           selectable-elements="settings-collapse-radio-button">
         <settings-collapse-radio-button no-collapse

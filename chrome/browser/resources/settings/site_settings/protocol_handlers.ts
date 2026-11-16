@@ -240,6 +240,10 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     this.actionMenuModel_ = null;
   }
 
+  private getSelectedValue_(): string {
+    return this.handlersEnabled_.toString();
+  }
+
   /**
    * A handler when the radio group selection changes.
    */
