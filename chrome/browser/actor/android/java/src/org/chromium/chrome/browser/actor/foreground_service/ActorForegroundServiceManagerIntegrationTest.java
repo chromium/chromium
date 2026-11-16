@@ -11,6 +11,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -19,6 +21,7 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
@@ -49,7 +52,9 @@ import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.ActorTaskTimeoutManager;
+import org.chromium.chrome.browser.actor.ActorTaskTimeoutParameters;
 import org.chromium.chrome.browser.actor.ActorUtils;
+import org.chromium.chrome.browser.actor.StoppedReason;
 import org.chromium.chrome.browser.actor.notifications.ActorNotificationFactory;
 import org.chromium.chrome.browser.actor.notifications.ActorNotificationService;
 import org.chromium.chrome.browser.actor.ui.R;
@@ -564,5 +569,131 @@ public class ActorForegroundServiceManagerIntegrationTest {
         assertNotNull(task1Repromoted);
         assertEquals(
                 expectedWarningTitle, task1Repromoted.extras.getString(Notification.EXTRA_TITLE));
+    }
+
+    private void assertPinnedNotification(
+            int taskId, int titleRes, int bodyRes, String taskTitle, int statusChipRes) {
+        Context context = ContextUtils.getApplicationContext();
+        Notification notification = findNotification(/* tag= */ null, taskId);
+        assertNotNull(notification);
+        assertEquals(
+                context.getString(titleRes),
+                notification.extras.getString(Notification.EXTRA_TITLE));
+        assertEquals(
+                context.getString(bodyRes, taskTitle),
+                notification.extras.getString(Notification.EXTRA_TEXT));
+        CharSequence expectedChip = statusChipRes == 0 ? null : context.getString(statusChipRes);
+        assertEquals(
+                expectedChip,
+                notification.extras.getCharSequence(
+                        ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+    }
+
+    @Test
+    public void
+            testWaitingOnUserTimeout_PostsNoResponseWarning_ResumedAndPausedShowsWarningAgain() {
+        String taskTitle = "Task 1";
+        ActorTask task = createTask(1, taskTitle);
+
+        transitionTask(task, ActorTaskState.WAITING_ON_USER);
+        assertPinnedNotification(
+                1,
+                R.string.actor_notification_title_check_your_task,
+                R.string.actor_notification_body_user_input,
+                taskTitle,
+                R.string.actor_notification_live_status_review);
+
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getNeedsUserInputTimeoutMs(), TimeUnit.MILLISECONDS);
+
+        assertPinnedNotification(
+                1,
+                R.string.actor_notification_title_will_stop_task,
+                R.string.actor_notification_body_will_stop_task_no_response,
+                taskTitle,
+                R.string.actor_notification_live_status_review);
+
+        transitionTask(task, ActorTaskState.ACTING);
+        assertPinnedNotification(
+                1,
+                R.string.actor_notification_title_working_on_task,
+                R.string.actor_notification_body_working,
+                taskTitle,
+                /* statusChipRes= */ 0);
+
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getWarningTimeoutMs(), TimeUnit.MILLISECONDS);
+        verify(mKeyedService, never()).stopTask(eq(1), anyInt());
+
+        transitionTask(task, ActorTaskState.PAUSED_BY_USER);
+        assertPinnedNotification(
+                1,
+                R.string.actor_notification_title_task_paused,
+                R.string.actor_notification_body_paused,
+                taskTitle,
+                R.string.actor_notification_live_status_paused);
+
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getPausedTimeoutMs(), TimeUnit.MILLISECONDS);
+
+        assertPinnedNotification(
+                1,
+                R.string.actor_notification_title_will_stop_task,
+                R.string.actor_notification_body_will_stop_task_long_running,
+                taskTitle,
+                R.string.actor_notification_live_status_review);
+    }
+
+    @Test
+    public void testRunningTaskTimeout_AutoPausesToWarningAndStopsOnHardTimeout() {
+        String taskTitle = "Task 1";
+        ActorTask task = createTask(1, taskTitle);
+        doAnswer(
+                        invocation -> {
+                            transitionTask(task, ActorTaskState.PAUSED_BY_ACTOR);
+                            return null;
+                        })
+                .when(task)
+                .pause();
+        doAnswer(
+                        invocation -> {
+                            transitionTask(task, ActorTaskState.CANCELLED);
+                            return null;
+                        })
+                .when(mKeyedService)
+                .stopTask(eq(1), anyInt());
+
+        transitionTask(task, ActorTaskState.ACTING);
+        assertPinnedNotification(
+                1,
+                R.string.actor_notification_title_working_on_task,
+                R.string.actor_notification_body_working,
+                taskTitle,
+                /* statusChipRes= */ 0);
+
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getRunningTimeoutMs() / 2, TimeUnit.MILLISECONDS);
+        transitionTask(task, ActorTaskState.REFLECTING);
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getRunningTimeoutMs() / 2, TimeUnit.MILLISECONDS);
+
+        verify(task).pause();
+        assertPinnedNotification(
+                1,
+                R.string.actor_notification_title_will_stop_task,
+                R.string.actor_notification_body_will_stop_task_long_running,
+                taskTitle,
+                R.string.actor_notification_live_status_review);
+
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getWarningTimeoutMs(), TimeUnit.MILLISECONDS);
+
+        verify(mKeyedService).stopTask(1, StoppedReason.TIMEOUT);
+        assertPinnedNotification(
+                1,
+                R.string.actor_notification_title_task_stopped,
+                R.string.actor_notification_body_stopped,
+                taskTitle,
+                R.string.actor_notification_live_status_stopped);
     }
 }

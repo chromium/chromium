@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 public class ActorTaskTimeoutManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    // TODO(crbug.com/528360965): Add integration tests for changing states and seeing warning
-    // notifications based on time elapsed.
     private static final int TASK_ID = 123;
     private static final int TASK_ID_2 = 456;
 
