@@ -30,6 +30,7 @@
 
 #include "third_party/blink/public/web/web_element.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -83,6 +84,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/occlusion_utils.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -96,13 +98,11 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -873,7 +873,8 @@ class PartialOcclusionHitTestHelper
     : public GarbageCollected<PartialOcclusionHitTestHelper> {
  public:
   PartialOcclusionHitTestHelper(Element* target, float visibility_threshold)
-      : target_(target), visibility_threshold_(visibility_threshold) {
+      : occlusion_tracker_(*target),
+        visibility_threshold_(visibility_threshold) {
     DCHECK_GT(visibility_threshold_, 0.0f);
     DCHECK_LE(visibility_threshold_, 1.0f);
   }
@@ -883,19 +884,22 @@ class PartialOcclusionHitTestHelper
                                         const PhysicalRect* physical_rect,
                                         const gfx::QuadF* quad,
                                         const cc::Region* region) {
-    // Hit testing proceeds front-to-back. When `target_` is hit, all potential
-    // occluders in front of it have already been evaluated. Stop hit testing to
-    // avoid penetrating behind `target_`.
-    if (&node == target_) {
-      occluded_region_.setEmpty();
-      return kStopHitTesting;
-    }
-    // Ignore nodes that are not opaque or have no layout object. We are only
-    // interested in evaluating nodes that visually occlude the target, as seen
-    // by the user.
-    if (!node.GetLayoutObject() ||
-        !node.GetLayoutObject()->HasNonZeroEffectiveOpacity()) {
-      return kContinueHitTesting;
+    switch (occlusion_tracker_.GetHitNodeOcclusion(node)) {
+      // Hit testing proceeds front-to-back. When the target is hit, all
+      // potential occluders in front of it have already been evaluated. Stop
+      // hit testing to avoid penetrating behind the target.
+      case HitNodeOcclusion::kTarget:
+        occlusion_tracker_.Reset();
+        return kStopHitTesting;
+      // Ignore nodes that are not opaque or have no layout object. We are only
+      // interested in evaluating nodes that visually occlude the target, as
+      // seen by the user.
+      case HitNodeOcclusion::kZeroOpacity:
+      case HitNodeOcclusion::kNotPainted:
+        return kContinueHitTesting;
+      case HitNodeOcclusion::kOccluding:
+      case HitNodeOcclusion::kInUserAgentShadowTree:
+        break;
     }
 
     // Determine the occluding node's geometry using the most specific bounds
@@ -923,58 +927,39 @@ class PartialOcclusionHitTestHelper
     }
     node_rect.Intersect(hit_rect);
     if (!node_rect.IsEmpty()) {
-      // Accumulate the occluding rect into `occluded_region_`.
-      occluded_region_.op(
-          gfx::RectToSkIRect(gfx::ToEnclosingRect(gfx::RectF(node_rect))),
-          SkRegion::kUnion_Op);
+      // Accumulate the occluding rect.
+      occlusion_tracker_.AddOccludedRect(
+          gfx::ToEnclosingRect(gfx::RectF(node_rect)));
       float target_area = gfx::RectF(hit_rect).size().GetArea();
-      float occluded_area = ComputeOccludedArea(target_area);
 
       // If the remaining visible area is less than `visibility_threshold_`,
-      // stop hit testing early. Since `target_` has not been reached yet, it
+      // stop hit testing early. Since the target has not been reached yet, it
       // will not be present in `result.ListBasedTestResult()`, which tells
       // `ComputeVisibilityInfo` that the element is occluded.
-      if (!HasEnoughVisibleAreaRemaining(occluded_area, target_area)) {
-        occluded_region_.setEmpty();
+      if (!HasEnoughVisibleAreaRemaining(target_area)) {
+        occlusion_tracker_.Reset();
         return kStopHitTesting;
       }
     }
     return kContinueHitTesting;
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(target_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(occlusion_tracker_); }
 
  private:
-  static float ComputeArea(const SkIRect& rect) {
-    return static_cast<float>(rect.width()) * static_cast<float>(rect.height());
-  }
-
-  float ComputeOccludedArea(float target_area) const {
-    if (target_area <= 0.0f || occluded_region_.isEmpty()) {
-      return 0.0f;
-    }
-    float occluded_area = 0.0f;
-    for (SkRegion::Iterator it(occluded_region_); !it.done(); it.next()) {
-      occluded_area += ComputeArea(it.rect());
-      if (occluded_area >= target_area) {
-        return target_area;
-      }
-    }
-    return occluded_area;
-  }
-
-  bool HasEnoughVisibleAreaRemaining(float occluded_area,
-                                     float target_area) const {
+  bool HasEnoughVisibleAreaRemaining(float target_area) const {
     if (target_area <= 0.0f) {
       return false;
     }
+    float occluded_area =
+        std::min(occlusion_tracker_.OccludedArea(), target_area);
     float visible_ratio = (target_area - occluded_area) / target_area;
     return visible_ratio >= visibility_threshold_;
   }
 
-  Member<Element> target_;
+  // Tracks the area of the target occluded by the nodes hit so far.
+  HitTestOcclusionTracker occlusion_tracker_;
   const float visibility_threshold_;
-  SkRegion occluded_region_;
 };
 
 class VisibilityObserver final : public GarbageCollected<VisibilityObserver> {

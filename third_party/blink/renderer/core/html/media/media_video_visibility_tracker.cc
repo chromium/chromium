@@ -5,10 +5,11 @@
 #include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
 
 #include <algorithm>
+#include <optional>
+#include <utility>
 
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/occlusion_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
@@ -60,12 +62,14 @@ bool HasEnoughVisibleAreaRemaining(float occluded_area,
          visibility_threshold;
 }
 
+constexpr char kComputeOccludingAreaDurationHistogram[] =
+    "Media.MediaVideoVisibilityTracker.ComputeOcclusion.ComputeOccludingArea."
+    "TotalDuration";
+
 float ComputeOccludingArea(const Vector<SkIRect>& occluding_rects,
                            float video_element_area) {
   // Record the total time spent computing the occluding area.
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Media.MediaVideoVisibilityTracker.ComputeOcclusion.ComputeOccludingArea."
-      "TotalDuration");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kComputeOccludingAreaDurationHistogram);
 
   float occluding_area = 0.0;
 
@@ -518,17 +522,17 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
     return {};
   }
 
-  wtf_size_t begin_index = 0;
-  wtf_size_t end_index = display_item_list.size();
-  while (begin_index < end_index && display_item_list[begin_index].ClientId() !=
-                                        start_after_display_item_client_id) {
-    begin_index++;
+  std::optional<wtf_size_t> start_index =
+      FindFirstDisplayItem(paint_artifact, start_after_display_item_client_id);
+  if (!start_index) {
+    return {};
   }
 
   // Skip DisplayItem with `start_after_display_item_client_id`
   // DisplayItemClientId.
-  begin_index++;
-  if (begin_index == kNotFound || begin_index >= end_index) {
+  wtf_size_t begin_index = *start_index + 1;
+  wtf_size_t end_index = display_item_list.size();
+  if (begin_index >= end_index) {
     return {};
   }
 
@@ -558,13 +562,8 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
     return {};
   }
 
-  MediaVideoVisibilityTracker::ClientIdsSet set;
-  for (const auto& display_item :
-       display_item_list.ItemsInRange(begin_index, end_index)) {
-    if (display_item.ClientId() != kInvalidDisplayItemClientId) {
-      set.insert(display_item.ClientId());
-    }
-  }
+  MediaVideoVisibilityTracker::ClientIdsSet set =
+      CollectPaintedClientIds(paint_artifact, begin_index, end_index);
 
   int set_size = base::saturated_cast<int>(set.size());
   UMA_HISTOGRAM_COUNTS_10000(
@@ -585,7 +584,7 @@ MediaVideoVisibilityTracker::GetClientIdsSet(
 }
 
 ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
-    const ClientIdsSet& client_ids_set,
+    HitTestOcclusionTracker& occlusion_tracker,
     Metrics& counts,
     const Node& node,
     const PhysicalRect*,
@@ -593,29 +592,24 @@ ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
     const cc::Region*) {
   counts.total_hit_tested_nodes++;
 
-  if (node == VideoElement()) {
-    return kStopHitTesting;
-  }
-
-  // Ignore nodes with a containing shadow root of type
-  // ShadowRootType::kUserAgent (e.g Video Controls).
-  if (node.IsInShadowTree() && node.ContainingShadowRoot() &&
-      node.ContainingShadowRoot()->IsUserAgent()) {
-    counts.total_ignored_nodes_user_agent_shadow_root++;
-    return kContinueHitTesting;
-  }
-
-  // Ignore nodes that are not opaque. We are only interested on evaluating
-  // nodes that visually occlude the video, as seen by the user.
-  if (!node.GetLayoutObject()->HasNonZeroEffectiveOpacity()) {
-    counts.total_ignored_nodes_not_opaque++;
-    return kContinueHitTesting;
-  }
-
-  // Ignore nodes that do not produce any visual content.
-  if (!client_ids_set.empty() &&
-      !client_ids_set.Contains(node.GetLayoutObject()->Id())) {
-    return kContinueHitTesting;
+  switch (occlusion_tracker.GetHitNodeOcclusion(node)) {
+    case HitNodeOcclusion::kTarget:
+      return kStopHitTesting;
+    // Ignore nodes with a containing shadow root of type
+    // ShadowRootType::kUserAgent (e.g Video Controls).
+    case HitNodeOcclusion::kInUserAgentShadowTree:
+      counts.total_ignored_nodes_user_agent_shadow_root++;
+      return kContinueHitTesting;
+    // Ignore nodes that are not opaque. We are only interested on evaluating
+    // nodes that visually occlude the video, as seen by the user.
+    case HitNodeOcclusion::kZeroOpacity:
+      counts.total_ignored_nodes_not_opaque++;
+      return kContinueHitTesting;
+    // Ignore nodes that do not produce any visual content.
+    case HitNodeOcclusion::kNotPainted:
+      return kContinueHitTesting;
+    case HitNodeOcclusion::kOccluding:
+      break;
   }
 
   // Only account for the intersection of |node_rect| BoundingBox with
@@ -628,11 +622,15 @@ ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
 
   // Add the current occluding node rect to `occlusion_state_.occluding_rects`
   // and compute the total occluded area.
+  const gfx::Rect occluding_rect = ToPixelSnappedRect(node_rect);
   occlusion_state_.occluding_rects.push_back(
-      gfx::RectToSkIRect(ToPixelSnappedRect(node_rect)));
-  occlusion_state_.occluded_area =
-      ComputeOccludingArea(occlusion_state_.occluding_rects,
-                           ComputeArea(occlusion_state_.video_element_rect));
+      gfx::RectToSkIRect(occluding_rect));
+  {
+    // Record the total time spent computing the occluding area.
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(kComputeOccludingAreaDurationHistogram);
+    occlusion_tracker.AddOccludedRect(occluding_rect);
+    occlusion_state_.occluded_area = occlusion_tracker.OccludedArea();
+  }
 
   counts.total_hit_tested_nodes_contributing_to_occlusion++;
 
@@ -645,11 +643,28 @@ ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
   return kStopHitTesting;
 }
 
+HitTestOcclusionTracker MediaVideoVisibilityTracker::CreateOcclusionTracker()
+    const {
+  // Without painted content to rely on, any node is deemed to paint.
+  std::optional<ClientIdsSet> client_ids_set =
+      GetClientIdsSet(VideoElement().GetLayoutObject()->Id());
+  if (client_ids_set->empty()) {
+    client_ids_set.reset();
+  }
+  HitTestOcclusionTracker occlusion_tracker(VideoElement(),
+                                            std::move(client_ids_set));
+
+  // The area occluded by the viewport is hidden too.
+  for (const SkIRect& rect : occlusion_state_.occluding_rects) {
+    occlusion_tracker.AddOccludedRect(gfx::SkIRectToRect(rect));
+  }
+  return occlusion_tracker;
+}
+
 bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
     Metrics& counts,
     const PhysicalRect& rect) {
-  const ClientIdsSet client_ids_set =
-      GetClientIdsSet(VideoElement().GetLayoutObject()->Id());
+  HitTestOcclusionTracker occlusion_tracker = CreateOcclusionTracker();
 
   {
     // Record the total time spent computing occlusion.
@@ -659,7 +674,8 @@ bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
     HitTestResult result(HitTestForOcclusionRatio(
         VideoElement(), rect,
         BindRepeating(&MediaVideoVisibilityTracker::ComputeOcclusion,
-                      WrapPersistent(this), client_ids_set, std::ref(counts))));
+                      WrapPersistent(this), std::ref(occlusion_tracker),
+                      std::ref(counts))));
   }
 
   return HasEnoughVisibleAreaRemaining(occlusion_state_.occluded_area,
@@ -710,8 +726,7 @@ double MediaVideoVisibilityTracker::ComputeVisibilityRatio() {
   auto intersection_area = ComputeArea(occlusion_state_.intersection_rect);
   if (intersection_area > 0.0f) {
     Metrics counts;
-    const ClientIdsSet client_ids_set =
-        GetClientIdsSet(VideoElement().GetLayoutObject()->Id());
+    HitTestOcclusionTracker occlusion_tracker = CreateOcclusionTracker();
 
     {
       // The hit test triggers the `ComputeOcclusion` callback for each hit
@@ -720,7 +735,7 @@ double MediaVideoVisibilityTracker::ComputeVisibilityRatio() {
       HitTestResult result(HitTestForOcclusionRatio(
           VideoElement(), occlusion_state_.intersection_rect,
           BindRepeating(&MediaVideoVisibilityTracker::ComputeOcclusion,
-                        WrapPersistent(this), client_ids_set,
+                        WrapPersistent(this), std::ref(occlusion_tracker),
                         std::ref(counts))));
     }
   }

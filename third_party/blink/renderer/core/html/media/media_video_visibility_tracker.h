@@ -26,6 +26,7 @@ class QuadF;
 namespace blink {
 
 class Document;
+class HitTestOcclusionTracker;
 class HTMLVideoElement;
 
 // This class tracks the area of an HTMLVideoElement, measured in square CSS
@@ -160,12 +161,17 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   const ClientIdsSet GetClientIdsSet(
       DisplayItemClientId start_after_display_item_client_id) const;
 
-  ListBasedHitTestBehavior ComputeOcclusion(const ClientIdsSet& client_ids_set,
-                                            Metrics& counts,
-                                            const Node& node,
-                                            const PhysicalRect*,
-                                            const gfx::QuadF*,
-                                            const cc::Region*);
+  ListBasedHitTestBehavior ComputeOcclusion(
+      HitTestOcclusionTracker& occlusion_tracker,
+      Metrics& counts,
+      const Node& node,
+      const PhysicalRect*,
+      const gfx::QuadF*,
+      const cc::Region*);
+
+  // Returns a tracker of the area of the video that is hidden, which already
+  // accounts for the area occluded by the viewport.
+  HitTestOcclusionTracker CreateOcclusionTracker() const;
 
   bool MeetsVisibilityThreshold(Metrics& counts, const PhysicalRect& rect);
 
