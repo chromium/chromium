@@ -59,7 +59,8 @@ std::unique_ptr<EventConverterEvdev> CreateConverter(
     std::unique_ptr<GestureInterpreterLibevdevCros> gesture_interp =
         std::make_unique<GestureInterpreterLibevdevCros>(
             params.id, params.cursor, params.gesture_property_provider,
-            params.dispatcher);
+            params.dispatcher,
+            devinfo.device_type() == InputDeviceType::INPUT_DEVICE_INTERNAL);
     return std::make_unique<EventReaderLibevdevCros>(std::move(fd), params.path,
                                                      params.id, devinfo,
                                                      std::move(gesture_interp));

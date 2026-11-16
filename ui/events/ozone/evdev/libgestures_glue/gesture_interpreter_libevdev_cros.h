@@ -19,6 +19,7 @@
 #include "ui/events/ozone/evdev/event_device_util.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/events/ozone/evdev/libgestures_glue/event_reader_libevdev_cros.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 
@@ -46,7 +47,8 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   GestureInterpreterLibevdevCros(int id,
                                  CursorDelegateEvdev* cursor,
                                  GesturePropertyProvider* property_provider,
-                                 DeviceEventDispatcherEvdev* dispatcher);
+                                 DeviceEventDispatcherEvdev* dispatcher,
+                                 bool is_internal_device);
 
   GestureInterpreterLibevdevCros(const GestureInterpreterLibevdevCros&) =
       delete;
@@ -98,6 +100,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   void OnGesturePinch(const Gesture* gesture, const GesturePinch* pinch);
   void OnGestureMetrics(const Gesture* gesture, const GestureMetrics* metrics);
 
+  // Converts a (dx, dy) from the device into the user's orientation.
+  gfx::Vector2dF ToUserOrientation(float dx, float dy) const;
+
   void DispatchChangedMouseButtons(unsigned int changed_buttons,
                                    bool down,
                                    stime_t time);
@@ -113,6 +118,10 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
 
   // The unique device id.
   int id_;
+
+  // True if the device is built in, and thus rotates with the internal
+  // display.
+  const bool is_internal_device_;
 
   // True if the device may be regarded as a mouse. This includes normal mice
   // and multi-touch mice.

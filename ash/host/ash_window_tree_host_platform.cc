@@ -94,8 +94,13 @@ void AshWindowTreeHostPlatform::UpdateCursorConfig() {
   // Scale all motion on High-DPI displays.
   float scale = display->device_scale_factor();
 
-  if (!display->IsInternal())
+  if (display->IsInternal()) {
+    // Built-in pointing devices rotate together with the internal display.
+    ui::CursorController::GetInstance()->SetInternalDisplayRotation(
+        display->rotation());
+  } else {
     scale *= 1.2;
+  }
 
   ui::CursorController::GetInstance()->SetCursorConfigForWindow(
       GetAcceleratedWidget(), display->panel_rotation(), scale);

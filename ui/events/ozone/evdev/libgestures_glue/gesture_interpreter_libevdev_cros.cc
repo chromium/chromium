@@ -21,6 +21,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/ozone/chromeos/cursor_controller.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -120,8 +121,10 @@ GestureInterpreterLibevdevCros::GestureInterpreterLibevdevCros(
     int id,
     CursorDelegateEvdev* cursor,
     GesturePropertyProvider* property_provider,
-    DeviceEventDispatcherEvdev* dispatcher)
+    DeviceEventDispatcherEvdev* dispatcher,
+    bool is_internal_device)
     : id_(id),
+      is_internal_device_(is_internal_device),
       cursor_(cursor),
       property_provider_(property_provider),
       dispatcher_(dispatcher),
@@ -317,6 +320,16 @@ void GestureInterpreterLibevdevCros::OnGestureReady(const Gesture* gesture) {
   }
 }
 
+gfx::Vector2dF GestureInterpreterLibevdevCros::ToUserOrientation(
+    float dx,
+    float dy) const {
+  gfx::Vector2dF delta(dx, dy);
+  if (is_internal_device_) {
+    CursorController::GetInstance()->ApplyInternalDisplayRotation(&delta);
+  }
+  return delta;
+}
+
 void GestureInterpreterLibevdevCros::OnGestureMove(const Gesture* gesture,
                                                    const GestureMove* move) {
   DVLOG(3) << base::StringPrintf("Gesture Move: (%f, %f) [%f, %f]",
@@ -327,8 +340,9 @@ void GestureInterpreterLibevdevCros::OnGestureMove(const Gesture* gesture,
   if (!cursor_)
     return;  // No cursor!
 
-  cursor_->MoveCursor(gfx::Vector2dF(move->dx, move->dy));
-  gfx::Vector2dF ordinal_delta(move->ordinal_dx, move->ordinal_dy);
+  cursor_->MoveCursor(ToUserOrientation(move->dx, move->dy));
+  gfx::Vector2dF ordinal_delta =
+      ToUserOrientation(move->ordinal_dx, move->ordinal_dy);
   dispatcher_->DispatchMouseMoveEvent(
       MouseMoveEventParams(id_, EF_NONE, cursor_->GetLocation(), &ordinal_delta,
                            PointerDetails(EventPointerType::kMouse),
@@ -356,8 +370,8 @@ void GestureInterpreterLibevdevCros::OnGestureScroll(
   } else {
     dispatcher_->DispatchScrollEvent(ScrollEventParams(
         id_, EventType::kScroll, cursor_->GetLocation(),
-        gfx::Vector2dF(scroll->dx, scroll->dy),
-        gfx::Vector2dF(scroll->ordinal_dx, scroll->ordinal_dy),
+        ToUserOrientation(scroll->dx, scroll->dy),
+        ToUserOrientation(scroll->ordinal_dx, scroll->ordinal_dy),
         kGestureScrollFingerCount, StimeToTimeTicks(gesture->end_time)));
   }
 }
@@ -419,8 +433,9 @@ void GestureInterpreterLibevdevCros::OnGestureFling(const Gesture* gesture,
 
   // Fling is like 2-finger scrolling but with velocity instead of displacement.
   dispatcher_->DispatchScrollEvent(ScrollEventParams(
-      id_, type, cursor_->GetLocation(), gfx::Vector2dF(fling->vx, fling->vy),
-      gfx::Vector2dF(fling->ordinal_vx, fling->ordinal_vy),
+      id_, type, cursor_->GetLocation(),
+      ToUserOrientation(fling->vx, fling->vy),
+      ToUserOrientation(fling->ordinal_vx, fling->ordinal_vy),
       kGestureScrollFingerCount, StimeToTimeTicks(gesture->end_time)));
 }
 
@@ -438,8 +453,8 @@ void GestureInterpreterLibevdevCros::OnGestureSwipe(const Gesture* gesture,
   // Swipe is 3-finger scrolling.
   dispatcher_->DispatchScrollEvent(ScrollEventParams(
       id_, EventType::kScroll, cursor_->GetLocation(),
-      gfx::Vector2dF(swipe->dx, swipe->dy),
-      gfx::Vector2dF(swipe->ordinal_dx, swipe->ordinal_dy),
+      ToUserOrientation(swipe->dx, swipe->dy),
+      ToUserOrientation(swipe->ordinal_dx, swipe->ordinal_dy),
       kGestureSwipeFingerCount, StimeToTimeTicks(gesture->end_time)));
 }
 
@@ -472,8 +487,8 @@ void GestureInterpreterLibevdevCros::OnGestureFourFingerSwipe(
 
   dispatcher_->DispatchScrollEvent(ScrollEventParams(
       id_, EventType::kScroll, cursor_->GetLocation(),
-      gfx::Vector2dF(swipe->dx, swipe->dy),
-      gfx::Vector2dF(swipe->ordinal_dx, swipe->ordinal_dy),
+      ToUserOrientation(swipe->dx, swipe->dy),
+      ToUserOrientation(swipe->ordinal_dx, swipe->ordinal_dy),
       /*finger_count=*/4, StimeToTimeTicks(gesture->end_time)));
 }
 

@@ -69,6 +69,23 @@ void CursorController::ApplyCursorConfigForWindow(gfx::AcceleratedWidget widget,
     TransformCursorMove(it->second.rotation, it->second.scale, delta);
 }
 
+void CursorController::SetInternalDisplayRotation(
+    display::Display::Rotation rotation) {
+  base::AutoLock lock(window_to_cursor_configuration_map_lock_);
+  internal_display_rotation_ = rotation;
+}
+
+void CursorController::ApplyInternalDisplayRotation(
+    gfx::Vector2dF* delta) const {
+  base::AutoLock lock(window_to_cursor_configuration_map_lock_);
+  // TransformCursorMove() negates the clockwise display rotation, so apply
+  // the opposite rotation here. ApplyCursorConfigForWindow() then cancels it
+  // out on the internal display, leaving only the panel orientation.
+  TransformCursorMove(static_cast<display::Display::Rotation>(
+                          (4 - internal_display_rotation_) % 4),
+                      1.f, delta);
+}
+
 CursorController::CursorController() {
 }
 

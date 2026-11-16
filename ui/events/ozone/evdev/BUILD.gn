@@ -352,5 +352,14 @@ source_set("unittests") {
     ]
   }
 
+  if (use_evdev_gestures) {
+    sources +=
+        [ "libgestures_glue/gesture_interpreter_libevdev_cros_unittest.cc" ]
+    configs += [
+      ":libevdev-cros",
+      ":libgestures",
+    ]
+  }
+
   visibility += [ "//ui/events/ozone:unittests" ]
 }

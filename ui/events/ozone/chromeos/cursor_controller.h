@@ -64,6 +64,14 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
   void ApplyCursorConfigForWindow(gfx::AcceleratedWidget widget,
                                   gfx::Vector2dF* delta) const;
 
+  // Sets the user rotation of the internal display.
+  void SetInternalDisplayRotation(display::Display::Rotation rotation);
+
+  // Rotates `delta` from the physical orientation of a built-in pointing
+  // device (e.g. internal touchpad), which rotates together with the internal
+  // display, to the user's orientation.
+  void ApplyInternalDisplayRotation(gfx::Vector2dF* delta) const;
+
  private:
   CursorController();
   ~CursorController();
@@ -80,6 +88,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE) CursorController {
   mutable base::Lock window_to_cursor_configuration_map_lock_;
   WindowToCursorConfigurationMap window_to_cursor_configuration_map_
       GUARDED_BY(window_to_cursor_configuration_map_lock_);
+  display::Display::Rotation internal_display_rotation_ GUARDED_BY(
+      window_to_cursor_configuration_map_lock_) = display::Display::ROTATE_0;
 };
 
 }  // namespace ui
