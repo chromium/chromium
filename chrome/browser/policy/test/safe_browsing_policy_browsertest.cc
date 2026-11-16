@@ -247,7 +247,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   EXPECT_TRUE(service->GetEnterpriseChangePasswordURL().DomainIs(
       "accounts.google.com"));
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 class MockPasswordProtectionService
     : public safe_browsing::ChromePasswordProtectionService {
  public:
@@ -384,6 +387,5 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 }
 
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace policy
