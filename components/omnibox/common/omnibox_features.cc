@@ -703,7 +703,7 @@ BASE_FEATURE(kUrlBarNoHandwritingBoundsAbove, ENABLED);
 
 // If enabled, Java-cached ZPS will be served.
 // The cached ZPS made sense on sub-4GB Android Go devices
-BASE_FEATURE(kServeJavaCachedZeroSuggest, ENABLED);
+BASE_FEATURE(kServeJavaCachedZeroSuggest, DISABLED);
 
 // If enabled, OmniboxSuggestionsDropdown will force reset the scroll position
 // of the Omnibox suggestion list to the top during any re-layout.

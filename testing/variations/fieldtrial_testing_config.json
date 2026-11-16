@@ -18098,22 +18098,6 @@
             ]
         }
     ],
-    "ServeJavaCachedZeroSuggest": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "ServeJavaCachedZeroSuggest"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerDumpWithoutCrashingOnStorageKeyMismatch": [
         {
             "platforms": [
