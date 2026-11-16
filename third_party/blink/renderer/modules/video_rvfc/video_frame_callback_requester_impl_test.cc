@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_callback_requester_impl.h"
+
+#include <cmath>
+#include <cstdint>
+#include <cstdlib>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "third_party/blink/renderer/core/page/page_animator.h"
-
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,8 +19,10 @@
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -31,6 +36,10 @@ using VideoFramePresentationMetadata =
     WebMediaPlayer::VideoFramePresentationMetadata;
 
 namespace {
+
+// Not a multiple of the 100us or 5us clamping resolutions, so tests can
+// tell whether `mediaTime` was clamped.
+constexpr base::TimeDelta kMediaTime = base::Microseconds(3'141'593);
 
 class MockWebMediaPlayer : public EmptyWebMediaPlayer {
  public:
@@ -83,7 +92,7 @@ class MetadataHelper {
     metadata_.expected_display_time = now + base::Milliseconds(26.3467);
     metadata_.width = 320;
     metadata_.height = 480;
-    metadata_.media_time = base::Seconds(3.14);
+    metadata_.media_time = kMediaTime;
     metadata_.metadata.processing_time = base::Milliseconds(60.982);
     metadata_.metadata.capture_begin_time = now + base::Milliseconds(5.6785);
     metadata_.metadata.receive_time = now + base::Milliseconds(17.1234);
@@ -197,6 +206,12 @@ class VideoFrameCallbackRequesterImplTest : public PageTestBase {
     video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
     test::RunPendingTasks();
     UpdateAllLifecyclePhasesForTest();
+  }
+
+  static double GetClampedTimeInSeconds(base::TimeDelta time,
+                                        bool cross_origin_isolated_capability) {
+    return VideoFrameCallbackRequesterImpl::GetClampedTimeInSeconds(
+        time, cross_origin_isolated_capability);
   }
 
   HTMLVideoElement* video() { return video_.Get(); }
@@ -360,6 +375,28 @@ TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_WindowRaf) {
   EXPECT_TRUE(callback->was_invoked());
 
   testing::Mock::VerifyAndClear(media_player());
+}
+
+// Makes sure `GetClampedTimeInSeconds()` clamps to 5us or 100us without float
+// noise.
+TEST_F(VideoFrameCallbackRequesterImplTest, ClampedTimeInSecondsResolution) {
+  auto verify_resolution = [](bool cross_origin_isolated_capability,
+                              int64_t resolution_us) {
+    const double clamped_s =
+        GetClampedTimeInSeconds(kMediaTime, cross_origin_isolated_capability);
+    const int64_t exposed_us =
+        std::llround(clamped_s * base::Time::kMicrosecondsPerSecond);
+    EXPECT_EQ(exposed_us % resolution_us, 0);
+    EXPECT_NE(exposed_us, kMediaTime.InMicroseconds());
+    EXPECT_LE(std::abs(exposed_us - kMediaTime.InMicroseconds()),
+              resolution_us);
+    EXPECT_EQ(clamped_s, base::Microseconds(exposed_us).InSecondsF());
+  };
+
+  verify_resolution(/*cross_origin_isolated_capability=*/false,
+                    TimeClamper::kCoarseResolutionMicroseconds);
+  verify_resolution(/*cross_origin_isolated_capability=*/true,
+                    TimeClamper::kFineResolutionMicroseconds);
 }
 
 TEST_F(VideoFrameCallbackRequesterImplTest, OnXrFrameData) {

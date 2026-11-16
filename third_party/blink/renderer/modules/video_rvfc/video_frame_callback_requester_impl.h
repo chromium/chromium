@@ -65,6 +65,8 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   // reasons.
   static double GetClampedTimeInMillis(base::TimeDelta time,
                                        bool cross_origin_isolated_capability);
+  static double GetClampedTimeInSeconds(base::TimeDelta time,
+                                        bool cross_origin_isolated_capability);
   static double GetCoarseClampedTimeInSeconds(base::TimeDelta time);
 
   void ExecuteVideoFrameCallbacks(

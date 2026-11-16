@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_callback_requester_impl.h"
 
+#include <cmath>
 #include <memory>
 #include <utility>
 
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_callback_metadata.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -231,7 +233,16 @@ void VideoFrameCallbackRequesterImpl::ExecuteVideoFrameCallbacks(
   metadata->setWidth(frame_metadata->width);
   metadata->setHeight(frame_metadata->height);
 
-  metadata->setMediaTime(frame_metadata->media_time.InSecondsF());
+  // For files and MSE, `media_time` comes from the media itself, and pages
+  // use it to identify frames, so it stays exact. For MediaStreams, it can be
+  // derived from a local clock, so it is clamped like the other timestamps.
+  const bool is_media_stream = GetSupplementable()->GetLoadType() ==
+                               WebMediaPlayer::kLoadTypeMediaStream;
+  metadata->setMediaTime(
+      is_media_stream
+          ? GetClampedTimeInSeconds(frame_metadata->media_time,
+                                    cross_origin_isolated_capability_)
+          : frame_metadata->media_time.InSecondsF());
 
   if (frame_metadata->metadata.processing_time) {
     metadata->setProcessingDuration(GetCoarseClampedTimeInSeconds(
@@ -311,6 +322,19 @@ double VideoFrameCallbackRequesterImpl::GetClampedTimeInMillis(
     bool cross_origin_isolated_capability) {
   return Performance::ClampTimeResolution(time,
                                           cross_origin_isolated_capability);
+}
+
+// static
+double VideoFrameCallbackRequesterImpl::GetClampedTimeInSeconds(
+    base::TimeDelta time,
+    bool cross_origin_isolated_capability) {
+  // Convert through whole microseconds, so that the ms to s conversion
+  // doesn't add floating point noise to the clamped value.
+  const double clamped_ms =
+      GetClampedTimeInMillis(time, cross_origin_isolated_capability);
+  return base::Microseconds(
+             std::round(clamped_ms * base::Time::kMicrosecondsPerMillisecond))
+      .InSecondsF();
 }
 
 // static
