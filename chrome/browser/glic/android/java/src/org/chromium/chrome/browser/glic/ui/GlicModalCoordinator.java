@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.glic.ui;
 
 import android.app.Activity;
+import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Outline;
@@ -19,6 +20,8 @@ import android.view.Window;
 import android.widget.FrameLayout;
 
 import androidx.activity.ComponentDialog;
+import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
@@ -33,12 +36,18 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -52,11 +61,22 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
- * Android coordinator for {@code glic::GlicModal}.
+ * Responsive Android coordinator for {@code glic::GlicModal}.
  *
- * <p>Presents a {@link ThinWebView} inside a centered {@link ModalDialogManager} card dialog with
- * portrait/landscape sizing, rounded corners, and an optional overlay close button.
+ * <ul>
+ *   <li>On tablet or desktop windows ({@code >=600dp}), or when {@link BottomSheetController} is
+ *       unavailable, presents the {@link ThinWebView} inside a centered {@link ModalDialogManager}
+ *       card dialog.
+ *   <li>On phone or compact windows ({@code <600dp}), presents the {@link ThinWebView} inside a
+ *       single-state modal {@link BottomSheetController} bottom sheet.
+ *   <li>On live window configuration changes across the {@code 600dp} breakpoint, dynamically swaps
+ *       the existing {@link ThinWebView} between {@link ModalDialogManager} and {@link
+ *       BottomSheetController} without reloading {@link WebContents} or notifying native dismissal.
+ * </ul>
  */
 @JNINamespace("glic")
 @NullMarked
@@ -64,10 +84,18 @@ public class GlicModalCoordinator {
     @JniType("::glic::GlicModalAndroid")
     interface NativeGlicModalAndroid extends JniTypeToken {}
 
+    @IntDef({ContainerMode.MODAL_DIALOG, ContainerMode.BOTTOM_SHEET})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ContainerMode {
+        int MODAL_DIALOG = 0;
+        int BOTTOM_SHEET = 1;
+    }
+
     private @Nullable JniRawPtr<NativeGlicModalAndroid> mNativePtr;
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final ModalDialogManager mModalDialogManager;
+    private final @Nullable BottomSheetController mBottomSheetController;
     private final WebContents mWebContents;
     private final int mPortraitWidthDp;
     private final int mPortraitHeightDp;
@@ -83,7 +111,10 @@ public class GlicModalCoordinator {
     private int mLastAvailWidthDip;
     private int mLastAvailHeightDip;
 
+    private @ContainerMode int mCurrentContainerMode;
+    private boolean mComponentCallbacksRegistered;
     private @Nullable PropertyModel mModel;
+    private @Nullable GlicModalBottomSheetContent mSheetContent;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable ContentView mContentView;
     private @Nullable ChromeImageButton mCloseButton;
@@ -119,6 +150,17 @@ public class GlicModalCoordinator {
                     if (model != mModel) return;
                     onDialogDismissed();
                 }
+            };
+
+    private final ComponentCallbacks mComponentCallbacks =
+            new ComponentCallbacks() {
+                @Override
+                public void onConfigurationChanged(Configuration newConfig) {
+                    GlicModalCoordinator.this.onConfigurationChanged(newConfig);
+                }
+
+                @Override
+                public void onLowMemory() {}
             };
 
     /**
@@ -160,6 +202,7 @@ public class GlicModalCoordinator {
                             activity,
                             windowAndroid,
                             modalDialogManager,
+                            BottomSheetControllerProvider.from(windowAndroid),
                             webContents,
                             portraitWidthDp,
                             portraitHeightDp,
@@ -187,6 +230,7 @@ public class GlicModalCoordinator {
             Activity activity,
             WindowAndroid windowAndroid,
             ModalDialogManager modalDialogManager,
+            @Nullable BottomSheetController bottomSheetController,
             WebContents webContents,
             int portraitWidthDp,
             int portraitHeightDp,
@@ -199,6 +243,7 @@ public class GlicModalCoordinator {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mModalDialogManager = modalDialogManager;
+        mBottomSheetController = bottomSheetController;
         mWebContents = webContents;
         mPortraitWidthDp = portraitWidthDp;
         mPortraitHeightDp = portraitHeightDp;
@@ -208,11 +253,19 @@ public class GlicModalCoordinator {
         mLoadingView = loadingView;
         mEnableAutoResize = enableAutoResize;
         mRevealed = (loadingView == null);
-        updateTargetSize();
+        updateTargetSize(mActivity.getResources().getConfiguration());
     }
 
-    private void updateTargetSize() {
-        Configuration config = mActivity.getResources().getConfiguration();
+    private @ContainerMode int pickContainerMode(Configuration config) {
+        if (mBottomSheetController == null
+                || config.screenWidthDp == Configuration.SCREEN_WIDTH_DP_UNDEFINED
+                || config.screenWidthDp >= 600) {
+            return ContainerMode.MODAL_DIALOG;
+        }
+        return ContainerMode.BOTTOM_SHEET;
+    }
+
+    private void updateTargetSize(Configuration config) {
         // Despite the "screen" prefix, Configuration.screenWidthDp and screenHeightDp reflect the
         // Activity window's available dimensions (including in split-screen and freeform windows).
         boolean useLandscapeBounds =
@@ -267,9 +320,13 @@ public class GlicModalCoordinator {
             mThinWebView.getView().setAlpha(0f);
         }
 
-        if (!showInModalDialog()) {
-            return false;
+        @ContainerMode int mode = pickContainerMode(mActivity.getResources().getConfiguration());
+        if (mode != ContainerMode.BOTTOM_SHEET || !showInBottomSheet()) {
+            showInModalDialog();
         }
+
+        mActivity.registerComponentCallbacks(mComponentCallbacks);
+        mComponentCallbacksRegistered = true;
 
         if (mRevealed) {
             mContentView.requestFocus();
@@ -309,14 +366,20 @@ public class GlicModalCoordinator {
         }
     }
 
-    private boolean showInModalDialog() {
-        if (mThinWebView == null) {
-            return false;
+    private @Nullable View getActiveContainerView() {
+        if (mCurrentContainerMode == ContainerMode.MODAL_DIALOG && mModel != null) {
+            return mModel.get(ModalDialogProperties.CUSTOM_VIEW);
         }
+        if (mCurrentContainerMode == ContainerMode.BOTTOM_SHEET && mSheetContent != null) {
+            return mSheetContent.getContentView();
+        }
+        return null;
+    }
 
+    private FrameLayout createContentContainer(ThinWebView thinWebView) {
         detachChildrenFromParent();
 
-        FrameLayout cardContainer =
+        FrameLayout container =
                 new FrameLayout(mActivity) {
                     @Override
                     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -355,19 +418,13 @@ public class GlicModalCoordinator {
                                 MeasureSpec.makeMeasureSpec(availWidthPx, MeasureSpec.EXACTLY),
                                 MeasureSpec.makeMeasureSpec(availHeightPx, childHeightMode));
                     }
-
-                    @Override
-                    protected void onConfigurationChanged(Configuration newConfig) {
-                        super.onConfigurationChanged(newConfig);
-                        GlicModalCoordinator.this.onConfigurationChanged();
-                    }
                 };
-        cardContainer.addView(
-                mThinWebView.getView(),
+        container.addView(
+                thinWebView.getView(),
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         if (!mRevealed && mLoadingView != null) {
-            cardContainer.addView(
+            container.addView(
                     mLoadingView,
                     new FrameLayout.LayoutParams(
                             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -377,6 +434,15 @@ public class GlicModalCoordinator {
             applyContentHeight();
         }
 
+        return container;
+    }
+
+    private void showInModalDialog() {
+        if (mThinWebView == null) {
+            return;
+        }
+
+        FrameLayout cardContainer = createContentContainer(mThinWebView);
         cardContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(
                         LayoutParams.WRAP_CONTENT,
@@ -404,9 +470,51 @@ public class GlicModalCoordinator {
                         .with(ModalDialogProperties.MAX_HEIGHT, mTargetHeightPx)
                         .build();
 
+        mCurrentContainerMode = ContainerMode.MODAL_DIALOG;
         mModalDialogManager.addObserver(mDialogObserver);
         mModalDialogManager.showDialog(mModel, ModalDialogType.APP);
+    }
+
+    private boolean showInBottomSheet() {
+        if (mThinWebView == null || mBottomSheetController == null) {
+            return false;
+        }
+
+        FrameLayout sheetContainer = createContentContainer(mThinWebView);
+        sheetContainer.setLayoutParams(
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+        maybeAttachCloseButton(sheetContainer);
+
+        GlicModalBottomSheetContent sheetContent = new GlicModalBottomSheetContent(sheetContainer);
+        if (!mBottomSheetController.requestShowContent(sheetContent, /* animate= */ true)) {
+            mBottomSheetController.hideContent(sheetContent, /* animate= */ false);
+            return false;
+        }
+        mSheetContent = sheetContent;
+        mCurrentContainerMode = ContainerMode.BOTTOM_SHEET;
         return true;
+    }
+
+    private void swapContainer(@ContainerMode int targetMode) {
+        if (targetMode == ContainerMode.MODAL_DIALOG) {
+            if (mSheetContent != null && mBottomSheetController != null) {
+                GlicModalBottomSheetContent content = mSheetContent;
+                mSheetContent = null;
+                mBottomSheetController.hideContent(content, /* animate= */ false);
+            }
+            showInModalDialog();
+        } else {
+            if (mModel != null) {
+                PropertyModel model = mModel;
+                mModel = null;
+                mModalDialogManager.removeObserver(mDialogObserver);
+                mModalDialogManager.dismissDialog(model, DialogDismissalCause.DISMISSED_BY_NATIVE);
+            }
+            if (!showInBottomSheet()) {
+                showInModalDialog();
+            }
+        }
     }
 
     @CalledByNative
@@ -437,37 +545,55 @@ public class GlicModalCoordinator {
         if (mContentView != null) {
             mContentView.requestFocus();
         }
-        if (mModel != null) {
-            View customView = mModel.get(ModalDialogProperties.CUSTOM_VIEW);
-            if (customView != null) {
-                customView.requestLayout();
-            }
+        View activeContainer = getActiveContainerView();
+        if (activeContainer != null) {
+            ViewUtils.requestLayout(activeContainer, "GlicModalCoordinator.showContent");
         }
     }
 
-    private void onConfigurationChanged() {
+    private void onConfigurationChanged(Configuration newConfig) {
+        if (mModel == null && mSheetContent == null) {
+            return;
+        }
         mMaxOfferedHeightPx = 0;
         mLastAvailWidthDip = 0;
         mLastAvailHeightDip = 0;
-        updateTargetSize();
+        updateTargetSize(newConfig);
+
+        @ContainerMode int targetMode = pickContainerMode(newConfig);
+        if (targetMode != mCurrentContainerMode) {
+            swapContainer(targetMode);
+            return;
+        }
+
         if (mRevealed && mEnableAutoResize && mContentHeightDip > 0) {
             applyContentHeight();
         }
-        if (mModel != null) {
+
+        if (mCurrentContainerMode == ContainerMode.MODAL_DIALOG && mModel != null) {
             mModel.set(ModalDialogProperties.MAX_HEIGHT, mTargetHeightPx);
-            View customView = mModel.get(ModalDialogProperties.CUSTOM_VIEW);
-            if (customView != null) {
-                customView.requestLayout();
-            }
+        }
+        View activeContainer = getActiveContainerView();
+        if (activeContainer != null) {
+            ViewUtils.requestLayout(activeContainer, "GlicModalCoordinator.onConfigurationChanged");
         }
     }
 
     @CalledByNative
     private void dismiss() {
-        if (mModel != null) {
+        if (mCurrentContainerMode == ContainerMode.MODAL_DIALOG && mModel != null) {
             PropertyModel model = mModel;
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.DISMISSED_BY_NATIVE);
             if (mModel == model) {
+                onDialogDismissed();
+            }
+        } else if (mCurrentContainerMode == ContainerMode.BOTTOM_SHEET
+                && mSheetContent != null
+                && mBottomSheetController != null) {
+            GlicModalBottomSheetContent sheetContent = mSheetContent;
+            mBottomSheetController.hideContent(
+                    sheetContent, /* animate= */ false, StateChangeReason.INTERACTION_COMPLETE);
+            if (mSheetContent == sheetContent) {
                 onDialogDismissed();
             }
         }
@@ -493,10 +619,15 @@ public class GlicModalCoordinator {
             mNativePtr.release();
             mNativePtr = null;
         }
+        if (mComponentCallbacksRegistered) {
+            mActivity.unregisterComponentCallbacks(mComponentCallbacks);
+            mComponentCallbacksRegistered = false;
+        }
         mMaxOfferedHeightPx = 0;
         mLastAvailWidthDip = 0;
         mLastAvailHeightDip = 0;
         mModalDialogManager.removeObserver(mDialogObserver);
+        mSheetContent = null;
         if (mThinWebView != null) {
             mThinWebView.destroy();
             mThinWebView = null;
@@ -528,21 +659,116 @@ public class GlicModalCoordinator {
      */
     @CalledByNativeForTesting
     private void simulateDismissingForTesting() {
-        if (mModel != null) {
+        if (mCurrentContainerMode == ContainerMode.MODAL_DIALOG && mModel != null) {
             mModalDialogManager.dismissDialog(
                     mModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        } else if (mCurrentContainerMode == ContainerMode.BOTTOM_SHEET
+                && mSheetContent != null
+                && mBottomSheetController != null) {
+            GlicModalBottomSheetContent sheetContent = mSheetContent;
+            mBottomSheetController.hideContent(
+                    sheetContent, /* animate= */ true, StateChangeReason.BACK_PRESS);
+            if (mSheetContent == sheetContent
+                    && mBottomSheetController.getCurrentSheetContent() != sheetContent) {
+                onDialogDismissed();
+            }
         }
     }
 
-    public @Nullable PropertyModel getPropertyModelForTesting() {
+    private class GlicModalBottomSheetContent implements BottomSheetContent {
+        private static final BottomSheetType BOTTOM_SHEET_TYPE =
+                new BottomSheetType.Builder().setUserInitiated(true).setModal(true).build();
+
+        private final View mSheetView;
+
+        GlicModalBottomSheetContent(View sheetView) {
+            mSheetView = sheetView;
+        }
+
+        @Override
+        public View getContentView() {
+            return mSheetView;
+        }
+
+        @Override
+        public @Nullable View getToolbarView() {
+            return null;
+        }
+
+        @Override
+        public int getVerticalScrollOffset() {
+            if (!mWebContents.isDestroyed()) {
+                return RenderCoordinates.fromWebContents(mWebContents).getScrollYPixInt();
+            }
+            return 0;
+        }
+
+        @Override
+        public void destroy() {
+            if (mSheetContent == this) {
+                onDialogDismissed();
+            }
+        }
+
+        @Override
+        public BottomSheetType getSheetType() {
+            return BOTTOM_SHEET_TYPE;
+        }
+
+        @Override
+        public boolean swipeToDismissEnabled() {
+            return true;
+        }
+
+        @Override
+        public float getHalfHeightRatio() {
+            return HeightMode.DISABLED;
+        }
+
+        @Override
+        public float getFullHeightRatio() {
+            return HeightMode.WRAP_CONTENT;
+        }
+
+        @Override
+        public boolean showHandlebar() {
+            return true;
+        }
+
+        @Override
+        public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+            return R.string.glic_bottom_sheet_half_height_a11y_label;
+        }
+
+        @Override
+        public @StringRes int getSheetFullHeightAccessibilityStringId() {
+            return R.string.glic_bottom_sheet_full_height_a11y_label;
+        }
+
+        @Override
+        public @StringRes int getSheetClosedAccessibilityStringId() {
+            return R.string.glic_bottom_sheet_hidden_a11y_label;
+        }
+    }
+
+    @ContainerMode
+    int getContainerModeForTesting() {
+        return mCurrentContainerMode;
+    }
+
+    @Nullable PropertyModel getPropertyModelForTesting() {
         return mModel;
     }
 
-    public @Nullable ChromeImageButton getCloseButtonForTesting() {
+    @Nullable BottomSheetContent getBottomSheetContentForTesting() {
+        return mSheetContent;
+    }
+
+    @Nullable ChromeImageButton getCloseButtonForTesting() {
         return mCloseButton;
     }
 
-    public boolean isRevealedForTesting() {
+    boolean isRevealedForTesting() {
         return mRevealed;
     }
 

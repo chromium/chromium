@@ -10,10 +10,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +23,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -47,6 +50,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.R;
+import org.chromium.chrome.browser.glic.ui.GlicModalCoordinator.ContainerMode;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -105,6 +114,7 @@ public class GlicModalCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private WebContents mWebContents;
     @Mock private ThinWebView mThinWebView;
     @Mock private GlicModalCoordinator.Natives mNativeMock;
@@ -135,10 +145,12 @@ public class GlicModalCoordinatorUnitTest {
         mWebView = new View(mActivity);
         when(mThinWebView.getView()).thenReturn(mWebView);
         when(mWebContents.isDestroyed()).thenReturn(true);
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
     }
 
     @After
     public void tearDown() {
+        BottomSheetControllerProvider.setInstanceForTesting(null);
         mNativePtr.release();
         mWindowAndroid.destroy();
     }
@@ -171,10 +183,13 @@ public class GlicModalCoordinatorUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp-w1000dp-h1000dp")
-    public void testShow_UsesModalDialog() {
+    public void testShow_TabletWindow_UsesModalDialog() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
         GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
 
         assertNotNull(coordinator);
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
         verify(mThinWebView).attachWebContents(eq(mWebContents), any(), any());
 
         PropertyModel model = coordinator.getPropertyModelForTesting();
@@ -184,6 +199,134 @@ public class GlicModalCoordinatorUnitTest {
         assertNotNull(coordinator.getCloseButtonForTesting());
 
         verify(mModalDialogManager).showDialog(model, ModalDialogType.APP);
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testShow_CompactWindow_UsesBottomSheet() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+        verify(mThinWebView).attachWebContents(eq(mWebContents), any(), any());
+
+        BottomSheetContent sheetContent = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheetContent);
+        assertEquals(HeightMode.DISABLED, sheetContent.getPeekHeight());
+        assertEquals(HeightMode.DISABLED, (int) sheetContent.getHalfHeightRatio());
+        assertEquals(HeightMode.WRAP_CONTENT, (int) sheetContent.getFullHeightRatio());
+        assertTrue(sheetContent.showHandlebar());
+        assertTrue(sheetContent.swipeToDismissEnabled());
+        assertTrue(sheetContent.getSheetType().isModal());
+        assertTrue(sheetContent.getSheetType().isUserInitiated());
+        assertEquals(
+                R.string.glic_bottom_sheet_hidden_a11y_label,
+                sheetContent.getSheetClosedAccessibilityStringId());
+        assertEquals(
+                R.string.glic_bottom_sheet_hidden_a11y_label,
+                sheetContent.getSheetHiddenAccessibilityStringId());
+        assertNotNull(coordinator.getCloseButtonForTesting());
+
+        verify(mBottomSheetController).requestShowContent(sheetContent, true);
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp-w400dp-h800dp")
+    public void testShow_TabletSplitScreenCompactWindow_UsesBottomSheet() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+        assertNotNull(coordinator.getBottomSheetContentForTesting());
+        verify(mBottomSheetController)
+                .requestShowContent(coordinator.getBottomSheetContentForTesting(), true);
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testShow_CompactWindow_FallsBackToModalWhenNoBottomSheetController() {
+        BottomSheetControllerProvider.setInstanceForTesting(null);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
+        assertNotNull(coordinator.getPropertyModelForTesting());
+        verify(mModalDialogManager)
+                .showDialog(coordinator.getPropertyModelForTesting(), ModalDialogType.APP);
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testShow_CompactWindow_SuppressedBottomSheetFallsBackToModal() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
+        assertNull(coordinator.getBottomSheetContentForTesting());
+        assertNotNull(coordinator.getPropertyModelForTesting());
+        verify(mBottomSheetController).hideContent(any(), eq(false));
+        verify(mModalDialogManager)
+                .showDialog(coordinator.getPropertyModelForTesting(), ModalDialogType.APP);
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testLiveResize_SwapsBetweenBottomSheetAndModalDialog() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+        BottomSheetContent initialSheetContent = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(initialSheetContent);
+        verify(mBottomSheetController).requestShowContent(initialSheetContent, true);
+
+        // Resize window to >=600dp (tablet/desktop window width).
+        Configuration config = mActivity.getResources().getConfiguration();
+        config.screenWidthDp = 1000;
+        config.screenHeightDp = 1000;
+        dispatchConfigurationChanged(config);
+
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
+        verify(mBottomSheetController).hideContent(initialSheetContent, false);
+        PropertyModel modalModel = coordinator.getPropertyModelForTesting();
+        assertNotNull(modalModel);
+        verify(mModalDialogManager).showDialog(modalModel, ModalDialogType.APP);
+        verify(mThinWebView, never()).destroy();
+        verify(mNativeMock, never()).onDismissed(any());
+
+        // Even if the old modal/sheet fires a late destroy or dismiss callback, it must be ignored.
+        initialSheetContent.destroy();
+        verify(mThinWebView, never()).destroy();
+        verify(mNativeMock, never()).onDismissed(any());
+
+        // Resize window back to <600dp (compact window width).
+        config.screenWidthDp = 360;
+        config.screenHeightDp = 800;
+        dispatchConfigurationChanged(config);
+        // Simulate ModalDialogManager firing onDismiss synchronously for the old model.
+        modalModel
+                .get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(modalModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+        verify(mModalDialogManager)
+                .dismissDialog(modalModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        assertNotNull(coordinator.getBottomSheetContentForTesting());
+        verify(mBottomSheetController, times(2)).requestShowContent(any(), eq(true));
+        verify(mThinWebView, never()).destroy();
+        verify(mNativeMock, never()).onDismissed(any());
     }
 
     @Test
@@ -193,12 +336,13 @@ public class GlicModalCoordinatorUnitTest {
         GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
 
         assertNull(coordinator);
-        verify(mModalDialogManager, never()).showDialog(any(), any(Integer.class));
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
     }
 
     @Test
-    public void testShow_NullModalDialogManager_ReturnsNull() {
+    public void testShow_NoControllers_ReturnsNull() {
         mWindowAndroid.mDialogManager = null;
+        BottomSheetControllerProvider.setInstanceForTesting(null);
 
         GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
 
@@ -227,6 +371,22 @@ public class GlicModalCoordinatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testOnDismiss_FromBottomSheet() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        BottomSheetContent sheetContent = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheetContent);
+
+        sheetContent.destroy();
+
+        verify(mNativeMock).onDismissed(mNativePtr);
+        verify(mThinWebView).destroy();
+    }
+
+    @Test
     public void testOnNativeDestroyed_ModalDialog() {
         GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
         assertNotNull(coordinator);
@@ -241,6 +401,26 @@ public class GlicModalCoordinatorUnitTest {
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
         controller.onDismiss(model, DialogDismissalCause.DISMISSED_BY_NATIVE);
 
+        verify(mThinWebView).destroy();
+        verify(mNativeMock, never()).onDismissed(any());
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testOnNativeDestroyed_BottomSheet() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        BottomSheetContent sheetContent = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheetContent);
+
+        coordinator.onNativeDestroyed();
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(sheetContent), eq(false), eq(StateChangeReason.INTERACTION_COMPLETE));
+        sheetContent.destroy();
         verify(mThinWebView).destroy();
         verify(mNativeMock, never()).onDismissed(any());
     }
@@ -266,8 +446,59 @@ public class GlicModalCoordinatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testCloseButton_ClicksAndDismissesBottomSheet() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        BottomSheetContent sheetContent = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheetContent);
+
+        View closeButton = coordinator.getCloseButtonForTesting();
+        assertNotNull(closeButton);
+        assertEquals(View.VISIBLE, closeButton.getVisibility());
+        closeButton.performClick();
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(sheetContent), eq(false), eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mNativeMock).onDismissed(mNativePtr);
+        verify(mThinWebView).destroy();
+    }
+
+    @Test
     @Config(qualifiers = "sw600dp-w1000dp-h1000dp")
-    public void testOnConfigurationChanged_UpdatesHeightAndLayouts() {
+    public void testLiveResize_SwapTargetFails_FallsBackToCurrentMode() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
+        PropertyModel initialModel = coordinator.getPropertyModelForTesting();
+        assertNotNull(initialModel);
+
+        // Make bottom sheet presentation fail when resizing to compact window (<600dp).
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+        Configuration config = mActivity.getResources().getConfiguration();
+        config.screenWidthDp = 360;
+        config.screenHeightDp = 800;
+        dispatchConfigurationChanged(config);
+
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
+        assertNull(coordinator.getBottomSheetContentForTesting());
+        assertNotNull(coordinator.getPropertyModelForTesting());
+        verify(mBottomSheetController).hideContent(any(), eq(false));
+        verify(mModalDialogManager, times(2)).showDialog(any(), eq(ModalDialogType.APP));
+        verify(mThinWebView, never()).destroy();
+        verify(mNativeMock, never()).onDismissed(any());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp-w1000dp-h1000dp")
+    public void testOnConfigurationChanged_SameMode_UpdatesHeightAndLayouts() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
         GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
         assertNotNull(coordinator);
         PropertyModel model = coordinator.getPropertyModelForTesting();
@@ -277,23 +508,44 @@ public class GlicModalCoordinatorUnitTest {
         assertEquals(dpToPx(PORTRAIT_WIDTH_DP), card.getMeasuredWidth());
         assertEquals(dpToPx(PORTRAIT_HEIGHT_DP), card.getMeasuredHeight());
 
-        // 1st change: rotate to landscape.
-        RuntimeEnvironment.setQualifiers("sw600dp-w1000dp-h600dp-land");
-        card.dispatchConfigurationChanged(mActivity.getResources().getConfiguration());
+        // 1st change: rotate to landscape while remaining >=600dp.
+        Configuration config = mActivity.getResources().getConfiguration();
+        config.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        config.screenWidthDp = 1000;
+        config.screenHeightDp = 600;
+        dispatchConfigurationChanged(config);
 
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
         assertEquals(dpToPx(LANDSCAPE_HEIGHT_DP), model.get(ModalDialogProperties.MAX_HEIGHT));
         measureCard(coordinator, dpToPx(1000), dpToPx(600));
         assertEquals(dpToPx(LANDSCAPE_WIDTH_DP), card.getMeasuredWidth());
         assertEquals(dpToPx(LANDSCAPE_HEIGHT_DP), card.getMeasuredHeight());
 
         // 2nd change: rotate back to portrait and verify the card adapts again.
-        RuntimeEnvironment.setQualifiers("sw600dp-w1000dp-h1000dp");
-        card.dispatchConfigurationChanged(mActivity.getResources().getConfiguration());
+        config.orientation = Configuration.ORIENTATION_PORTRAIT;
+        config.screenWidthDp = 1000;
+        config.screenHeightDp = 1000;
+        dispatchConfigurationChanged(config);
 
         assertEquals(dpToPx(PORTRAIT_HEIGHT_DP), model.get(ModalDialogProperties.MAX_HEIGHT));
         measureCard(coordinator, dpToPx(1000), dpToPx(1000));
         assertEquals(dpToPx(PORTRAIT_WIDTH_DP), card.getMeasuredWidth());
         assertEquals(dpToPx(PORTRAIT_HEIGHT_DP), card.getMeasuredHeight());
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testBottomSheetContent_BackPressDefaultsAndScrollOffset() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        BottomSheetContent sheetContent = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheetContent);
+
+        assertFalse(sheetContent.getBackPressStateChangedSupplier().get());
+        assertFalse(sheetContent.handleBackPress());
+        assertEquals(0, sheetContent.getVerticalScrollOffset());
     }
 
     @Test
@@ -347,7 +599,7 @@ public class GlicModalCoordinatorUnitTest {
         // 1st resize: widen the window to 900x650dp -> adapts to landscape bounds.
         config.screenWidthDp = 900;
         config.screenHeightDp = 650;
-        card.dispatchConfigurationChanged(config);
+        dispatchConfigurationChanged(config);
         measureCard(coordinator, dpToPx(900), dpToPx(650));
         assertEquals(dpToPx(LANDSCAPE_WIDTH_DP), card.getMeasuredWidth());
         assertEquals(dpToPx(LANDSCAPE_HEIGHT_DP), card.getMeasuredHeight());
@@ -356,7 +608,7 @@ public class GlicModalCoordinatorUnitTest {
         // 2nd resize: narrow back to 650x900dp -> adapts back to portrait bounds.
         config.screenWidthDp = 650;
         config.screenHeightDp = 900;
-        card.dispatchConfigurationChanged(config);
+        dispatchConfigurationChanged(config);
         measureCard(coordinator, dpToPx(650), dpToPx(900));
         assertEquals(dpToPx(PORTRAIT_WIDTH_DP), card.getMeasuredWidth());
         assertEquals(dpToPx(PORTRAIT_HEIGHT_DP), card.getMeasuredHeight());
@@ -383,7 +635,7 @@ public class GlicModalCoordinatorUnitTest {
         // 1st resize: narrow to 650x900dp -> adapts to portrait bounds.
         config.screenWidthDp = 650;
         config.screenHeightDp = 900;
-        card.dispatchConfigurationChanged(config);
+        dispatchConfigurationChanged(config);
         measureCard(coordinator, dpToPx(650), dpToPx(900));
         assertEquals(dpToPx(PORTRAIT_WIDTH_DP), card.getMeasuredWidth());
         assertEquals(dpToPx(PORTRAIT_HEIGHT_DP), card.getMeasuredHeight());
@@ -392,7 +644,7 @@ public class GlicModalCoordinatorUnitTest {
         // 2nd resize: widen back to 900x500dp -> adapts back to landscape bounds.
         config.screenWidthDp = 900;
         config.screenHeightDp = 500;
-        card.dispatchConfigurationChanged(config);
+        dispatchConfigurationChanged(config);
         measureCard(coordinator, dpToPx(900), dpToPx(500));
         assertEquals(dpToPx(LANDSCAPE_WIDTH_DP), card.getMeasuredWidth());
         assertEquals(dpToPx(LANDSCAPE_HEIGHT_DP), card.getMeasuredHeight());
@@ -451,6 +703,34 @@ public class GlicModalCoordinatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testShow_BottomSheet_WithLoadingView_RevealedOnShowContent() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+        View loadingView = new View(mActivity);
+        GlicModalCoordinator coordinator =
+                showCoordinator(
+                        PORTRAIT_HEIGHT_DP,
+                        /* showCloseButton= */ true,
+                        loadingView,
+                        /* enableAutoResize= */ false);
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+        assertFalse(coordinator.isRevealedForTesting());
+        assertEquals(0f, mWebView.getAlpha(), 0.001f);
+
+        BottomSheetContent sheetContent = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheetContent);
+        FrameLayout sheetContainer = (FrameLayout) sheetContent.getContentView();
+        assertEquals(sheetContainer, loadingView.getParent());
+
+        coordinator.showContent();
+
+        assertTrue(coordinator.isRevealedForTesting());
+        assertEquals(1f, mWebView.getAlpha(), 0.001f);
+        assertNull(loadingView.getParent());
+    }
+
+    @Test
     public void testAutoResize_OnContentSizeChanged_UpdatesWebViewHeight() {
         GlicModalCoordinator coordinator =
                 showCoordinator(
@@ -469,6 +749,96 @@ public class GlicModalCoordinatorUnitTest {
         // Grow back up and verify height updates rather than sticking at the smaller size.
         coordinator.onContentSizeChanged(480);
         assertEquals(dpToPx(480), mWebView.getLayoutParams().height);
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testAutoResize_BottomSheet_OnContentSizeChanged() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+        GlicModalCoordinator coordinator =
+                showCoordinator(
+                        PORTRAIT_HEIGHT_DP,
+                        /* showCloseButton= */ true,
+                        /* loadingView= */ null,
+                        /* enableAutoResize= */ true);
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+        assertTrue(coordinator.isRevealedForTesting());
+
+        coordinator.onContentSizeChanged(280);
+
+        assertNotNull(mWebView.getLayoutParams());
+        assertEquals(dpToPx(280), mWebView.getLayoutParams().height);
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testAutoResize_PreservedAcrossContainerSwap() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+        GlicModalCoordinator coordinator =
+                showCoordinator(
+                        PORTRAIT_HEIGHT_DP,
+                        /* showCloseButton= */ true,
+                        /* loadingView= */ null,
+                        /* enableAutoResize= */ true);
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+
+        // Set content height while in BottomSheet mode.
+        coordinator.onContentSizeChanged(280);
+        assertEquals(dpToPx(280), mWebView.getLayoutParams().height);
+
+        // Resize to tablet (>=600dp) swapping to ModalDialog.
+        Configuration config = mActivity.getResources().getConfiguration();
+        config.screenWidthDp = 1000;
+        config.screenHeightDp = 1000;
+        dispatchConfigurationChanged(config);
+
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
+        assertEquals(dpToPx(280), mWebView.getLayoutParams().height);
+
+        // Resize back to compact (<600dp) swapping back to BottomSheet.
+        config.screenWidthDp = 360;
+        config.screenHeightDp = 800;
+        dispatchConfigurationChanged(config);
+
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+        assertEquals(dpToPx(280), mWebView.getLayoutParams().height);
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testConfigurationChanged_UnattachedContainerAndIgnoredAfterDestroy() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+
+        // Deliver a standalone Configuration (>=600dp landscape window) via ComponentCallbacks
+        // while the sheet view is never attached to a window and before Activity.getResources()
+        // changes.
+        Configuration widenedConfig =
+                new Configuration(mActivity.getResources().getConfiguration());
+        widenedConfig.screenWidthDp = 700;
+        widenedConfig.screenHeightDp = 500;
+        dispatchConfigurationChanged(widenedConfig);
+
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
+        PropertyModel model = coordinator.getPropertyModelForTesting();
+        assertNotNull(model);
+        assertEquals(dpToPx(LANDSCAPE_HEIGHT_DP), model.get(ModalDialogProperties.MAX_HEIGHT));
+
+        // After teardown, ComponentCallbacks is unregistered and subsequent config changes are
+        // ignored.
+        coordinator.onNativeDestroyed();
+        clearInvocations(mModalDialogManager, mBottomSheetController);
+
+        Configuration compactConfig = new Configuration(widenedConfig);
+        compactConfig.screenWidthDp = 360;
+        compactConfig.screenHeightDp = 800;
+        dispatchConfigurationChanged(compactConfig);
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
     }
 
     @Test
@@ -509,6 +879,14 @@ public class GlicModalCoordinatorUnitTest {
                 MeasureSpec.makeMeasureSpec(dpToPx(350), MeasureSpec.EXACTLY));
         assertEquals(dpToPx(500), mWebView.getLayoutParams().height);
         assertEquals(dpToPx(500), card.getMeasuredHeight());
+    }
+
+    private void dispatchConfigurationChanged(Configuration config) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            mActivity.onConfigurationChanged(config);
+        } else {
+            RuntimeEnvironment.getApplication().onConfigurationChanged(config);
+        }
     }
 
     private View measureCard(
