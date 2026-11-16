@@ -324,13 +324,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
 #else
   source->AddBoolean("isAndroidMobile", false);
 #endif
-  source->AddInteger("maxInFlightRequests",
-                     base::FeatureList::IsEnabled(kGlicMaxInFlightRequests)
-                         ? kGlicMaxInFlightRequestLimit.Get()
-                         : INT_MAX);
-  source->AddBoolean(
-      "sendResponsesForAllRequests",
-      base::FeatureList::IsEnabled(kGlicSendResponsesForAllRequests));
 
   // Set up guest URL via cli flag or default to finch param value.
   const GURL guest_url = GetGuestURL(Profile::FromWebUI(web_ui));

@@ -25,8 +25,6 @@ export function configureLoadTimeData(overrides: Record<string, any> = {}) {
         glicHeaderRequestTypes: '',
         zoomLabel: 'Zoom: $1',
         loggingEnabled: false,
-        maxInFlightRequests: 10,
-        sendResponsesForAllRequests: false,
         glicGuestAPISource: '',
         enableStructuredYieldMetadata: false,
         glicPopupWindowsEnabled: false,
@@ -35,7 +33,6 @@ export function configureLoadTimeData(overrides: Record<string, any> = {}) {
 }
 
 export class FakePageHandler implements Partial<PageHandlerInterface> {
-  createWebClient(_receiver: any) {}
   webviewCommitted(_url: any) {}
   onZoomLevelChange(_zoomFactor: number) {}
   prepareForClient() {
@@ -51,7 +48,6 @@ export class FakeBrowserProxy implements BrowserProxy {
 
 export class FakeWebviewDelegate implements WebviewDelegate {
   webviewError(_reason: string) {}
-  webviewUnresponsive() {}
   webviewPageCommit(_pageType?: GuestPageType, _isApiAllowed?: boolean) {}
   webviewDeniedByAdmin() {}
 }

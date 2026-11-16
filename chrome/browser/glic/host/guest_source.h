@@ -7,14 +7,7 @@
 
 #include <string>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-
 namespace glic {
-
-BASE_DECLARE_FEATURE(kGlicMaxInFlightRequests);
-extern const base::FeatureParam<int> kGlicMaxInFlightRequestLimit;
-BASE_DECLARE_FEATURE(kGlicSendResponsesForAllRequests);
 
 // Path suffix of the JS resource intercepted on the guest origin to serve the
 // Glic API bundle. Any same-origin GET request from an allowed guest primary

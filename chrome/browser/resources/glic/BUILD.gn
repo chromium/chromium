@@ -179,7 +179,6 @@ copy("copy_glic_api_mojo") {
 copy("copy_glic_api_src") {
   sources = [
     "observable.ts",
-    "task_queue.ts",
     "timer.ts",
   ]
   outputs = [ "$target_gen_dir/glic_api_tsc_input/{{source_file_part}}" ]
@@ -195,7 +194,6 @@ webui_ts_library("build_glic_api_ts") {
   out_dir = "$target_gen_dir/glic_api_tsc"
   in_files = glic_api_ts_files + [
                "observable.ts",
-               "task_queue.ts",
                "timer.ts",
                "enum_conversions.ts",
                "gemini_enterprise.mojom-webui.ts",
