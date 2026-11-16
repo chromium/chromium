@@ -63,6 +63,19 @@ message FlagValue {
     // will not honor this flag, and will behave as if it is set to true.
     optional bool apply_even_if_cronet_telemetry_disabled = 8;
 
+    // If set to true, Cronet will consider this flag value even if the host
+    // process is a persistent system app (i.e. both ApplicationInfo.FLAG_SYSTEM
+    // and ApplicationInfo.FLAG_PERSISTENT are set) or runs under a
+    // non-application UID (i.e. neither Process.isApplicationUid() nor
+    // Process.isSdkSandbox() is true, such as system_server or core OS
+    // daemons). By default, flags are NOT applied to such processes, because
+    // they are critical to device stability and crashing them can trigger
+    // Android RescueParty recovery.
+    //
+    // Note: this field was introduced in November 2026; older versions of
+    // Cronet will not honor this flag, and will behave as if it is set to true.
+    optional bool apply_to_system_processes = 9;
+
     // If none of these fields are set, the flag is deemed to be unset.
     oneof value {
       bool bool_value = 3;

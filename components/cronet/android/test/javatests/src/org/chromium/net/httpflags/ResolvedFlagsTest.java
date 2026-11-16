@@ -45,7 +45,8 @@ public final class ResolvedFlagsTest {
                                         Flags.newBuilder().build(),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .isEmpty();
     }
@@ -73,7 +74,8 @@ public final class ResolvedFlagsTest {
                                                 .build(),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly(
@@ -93,7 +95,8 @@ public final class ResolvedFlagsTest {
                                                                         .newBuilder())),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .isEmpty();
     }
@@ -106,7 +109,8 @@ public final class ResolvedFlagsTest {
                                         singleFlag("test_flag", FlagValue.newBuilder()),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .isEmpty();
     }
@@ -125,7 +129,8 @@ public final class ResolvedFlagsTest {
                                                                         .setAppId("test_app_id"))),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly("test_flag", "test_flag_value");
@@ -146,7 +151,8 @@ public final class ResolvedFlagsTest {
                                                                                 "nonmatching_app_id"))),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .isEmpty();
     }
@@ -165,7 +171,8 @@ public final class ResolvedFlagsTest {
                                                                         .setAppId("test_app_id"))),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ false)
+                                        /* isTelemetryEnabled= */ false,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .isEmpty();
     }
@@ -186,7 +193,51 @@ public final class ResolvedFlagsTest {
                                                                                 true))),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ false)
+                                        /* isTelemetryEnabled= */ false,
+                                        /* isSystemProcess= */ false)
+                                .flags())
+                .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
+                .containsExactly("test_flag", "test_flag_value");
+    }
+
+    @Test
+    @SmallTest
+    public void testResolve_doesNotReturnFlagIfSystemProcess() {
+        assertThat(
+                        ResolvedFlags.resolve(
+                                        singleFlag(
+                                                "test_flag",
+                                                FlagValue.newBuilder()
+                                                        .addConstrainedValues(
+                                                                stringConstrainedValue(
+                                                                                "test_flag_value")
+                                                                        .setAppId("test_app_id"))),
+                                        "test_app_id",
+                                        "1.2.3.4",
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ true)
+                                .flags())
+                .isEmpty();
+    }
+
+    @Test
+    @SmallTest
+    public void testResolve_returnsFlagIfSystemProcessOverrideIsUsed() {
+        assertThat(
+                        ResolvedFlags.resolve(
+                                        singleFlag(
+                                                "test_flag",
+                                                FlagValue.newBuilder()
+                                                        .addConstrainedValues(
+                                                                stringConstrainedValue(
+                                                                                "test_flag_value")
+                                                                        .setAppId("test_app_id")
+                                                                        .setApplyToSystemProcesses(
+                                                                                true))),
+                                        "test_app_id",
+                                        "1.2.3.4",
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ true)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly("test_flag", "test_flag_value");
@@ -200,7 +251,11 @@ public final class ResolvedFlagsTest {
                 IllegalArgumentException.class,
                 () ->
                         ResolvedFlags.resolve(
-                                flags, "test_app_id", "", /* isTelemetryEnabled= */ true));
+                                flags,
+                                "test_app_id",
+                                "",
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false));
     }
 
     @Test
@@ -211,7 +266,11 @@ public final class ResolvedFlagsTest {
                 IllegalArgumentException.class,
                 () ->
                         ResolvedFlags.resolve(
-                                flags, "test_app_id", "1.2.a.4", /* isTelemetryEnabled= */ true));
+                                flags,
+                                "test_app_id",
+                                "1.2.a.4",
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false));
     }
 
     @Test
@@ -228,7 +287,11 @@ public final class ResolvedFlagsTest {
                 IllegalArgumentException.class,
                 () -> {
                     ResolvedFlags.resolve(
-                            flags, "test_app_id", "1.2.3.4", /* isTelemetryEnabled= */ true);
+                            flags,
+                            "test_app_id",
+                            "1.2.3.4",
+                            /* isTelemetryEnabled= */ true,
+                            /* isSystemProcess= */ false);
                 });
     }
 
@@ -246,7 +309,11 @@ public final class ResolvedFlagsTest {
                 IllegalArgumentException.class,
                 () -> {
                     ResolvedFlags.resolve(
-                            flags, "test_app_id", "1.2.3.4", /* isTelemetryEnabled= */ true);
+                            flags,
+                            "test_app_id",
+                            "1.2.3.4",
+                            /* isTelemetryEnabled= */ true,
+                            /* isSystemProcess= */ false);
                 });
     }
 
@@ -261,7 +328,8 @@ public final class ResolvedFlagsTest {
                                                                 .setMinVersion(minVersion))),
                                 "test_app_id",
                                 cronetVersion,
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags();
         if (expectMatch) {
             assertThat(flags)
@@ -333,7 +401,8 @@ public final class ResolvedFlagsTest {
                                                         .addConstrainedValues(nonmatchingValue)),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly("test_flag", "matching_test_flag_value");
@@ -346,7 +415,8 @@ public final class ResolvedFlagsTest {
                                                         .addConstrainedValues(matchingValue)),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly("test_flag", "matching_test_flag_value");
@@ -368,7 +438,8 @@ public final class ResolvedFlagsTest {
                                                                         "test_flag_value_2"))),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly("test_flag", "test_flag_value_1");
@@ -390,7 +461,8 @@ public final class ResolvedFlagsTest {
                                                                         "test_flag_value_should_be_skipped"))),
                                         "test_app_id",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .isEmpty();
     }
@@ -408,7 +480,8 @@ public final class ResolvedFlagsTest {
                                                                 .setBoolValue(false))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -429,7 +502,8 @@ public final class ResolvedFlagsTest {
                                                                 .setBoolValue(true))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -450,7 +524,8 @@ public final class ResolvedFlagsTest {
                                                                 .setIntValue(0))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -471,7 +546,8 @@ public final class ResolvedFlagsTest {
                                                                 .setIntValue(42))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -492,7 +568,8 @@ public final class ResolvedFlagsTest {
                                                                 .setFloatValue(0))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -513,7 +590,8 @@ public final class ResolvedFlagsTest {
                                                                 .setFloatValue(42))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -534,7 +612,8 @@ public final class ResolvedFlagsTest {
                                                                 .setStringValue(""))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -556,7 +635,8 @@ public final class ResolvedFlagsTest {
                                                                         "test_string_value"))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -577,7 +657,8 @@ public final class ResolvedFlagsTest {
                                                                 .setBytesValue(ByteString.EMPTY))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -599,7 +680,8 @@ public final class ResolvedFlagsTest {
                                                                 .setBytesValue(byteString))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value).isNotNull();
@@ -620,7 +702,8 @@ public final class ResolvedFlagsTest {
                                                                 .setStringValue("test_string"))),
                                 "test_app_id",
                                 "1.2.3.4",
-                                /* isTelemetryEnabled= */ true)
+                                /* isTelemetryEnabled= */ true,
+                                /* isSystemProcess= */ false)
                         .flags()
                         .get("test_flag");
         assertThat(value.getType()).isEqualTo(ResolvedFlags.Value.Type.STRING);
@@ -645,7 +728,8 @@ public final class ResolvedFlagsTest {
                                                                         .setAppId("test_app."))),
                                         "test_app.foo",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly("test_flag", "test_flag_value");
@@ -669,7 +753,8 @@ public final class ResolvedFlagsTest {
                                                                                 "test_app.foo."))),
                                         "test_app.foo",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly("test_flag", "wildcard_match");
@@ -692,7 +777,8 @@ public final class ResolvedFlagsTest {
                                                                         "wildcard_match"))),
                                         "test_app.foo",
                                         "1.2.3.4",
-                                        /* isTelemetryEnabled= */ true)
+                                        /* isTelemetryEnabled= */ true,
+                                        /* isSystemProcess= */ false)
                                 .flags())
                 .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
                 .containsExactly("test_flag", "exact_match");

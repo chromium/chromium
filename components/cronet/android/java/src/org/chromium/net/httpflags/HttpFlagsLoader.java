@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
+import android.os.Process;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -63,6 +65,26 @@ public final class HttpFlagsLoader {
     private static String sVersion;
     private static final Object sLock = new Object();
     @VisibleForTesting public static final String LOG_FLAG_NAME = "Cronet_log_me";
+    private static final int PERSISTENT_SYSTEM_MASK =
+            ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_PERSISTENT;
+    @Nullable private static Integer sUidForTesting;
+    @Nullable private static Boolean sIsSdkSandboxForTesting;
+
+    @VisibleForTesting
+    public static final class WithProcessForTesting implements AutoCloseable {
+        public WithProcessForTesting(@Nullable Integer uid, @Nullable Boolean isSdkSandbox) {
+            assert sUidForTesting == null;
+            assert sIsSdkSandboxForTesting == null;
+            sUidForTesting = uid;
+            sIsSdkSandboxForTesting = isSdkSandbox;
+        }
+
+        @Override
+        public void close() {
+            sUidForTesting = null;
+            sIsSdkSandboxForTesting = null;
+        }
+    }
 
     /**
      * Locates and loads the HTTP flags file from the host system.
@@ -140,7 +162,8 @@ public final class HttpFlagsLoader {
                                 flags != null ? flags : Flags.newBuilder().build(),
                                 context.getPackageName(),
                                 version,
-                                isTelemetryEnabled);
+                                isTelemetryEnabled,
+                                isSystemProcess(context));
                 ResolvedFlags.Value logMe = sHttpFlags.flags().get(LOG_FLAG_NAME);
                 if (logMe != null) {
                     Log.i(
@@ -152,6 +175,22 @@ public final class HttpFlagsLoader {
                 return sHttpFlags;
             }
         }
+    }
+
+    private static boolean isSystemProcess(Context context) {
+        // Note: Everything in this method runs in-process (no Binder IPCs).
+        return (context.getApplicationInfo().flags & PERSISTENT_SYSTEM_MASK)
+                        == PERSISTENT_SYSTEM_MASK
+                || !(Process.isApplicationUid(getUid()) || isSdkSandbox());
+    }
+
+    private static int getUid() {
+        return sUidForTesting != null ? sUidForTesting : Process.myUid();
+    }
+
+    private static boolean isSdkSandbox() {
+        if (sIsSdkSandboxForTesting != null) return sIsSdkSandboxForTesting;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && Process.isSdkSandbox();
     }
 
     @Nullable

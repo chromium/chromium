@@ -55,10 +55,12 @@ public final class ResolvedFlags {
                 FlagValue flagValue,
                 String appId,
                 int[] cronetVersion,
-                boolean isTelemetryEnabled) {
+                boolean isTelemetryEnabled,
+                boolean isSystemProcess) {
             for (var constrainedValue : flagValue.getConstrainedValuesList()) {
                 if ((!isTelemetryEnabled
                                 && !constrainedValue.getApplyEvenIfCronetTelemetryDisabled())
+                        || (isSystemProcess && !constrainedValue.getApplyToSystemProcesses())
                         || (constrainedValue.hasAppId()
                                 && !doesAppIdMatch(constrainedValue.getAppId(), appId))
                         || (constrainedValue.hasMinVersion()
@@ -217,9 +219,16 @@ public final class ResolvedFlags {
      *     FlagValue.ConstrainedValue#getMinVersion} field.
      * @param isTelemetryEnabled Whether Cronet telemetry is enabled; used for filtering against the
      *     {@link FlagValue.ConstrainedValue#getApplyEvenIfCronetTelemetryDisabled} field.
+     * @param isSystemProcess Whether the host process is a persistent system app or non-application
+     *     system process; used for filtering against the {@link
+     *     FlagValue.ConstrainedValue#getApplyToSystemProcesses} field.
      */
     public static ResolvedFlags resolve(
-            Flags flags, String appId, String cronetVersion, boolean isTelemetryEnabled) {
+            Flags flags,
+            String appId,
+            String cronetVersion,
+            boolean isTelemetryEnabled,
+            boolean isSystemProcess) {
         try (var traceEvent = ScopedSysTraceEvent.scoped("Cronet ResolvedFlags#resolve")) {
             int[] parsedCronetVersion = parseVersionString(cronetVersion);
             Map<String, Value> resolvedFlags = new HashMap<>();
@@ -230,7 +239,8 @@ public final class ResolvedFlags {
                                     flag.getValue(),
                                     appId,
                                     parsedCronetVersion,
-                                    isTelemetryEnabled);
+                                    isTelemetryEnabled,
+                                    isSystemProcess);
                     if (value == null) continue;
                     resolvedFlags.put(flag.getKey(), value);
                 } catch (RuntimeException exception) {
