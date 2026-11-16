@@ -615,16 +615,16 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
 
   result->push_back("CLASSPATH=" + classpath);
   result->push_back("LD_LIBRARY_PATH=" + library_path);
+  auto is_env_var = [](std::string_view entry, std::string_view var) {
+    return entry.starts_with(var) && entry.substr(var.size()).starts_with('=');
+  };
   for (char** envp = environ; *envp != nullptr; UNSAFE_TODO(++envp)) {
-    if ((UNSAFE_TODO(strncmp(*envp, kClasspathVar, strlen(kClasspathVar))) ==
-             0 &&
-         UNSAFE_TODO((*envp)[strlen(kClasspathVar)]) == '=') ||
-        (UNSAFE_TODO(strncmp(*envp, kLdLibraryPathVar,
-                             strlen(kLdLibraryPathVar))) == 0 &&
-         UNSAFE_TODO((*envp)[strlen(kLdLibraryPathVar)]) == '=')) {
+    std::string_view entry(*envp);
+    if (is_env_var(entry, kClasspathVar) ||
+        is_env_var(entry, kLdLibraryPathVar)) {
       continue;
     }
-    result->push_back(*envp);
+    result->emplace_back(entry);
   }
 
   return true;
