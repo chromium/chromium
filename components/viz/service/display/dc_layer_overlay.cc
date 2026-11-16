@@ -1190,9 +1190,6 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
       {quad_rect_in_target_space, is_overlay});
 
   overlay_data.promoted_overlays.push_back(dc_layer);
-
-  // Recorded for each overlay.
-  UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.IsUnderlay", !is_overlay);
 }
 
 void DCLayerOverlayProcessor::ProcessForOverlay(

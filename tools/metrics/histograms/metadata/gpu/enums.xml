@@ -52,11 +52,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Software Rendering"/>
 </enum>
 
-<enum name="BooleanUnderlay">
-  <int value="0" label="Overlay Mode"/>
-  <int value="1" label="Underlay Mode"/>
-</enum>
-
 <enum name="CanvasOopRasterAndGpuAcceleration">
   <int value="0" label="Canvas2D accelerated and OOPR enabled"/>
   <int value="1" label="Canvas2D accelerated and OOPR disabled"/>
