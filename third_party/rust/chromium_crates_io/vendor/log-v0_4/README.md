@@ -3,7 +3,7 @@ log
 
 A Rust library providing a lightweight logging *facade*.
 
-[![Build status](https://img.shields.io/github/actions/workflow/status/rust-lang/log/main.yml?branch=master)](https://github.com/rust-lang/log/actions)
+[![Build status](https://img.shields.io/github/actions/workflow/status/rust-lang/log/main.yml?branch=main)](https://github.com/rust-lang/log/actions)
 [![Latest version](https://img.shields.io/crates/v/log.svg)](https://crates.io/crates/log)
 [![Documentation](https://docs.rs/log/badge.svg)](https://docs.rs/log)
 ![License](https://img.shields.io/crates/l/log.svg)

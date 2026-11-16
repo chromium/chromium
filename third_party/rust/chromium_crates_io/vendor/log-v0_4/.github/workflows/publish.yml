@@ -1,0 +1,31 @@
+name: Publish a release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  publish:
+    name: Publish the log crate # zizmor: ignore[concurrency-limits] Can't risk skipping a release: https://release-plz.dev/docs/github/quickstart#concurrency
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'rust-lang' }}
+    environment: publish
+    permissions:
+      pull-requests: write # Required for release-plz to open a PR
+      contents: write # Required for release-plz to create a branch for the PR
+      id-token: write # Required for trusted publishing OIDC
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Rust
+        run: rustup update stable
+      - name: Run release-plz
+        uses: MarcoIeni/release-plz-action@6caa8d34f74d82b0dc76a18edd1cc3d6801c9baf # v0.5.143
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
