@@ -1792,6 +1792,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/CronetUrlRequestHTTPSTest.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
     "test/javatests/src/org/chromium/net/DiskStorageTest.java",
+    "test/javatests/src/org/chromium/net/DroppingConnectionCallback.java",
     "test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
     "test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTest.java",
     "test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTestUtil.java",

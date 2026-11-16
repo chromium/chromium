@@ -7,9 +7,11 @@
 
 #include <jni.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_connection.h"
 
@@ -19,6 +21,7 @@ class FilePath;
 
 namespace cronet {
 
+class CallbackConnectionListener;
 struct NativeTestServerServerCertificateConfig;
 class NativeTestServerHandleRequestCallback;
 
@@ -46,6 +49,10 @@ class EmbeddedTestServerAdapter {
   bool Start(JNIEnv* env);
 
   void EnableConnectProxy(JNIEnv* env, const std::vector<std::string>& urls);
+
+  // See NativeTestServer.java. Can be called after Start().
+  void SetConnectionCallback(JNIEnv* env,
+                             const base::android::JavaRef<jobject>& callback);
 
   // Returns port number of the server.
   int GetPort(JNIEnv* env);
@@ -109,6 +116,8 @@ class EmbeddedTestServerAdapter {
           callback);
 
  private:
+  // Declared before `test_server` so that it outlives the server's IO thread.
+  std::unique_ptr<CallbackConnectionListener> connection_listener_;
   net::test_server::EmbeddedTestServer test_server;
 };
 

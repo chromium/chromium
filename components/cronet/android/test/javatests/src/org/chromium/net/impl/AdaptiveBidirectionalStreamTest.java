@@ -17,10 +17,6 @@ import android.net.Network;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,7 +24,6 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.ConnectivityManagerWrapper;
@@ -39,12 +34,15 @@ import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.StringFlag;
+import org.chromium.net.DroppingConnectionCallback;
 import org.chromium.net.ExperimentalCronetEngine;
-import org.chromium.net.Http2TestServer;
+import org.chromium.net.NativeTestServer;
 import org.chromium.net.NetworkException;
 import org.chromium.net.TestBidirectionalStreamCallback;
+import org.chromium.net.test.Protocol;
+import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
-import java.net.SocketAddress;
 import java.net.URI;
 
 /** Test functionality of BidirectionalStream interface. */
@@ -54,8 +52,6 @@ import java.net.URI;
         implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support adaptive bidirectional streaming")
 public class AdaptiveBidirectionalStreamTest {
-    private static final String TAG = AdaptiveBidirectionalStreamTest.class.getSimpleName();
-
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private ExperimentalCronetEngine mCronetEngine;
@@ -66,52 +62,28 @@ public class AdaptiveBidirectionalStreamTest {
 
     private TestLogger mTestLogger;
 
-    private SocketDroppingPacketHandler mDroppingPacketHandler;
-    private SocketDroppingPacketHandler mPostTlsDroppingPacketHandler;
+    private NativeTestServer mTestServer;
     private CronetAdaptiveRequestContext mAdaptiveRequestContext;
     private ConnectivityManagerWrapper mMockConnectivityManagerWrapper;
     private Network mDefaultNetwork;
     private long mDefaultNetworkHandle;
 
-    @ChannelHandler.Sharable
-    private static final class SocketDroppingPacketHandler extends ChannelInboundHandlerAdapter {
-        private boolean mDropFirstRemoteAddress;
-        private boolean mDropAllRemoteAddresses;
-        private SocketAddress mDroppedRemoteAddress;
-
-        @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            if (mDropFirstRemoteAddress && mDroppedRemoteAddress == null) {
-                mDroppedRemoteAddress = ctx.channel().remoteAddress();
-            }
-            if (mDropAllRemoteAddresses
-                    || (mDroppedRemoteAddress != null
-                            && mDroppedRemoteAddress == ctx.channel().remoteAddress())) {
-                Log.i(TAG, "Dropping packet for socket " + ctx.channel().remoteAddress());
-                return;
-            }
-            ctx.fireChannelRead(msg);
-        }
-    }
-
     @Before
     public void setUp() throws Exception {
         mTestLogger = mLoggerTestRule.mTestLogger;
-        mDroppingPacketHandler = new SocketDroppingPacketHandler();
-        mPostTlsDroppingPacketHandler = new SocketDroppingPacketHandler();
 
         ExperimentalCronetEngine.Builder builder =
                 (ExperimentalCronetEngine.Builder)
                         new NativeCronetProvider(mTestRule.getTestFramework().getContext())
                                 .createBuilder();
         mCronetEngine = (ExperimentalCronetEngine) builder.build();
-        assertThat(
-                        Http2TestServer.startHttp2TestServer(
-                                new Http2TestServer.ServerStartOptions(
-                                                mTestRule.getTestFramework().getContext())
-                                        .setPreTlsPacketHandler(mDroppingPacketHandler)
-                                        .setPostTlsPacketHandler(mPostTlsDroppingPacketHandler)))
-                .isTrue();
+        mTestServer =
+                new NativeTestServer(
+                        mTestRule.getTestFramework().getContext(), Type.HTTPS, Protocol.HTTP2);
+        // The adaptive network flags below match "https://localhost", which is the host this
+        // certificate makes the server use.
+        mTestServer.setSSLConfig(ServerCertificate.CERT_COMMON_NAME_IS_DOMAIN);
+        mTestServer.start();
 
         mAdaptiveRequestContext = ((CronetUrlRequestContext) mCronetEngine).mAdaptiveRequestContext;
         mMockConnectivityManagerWrapper = mock(ConnectivityManagerWrapper.class);
@@ -138,7 +110,7 @@ public class AdaptiveBidirectionalStreamTest {
 
     @After
     public void tearDown() throws Exception {
-        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
+        mTestServer.close();
     }
 
     @Test
@@ -150,7 +122,7 @@ public class AdaptiveBidirectionalStreamTest {
                         value = "https://localhost"),
                 @StringFlag(
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
-                        value = "/echostream"),
+                        value = "/echo_body"),
             },
             boolFlags = {
                 @BoolFlag(
@@ -163,7 +135,7 @@ public class AdaptiveBidirectionalStreamTest {
     public void postViaBidirectionalStreamWithFallbackSet_successOnPrimaryNetwork()
             throws Exception {
 
-        String url = Http2TestServer.getEchoStreamUrl();
+        String url = mTestServer.getEchoBodyURL();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.addWriteData("Test String".getBytes());
         // Create stream.
@@ -194,7 +166,7 @@ public class AdaptiveBidirectionalStreamTest {
                         value = "https://localhost"),
                 @StringFlag(
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
-                        value = "/echostream")
+                        value = "/echo_body")
             },
             boolFlags = {
                 @BoolFlag(
@@ -206,8 +178,9 @@ public class AdaptiveBidirectionalStreamTest {
     public void tlsConnectionFailsAllNetworks_throwsConnectionTimeoutError() throws Exception {
 
         // All packets being dropped for all networks. We can't save this.
-        mDroppingPacketHandler.mDropAllRemoteAddresses = true;
-        String url = Http2TestServer.getEchoStreamUrl();
+        mTestServer.setConnectionCallback(
+                new DroppingConnectionCallback(DroppingConnectionCallback.Drop.ALL_BEFORE_TLS));
+        String url = mTestServer.getEchoBodyURL();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         // Create stream.
         BidirectionalStream stream =
@@ -280,7 +253,7 @@ public class AdaptiveBidirectionalStreamTest {
                         value = "https://localhost"),
                 @StringFlag(
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
-                        value = "/echostream")
+                        value = "/echo_body")
             },
             boolFlags = {
                 @BoolFlag(
@@ -296,8 +269,9 @@ public class AdaptiveBidirectionalStreamTest {
             throws Exception {
 
         // Drop packet for first socket we find.
-        mDroppingPacketHandler.mDropFirstRemoteAddress = true;
-        String url = Http2TestServer.getEchoStreamUrl();
+        mTestServer.setConnectionCallback(
+                new DroppingConnectionCallback(DroppingConnectionCallback.Drop.FIRST_BEFORE_TLS));
+        String url = mTestServer.getEchoBodyURL();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.addWriteData("Test String".getBytes());
 
@@ -331,7 +305,7 @@ public class AdaptiveBidirectionalStreamTest {
                         value = "https://localhost"),
                 @StringFlag(
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
-                        value = "/echostream"),
+                        value = "/echo_body"),
             },
             boolFlags = {
                 @BoolFlag(
@@ -343,7 +317,7 @@ public class AdaptiveBidirectionalStreamTest {
     public void postViaBidirectionalStreamWithMemorizedFallback_successOnPrimaryNetwork()
             throws Exception {
 
-        String url = Http2TestServer.getEchoStreamUrl();
+        String url = mTestServer.getEchoBodyURL();
 
         // 1. Manually report a fallback used to memorize it.
         // We use mDefaultNetwork as the memorized fallback.
@@ -418,10 +392,10 @@ public class AdaptiveBidirectionalStreamTest {
                         value = "https://localhost"),
                 @StringFlag(
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
-                        value = "/echostream"),
+                        value = "/echo_body"),
                 @StringFlag(
                         name = CronetAdaptiveRequestContext.FAST_IDEMPOTENT_PATHS_FLAG_NAME,
-                        value = "/echostream")
+                        value = "/echo_body")
             },
             boolFlags = {
                 @BoolFlag(
@@ -437,8 +411,9 @@ public class AdaptiveBidirectionalStreamTest {
             throws Exception {
 
         // Drop packet for first socket AFTER TLS.
-        mPostTlsDroppingPacketHandler.mDropFirstRemoteAddress = true;
-        String url = Http2TestServer.getEchoStreamUrl();
+        mTestServer.setConnectionCallback(
+                new DroppingConnectionCallback(DroppingConnectionCallback.Drop.FIRST_AFTER_TLS));
+        String url = mTestServer.getEchoBodyURL();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         callback.addWriteData("Test String".getBytes());
 

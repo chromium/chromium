@@ -20,10 +20,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/test/test_support_android.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
+#include "net/socket/socket_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -63,6 +67,74 @@ struct NativeTestServerOCSPConfig final {
 struct NativeTestServerServerCertificateConfig final {
   net::test_server::EmbeddedTestServer::ServerCertificateConfig
       server_certificate_config;
+};
+
+// Asks the test's NativeTestServer.ConnectionCallback before each read and
+// write. A read or write that the callback refuses never completes, so the
+// client sees an open connection that never answers.
+class CallbackStreamSocket final : public net::WrappedStreamSocket {
+ public:
+  CallbackStreamSocket(std::unique_ptr<net::StreamSocket> transport,
+                       jni_zero::ScopedJavaGlobalRef<jobject> java_callback,
+                       int connection_index)
+      : WrappedStreamSocket(std::move(transport)),
+        java_callback_(std::move(java_callback)),
+        connection_index_(connection_index) {}
+
+  int Read(net::IOBuffer* buf,
+           int buf_len,
+           net::CompletionOnceCallback callback) override;
+
+  // Makes the SSL server socket use Read(), which asks the callback.
+  int ReadIfReady(net::IOBuffer* buf,
+                  int buf_len,
+                  net::CompletionOnceCallback callback) override {
+    return net::ERR_READ_IF_READY_NOT_IMPLEMENTED;
+  }
+
+  int Write(
+      net::IOBuffer* buf,
+      int buf_len,
+      net::CompletionOnceCallback callback,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
+
+ private:
+  const jni_zero::ScopedJavaGlobalRef<jobject> java_callback_;
+  const int connection_index_;
+};
+
+class CallbackConnectionListener final
+    : public net::test_server::EmbeddedTestServerConnectionListener {
+ public:
+  // Called on the test thread while the server's IO thread may be accepting
+  // connections.
+  void SetCallback(const jni_zero::JavaRef<jobject>& java_callback) {
+    base::AutoLock lock(lock_);
+    java_callback_ = java_callback;
+  }
+
+  std::unique_ptr<net::StreamSocket> AcceptedSocket(
+      std::unique_ptr<net::StreamSocket> socket) override {
+    int connection_index = next_connection_index_++;
+    jni_zero::ScopedJavaGlobalRef<jobject> java_callback;
+    {
+      base::AutoLock lock(lock_);
+      java_callback = java_callback_;
+    }
+    if (!java_callback) {
+      return socket;
+    }
+    return std::make_unique<CallbackStreamSocket>(
+        std::move(socket), std::move(java_callback), connection_index);
+  }
+
+  void ReadFromSocket(const net::StreamSocket& socket, int rv) override {}
+
+ private:
+  base::Lock lock_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_callback_ GUARDED_BY(lock_);
+  // Only used on the server's IO thread.
+  int next_connection_index_ = 0;
 };
 
 }  // namespace cronet
@@ -184,6 +256,29 @@ NativeTestServerHandleRequestCallback::operator()(
              jni_zero::AttachCurrentThread(), java_callback_,
              {.http_request = http_request})
       .raw_http_response;
+}
+
+int CallbackStreamSocket::Read(net::IOBuffer* buf,
+                               int buf_len,
+                               net::CompletionOnceCallback callback) {
+  if (!Java_NativeTestServer_shouldRead(jni_zero::AttachCurrentThread(),
+                                        java_callback_, connection_index_)) {
+    return net::ERR_IO_PENDING;
+  }
+  return transport_->Read(buf, buf_len, std::move(callback));
+}
+
+int CallbackStreamSocket::Write(
+    net::IOBuffer* buf,
+    int buf_len,
+    net::CompletionOnceCallback callback,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
+  if (!Java_NativeTestServer_shouldWrite(jni_zero::AttachCurrentThread(),
+                                         java_callback_, connection_index_)) {
+    return net::ERR_IO_PENDING;
+  }
+  return transport_->Write(buf, buf_len, std::move(callback),
+                           traffic_annotation);
 }
 
 }  // namespace cronet
@@ -356,7 +451,9 @@ EmbeddedTestServerAdapter::EmbeddedTestServerAdapter(
     const base::FilePath& test_files_root,
     net::EmbeddedTestServer::Type server_type,
     net::test_server::HttpConnection::Protocol protocol)
-    : test_server(net::EmbeddedTestServer(server_type, protocol)) {
+    : connection_listener_(std::make_unique<CallbackConnectionListener>()),
+      test_server(net::EmbeddedTestServer(server_type, protocol)) {
+  test_server.SetConnectionListener(connection_listener_.get());
   test_server.RegisterRequestHandler(
       base::BindRepeating(&CronetTestRequestHandler, &test_server));
   test_server.ServeFilesFromDirectory(test_files_root);
@@ -385,6 +482,12 @@ void EmbeddedTestServerAdapter::EnableConnectProxy(
     destinations.push_back(net::HostPortPair::FromURL(GURL(url)));
   }
   test_server.EnableConnectProxy(destinations);
+}
+
+void EmbeddedTestServerAdapter::SetConnectionCallback(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& callback) {
+  connection_listener_->SetCallback(callback);
 }
 
 void EmbeddedTestServerAdapter::Destroy(JNIEnv* env) {

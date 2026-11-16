@@ -117,6 +117,14 @@ public final class NativeTestServer implements AutoCloseable {
                         mEmbeddedTestServerAdapter, urlsToBeProxied.toArray(new String[0]));
     }
 
+    /**
+     * Makes every connection that the server accepts after this call ask {@code callback} before
+     * each read and write. Can be called after {@link #start}.
+     */
+    public void setConnectionCallback(ConnectionCallback callback) {
+        NativeTestServerJni.get().setConnectionCallback(mEmbeddedTestServerAdapter, callback);
+    }
+
     public String getEchoBodyURL() {
         return NativeTestServerJni.get().getEchoBodyURL(mEmbeddedTestServerAdapter);
     }
@@ -260,6 +268,25 @@ public final class NativeTestServer implements AutoCloseable {
         RawHttpResponse handleRequest(HttpRequest httpRequest);
     }
 
+    /**
+     * Decides whether each read and write on a connection goes through. A refused read or write
+     * never completes, so the client sees an open connection that never answers. Called on the
+     * server's IO thread.
+     */
+    public interface ConnectionCallback {
+        /**
+         * Called before the server reads from a connection.
+         *
+         * @param connectionIndex 0 for the first connection that the server accepted, 1 for the
+         *     second, and so on.
+         * @return false to make this read never complete.
+         */
+        boolean shouldRead(int connectionIndex);
+
+        /** Like {@link #shouldRead}, but before the server writes to a connection. */
+        boolean shouldWrite(int connectionIndex);
+    }
+
     // The following indirecting methods are needed because jni_zero doesn't support @CalledByNative
     // on nested classes. See https://crbug.com/422988765.
 
@@ -269,6 +296,16 @@ public final class NativeTestServer implements AutoCloseable {
                     HandleRequestCallback callback,
                     @JniType("cronet::NativeTestServerHttpRequest") HttpRequest httpRequest) {
         return callback.handleRequest(httpRequest);
+    }
+
+    @CalledByNative
+    private static boolean shouldRead(ConnectionCallback callback, int connectionIndex) {
+        return callback.shouldRead(connectionIndex);
+    }
+
+    @CalledByNative
+    private static boolean shouldWrite(ConnectionCallback callback, int connectionIndex) {
+        return callback.shouldWrite(connectionIndex);
     }
 
     @CalledByNative
@@ -334,6 +371,9 @@ public final class NativeTestServer implements AutoCloseable {
         void enableConnectProxy(
                 long nativeEmbeddedTestServerAdapter,
                 @JniType("std::vector<std::string>") String[] urls);
+
+        void setConnectionCallback(
+                long nativeEmbeddedTestServerAdapter, ConnectionCallback callback);
 
         @JniType("std::string")
         String getEchoBodyURL(long nativeEmbeddedTestServerAdapter);
