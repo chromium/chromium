@@ -15,6 +15,7 @@ source_set("reporting") {
       "browser_crash_event_router.h",
       "crash_reporting_context.h",
       "event_initiator_utils.h",
+      "extension_actor_attribution_metrics.h",
       "realtime_reporting_client.h",
       "realtime_reporting_client_factory.h",
       "reporting_event_router_factory.h",

@@ -3010,6 +3010,37 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Re-registration unsuccessful"/>
 </enum>
 
+<!-- LINT.IfChange(ExtensionActorAttributionResult) -->
+
+<enum name="ExtensionActorAttributionResult">
+  <int value="0" label="Attributed to an extension"/>
+  <int value="1" label="No active extension actor"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/connectors/reporting/extension_actor_attribution_metrics.h:ExtensionActorAttributionResult) -->
+
+<!-- LINT.IfChange(ExtensionActorClearReason) -->
+
+<enum name="ExtensionActorClearReason">
+  <int value="0" label="User interaction"/>
+  <int value="1" label="Non-extension navigation"/>
+  <int value="2" label="Explicit ClearActiveActor() call"/>
+  <int value="3" label="Browser-initiated (e.g. omnibox) navigation started"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/connectors/reporting/extension_actor_attribution_metrics.h:ExtensionActorClearReason) -->
+
+<!-- LINT.IfChange(ExtensionDownloadAttributionSignal) -->
+
+<enum name="ExtensionDownloadAttributionSignal">
+  <int value="0" label="No extension signal"/>
+  <int value="1" label="Started via chrome.downloads API"/>
+  <int value="2" label="Request initiator is a chrome-extension:// origin"/>
+  <int value="3" label="Originating tab has an active extension actor"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/enterprise/connectors/reporting/extension_actor_attribution_metrics.h:ExtensionDownloadAttributionSignal) -->
+
 <enum name="IdleTimeoutCase">
   <int value="0" label="Foreground"/>
   <int value="1" label="Background"/>

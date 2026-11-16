@@ -8,7 +8,9 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_attribution_metrics.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
@@ -121,8 +123,7 @@ void ExtensionActorTracker::ClearActiveActor(
     return;
   }
   if (auto* tracker = FromWebContents(web_contents)) {
-    tracker->active_actor_id_.reset();
-    tracker->is_initial_navigation_ = false;
+    tracker->ResetActiveActor(ExtensionActorClearReason::kExplicit);
   }
 }
 
@@ -149,12 +150,7 @@ void ExtensionActorTracker::DidStartNavigation(
       is_extension_reload_or_history) {
     return;
   }
-  if (active_actor_id_) {
-    DVLOG(1) << "Browser-initiated navigation cleared extension actor "
-             << *active_actor_id_;
-  }
-  active_actor_id_.reset();
-  is_initial_navigation_ = false;
+  ResetActiveActor(ExtensionActorClearReason::kBrowserInitiatedNavigation);
 }
 
 void ExtensionActorTracker::DidFinishNavigation(
@@ -182,7 +178,7 @@ void ExtensionActorTracker::DidFinishNavigation(
     return;
   }
 
-  active_actor_id_.reset();
+  ResetActiveActor(ExtensionActorClearReason::kNonExtensionNavigation);
 }
 
 void ExtensionActorTracker::DidGetUserInteraction(
@@ -192,8 +188,7 @@ void ExtensionActorTracker::DidGetUserInteraction(
       event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
     return;
   }
-  active_actor_id_.reset();
-  is_initial_navigation_ = false;
+  ResetActiveActor(ExtensionActorClearReason::kUserInteraction);
 }
 
 void ExtensionActorTracker::DidOpenRequestedURL(
@@ -217,6 +212,17 @@ void ExtensionActorTracker::DidOpenRequestedURL(
   } else {
     ClearActiveActor(new_contents);
   }
+}
+
+void ExtensionActorTracker::ResetActiveActor(ExtensionActorClearReason reason) {
+  is_initial_navigation_ = false;
+  if (!active_actor_id_.has_value()) {
+    return;
+  }
+  DVLOG(1) << "Cleared extension actor " << *active_actor_id_ << " (reason "
+           << static_cast<int>(reason) << ")";
+  active_actor_id_.reset();
+  base::UmaHistogramEnumeration(kExtensionActorTrackerClearedHistogram, reason);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ExtensionActorTracker);

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +41,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace enterprise_connectors {
 
@@ -524,6 +527,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentAreaUserProviderTest, FrameUrlChain) {
   // Construct a mock DownloadItem originating from the child frame.
   GURL empty_url;
   std::vector<GURL> empty_url_chain;
+  std::optional<url::Origin> no_initiator;
   testing::NiceMock<download::MockDownloadItem> mock_download_item;
   ON_CALL(mock_download_item, GetURL())
       .WillByDefault(testing::ReturnRef(empty_url));
@@ -531,6 +535,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentAreaUserProviderTest, FrameUrlChain) {
       .WillByDefault(testing::ReturnRef(empty_url));
   ON_CALL(mock_download_item, GetUrlChain())
       .WillByDefault(testing::ReturnRef(empty_url_chain));
+  ON_CALL(mock_download_item, GetRequestInitiator())
+      .WillByDefault(testing::ReturnRef(no_initiator));
 
   content::DownloadItemUtils::AttachInfo(&mock_download_item,
                                          browser()->GetProfile(), web_contents,
@@ -566,6 +572,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentAreaUserProviderInitiatorTest,
 
   GURL empty_url;
   std::vector<GURL> empty_url_chain;
+  std::optional<url::Origin> no_initiator;
   testing::NiceMock<download::MockDownloadItem> mock_download_item;
   ON_CALL(mock_download_item, GetURL())
       .WillByDefault(testing::ReturnRef(empty_url));
@@ -573,6 +580,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentAreaUserProviderInitiatorTest,
       .WillByDefault(testing::ReturnRef(empty_url));
   ON_CALL(mock_download_item, GetUrlChain())
       .WillByDefault(testing::ReturnRef(empty_url_chain));
+  ON_CALL(mock_download_item, GetRequestInitiator())
+      .WillByDefault(testing::ReturnRef(no_initiator));
   content::DownloadItemUtils::AttachInfo(
       &mock_download_item, browser()->GetProfile(),
       browser()->tab_strip_model()->GetActiveWebContents(),
