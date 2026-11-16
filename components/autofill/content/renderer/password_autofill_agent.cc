@@ -2362,6 +2362,7 @@ void PasswordAutofillAgent::TryFixAutofilledForm(
     // state if JavaScript modifies the field's value.
     if (*cached_value != control_element.SuggestedValue()) {
       control_element.SetSuggestedValue(*cached_value);
+      control_element.SetAutofillState(WebAutofillState::kAutofilled);
     }
   }
 }

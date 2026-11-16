@@ -4775,6 +4775,9 @@ TEST_F(PasswordAutofillAgentTest, RestoresAfterJavaScriptModification) {
 
   EXPECT_FALSE(called_password_forms_parsed_);
   EXPECT_FALSE(called_password_forms_rendered_);
+
+  password_autofill_agent_->UserGestureObserved();
+  CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
 }
 
 TEST_F(PasswordAutofillAgentTest, DoNotRestoreWhenFormStructureWasChanged) {
