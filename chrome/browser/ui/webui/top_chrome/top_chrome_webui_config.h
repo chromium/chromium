@@ -24,7 +24,24 @@ class GURL;
 // top-chrome WebUIs.
 class TopChromeWebUIConfig : public content::WebUIConfig {
  public:
-  TopChromeWebUIConfig(std::string_view scheme, std::string_view host);
+  // Which renderer process a Top Chrome WebUI runs in.
+  enum class ProcessModel {
+    // Shares the Top Chrome WebUI renderer process (process lock host
+    // `chrome::kChromeUITopChromeDomain`) with other Top Chrome WebUIs. Only
+    // applies to trusted `chrome://` WebUIs; `chrome-untrusted://` WebUIs are
+    // always locked to their own site URL.
+    kTopChromeProcess,
+    // Runs in a dedicated renderer process locked to the WebUI's own site URL.
+    // For WebUIs that derive from `TopChromeWebUIConfig` (e.g. to be hosted via
+    // `WebUIContentsWrapper`) but do not share the Top Chrome WebUI renderer
+    // process.
+    kDedicatedProcess,
+  };
+
+  TopChromeWebUIConfig(
+      std::string_view scheme,
+      std::string_view host,
+      ProcessModel process_model = ProcessModel::kTopChromeProcess);
   ~TopChromeWebUIConfig() override;
 
   // Overridden from content::WebUIConfig:
@@ -88,8 +105,11 @@ class TopChromeWebUIConfig : public content::WebUIConfig {
 template <typename T>
 class DefaultTopChromeWebUIConfig : public TopChromeWebUIConfig {
  public:
-  DefaultTopChromeWebUIConfig(std::string_view scheme, std::string_view host)
-      : TopChromeWebUIConfig(scheme, host) {}
+  DefaultTopChromeWebUIConfig(
+      std::string_view scheme,
+      std::string_view host,
+      ProcessModel process_model = ProcessModel::kTopChromeProcess)
+      : TopChromeWebUIConfig(scheme, host, process_model) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
     return true;

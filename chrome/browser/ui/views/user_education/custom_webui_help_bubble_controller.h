@@ -56,14 +56,20 @@ class CustomWebUIHelpBubbleController
 
 // You need to do this in your custom help bubble WebUI controller `.h` file,
 // and then register it in `chrome_web_ui_configs.cc`.
-#define DECLARE_TOP_CHROME_WEBUI_CONFIG(ControllerClass, HostName)           \
-  class ControllerClass##Config                                              \
-      : public DefaultTopChromeWebUIConfig<ControllerClass> {                \
-   public:                                                                   \
-    ControllerClass##Config()                                                \
-        : DefaultTopChromeWebUIConfig(content::kChromeUIScheme, HostName) {} \
-    ~ControllerClass##Config() override = default;                           \
-    bool ShouldAutoResizeHost() override;                                    \
+//
+// The config uses `ProcessModel::kDedicatedProcess`: each custom help bubble
+// WebUI runs in its own renderer process and does not share the Top Chrome
+// WebUI renderer process.
+#define DECLARE_TOP_CHROME_WEBUI_CONFIG(ControllerClass, HostName)        \
+  class ControllerClass##Config                                           \
+      : public DefaultTopChromeWebUIConfig<ControllerClass> {             \
+   public:                                                                \
+    ControllerClass##Config()                                             \
+        : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,           \
+                                      HostName,                           \
+                                      ProcessModel::kDedicatedProcess) {} \
+    ~ControllerClass##Config() override = default;                        \
+    bool ShouldAutoResizeHost() override;                                 \
   }
 
 // You need to do this in your custom help bubble WebUI controller `.cc` file.

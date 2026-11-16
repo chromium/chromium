@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 
+#include <optional>
+#include <string_view>
+
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
@@ -52,9 +56,12 @@ class TestTopChromeWebUIController : public TopChromeWebUIController {
 class TestTopChromeWebUIConfig
     : public DefaultTopChromeWebUIConfig<TestTopChromeWebUIController> {
  public:
-  TestTopChromeWebUIConfig()
-      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                    kTestTopChromeWebUIHost) {}
+  explicit TestTopChromeWebUIConfig(
+      std::string_view scheme = content::kChromeUIScheme,
+      ProcessModel process_model = ProcessModel::kTopChromeProcess)
+      : DefaultTopChromeWebUIConfig(scheme,
+                                    kTestTopChromeWebUIHost,
+                                    process_model) {}
 };
 
 }  // namespace
@@ -88,4 +95,21 @@ TEST_F(TopChromeWebUIConfigTest, DefaultTopChromeWebUIConfig) {
   std::unique_ptr<content::WebUIController> webui_controller =
       config->CreateWebUIController(&test_webui, GURL(kTestTopChromeWebUIURL));
   EXPECT_NE(webui_controller, nullptr);
+}
+
+// Tests that trusted chrome:// TopChromeWebUIConfigs share the top-chrome
+// process lock host by default, while untrusted configs and configs opting into
+// `ProcessModel::kDedicatedProcess` lock to their own site URL.
+TEST_F(TopChromeWebUIConfigTest, ProcessLockHost) {
+  TestTopChromeWebUIConfig default_config;
+  EXPECT_EQ(default_config.process_lock_host(),
+            chrome::kChromeUITopChromeDomain);
+
+  TestTopChromeWebUIConfig untrusted_config(content::kChromeUIUntrustedScheme);
+  EXPECT_EQ(untrusted_config.process_lock_host(), std::nullopt);
+
+  TestTopChromeWebUIConfig dedicated_config(
+      content::kChromeUIScheme,
+      TopChromeWebUIConfig::ProcessModel::kDedicatedProcess);
+  EXPECT_EQ(dedicated_config.process_lock_host(), std::nullopt);
 }

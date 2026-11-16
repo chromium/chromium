@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -38,12 +40,12 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/browser/webui/url_data_manager_backend.h"
-#include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
@@ -2250,47 +2252,99 @@ TEST_F(SiteInstanceTest, DoesSiteRequireDedicatedProcess) {
   URLDataManagerBackend::SetDisallowWebUISchemeCachingForTesting(false);
 }
 
-TEST_F(SiteInstanceTest, DoWebUIURLsWithSubdomainsUseTLDForProcessLock) {
-  class CustomWebUIWebUIControllerFactory : public WebUIControllerFactory {
+TEST_F(SiteInstanceTest, WebUIConfigProcessLockHost) {
+  class TestProcessLockWebUIConfig : public WebUIConfig {
    public:
-    std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
+    TestProcessLockWebUIConfig(
+        std::string_view scheme,
+        std::string_view host,
+        std::optional<std::string_view> process_lock_host = std::nullopt)
+        : WebUIConfig(scheme, host, process_lock_host) {}
+
+    std::unique_ptr<WebUIController> CreateWebUIController(
         WebUI* web_ui,
         const GURL& url) override {
       return nullptr;
     }
-    WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
-                               const GURL& url) override {
-      return WebUI::kNoWebUI;
-    }
-    bool UseWebUIForURL(BrowserContext* browser_context,
-                        const GURL& url) override {
-      return HasWebUIScheme(url);
-    }
   };
-  CustomWebUIWebUIControllerFactory factory;
-  content::ScopedWebUIControllerFactoryRegistration factory_registration(
-      &factory);
 
-  const GURL webui_tld_url = GetWebUIURL("foo");
+  ScopedWebUIConfigRegistration bar_registration(
+      std::make_unique<TestProcessLockWebUIConfig>(kChromeUIScheme, "bar.foo",
+                                                   "foo"));
+  ScopedWebUIConfigRegistration baz_registration(
+      std::make_unique<TestProcessLockWebUIConfig>(kChromeUIScheme, "baz",
+                                                   "foo"));
+  ScopedWebUIConfigRegistration standalone_registration(
+      std::make_unique<TestProcessLockWebUIConfig>(kChromeUIScheme,
+                                                   "standalone.foo"));
+  ScopedWebUIConfigRegistration untrusted_registration(
+      std::make_unique<TestProcessLockWebUIConfig>(kChromeUIUntrustedScheme,
+                                                   "bar.foo"));
+
+  const GURL webui_shared_lock_url = GetWebUIURL("foo");
   const GURL webui_host_bar_url = GetWebUIURL("bar.foo");
-  const GURL webui_host_baz_url = GetWebUIURL("baz.foo");
+  const GURL webui_host_baz_url = GetWebUIURL("baz");
+  const GURL webui_standalone_url = GetWebUIURL("standalone.foo");
+  const GURL untrusted_url("chrome-untrusted://bar.foo/");
 
-  const SiteInfo webui_tld_site_info = GetSiteInfoForURL(webui_tld_url);
   const SiteInfo webui_host_bar_site_info =
       GetSiteInfoForURL(webui_host_bar_url);
   const SiteInfo webui_host_baz_site_info =
       GetSiteInfoForURL(webui_host_baz_url);
+  const SiteInfo webui_standalone_site_info =
+      GetSiteInfoForURL(webui_standalone_url);
+  const SiteInfo untrusted_site_info = GetSiteInfoForURL(untrusted_url);
 
   // WebUI URLs should result in SiteURLs with the full scheme and hostname
   // of the WebUI URL.
-  EXPECT_EQ(webui_tld_url, webui_tld_site_info.site_url());
   EXPECT_EQ(webui_host_bar_url, webui_host_bar_site_info.site_url());
   EXPECT_EQ(webui_host_baz_url, webui_host_baz_site_info.site_url());
+  EXPECT_EQ(webui_standalone_url, webui_standalone_site_info.site_url());
+  EXPECT_EQ(untrusted_url, untrusted_site_info.site_url());
 
-  // WebUI URLs should use their TLD for ProcessLockURLs.
-  EXPECT_EQ(webui_tld_url, webui_tld_site_info.GetProcessLockURL());
-  EXPECT_EQ(webui_tld_url, webui_host_bar_site_info.GetProcessLockURL());
-  EXPECT_EQ(webui_tld_url, webui_host_baz_site_info.GetProcessLockURL());
+  // WebUIs whose WebUIConfig specifies a `process_lock_host()` should use that
+  // shared host for ProcessLockURLs, regardless of whether their host has a
+  // subdomain suffix. WebUIs without one and chrome-untrusted:// WebUIs should
+  // use their own site URL.
+  EXPECT_EQ(webui_shared_lock_url,
+            webui_host_bar_site_info.GetProcessLockURL());
+  EXPECT_EQ(webui_shared_lock_url,
+            webui_host_baz_site_info.GetProcessLockURL());
+  EXPECT_EQ(webui_standalone_url,
+            webui_standalone_site_info.GetProcessLockURL());
+  EXPECT_EQ(untrusted_url, untrusted_site_info.GetProcessLockURL());
+
+#if !BUILDFLAG(IS_ANDROID)
+  // When `kInitialWebUIUseSeparateProcess` is enabled and `IsInitialWebUIURL()`
+  // returns true, the initial WebUI should lock to its own site URL instead of
+  // the shared `process_lock_host()`.
+  class InitialWebUIBrowserClient : public TestContentBrowserClient {
+   public:
+    explicit InitialWebUIBrowserClient(const GURL& initial_webui_url)
+        : initial_webui_url_(initial_webui_url) {}
+    bool IsInitialWebUIURL(const GURL& url) override {
+      return url == initial_webui_url_;
+    }
+
+   private:
+    GURL initial_webui_url_;
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kInitialWebUI,
+      {{features::kInitialWebUIUseSeparateProcess.name, "true"}});
+  InitialWebUIBrowserClient initial_webui_client(webui_host_bar_url);
+  ScopedContentBrowserClientSetting browser_client_setting(
+      &initial_webui_client);
+
+  const SiteInfo initial_webui_site_info =
+      GetSiteInfoForURL(webui_host_bar_url);
+  EXPECT_EQ(webui_host_bar_url, initial_webui_site_info.site_url());
+  EXPECT_EQ(webui_host_bar_url, initial_webui_site_info.GetProcessLockURL());
+  EXPECT_EQ(webui_shared_lock_url,
+            GetSiteInfoForURL(webui_host_baz_url).GetProcessLockURL());
+#endif
 }
 
 TEST_F(SiteInstanceTest, ErrorPage) {

@@ -28,7 +28,8 @@
 
 DefaultBrowserModalUIConfig::DefaultBrowserModalUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                  chrome::kChromeUIDefaultBrowserModalHost) {}
+                                  chrome::kChromeUIDefaultBrowserModalHost,
+                                  ProcessModel::kDedicatedProcess) {}
 
 DefaultBrowserModalUIConfig::~DefaultBrowserModalUIConfig() = default;
 

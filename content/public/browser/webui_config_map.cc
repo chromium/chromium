@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -83,6 +85,22 @@ void WebUIConfigMap::AddUntrustedWebUIConfig(
 void WebUIConfigMap::AddWebUIConfigImpl(std::unique_ptr<WebUIConfig> config) {
   GURL url(base::StrCat(
       {config->scheme(), url::kStandardSchemeSeparator, config->host()}));
+
+  // A process lock host must not be the host of a registered `chrome://`
+  // WebUIConfig. Otherwise, the shared process lock URL
+  // (`chrome://<process_lock_host>/`) would be the same as that WebUI's own
+  // process lock URL, and that WebUI could end up in the shared process.
+  if (config->process_lock_host().has_value()) {
+    GURL lock_url(base::StrCat({kChromeUIScheme, url::kStandardSchemeSeparator,
+                                *config->process_lock_host()}));
+    CHECK(!configs_map_.contains(url::Origin::Create(lock_url))) << lock_url;
+  }
+  if (config->scheme() == kChromeUIScheme) {
+    for (const auto& [origin, registered_config] : configs_map_) {
+      CHECK(registered_config->process_lock_host() != config->host()) << url;
+    }
+  }
+
   auto it = configs_map_.emplace(url::Origin::Create(url), std::move(config));
   // CHECK if a WebUIConfig with the same host was already added.
   CHECK(it.second) << url;
@@ -90,6 +108,20 @@ void WebUIConfigMap::AddWebUIConfigImpl(std::unique_ptr<WebUIConfig> config) {
 
 WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
                                        const GURL& url) {
+  WebUIConfig* config = FindConfig(url);
+  if (!config || !config->IsWebUIEnabled(browser_context) ||
+      !config->ShouldHandleURL(url)) {
+    return nullptr;
+  }
+
+  return config;
+}
+
+const WebUIConfig* WebUIConfigMap::GetRegisteredConfig(const GURL& url) const {
+  return FindConfig(url);
+}
+
+WebUIConfig* WebUIConfigMap::FindConfig(const GURL& url) const {
   // "filesystem:" and "blob:" get dropped by url::Origin::Create() below. We
   // don't want navigations to these URLs to have WebUI bindings, e.g.
   // chrome.send() or Mojo.bindInterface(), since some WebUIs currently expose
@@ -104,16 +136,22 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
     return nullptr;
   }
 
-  auto& config = origin_and_config->second;
-  if (!config->IsWebUIEnabled(browser_context) ||
-      !config->ShouldHandleURL(url)) {
-    return nullptr;
-  }
-
-  return config.get();
+  return origin_and_config->second.get();
 }
 
 std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(const GURL& url) {
+  std::unique_ptr<WebUIConfig> config = RemoveConfigImpl(url);
+  CHECK(!config || !config->process_lock_host().has_value())
+      << "Configs with a process lock host must not be removed: " << url;
+  return config;
+}
+
+std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfigForTesting(
+    const GURL& url) {
+  return RemoveConfigImpl(url);
+}
+
+std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfigImpl(const GURL& url) {
   CHECK(url.scheme() == kChromeUIScheme ||
         url.scheme() == kChromeUIUntrustedScheme);
 

@@ -21,9 +21,17 @@ class DiceWebSigninInterceptUI;
 class DiceWebSigninInterceptUIConfig
     : public content::DefaultWebUIConfig<DiceWebSigninInterceptUI> {
  public:
+  // `DiceWebSigninInterceptionBubbleView` is a Top Chrome toolbar bubble that
+  // shares the Top Chrome WebUI renderer process. It does not use
+  // `DefaultTopChromeWebUIConfig`, because that would also enable other Top
+  // Chrome-only behavior for this WebUI (e.g. Top Chrome page load metrics,
+  // `SupportsInProcessResourceLoadingV2()`, and being included in
+  // `TopChromeWebUIConfig::ForEachConfig()`), so the process lock host is
+  // specified here directly.
   DiceWebSigninInterceptUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIDiceWebSigninInterceptHost) {}
+                           chrome::kChromeUIDiceWebSigninInterceptHost,
+                           chrome::kChromeUITopChromeDomain) {}
 };
 
 class DiceWebSigninInterceptUI : public content::WebUIController {

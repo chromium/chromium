@@ -4,8 +4,10 @@
 
 #include "content/public/browser/webui_config_map.h"
 
+#include <optional>
 #include <string_view>
 
+#include "base/test/gtest_util.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -25,8 +27,10 @@ BrowserContext* kBrowserContext = nullptr;
 
 class TestConfig : public WebUIConfig {
  public:
-  TestConfig(std::string_view scheme, std::string_view host)
-      : WebUIConfig(scheme, host) {}
+  TestConfig(std::string_view scheme,
+             std::string_view host,
+             std::optional<std::string_view> process_lock_host = std::nullopt)
+      : WebUIConfig(scheme, host, process_lock_host) {}
   ~TestConfig() override = default;
 
   std::unique_ptr<WebUIController> CreateWebUIController(
@@ -90,6 +94,28 @@ TEST(WebUIConfigTest, AddAndRemoteChromeUntrustedUrl) {
   EXPECT_EQ(initial_size, map.GetWebUIConfigList(nullptr).size());
 }
 
+TEST(WebUIConfigTest, GetRegisteredConfigIgnoresEnabledAndShouldHandleURL) {
+  class DisabledConfig : public TestConfig {
+   public:
+    DisabledConfig(std::string_view scheme, std::string_view host)
+        : TestConfig(scheme, host) {}
+
+    bool IsWebUIEnabled(BrowserContext* browser_context) override {
+      return false;
+    }
+    bool ShouldHandleURL(const GURL& url) override { return false; }
+  };
+
+  auto& map = WebUIConfigMap::GetInstance();
+  auto disabled_config = std::make_unique<DisabledConfig>("chrome", "foo");
+  auto* disabled_config_ptr = disabled_config.get();
+  ScopedWebUIConfigRegistration registration(std::move(disabled_config));
+
+  EXPECT_EQ(nullptr, map.GetConfig(kBrowserContext, GURL(kChromeFoo)));
+  EXPECT_EQ(disabled_config_ptr, map.GetRegisteredConfig(GURL(kChromeFoo)));
+  EXPECT_EQ(nullptr, map.GetRegisteredConfig(GURL(kChromeBar)));
+}
+
 class WebUiConfigDeathTest : public testing::Test,
                              public ::testing::WithParamInterface<const char*> {
  public:
@@ -110,6 +136,7 @@ TEST_P(WebUiConfigDeathTest, GetAndRemoveNonChromeUrls) {
 
   const GURL url(GetParam());
   EXPECT_EQ(nullptr, map.GetConfig(kBrowserContext, url));
+  EXPECT_EQ(nullptr, map.GetRegisteredConfig(url));
   EXPECT_DEATH_IF_SUPPORTED(map.RemoveConfig(url), "");
 }
 
@@ -126,5 +153,63 @@ INSTANTIATE_TEST_SUITE_P(
         // HTTP/HTTPS URLS
         "http://foo.com",
         "https://foo.com"));
+
+// Tests that constructing a WebUIConfig with an invalid process lock host
+// (set on a chrome-untrusted:// config, or not forming a valid chrome:// host)
+// crashes.
+TEST(WebUIConfigDeathTest, InvalidProcessLockHost) {
+  EXPECT_CHECK_DEATH(TestConfig("chrome-untrusted", "foo", "top-chrome"));
+  EXPECT_CHECK_DEATH(TestConfig("chrome", "foo", ""));
+  EXPECT_CHECK_DEATH(TestConfig("chrome", "foo", "bar/baz"));
+}
+
+// Tests that a process lock host cannot be the host of a registered chrome://
+// WebUIConfig, regardless of the order in which the configs are added.
+TEST(WebUIConfigDeathTest, ProcessLockHostMatchesRegisteredHost) {
+  auto& map = WebUIConfigMap::GetInstance();
+  {
+    ScopedWebUIConfigRegistration registration(
+        std::make_unique<TestConfig>("chrome", "foo"));
+    EXPECT_CHECK_DEATH(map.AddWebUIConfig(
+        std::make_unique<TestConfig>("chrome", "bar", "foo")));
+  }
+  {
+    ScopedWebUIConfigRegistration registration(
+        std::make_unique<TestConfig>("chrome", "bar", "foo"));
+    EXPECT_CHECK_DEATH(
+        map.AddWebUIConfig(std::make_unique<TestConfig>("chrome", "foo")));
+  }
+}
+
+// Tests that a process lock host can match the host of a chrome-untrusted://
+// WebUIConfig, since the shared process lock URL is always a chrome:// URL.
+TEST(WebUIConfigTest, ProcessLockHostMatchesUntrustedHost) {
+  auto& map = WebUIConfigMap::GetInstance();
+  {
+    ScopedWebUIConfigRegistration untrusted_registration(
+        std::make_unique<TestConfig>("chrome-untrusted", "foo"));
+    ScopedWebUIConfigRegistration chrome_registration(
+        std::make_unique<TestConfig>("chrome", "bar", "foo"));
+    EXPECT_NE(nullptr, map.GetConfig(kBrowserContext, GURL(kChromeBar)));
+  }
+  {
+    ScopedWebUIConfigRegistration chrome_registration(
+        std::make_unique<TestConfig>("chrome", "bar", "foo"));
+    ScopedWebUIConfigRegistration untrusted_registration(
+        std::make_unique<TestConfig>("chrome-untrusted", "foo"));
+    EXPECT_NE(nullptr,
+              map.GetConfig(kBrowserContext, GURL(kChromeUntrustedFoo)));
+  }
+}
+
+// Tests that `RemoveConfig()` crashes when removing a WebUIConfig with a
+// process lock host, while `ScopedWebUIConfigRegistration` can still remove it
+// through `RemoveConfigForTesting()`.
+TEST(WebUIConfigDeathTest, RemoveConfigWithProcessLockHost) {
+  ScopedWebUIConfigRegistration registration(
+      std::make_unique<TestConfig>("chrome", "foo", "top-chrome"));
+  EXPECT_CHECK_DEATH(
+      WebUIConfigMap::GetInstance().RemoveConfig(GURL(kChromeFoo)));
+}
 
 }  // namespace content

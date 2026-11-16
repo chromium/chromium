@@ -34,7 +34,8 @@ class TabGroupHomeUIConfig
  public:
   TabGroupHomeUIConfig()
       : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                    kTabGroupHomeHost) {}
+                                    kTabGroupHomeHost,
+                                    ProcessModel::kDedicatedProcess) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

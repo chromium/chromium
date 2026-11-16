@@ -47,7 +47,11 @@ GURL GetChromeUntrustedUIURL(const std::string& host_and_path);
 
 class TestWebUIConfig : public content::WebUIConfig {
  public:
-  explicit TestWebUIConfig(std::string_view host);
+  // `process_lock_host`, if set, lets multiple TestWebUIConfigs share a
+  // renderer process; see `WebUIConfig::process_lock_host()`.
+  explicit TestWebUIConfig(
+      std::string_view host,
+      std::optional<std::string_view> process_lock_host = std::nullopt);
 
   ~TestWebUIConfig() override = default;
 

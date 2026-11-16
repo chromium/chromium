@@ -157,7 +157,11 @@ void FeedbackUI::CreatePageHandler(
 
 FeedbackUIConfig::FeedbackUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                  chrome::kChromeUIFeedbackHost) {}
+                                  chrome::kChromeUIFeedbackHost,
+                                  // `FeedbackUI` needs spellcheck for its text
+                                  // input, which is disabled in the shared Top
+                                  // Chrome renderer process.
+                                  ProcessModel::kDedicatedProcess) {}
 
 bool FeedbackUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

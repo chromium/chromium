@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/safe_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/isolated_origin_util.h"
@@ -30,6 +30,8 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -44,46 +46,8 @@ namespace content {
 
 namespace {
 
-using WebUIDomains = std::vector<std::string>;
-
 // Holdback flag for the OAC redundant lookup optimization.
 BASE_FEATURE(kOacRedundantLookupHoldback, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Parses the TLD and any lower level domains for WebUI URLs of the form
-// chrome://foo.bar/. Domains are returned in the same order they appear in the
-// host.
-WebUIDomains GetWebUIDomains(const GURL& url) {
-  return base::SplitString(url.host(), ".", base::TRIM_WHITESPACE,
-                           base::SPLIT_WANT_ALL);
-}
-
-// Checks if the `url` is a special case WebUI URL of the form
-// chrome://foo.bar/. Such URLs will employ LockURLs based on their TLD (ie
-// chome://bar/). This will allow WebUI URLs of the above form with common TLDs
-// to share a process whilst maintaining independent SiteURLs to allow for
-// WebUIType differentiation.
-bool IsWebUIAndUsesTLDForProcessLockURL(const GURL& url) {
-  if (!std::ranges::contains(URLDataManagerBackend::GetWebUISchemes(),
-                             url.scheme())) {
-    return false;
-  }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (features::kInitialWebUIUseSeparateProcess.Get() &&
-      GetContentClient()->browser()->IsInitialWebUIURL(url)) {
-    // If initial WebUIs need to use a different process separate from other
-    // WebUIs, use the full URL for process lock instead of just the TLD.
-    return false;
-  }
-#endif
-
-  WebUIDomains domains = GetWebUIDomains(url);
-  // This only applies to WebUI urls with two or more non-empty domains.
-  return domains.size() >= 2 &&
-         std::ranges::all_of(domains, [](const std::string& domain) {
-           return !domain.empty();
-         });
-}
 
 // URL used for the site URL and lock URL in error page SiteInfo objects.
 GURL GetErrorPageSiteAndLockURL() {
@@ -92,6 +56,36 @@ GURL GetErrorPageSiteAndLockURL() {
 
 GURL SchemeAndHostToSite(std::string_view scheme, std::string_view host) {
   return GURL(base::StrCat({scheme, url::kStandardSchemeSeparator, host}));
+}
+
+// Returns the shared process lock URL for `url` if it is a trusted `chrome://`
+// WebUI whose registered WebUIConfig specifies a `process_lock_host()`. This
+// allows WebUIs that share a process lock host to share a RenderProcessHost
+// while keeping their own site URL (`chrome://<host>/`) for WebUIType
+// differentiation.
+std::optional<GURL> GetWebUIProcessLockURL(const GURL& url) {
+  // Only `chrome://` WebUIs can use a shared process lock host. Other URLs,
+  // including `chrome-untrusted://` WebUIs, use the normal process lock.
+  if (!url.SchemeIs(kChromeUIScheme)) {
+    return std::nullopt;
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (features::kInitialWebUIUseSeparateProcess.Get() &&
+      GetContentClient()->browser()->IsInitialWebUIURL(url)) {
+    // If initial WebUIs need to use a different process separate from other
+    // WebUIs, use their own site URL for the process lock instead of the
+    // shared host.
+    return std::nullopt;
+  }
+#endif
+
+  const WebUIConfig* config =
+      WebUIConfigMap::GetInstance().GetRegisteredConfig(url);
+  if (!config || !config->process_lock_host().has_value()) {
+    return std::nullopt;
+  }
+  return SchemeAndHostToSite(kChromeUIScheme, *config->process_lock_host());
 }
 
 // Figure out which origin to use for computing site and process lock URLs for
@@ -309,24 +303,22 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
       GetContentClient()->browser()->GetEffectiveURL(
           isolation_context.browser_context(), url_info.url);
 
-  // In the case of WebUIs, pass the real URL as an effective URL. It will be
-  // used to compute a SiteInfo's site URL which is the complete WebUI URL,
-  // while the agent_cluster_key_ has a site URL which is the WebUI TLD. This
-  // allows WebUI to continue to differentiate WebUIType via site URL while
-  // allowing WebUI with a shared TLD to share a RenderProcessHost.
-  // TODO(crbug.com/579199089): Remove this and replace it with
-  // WebUIConfig-based process lock configuration.
-  if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url)) {
-    CHECK(!effective_url.has_value());
-    effective_url = url_info.url;
-  }
-
   // If there is an effective URL, compute the effective site URL and override
   // the site_url computed from the AgentClusterKey.
   if (effective_url.has_value()) {
     site_url =
         GetAgentClusterKeyForURL(isolation_context, url_info, effective_url)
             .GetURL();
+  }
+
+  // Allow WebUIs whose WebUIConfig specifies a shared process lock host to
+  // share a RenderProcessHost while keeping their own site URL
+  // (`chrome://<host>/`) as `site_url` to differentiate WebUIType.
+  if (std::optional<GURL> webui_lock_url =
+          GetWebUIProcessLockURL(url_info.url)) {
+    CHECK(!effective_url.has_value());
+    agent_cluster_key = AgentClusterKey::CreateSiteKeyed(
+        *webui_lock_url, AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
 
   BrowserContext* browser_context = isolation_context.browser_context();
@@ -944,24 +936,6 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   if (url.SchemeIs(kChromeErrorScheme)) {
     return AgentClusterKey::CreateSiteKeyed(
         GetErrorPageSiteAndLockURL(),
-        AgentClusterKey::OACStatus::kSiteKeyedByDefault);
-  }
-
-  // For WebUI URLs of the form chrome://foo.bar/, return a site-keyed
-  // AgentClusterKey with a URL based on the TLD (ie chrome://bar/) when
-  // there is no effective URL passed. When an effective URL is passed, which
-  // will be the case when computing the site URL for the WebUI's SiteInfo,
-  // proceed with regular computations. This allows WebUI to continue to
-  // differentiate WebUIType via SiteURL while allowing WebUI with a shared TLD
-  // to share a RenderProcessHost.
-  // TODO(crbug.com/579199089): Remove this and replace it with
-  // WebUIConfig-based process lock configuration.
-  if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url) &&
-      !effective_url.has_value()) {
-    WebUIDomains host_domains = GetWebUIDomains(url_info.url);
-    return AgentClusterKey::CreateSiteKeyed(
-        GURL(base::StrCat({url_info.url.scheme(), url::kStandardSchemeSeparator,
-                           host_domains.back()})),
         AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
 

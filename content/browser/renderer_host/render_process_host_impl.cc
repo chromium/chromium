@@ -1335,10 +1335,10 @@ bool IsUnusedAndTiedToBrowsingInstance(
   // reuse from unrelated windows (such as when over the process limit), this
   // will disqualify any initial processes in unrelated windows.
   //
-  // This check is important for certain chrome://*.top-chrome/ WebUI cases (see
-  // `IsWebUIAndUsesTLDForProcessLockURL()`), which need to only reuse available
-  // existing top-chrome WebUI processes, but should not attempt to reuse an
-  // unused process from an unrelated blank tab.
+  // This check is important for WebUIs that share a process lock host (see
+  // `WebUIConfig::process_lock_host()`), which should only reuse existing
+  // processes with the same lock, not an unused process from an unrelated blank
+  // tab.
   bool stays_in_existing_browsing_instance = false;
   host->ForEachRenderFrameHost([&stays_in_existing_browsing_instance,
                                 &isolation_context](RenderFrameHost* rfh) {

@@ -292,10 +292,14 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   }
 
   // Returns the URL which should be used in a SetProcessLock call for this
-  // SiteInfo's process, based on the |agent_cluster_key_|.  This is the same as
-  // |site_url_| except for cases involving effective URLs, such as hosted apps.
-  // In those cases, this URL is a site URL that is computed without the use of
-  // effective URLs.
+  // SiteInfo's process, based on the `agent_cluster_key_`.  This is the same as
+  // `site_url_` except for:
+  // - Cases involving effective URLs, such as hosted apps. In those cases, this
+  //   URL is a site URL that is computed without the use of effective URLs.
+  // - WebUIs whose WebUIConfig specifies a `WebUIConfig::process_lock_host()`.
+  //   In those cases, this URL is the shared `chrome://<process_lock_host>/`
+  //   URL, while `site_url_` remains the WebUI's own site URL
+  //   (`chrome://<host>/`).
   //
   // NOTE: This URL is currently set even in cases where this SiteInstance's
   //       process is *not* going to be locked to it.  Callers should be careful
@@ -458,22 +462,11 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   static auto MakeSecurityPrincipalKey(const SiteInfo& site_info);
 
   // Returns the AgentClusterKey (and OAC status) appropriate to use for the
-  // provided |url_info|. |effective_url| is the effective URL, which can
-  // override the real URL in |url_info| when loading hosted apps or the NTP. If
-  // an |effective_url| is provided, the AgentClusterKey will be computed based
-  // on this effective URL rather than the real URL. The |effective_url| is
-  // expected to be different from the real URL, except in the case of WebUIs
-  // (see below).
-  //
-  // Note: in the case of WebUIs, this function should first be called without
-  // an |effective_url| to compute the AgentClusterKey, and with an
-  // |effective_url| which is the real URL of the WebUI. The first call will
-  // return an AgentClusterKey whose site URL is the TLD (ie chrome://bar). The
-  // second call will be used to compute a Site URL which is the WebUIType. This
-  // allows WebUI to continue to differentiate WebUIType via SiteURL while
-  // allowing WebUI with a shared TLD to share a RenderProcessHost.
-  // TODO(crbug.com/579199089): Remove this and replace it with
-  // WebUIConfig-based process lock configuration.
+  // provided `url_info`. `effective_url` is the effective URL, which can
+  // override the real URL in `url_info` when loading hosted apps or the NTP. If
+  // an `effective_url` is provided, the AgentClusterKey will be computed based
+  // on this effective URL rather than the real URL. The `effective_url` is
+  // expected to be different from the real URL.
   static AgentClusterKey GetAgentClusterKeyForURL(
       const IsolationContext& isolation_context,
       const UrlInfo& url_info,
@@ -505,10 +498,13 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
 
   // In some cases such as hosted apps, the URL or origin of the AgentClusterKey
   // might be overridden by an effective URL. The overridden site URL is stored
-  // in this member. When there is no effective URL, |site_url_| simply
-  // duplicates the information returned by GetProcessLockURL(). Regardless of
-  // the presence of effective URLs, it is never used when assigning a process
-  // lock. When assigning a process lock, we only take into account the
+  // in this member. For WebUIs whose WebUIConfig specifies a
+  // `WebUIConfig::process_lock_host()`, the AgentClusterKey is based on the
+  // shared `chrome://<process_lock_host>/` URL, and this member stores the
+  // WebUI's own site URL (`chrome://<host>/`). In all other cases, `site_url_`
+  // simply duplicates the information returned by GetProcessLockURL().
+  // Regardless of the case, it is never used when assigning a process lock.
+  // When assigning a process lock, we only take into account the
   // AgentClusterKey.
   GURL site_url_;
 

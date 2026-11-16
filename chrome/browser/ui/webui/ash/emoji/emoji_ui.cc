@@ -106,7 +106,8 @@ namespace ash {
 
 EmojiUIConfig::EmojiUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                  ash::kChromeUIEmojiPickerHost) {}
+                                  ash::kChromeUIEmojiPickerHost,
+                                  ProcessModel::kDedicatedProcess) {}
 
 bool EmojiUIConfig::ShouldAutoResizeHost() {
   return true;

@@ -4,15 +4,20 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 
+#include <string_view>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
 namespace {
 
@@ -27,9 +32,22 @@ void DestroyBubble(WebUIBubbleManager* bubble_manager, Profile* profile) {
 }  // namespace
 
 class TestWebUIController : public TopChromeWebUIController {
+ public:
+  explicit TestWebUIController(content::WebUI* web_ui)
+      : TopChromeWebUIController(web_ui) {}
+
+  static constexpr std::string_view GetWebUIName() { return "Test"; }
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
+
+class TestTopChromeWebUIConfig
+    : public DefaultTopChromeWebUIConfig<TestWebUIController> {
+ public:
+  explicit TestTopChromeWebUIConfig(std::string_view host)
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme, host) {}
+};
 
 template <>
 class WebUIContentsWrapperT<TestWebUIController> final
@@ -81,8 +99,8 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  // WebContents under the ".top-chrome" pseudo-TLD will reuse the render
-  // process.
+  // WebContents whose registered TopChromeWebUIConfig shares a process lock
+  // (such as TestTopChromeWebUIConfig) will reuse the render process.
   std::unique_ptr<WebUIBubbleManager> MakeBubbleManager(
       GURL site_url = GURL("chrome://test.top-chrome")) {
     return WebUIBubbleManager::Create<TestWebUIController>(browser(), site_url,
@@ -92,6 +110,10 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
   void DestroyBubbleManager() { bubble_manager_.reset(); }
 
  private:
+  content::ScopedWebUIConfigRegistration config_registration_1_{
+      std::make_unique<TestTopChromeWebUIConfig>("test.top-chrome")};
+  content::ScopedWebUIConfigRegistration config_registration_2_{
+      std::make_unique<TestTopChromeWebUIConfig>("test2.top-chrome")};
   std::unique_ptr<WebUIBubbleManager> bubble_manager_;
 };
 

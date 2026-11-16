@@ -5,6 +5,7 @@
 #include "content/public/test/web_ui_browsertest_util.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -242,8 +243,10 @@ GURL GetChromeUntrustedUIURL(const std::string& host_and_path) {
               url::kStandardSchemeSeparator + host_and_path);
 }
 
-TestWebUIConfig::TestWebUIConfig(std::string_view host)
-    : WebUIConfig(content::kChromeUIScheme, host) {}
+TestWebUIConfig::TestWebUIConfig(
+    std::string_view host,
+    std::optional<std::string_view> process_lock_host)
+    : WebUIConfig(content::kChromeUIScheme, host, process_lock_host) {}
 
 std::unique_ptr<WebUIController> TestWebUIConfig::CreateWebUIController(
     content::WebUI* web_ui,
@@ -252,7 +255,7 @@ std::unique_ptr<WebUIController> TestWebUIConfig::CreateWebUIController(
     return nullptr;
   }
 
-  return CreateTestWebUIControllerForURL(web_ui, GURL(host()), true);
+  return CreateTestWebUIControllerForURL(web_ui, url, true);
 }
 
 TestWebUIControllerFactory::TestWebUIControllerFactory()

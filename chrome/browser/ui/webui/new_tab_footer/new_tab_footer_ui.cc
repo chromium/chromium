@@ -35,7 +35,8 @@
 
 NewTabFooterUIConfig::NewTabFooterUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                  chrome::kChromeUINewTabFooterHost) {}
+                                  chrome::kChromeUINewTabFooterHost,
+                                  ProcessModel::kDedicatedProcess) {}
 
 bool NewTabFooterUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_WEBUI_CONFIG_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -32,7 +33,22 @@ class WebUI;
 // all existing WebUI pages use this.
 class CONTENT_EXPORT WebUIConfig {
  public:
-  explicit WebUIConfig(std::string_view scheme, std::string_view host);
+  // `process_lock_host`, if set, is the host of the shared process lock URL
+  // (`chrome://<process_lock_host>/`) for this WebUI, e.g. "top-chrome".
+  // Multiple `chrome://` WebUIs constructed with the same `process_lock_host`
+  // can share a renderer process while keeping their own site URL
+  // (`chrome://<host>/`), so their `WebUIType` remains distinct. Note that
+  // WebUIs with the same `process_lock_host` are not process-isolated from each
+  // other.
+  //
+  // CHECKs that `process_lock_host` is `std::nullopt` for any non-`chrome://`
+  // scheme. `WebUIConfigMap` also CHECKs that it is not the host of a
+  // registered `chrome://` WebUI. Defaults to `std::nullopt`, which locks the
+  // renderer process to this WebUI's own site URL.
+  explicit WebUIConfig(
+      std::string_view scheme,
+      std::string_view host,
+      std::optional<std::string_view> process_lock_host = std::nullopt);
   virtual ~WebUIConfig();
   WebUIConfig(const WebUIConfig&) = delete;
   WebUIConfig& operator=(const WebUIConfig&) = delete;
@@ -42,6 +58,13 @@ class CONTENT_EXPORT WebUIConfig {
 
   // Host the WebUI serves.
   const std::string& host() const { return host_; }
+
+  // Host of the shared process lock URL (`chrome://<process_lock_host>/`), or
+  // `std::nullopt` if the WebUI locks its renderer process to its own site URL.
+  // See the constructor for details.
+  const std::optional<std::string>& process_lock_host() const {
+    return process_lock_host_;
+  }
 
   // Returns whether the WebUI is enabled e.g. the necessary feature flags are
   // on/off, the WebUI is enabled in incognito, etc. Defaults to true.
@@ -87,6 +110,7 @@ class CONTENT_EXPORT WebUIConfig {
  private:
   const std::string scheme_;
   const std::string host_;
+  const std::optional<std::string> process_lock_host_;
 };
 
 // Templated class with an implementation for CreateWebUIController. Prefer
@@ -95,8 +119,11 @@ class CONTENT_EXPORT WebUIConfig {
 template <typename T>
 class CONTENT_EXPORT DefaultWebUIConfig : public WebUIConfig {
  public:
-  explicit DefaultWebUIConfig(std::string_view scheme, std::string_view host)
-      : WebUIConfig(scheme, host) {}
+  explicit DefaultWebUIConfig(
+      std::string_view scheme,
+      std::string_view host,
+      std::optional<std::string_view> process_lock_host = std::nullopt)
+      : WebUIConfig(scheme, host, process_lock_host) {}
   ~DefaultWebUIConfig() override = default;
 
   std::unique_ptr<WebUIController> CreateWebUIController(

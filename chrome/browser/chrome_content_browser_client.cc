@@ -398,6 +398,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/child_process_id.h"
@@ -2562,10 +2563,15 @@ void ChromeContentBrowserClient::EnsureRequiredHeadersForIsolatedApp(
 bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  // Top Chrome WebUI should try to share a RenderProcessHost with other
-  // existing Top Chrome WebUI.
-  if (::IsTopChromeWebUIURL(url)) {
-    return true;
+  // WebUIs whose WebUIConfig specifies a `process_lock_host()` (e.g. Top Chrome
+  // WebUIs) should try to share a RenderProcessHost with other existing WebUIs
+  // that use the same process lock host.
+  if (url.SchemeIs(content::kChromeUIScheme)) {
+    const content::WebUIConfig* config =
+        content::WebUIConfigMap::GetInstance().GetRegisteredConfig(url);
+    if (config && config->process_lock_host().has_value()) {
+      return true;
+    }
   }
 
   return false;

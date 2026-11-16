@@ -87,7 +87,8 @@ int GetSessionIndexForPrimaryAccount(
 
 DrivePickerHostUIConfig::DrivePickerHostUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                  chrome::kChromeUIDrivePickerHostHost) {}
+                                  chrome::kChromeUIDrivePickerHostHost,
+                                  ProcessModel::kDedicatedProcess) {}
 
 // static
 bool DrivePickerHostUIConfig::IsEnabled() {
