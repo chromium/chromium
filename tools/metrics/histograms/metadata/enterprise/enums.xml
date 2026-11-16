@@ -2701,6 +2701,7 @@ chromium-metrics-reviews@google.com.
   <int value="1496" label="GeminiEnterpriseUrl"/>
   <int value="1497" label="IsolatedModeUserInstalledExtensionsSettings"/>
   <int value="1498" label="SystemTitleBarEnabled"/>
+  <int value="1499" label="SearchFromDesktopEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

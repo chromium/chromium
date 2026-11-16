@@ -1,0 +1,39 @@
+caption: Enable Search from desktop
+default: null
+desc: |-
+  Controls whether the Search from desktop feature is available in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> and <ph name="MAC_OS_NAME">macOS</ph>.
+
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> provides a "Search from desktop" setting that allows users to open a floating desktop search box from anywhere on their computer using a global keyboard shortcut, the system tray or menu bar icon, or, on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, Start Menu and taskbar shortcuts.
+
+  Setting the policy to Enabled turns on Search from desktop and prevents users from turning it off in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> settings. Users can still customize their local keyboard shortcut. After Search from desktop is first used, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> keeps running in the background so the keyboard shortcut works when no browser window is open, and on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> it also starts when the user signs in.
+
+  Setting the policy to Disabled turns off Search from desktop, closes any open desktop search window, unregisters the global keyboard shortcut, removes the system tray or menu bar icon, and prevents users from turning the feature on in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> settings. Search from desktop then no longer keeps <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> running in the background or, on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, starts it when the user signs in. On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, existing Search from desktop shortcuts in the Start Menu or taskbar are not removed, but they open <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> as a normal launch would, in a browser window or the profile picker.
+
+  Not setting the policy turns on Search from desktop, and users can turn it off in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> settings.
+
+  When Search from desktop is enabled, <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> availability and screen or file content sharing within the desktop search box continue to respect <ph name="AI_MODE_SETTINGS_POLICY_NAME">AIModeSettings</ph> and <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME">SearchContentSharingSettings</ph>.
+
+  This policy has no effect on versions of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> where the "Search from desktop" setting is not available, or for profiles where it is unavailable, such as when Google is not the default search engine.
+example_value: false
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome.win
+- chrome.mac
+items:
+- caption: Enable Search from desktop
+  value: true
+- caption: Disable Search from desktop
+  value: false
+- caption: Allow the user to decide
+  value: null
+owners:
+- file://chrome/browser/ui/omnibox/omnibox_everywhere/OWNERS
+- adamyao@google.com
+- julietlevesque@google.com
+schema:
+  type: boolean
+tags: []
+type: main

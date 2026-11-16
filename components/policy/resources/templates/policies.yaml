@@ -1497,6 +1497,7 @@ policies:
   1496: GeminiEnterpriseUrl
   1497: IsolatedModeUserInstalledExtensionsSettings
   1498: SystemTitleBarEnabled
+  1499: SearchFromDesktopEnabled
 
 atomic_groups:
   1: Homepage
