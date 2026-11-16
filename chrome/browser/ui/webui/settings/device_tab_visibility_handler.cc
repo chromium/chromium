@@ -145,8 +145,6 @@ void DeviceTabVisibilityHandler::HandleSetDeviceTabVisibility(
     const base::ListValue& args) {
   CHECK_EQ(args.size(), 2U);
   const std::string& session_tag = args[0].GetString();
-  // TODO(crbug.com/570417844): Verify that `session_tag` corresponds to a
-  // known foreign session.
   CHECK(!session_tag.empty());
   const bool visible = args[1].GetBool();
   AllowJavascript();
