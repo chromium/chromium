@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
 /**
@@ -111,31 +112,49 @@ public class CustomTabActivityRestoreSavedStateTest {
     }
 
     /**
-     * An off-the-record Custom Tab restored with its cipher key adds its tab to the model only
-     * after cookies are restored asynchronously, so there is no current tab when the saved
-     * fullscreen would be re-entered. It must not crash, and it comes back not fullscreen.
+     * An off-the-record Custom Tab restored with its cipher key skips the cookie restore when its
+     * profile survived the recreation, so the tab is in the model when the saved fullscreen is
+     * re-entered.
      */
     @Test
     @MediumTest
-    public void testIncognitoCustomTab_withoutTabAtRestore_doesNotCrash() {
+    public void testIncognitoCustomTab_reentersSavedFullscreen() {
         CustomTabActivity activity = launch(createIncognitoIntent());
         waitForCipherKey(activity);
 
         CustomTabActivity recreated =
                 recreateWithSavedFullscreenOptions(activity, /* injectFullscreenOptions= */ true);
 
-        // Without the cipher key the tab is added synchronously and this test would not exercise
-        // the missing-tab path.
-        Bundle savedInstanceState = recreated.getSavedInstanceState();
-        assertNotNull(savedInstanceState);
-        assertTrue(
-                "The bundle must hold the cipher key so that tab creation is deferred",
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> new CipherFactory().restoreFromBundle(savedInstanceState)));
+        // Without the cipher key the cookie restore is not attempted at all, and this test would
+        // not exercise the skip.
+        assertBundleHoldsCipherKey(recreated);
         assertTrue(recreated.getActivityTab().isIncognito());
-        assertFalse(
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> recreated.getFullscreenManager().getPersistentFullscreenMode()));
+        CriteriaHelper.pollUiThread(
+                () -> recreated.getFullscreenManager().getPersistentFullscreenMode(),
+                "Saved fullscreen should be re-entered after recreation");
+    }
+
+    /**
+     * Skipping the cookie restore on a recreation keeps the cookies, because the off-the-record
+     * profile that holds them survives.
+     */
+    @Test
+    @MediumTest
+    public void testIncognitoCustomTab_keepsCookiesAfterRecreation() throws Exception {
+        CustomTabActivity activity = launch(createIncognitoIntent());
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                activity.getActivityTab().getWebContents(),
+                "document.cookie = 'restore_test=1; max-age=3600'");
+        waitForCipherKey(activity);
+
+        CustomTabActivity recreated =
+                recreateWithSavedFullscreenOptions(activity, /* injectFullscreenOptions= */ false);
+
+        assertBundleHoldsCipherKey(recreated);
+        assertEquals(
+                "\"restore_test=1\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        recreated.getActivityTab().getWebContents(), "document.cookie"));
     }
 
     /**
@@ -167,6 +186,15 @@ public class CustomTabActivityRestoreSavedStateTest {
                     return controller != null && controller.isReauthPageShowing();
                 },
                 "Re-auth page should be shown in the recreated activity");
+    }
+
+    private static void assertBundleHoldsCipherKey(CustomTabActivity activity) {
+        Bundle savedInstanceState = activity.getSavedInstanceState();
+        assertNotNull(savedInstanceState);
+        assertTrue(
+                "The bundle must hold the cipher key",
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new CipherFactory().restoreFromBundle(savedInstanceState)));
     }
 
     private Intent createIncognitoIntent() {

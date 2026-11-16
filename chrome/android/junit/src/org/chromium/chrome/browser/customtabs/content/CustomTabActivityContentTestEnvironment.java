@@ -187,6 +187,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
         when(profileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
+        setOffTheRecordProfileExists(false);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(webContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.INITIAL_URL);
         when(verifier.verify(any())).thenReturn(Promise.fulfilled(true));
@@ -299,6 +300,26 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         return tab;
     }
 
+    /**
+     * Adds {@code tab} to the {@link AsyncTabParamsManagerSingleton} as a tab awaiting reparenting,
+     * as the previous activity does before an activity recreation, without pointing the intent at
+     * it.
+     */
+    public void addTabAwaitingReparenting(Tab tab) {
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(tab.getId(), new TabReparentingParams(tab, null));
+    }
+
+    /** Makes {@code getOffTheRecordProfile(false)} return the off-the-record profile. */
+    public void setOffTheRecordProfileExists(boolean exists) {
+        when(profileProvider.getOffTheRecordProfile(eq(false)))
+                .thenReturn(exists ? mIncognitoProfile : null);
+    }
+
+    public Profile getIncognitoProfile() {
+        return mIncognitoProfile;
+    }
+
     @SuppressWarnings("DirectInvocationOnMock")
     public Tab prepareTab() {
         Tab tab = mock(Tab.class);
@@ -310,6 +331,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tab.isIncognito()).thenAnswer((mock) -> isOffTheRecord);
         when(tab.isOffTheRecord()).thenAnswer((mock) -> isOffTheRecord);
         when(tab.isIncognitoBranded()).thenAnswer((mock) -> isOffTheRecord);
+        when(tab.getProfile()).thenAnswer((mock) -> isOffTheRecord ? mIncognitoProfile : mProfile);
         when(intentDataProvider.isOffTheRecord()).thenReturn(isOffTheRecord);
         tab.getUserDataHost().setUserData(ReparentingTask.class, reparentingTask);
         return tab;

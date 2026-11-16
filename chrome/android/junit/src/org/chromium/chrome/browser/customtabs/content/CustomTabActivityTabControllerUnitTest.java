@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -263,6 +264,90 @@ public class CustomTabActivityTabControllerUnitTest {
 
         verify(env.tabFactory, never()).createTab(any(), any(), any());
         verify(env.tabModel, never()).addTab(any(), anyInt(), anyInt(), anyInt());
+    }
+
+    /**
+     * Sets up an off-the-record Custom Tab restored from a bundle with a cipher key, using a mock
+     * {@link CookiesFetcher}, and returns that mock.
+     */
+    private CookiesFetcher setUpOffTheRecordRestoreWithCipherKey(Tab savedTab) {
+        env.saveTab(savedTab);
+        mTabController = env.createTabController();
+        when(env.intentDataProvider.isOffTheRecord()).thenReturn(true);
+        when(env.cipherFactory.restoreFromBundle(any())).thenReturn(true);
+
+        CookiesFetcher mockFetcher = mock(CookiesFetcher.class);
+        mTabController.setCookiesFetcherForTesting(mockFetcher);
+        return mockFetcher;
+    }
+
+    @Test
+    public void skipsCookieRestore_IfOffTheRecordTabAwaitsReparenting() {
+        env.isOffTheRecord = true;
+        Tab savedTab = env.prepareTab();
+        CookiesFetcher mockFetcher = setUpOffTheRecordRestoreWithCipherKey(savedTab);
+        env.setOffTheRecordProfileExists(true);
+        env.addTabAwaitingReparenting(savedTab);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        verify(mockFetcher, never()).restoreCookies(any());
+        assertEquals(savedTab, env.tabProvider.getTab());
+        assertEquals(TabCreationMode.RESTORED, env.tabProvider.getInitialTabCreationMode());
+    }
+
+    @Test
+    public void restoresCookies_IfProfileExistsButNoTabAwaitsReparenting() {
+        // After process death, startup code may create the profile before
+        // finishNativeInitialization(). The cookies must still be restored from the file.
+        env.isOffTheRecord = true;
+        Tab savedTab = env.prepareTab();
+        CookiesFetcher mockFetcher = setUpOffTheRecordRestoreWithCipherKey(savedTab);
+        env.setOffTheRecordProfileExists(true);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mockFetcher).restoreCookies(callbackCaptor.capture());
+        assertNull(env.tabProvider.getTab());
+
+        callbackCaptor.getValue().run();
+        assertEquals(savedTab, env.tabProvider.getTab());
+    }
+
+    @Test
+    public void restoresCookies_IfTabAwaitingReparentingUsesAnotherProfile() {
+        env.isOffTheRecord = true;
+        Tab savedTab = env.prepareTab();
+        CookiesFetcher mockFetcher = setUpOffTheRecordRestoreWithCipherKey(savedTab);
+        env.setOffTheRecordProfileExists(true);
+        Tab otherTab = env.prepareTab();
+        when(otherTab.getId()).thenReturn(2);
+        when(otherTab.getProfile()).thenReturn(mock(Profile.class));
+        env.addTabAwaitingReparenting(otherTab);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        verify(mockFetcher).restoreCookies(any());
+        assertNull(env.tabProvider.getTab());
+    }
+
+    @Test
+    public void restoresCookies_IfProfileDoesNotExist() {
+        env.isOffTheRecord = true;
+        Tab savedTab = env.prepareTab();
+        CookiesFetcher mockFetcher = setUpOffTheRecordRestoreWithCipherKey(savedTab);
+        env.setOffTheRecordProfileExists(false);
+        env.addTabAwaitingReparenting(savedTab);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        verify(mockFetcher).restoreCookies(any());
+        assertNull(env.tabProvider.getTab());
     }
 
     @Test

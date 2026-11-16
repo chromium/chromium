@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -314,9 +315,13 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         // Ensure OTR cookies are restored before attempting to restore / create the initial tab.
         // This logic does not need to happen on pre-warm starts because those instances are never
         // resuming a previously killed task, which are the only instances where restoring cookie
-        // state is needed.
+        // state is needed. It is also skipped when the activity is recreated while the process
+        // stays alive (e.g. a move to another display): the OTR profile survives and still holds
+        // the cookies, and creating the tab synchronously lets the rest of startup see it.
         boolean hadCipherData = mCipherFactory.restoreFromBundle(mSavedInstanceStateSupplier.get());
-        if (hadCipherData && mIntentDataProvider.isOffTheRecord()) {
+        if (hadCipherData
+                && mIntentDataProvider.isOffTheRecord()
+                && !isOffTheRecordProfileUsedByTabAwaitingReparenting()) {
             // Ensure the Profile has been created.
             ProfileProvider profileProvider = mProfileProviderSupplier.get();
             assumeNonNull(profileProvider);
@@ -327,6 +332,30 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         } else {
             finishTabInitializationPostNative();
         }
+    }
+
+    /**
+     * Returns true if a tab that is waiting to be reparented uses this Custom Tab's off-the-record
+     * profile. The profile and its cookies then survived the recreation, so the cookies do not need
+     * to be restored from disk.
+     *
+     * <p>A tab waits for reparenting only when Chrome recreates the activity itself. When Android
+     * recreates it, this returns false and the cookies are restored although the profile survived.
+     * Checking for the saved profile before startup creates it would avoid that.
+     */
+    private boolean isOffTheRecordProfileUsedByTabAwaitingReparenting() {
+        ProfileProvider profileProvider = mProfileProviderSupplier.get();
+        assumeNonNull(profileProvider);
+        Profile profile = profileProvider.getOffTheRecordProfile(/* createIfNeeded= */ false);
+        if (profile == null) return false;
+
+        SparseArray<AsyncTabParams> params =
+                AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams();
+        for (int i = 0; i < params.size(); i++) {
+            Tab tab = params.valueAt(i).getTabToReparent();
+            if (tab != null && tab.getProfile() == profile) return true;
+        }
+        return false;
     }
 
     private void finishTabInitializationPostNative() {
