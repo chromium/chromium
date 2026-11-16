@@ -88,6 +88,8 @@ public class AutofillProviderTest {
     private TestContainerView mContainerView;
     private View mAnchorView;
     private AutofillProvider mAutofillProvider;
+    // Keeps the Activity used by createWrapperForNewActivity() from being garbage collected.
+    private Activity mInitialActivity;
     private DisplayAndroid mDisplayAndroid;
     private final long mMockedNativeAndroidAutofillProvider = 1;
 
@@ -141,6 +143,16 @@ public class AutofillProviderTest {
         public void getLocationInWindow(int[] outLocation) {
             outLocation[0] = mScreenX;
             outLocation[1] = mScreenY;
+        }
+    }
+
+    /** Activity whose destroyed state can be set directly. */
+    public static class TestActivity extends Activity {
+        boolean mIsDestroyed;
+
+        @Override
+        public boolean isDestroyed() {
+            return mIsDestroyed;
         }
     }
 
@@ -1375,6 +1387,215 @@ public class AutofillProviderTest {
 
         assertTrue(mAutofillProvider.isAutofillDisabled());
         verify(newAutofillManager, never()).isEnabled();
+    }
+
+    @Test
+    public void testStartAutofillSessionRefetchesAutofillManagerAfterActivityChange() {
+        AutofillManager oldAutofillManager = createWrapperForNewActivity();
+        AutofillManager newAutofillManager =
+                setActivityWithAutofillManager(Robolectric.buildActivity(Activity.class).get());
+        when(newAutofillManager.getAutofillServiceComponentName())
+                .thenReturn(new ComponentName("com.google.android.gms", "AutofillService"));
+        HistogramWatcher providerWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillProviderUMA.UMA_AUTOFILL_PROVIDER,
+                        AutofillProviderUMA.Provider.AWG);
+
+        startSessionOnSingleField();
+
+        verify(newAutofillManager).notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+        verify(oldAutofillManager, never())
+                .notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+        // An AutofillManager has only one AutofillCallback, which may be the app's.
+        verify(newAutofillManager, never()).registerCallback(any());
+        verify(oldAutofillManager).unregisterCallback(any());
+        assertTrue(mAutofillProvider.getAutofillManagerWrapper().isAwGCurrentAutofillService());
+        providerWatcher.assertExpected();
+    }
+
+    @Test
+    public void testIsAutofillDisabledRefetchesAutofillManagerAfterActivityChange() {
+        createWrapperForNewActivity();
+        AutofillManager newAutofillManager =
+                setActivityWithAutofillManager(Robolectric.buildActivity(Activity.class).get());
+        when(newAutofillManager.isEnabled()).thenReturn(false);
+
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+    }
+
+    @Test
+    public void testMovingFromLiveActivityCancelsOldSession() {
+        setContainerScreenGeometry(new Rect(0, 0, 200, 500), LOCATION_X, LOCATION_Y);
+        AutofillManager oldAutofillManager = createWrapperForNewActivity();
+        startSessionOnSingleField();
+        verify(oldAutofillManager).notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+
+        AutofillManager newAutofillManager =
+                setActivityWithAutofillManager(Robolectric.buildActivity(Activity.class).get());
+        mAutofillProvider.queryAutofillSuggestion();
+
+        verify(oldAutofillManager).cancel();
+        verify(oldAutofillManager, never()).requestAutofill(any(), anyInt(), any());
+        verify(newAutofillManager).requestAutofill(any(View.class), anyInt(), any(Rect.class));
+    }
+
+    @Test
+    public void testActivityRecreationKeepsRestoredSession() {
+        TestActivity oldActivity = Robolectric.buildActivity(TestActivity.class).get();
+        AutofillManager oldAutofillManager = setActivityWithAutofillManager(oldActivity);
+        mAutofillProvider.switchToContext(new WeakReference<>(mContextWrapper));
+        startSessionOnSingleField();
+        oldActivity.mIsDestroyed = true;
+
+        // The recreated Activity's AutofillManager restores the session of the destroyed one.
+        AutofillManager newAutofillManager =
+                setActivityWithAutofillManager(Robolectric.buildActivity(Activity.class).get());
+        startSessionOnSingleField();
+
+        verify(oldAutofillManager, never()).cancel();
+        verify(newAutofillManager).notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+    }
+
+    @Test
+    public void testSameActivityDoesNotRefetchAutofillManager() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        AutofillManager oldAutofillManager = setActivityWithAutofillManager(activity);
+        mAutofillProvider.switchToContext(new WeakReference<>(mContextWrapper));
+        AutofillManager otherAutofillManager = setActivityWithAutofillManager(activity);
+
+        startSessionOnSingleField();
+
+        verify(oldAutofillManager).notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+        verify(oldAutofillManager, never()).unregisterCallback(any());
+        verify(otherAutofillManager, never()).isEnabled();
+    }
+
+    @Test
+    @Features.DisableFeatures(
+            AndroidAutofillFeatures.ANDROID_AUTOFILL_REFETCH_MANAGER_IF_DISABLED_NAME)
+    public void testActivityChangeKeepsAutofillManagerWithoutFeature() {
+        AutofillManager oldAutofillManager = createWrapperForNewActivity();
+        AutofillManager newAutofillManager =
+                setActivityWithAutofillManager(Robolectric.buildActivity(Activity.class).get());
+
+        startSessionOnSingleField();
+
+        verify(oldAutofillManager).notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+        verify(oldAutofillManager, never()).unregisterCallback(any());
+        verify(newAutofillManager, never()).isEnabled();
+    }
+
+    @Test
+    public void testDestroyedWrapperDoesNotRefetchAutofillManagerAfterActivityChange() {
+        createWrapperForNewActivity();
+        AutofillManager newAutofillManager =
+                setActivityWithAutofillManager(Robolectric.buildActivity(Activity.class).get());
+
+        mAutofillProvider.destroy();
+
+        assertTrue(mAutofillProvider.isAutofillDisabled());
+        verify(newAutofillManager, never()).isEnabled();
+    }
+
+    @Test
+    public void testRefetchRunsOncePerActivityIfNoAutofillManagerIsReturned() {
+        AutofillManager oldAutofillManager = createWrapperForNewActivity();
+        final int[] systemServiceCalls = {0};
+        mContextWrapper.setBaseContext(
+                new ContextWrapper(Robolectric.buildActivity(Activity.class).get()) {
+                    @Override
+                    public Object getSystemService(String name) {
+                        if (AUTOFILL_SERVICE_NAME.equals(name)) {
+                            systemServiceCalls[0]++;
+                            return null;
+                        }
+                        return super.getSystemService(name);
+                    }
+                });
+
+        mAutofillProvider.isAutofillDisabled();
+        startSessionOnSingleField();
+        mAutofillProvider.isAutofillDisabled();
+
+        assertEquals(1, systemServiceCalls[0]);
+        verify(oldAutofillManager, never()).unregisterCallback(any());
+        verify(oldAutofillManager).notifyViewEntered(any(View.class), anyInt(), any(Rect.class));
+    }
+
+    @Test
+    public void testFocusChangeAfterActivityRecreationUsesNewAutofillManager() {
+        TestActivity oldActivity = Robolectric.buildActivity(TestActivity.class).get();
+        AutofillManager oldAutofillManager = setActivityWithAutofillManager(oldActivity);
+        mAutofillProvider.switchToContext(new WeakReference<>(mContextWrapper));
+        int sessionId = 123;
+        FormData formData =
+                new FormData(
+                        sessionId,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Arrays.asList(
+                                new FormFieldDataBuilder().build(),
+                                new FormFieldDataBuilder().build()));
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+        oldActivity.mIsDestroyed = true;
+
+        // The recreated Activity's AutofillManager restores the session, and the user focuses the
+        // other field of the same form, which doesn't start a new session.
+        AutofillManager newAutofillManager =
+                setActivityWithAutofillManager(Robolectric.buildActivity(Activity.class).get());
+        mAutofillProvider.onFocusChanged(
+                /* focusOnForm= */ true,
+                /* focusField= */ 1,
+                /* x= */ 0,
+                /* y= */ 30,
+                /* width= */ 50,
+                /* height= */ 20);
+
+        int field1VirtualId = FormData.toFieldVirtualId(sessionId, (short) 1);
+        verify(oldAutofillManager, never()).cancel();
+        verify(oldAutofillManager, never())
+                .notifyViewEntered(any(View.class), eq(field1VirtualId), any(Rect.class));
+        verify(newAutofillManager)
+                .notifyViewEntered(any(View.class), eq(field1VirtualId), any(Rect.class));
+    }
+
+    /**
+     * Moves {@link #mContextWrapper} to a new {@link Activity} and recreates the wrapper there.
+     *
+     * @return the new wrapper's enabled {@link AutofillManager}.
+     */
+    private AutofillManager createWrapperForNewActivity() {
+        mInitialActivity = Robolectric.buildActivity(Activity.class).get();
+        AutofillManager autofillManager = setActivityWithAutofillManager(mInitialActivity);
+        mAutofillProvider.switchToContext(new WeakReference<>(mContextWrapper));
+        return autofillManager;
+    }
+
+    /**
+     * Sets the base context of {@link #mContextWrapper} to {@code activity}, returning a new
+     * enabled {@link AutofillManager}.
+     */
+    private AutofillManager setActivityWithAutofillManager(Activity activity) {
+        AutofillManager autofillManager = Mockito.mock(AutofillManager.class);
+        when(autofillManager.isEnabled()).thenReturn(true);
+        mContextWrapper.setBaseContext(
+                new ContextWrapper(activity) {
+                    @Override
+                    public Object getSystemService(String name) {
+                        if (AUTOFILL_SERVICE_NAME.equals(name)) {
+                            return autofillManager;
+                        }
+                        return super.getSystemService(name);
+                    }
+                });
+        return autofillManager;
     }
 
     /**
