@@ -30,6 +30,15 @@ enum SettingId {
   kPageZoom = 115,
   kSplitViewDragAndDrop = 116,
 
+  // Privacy section (300-399).
+  kPrivacy = 300,
+  kSafetyCheck = 301,
+  kClearBrowsingData = 302,
+  kThirdPartyCookies = 303,
+  kDoNotTrack = 304,
+  kThirdPartyCookiesAllowedSites = 305,
+  kUniversalOptOut = 306,
+
   // Security section (400-499).
   kSecurity = 400,
   kSafeBrowsing = 401,
