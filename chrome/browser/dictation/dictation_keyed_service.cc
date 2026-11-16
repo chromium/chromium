@@ -382,6 +382,10 @@ bool DictationKeyedService::ShouldShowContextMenuItem() const {
   return IsEnabledAndReady();
 }
 
+bool DictationKeyedService::ShouldShowSettingsPage() const {
+  return IsEnabledAndReady() && HasCompletedOnboarding();
+}
+
 void DictationKeyedService::TriggerSession(
     const TargetDetails& target_details,
     DictationSessionEntryPoint entry_point) {
@@ -440,8 +444,7 @@ void DictationKeyedService::ContextMenuHandler(
 void DictationKeyedService::ToggleHotkeyHandler() {
   CHECK(IsEnabledAndReady(), base::NotFatalUntil::M155);
 
-  CHECK(profile_->GetPrefs()->GetBoolean(
-      prefs::kPrefDictationOnboardingCompleted));
+  CHECK(HasCompletedOnboarding());
 
   BrowserWindowInterface* active_browser =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
@@ -531,10 +534,7 @@ void DictationKeyedService::DidInstallConnector() {
 }
 
 void DictationKeyedService::UpdateHotkeyManager() {
-  bool onboarding_completed = profile_->GetPrefs()->GetBoolean(
-      prefs::kPrefDictationOnboardingCompleted);
-
-  if (!IsEnabledAndReady() || !onboarding_completed) {
+  if (!IsEnabledAndReady() || !HasCompletedOnboarding()) {
     hotkey_manager_.reset();
   } else if (!hotkey_manager_) {
     hotkey_manager_ = std::make_unique<HotkeyManager>(
@@ -542,6 +542,11 @@ void DictationKeyedService::UpdateHotkeyManager() {
         /*is_listening=*/session_ &&
             IsListeningState(session_->controller_.GetState()));
   }
+}
+
+bool DictationKeyedService::HasCompletedOnboarding() const {
+  return profile_->GetPrefs()->GetBoolean(
+      prefs::kPrefDictationOnboardingCompleted);
 }
 
 bool DictationKeyedService::IsDisabledByPolicy() const {

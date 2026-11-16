@@ -109,6 +109,10 @@ class DictationKeyedService : public KeyedService,
 
   bool ShouldShowContextMenuItem() const;
 
+  // Returns true if the Dictation settings page should be shown (requires the
+  // feature to be enabled/ready and FRE completed).
+  bool ShouldShowSettingsPage() const;
+
   // Handles the context menu item click.
   void ContextMenuHandler(const TargetDetails& target_details);
 
@@ -177,6 +181,7 @@ class DictationKeyedService : public KeyedService,
   // `kEnded` like any other session end.
   void EndActiveSession();
 
+  bool HasCompletedOnboarding() const;
   bool IsDisabledByPolicy() const;
   void MaybeRegisterOptimizationTypes();
 

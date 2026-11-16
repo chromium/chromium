@@ -639,7 +639,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   auto* dictation_keyed_service =
       dictation::DictationKeyedService::Get(profile);
   bool show_dictation_control =
-      dictation_keyed_service && dictation_keyed_service->IsEnabledAndReady();
+      dictation_keyed_service &&
+      dictation_keyed_service->ShouldShowSettingsPage();
 
   std::pair<const std::string_view, bool> optimization_guide_features[] = {
       {"showComposeControl", compose_visible},

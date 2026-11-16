@@ -43,6 +43,12 @@ class DictationOnboardingInteractiveTest
     });
   }
 
+  StepBuilder CheckShouldShowSettingsPage(bool expected) {
+    return CheckResult(
+        [this]() { return dictation_service().ShouldShowSettingsPage(); },
+        expected);
+  }
+
   void SetUpOnMainThread() override {
     DictationInteractiveBrowserTestBase::SetUpOnMainThread();
     // Ensure onboarding is NOT complete at the start of the test.
@@ -87,11 +93,13 @@ IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
       // Try starting a session. It should show the onboarding dialog since it's
       // the first run.
       CheckHasSession(false),
+      CheckShouldShowSettingsPage(false),
       StartSession(),
       WaitForShow(kDictationOnboardingDialogElementId),
 
       // The session must not be started.
       CheckHasSession(false),
+      CheckShouldShowSettingsPage(false),
 
       // Complete the onboarding
       PressButton(kDictationOnboardingOkButtonElementId),
@@ -99,6 +107,7 @@ IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
 
       // Verify the pref is set to completed and the session started.
       CheckHasCompletedOnboardingPref(true),
+      CheckShouldShowSettingsPage(true),
       CheckHasSession(true)
   );
   // clang-format on
@@ -111,6 +120,7 @@ IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
       // Try starting a session. It should show the onboarding dialog since it's
       // the first run.
       CheckHasSession(false),
+      CheckShouldShowSettingsPage(false),
       StartSession(),
       WaitForShow(kDictationOnboardingDialogElementId),
 
@@ -123,6 +133,7 @@ IN_PROC_BROWSER_TEST_F(DictationOnboardingInteractiveTest,
 
       // Verify the pref is still false, and no session is started.
       CheckHasCompletedOnboardingPref(false),
+      CheckShouldShowSettingsPage(false),
       CheckHasSession(false)
   );
   // clang-format on

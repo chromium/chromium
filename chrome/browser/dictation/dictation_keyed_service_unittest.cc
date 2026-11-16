@@ -187,6 +187,22 @@ TEST_F(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
   EXPECT_NE(service_->hotkey_manager_for_testing(), nullptr);
 }
 
+TEST_F(DictationKeyedServiceTest, ShouldShowSettingsPage) {
+  EXPECT_TRUE(service_->ShouldShowSettingsPage());
+
+  profile_.GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
+                                  false);
+  EXPECT_FALSE(service_->ShouldShowSettingsPage());
+  EXPECT_TRUE(service_->ShouldShowContextMenuItem());
+
+  profile_.GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
+                                  true);
+  EXPECT_TRUE(service_->ShouldShowSettingsPage());
+
+  profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 2);
+  EXPECT_FALSE(service_->ShouldShowSettingsPage());
+}
+
 TEST_F(DictationKeyedServiceTest, GlobalHotkeyRegisteredOnlyWhileListening) {
   EXPECT_EQ(global_hotkey(), nullptr);
   EXPECT_FALSE(global_listener().IsListeningFor(hotkey()));
