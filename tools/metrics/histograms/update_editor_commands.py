@@ -8,8 +8,6 @@
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
-from __future__ import print_function
-
 import logging
 import re
 import sys
@@ -18,7 +16,7 @@ from xml.dom import minidom
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.common.diff_util import PromptUserToAcceptDiff
+import chromium_src.tools.metrics.common.diff_util as diff_util
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 
@@ -132,7 +130,9 @@ def main():
 
   Log('Writing out new histograms file.')
   new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
-  if PromptUserToAcceptDiff(xml, new_xml, 'Is the updated version acceptable?'):
+  if diff_util.PromptUserToAcceptDiff(
+    xml, new_xml, 'Is the updated version acceptable?'
+  ):
     with open(ENUMS_PATH, 'wb') as f:
       f.write(new_xml)
 

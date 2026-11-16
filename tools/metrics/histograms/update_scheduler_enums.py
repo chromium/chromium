@@ -8,17 +8,13 @@ values read from web_scheduler_tracked_feature.h.
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
-from __future__ import print_function
-
 import os
 import sys
 
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.histograms.update_histogram_enum import (
-  UpdateHistogramEnum,
-)
+import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 XML_FILE = 'tools/metrics/histograms/metadata/navigation/enums.xml'
 ENUM_NAME = 'WebSchedulerTrackedFeature'
@@ -36,7 +32,7 @@ if __name__ == '__main__':
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  UpdateHistogramEnum(
+  update_histogram_enum.UpdateHistogramEnum(
     XML_FILE,
     histogram_enum_name=ENUM_NAME,
     source_enum_path=SOUCRE_FILE,

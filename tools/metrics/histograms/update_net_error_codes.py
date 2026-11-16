@@ -9,8 +9,6 @@
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
-from __future__ import print_function
-
 import os.path
 import re
 import sys

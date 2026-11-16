@@ -9,16 +9,12 @@ snippet to put in uma.py of Chromium Dashboard. Make sure that you review the
 output for correctness.
 """
 
-from __future__ import print_function
-
 import os
 
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.histograms.update_histogram_enum import (
-  UpdateHistogramEnum,
-)
+import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 if __name__ == '__main__':
   web_feature_source = (
@@ -28,7 +24,7 @@ if __name__ == '__main__':
   START_MARKER = '^enum WebFeature {'
   END_MARKER = '^kNumberOfFeatures'
 
-  UpdateHistogramEnum(
+  update_histogram_enum.UpdateHistogramEnum(
     'tools/metrics/histograms/metadata/blink/enums.xml',
     histogram_enum_name='FeatureObserver',
     source_enum_path=web_feature_source,
@@ -43,7 +39,7 @@ if __name__ == '__main__':
   )
   WEBDX_START_MARKER = '^enum WebDXFeature {'
 
-  UpdateHistogramEnum(
+  update_histogram_enum.UpdateHistogramEnum(
     'tools/metrics/histograms/metadata/blink/enums.xml',
     histogram_enum_name='WebDXFeatureObserver',
     source_enum_path=webdx_feature_source,

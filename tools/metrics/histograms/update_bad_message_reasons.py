@@ -8,17 +8,13 @@ from the corresponding bad_message.h files.
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
-from __future__ import print_function
-
 import os
 import sys
 
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.histograms.update_histogram_enum import (
-  UpdateHistogramEnum,
-)
+import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 if __name__ == '__main__':
   if len(sys.argv) > 1:
@@ -43,7 +39,7 @@ if __name__ == '__main__':
   for header_file, details in histograms.items():
     end_marker = details.get('end_marker', '^BAD_MESSAGE_MAX')
     strip_k_prefix = details.get('strip_k_prefix', False)
-    UpdateHistogramEnum(
+    update_histogram_enum.UpdateHistogramEnum(
       'tools/metrics/histograms/metadata/stability/enums.xml',
       histogram_enum_name=details['name'],
       source_enum_path=header_file,

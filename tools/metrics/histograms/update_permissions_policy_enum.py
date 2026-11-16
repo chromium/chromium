@@ -8,17 +8,13 @@ values read from permissions_policy_feature.mojom.
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
-from __future__ import print_function
-
 import os
 import sys
 
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.histograms.update_histogram_enum import (
-  UpdateHistogramEnum,
-)
+import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
 if __name__ == '__main__':
   if len(sys.argv) > 1:
@@ -30,7 +26,7 @@ if __name__ == '__main__':
     'services/network/public/mojom/permissions_policy/'
     + 'permissions_policy_feature.mojom'
   )
-  UpdateHistogramEnum(
+  update_histogram_enum.UpdateHistogramEnum(
     'tools/metrics/histograms/metadata/blink/enums.xml',
     histogram_enum_name='FeaturePolicyFeature',
     source_enum_path=source_file,

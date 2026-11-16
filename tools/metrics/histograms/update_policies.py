@@ -8,8 +8,6 @@ definitions read from policies.yaml.
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
-from __future__ import print_function
-
 import argparse
 import os
 import sys

@@ -15,9 +15,7 @@ import re
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.components.autofill.core.browser.data_model.autofill_ai.entity_schema_parser import (
-  parse_entity_schema,
-)
+import chromium_src.components.autofill.core.browser.data_model.autofill_ai.entity_schema_parser as entity_schema_parser
 import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.update_histogram_enum as update_histogram_enum
 
@@ -161,7 +159,9 @@ def GenerateAutofillPredictionSourceByFieldType(field_types):
 
 def GenerateAutofillAiEntityType():
   result = {}
-  schema = parse_entity_schema(path_util.GetInputFile(ENTITY_SCHEMA_PATH))
+  schema = entity_schema_parser.parse_entity_schema(
+    path_util.GetInputFile(ENTITY_SCHEMA_PATH)
+  )
   for enum_id, entity in enumerate(schema):
     result[enum_id] = entity['name']
   return result
