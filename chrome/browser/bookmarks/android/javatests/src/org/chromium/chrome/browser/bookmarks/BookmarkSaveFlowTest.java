@@ -35,7 +35,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -217,32 +216,29 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableIf.Build(
-            sdk_is_greater_than = 35,
-            sdk_is_less_than = 37,
-            message = "https://crbug.com/576703594")
     public void testBookmarkSaveFlow_WithShoppingListItem() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
-                    PowerBookmarkMeta.Builder meta =
-                            PowerBookmarkMeta.newBuilder()
-                                    .setShoppingSpecifics(
-                                            ShoppingSpecifics.newBuilder()
-                                                    .setProductClusterId(1234L)
-                                                    .build());
-                    mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
-                    mBookmarkSaveFlowCoordinator.show(
-                            id,
-                            /* fromExplicitTrackUi= */ false,
-                            /* wasBookmarkMoved= */ false,
-                            /* isNewBookmark= */ true,
-                            meta.build());
-                    return null;
-                });
-        mRenderTestRule.render(
-                mBookmarkSaveFlowCoordinator.getViewForTesting(),
-                "bookmark_save_flow_shopping_list_item");
+        View view =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+                            PowerBookmarkMeta.Builder meta =
+                                    PowerBookmarkMeta.newBuilder()
+                                            .setShoppingSpecifics(
+                                                    ShoppingSpecifics.newBuilder()
+                                                            .setProductClusterId(1234L)
+                                                            .build());
+                            mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
+                            mBookmarkSaveFlowCoordinator.show(
+                                    id,
+                                    /* fromExplicitTrackUi= */ false,
+                                    /* wasBookmarkMoved= */ false,
+                                    /* isNewBookmark= */ true,
+                                    meta.build());
+                            return mBookmarkSaveFlowCoordinator
+                                    .getViewForTesting()
+                                    .findViewById(R.id.container);
+                        });
+        mRenderTestRule.render(view, "bookmark_save_flow_shopping_list_item");
     }
 
     @Test
