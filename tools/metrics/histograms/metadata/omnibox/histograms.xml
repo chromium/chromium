@@ -3902,7 +3902,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.Popup.Aim.ConstructionToFirstShownDuration" units="ms"
-    expires_after="2026-12-22">
+    expires_after="2027-05-08">
   <owner>mahmadi@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
