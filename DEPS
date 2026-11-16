@@ -3143,7 +3143,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/tools/swift-toolchain/mac-amd64',
-              'version': 'version:2@5.8-release',
+              'version': 'version:2@6.4.0-release',
           },
       ],
       'condition': 'host_os == "mac" and host_cpu == "x64"',
@@ -3153,10 +3153,8 @@ deps = {
   'src/third_party/swift-toolchain/mac-arm64': {
       'packages': [
           {
-              # Intentionally using the universal amd64 package for
-              # Swift 5.8.  Switch to arm64 for Swift 6+.
-              'package': 'chromium/tools/swift-toolchain/mac-amd64',
-              'version': 'version:2@5.8-release',
+              'package': 'chromium/tools/swift-toolchain/mac-arm64',
+              'version': 'version:2@6.4.0-release',
           },
       ],
       'condition': 'host_os == "mac" and host_cpu == "arm64"',

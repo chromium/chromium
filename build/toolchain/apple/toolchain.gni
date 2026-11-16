@@ -60,7 +60,7 @@ if (swift_toolchain_path == -1) {
     # must be kept in sync with the `version` of `third_party/swift-toolchain`
     # in
     # //DEPS.
-    swiftc_version = "swift-5.8-release"
+    swiftc_version = "swift-6.4.0-release"
 
     # Use the hermetic swift toolchain.
     if (host_cpu == "x64") {
