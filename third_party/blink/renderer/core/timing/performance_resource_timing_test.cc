@@ -12,7 +12,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -394,4 +399,53 @@ TEST_F(PerformanceResourceTimingTest,
   EXPECT_EQ(resource_timing->fetchStart(), resource_timing->startTime());
   EXPECT_EQ(resource_timing->fetchStart(), 500);
 }
+
+using PerformanceResourceTimingSimTest = SimTest;
+
+TEST_F(PerformanceResourceTimingSimTest, FailedSubframeNavigationContentType) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"(
+    <iframe id="subframe" src="https://example.com/404.html"></iframe>
+  )");
+
+  auto* iframe = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("subframe")));
+  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(iframe->ContentFrame());
+
+  auto* mojo_handler =
+      MakeGarbageCollected<LocalFrameMojoHandler>(*GetDocument().GetFrame());
+  static_cast<mojom::blink::LocalFrame*>(mojo_handler)
+      ->AddResourceTimingEntryForFailedSubframeNavigation(
+          iframe->ContentFrame()->GetFrameToken(),
+          KURL("https://example.com/404.html"),
+          /*start_time=*/base::TimeTicks::Now(),
+          /*redirect_time=*/base::TimeTicks::Now(),
+          /*request_start=*/base::TimeTicks::Now(),
+          /*response_start=*/base::TimeTicks::Now(),
+          /*completion_time=*/base::TimeTicks::Now(),
+          /*response_code=*/404,
+          /*mime_type=*/"text/html",
+          network::mojom::blink::LoadTimingInfo::New(),
+          net::HttpConnectionInfo::kHTTP1_1,
+          /*alpn_negotiated_protocol=*/"http/1.1",
+          /*is_secure_transport=*/true,
+          /*is_validated=*/false,
+          /*normalized_server_timing=*/g_empty_string,
+          /*resource_lengths=*/nullptr);
+
+  PerformanceEntryVector entries =
+      DOMWindowPerformance::performance(*GetDocument().domWindow())
+          ->getEntriesByType(performance_entry_names::kResource);
+  ASSERT_EQ(entries.size(), 1u);
+  ASSERT_EQ(entries[0]->EntryTypeEnum(), PerformanceEntry::kResource);
+  auto* resource_timing =
+      static_cast<PerformanceResourceTiming*>(entries[0].Get());
+  EXPECT_EQ(resource_timing->responseStatus(), 404);
+  EXPECT_EQ(resource_timing->contentType(), "text/html");
+
+  iframe->remove();
+}
+
 }  // namespace blink

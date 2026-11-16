@@ -1550,6 +1550,10 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
     response.SetEncodedDataLength(-1);
   }
   response.SetHttpStatusCode(response_code);
+  if (!mime_type.empty()) {
+    response.SetHttpHeaderField(http_names::kContentType,
+                                AtomicString(mime_type));
+  }
   if (!normalized_server_timing.empty()) {
     response.SetHttpHeaderField(http_names::kServerTiming,
                                 AtomicString(normalized_server_timing));

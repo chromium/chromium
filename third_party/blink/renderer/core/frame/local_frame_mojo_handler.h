@@ -17,6 +17,7 @@
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/outside_context_csp_violation_reporter_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -51,7 +52,7 @@ class Page;
 //  - Data members of which types are defined by mojom.
 //
 // A single LocalFrame instance owns a single LocalFrameMojoHandler instance.
-class LocalFrameMojoHandler
+class CORE_EXPORT LocalFrameMojoHandler
     : public GarbageCollected<LocalFrameMojoHandler>,
       public mojom::blink::LocalFrame,
       public mojom::blink::LocalMainFrame,
