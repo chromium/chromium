@@ -66,6 +66,16 @@ function normalizeUrl(urlString: string): URL|null {
   return null;
 }
 
+// LINT.IfChange(MostVisitedMenuAction)
+export enum MostVisitedMenuAction {
+  EDIT = 0,
+  VIEW = 1,
+  REORDER = 2,
+  REMOVE = 3,
+  MAX_VALUE = REMOVE,
+}
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MostVisitedMenuAction)
+
 export interface AutoRemovedEventDetail {
   message: string;
   undo: () => void;
@@ -1028,6 +1038,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.dialogTileUrl_ = tile.url;
     this.dialogTileUrlInvalid_ = false;
     this.$.dialog.showModal();
+    this.recordMenuAction_(
+        isReadonly ? MostVisitedMenuAction.VIEW : MostVisitedMenuAction.EDIT);
   }
 
   protected async onReorderClick_() {
@@ -1038,6 +1050,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (this.inReorderMode_) {
       this.tileFocus_(this.actionMenuTargetIndex_);
     }
+    this.recordMenuAction_(MostVisitedMenuAction.REORDER);
   }
 
   protected onRestoreDefaultsClick_() {
@@ -1052,6 +1065,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.$.actionMenu.close();
     await this.tileRemove_(this.actionMenuTargetIndex_);
     this.actionMenuTargetIndex_ = -1;
+    this.recordMenuAction_(MostVisitedMenuAction.REMOVE);
   }
 
   protected async onSaveClick_() {
@@ -1401,6 +1415,14 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.reorderAnnouncement_ = message;
       this.reorderAnnouncementTimeout_ = null;
     }, 100);
+  }
+
+  private recordMenuAction_(action: MostVisitedMenuAction) {
+    if (chrome.metricsPrivate) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'NewTabPage.MostVisited.MenuAction', action,
+          MostVisitedMenuAction.MAX_VALUE + 1);
+    }
   }
 
   protected onTilesRendered_() {

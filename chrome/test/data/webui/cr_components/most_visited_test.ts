@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_components/most_visited/most_visited.js';
 
 import {TileSource} from '//resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
+import {MostVisitedMenuAction} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {AutoRemovedEventDetail, MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {MostVisitedPageRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
@@ -16,6 +17,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -289,6 +292,78 @@ suite('General', () => {
             `${window.devicePixelRatio || 1}x`,
             url.searchParams.get('scaleFactor'));
       });
+
+  test('menu action clicks record metrics', async () => {
+    const metricsTracker: MetricsTracker = fakeMetricsPrivate();
+    mostVisited.shortcutsReorderEnabled = true;
+    await addTiles(
+        [
+          {
+            title: 'a',
+            titleDirection: TextDirection.LEFT_TO_RIGHT,
+            url: 'https://a/',
+            source: TileSource.CUSTOM_LINKS,
+            titleSource: 0,
+            isQueryTile: false,
+            allowUserEdit: true,
+            allowUserDelete: true,
+          },
+          {
+            title: 'b',
+            titleDirection: TextDirection.LEFT_TO_RIGHT,
+            url: 'https://b/',
+            source: TileSource.ENTERPRISE_SHORTCUTS,
+            titleSource: 0,
+            isQueryTile: false,
+            allowUserEdit: false,
+            allowUserDelete: false,
+          },
+        ],
+        /*customLinksEnabled=*/ true, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+
+    const tiles = queryTiles();
+    const expectations = [
+      {
+        tileIndex: 0,
+        buttonSelector: '#actionMenuViewOrEdit',
+        action: MostVisitedMenuAction.EDIT,
+      },
+      {
+        tileIndex: 1,
+        buttonSelector: '#actionMenuViewOrEdit',
+        action: MostVisitedMenuAction.VIEW,
+      },
+      {
+        tileIndex: 0,
+        buttonSelector: '#actionMenuRemove',
+        action: MostVisitedMenuAction.REMOVE,
+      },
+      {
+        tileIndex: 0,
+        buttonSelector: '#actionMenuReorder',
+        action: MostVisitedMenuAction.REORDER,
+      },
+    ];
+
+    for (const expected of expectations) {
+      tiles[expected.tileIndex]!
+          .querySelector<HTMLElement>('#actionMenuButton')!.click();
+      await microtasksFinished();
+      $$<HTMLElement>(mostVisited, expected.buttonSelector).click();
+      await microtasksFinished();
+      await new Promise(requestAnimationFrame);
+      await microtasksFinished();
+
+      assertEquals(
+          1,
+          metricsTracker.count(
+              'NewTabPage.MostVisited.MenuAction', expected.action));
+      if (mostVisited.$.dialog.open) {
+        mostVisited.$.dialog.close();
+      }
+    }
+  });
 });
 
 suite('ShowAddButton', () => {
