@@ -1590,6 +1590,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_UPDATE_DISPLAY_OBSERVER_ON_DISPLAY_CHANGES,
                 "Updates the DisplayAndroid observer when the display changes."),
+        Flag.baseFeature(
+                NetFeatures.DNS_TASK_ALLOW_PARTIAL_ADDRESS_RESULTS,
+                "Allows the built-in DNS resolver (HostResolverDnsTask) to succeed when one"
+                        + " address transaction (A or AAAA) succeeds and the sibling address"
+                        + " transaction fails."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
