@@ -1573,6 +1573,31 @@ class AndroidAutofillProviderWithCredManTest
                                                         field.global_id());
   }
 
+  void StartSessionOnField(const FormData& form, const FormFieldData& field) {
+    android_autofill_manager().OnAskForValuesToFillTest(form,
+                                                        field.global_id());
+  }
+
+  base::RepeatingCallback<void(bool)> TriggerLongPressCredMan() {
+    base::RepeatingCallback<void(bool)> completed_callback;
+    EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
+        .WillOnce(SaveArg<0>(&completed_callback));
+    EXPECT_CALL(
+        cred_man_delegate(),
+        TriggerCredManUi(
+            Eq(webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
+    test_api(autofill_provider()).OnTriggerPasskeyRequest();
+    Mock::VerifyAndClearExpectations(&cred_man_delegate());
+    return completed_callback;
+  }
+
+  void DismissCredManSheet(base::RepeatingCallback<void(bool)> callback,
+                           bool success = false) {
+    EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback);
+    callback.Run(success);
+    Mock::VerifyAndClearExpectations(&cred_man_delegate());
+  }
+
   webauthn::MockWebAuthnCredManDelegate& cred_man_delegate() {
     return *static_cast<webauthn::MockWebAuthnCredManDelegate*>(
         web_authn_delegate_factory()->GetRequestDelegate(main_frame()));
@@ -1660,6 +1685,7 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
 
 TEST_F(AndroidAutofillProviderWithCredManTest,
        LogConditionalPasskeysFlowPasskeysAvailableOnLongPress) {
+  base::HistogramTester histogram_tester;
   ON_CALL(cred_man_delegate(), HasPasskeys())
       .WillByDefault(
           Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
@@ -1668,11 +1694,18 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
   FocusFormField(webauthn_email_field());
   EXPECT_FALSE(keyboard_suppressor().is_suppressing());
 
-  // Simulate the long-press suggestion was accepted.
-  EXPECT_CALL(cred_man_delegate(),
-              TriggerCredManUi(Eq(
-                  webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
-  test_api(autofill_provider()).OnTriggerPasskeyRequest();
+  // Trigger CredMan via long-press, then dismiss and verify callback cleanup,
+  // no unexpected focus notification, and histogram emission.
+  base::RepeatingCallback<void(bool)> completed_callback =
+      TriggerLongPressCredMan();
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+
+  EXPECT_CALL(provider_bridge(), OnFocusChanged).Times(0);
+  DismissCredManSheet(completed_callback);
+  EXPECT_FALSE(test_api(autofill_provider()).is_credman_sheet_showing());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ConditionalPasskeysFlow.PasskeysState",
+      webauthn::WebAuthnCredManDelegate::State::kNoPasskeys, 1);
 }
 
 TEST_F(AndroidAutofillProviderWithCredManTest,
@@ -1701,6 +1734,9 @@ TEST_F(AndroidAutofillProviderWithCredManTest, NoCredManWithoutAnnotation) {
   FocusFormField(non_webauthn_password_field());
 
   EXPECT_FALSE(keyboard_suppressor().is_suppressing());
+
+  test_api(autofill_provider()).OnTriggerPasskeyRequest();
+  EXPECT_FALSE(test_api(autofill_provider()).is_credman_sheet_showing());
 }
 
 TEST_F(AndroidAutofillProviderWithCredManTest, SkipsCredManCallBeforeReady) {
@@ -1710,6 +1746,56 @@ TEST_F(AndroidAutofillProviderWithCredManTest, SkipsCredManCallBeforeReady) {
 
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
   FocusFormField(webauthn_email_field());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       SkipsLongPressCredManCallBeforeReady) {
+  ON_CALL(cred_man_delegate(), HasPasskeys())
+      .WillByDefault(
+          Return(webauthn::WebAuthnCredManDelegate::State::kNotReady));
+  StartSessionOnField(test_form(), webauthn_email_field());
+
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback).Times(0);
+  EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
+  test_api(autofill_provider()).OnTriggerPasskeyRequest();
+  EXPECT_FALSE(test_api(autofill_provider()).is_credman_sheet_showing());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       IgnoresRepeatedLongPressWhileCredManShowing) {
+  StartSessionOnField(test_form(), webauthn_email_field());
+  TriggerLongPressCredMan();
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback).Times(0);
+  EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
+  test_api(autofill_provider()).OnTriggerPasskeyRequest();
+  EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       LongPressReopensClosedCredManSheet) {
+  base::RepeatingCallback<void(bool)> initial_callback;
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&initial_callback));
+  EXPECT_CALL(cred_man_delegate(), TriggerCredManUi);
+  FocusFormField(webauthn_email_field());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+
+  // Dismissing transitions to `kClosed`; focusing again does not auto-reopen.
+  DismissCredManSheet(initial_callback);
+  FocusFormField(webauthn_email_field());
+  ASSERT_FALSE(test_api(autofill_provider()).is_credman_sheet_showing());
+
+  // Long-press reopens the closed sheet (`kClosed -> kIsShowing`).
+  base::RepeatingCallback<void(bool)> reopen_callback =
+      TriggerLongPressCredMan();
+  EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+
+  DismissCredManSheet(reopen_callback);
+  EXPECT_FALSE(test_api(autofill_provider()).is_credman_sheet_showing());
 }
 
 TEST_F(AndroidAutofillProviderWithCredManTest, OfferLongPressOption) {
@@ -1805,6 +1891,30 @@ class AndroidAutofillProviderWithCredManMultiFrameTest
 
   const FormFieldData& sub_frame_webauthn_email_field() const {
     return sub_frame_test_form().fields()[0];
+  }
+
+  FormData CreateMultiFrameForm() {
+    const url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
+    const url::Origin bar_origin = url::Origin::Create(GURL("https://bar.com"));
+    FormData form = test::GetFormData({
+        .fields = {{
+                       .host_frame = LocalFrameToken(
+                           main_frame()->GetFrameToken().value()),
+                       .autocomplete_attribute = "username webauthn",
+                       .origin = foo_origin,
+                   },
+                   {
+                       .host_frame =
+                           LocalFrameToken(sub_frame_->GetFrameToken().value()),
+                       .autocomplete_attribute = "webauthn",
+                       .origin = bar_origin,
+                   }},
+        .url = "https://foo.com/form.html",
+        .main_frame_origin = foo_origin,
+    });
+    android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                           AutofillManagerTestApi::pass_key());
+    return form;
   }
 
  protected:
@@ -2231,6 +2341,78 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
   EXPECT_TRUE(
       test_api(autofill_provider()).last_focused_field_origin().opaque());
   EXPECT_EQ(test_api(autofill_provider()).form(), nullptr);
+}
+
+// Tests that while a long-press CredMan sheet (`OnTriggerPasskeyRequest`) is
+// showing, cross-origin form events and subframe navigations are ignored and
+// preserve the session origin.
+TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
+       LongPressCredManBlocksCrossOriginUpdates) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAndroidAutofillFieldsUpdatedOnSelect};
+  FormData multi_frame_form = CreateMultiFrameForm();
+  const FormFieldData& foo_field = multi_frame_form.fields()[0];
+  const FormFieldData& bar_field = multi_frame_form.fields()[1];
+
+  StartSessionOnField(multi_frame_form, foo_field);
+  TriggerLongPressCredMan();
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_CALL(provider_bridge(), StartAutofillSession).Times(0);
+  EXPECT_CALL(provider_bridge(), OnFocusChanged).Times(0);
+  EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
+  EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
+  EXPECT_CALL(*sub_frame_mock_delegate_, TriggerCredManUi).Times(0);
+
+  android_autofill_manager().OnAskForValuesToFillTest(multi_frame_form,
+                                                      bar_field.global_id());
+  android_autofill_manager().OnFocusOnFormField(
+      multi_frame_form, bar_field.global_id(),
+      AutofillManagerTestApi::pass_key());
+  autofill_provider().OnSelectControlSelectionChanged(
+      &android_autofill_manager(), multi_frame_form, bar_field);
+  autofill_provider().OnSelectControlSelectionChanged(
+      &android_autofill_manager(), sub_frame_test_form(),
+      sub_frame_webauthn_email_field());
+  android_autofill_manager().OnFormSubmitted(
+      multi_frame_form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+  sub_frame_mock_delegate_ = nullptr;
+  sub_frame_ = NavigateAndCommitFrame(sub_frame_.ExtractAsDangling(),
+                                      GURL("https://bar.com/other.html"));
+
+  EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_id(),
+            foo_field.global_id());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            foo_field.origin());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
+// Tests that dismissing a long-press CredMan sheet restores normal cross-origin
+// session startup.
+TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
+       LongPressCredManDismissalRestoresCrossOriginUpdates) {
+  FormData multi_frame_form = CreateMultiFrameForm();
+  const FormFieldData& foo_field = multi_frame_form.fields()[0];
+  const FormFieldData& bar_field = multi_frame_form.fields()[1];
+
+  StartSessionOnField(multi_frame_form, foo_field);
+  base::RepeatingCallback<void(bool)> completed_callback =
+      TriggerLongPressCredMan();
+  DismissCredManSheet(completed_callback);
+  ASSERT_FALSE(test_api(autofill_provider()).is_credman_sheet_showing());
+
+  EXPECT_CALL(provider_bridge(),
+              StartAutofillSession(EqualsFormData(multi_frame_form),
+                                   EqualsFieldInfo(/*index=*/1),
+                                   /*has_server_predictions=*/false));
+  StartSessionOnField(multi_frame_form, bar_field);
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_id(),
+            bar_field.global_id());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            bar_field.origin());
 }
 
 class AndroidAutofillProviderCredManSpoofSheetStatusTest
