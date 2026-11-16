@@ -68,10 +68,15 @@ AtomicString HTMLSlotElement::NormalizeSlotName(const AtomicString& name) {
 
 const HeapVector<Member<Node>>& HTMLSlotElement::AssignedNodes() const {
   if (!SupportsAssignment()) {
-    DCHECK(assigned_nodes_.empty());
+    CHECK(assigned_nodes_.empty());
     return assigned_nodes_;
   }
-  ContainingShadowRoot()->GetSlotAssignment().RecalcAssignment();
+  ShadowRoot* root = ContainingShadowRoot();
+  if (!root->HasSlotAssignment()) {
+    CHECK(assigned_nodes_.empty());
+    return assigned_nodes_;
+  }
+  root->GetSlotAssignment().RecalcAssignment();
   return assigned_nodes_;
 }
 
@@ -765,7 +770,7 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChangeNaive(
 
 void HTMLSlotElement::SetShadowRootNeedsAssignmentRecalc() {
   DCHECK(ContainingShadowRoot());
-  ContainingShadowRoot()->GetSlotAssignment().SetNeedsAssignmentRecalc();
+  ContainingShadowRoot()->SetNeedsAssignmentRecalc();
 }
 
 void HTMLSlotElement::DidSlotChange(SlotChangeType slot_change_type) {
@@ -824,6 +829,9 @@ void HTMLSlotElement::EnqueueSlotChangeEvent() {
 bool HTMLSlotElement::HasAssignedNodesSlow() const {
   ShadowRoot* root = ContainingShadowRoot();
   DCHECK(root) << "This should only be called on slots inside a shadow tree";
+  if (!root->HasSlotAssignment()) {
+    return false;
+  }
   SlotAssignment& assignment = root->GetSlotAssignment();
   if (assignment.FindSlotByName(GetName()) != this)
     return false;
@@ -838,7 +846,7 @@ void HTMLSlotElement::ChildrenChanged(const ChildrenChange& change) {
 
 bool HTMLSlotElement::CalculateAndAdjustAutoDirectionality() {
   if (SupportsAssignment() &&
-      ContainingShadowRoot()->GetSlotAssignment().NeedsAssignmentRecalc()) {
+      ContainingShadowRoot()->NeedsSlotAssignmentRecalc()) {
     // It might not be safe to do an auto directionality update right now
     // since it might run RecalcAssignment at a bad time; we should wait until
     // RecalcAssignment runs.  RecalcAssignment needs to update directionality
