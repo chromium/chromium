@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -774,6 +775,20 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
     BrowserWindowInterface* browser_window = SessionRestore::RestoreSession(
         profile_, nullptr, restore_options, tabs);
     if (browser_window) {
+#if BUILDFLAG(IS_LINUX)
+      if (process_startup == chrome::startup::IsProcessStartup::kYes) {
+        // Session-restored windows leave the launch token for any new window
+        // opened for the launch; discard any leftover token so a later
+        // activation does not reuse a stale startup token. With a
+        // `browser_creator_`, defer this until all startup profiles are
+        // launched.
+        if (browser_creator_) {
+          browser_creator_->discard_activation_token_after_launch_ = true;
+        } else {
+          std::ignore = base::nix::TakeXdgActivationToken();
+        }
+      }
+#endif
       return browser_window;
     }
   } else if (behavior == BrowserOpenBehavior::USE_EXISTING ||

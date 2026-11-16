@@ -296,18 +296,20 @@ class XdgActivationSessionTest : public WaylandTestSimple {
   std::unique_ptr<WaylandWindow> CreateSessionWindow(
       MockWaylandPlatformWindowDelegate& delegate,
       std::optional<int32_t> restore_id) {
-    auto* const session_manager = connection_->session_manager();
-    CHECK(session_manager);
-    auto session_id = session_manager->RestoreSession(
-        wl::TestXxSessionManager::kTestSessionId,
-        PlatformSessionManager::RestoreReason::kLaunch);
-    CHECK(session_id.has_value());
+    if (!session_id_.has_value()) {
+      auto* const session_manager = connection_->session_manager();
+      CHECK(session_manager);
+      session_id_ = session_manager->RestoreSession(
+          wl::TestXxSessionManager::kTestSessionId,
+          PlatformSessionManager::RestoreReason::kLaunch);
+      CHECK(session_id_.has_value());
+    }
 
     PlatformWindowInitProperties properties;
     properties.bounds = kDefaultBounds;
     properties.type = PlatformWindowType::kWindow;
-    properties.session_id = session_id.value();
-    properties.session_window_new_id = 2;
+    properties.session_id = session_id_.value();
+    properties.session_window_new_id = next_window_id_++;
     properties.session_window_restore_id = restore_id;
     return delegate.CreateWaylandWindow(connection_.get(),
                                         std::move(properties));
@@ -320,6 +322,10 @@ class XdgActivationSessionTest : public WaylandTestSimple {
     });
     return has_token_request;
   }
+
+ private:
+  std::optional<std::string> session_id_;
+  int32_t next_window_id_ = 2;
 };
 
 // Tests that a toplevel restored from a session does not request an
@@ -374,28 +380,76 @@ TEST_F(XdgActivationSessionTest, TokenRequestForNewSessionWindow) {
   EXPECT_TRUE(HasTokenRequest());
 }
 
-// Tests that a restored toplevel still uses the launch token.
-TEST_F(XdgActivationSessionTest, RestoredWindowUsesLaunchToken) {
+// Tests that an unconfigured restored toplevel leaves the launch token alone so
+// a newly opened session window can use it instead.
+TEST_F(XdgActivationSessionTest, RestoredWindowLeavesLaunchTokenForNewWindow) {
+  base::ScopedClosureRunner clear_token(
+      base::BindOnce(base::IgnoreResult(&base::nix::TakeXdgActivationToken)));
   const std::string kLaunchToken = "LAUNCH_TOKEN";
   base::nix::SetActivationToken(kLaunchToken);
 
-  MockWaylandPlatformWindowDelegate delegate(connection_.get());
-  auto window = CreateSessionWindow(delegate, /*restore_id=*/1);
-  window->Show(/*inactive=*/false);
+  MockWaylandPlatformWindowDelegate restored_delegate(connection_.get());
+  auto restored_window =
+      CreateSessionWindow(restored_delegate, /*restore_id=*/1);
+  restored_window->Show(/*inactive=*/false);
+  restored_window->Activate();
+  EXPECT_FALSE(HasTokenRequest());
+
+  MockWaylandPlatformWindowDelegate new_delegate(connection_.get());
+  auto new_window =
+      CreateSessionWindow(new_delegate, /*restore_id=*/std::nullopt);
+  new_window->Show(/*inactive=*/false);
   EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
   EXPECT_FALSE(HasTokenRequest());
 
-  auto surface_id = window->root_surface()->get_surface_id();
-  PostToServerAndWait([surface_id,
+  const auto restored_surface_id =
+      restored_window->root_surface()->get_surface_id();
+  const auto new_surface_id = new_window->root_surface()->get_surface_id();
+  PostToServerAndWait([restored_surface_id, new_surface_id,
                        kLaunchToken](wl::TestWaylandServerThread* server) {
     auto* const xdg_activation = server->xdg_activation_v1();
-    auto* const surface =
-        server->GetObject<wl::MockSurface>(surface_id)->resource();
-    EXPECT_CALL(*xdg_activation, Activate(_, _, StrEq(kLaunchToken), surface))
+    auto* const restored_surface =
+        server->GetObject<wl::MockSurface>(restored_surface_id)->resource();
+    auto* const new_surface =
+        server->GetObject<wl::MockSurface>(new_surface_id)->resource();
+    EXPECT_CALL(*xdg_activation, Activate(_, _, _, restored_surface)).Times(0);
+    EXPECT_CALL(*xdg_activation,
+                Activate(_, _, StrEq(kLaunchToken), new_surface))
         .Times(1);
   });
 
+  ActivateSurface(restored_surface_id);
+  ActivateSurface(new_surface_id);
+  SyncDisplay();
+}
+
+// Tests that once a restored toplevel is configured, runtime activation tokens
+// (e.g. from external link opens or notifications) still activate it even
+// before any user press inside the window.
+TEST_F(XdgActivationSessionTest, ConfiguredRestoredWindowUsesRuntimeToken) {
+  base::ScopedClosureRunner clear_token(
+      base::BindOnce(base::IgnoreResult(&base::nix::TakeXdgActivationToken)));
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  auto window = CreateSessionWindow(delegate, /*restore_id=*/1);
+  window->Show(/*inactive=*/false);
+
+  const auto surface_id = window->root_surface()->get_surface_id();
   ActivateSurface(surface_id);
+  SyncDisplay();
+
+  const std::string kRuntimeToken = "RUNTIME_TOKEN";
+  base::nix::SetActivationToken(kRuntimeToken);
+  PostToServerAndWait([surface_id,
+                       kRuntimeToken](wl::TestWaylandServerThread* server) {
+    auto* const xdg_activation = server->xdg_activation_v1();
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    EXPECT_CALL(*xdg_activation, Activate(_, _, StrEq(kRuntimeToken), surface))
+        .Times(1);
+  });
+
+  window->Activate();
+  EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
   SyncDisplay();
 }
 

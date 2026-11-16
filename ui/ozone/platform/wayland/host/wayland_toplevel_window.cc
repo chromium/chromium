@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -393,6 +394,12 @@ void WaylandToplevelWindow::ActivateWithToken(std::string token) {
 
 void WaylandToplevelWindow::Activate() {
   if (connection()->xdg_activation()) {
+    // While a session-restored toplevel is not yet configured, leave any
+    // launch token in `base::nix` for a window opened for the launch itself
+    // (if any). Once configured, runtime tokens (e.g. from external links or
+    // notifications) may activate it.
+    const bool restoring_from_session =
+        IsRestoredFromSession() && !IsSurfaceConfigured();
     if (pending_configure_activation_token_.has_value()) {
       if (IsSurfaceConfigured()) {
         connection()->xdg_activation()->Activate(
@@ -400,7 +407,9 @@ void WaylandToplevelWindow::Activate() {
             pending_configure_activation_token_.value());
         pending_configure_activation_token_.reset();
       }
-    } else if (auto token = base::nix::TakeXdgActivationToken()) {
+    } else if (auto token = restoring_from_session
+                                ? std::nullopt
+                                : base::nix::TakeXdgActivationToken()) {
       ActivateWithToken(token.value());
     } else if (!IsRestoredFromSession() ||
                connection()->xdg_activation()->HasUserPressSerial()) {

@@ -283,6 +283,12 @@ class StartupBrowserCreator {
   // StartupBrowserCreatorTest.LastUsedProfileActivated test.
   static bool ActivatedProfile();
 
+#if BUILDFLAG(IS_LINUX)
+  // Discards the launch activation token if a session restore on process
+  // startup left it unconsumed.
+  void DiscardLeftoverActivationTokenIfNeeded();
+#endif
+
   // Additional tabs to open during first run.
   std::vector<GURL> first_run_tabs_;
 
@@ -303,6 +309,17 @@ class StartupBrowserCreator {
   static bool in_synchronous_profile_launch_;
 
   static bool is_launching_browser_for_last_profiles_;
+
+#if BUILDFLAG(IS_LINUX)
+  // True while ProcessLastOpenedProfiles() launches profiles.
+  bool launching_last_opened_profiles_ = false;
+
+  // Set by StartupBrowserCreatorImpl when a session restore on process startup
+  // leaves the launch activation token unconsumed. The token is discarded once
+  // all startup profiles are launched, so a new window opened for a later
+  // profile can still use it.
+  bool discard_activation_token_after_launch_ = false;
+#endif
 };
 
 // Returns true if |profile| has exited uncleanly and has not been launched

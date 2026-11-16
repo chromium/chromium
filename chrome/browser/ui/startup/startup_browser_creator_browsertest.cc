@@ -178,6 +178,8 @@ using testing::Return;
 #include "base/functional/callback_helpers.h"
 #include "base/nix/xdg_util.h"
 #include "base/strings/string_view_util.h"
+#include "ui/gfx/switches.h"
+#include "ui/ozone/public/ozone_switches.h"
 #if BUILDFLAG(SUPPORTS_OZONE_X11)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -2262,6 +2264,127 @@ INSTANTIATE_TEST_SUITE_P(
                  ? "Xdg"
                  : "DesktopStartupId";
     });
+
+// Uses the headless Ozone platform so platform window creation does not consume
+// `base::nix::TakeXdgActivationToken()` directly (matching Wayland session
+// restore, where restored toplevels leave the cold-start token untouched).
+class StartupBrowserCreatorHeadlessActivationTokenTest
+    : public StartupBrowserCreatorTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    StartupBrowserCreatorTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchNative(::switches::kOzonePlatform,
+                                     ::switches::kHeadless);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorHeadlessActivationTokenTest,
+                       SessionRestoreClearsLeftoverActivationToken) {
+  base::ScopedClosureRunner clear_token(
+      base::BindOnce(base::IgnoreResult(&base::nix::TakeXdgActivationToken)));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  DisableWhatsNewPage();
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& profile1 = profiles::testing::CreateProfileSync(
+      profile_manager,
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 1")));
+  SessionStartupPref::SetStartupPref(
+      &profile1, SessionStartupPref(SessionStartupPref::LAST));
+
+  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+      BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile1,
+                                /*from_user_gesture=*/true));
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser1, embedded_test_server()->GetURL("/empty.html")));
+
+  ScopedProfileKeepAlive profile_keep_alive(
+      &profile1, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(browser1);
+  ASSERT_EQ(0u, ProfileBrowserCollection::GetForProfile(&profile1)->GetSize());
+
+  base::nix::SetActivationToken("cold-start-token");
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
+                                   chrome::startup::IsFirstRun::kNo);
+  launch.Launch(&profile1, chrome::startup::IsProcessStartup::kYes,
+                /*restore_tabbed_browser=*/true);
+
+  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile1)->GetSize());
+  BrowserWindowInterface* restored_browser =
+      ProfileBrowserCollection::GetForProfile(&profile1)
+          ->GetLastActiveBrowser();
+  ASSERT_TRUE(restored_browser);
+  EXPECT_TRUE(BrowserInitState::From(restored_browser)
+                  ->create_params()
+                  .startup_id.empty());
+  EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
+}
+
+// A session restore for an earlier profile must not discard the launch token
+// before the last used profile opens a new window for the launch.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorHeadlessActivationTokenTest,
+                       MultiProfileSessionRestoreKeepsTokenForLastUsedProfile) {
+  base::ScopedClosureRunner clear_token(
+      base::BindOnce(base::IgnoreResult(&base::nix::TakeXdgActivationToken)));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  DisableWhatsNewPage();
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& profile1 = profiles::testing::CreateProfileSync(
+      profile_manager,
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 1")));
+  Profile& profile2 = profiles::testing::CreateProfileSync(
+      profile_manager,
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2")));
+  SessionStartupPref::SetStartupPref(
+      &profile1, SessionStartupPref(SessionStartupPref::LAST));
+  SessionStartupPref::SetStartupPref(
+      &profile2, SessionStartupPref(SessionStartupPref::DEFAULT));
+
+  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+      BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL, &profile1,
+                                /*from_user_gesture=*/true));
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser1, embedded_test_server()->GetURL("/empty.html")));
+
+  ScopedProfileKeepAlive profile1_keep_alive(
+      &profile1, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedProfileKeepAlive profile2_keep_alive(
+      &profile2, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(browser1);
+  ASSERT_EQ(0u, ProfileBrowserCollection::GetForProfile(&profile1)->GetSize());
+  ASSERT_EQ(0u, ProfileBrowserCollection::GetForProfile(&profile2)->GetSize());
+
+  base::nix::SetActivationToken("cold-start-token");
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  StartupBrowserCreator browser_creator;
+  browser_creator.LaunchBrowserForLastProfiles(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kYes,
+      chrome::startup::IsFirstRun::kNo,
+      {&profile2, StartupProfileMode::kBrowserWindow}, {&profile1, &profile2},
+      /*restore_tabbed_browser=*/true);
+
+  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile1)->GetSize());
+  BrowserWindowInterface* restored_browser =
+      ProfileBrowserCollection::GetForProfile(&profile1)
+          ->GetLastActiveBrowser();
+  ASSERT_TRUE(restored_browser);
+  EXPECT_TRUE(BrowserInitState::From(restored_browser)
+                  ->create_params()
+                  .startup_id.empty());
+
+  ASSERT_EQ(1u, ProfileBrowserCollection::GetForProfile(&profile2)->GetSize());
+  BrowserWindowInterface* new_browser =
+      ProfileBrowserCollection::GetForProfile(&profile2)
+          ->GetLastActiveBrowser();
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ("cold-start-token",
+            BrowserInitState::From(new_browser)->create_params().startup_id);
+  EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
+}
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

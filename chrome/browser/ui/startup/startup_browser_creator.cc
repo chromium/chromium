@@ -9,9 +9,11 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "apps/switches.h"
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -139,6 +141,10 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -785,8 +791,21 @@ void StartupBrowserCreator::LaunchBrowser(
                restore_tabbed_browser);
   }
   in_synchronous_profile_launch_ = false;
+#if BUILDFLAG(IS_LINUX)
+  if (!launching_last_opened_profiles_) {
+    DiscardLeftoverActivationTokenIfNeeded();
+  }
+#endif
   ProfileLaunchObserver::AddLaunched(profile);
 }
+
+#if BUILDFLAG(IS_LINUX)
+void StartupBrowserCreator::DiscardLeftoverActivationTokenIfNeeded() {
+  if (std::exchange(discard_activation_token_after_launch_, false)) {
+    std::ignore = base::nix::TakeXdgActivationToken();
+  }
+}
+#endif
 
 void StartupBrowserCreator::LaunchBrowserForLastProfiles(
     const base::CommandLine& command_line,
@@ -1472,6 +1491,11 @@ void StartupBrowserCreator::ProcessLastOpenedProfiles(
                                                  switch_pair.second);
   }
 
+#if BUILDFLAG(IS_LINUX)
+  base::AutoReset<bool> launching_last_opened_profiles(
+      &launching_last_opened_profiles_, true);
+#endif
+
   // Launch the profiles in the order they became active.
   for (Profile* profile : last_opened_profiles) {
     CHECK(!profile->IsGuestSession(), base::NotFatalUntil::M162);
@@ -1512,6 +1536,12 @@ void StartupBrowserCreator::ProcessLastOpenedProfiles(
     // We've launched at least one browser.
     process_startup = chrome::startup::IsProcessStartup::kNo;
   }
+
+#if BUILDFLAG(IS_LINUX)
+  // Only discard the launch token once every profile has had a chance to open
+  // a new window that consumes it.
+  DiscardLeftoverActivationTokenIfNeeded();
+#endif
 
 // Set the |last_used_profile| to activate if a browser is launched for at
 // least one profile. Otherwise, show UserManager.
