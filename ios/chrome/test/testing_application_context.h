@@ -82,6 +82,9 @@ class TestingApplicationContext : public ApplicationContext {
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  // Sets the SafeBrowsingService.
+  void SetSafeBrowsingService(SafeBrowsingService* safe_browsing_service);
+
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;

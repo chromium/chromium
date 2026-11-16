@@ -68,6 +68,9 @@ class FakeSafeBrowsingService : public SafeBrowsingService {
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager);
 
+  // Returns the TestURLLoaderFactory used by GetURLLoaderFactory().
+  network::TestURLLoaderFactory* GetTestURLLoaderFactory();
+
  protected:
   ~FakeSafeBrowsingService() override;
 

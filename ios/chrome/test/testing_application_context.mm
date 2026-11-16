@@ -136,6 +136,12 @@ void TestingApplicationContext::SetSharedURLLoaderFactory(
   test_url_loader_factory_ = std::move(url_loader_factory);
 }
 
+void TestingApplicationContext::SetSafeBrowsingService(
+    SafeBrowsingService* safe_browsing_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  fake_safe_browsing_service_ = safe_browsing_service;
+}
+
 void TestingApplicationContext::OnAppEnterForeground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }

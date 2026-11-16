@@ -326,3 +326,8 @@ void FakeSafeBrowsingService::SetDatabaseManager(
         database_manager) {
   database_manager_ = database_manager;
 }
+
+network::TestURLLoaderFactory*
+FakeSafeBrowsingService::GetTestURLLoaderFactory() {
+  return &url_loader_factory_;
+}
