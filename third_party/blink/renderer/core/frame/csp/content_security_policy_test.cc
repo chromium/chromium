@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
-#include "build/build_config.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -787,16 +786,7 @@ TEST_F(ContentSecurityPolicyTest, RequestsAllowedWhenBypassingCSP) {
   SchemeRegistry::
       RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest("https");
 }
-// TODO(crbug.com/585642828): Crashes in batched runs on Android because
-// IsBeforeThreadCreated() is false once an earlier test created a thread.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_FilesystemAllowedWhenBypassingCSP \
-  DISABLED_FilesystemAllowedWhenBypassingCSP
-#else
-#define MAYBE_FilesystemAllowedWhenBypassingCSP \
-  FilesystemAllowedWhenBypassingCSP
-#endif
-TEST_F(ContentSecurityPolicyTest, MAYBE_FilesystemAllowedWhenBypassingCSP) {
+TEST_F(ContentSecurityPolicyTest, FilesystemAllowedWhenBypassingCSP) {
   const KURL base;
   CreateExecutionContext();
   execution_context->GetSecurityContext().SetSecurityOrigin(
