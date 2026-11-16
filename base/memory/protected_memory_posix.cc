@@ -23,12 +23,15 @@ namespace base {
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 namespace {
 
-bool SetMemory(void* start, void* end, int prot) {
+// Note: A boolean flag is used instead of a generic protection flag in
+// SetMemory to prevent the creation of a generic CFI bypass gadget.
+bool SetMemory(void* start, void* end, bool write) {
   CHECK(end > start);
   const uintptr_t page_start =
       bits::AlignDown(reinterpret_cast<uintptr_t>(start), GetPageSize());
   return mprotect(reinterpret_cast<void*>(page_start),
-                  reinterpret_cast<uintptr_t>(end) - page_start, prot) == 0;
+                  reinterpret_cast<uintptr_t>(end) - page_start,
+                  write ? (PROT_READ | PROT_WRITE) : PROT_READ) == 0;
 }
 
 }  // namespace
@@ -62,11 +65,11 @@ void CheckMemoryReadOnly(const void* ptr) {
 }  // namespace internal
 
 bool AutoWritableMemoryBase::SetMemoryReadWrite(void* start, void* end) {
-  return SetMemory(start, end, PROT_READ | PROT_WRITE);
+  return SetMemory(start, end, /*write=*/true);
 }
 
 bool AutoWritableMemoryBase::SetMemoryReadOnly(void* start, void* end) {
-  return SetMemory(start, end, PROT_READ);
+  return SetMemory(start, end, /*write=*/false);
 }
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 }  // namespace base
