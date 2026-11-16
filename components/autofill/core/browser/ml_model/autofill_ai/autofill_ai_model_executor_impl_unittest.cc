@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/mock_autofill_ai_model_cache.h"
@@ -23,6 +24,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
@@ -138,6 +140,44 @@ TEST_F(AutofillAiModelExecutorImplTest, ValidResponse) {
   histogram_tester.ExpectUniqueSample(
       kUmaAutofillAiModelExecutionStatus,
       AutofillAiModelExecutionStatus::kSuccessNonEmptyResult, 1);
+}
+
+// Tests that response field indices are resolved against the fields from the
+// request proto, rather than the `FormData::fields()`.
+TEST_F(AutofillAiModelExecutorImplTest, ValidResponseWithSyntheticSelect) {
+  const FormData form = test::GetFormData(
+      {.fields = {{.name = u"Country",
+                   .form_control_type = FormControlType::kSyntheticSelectOne},
+                  {.name = u"Passport number"}}});
+  // Synthetic selects are omitted from the request proto, creating an index
+  // mismatch between the `form` and the request sent to the model.
+  ASSERT_EQ(ToFormDataProto(form, FormDataProtoConversionReason::kModelRequest)
+                .fields_size(),
+            1);
+  // Response indices refer to fields in the request, not the `form`.
+  AutofillAiTypeResponse response = CreateResponse({{0, PASSPORT_NUMBER}});
+
+  MockOnModelExecutedCallback on_model_executed;
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsClassifications, _,
+          _, An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+  EXPECT_CALL(
+      model_cache(),
+      Update(CalculateFormSignature(form), EqualsProto(response),
+             ElementsAre(FieldIdentifier{
+                 // Expect the signature of the non-synthetic select.
+                 .signature = CalculateFieldSignatureForField(form.fields()[1]),
+                 .rank_in_signature_group = 0})));
+  EXPECT_CALL(on_model_executed, Run(form.global_id()));
+
+  engine()->GetPredictions(form, on_model_executed.Get(), std::nullopt);
 }
 
 TEST_F(AutofillAiModelExecutorImplTest, PrivateAiServiceType) {

@@ -70,7 +70,6 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  private:
   // Writes the model execution response into the cache.
   void OnModelExecuted(
-      const FormData form_data,
       const optimization_guide::proto::AutofillAiTypeRequest request,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
