@@ -163,8 +163,9 @@ void LogCommittedAbortsBeforePaint(PageAbortReason abort_reason,
       break;
     default:
       // These should only be logged for provisional aborts.
-      CHECK_NE(abort_reason, PageAbortReason::ABORT_OTHER,
-               base::NotFatalUntil::M161);
+      // TODO(crbug.com/585705841): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK_NE(abort_reason, PageAbortReason::ABORT_OTHER);
       break;
   }
 }
