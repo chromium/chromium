@@ -387,6 +387,17 @@ class ManagePasswordsUIController
   // it shouldn't anymore.
   void ClearPopUpFlagForBubble();
 
+  // Closes the process-global `PasswordBubbleViewBase` instance only if it is
+  // anchored to this tab's `web_contents()`, avoiding cross-tab or cross-window
+  // dismissal when unrelated tabs update their password state.
+  void CloseBubbleIfOwnedByThisTab();
+
+  // Returns true if a different browser window currently owns the
+  // process-global password bubble while this tab's browser window is
+  // unfocused, preventing automatic bubbles in background windows from stealing
+  // the active bubble.
+  bool IsBlockedByOtherWindowBubble() const;
+
   // Closes the account chooser gracefully so the callback is called. Closes the
   // password bubble. Then sets the state to MANAGE_STATE.
   void DestroyPopups();

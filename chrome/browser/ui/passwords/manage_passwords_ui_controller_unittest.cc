@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,6 +30,8 @@
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/autofill/bubble_manager_impl.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
@@ -36,7 +39,12 @@
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
+#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/affiliations/core/browser/match_type.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
@@ -75,6 +83,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -201,6 +210,10 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
 
   bool opened_automatic_bubble() const { return opened_automatic_bubble_; }
 
+  page_actions::MockPageActionController& page_action_controller() {
+    return page_action_controller_;
+  }
+
   MOCK_METHOD(std::unique_ptr<AccountChooserPrompt>,
               CreateAccountChooser,
               (CredentialManagerDialogController*),
@@ -258,10 +271,10 @@ TestManagePasswordsUIController::TestManagePasswordsUIController(
 }
 
 void TestManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
-  opened_automatic_bubble_ = IsAutomaticallyOpeningBubble();
   ManagePasswordsUIController::UpdateBubbleAndIconVisibility();
+  opened_automatic_bubble_ = IsAutomaticallyOpeningBubble();
   OnUpdateBubbleAndIconVisibility();
-  // Manually invoke this because `OnUpdateBubbleAndIconVisibility` skips it
+  // Manually invoke this because `OnUpdateBubbleAndIconVisibility()` skips it
   // due to the lack of a browser.
   UpdatePasswordIconAndBubbleState(&manage_passwords_page_action_controller_,
                                    passwords_action_item_.get());
@@ -3103,4 +3116,216 @@ TEST_F(ManagePasswordsUIControllerTest, AutomatedPasswordChangeOffered) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch", true,
       1);
+}
+
+// Verifies that a password UI state transition in a background/unrelated tab
+// does not close the process-global password bubble owned by the active tab or
+// clear the other tab's omnibox tooltip.
+TEST_F(ManagePasswordsUIControllerTest,
+       StateChangeInOtherTabDoesNotCloseActiveBubble) {
+  std::optional<ChromeLayoutProvider> layout_provider;
+  if (!views::LayoutProvider::Get()) {
+    layout_provider.emplace();
+  }
+  controller()->OnPasskeyDeleted();
+  std::unique_ptr<views::View> bubble(PasswordBubbleViewBase::CreateBubble(
+      web_contents(), views::BubbleAnchor(),
+      LocationBarBubbleDelegateView::AUTOMATIC));
+  base::ScopedClosureRunner close_bubble(base::BindOnce([]() {
+    if (PasswordBubbleViewBase::manage_password_bubble()) {
+      PasswordBubbleViewBase::CloseCurrentBubble();
+    }
+  }));
+  ASSERT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+
+  // Simulate state updates on a second tab; another tab owning
+  // `manage_password_bubble()` must neither blank out the second tab's omnibox
+  // tooltip/accessible name nor have its bubble closed.
+  tabs::MockTabInterface other_tab;
+  std::unique_ptr<content::WebContents> other_web_contents =
+      CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      other_web_contents.get(), GURL(kExampleUrl));
+  tabs::TabLookupFromWebContents::CreateForWebContents(other_web_contents.get(),
+                                                       &other_tab);
+  testing::NiceMock<TestManagePasswordsUIController> other_controller(
+      other_tab, other_web_contents.get(), &client());
+
+  const std::u16string expected_manage_tooltip =
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE);
+  ASSERT_FALSE(expected_manage_tooltip.empty());
+  EXPECT_CALL(other_controller.page_action_controller(),
+              OverrideTooltip(kActionShowPasswordsBubbleOrPage,
+                              expected_manage_tooltip));
+  EXPECT_CALL(other_controller.page_action_controller(),
+              OverrideAccessibleName(kActionShowPasswordsBubbleOrPage,
+                                     expected_manage_tooltip));
+  other_controller.OnPasswordAutofilled(
+      {test_local_form()}, url::Origin::Create(test_local_form().url), {});
+  EXPECT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+  testing::Mock::VerifyAndClearExpectations(
+      &other_controller.page_action_controller());
+
+  other_controller.OnPasswordSubmitted(
+      CreateFormManagerWithBestMatches({}, &submitted_form()));
+  EXPECT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+
+  // A state change on the owning tab itself still closes its bubble.
+  controller()->OnPasswordSubmitted(
+      CreateFormManagerWithBestMatches({}, &submitted_form()));
+  EXPECT_EQ(nullptr, PasswordBubbleViewBase::manage_password_bubble());
+}
+
+// Verifies that an automatic bubble request on the selected tab of an unfocused
+// browser window (`IsActivated() == true`, `IsActive() == false`) does not
+// preempt a password bubble open in the focused window, preserves the inactive
+// window's omnibox tooltip, still allows explicit user actions, and does not
+// wedge `BubbleManagerImpl`.
+TEST_F(ManagePasswordsUIControllerTest,
+       AutomaticBubbleInInactiveWindowDoesNotCloseOtherWindowBubble) {
+  std::optional<ChromeLayoutProvider> layout_provider;
+  if (!views::LayoutProvider::Get()) {
+    layout_provider.emplace();
+  }
+  testing::NiceMock<MockBrowserWindowInterface> active_browser;
+  testing::NiceMock<MockBrowserWindowInterface> inactive_browser;
+  ON_CALL(active_browser, IsActive()).WillByDefault(Return(true));
+  ON_CALL(inactive_browser, IsActive()).WillByDefault(Return(false));
+
+  // Open a password bubble on `tab_a` in the focused browser window.
+  tabs::MockTabInterface tab_a;
+  std::unique_ptr<content::WebContents> web_contents_a =
+      CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents_a.get(), GURL(kExampleUrl));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_a.get(),
+                                                       &tab_a);
+  testing::NiceMock<TestManagePasswordsUIController> controller_a(
+      tab_a, web_contents_a.get(), &client());
+  auto open_bubble_on_tab_a = [&]() {
+    // Keep `GetBrowserWindowInterface()` null during construction so
+    // `~PasswordBubbleViewBase()` does not dereference `BrowserActions` on
+    // `MockBrowserWindowInterface`.
+    ON_CALL(tab_a, GetBrowserWindowInterface()).WillByDefault(Return(nullptr));
+    controller_a.OnPasskeyDeleted();
+    std::unique_ptr<views::View> view(PasswordBubbleViewBase::CreateBubble(
+        web_contents_a.get(), views::BubbleAnchor(),
+        LocationBarBubbleDelegateView::AUTOMATIC));
+    ON_CALL(tab_a, GetBrowserWindowInterface())
+        .WillByDefault(Return(&active_browser));
+    return view;
+  };
+  std::unique_ptr<views::View> bubble = open_bubble_on_tab_a();
+  base::ScopedClosureRunner close_bubble(base::BindOnce([]() {
+    if (PasswordBubbleViewBase::manage_password_bubble()) {
+      PasswordBubbleViewBase::CloseCurrentBubble();
+    }
+  }));
+  ASSERT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+
+  // Set up `tab_b` as the selected tab (`IsActivated() == true`) of an
+  // unfocused second browser window (`inactive_browser.IsActive() == false`).
+  tabs::MockTabInterface tab_b;
+  base::RepeatingCallbackList<void(tabs::TabInterface*)> did_activate_callbacks;
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
+      will_deactivate_callbacks;
+  ON_CALL(tab_b, RegisterDidActivate)
+      .WillByDefault([&](tabs::TabInterface::DidActivateCallback cb) {
+        return did_activate_callbacks.Add(std::move(cb));
+      });
+  ON_CALL(tab_b, RegisterWillDeactivate)
+      .WillByDefault([&](tabs::TabInterface::WillDeactivateCallback cb) {
+        return will_deactivate_callbacks.Add(std::move(cb));
+      });
+  ON_CALL(tab_b, IsActivated()).WillByDefault(Return(true));
+  ON_CALL(tab_b, GetBrowserWindowInterface())
+      .WillByDefault(Return(&inactive_browser));
+  std::unique_ptr<content::WebContents> web_contents_b =
+      CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents_b.get(), GURL(kExampleUrl));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_b.get(),
+                                                       &tab_b);
+  std::unique_ptr<TabDialogs> tab_dialogs_b =
+      TabDialogs::Create(tab_b, web_contents_b.get());
+  autofill::BubbleManagerImpl bubble_manager_b(&tab_b);
+  testing::NiceMock<TestManagePasswordsUIController> controller_b(
+      tab_b, web_contents_b.get(), &client());
+
+  // An automatic bubble state transition in the inactive window is suppressed
+  // before `UpdateVisibility()` runs, keeping `tab_a`'s bubble open and
+  // preserving `tab_b`'s non-empty omnibox tooltip and accessible name.
+  const std::u16string expected_save_tooltip =
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_SAVE);
+  ASSERT_FALSE(expected_save_tooltip.empty());
+  EXPECT_CALL(
+      controller_b.page_action_controller(),
+      OverrideTooltip(kActionShowPasswordsBubbleOrPage, expected_save_tooltip));
+  EXPECT_CALL(controller_b.page_action_controller(),
+              OverrideAccessibleName(kActionShowPasswordsBubbleOrPage,
+                                     expected_save_tooltip));
+  controller_b.OnPasswordSubmitted(
+      CreateFormManagerWithBestMatches({}, &submitted_form()));
+  EXPECT_FALSE(controller_b.opened_automatic_bubble());
+  EXPECT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+  testing::Mock::VerifyAndClearExpectations(
+      &controller_b.page_action_controller());
+
+  // Direct `QueueOrShowBubble(/*user_action=*/false)` also suppresses before
+  // calling `RequestShowController()`.
+  base::HistogramTester histogram_tester;
+  controller_b.QueueOrShowBubble(/*user_action=*/false);
+  histogram_tester.ExpectTotalCount("Autofill.Bubble.RequestShow", 0);
+  EXPECT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+
+  // If `controller_b` was queued while `tab_b` was backgrounded and is later
+  // dequeued while `tab_a` owns the bubble in the focused window,
+  // `ShowBubble()` suppresses it, notifies `OnBubbleHiddenByController()` so
+  // `active_bubble_controller_` is cleared, and refreshes the tooltip.
+  PasswordBubbleViewBase::CloseCurrentBubble();
+  bubble.reset();
+  ON_CALL(tab_b, IsActivated()).WillByDefault(Return(false));
+  controller_b.QueueOrShowBubble(/*user_action=*/false);
+  ASSERT_TRUE(bubble_manager_b.HasPendingBubbleOfSameType(
+      autofill::BubbleType::kPassword));
+  bubble = open_bubble_on_tab_a();
+  ASSERT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+
+  EXPECT_CALL(
+      controller_b.page_action_controller(),
+      OverrideTooltip(kActionShowPasswordsBubbleOrPage, expected_save_tooltip));
+  EXPECT_CALL(controller_b.page_action_controller(),
+              OverrideAccessibleName(kActionShowPasswordsBubbleOrPage,
+                                     expected_save_tooltip));
+  ON_CALL(tab_b, IsActivated()).WillByDefault(Return(true));
+  did_activate_callbacks.Notify(&tab_b);
+  EXPECT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+  testing::Mock::VerifyAndClearExpectations(
+      &controller_b.page_action_controller());
+
+  ON_CALL(tab_b, IsActivated()).WillByDefault(Return(false));
+  will_deactivate_callbacks.Notify(&tab_b);
+  histogram_tester.ExpectTotalCount("Autofill.Bubble.HideDueToTabHide", 0);
+  ON_CALL(tab_b, IsActivated()).WillByDefault(Return(true));
+  did_activate_callbacks.Notify(&tab_b);
+
+  // An explicit user action in the unfocused window is still allowed:
+  // `ShowManagePasswordsBubble()` closes `tab_a`'s old bubble, and
+  // `PasswordBubbleViewBase::ShowBubble()` then returns early in unit tests
+  // because `GlobalBrowserCollection::GetInstance()->FindBrowserWithTab()`
+  // returns nullptr (`CreateBubble()` is never reached).
+  controller_b.QueueOrShowBubble(/*user_action=*/true);
+  EXPECT_EQ(nullptr, PasswordBubbleViewBase::manage_password_bubble());
+  bubble.reset();
+
+  // Reopen `tab_a`'s bubble. Once the second window becomes active, an
+  // automatic request on `controller_b` is no longer blocked and
+  // `ShowManagePasswordsBubble()` closes `tab_a`'s bubble
+  // (`PasswordBubbleViewBase::ShowBubble()` again returns early because
+  // `FindBrowserWithTab()` returns nullptr in unit tests).
+  bubble = open_bubble_on_tab_a();
+  ASSERT_EQ(bubble.get(), PasswordBubbleViewBase::manage_password_bubble());
+  ON_CALL(inactive_browser, IsActive()).WillByDefault(Return(true));
+  controller_b.QueueOrShowBubble(/*user_action=*/false);
+  EXPECT_EQ(nullptr, PasswordBubbleViewBase::manage_password_bubble());
 }

@@ -101,13 +101,18 @@ void ManagePasswordsPageActionController::UpdateVisibility(
   if (should_be_visible) {
     page_action_controller_->Show(kActionShowPasswordsBubbleOrPage);
     const gfx::VectorIcon& icon = GetVectorIconForState();
-    // Checks for if the bubble is showing or is about to be showing as there
-    // should be no tooltip if bubble is open.
+    // Suppress the omnibox icon tooltip while this tab's password bubble is
+    // open or about to open automatically. Because `manage_password_bubble()`
+    // is a process-global singleton shared across all tabs and windows, verify
+    // `GetWebContents()` ownership so a bubble open in another tab/window does
+    // not blank out this tab's tooltip (and null-check `GetWidget()` for
+    // widget-less unit test bubbles).
+    const PasswordBubbleViewBase* const bubble =
+        PasswordBubbleViewBase::manage_password_bubble();
     bool bubble_is_or_will_be_showing =
-        (PasswordBubbleViewBase::manage_password_bubble() &&
-         PasswordBubbleViewBase::manage_password_bubble()
-             ->GetWidget()
-             ->IsVisible()) ||
+        (bubble &&
+         bubble->GetWebContents() == passwords_ui_controller.web_contents() &&
+         bubble->GetWidget() && bubble->GetWidget()->IsVisible()) ||
         passwords_ui_controller.IsAutomaticallyOpeningBubble();
     std::u16string tooltip = bubble_is_or_will_be_showing
                                  ? std::u16string()

@@ -199,6 +199,18 @@ GetSaveProgressLogger(password_manager::PasswordManagerClient* client) {
       password_manager::BrowserSavePasswordProgressLogger>(log_manager);
 }
 
+// Returns the browser window hosting `web_contents`, or nullptr if the
+// contents are not attached to a tab/window (e.g. in unit tests).
+BrowserWindowInterface* GetBrowserWindowInterface(
+    const content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  tabs::TabInterface* const tab = tabs::TabInterface::MaybeGetFromContents(
+      const_cast<content::WebContents*>(web_contents));
+  return tab ? tab->GetBrowserWindowInterface() : nullptr;
+}
+
 }  // namespace
 
 ManagePasswordsUIController::ManagePasswordsUIController(
@@ -1286,6 +1298,13 @@ void ManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
     ClearPopUpFlagForBubble();
   }
 
+  // If another browser window owns the global password bubble while this tab's
+  // window is inactive, suppress automatic popups before `UpdateVisibility()`
+  // runs so the omnibox icon keeps its tooltip and accessible name.
+  if (IsBlockedByOtherWindowBubble()) {
+    ClearPopUpFlagForBubble();
+  }
+
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           web_contents());
@@ -1318,10 +1337,12 @@ void ManagePasswordsUIController::UpdatePasswordIconAndBubbleState(
     ManagePasswordsPageActionController* controller,
     actions::ActionItem* passwords_action_item) {
   password_manager::ui::State state = GetState();
-  // If the UI state has changed since the last update,
-  // close the current bubble to ensure that the UI reflects the new state.
+  // `ManagePasswordsUIController` is per-tab, whereas `PasswordBubbleViewBase`
+  // maintains a single process-global bubble across all tabs and windows. Only
+  // close the bubble on a state transition if it belongs to this tab, so
+  // background tab updates do not dismiss another tab's or window's bubble.
   if (state != last_page_action_state_) {
-    PasswordBubbleViewBase::CloseCurrentBubble();
+    CloseBubbleIfOwnedByThisTab();
   }
   // Update the last known state.
   last_page_action_state_ = state;
@@ -1350,7 +1371,11 @@ void ManagePasswordsUIController::UpdatePasswordIconAndBubbleState(
   controller->UpdateVisibility(state, *this, *passwords_action_item);
 
   if (show_bubble) {
-    PasswordBubbleViewBase::CloseCurrentBubble();
+    // Only close an existing bubble if this tab owns it; if a background tab
+    // transitions into an auto-pop-up state (`show_bubble == true`), its
+    // request will be queued by `BubbleManager` and must not dismiss the active
+    // tab's open bubble first.
+    CloseBubbleIfOwnedByThisTab();
     // This will detach any existing bubble so OnBubbleHidden() isn't called.
     weak_ptr_factory_.InvalidateWeakPtrs();
     QueueOrShowBubble(/*user_action=*/false);
@@ -1473,6 +1498,41 @@ void ManagePasswordsUIController::ClearPopUpFlagForBubble() {
   }
 }
 
+void ManagePasswordsUIController::CloseBubbleIfOwnedByThisTab() {
+  // `PasswordBubbleViewBase::manage_password_bubble()` is a single
+  // process-global instance shared across all tabs and browser windows. Verify
+  // `GetWebContents()` ownership before closing so state updates on background
+  // tabs do not dismiss an active bubble elsewhere (or record spurious bubble
+  // dismissals).
+  const PasswordBubbleViewBase* bubble =
+      PasswordBubbleViewBase::manage_password_bubble();
+  if (bubble && bubble->GetWebContents() == web_contents()) {
+    PasswordBubbleViewBase::CloseCurrentBubble();
+  }
+}
+
+bool ManagePasswordsUIController::IsBlockedByOtherWindowBubble() const {
+  const PasswordBubbleViewBase* bubble =
+      PasswordBubbleViewBase::manage_password_bubble();
+  if (!bubble || !bubble->GetWebContents() ||
+      bubble->GetWebContents() == web_contents()) {
+    return false;
+  }
+  // `TabInterface::IsActivated()` is true for the selected tab of *every*
+  // browser window, even unfocused ones, so `BubbleManagerImpl` does not queue
+  // requests on the selected tab of a background window. Block replacement when
+  // the global bubble belongs to a different browser window and this tab's
+  // window is inactive.
+  BrowserWindowInterface* const this_browser =
+      GetBrowserWindowInterface(web_contents());
+  BrowserWindowInterface* const bubble_browser =
+      GetBrowserWindowInterface(bubble->GetWebContents());
+  if (!this_browser || !bubble_browser || this_browser == bubble_browser) {
+    return false;
+  }
+  return !this_browser->IsActive();
+}
+
 void ManagePasswordsUIController::DestroyPopups() {
   HideBubble(/*initiated_by_bubble_manager=*/false);
   if (dialog_controller_ && dialog_controller_->IsShowingAccountChooser()) {
@@ -1576,6 +1636,20 @@ bool ManagePasswordsUIController::BubbleManagerHasPasswordBubbleInQueue()
 }
 
 void ManagePasswordsUIController::ShowBubble() {
+  // Suppress automatic (`!user_action_`) bubbles if `BubbleManager` dequeues a
+  // pending request in an unfocused window while another window owns the global
+  // password bubble; explicit user clicks still open the bubble. Clear
+  // `active_bubble_controller_` via `OnBubbleHiddenByController()` and refresh
+  // icon visibility so neither `BubbleManager` nor the omnibox tooltip stays in
+  // an opening state.
+  if (!user_action_ && IsBlockedByOtherWindowBubble()) {
+    if (auto* manager =
+            autofill::BubbleManager::GetForWebContents(web_contents())) {
+      manager->OnBubbleHiddenByController(*this, /*show_next_bubble=*/false);
+    }
+    UpdateBubbleAndIconVisibility();
+    return;
+  }
   if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
     tab_dialogs->ShowManagePasswordsBubble(user_action_);
   }
@@ -1788,11 +1862,20 @@ void ManagePasswordsUIController::ResetAutoSaveAfterErrorResolution(
 }
 
 void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {
-  if (PasswordBubbleViewBase::manage_password_bubble()) {
-    PasswordBubbleViewBase::CloseCurrentBubble();
-  }
+  // `QueueOrShowBubble()` may be called on a background tab (where
+  // `BubbleManager` queues the request until tab activation), so only close an
+  // existing bubble if it belongs to this tab.
+  CloseBubbleIfOwnedByThisTab();
 
   user_action_ = user_action;
+
+  // Suppress automatic (`!user_action`) bubbles in an unfocused window while
+  // another window owns the global password bubble, before
+  // `RequestShowController()` preempts any active per-window Autofill bubble or
+  // sets `active_bubble_controller_`.
+  if (!user_action && IsBlockedByOtherWindowBubble()) {
+    return;
+  }
 
   if (auto* manager =
           autofill::BubbleManager::GetForWebContents(web_contents())) {
