@@ -88,9 +88,8 @@ GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
 bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
                                    const GURL& resolved_guest_url);
 
-// Derives the Gemini Enterprise web app's Skills URL (`/home/cid/<configId>/r/skills`
-// or `/r/skills`) from `profile`'s latched guest URL, or returns an empty
-// GURL() if `profile` has no valid guest URL.
+// Returns `GetGeicSkillsUrlForGuestUrl()` for `profile`'s latched guest URL, or
+// an empty `GURL` if none.
 GURL GetGeicSkillsUrl(Profile* profile);
 
 }  // namespace geic

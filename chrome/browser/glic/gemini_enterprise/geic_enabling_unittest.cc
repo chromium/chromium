@@ -743,7 +743,9 @@ TEST_F(GeicEnablingTest, CanSwitchBetweenGeminiProvidersInSettings) {
         // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
-  auto get_skills_url_for_guest_url = [](const std::string& guest_url) {
+  // Resolves the guest URL from the `features::kGeic` guest URL param, so BYOID
+  // Auth Portal URLs are unwrapped and the `idp` parameter is dropped.
+  auto get_skills_url_for_finch_guest_url = [](const std::string& guest_url) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
         {{features::kGeic,
@@ -752,28 +754,32 @@ TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
     TestingProfile profile;
     return GetGeicSkillsUrl(&profile);
   };
-
-  // Extracts `configId` into `/home/cid/<configId>/r/skills`, strips
-  // `configId`, `location`, `hl`, and `idp`, and preserves other query
-  // parameters.
   EXPECT_EQ(
-      get_skills_url_for_guest_url(
-          "https://business.gemini.google/side-panel?"
-          "configId=abc123&location=global&hl=en&mods=widget_staging_api_mod"),
-      GURL("https://business.gemini.google/home/cid/abc123/r/skills?"
-           "mods=widget_staging_api_mod"));
-  EXPECT_EQ(
-      get_skills_url_for_guest_url(
+      get_skills_url_for_finch_guest_url(
           "https://auth.cloud.google/signin/locations/global/workforcePools/"
           "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
           "vertexaisearch.cloud.google%2Fhome%2Fcid%2Fabc123"),
       GURL("https://vertexaisearch.cloud.google/home/cid/abc123/r/skills"));
 
-  // Falls back to `/r/skills` and clears the query string when `configId` is
-  // absent and no other query parameters remain.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic, {{"enabled", "true"}}}}, {});
+
+  // Sets the guest URL via `::switches::kGlicGuestURL` rather than the
+  // `features::kGeic` guest URL param, which `IsAllowedGeminiEnterpriseHost()`
+  // filters and which does not allow Gemini at Work hosts yet.
+  auto get_skills_url_for_guest_url = [this](const std::string& guest_url) {
+    scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+        ::switches::kGlicGuestURL);
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ::switches::kGlicGuestURL, guest_url);
+    return GetGeicSkillsUrl(profile());
+  };
+
+  // URL mapping cases live in `geic_guest_url_unittest.cc`.
   EXPECT_EQ(get_skills_url_for_guest_url(
-                "https://business.gemini.google/side-panel?location=us&hl=fr"),
-            GURL("https://business.gemini.google/r/skills"));
+                "https://gemini.google.com/work/cid/abc123/side-panel"),
+            GURL("https://gemini.google.com/work/cid/abc123/customize/skills"));
 
   // Returns an empty GURL when the resolved guest URL is empty/invalid.
   scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
