@@ -2534,7 +2534,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithBlankInstanceDelay,
   ExecuteJsTest();
 
   // Close Glic to trigger the blank instance removal check.
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
 
   // Wait for the blank instance removal timer (configured to 100ms in this
@@ -3163,7 +3163,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, DISABLED_testInitializeFailsWindowOpen) {
       {.params = base::Value(base::DictValue().Set("failWith", "error"))});
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
 
-  GetOnlyGlicInstance()->CloseAllEmbedders();
+  GetOnlyGlicInstance()->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
 
   ToggleGlicForActiveTab();

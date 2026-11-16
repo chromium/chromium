@@ -108,6 +108,7 @@ source_set("glic") {
     "service/glic_instance_helper.h",
     "service/metrics/metrics_types.cc",
     "service/metrics/metrics_types.h",
+    "widget/browser_conditions.h",
   ]
   public_deps = [
     ":enum",
@@ -611,7 +612,6 @@ source_set("impl") {
     "suggestions/caching_zero_state_suggestions_manager.cc",
     "suggestions/caching_zero_state_suggestions_manager.h",
     "widget/browser_conditions.cc",
-    "widget/browser_conditions.h",
     "widget/conversions.cc",
     "widget/conversions.h",
     "widget/web_contents_delegate_util.h",

@@ -33,6 +33,10 @@ BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile);
 // Returns whether 'browser' is visible with a valid widget and window.
 bool IsBrowserVisible(BrowserWindowInterface* browser);
 
+// Returns whether any browser window is currently in ChromeOS locked
+// fullscreen mode. Always returns false on non-ChromeOS platforms.
+bool IsAnyBrowserLockedFullscreen();
+
 // Observes changes to what value FindBrowserForAttachment() would return.
 class BrowserAttachObserver {
  public:

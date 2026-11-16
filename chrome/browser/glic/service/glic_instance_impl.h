@@ -234,7 +234,7 @@ class GlicInstanceImpl : public GlicInstance,
   void UnbindTab(tabs::TabInterface* tab);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
   bool ContextAccessIndicatorEnabled();
-  void CloseAllEmbedders();
+  void CloseAllEmbedders(const CloseOptions& options);
   Host& host() override;
 
   // GlicInstance:
@@ -433,6 +433,7 @@ class GlicInstanceImpl : public GlicInstance,
   // already exist.
   void EnsureHostAwake();
 
+  tabs::TabInterface* FindForegroundTabToActivate() const;
   void MaybeActivateForegroundEmbedder();
   void MaybeRemoveBlankInstanceOnClose();
 

@@ -160,6 +160,10 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // with this render frame host.
   void CloseAndShutdown(content::RenderFrameHost* render_frame_host);
 
+  // Cancels in-flight invocations and active actor tasks, closes all Glic UI
+  // embedders, and hibernates all instances for locked fullscreen mode.
+  void CloseAllForLockedFullscreen();
+
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }

@@ -15,15 +15,19 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -1170,6 +1174,131 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreenTtc,
 INSTANTIATE_TEST_SUITE_P(All,
                          BrowserCommandControllerBrowserTestLockedFullscreenTtc,
                          testing::Bool());
+
+class BrowserCommandControllerBrowserTestLockedFullscreenGlic
+    : public BrowserCommandControllerBrowserTestLockedFullscreen {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BrowserCommandControllerBrowserTestLockedFullscreen::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(::switches::kGlicDev);
+  }
+
+  void SetUpOnMainThread() override {
+    BrowserCommandControllerBrowserTestLockedFullscreen::SetUpOnMainThread();
+    PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
+    profile_prefs->SetInteger(
+        optimization_guide::prefs::kGeminiSettings,
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+    glic_service().enabling().SetCompletedFre(
+        glic::prefs::FreStatus::kCompleted);
+  }
+
+ protected:
+  glic::GlicKeyedService& glic_service() {
+    return CHECK_DEREF(glic::GlicKeyedService::Get(browser()->GetProfile()));
+  }
+
+  void MarkInstanceNonBlank(tabs::TabInterface* tab) {
+    auto* instance = static_cast<glic::GlicInstanceImpl*>(
+        glic_service().GetInstanceForTab(tab));
+    ASSERT_NE(instance, nullptr);
+    instance->OnUserInputSubmitted(glic::mojom::WebClientMode::kText,
+                                   glic::mojom::PromptType::kUnspecified);
+  }
+
+ private:
+  glic::GlicTestEnvironment glic_test_environment_;
+};
+
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreenGlic,
+                       ClosesGlicAcrossWindowsAndTabsOnLock) {
+  // Open Glic on a tab in the locking browser window, then switch to a new
+  // foreground tab so Glic is on a background tab (Path 2).
+  EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GLIC));
+  tabs::TabInterface* locked_bg_tab =
+      browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(locked_bg_tab);
+  MarkInstanceNonBlank(locked_bg_tab);
+
+  AddBlankTabAndShow(browser());
+  ASSERT_NE(browser()->tab_strip_model()->GetActiveTab(), locked_bg_tab);
+
+  // Open Glic in a second browser window of the same profile (Path 1) so Glic
+  // in `other_browser` has focus when `browser()` enters locked fullscreen.
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(other_browser);
+  EXPECT_TRUE(chrome::ExecuteCommand(other_browser, IDC_OPEN_GLIC));
+  ASSERT_TRUE(glic_service().instance_coordinator().IsAnyPanelShowing());
+  tabs::TabInterface* other_tab =
+      other_browser->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(other_tab);
+  MarkInstanceNonBlank(other_tab);
+  glic_service().GetInstanceForTab(other_tab)->FocusIfActive();
+
+  // Entering locked fullscreen must close Glic embedders across all windows
+  // and tabs of the profile, hibernate the instances, and keep the locked
+  // browser window active.
+  EnterLockedFullscreen();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return glic::GlicSidePanelCoordinator::GetForTab(locked_bg_tab)->state() ==
+           glic::GlicSidePanelCoordinator::State::kClosed;
+  }));
+
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  EXPECT_FALSE(glic_service().instance_coordinator().IsAnyPanelShowing());
+  ASSERT_NE(glic_service().GetInstanceForTab(other_tab), nullptr);
+  EXPECT_FALSE(glic_service().GetInstanceForTab(other_tab)->IsShowing());
+  EXPECT_TRUE(glic_service().GetInstanceForTab(other_tab)->IsHibernated());
+  ASSERT_NE(glic_service().GetInstanceForTab(locked_bg_tab), nullptr);
+  EXPECT_FALSE(glic_service().GetInstanceForTab(locked_bg_tab)->IsShowing());
+  EXPECT_TRUE(glic_service().GetInstanceForTab(locked_bg_tab)->IsHibernated());
+
+  // Closing the foreground tab inside the locked window activates
+  // `locked_bg_tab`; Glic must not re-show.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      browser()->tab_strip_model()->active_index(), TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveTab(), locked_bg_tab);
+  EXPECT_FALSE(glic_service().instance_coordinator().IsAnyPanelShowing());
+  EXPECT_FALSE(glic_service().GetInstanceForTab(locked_bg_tab)->IsShowing());
+
+  ExitLockedFullscreen();
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreenGlic,
+                       ShowRefusedWhenBrowserInLockedFullscreen) {
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab1);
+
+  EnterLockedFullscreen();
+
+  // Direct ToggleUI / Show calls while in locked fullscreen must be refused.
+  glic_service().ToggleUI(browser(), /*prevent_close=*/true,
+                          glic::mojom::InvocationSource::kOsHotkey);
+  EXPECT_FALSE(glic_service().instance_coordinator().IsAnyPanelShowing());
+  glic_service().ToggleUI(nullptr, /*prevent_close=*/true,
+                          glic::mojom::InvocationSource::kOsHotkey);
+  EXPECT_FALSE(glic_service().instance_coordinator().IsAnyPanelShowing());
+
+  // Direct Invoke calls while in locked fullscreen must fail with
+  // kLockedFullscreen.
+  base::test::TestFuture<glic::GlicInvokeError> error_future;
+  glic::GlicInvokeOptions options(glic::Target(*tab1),
+                                  glic::mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+  EXPECT_FALSE(glic_service().Invoke(std::move(options)));
+  EXPECT_EQ(error_future.Get(), glic::GlicInvokeError::kLockedFullscreen);
+  EXPECT_FALSE(glic_service().instance_coordinator().IsAnyPanelShowing());
+
+  ExitLockedFullscreen();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BrowserCommandControllerBrowserTestLockedFullscreenGlic,
+    testing::Bool());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,

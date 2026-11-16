@@ -293,7 +293,9 @@ enum class GlicInvokeError {
   // ABANDONED, which is what CUI 1 recorded for the sign-in panel before it
   // was resolved from the invocation.
   kSignInRequired = 27,
-  kMaxValue = kSignInRequired,
+  // A browser window is in locked fullscreen mode.
+  kLockedFullscreen = 28,
+  kMaxValue = kLockedFullscreen,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/public/glic_invoke_options.cc:GlicInvokeErrorToString)
 

@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(GlicActivityManagerBrowserTest,
   EXPECT_TRUE(activity_manager().GetSortedActivities(nullptr).empty());
 
   // Once the floaty is closed, conv_floaty is included across all tabs.
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose(instance));
 
   std::vector<const GlicActivityItem*> tab1_items =

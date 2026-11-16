@@ -471,6 +471,12 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
 
 GlicInstance* GlicInstanceCoordinatorImpl::ShowInstanceForTabGroup(
     tab_groups::TabGroupId group_id) {
+  // TODO(b/585281380): Route tab group invocations through Invoke() and remove
+  // ShowInstanceForTabGroup() from GlicInstanceCoordinator.
+  if (IsAnyBrowserLockedFullscreen()) {
+    return nullptr;
+  }
+
   GlicInstanceImpl* existing_instance = GetInstanceImplForTabGroup(group_id);
 
   if (existing_instance) {
@@ -526,6 +532,10 @@ bool GlicInstanceCoordinatorImpl::MaybeInvoke(BrowserWindowInterface* bwi,
 void GlicInstanceCoordinatorImpl::Show(BrowserWindowInterface* browser,
                                        mojom::InvocationSource source) {
   CHECK(GlicEnabling::ShouldShowGlicButton(profile_));
+
+  if (IsAnyBrowserLockedFullscreen()) {
+    return;
+  }
 
   // TODO(b/542727532): Follow up on whether MaybeInvoke is still needed and
   // remove if possible.
@@ -677,6 +687,23 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
   hotkey_manager_.reset();
 }
 
+void GlicInstanceCoordinatorImpl::CloseAllForLockedFullscreen() {
+  std::vector<base::WeakPtr<GlicInstanceImpl>> instances;
+  instances.reserve(instances_.size());
+  for (auto& [id, instance] : instances_) {
+    instances.push_back(instance->GetWeakPtr());
+  }
+  for (const auto& instance : instances) {
+    if (!instance) {
+      continue;
+    }
+    CancelInvoke(instance.get());
+    instance->CancelTask();
+    instance->CloseAllEmbedders({.suppress_animations = true});
+    instance->Hibernate();
+  }
+}
+
 void GlicInstanceCoordinatorImpl::RemoveAllInstances(
     InstanceRemovalReason reason) {
   while (!instances_.empty()) {
@@ -748,6 +775,12 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
       notify_error(GlicInvokeError::kProfileNotEnabled);
       return nullptr;
     }
+  }
+
+  if (IsAnyBrowserLockedFullscreen()) {
+    metrics->RecordError(GlicInvokeError::kLockedFullscreen);
+    notify_error(GlicInvokeError::kLockedFullscreen);
+    return nullptr;
   }
 
   // Validate against the requested surface, before it gets resolved and

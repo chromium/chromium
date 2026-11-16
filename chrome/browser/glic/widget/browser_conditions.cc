@@ -144,6 +144,23 @@ bool IsBrowserVisible(BrowserWindowInterface* bwi) {
       ;
 }
 
+bool IsAnyBrowserLockedFullscreen() {
+#if BUILDFLAG(IS_CHROMEOS)
+  bool locked = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (platform_util::IsBrowserLockedFullscreen(browser)) {
+          locked = true;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return locked;
+#else
+  return false;
+#endif
+}
+
 BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile) {
   BrowserWindowInterface* const active_bwi =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();

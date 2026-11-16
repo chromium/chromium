@@ -452,6 +452,7 @@ std::optional<std::string_view> GlicInvokeErrorToChromeErrorCode(
     case GlicInvokeError::kCancelled:
     case GlicInvokeError::kLiveModeActive:
     case GlicInvokeError::kSignInRequired:
+    case GlicInvokeError::kLockedFullscreen:
       return std::nullopt;
   }
 }

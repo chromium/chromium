@@ -1809,7 +1809,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
       GetProfile(), ProfileKeepAliveOrigin::kGlicView));
 
   // Close the detached window.
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose(instance));
 
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
@@ -1961,7 +1961,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorRemoveBlankInstancesTest,
   base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
 
   // Close the panel.
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
 
   // Wait for the blank instance to be deleted asynchronously.
@@ -1985,7 +1985,7 @@ IN_PROC_BROWSER_TEST_F(
   // blank-instance timer (while the closed side-panel embedder is still bound),
   // and unbinding that embedder afterward must also keep both the pinned tab
   // and the instance alive.
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
 
   base::RunLoop wait_past_blank_timer;
@@ -2036,7 +2036,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorRemoveBlankInstancesTest,
   // Closing and unbinding the panel mid-session keeps the tab pinned and
   // keeps it as the conversation's surface, so a LastActiveOrNew invocation
   // (a continuation) resolves to it instead of opening a new tab.
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
   instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
   ASSERT_TRUE(weak_instance);
@@ -2081,7 +2081,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Unbind while the session is active (the unpin is deferred), then bind the
   // tab again before the session ends.
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
   instance->UnbindEmbedder(SidePanelEmbedderKey(tab));
   ASSERT_TRUE(weak_instance);
@@ -2428,6 +2428,49 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
               testing::ElementsAre(tab0, tab2));
   EXPECT_FALSE(
       instance->GetSharingManagerInternal().IsTabPinned(tab1->GetHandle()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       CloseAllForLockedFullscreenClosesAllEmbedders) {
+#if !BUILDFLAG(IS_ANDROID)
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * detached_instance,
+                       OpenGlicForActiveTabAndDetach());
+  PreventBlankDeletionOnClose(detached_instance);
+#endif
+
+  tabs::TabInterface* tab1 =
+      GetTabListInterface()->OpenTab(GURL("about:blank"), -1);
+  GetTabListInterface()->ActivateTab(tab1->GetHandle());
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance1, OpenGlicForActiveTab());
+  PreventBlankDeletionOnClose(instance1);
+
+  // Open and activate a second tab and bind Glic to it so `tab1` holds a
+  // backgrounded inactive side panel embedder while `tab2` is actively showing.
+  tabs::TabInterface* tab2 =
+      GetTabListInterface()->OpenTab(GURL("about:blank"), -1);
+  GetTabListInterface()->ActivateTab(tab2->GetHandle());
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance2, OpenGlicForTab(tab2));
+  PreventBlankDeletionOnClose(instance2);
+
+  service()->CloseAllForLockedFullscreen();
+  ASSERT_OK(
+      WaitForSidePanelState(tab1, GlicSidePanelCoordinator::State::kClosed));
+
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(detached_instance->IsShowing());
+  EXPECT_FALSE(detached_instance->IsDetached());
+  EXPECT_TRUE(detached_instance->IsHibernated());
+#endif
+  EXPECT_FALSE(instance1->IsShowing());
+  EXPECT_TRUE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsShowing());
+  EXPECT_TRUE(instance2->IsHibernated());
+
+  // Activating `tab1` after closing all embedders must not re-show Glic.
+  GetTabListInterface()->ActivateTab(tab1->GetHandle());
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+  EXPECT_FALSE(instance1->IsShowing());
 }
 
 }  // namespace glic

@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithContextualCueing,
   // (kTopChromeButton) -> resets zss_warming_enabled_ = true and runs
   // warming.
   PreventBlankDeletionOnClose(instance);
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
 
   coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithContextualCueing,
   // 2. Simulate showing Glic again after closing via an implicit source
   // (kTabRestore) -> preserves disabled state (zss_warming_enabled_ == false).
   PreventBlankDeletionOnClose(instance);
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
 
   coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithContextualCueing,
   // (kTabRestore) -> preserves enabled state (zss_warming_enabled_ == true)
   // and runs warming on open.
   PreventBlankDeletionOnClose(instance);
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose());
 
   coordinator().Toggle(GetBrowser(), /*prevent_close=*/true,

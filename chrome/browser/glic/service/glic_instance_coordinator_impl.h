@@ -177,6 +177,10 @@ class GlicInstanceCoordinatorImpl
   // coordinator.
   void Shutdown() override;
   void CloseFloatingPanel() override;
+  // Cancels in-flight invocations and active actor tasks, closes all Glic UI
+  // embedders (side panels across all windows/tabs and floating panels), and
+  // hibernates all instances when entering locked fullscreen mode.
+  void CloseAllForLockedFullscreen();
   base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options) override;
   base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,

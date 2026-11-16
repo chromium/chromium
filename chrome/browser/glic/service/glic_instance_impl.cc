@@ -61,6 +61,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -391,6 +392,7 @@ GlicInstanceImpl::~GlicInstanceImpl() {
   // (e.g., during host or embedder shutdown) from posting new tasks back to
   // the coordinator while this instance is being destroyed.
   coordinator_delegate_ = nullptr;
+  browser_collection_observation_.Reset();
   tab_group_binding_.reset();
   offscreen_rendering_controller_.Stop();
   // Destroying the web contents may result in calls back here, so do it first.
@@ -1227,7 +1229,7 @@ glic::mojom::ConversationInfoPtr GlicInstanceImpl::GetConversationInfo() const {
 // The floating UI is a more deliberate user choice, and we don't want a
 // tab switch to unexpectedly close the floating UI.
 bool GlicInstanceImpl::ShouldDoAutomaticActivation() const {
-  if (is_in_show_) {
+  if (is_in_show_ || IsAnyBrowserLockedFullscreen()) {
     return false;
   }
   return !active_embedder_key_.has_value() ||
@@ -1809,32 +1811,36 @@ mojom::PanelState GlicInstanceImpl::ComputePanelState() {
   return panel_state;
 }
 
+tabs::TabInterface* GlicInstanceImpl::FindForegroundTabToActivate() const {
+  for (const auto& [key, entry] : embedders_) {
+    tabs::TabInterface* tab = GetTabFromEmbedderKey(key);
+    if (!tab || !entry.embedder || !tab->IsActivated()) {
+      continue;
+    }
+    // Note that this will only happen for a fully showing panel, not peek.
+    auto* coordinator = GlicSidePanelCoordinator::GetForTab(tab);
+    if (coordinator &&
+        coordinator->state() == GlicSidePanelCoordinator::State::kShown) {
+      return tab;
+    }
+  }
+  return nullptr;
+}
+
 // If no embedder is active, finds an embedder associated with an active
 // tab and activates it. Note: The order is not guaranteed to be MRU.
 void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
   if (active_embedder_key_.has_value()) {
     return;
   }
-  for (auto const& [key, entry] : embedders_) {
-    if (auto* sp_key = std::get_if<SidePanelEmbedderKey>(&key)) {
-      tabs::TabInterface& tab = sp_key->tab.get();
-      if (entry.embedder && tab.IsActivated()) {
-        auto* coordinator = GlicSidePanelCoordinator::GetForTab(&tab);
-        if (coordinator &&
-            coordinator->state() == GlicSidePanelCoordinator::State::kShown) {
-          // Note that this will only happen for a fully showing panel, not
-          // peek.
-          SidePanelShowOptions side_panel_options{tab};
-          side_panel_options.open_trigger = SidePanelOpenTrigger::kTabChanged;
-          ShowOptions show_options{side_panel_options};
-          show_options.invocation_source =
-              mojom::InvocationSource::kReshowInactive;
-          show_options.propagate_to_group = false;
-          Show(show_options);
-          return;
-        }
-      }
-    }
+  if (tabs::TabInterface* tab = FindForegroundTabToActivate()) {
+    SidePanelShowOptions side_panel_options{*tab};
+    side_panel_options.open_trigger = SidePanelOpenTrigger::kTabChanged;
+    ShowOptions show_options{side_panel_options};
+    show_options.invocation_source = mojom::InvocationSource::kReshowInactive;
+    show_options.propagate_to_group = false;
+    Show(show_options);
+    return;
   }
 
   OnAllEmbeddersInactive();
@@ -2049,14 +2055,14 @@ void GlicInstanceImpl::OnWebClientCleared() {
   NotifyPanelWillOpen(mojom::InvocationSource::kDefaultValue, std::nullopt);
 }
 
-void GlicInstanceImpl::CloseAllEmbedders() {
+void GlicInstanceImpl::CloseAllEmbedders(const CloseOptions& options) {
   // Copy the keys before iterating because Close() might modify `embedders_`.
   std::vector<EmbedderKey> keys;
   for (auto& [key, entry] : embedders_) {
     keys.push_back(key);
   }
   for (const auto& key : keys) {
-    Close(key);
+    Close(key, options);
   }
 }
 

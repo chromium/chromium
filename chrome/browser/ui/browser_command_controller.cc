@@ -1520,17 +1520,17 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
       UpdateTabSwitchingCommandState();
       UpdateCommandsForFind();
     }
-    if (auto* side_panel_ui = SidePanelUI::From(browser_)) {
-      if (side_panel_ui->GetCurrentEntryId() == SidePanelEntryId::kGlic) {
-        side_panel_ui->Close();
-      }
-    }
     if (auto* const action = FindAction(kActionSidePanelShowGlic, browser_)) {
       action->SetVisible(false);
     }
     if (auto* service =
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())) {
-      service->instance_coordinator().CloseFloatingPanel();
+      service->CloseAllForLockedFullscreen();
+    }
+    // Closing a Glic panel in another window can shift focus away from the
+    // locked window, so ensure the locked window remains active.
+    if (auto* browser_window = browser_->GetWindow()) {
+      browser_window->Activate();
     }
     if (auto* const action = FindAction(kActionTtcToolbar, browser_)) {
       action->SetVisible(false);

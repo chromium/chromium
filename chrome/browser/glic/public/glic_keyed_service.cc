@@ -402,6 +402,11 @@ void GlicKeyedService::CloseAndShutdown(
   instance_coordinator().CloseAndShutdownInstanceWithFrame(render_frame_host);
 }
 
+void GlicKeyedService::CloseAllForLockedFullscreen() {
+  static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
+      .CloseAllForLockedFullscreen();
+}
+
 GlicInstanceCoordinator& GlicKeyedService::instance_coordinator() const {
   CHECK(instance_coordinator_);
   return *instance_coordinator_.get();

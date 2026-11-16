@@ -1015,7 +1015,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(connected_future.Wait());
   EXPECT_FALSE(panel_opened_future.IsReady());
 
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose(instance));
   ASSERT_FALSE(instance->IsShowing());
 
@@ -1509,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
   base::WeakPtr<GlicInstanceImpl> weak_instance = instance->GetWeakPtr();
 
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
@@ -1578,7 +1578,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
   coordinator().Invoke(std::move(options));
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, WaitForGlicOpen(tab));
 
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose(instance));
 
   // Give the blank instance removal timer a chance to run.
@@ -3257,7 +3257,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   ASSERT_OK(WaitForClientLoadState(instance, ClientLoadState::kReady));
   EXPECT_FALSE(error_future.IsReady());
 
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
@@ -3285,7 +3285,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_OK(WaitForClientLoadState(instance, ClientLoadState::kReady));
   EXPECT_FALSE(error_future.IsReady());
 
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
@@ -3685,7 +3685,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   BrowserWindowInterface* browser = tab1->GetBrowserWindowInterface();
 
   PreventDeletionOnClose(instance);
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_TRUE(WaitForGlicClose(instance));
 
   base::test::TestFuture<void> success_future;
@@ -3753,7 +3753,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   // host this test is about.
   PreventDeletionOnClose(instance);
   ASSERT_OK(DisconnectWebClient(instance));
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose(instance));
   // Closing the panel neither hibernates the host nor clears its failure, so
   // the next show starts out looking at a failed client.
@@ -3963,7 +3963,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndWaitIdle());
 
   PreventDeletionOnClose(instance);
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose(instance));
 
   ASSERT_OK(DisconnectWebClient(instance));
@@ -4440,7 +4440,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOfflineBrowserTest,
   EXPECT_EQ(instance->host().client_load_error_reason(),
             ClientLoadErrorReason::kOffline);
   PreventDeletionOnClose(instance);
-  instance->CloseAllEmbedders();
+  instance->CloseAllEmbedders({});
   ASSERT_OK(WaitForGlicClose(instance));
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
   EXPECT_EQ(instance->host().client_load_error_reason(),

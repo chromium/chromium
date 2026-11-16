@@ -307,6 +307,7 @@ void GlicShareImageHandler::OnInvokeError(GlicInvokeError error) {
       ShareComplete(ShareImageResult::kFailedLostInstance);
       break;
     case GlicInvokeError::kPanelClosed:
+    case GlicInvokeError::kLockedFullscreen:
       ShareComplete(ShareImageResult::kFailedCancelled);
       break;
   }

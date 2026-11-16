@@ -556,7 +556,7 @@ class GlicBrowserTestMixin : public T {
     }
     CHECK(instance);
     PreventDeletionOnClose(instance);
-    instance->CloseAllEmbedders();
+    instance->CloseAllEmbedders({});
   }
 
   [[nodiscard]] TestResult<> CloseAllEmbeddersAndWait(

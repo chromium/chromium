@@ -220,6 +220,8 @@ std::string_view GlicInvokeErrorToString(GlicInvokeError error) {
       return "Panel was closed before the client was ready";
     case GlicInvokeError::kSignInRequired:
       return "User did not sign in before the invocation timed out";
+    case GlicInvokeError::kLockedFullscreen:
+      return "Browser is in locked fullscreen mode";
   }
   NOTREACHED();
 }

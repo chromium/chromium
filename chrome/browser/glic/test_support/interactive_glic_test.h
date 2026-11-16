@@ -559,7 +559,7 @@ class InteractiveGlicTestMixin : public T {
       if (!instance) {
         return;
       }
-      instance->CloseAllEmbedders();
+      instance->CloseAllEmbedders({});
     });
   }
 
