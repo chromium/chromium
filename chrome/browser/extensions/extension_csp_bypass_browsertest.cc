@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -278,10 +279,52 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
 // |                                  |                       | a.com embed    |
 // |                                  |                       | blocked        |
 // +----------------------------------+-----------------------+----------------+
+// | Extension > a.com                | Content-Security-     | a.com embed    |
+// | (Ext has a.com host permissions) | Policy:               | blocked        |
+// |                                  | frame-ancestors       |                |
+// |                                  | 'none' +              |                |
+// |                                  | X-Frame-Options:      |                |
+// |                                  | ALLOWALL              |                |
+// +----------------------------------+-----------------------+----------------+
+// | Extension > a.com                | Content-Security-     | a.com embed    |
+// | (Ext has a.com host permissions) | Policy:               | blocked        |
+// |                                  | frame-ancestors       |                |
+// |                                  | 'self'                |                |
+// +----------------------------------+-----------------------+----------------+
+// | Extension > a.com > b.com        | Content-Security-     | a.com embed    |
+// | (Ext has a.com host permissions) | Policy:               | commits,       |
+// |                                  | frame-ancestors       | b.com embed    |
+// |                                  | https://a.com         | blocked        |
+// +----------------------------------+-----------------------+----------------+
+// | Extension > a.com > b.com        | Content-Security-     | a.com embed    |
+// | (Ext has <all_urls> host         | Policy:               | commits,       |
+// | permissions)                     | frame-ancestors       | b.com embed    |
+// |                                  | 'self'                | blocked        |
+// +----------------------------------+-----------------------+----------------+
+// | Extension A > Extension B >      | Content-Security-     | Extension B    |
+// | a.com                            | Policy:               | embed commits, |
+// | (Ext A has no host permissions,  | frame-ancestors       | a.com embed    |
+// | Ext B has a.com host             | chrome-extension://   | blocked        |
+// | permissions)                     | <ext_b_id>            |                |
+// +----------------------------------+-----------------------+----------------+
+// | Extension A > Extension B >      | Content-Security-     | Extension B    |
+// | a.com                            | Policy:               | embed commits, |
+// | (Ext A has no host permissions,  | frame-ancestors       | a.com embed    |
+// | Ext B has a.com host             | chrome-extension://   | blocked        |
+// | permissions)                     | <ext_a_id>            |                |
+// +----------------------------------+-----------------------+----------------+
+// | Extension > evil.com >           | Content-Security-     | evil.com and   |
+// | Extension > good.com             | Policy:               | Extension      |
+// | (Ext has <all_urls> host         | frame-ancestors       | embeds commit, |
+// | permissions)                     | chrome-extension://   | good.com embed |
+// |                                  | <ext_id>              | blocked        |
+// |                                  | https://good.com      |                |
+// +----------------------------------+-----------------------+----------------+
 //
-// Test fixture for verifying how HTTP anti-framing headers (`X-Frame-Options`)
-// interact with top-level and nested `chrome-extension:` frames,
-// `host_permissions`, and `web_accessible_resources`.
+// Test fixture for verifying how HTTP anti-framing headers (`X-Frame-Options`
+// and `Content-Security-Policy: frame-ancestors`) interact with top-level and
+// nested `chrome-extension:` frames, `host_permissions`, and
+// `web_accessible_resources`.
 class ExtensionIframeAntiFramingBrowserTest : public ExtensionBrowserTest {
  public:
   ExtensionIframeAntiFramingBrowserTest() = default;
@@ -297,7 +340,8 @@ class ExtensionIframeAntiFramingBrowserTest : public ExtensionBrowserTest {
 
     UseHttpsTestServer();
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {"a.com", "example.com"};
+    cert_config.dns_names = {"a.com", "b.com", "example.com", "evil.com",
+                             "good.com"};
     embedded_test_server()->SetSSLConfig(cert_config);
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &ExtensionIframeAntiFramingBrowserTest::HandleAntiFramingRequest));
@@ -308,6 +352,7 @@ class ExtensionIframeAntiFramingBrowserTest : public ExtensionBrowserTest {
   // HTTP anti-framing headers attached to a test server response.
   struct AntiFramingHeaders {
     std::string_view xfo;
+    std::string_view csp;
   };
 
   // Configuration for creating and loading an unpacked test extension with an
@@ -329,6 +374,12 @@ class ExtensionIframeAntiFramingBrowserTest : public ExtensionBrowserTest {
     raw_ptr<content::RenderFrameHost> frame = nullptr;
   };
 
+  // Returns the serialized HTTPS origin (including ephemeral port) for `host`
+  // on `embedded_test_server()`, suitable for `frame-ancestors` source lists.
+  std::string GetHttpsOrigin(std::string_view host) const {
+    return embedded_test_server()->GetOrigin(std::string(host)).Serialize();
+  }
+
   // Builds an HTTPS URL on `host` and `path` served without any anti-framing
   // HTTP headers.
   GURL GetUrlWithoutAntiFramingHeaders(
@@ -338,14 +389,20 @@ class ExtensionIframeAntiFramingBrowserTest : public ExtensionBrowserTest {
   }
 
   // Builds an HTTPS URL on `host` and `path` served with the specified
-  // `X-Frame-Options` HTTP header.
+  // `X-Frame-Options` and/or `Content-Security-Policy` HTTP headers.
   GURL GetAntiFramingUrl(
       std::string_view host,
       AntiFramingHeaders headers,
       std::string_view path = "/anti_framing/page.html") const {
-    CHECK(!headers.xfo.empty());
+    CHECK(!headers.xfo.empty() || !headers.csp.empty());
     GURL url = embedded_test_server()->GetURL(host, path);
-    return net::AppendQueryParameter(url, /*name=*/"xfo", headers.xfo);
+    if (!headers.xfo.empty()) {
+      url = net::AppendQueryParameter(url, /*name=*/"xfo", headers.xfo);
+    }
+    if (!headers.csp.empty()) {
+      url = net::AppendQueryParameter(url, /*name=*/"csp", headers.csp);
+    }
+    return url;
   }
 
   // Creates and loads an unpacked extension configured according to `config`,
@@ -451,8 +508,9 @@ class ExtensionIframeAntiFramingBrowserTest : public ExtensionBrowserTest {
  private:
   // Serves minimal HTML documents for /anti_framing/* and /sub paths so tests
   // can build multi-frame hierarchies without static files. Echoes any "xfo"
-  // URL query parameter as an `X-Frame-Options` HTTP response header, or
-  // serves no anti-framing headers when omitted.
+  // and "csp" URL query parameters as `X-Frame-Options` and
+  // `Content-Security-Policy` HTTP response headers, or serves no anti-framing
+  // headers when omitted.
   static std::unique_ptr<net::test_server::HttpResponse>
   HandleAntiFramingRequest(const net::test_server::HttpRequest& request) {
     const GURL url = request.GetURL();
@@ -469,6 +527,9 @@ class ExtensionIframeAntiFramingBrowserTest : public ExtensionBrowserTest {
     for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
       if (it.GetKey() == "xfo") {
         response->AddCustomHeader("X-Frame-Options", it.GetUnescapedValue());
+      } else if (it.GetKey() == "csp") {
+        response->AddCustomHeader("Content-Security-Policy",
+                                  it.GetUnescapedValue());
       }
     }
     return response;
@@ -587,6 +648,230 @@ IN_PROC_BROWSER_TEST_F(
   // Embed a.com inside the extension's child frame and verify
   // `X-Frame-Options: DENY` blocks the navigation.
   ExpectBlockedByResponse(EmbedIframe(ext_frame_result.frame, target_url));
+}
+
+// In Extension > a.com (where the extension has a.com host permissions), the
+// a.com `<iframe>` embed is blocked because a.com's
+// `Content-Security-Policy: frame-ancestors 'none'` HTTP header overrides its
+// `X-Frame-Options: ALLOWALL` HTTP header.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionIframeAntiFramingBrowserTest,
+    ExtensionWithHostPermissionEmbedsWeb_FrameAncestorsNoneOverridesAllowAllBlocks) {
+  const Extension* extension =
+      LoadFramingExtension({.host_permissions_entry = R"("https://a.com/*")"});
+  ASSERT_TRUE(extension);
+
+  // a.com serves both `X-Frame-Options: ALLOWALL` (allowing framing) and
+  // `Content-Security-Policy: frame-ancestors 'none'` (forbidding all framing,
+  // which takes precedence over `X-Frame-Options`).
+  const GURL target_url = GetAntiFramingUrl(
+      "a.com", {.xfo = "ALLOWALL", .csp = "frame-ancestors 'none'"});
+
+  // Navigate to the extension's page and verify embedding a.com is blocked.
+  content::RenderFrameHost* main_frame =
+      NavigateMainFrame(extension->GetResourceURL("extension_page.html"));
+  ASSERT_TRUE(main_frame);
+  ExpectBlockedByResponse(EmbedIframe(main_frame, target_url));
+}
+
+// In Extension > a.com (where the extension has a.com host permissions), the
+// a.com `<iframe>` embed is blocked because of a.com's
+// `Content-Security-Policy: frame-ancestors 'self'` HTTP header.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionIframeAntiFramingBrowserTest,
+    ExtensionWithHostPermissionEmbedsWeb_FrameAncestorsSelfBlocks) {
+  const Extension* extension =
+      LoadFramingExtension({.host_permissions_entry = R"("https://a.com/*")"});
+  ASSERT_TRUE(extension);
+
+  // a.com serves `Content-Security-Policy: frame-ancestors 'self'` to allow
+  // only same-origin ancestors.
+  const GURL target_url =
+      GetAntiFramingUrl("a.com", {.csp = "frame-ancestors 'self'"});
+
+  // Navigate to the extension's page and verify the cross-origin extension is
+  // blocked from embedding a.com even with host permissions.
+  content::RenderFrameHost* main_frame =
+      NavigateMainFrame(extension->GetResourceURL("extension_page.html"));
+  ASSERT_TRUE(main_frame);
+  ExpectBlockedByResponse(EmbedIframe(main_frame, target_url));
+}
+
+// In Extension > a.com > b.com (where the extension has a.com host
+// permissions), the b.com `<iframe>` embed is blocked because of b.com's
+// `Content-Security-Policy: frame-ancestors https://a.com` HTTP header.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionIframeAntiFramingBrowserTest,
+    NestedWebEmbedding_FrameAncestorsOnlyAllowsParentWebBlocks) {
+  const Extension* extension =
+      LoadFramingExtension({.host_permissions_entry = R"("https://a.com/*")"});
+  ASSERT_TRUE(extension);
+
+  // a.com serves no anti-framing headers, while b.com serves
+  // `frame-ancestors https://a.com` to allow framing only by a.com.
+  const GURL a_url = GetUrlWithoutAntiFramingHeaders("a.com");
+  const std::string b_csp =
+      base::StrCat({"frame-ancestors ", GetHttpsOrigin("a.com")});
+  const GURL b_url = GetAntiFramingUrl("b.com", {.csp = b_csp});
+
+  // Navigate to the extension's page and verify the intermediate a.com embed
+  // succeeds.
+  content::RenderFrameHost* main_frame =
+      NavigateMainFrame(extension->GetResourceURL("extension_page.html"));
+  ASSERT_TRUE(main_frame);
+  const IframeNavigationResult a_result = EmbedIframe(main_frame, a_url);
+  ASSERT_NO_FATAL_FAILURE(AssertIframeCommitted(a_result, a_url));
+
+  // Embed b.com inside a.com. Even though immediate parent a.com matches
+  // b.com's `frame-ancestors` header, the top-level ancestor extension does
+  // not, so b.com is blocked.
+  ExpectBlockedByResponse(EmbedIframe(a_result.frame, b_url));
+}
+
+// In Extension > a.com > b.com (where the extension has <all_urls> host
+// permissions), the b.com `<iframe>` embed is blocked because of b.com's
+// `Content-Security-Policy: frame-ancestors 'self'` HTTP header.
+IN_PROC_BROWSER_TEST_F(ExtensionIframeAntiFramingBrowserTest,
+                       NestedWebEmbedding_FrameAncestorsSelfBlocks) {
+  const Extension* extension =
+      LoadFramingExtension({.host_permissions_entry = R"("<all_urls>")"});
+  ASSERT_TRUE(extension);
+
+  // a.com serves no anti-framing headers, while b.com serves
+  // `frame-ancestors 'self'` to allow only same-origin b.com ancestors.
+  const GURL a_url = GetUrlWithoutAntiFramingHeaders("a.com");
+  const GURL b_url =
+      GetAntiFramingUrl("b.com", {.csp = "frame-ancestors 'self'"});
+
+  // Navigate to the extension's page and verify the intermediate a.com embed
+  // succeeds.
+  content::RenderFrameHost* main_frame =
+      NavigateMainFrame(extension->GetResourceURL("extension_page.html"));
+  ASSERT_TRUE(main_frame);
+  const IframeNavigationResult a_result = EmbedIframe(main_frame, a_url);
+  ASSERT_NO_FATAL_FAILURE(AssertIframeCommitted(a_result, a_url));
+
+  // Embed b.com inside a.com. Both cross-origin ancestors (a.com and the
+  // extension) are disallowed by b.com's `frame-ancestors 'self'` header, so
+  // b.com is blocked.
+  ExpectBlockedByResponse(EmbedIframe(a_result.frame, b_url));
+}
+
+// In Extension A > Extension B > a.com (where extension A has no host
+// permissions and extension B has a.com host permissions), the a.com
+// `<iframe>` embed is blocked because of a.com's `Content-Security-Policy:
+// frame-ancestors chrome-extension://<ext_b_id>` HTTP header.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionIframeAntiFramingBrowserTest,
+    MultiExtensionEmbedding_FrameAncestorsOnlyAllowsFinalExtensionBlocks) {
+  const Extension* ext_a = LoadFramingExtension({});
+  ASSERT_TRUE(ext_a);
+  const Extension* ext_b = LoadFramingExtension({
+      .host_permissions_entry = R"("https://a.com/*")",
+      // Expose extension_page.html so extension A can embed extension B's page.
+      .expose_page_in_web_accessible_resources = true,
+  });
+  ASSERT_TRUE(ext_b);
+
+  // a.com serves `frame-ancestors` allowing only extension B's origin.
+  const GURL ext_b_page_url = ext_b->GetResourceURL("extension_page.html");
+  const std::string csp =
+      base::StrCat({"frame-ancestors ", ext_b->origin().Serialize()});
+  const GURL target_url = GetAntiFramingUrl("a.com", {.csp = csp});
+
+  // Navigate to extension A's page and verify embedding extension B's page
+  // succeeds via `web_accessible_resources`.
+  content::RenderFrameHost* main_frame =
+      NavigateMainFrame(ext_a->GetResourceURL("extension_page.html"));
+  ASSERT_TRUE(main_frame);
+  const IframeNavigationResult ext_b_frame_result =
+      EmbedIframe(main_frame, ext_b_page_url);
+  ASSERT_NO_FATAL_FAILURE(
+      AssertIframeCommitted(ext_b_frame_result, ext_b_page_url));
+
+  // Embed a.com inside extension B's child frame. Even though immediate parent
+  // extension B is allowed by a.com's `frame-ancestors` header, top-level
+  // ancestor extension A is not, so a.com is blocked.
+  ExpectBlockedByResponse(EmbedIframe(ext_b_frame_result.frame, target_url));
+}
+
+// In Extension A > Extension B > a.com (where extension A has no host
+// permissions and extension B has a.com host permissions), the a.com
+// `<iframe>` embed is blocked because of a.com's `Content-Security-Policy:
+// frame-ancestors chrome-extension://<ext_a_id>` HTTP header.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionIframeAntiFramingBrowserTest,
+    MultiExtensionEmbedding_FrameAncestorsOnlyAllowsTopExtensionBlocks) {
+  const Extension* ext_a = LoadFramingExtension({});
+  ASSERT_TRUE(ext_a);
+  const Extension* ext_b = LoadFramingExtension({
+      .host_permissions_entry = R"("https://a.com/*")",
+      // Expose extension_page.html so extension A can embed extension B's page.
+      .expose_page_in_web_accessible_resources = true,
+  });
+  ASSERT_TRUE(ext_b);
+
+  // a.com serves `frame-ancestors` allowing only extension A's origin.
+  const GURL ext_b_page_url = ext_b->GetResourceURL("extension_page.html");
+  const std::string csp =
+      base::StrCat({"frame-ancestors ", ext_a->origin().Serialize()});
+  const GURL target_url = GetAntiFramingUrl("a.com", {.csp = csp});
+
+  // Navigate to extension A's page and verify embedding extension B's page
+  // succeeds via `web_accessible_resources`.
+  content::RenderFrameHost* main_frame =
+      NavigateMainFrame(ext_a->GetResourceURL("extension_page.html"));
+  ASSERT_TRUE(main_frame);
+  const IframeNavigationResult ext_b_frame_result =
+      EmbedIframe(main_frame, ext_b_page_url);
+  ASSERT_NO_FATAL_FAILURE(
+      AssertIframeCommitted(ext_b_frame_result, ext_b_page_url));
+
+  // Embed a.com inside extension B's child frame. Even though top-level
+  // ancestor extension A is allowed by a.com's `frame-ancestors` header,
+  // intermediate parent extension B is not, so a.com is blocked.
+  ExpectBlockedByResponse(EmbedIframe(ext_b_frame_result.frame, target_url));
+}
+
+// In Extension > evil.com > Extension > good.com (where the extension has
+// <all_urls> host permissions), the good.com `<iframe>` embed is blocked
+// because of good.com's `Content-Security-Policy: frame-ancestors
+// chrome-extension://<ext_id> https://good.com` HTTP header.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionIframeAntiFramingBrowserTest,
+    SandwichedWebEmbedding_FrameAncestorsExcludesMiddleWebBlocks) {
+  const Extension* extension = LoadFramingExtension({
+      .host_permissions_entry = R"("<all_urls>")",
+      // Expose extension_page.html so evil.com can embed the extension page.
+      .expose_page_in_web_accessible_resources = true,
+  });
+  ASSERT_TRUE(extension);
+
+  // evil.com serves no anti-framing headers, while good.com serves
+  // `frame-ancestors` allowing only the extension and https://good.com.
+  const GURL evil_url = GetUrlWithoutAntiFramingHeaders("evil.com");
+  const GURL ext_page_url = extension->GetResourceURL("extension_page.html");
+  const std::string good_csp =
+      base::StrCat({"frame-ancestors ", extension->origin().Serialize(), " ",
+                    GetHttpsOrigin("good.com")});
+  const GURL good_url = GetAntiFramingUrl("good.com", {.csp = good_csp});
+
+  // Navigate to the extension's page and verify both intermediate embeds
+  // (evil.com and extension_page.html) succeed.
+  content::RenderFrameHost* main_frame = NavigateMainFrame(ext_page_url);
+  ASSERT_TRUE(main_frame);
+  const IframeNavigationResult evil_result = EmbedIframe(main_frame, evil_url);
+  ASSERT_NO_FATAL_FAILURE(AssertIframeCommitted(evil_result, evil_url));
+  const IframeNavigationResult ext_child_result =
+      EmbedIframe(evil_result.frame, ext_page_url);
+  ASSERT_NO_FATAL_FAILURE(
+      AssertIframeCommitted(ext_child_result, ext_page_url));
+
+  // Embed good.com inside the extension's child frame. `frame-ancestors`
+  // checks every ancestor in the frame tree, not just the immediate parent.
+  // Even though both extension frames match good.com's `frame-ancestors`
+  // header, intermediate ancestor evil.com does not, so good.com is blocked.
+  ExpectBlockedByResponse(EmbedIframe(ext_child_result.frame, good_url));
 }
 
 }  // namespace extensions
