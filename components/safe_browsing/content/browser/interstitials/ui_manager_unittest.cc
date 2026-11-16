@@ -954,6 +954,106 @@ TEST_F(SafeBrowsingUIManagerTest,
                    .is_bypassing_interstitial);
 }
 
+TEST_F(SafeBrowsingUIManagerTest,
+       OnBlockingPageDoneClearsRedirectSourceFromPendingAllowlist) {
+  // Simulate `DisplayBlockingPage()` adding the flagged redirect source
+  // (`kRedirectURL`) to the pending allowlist while `main_frame_url` is the
+  // final URL in the chain (`kAnotherRedirectURL`).
+  security_interstitials::UnsafeResource redirect_resource = MakeUnsafeResource(
+      kRedirectURL, SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+  redirect_resource.navigation_id = 10;
+  AddToAllowlist(redirect_resource, /*pending=*/true);
+
+  SBThreatType threat_type = SBThreatType::SB_THREAT_TYPE_SAFE;
+  ASSERT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      GURL(kRedirectURL), /*entry=*/nullptr, web_contents(),
+      /*allowlist_only=*/false, &threat_type));
+  EXPECT_EQ(threat_type, SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+
+  // Dismissing the interstitial (`proceed` = false) with `main_frame_url` set
+  // to `kAnotherRedirectURL` must remove `kRedirectURL` from the pending
+  // allowlist.
+  ui_manager()->OnBlockingPageDone({redirect_resource}, /*proceed=*/false,
+                                   web_contents(), GURL(kAnotherRedirectURL),
+                                   /*showed_interstitial=*/true);
+  EXPECT_FALSE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      GURL(kRedirectURL), /*entry=*/nullptr, web_contents(),
+      /*allowlist_only=*/false, &threat_type));
+
+  // Also verify that proceeding (`proceed` = true) removes `kRedirectURL` from
+  // the pending allowlist when `main_frame_url` differs.
+  security_interstitials::UnsafeResource warn_redirect_resource =
+      MakeUnsafeResource(kRedirectURL,
+                         SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+  warn_redirect_resource.navigation_id = 11;
+  AddToAllowlist(warn_redirect_resource, /*pending=*/true);
+  ui_manager()->OnBlockingPageDone({warn_redirect_resource}, /*proceed=*/true,
+                                   web_contents(), GURL(kAnotherRedirectURL),
+                                   /*showed_interstitial=*/true);
+  EXPECT_FALSE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      GURL(kRedirectURL), /*entry=*/nullptr, web_contents(),
+      /*allowlist_only=*/false, &threat_type));
+  EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      GURL(kAnotherRedirectURL), /*entry=*/nullptr, web_contents(),
+      /*allowlist_only=*/true, &threat_type));
+}
+
+TEST_F(SafeBrowsingUIManagerTest,
+       OnBlockingPageDoneClearsViewSourceUrlFromPendingAllowlist) {
+  const GURL view_source_url("view-source:https://www.malware.com/");
+  const GURL inner_url("https://www.malware.com/");
+
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResource(view_source_url.spec().c_str(),
+                         SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+  resource.navigation_id = 20;
+  AddToAllowlist(resource, /*pending=*/true);
+
+  SBThreatType threat_type = SBThreatType::SB_THREAT_TYPE_SAFE;
+  ASSERT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      view_source_url, /*entry=*/nullptr, web_contents(),
+      /*allowlist_only=*/false, &threat_type));
+
+  // `NavigationEntry::GetURL()` strips the `view-source:` scheme, passing
+  // `inner_url` as `main_frame_url`. Verify `view_source_url` is still cleared
+  // from pending.
+  ui_manager()->OnBlockingPageDone({resource}, /*proceed=*/false,
+                                   web_contents(), inner_url,
+                                   /*showed_interstitial=*/true);
+  EXPECT_FALSE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      view_source_url, /*entry=*/nullptr, web_contents(),
+      /*allowlist_only=*/false, &threat_type));
+}
+
+TEST_F(SafeBrowsingUIManagerTest, OnBlockingPageDoneHandlesEmptyMainFrameUrl) {
+  // Embedders such as Android WebView pass an empty `GURL()` as
+  // `main_frame_url` when `GetNavigationEntryForResource()` returns null prior
+  // to commit. Verify neither `proceed` branch crashes or leaks pending state.
+  security_interstitials::UnsafeResource block_resource =
+      MakeUnsafeResource(kBadURL, SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+  block_resource.navigation_id = 30;
+  AddToAllowlist(block_resource, /*pending=*/true);
+
+  SBThreatType threat_type = SBThreatType::SB_THREAT_TYPE_SAFE;
+  ui_manager()->OnBlockingPageDone({block_resource}, /*proceed=*/false,
+                                   web_contents(), GURL(),
+                                   /*showed_interstitial=*/false);
+  EXPECT_FALSE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      GURL(kBadURL), /*entry=*/nullptr, web_contents(),
+      /*allowlist_only=*/false, &threat_type));
+
+  security_interstitials::UnsafeResource proceed_resource =
+      MakeUnsafeResource(kBadURL, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  proceed_resource.navigation_id = 31;
+  AddToAllowlist(proceed_resource, /*pending=*/true);
+  ui_manager()->OnBlockingPageDone({proceed_resource}, /*proceed=*/true,
+                                   web_contents(), GURL(),
+                                   /*showed_interstitial=*/false);
+  EXPECT_FALSE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
+      GURL(kBadURL), /*entry=*/nullptr, web_contents(),
+      /*allowlist_only=*/false, &threat_type));
+}
+
 TEST(BaseBlockingPageReportingInfoTest, ClientSideDetectionBillingScamVerdict) {
   security_interstitials::UnsafeResource resource;
   resource.url = GURL("https://example.test/");

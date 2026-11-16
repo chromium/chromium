@@ -42,6 +42,12 @@ using safe_browsing::ThreatSeverity;
 
 // Returns the key that should be used in a AllowlistUrlSet.
 std::string GetAllowlistEntryKey(const GURL& url) {
+  // Embedders (such as Android WebView) can pass empty or uninitialized
+  // GURLs before a navigation commits. Guard against them here to prevent
+  // crashes during allowlist key generation.
+  if (!url.is_valid()) {
+    return std::string();
+  }
   // The allowlist needs to store 'view-source' URLs and regular URLs separately
   // because the rules for displaying 'view-source' might be different from
   // regular domains. For example, an admin might want to disallow viewing the
@@ -394,10 +400,20 @@ void BaseUIManager::OnBlockingPageDone(
       AddToAllowlistUrlSet(main_frame_url, resource.navigation_id, web_contents,
                            false /* Pending -> permanent */,
                            resource.threat_type);
+      if (web_contents && GetAllowlistEntryKey(resource.url) !=
+                              GetAllowlistEntryKey(main_frame_url)) {
+        RemoveAllowlistUrlSet(resource.url, resource.navigation_id,
+                              web_contents, /*from_pending_only=*/true);
+      }
     } else if (web_contents) {
       // |web_contents| doesn't exist if the tab has been closed.
-      RemoveAllowlistUrlSet(main_frame_url, resource.navigation_id,
-                            web_contents, /*from_pending_only=*/true);
+      RemoveAllowlistUrlSet(resource.url, resource.navigation_id, web_contents,
+                            /*from_pending_only=*/true);
+      if (GetAllowlistEntryKey(resource.url) !=
+          GetAllowlistEntryKey(main_frame_url)) {
+        RemoveAllowlistUrlSet(main_frame_url, resource.navigation_id,
+                              web_contents, /*from_pending_only=*/true);
+      }
     }
   }
 }
