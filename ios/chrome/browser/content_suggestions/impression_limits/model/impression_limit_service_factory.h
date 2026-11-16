@@ -17,6 +17,10 @@ class ImpressionLimitServiceFactory final
  public:
   explicit ImpressionLimitServiceFactory(PassKey key);
 
+  // Returns the default factory that can be injected in tests that want to
+  // us a real ImpressionLimitService instance.
+  static TestingFactory GetDefaultFactory();
+
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(

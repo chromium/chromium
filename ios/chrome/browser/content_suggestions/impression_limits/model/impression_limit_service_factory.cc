@@ -6,12 +6,26 @@
 
 #import <utility>
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/impression_limits/model/impression_limit_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+
+namespace {
+
+// Default `ImpressionLimitService` factory.
+std::unique_ptr<KeyedService> BuildImpressionLimitService(ProfileIOS& profile) {
+  return std::make_unique<ImpressionLimitService>(
+      profile.GetPrefs(), ios::HistoryServiceFactory::GetForProfile(profile),
+      ios::BookmarkModelFactory::GetForProfile(profile),
+      commerce::ShoppingServiceFactory::GetForProfile(profile));
+}
+
+}  // namespace
 
 ImpressionLimitServiceFactory::ImpressionLimitServiceFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(std::move(key),
@@ -22,11 +36,14 @@ ImpressionLimitServiceFactory::ImpressionLimitServiceFactory(PassKey key)
   DependsOn(commerce::ShoppingServiceFactory::GetInstance());
 }
 
+// static
+ImpressionLimitServiceFactory::TestingFactory
+ImpressionLimitServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildImpressionLimitService);
+}
+
 std::unique_ptr<KeyedService>
 ImpressionLimitServiceFactory::BuildServiceInstanceFor(
     ProfileIOS& profile) const {
-  return std::make_unique<ImpressionLimitService>(
-      profile.GetPrefs(), ios::HistoryServiceFactory::GetForProfile(profile),
-      ios::BookmarkModelFactory::GetForProfile(profile),
-      commerce::ShoppingServiceFactory::GetForProfile(profile));
+  return BuildImpressionLimitService(profile);
 }
