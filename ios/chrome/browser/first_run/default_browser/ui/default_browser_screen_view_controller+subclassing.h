@@ -14,6 +14,10 @@
 // Subclasses can override this method to customize the banner or header image.
 - (void)configureBanner;
 
+// Returns the default title text when `titleText` is not explicitly set.
+// Subclasses can override this method to provide a custom default title.
+- (NSString*)defaultTitleText;
+
 // Returns the default subtitle text when `subtitleText` is not explicitly set.
 // Subclasses can override this method to provide a custom default subtitle.
 - (NSString*)defaultSubtitleText;

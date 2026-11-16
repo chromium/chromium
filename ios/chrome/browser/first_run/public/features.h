@@ -69,6 +69,13 @@ enum class AndroidSwitcherDefaultBrowserPromoInFREVariationType {
   kSwitcherInfoSignal = 2,
 };
 
+// Enum to represent UI copy arms of feature
+// `kAndroidSwitcherDefaultBrowserPromoInFRE`.
+enum class AndroidSwitcherDefaultBrowserPromoInFREArm {
+  // Highlights Google ecosystem integration.
+  kGoogleEcosystem = 0,
+};
+
 // Flag to enable the FRE Default Browser Experiment.
 BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
 
@@ -114,6 +121,13 @@ extern const char
 extern const char
     kAndroidSwitcherDefaultBrowserPromoInFREParamSwitcherInfoSignal[];
 
+// Name of the parameter that indicates which UI arm of the
+// `kAndroidSwitcherDefaultBrowserPromoInFRE` feature is enabled.
+extern const char kAndroidSwitcherDefaultBrowserPromoInFREArmParam[];
+
+// Parameter values for `kAndroidSwitcherDefaultBrowserPromoInFREArmParam`.
+extern const char kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem[];
+
 // Returns which variation of the kBestFeaturesScreenInFirstRun feature is
 // enabled or `kDisabled` if the feature is disabled.
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType();
@@ -139,6 +153,11 @@ bool IsPostFREIphInProfileAgentEnabled();
 // feature is enabled or `kDisabled` if the feature is disabled.
 AndroidSwitcherDefaultBrowserPromoInFREVariationType
 GetAndroidSwitcherDefaultBrowserPromoInFREVariationType();
+
+// Returns which UI arm of the `kAndroidSwitcherDefaultBrowserPromoInFRE`
+// feature is enabled.
+AndroidSwitcherDefaultBrowserPromoInFREArm
+GetAndroidSwitcherDefaultBrowserPromoInFREArm();
 
 }  // namespace first_run
 

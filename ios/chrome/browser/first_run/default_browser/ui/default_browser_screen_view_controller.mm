@@ -34,13 +34,7 @@
     // set.
     CHECK(![self.titleText length]);
     CHECK(![self.subtitleText length]);
-    BOOL usesTablet =
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-    [self
-        setPromoTitle:
-            l10n_util::GetNSString(
-                usesTablet ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-                           : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE)];
+    [self setPromoTitle:[self defaultTitleText]];
     [self setPromoSubtitle:[self defaultSubtitleText]];
   }
   self.configuration.primaryActionString = l10n_util::GetNSString(
@@ -96,6 +90,13 @@
 #else
   self.bannerName = kChromiumDefaultBrowserScreenBannerImage;
 #endif
+}
+
+- (NSString*)defaultTitleText {
+  BOOL usesTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  return l10n_util::GetNSString(
+      usesTablet ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
+                 : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
 }
 
 - (NSString*)defaultSubtitleText {

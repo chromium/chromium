@@ -45,6 +45,12 @@ const char kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal[] =
 const char kAndroidSwitcherDefaultBrowserPromoInFREParamSwitcherInfoSignal[] =
     "switcher-info-signal";
 
+const char kAndroidSwitcherDefaultBrowserPromoInFREArmParam[] =
+    "android-switcher-default-browser-promo-in-fre-arm";
+
+const char kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem[] =
+    "google-ecosystem";
+
 BASE_FEATURE_PARAM(int,
                    kBestFeaturesScreenInFirstRunParamFeature,
                    &kBestFeaturesScreenInFirstRun,
@@ -86,6 +92,20 @@ BASE_FEATURE_ENUM_PARAM(
     AndroidSwitcherDefaultBrowserPromoInFREVariationType::kSegmentationSignal,
     &kAndroidSwitcherDefaultBrowserPromoInFREOptions);
 
+constexpr base::FeatureParam<AndroidSwitcherDefaultBrowserPromoInFREArm>::Option
+    kAndroidSwitcherDefaultBrowserPromoInFREArmOptions[] = {
+        {AndroidSwitcherDefaultBrowserPromoInFREArm::kGoogleEcosystem,
+         kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem},
+};
+
+BASE_FEATURE_ENUM_PARAM(
+    AndroidSwitcherDefaultBrowserPromoInFREArm,
+    kAndroidSwitcherDefaultBrowserPromoInFREArmFeature,
+    &kAndroidSwitcherDefaultBrowserPromoInFRE,
+    kAndroidSwitcherDefaultBrowserPromoInFREArmParam,
+    AndroidSwitcherDefaultBrowserPromoInFREArm::kGoogleEcosystem,
+    &kAndroidSwitcherDefaultBrowserPromoInFREArmOptions);
+
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {
   if (IsBestOfAppBestFeaturesEnabled()) {
     return BestFeaturesScreenVariationType::kBestOfApp;
@@ -126,6 +146,11 @@ GetAndroidSwitcherDefaultBrowserPromoInFREVariationType() {
     return AndroidSwitcherDefaultBrowserPromoInFREVariationType::kDisabled;
   }
   return kAndroidSwitcherDefaultBrowserPromoInFREParamFeature.Get();
+}
+
+AndroidSwitcherDefaultBrowserPromoInFREArm
+GetAndroidSwitcherDefaultBrowserPromoInFREArm() {
+  return kAndroidSwitcherDefaultBrowserPromoInFREArmFeature.Get();
 }
 
 }  // namespace first_run

@@ -64,6 +64,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
     "//components/signin/public/base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/default_browser/ui",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/public:constants",
@@ -79,10 +80,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/switcher_info",
     "//ios/public/provider/chrome/browser/switcher_info:switcher_info_api",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

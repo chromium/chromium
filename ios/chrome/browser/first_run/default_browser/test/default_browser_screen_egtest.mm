@@ -91,7 +91,10 @@ id<GREYMatcher> DefaultPromoSubtitle() {
          first_run::kAndroidSwitcherDefaultBrowserPromoInFRE.name, ":",
          first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam, "/",
          first_run::
-             kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal}));
+             kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal,
+         "/", first_run::kAndroidSwitcherDefaultBrowserPromoInFREArmParam, "/",
+         first_run::
+             kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem}));
     config.additional_args.push_back(
         "-force-device-switcher-experience=AndroidPhone");
   } else {
@@ -173,28 +176,31 @@ id<GREYMatcher> DefaultPromoSubtitle() {
               first_run::
                   kFirstRunDefaultBrowserAndroidSwitcherScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DefaultPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  NSString* expectedSubtitle = GetNSString(
+  NSString* expectedTitle = GetNSString(
       [ChromeEarlGrey isIPadIdiom]
-          ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE_IPAD
-          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE);
-  [[EarlGrey selectElementWithMatcher:grey_text(expectedSubtitle)]
+          ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE_IPAD
+          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE);
+  [[EarlGrey selectElementWithMatcher:grey_text(expectedTitle)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_text(GetNSString(
-              IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_YOUTUBE_ROW))]
+              IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_text(GetNSString(
-              IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_MAPS_ROW))]
+              IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_YOUTUBE_MAPS_ROW))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_text(GetNSString(
               IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_DRIVE_PHOTOS_ROW))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_text(GetNSString(
+              IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_LENS_ROW))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

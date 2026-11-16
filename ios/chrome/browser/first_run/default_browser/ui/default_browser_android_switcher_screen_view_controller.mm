@@ -6,6 +6,7 @@
 
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_view_controller+subclassing.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -68,7 +70,7 @@ UIView* CreateFeatureIconView(Symbol symbol) {
       kFirstRunDefaultBrowserAndroidSwitcherScreenAccessibilityIdentifier;
 }
 
-#pragma mark - DefaultBrowserScreenViewController (Subclassing)
+#pragma mark - Subclassing
 
 - (void)configureBanner {
   self.shouldHideBanner = YES;
@@ -81,27 +83,38 @@ UIView* CreateFeatureIconView(Symbol symbol) {
   return YES;
 }
 
+- (NSString*)defaultTitleText {
+  switch (first_run::GetAndroidSwitcherDefaultBrowserPromoInFREArm()) {
+    case first_run::AndroidSwitcherDefaultBrowserPromoInFREArm::
+        kGoogleEcosystem: {
+      BOOL usesTablet =
+          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+      return l10n_util::GetNSString(
+          usesTablet
+              ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE_IPAD
+              : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE);
+    }
+  }
+}
+
 - (NSString*)defaultSubtitleText {
-  BOOL usesTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
   return l10n_util::GetNSString(
-      usesTablet
-          ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE_IPAD
-          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE);
+      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE);
 }
 
 - (UIView*)contentViewForPromo {
   NSArray<NSString*>* instructions = @[
     l10n_util::GetNSString(
-        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_YOUTUBE_ROW),
-    l10n_util::GetNSString(
-        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_MAPS_ROW),
+        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_YOUTUBE_MAPS_ROW),
     l10n_util::GetNSString(
         IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_DRIVE_PHOTOS_ROW),
+    l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_LENS_ROW),
   ];
   NSArray<UIView*>* iconViews = @[
     CreateFeatureIconView(SymbolExternalLink),
-    CreateFeatureIconView(SymbolLocation),
     CreateFeatureIconView(SymbolShare),
+    CreateFeatureIconView(SymbolCameraLens),
   ];
 
   return [[InstructionView alloc] initWithList:instructions
