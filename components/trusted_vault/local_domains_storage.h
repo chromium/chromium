@@ -6,9 +6,11 @@
 #define COMPONENTS_TRUSTED_VAULT_LOCAL_DOMAINS_STORAGE_H_
 
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -19,6 +21,7 @@
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "crypto/process_bound_string.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace os_crypt_async {
@@ -150,6 +153,11 @@ class LocalDomainsStorage : public StandaloneTrustedVaultStorage {
       trusted_vault_pb::UserDomainData* user,
       SecurityDomainId domain);
 
+  // Removes users matching `predicate` from `data_` and `vault_keys_` without
+  // writing to disk. Returns true if at least one user was removed.
+  bool RemoveUsersInMemory(
+      base::FunctionRef<bool(const trusted_vault_pb::UserDomainData&)>
+          predicate);
   void RemoveUsers(
       base::FunctionRef<bool(const trusted_vault_pb::UserDomainData&)>
           predicate);
@@ -166,6 +174,11 @@ class LocalDomainsStorage : public StandaloneTrustedVaultStorage {
   std::unique_ptr<StorageFileAccess> file_access_;
   // Nullopt until `ReadDataFromDisk()` has been called.
   std::optional<trusted_vault_pb::LocalDomainsData> data_;
+  // Plaintext keys are not kept in `data_`. Instead, they are protected at
+  // rest in memory using `crypto::ProcessBoundString`.
+  std::map<std::pair<GaiaId, SecurityDomainId>,
+           std::vector<crypto::ProcessBoundString>>
+      vault_keys_;
 };
 
 }  // namespace trusted_vault

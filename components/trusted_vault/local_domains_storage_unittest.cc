@@ -89,6 +89,20 @@ TEST_F(LocalDomainsStorageTest, ShouldStoreAndRetrieveKeysPerDomain) {
       2);
 }
 
+TEST_F(LocalDomainsStorageTest, ShouldIdentifyNonConstantVaultKeys) {
+  storage()->SetVaultKeys(test_gaia(), SecurityDomainId::kChromeSync,
+                          {GetConstantTrustedVaultKey()},
+                          /*last_key_version=*/1);
+  EXPECT_FALSE(
+      storage()->HasNonConstantKey(test_gaia(), SecurityDomainId::kChromeSync));
+
+  storage()->SetVaultKeys(test_gaia(), SecurityDomainId::kChromeSync,
+                          {GetConstantTrustedVaultKey(), {1, 2, 3}},
+                          /*last_key_version=*/2);
+  EXPECT_TRUE(
+      storage()->HasNonConstantKey(test_gaia(), SecurityDomainId::kChromeSync));
+}
+
 TEST_F(LocalDomainsStorageTest, ShouldSharePhysicalDevicePrivateKey) {
   PhysicalDeviceRecoveryFactorData factor_data;
   factor_data.set_private_key_material("shared_private_key");

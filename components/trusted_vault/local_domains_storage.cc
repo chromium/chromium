@@ -4,12 +4,17 @@
 
 #include "components/trusted_vault/local_domains_storage.h"
 
+#include <algorithm>
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
@@ -22,6 +27,8 @@
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "crypto/process_bound_string.h"
+#include "crypto/secure_util.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace trusted_vault {
@@ -32,6 +39,21 @@ constexpr base::FilePath::CharType kLocalDomainsFileName[] =
     FILE_PATH_LITERAL("local_domains_data.pb");
 
 constexpr int kCurrentLocalDomainsDataVersion = 1;
+
+void SecureZeroSensitiveLocalDomainsData(
+    trusted_vault_pb::LocalDomainsData& data) {
+  for (trusted_vault_pb::UserDomainData& user : *data.mutable_user()) {
+    for (trusted_vault_pb::DomainData& domain_data :
+         *user.mutable_domain_data()) {
+      for (trusted_vault_pb::LocalTrustedVaultKey& key :
+           *domain_data.mutable_vault_key()) {
+        crypto::SecureZeroBuffer(
+            base::as_writable_byte_span(*key.mutable_key_material()));
+      }
+      domain_data.clear_vault_key();
+    }
+  }
+}
 
 bool WriteLocalDomainsDataToDiskImpl(
     const trusted_vault_pb::LocalDomainsData& data,
@@ -275,11 +297,48 @@ LocalDomainsStorage::~LocalDomainsStorage() = default;
 
 void LocalDomainsStorage::ReadDataFromDisk() {
   data_ = file_access_->ReadFromDisk();
+  vault_keys_.clear();
+  for (const trusted_vault_pb::UserDomainData& user : data_->user()) {
+    const GaiaId gaia_id(user.gaia_id());
+    for (const trusted_vault_pb::DomainData& domain_data : user.domain_data()) {
+      const SecurityDomainId domain =
+          static_cast<SecurityDomainId>(domain_data.domain_id());
+      vault_keys_[{gaia_id, domain}] = base::ToVector(
+          domain_data.vault_key(),
+          [](const trusted_vault_pb::LocalTrustedVaultKey& key) {
+            return crypto::ProcessBoundString(key.key_material());
+          });
+    }
+  }
+  SecureZeroSensitiveLocalDomainsData(*data_);
 }
 
 void LocalDomainsStorage::WriteToDisk() {
   CHECK(data_.has_value());
-  file_access_->WriteToDisk(*data_);
+  CHECK(std::ranges::all_of(vault_keys_, [this](const auto& entry) {
+    const auto& [gaia_id, domain] = entry.first;
+    return FindDomainData(FindUser(gaia_id), domain) != nullptr;
+  }));
+  trusted_vault_pb::LocalDomainsData data_copy = *data_;
+  for (trusted_vault_pb::UserDomainData& user : *data_copy.mutable_user()) {
+    const GaiaId gaia_id(user.gaia_id());
+    for (trusted_vault_pb::DomainData& domain_data :
+         *user.mutable_domain_data()) {
+      const SecurityDomainId domain =
+          static_cast<SecurityDomainId>(domain_data.domain_id());
+      const auto it = vault_keys_.find({gaia_id, domain});
+      if (it == vault_keys_.end()) {
+        continue;
+      }
+      for (const crypto::ProcessBoundString& key : it->second) {
+        crypto::SecureString decrypted = key.secure_value();
+        domain_data.add_vault_key()->set_key_material(decrypted.data(),
+                                                      decrypted.size());
+      }
+    }
+  }
+  file_access_->WriteToDisk(data_copy);
+  SecureZeroSensitiveLocalDomainsData(data_copy);
 }
 
 trusted_vault_pb::UserDomainData* LocalDomainsStorage::FindUser(
@@ -356,11 +415,23 @@ trusted_vault_pb::DomainData* LocalDomainsStorage::GetOrCreateDomainData(
   return domain_data;
 }
 
-void LocalDomainsStorage::RemoveUsers(
+bool LocalDomainsStorage::RemoveUsersInMemory(
     base::FunctionRef<bool(const trusted_vault_pb::UserDomainData&)>
         predicate) {
   CHECK(data_.has_value());
-  if (google::protobuf::erase_if(*data_->mutable_user(), predicate) > 0) {
+  if (google::protobuf::erase_if(*data_->mutable_user(), predicate) == 0) {
+    return false;
+  }
+  std::erase_if(vault_keys_, [&](const auto& entry) {
+    return FindUser(entry.first.first) == nullptr;
+  });
+  return true;
+}
+
+void LocalDomainsStorage::RemoveUsers(
+    base::FunctionRef<bool(const trusted_vault_pb::UserDomainData&)>
+        predicate) {
+  if (RemoveUsersInMemory(predicate)) {
     WriteToDisk();
   }
 }
@@ -405,20 +476,14 @@ void LocalDomainsStorage::ClearDataForUnknownUsersOrMarkForDeletion(
     }
   }
 
-  if (google::protobuf::erase_if(
-          *data_->mutable_user(),
-          [&](const trusted_vault_pb::UserDomainData& user) {
-            const GaiaId gaia_id(user.gaia_id());
-            if (primary_account_gaia_id.has_value() &&
-                gaia_id == *primary_account_gaia_id) {
-              return false;
-            }
-            return !known_gaia_ids.contains(gaia_id);
-          }) > 0) {
-    should_write_data = true;
-  }
+  const bool users_removed =
+      RemoveUsersInMemory([&](const trusted_vault_pb::UserDomainData& user) {
+        const GaiaId gaia_id(user.gaia_id());
+        return gaia_id != primary_account_gaia_id &&
+               !known_gaia_ids.contains(gaia_id);
+      });
 
-  if (should_write_data) {
+  if (should_write_data || users_removed) {
     WriteToDisk();
   }
 }
@@ -517,16 +582,14 @@ void LocalDomainsStorage::SetLastRegistrationReturnedLocalDataObsolete(
 std::vector<std::vector<uint8_t>> LocalDomainsStorage::GetVaultKeys(
     const GaiaId& gaia_id,
     SecurityDomainId domain) const {
-  const auto* user = FindUser(gaia_id);
-  const auto* domain_data = FindDomainData(user, domain);
-  if (!domain_data) {
+  CHECK(data_.has_value());
+  const auto it = vault_keys_.find({gaia_id, domain});
+  if (it == vault_keys_.end()) {
     return {};
   }
-  std::vector<std::vector<uint8_t>> result;
-  for (const auto& key : domain_data->vault_key()) {
-    result.emplace_back(ProtoStringToBytes(key.key_material()));
-  }
-  return result;
+  return base::ToVector(it->second, [](const crypto::ProcessBoundString& key) {
+    return ProtoStringToBytes(key.secure_value());
+  });
 }
 
 int LocalDomainsStorage::GetLastKeyVersion(const GaiaId& gaia_id,
@@ -541,14 +604,19 @@ void LocalDomainsStorage::SetVaultKeys(
     SecurityDomainId domain,
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
+  CHECK(data_.has_value());
+  vault_keys_[{gaia_id, domain}] =
+      base::ToVector(keys, [](const std::vector<uint8_t>& key) {
+        std::string key_str;
+        AssignBytesToProtoString(key, &key_str);
+        crypto::ProcessBoundString process_bound_key(key_str);
+        crypto::SecureZeroBuffer(base::as_writable_byte_span(key_str));
+        return process_bound_key;
+      });
   MutateDomain(gaia_id, domain, [&](trusted_vault_pb::DomainData& domain_data) {
     domain_data.set_last_vault_key_version(last_key_version);
     domain_data.set_keys_marked_as_stale_by_consumer(false);
     domain_data.clear_vault_key();
-    for (const auto& key : keys) {
-      AssignBytesToProtoString(
-          key, domain_data.add_vault_key()->mutable_key_material());
-    }
   });
 }
 
@@ -573,18 +641,17 @@ void LocalDomainsStorage::SetKeysMarkedAsStaleByConsumer(
 
 bool LocalDomainsStorage::HasNonConstantKey(const GaiaId& gaia_id,
                                             SecurityDomainId domain) const {
-  const auto* user = FindUser(gaia_id);
-  const auto* domain_data = FindDomainData(user, domain);
-  if (!domain_data) {
+  CHECK(data_.has_value());
+  const auto it = vault_keys_.find({gaia_id, domain});
+  if (it == vault_keys_.end()) {
     return false;
   }
-  for (const auto& key : domain_data->vault_key()) {
-    if (ProtoStringToBytes(key.key_material()) !=
-        GetConstantTrustedVaultKey()) {
-      return true;
-    }
-  }
-  return false;
+  const std::vector<uint8_t> constant_key = GetConstantTrustedVaultKey();
+  return std::ranges::any_of(
+      it->second, [&constant_key](const crypto::ProcessBoundString& key) {
+        const crypto::SecureString decrypted_key = key.secure_value();
+        return base::as_byte_span(decrypted_key) != base::span(constant_key);
+      });
 }
 
 int64_t LocalDomainsStorage::GetLastFailedRequestMillis(
