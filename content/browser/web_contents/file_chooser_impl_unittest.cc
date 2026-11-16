@@ -106,4 +106,23 @@ TEST_F(FileChooserImplTest, SaveModeBlocked) {
             bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(FileChooserImplTest, OpenDirectoryModeBlocked) {
+  auto chooser_and_remote = FileChooserImpl::CreateForTesting(
+      static_cast<RenderFrameHostImpl*>(main_rfh()));
+  // We keep the remote to send the message via mojo, which enables
+  // ReportBadMessage to work properly.
+  auto& chooser = chooser_and_remote.second;
+
+  auto params = blink::mojom::FileChooserParams::New();
+  params->mode = blink::mojom::FileChooserParams::Mode::kOpenDirectory;
+
+  EXPECT_CALL(*mock_web_contents_delegate_, RunFileChooser(_, _, _)).Times(0);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  chooser->OpenFileChooser(std::move(params), base::DoNothing());
+  chooser.FlushForTesting();
+  EXPECT_EQ("FileChooser: Open directory mode is not allowed.",
+            bad_message_observer.WaitForBadMessage());
+}
+
 }  // namespace content

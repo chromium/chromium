@@ -204,6 +204,15 @@ void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
     return;
   }
 
+  // Do not allow open directory mode from the renderer process either. Blink
+  // uses kUploadFolder to upload a directory. Only the File System Access API
+  // uses kOpenDirectory, in the browser process, bypassing this Mojo interface.
+  if (params->mode == blink::mojom::FileChooserParams::Mode::kOpenDirectory) {
+    mojo::ReportBadMessage("FileChooser: Open directory mode is not allowed.");
+    listener->FileSelectionCanceled();
+    return;
+  }
+
   // Do not allow open dialogs to have renderer-controlled default_file_name.
   // See https://crbug.com/433800617 for context.
   params->default_file_name = base::FilePath();
