@@ -65,8 +65,9 @@ class ManifestBrokerState final : public OnDeviceCapability,
       override;
 
   // OnDeviceModelControl
+  void InstallCapability(OnDeviceBaseModel base_model) override;
   void UninstallCapability(OnDeviceBaseModel base_model) override;
-  void GetInstalledModels(InstalledModelsCallback callback) override;
+  void GetModels(ModelsCallback callback) override;
   ModelInstallState GetModelInstallState(
       OnDeviceBaseModel base_model) const override;
   void AddObserver(OnDeviceModelControl::Observer* observer) override;

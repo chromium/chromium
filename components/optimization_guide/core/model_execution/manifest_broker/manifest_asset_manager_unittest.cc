@@ -1724,7 +1724,7 @@ TEST_F(ManifestAssetManagerTest,
   EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
-TEST_F(ManifestAssetManagerTest, GetInstalledModelsReflectsComponentStates) {
+TEST_F(ManifestAssetManagerTest, GetModelsReflectsComponentStates) {
   DummyAsset ready_asset =
       DummyAsset::For("compose").WithAssetId("gemma4_component");
   DummyAsset unknown_ready_asset = DummyAsset::For("summarize");
@@ -1760,30 +1760,73 @@ TEST_F(ManifestAssetManagerTest, GetInstalledModelsReflectsComponentStates) {
   EXPECT_TRUE(component_state_.WaitForRegistration(
       downloading_asset.ToInstallTarget()));
 
-  auto get_installed_models = [&]() {
-    base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
-        future;
-    manifest_broker_state_->GetInstalledModels(future.GetCallback());
+  auto get_models = [&]() {
+    base::test::TestFuture<std::vector<OnDeviceModelControl::ModelInfo>> future;
+    manifest_broker_state_->GetModels(future.GetCallback());
     return future.Take();
   };
 
-  // Only `ready_asset` is returned; `unknown_ready_asset` (OnDeviceBaseModel::
-  // kUnknown), `registered_asset`, and `downloading_asset` are excluded.
+  // Known models in the manifest are returned with `kReady` or `kDownloadable`;
+  // `unknown_ready_asset` (OnDeviceBaseModel::kUnknown) is excluded.
   {
-    auto models = get_installed_models();
-    ASSERT_EQ(models.size(), 1u);
-    EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kGemma4);
-    EXPECT_GT(models[0].size_bytes, 0u);
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kV3NanoCpu);
+    EXPECT_EQ(models[0].status,
+              OnDeviceModelControl::ModelStatus::kDownloadable);
+    EXPECT_EQ(models[0].size_bytes, 0u);
+
+    EXPECT_EQ(models[1].base_model, OnDeviceBaseModel::kV3NanoGpu);
+    EXPECT_EQ(models[1].status,
+              OnDeviceModelControl::ModelStatus::kDownloadable);
+    EXPECT_EQ(models[1].size_bytes, 0u);
+
+    EXPECT_EQ(models[2].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_EQ(models[2].status, OnDeviceModelControl::ModelStatus::kReady);
+    EXPECT_GT(models[2].size_bytes, 0u);
   }
 
   // Advance past the 10s disk space freshness window so kUninstalling is
-  // deferred; `ready_asset` is still immediately excluded as kUninstall.
+  // deferred; `ready_asset` immediately transitions to `kDownloadable`.
   task_environment_.FastForwardBy(base::Seconds(11));
   manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kGemma4);
-  EXPECT_TRUE(get_installed_models().empty());
+  {
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[2].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_EQ(models[2].status,
+              OnDeviceModelControl::ModelStatus::kDownloadable);
+    EXPECT_EQ(models[2].size_bytes, 0u);
+  }
+
+  // Under `kThrottled`, only foreground downloads complete, so making
+  // background-registered `registered_asset` installable keeps it as
+  // `kDownloadable` until `InstallCapability` requests a foreground download.
+  component_state_.SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kThrottled);
+  MakeAssetInstallable(registered_asset);
+  task_environment_.RunUntilIdle();
+  {
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[1].base_model, OnDeviceBaseModel::kV3NanoGpu);
+    EXPECT_EQ(models[1].status,
+              OnDeviceModelControl::ModelStatus::kDownloadable);
+    EXPECT_EQ(models[1].size_bytes, 0u);
+  }
+
+  manifest_broker_state_->InstallCapability(OnDeviceBaseModel::kV3NanoGpu);
+  task_environment_.RunUntilIdle();
+  {
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[1].base_model, OnDeviceBaseModel::kV3NanoGpu);
+    EXPECT_EQ(models[1].status, OnDeviceModelControl::ModelStatus::kReady);
+    EXPECT_GT(models[1].size_bytes, 0u);
+  }
 }
 
-TEST_F(ManifestAssetManagerTest, GetInstalledModelsEmptyOnUninstallManifest) {
+TEST_F(ManifestAssetManagerTest, GetModelsEmptyOnUninstallManifest) {
   DummyAsset asset = DummyAsset::For("compose").WithAssetId("gemma4_component");
   usage_tracker_.RaisePriority(asset.use_case,
                                UsageTracker::Priority::kUserBlocking);
@@ -1793,9 +1836,8 @@ TEST_F(ManifestAssetManagerTest, GetInstalledModelsEmptyOnUninstallManifest) {
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 
   {
-    base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
-        future;
-    manifest_broker_state_->GetInstalledModels(future.GetCallback());
+    base::test::TestFuture<std::vector<OnDeviceModelControl::ModelInfo>> future;
+    manifest_broker_state_->GetModels(future.GetCallback());
     ASSERT_EQ(future.Get().size(), 1u);
     EXPECT_EQ(future.Get()[0].base_model, OnDeviceBaseModel::kGemma4);
   }
@@ -1806,14 +1848,13 @@ TEST_F(ManifestAssetManagerTest, GetInstalledModelsEmptyOnUninstallManifest) {
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
       false);
 
-  base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
-      future;
-  manifest_broker_state_->GetInstalledModels(future.GetCallback());
+  base::test::TestFuture<std::vector<OnDeviceModelControl::ModelInfo>> future;
+  manifest_broker_state_->GetModels(future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(ManifestAssetManagerTest,
-       GetInstalledModelsDedupesRecipesAndExcludesAdaptations) {
+       GetModelsDedupesRecipesAndExcludesAdaptations) {
   DummyAsset base_asset =
       DummyAsset::For("base").WithAssetId("gemma4_component");
   DummyAsset ready_adapt_asset =
@@ -1883,13 +1924,13 @@ TEST_F(ManifestAssetManagerTest,
   EXPECT_TRUE(component_state_.WaitForRegistration(
       ready_adapt_asset.ToInstallTarget()));
 
-  base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
-      future;
-  manifest_broker_state_->GetInstalledModels(future.GetCallback());
-  std::vector<OnDeviceModelControl::InstalledModel> models = future.Take();
+  base::test::TestFuture<std::vector<OnDeviceModelControl::ModelInfo>> future;
+  manifest_broker_state_->GetModels(future.GetCallback());
+  std::vector<OnDeviceModelControl::ModelInfo> models = future.Take();
 
   ASSERT_EQ(models.size(), 1u);
   EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kGemma4);
+  EXPECT_EQ(models[0].status, OnDeviceModelControl::ModelStatus::kReady);
   EXPECT_GT(models[0].size_bytes, 0u);
 }
 

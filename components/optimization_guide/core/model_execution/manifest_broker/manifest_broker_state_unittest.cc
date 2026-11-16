@@ -683,29 +683,29 @@ TEST_F(ManifestBrokerStateTest,
             mojom::ModelUnavailableReason::kPendingUsage);
 }
 
-TEST_F(ManifestBrokerStateTest, GetInstalledModelsBeforeManifestLoaded) {
+TEST_F(ManifestBrokerStateTest, GetModelsBeforeManifestLoaded) {
   ScenarioBuilder(fake_.component_state())
       .AddBaseModel("gemma4_component")
       .AddUnsafeSolution("test", "gemma4_component")
       .Finish();
   ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
 
-  // Call GetInstalledModels immediately on startup before the manifest has
-  // finished loading and creating ManifestAssetManager.
+  // Call GetModels immediately on startup before the manifest has finished
+  // loading and creating ManifestAssetManager.
   OnDeviceModelControl* model_control = fake_.state().GetModelControl();
   ASSERT_NE(model_control, nullptr);
 
-  base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
-      future;
-  model_control->GetInstalledModels(future.GetCallback());
+  base::test::TestFuture<std::vector<OnDeviceModelControl::ModelInfo>> future;
+  model_control->GetModels(future.GetCallback());
 
-  std::vector<OnDeviceModelControl::InstalledModel> models = future.Take();
+  std::vector<OnDeviceModelControl::ModelInfo> models = future.Take();
   ASSERT_EQ(models.size(), 1u);
   EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kGemma4);
+  EXPECT_EQ(models[0].status, OnDeviceModelControl::ModelStatus::kReady);
   EXPECT_GT(models[0].size_bytes, 0u);
 }
 
-TEST_F(ManifestBrokerStateTest, GetInstalledModelsAndUninstall) {
+TEST_F(ManifestBrokerStateTest, GetModelsInstallAndUninstall) {
   proto::SolutionConfig compose_config;
   *compose_config.mutable_feature() = SimpleComposeConfig();
 
@@ -733,30 +733,58 @@ TEST_F(ManifestBrokerStateTest, GetInstalledModelsAndUninstall) {
   ASSERT_NE(model_control, nullptr);
 
   {
-    base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
-        future;
-    model_control->GetInstalledModels(future.GetCallback());
-    std::vector<OnDeviceModelControl::InstalledModel> models = future.Take();
+    base::test::TestFuture<std::vector<OnDeviceModelControl::ModelInfo>> future;
+    model_control->GetModels(future.GetCallback());
+    std::vector<OnDeviceModelControl::ModelInfo> models = future.Take();
     ASSERT_EQ(models.size(), 2u);
 
     EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kV3NanoGpu);
+    EXPECT_EQ(models[0].status, OnDeviceModelControl::ModelStatus::kReady);
     EXPECT_GT(models[0].size_bytes, 0u);
 
     EXPECT_EQ(models[1].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_EQ(models[1].status, OnDeviceModelControl::ModelStatus::kReady);
     EXPECT_GT(models[1].size_bytes, 0u);
   }
 
-  // Uninstalling nano_v3_gpu_component should immediately exclude it from
-  // GetInstalledModels.
+  // Uninstalling nano_v3_gpu_component should immediately transition it to
+  // `kDownloadable`.
   model_control->UninstallCapability(OnDeviceBaseModel::kV3NanoGpu);
 
   {
-    base::test::TestFuture<std::vector<OnDeviceModelControl::InstalledModel>>
-        future;
-    model_control->GetInstalledModels(future.GetCallback());
-    std::vector<OnDeviceModelControl::InstalledModel> models = future.Take();
-    ASSERT_EQ(models.size(), 1u);
-    EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kGemma4);
+    base::test::TestFuture<std::vector<OnDeviceModelControl::ModelInfo>> future;
+    model_control->GetModels(future.GetCallback());
+    std::vector<OnDeviceModelControl::ModelInfo> models = future.Take();
+    ASSERT_EQ(models.size(), 2u);
+    EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kV3NanoGpu);
+    EXPECT_EQ(models[0].status,
+              OnDeviceModelControl::ModelStatus::kDownloadable);
+    EXPECT_EQ(models[0].size_bytes, 0u);
+
+    EXPECT_EQ(models[1].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_EQ(models[1].status, OnDeviceModelControl::ModelStatus::kReady);
+  }
+
+  // Wait for the delayed uninstall to finish, then re-install via
+  // InstallCapability.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(
+      fake_.component_state().WaitForUninstall("nano_v3_gpu_component_key"));
+  task_environment_.RunUntilIdle();
+
+  model_control->InstallCapability(OnDeviceBaseModel::kV3NanoGpu);
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"nano_v3_gpu_component_key", base::Version("1.0.0.0")}));
+  task_environment_.RunUntilIdle();
+
+  {
+    base::test::TestFuture<std::vector<OnDeviceModelControl::ModelInfo>> future;
+    model_control->GetModels(future.GetCallback());
+    std::vector<OnDeviceModelControl::ModelInfo> models = future.Take();
+    ASSERT_EQ(models.size(), 2u);
+    EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kV3NanoGpu);
+    EXPECT_EQ(models[0].status, OnDeviceModelControl::ModelStatus::kReady);
+    EXPECT_GT(models[0].size_bytes, 0u);
   }
 }
 

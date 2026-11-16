@@ -107,9 +107,10 @@ class ManifestAssetManager : public UsageTracker::Observer,
   std::vector<std::pair<mojom::BrokerModelInfoPtr, base::FilePath>>
   GetBrokerModels() const;
 
-  // Returns installed base models and their install directories.
-  std::vector<std::pair<OnDeviceBaseModel, base::FilePath>>
-  GetInstalledBaseModels() const;
+  // Returns base models in the manifest and their install directories (empty
+  // if not `kReady`).
+  std::vector<std::pair<OnDeviceModelControl::ModelInfo, base::FilePath>>
+  GetBaseModels() const;
 
   // Returns the ledger-tracked installation status for `base_model`.
   static OnDeviceModelControl::ModelInstallState GetModelInstallState(
@@ -132,6 +133,10 @@ class ManifestAssetManager : public UsageTracker::Observer,
   // Requests uninstall for all use cases in the manifest and updates component
   // registrations.
   void UninstallAllAssets();
+
+  // Requests installation for all use cases requiring the base model asset
+  // identified by `base_model` and recomputes asset priorities.
+  void InstallCapability(OnDeviceBaseModel base_model);
 
   // Requests uninstall for all use cases requiring the base model asset
   // identified by `base_model` and recomputes asset priorities.
@@ -169,6 +174,9 @@ class ManifestAssetManager : public UsageTracker::Observer,
     // Returns an AssetState for whether we have the target_version.
     ManifestSolutionFactory::AssetState AsAssetState(
         const std::string& target_version) const;
+    bool IsReadyFor(const std::string& target_version) const {
+      return AsAssetState(target_version).has_value();
+    }
 
     std::string asset_id() const { return asset_id_; }
     std::string requested_version() const { return requested_version_; }

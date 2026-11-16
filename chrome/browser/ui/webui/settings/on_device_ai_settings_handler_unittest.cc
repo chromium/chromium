@@ -35,9 +35,7 @@ class FakeOnDeviceModelControl : public OnDeviceModelControl {
   FakeOnDeviceModelControl() = default;
   ~FakeOnDeviceModelControl() override = default;
 
-  void SetInstalledModels(std::vector<InstalledModel> models) {
-    models_ = std::move(models);
-  }
+  void SetModels(std::vector<ModelInfo> models) { models_ = std::move(models); }
 
   const std::vector<OnDeviceBaseModel>& uninstalled_models() const {
     return uninstalled_models_;
@@ -46,21 +44,27 @@ class FakeOnDeviceModelControl : public OnDeviceModelControl {
   // OnDeviceModelControl:
   void UninstallModels() override { models_.clear(); }
 
+  void InstallCapability(OnDeviceBaseModel base_model) override {}
+
   void UninstallCapability(OnDeviceBaseModel base_model) override {
     uninstalled_models_.push_back(base_model);
-    std::erase_if(models_, [base_model](const InstalledModel& model) {
-      return model.base_model == base_model;
-    });
+    for (auto& model : models_) {
+      if (model.base_model == base_model) {
+        model.status = ModelStatus::kDownloadable;
+        model.size_bytes = 0;
+      }
+    }
   }
 
-  void GetInstalledModels(InstalledModelsCallback callback) override {
+  void GetModels(ModelsCallback callback) override {
     std::move(callback).Run(models_);
   }
 
   ModelInstallState GetModelInstallState(
       OnDeviceBaseModel base_model) const override {
     for (const auto& model : models_) {
-      if (model.base_model == base_model) {
+      if (model.base_model == base_model &&
+          model.status == ModelStatus::kReady) {
         return ModelInstallState::kInstalled;
       }
     }
@@ -76,7 +80,7 @@ class FakeOnDeviceModelControl : public OnDeviceModelControl {
   void RemoveObserver(Observer* observer) override {}
 
  private:
-  std::vector<InstalledModel> models_;
+  std::vector<ModelInfo> models_;
   std::vector<OnDeviceBaseModel> uninstalled_models_;
 };
 
@@ -264,18 +268,23 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   const base::ByteSize kNanoSize = base::GiB(1);
   const base::ByteSize kGemmaSize = base::GiB(2);
 
-  fake_control.SetInstalledModels({
-      OnDeviceModelControl::InstalledModel(
-          OnDeviceBaseModel::kSpeechRecognitionSmallExpert, kAsrSize.InBytes()),
+  fake_control.SetModels({
+      OnDeviceModelControl::ModelInfo(
+          OnDeviceBaseModel::kSpeechRecognitionSmallExpert,
+          OnDeviceModelControl::ModelStatus::kReady, kAsrSize.InBytes()),
       // Unmapped models are excluded by GetOnDeviceModelUiMetadata().
-      OnDeviceModelControl::InstalledModel(OnDeviceBaseModel::kClassifier,
-                                           base::MiB(200).InBytes()),
-      OnDeviceModelControl::InstalledModel(
-          OnDeviceBaseModel::kProofreaderSmallExpert, base::MiB(300).InBytes()),
-      OnDeviceModelControl::InstalledModel(OnDeviceBaseModel::kV3NanoGpu,
-                                           kNanoSize.InBytes()),
-      OnDeviceModelControl::InstalledModel(OnDeviceBaseModel::kGemma4,
-                                           kGemmaSize.InBytes()),
+      OnDeviceModelControl::ModelInfo(OnDeviceBaseModel::kClassifier,
+                                      OnDeviceModelControl::ModelStatus::kReady,
+                                      base::MiB(200).InBytes()),
+      OnDeviceModelControl::ModelInfo(
+          OnDeviceBaseModel::kProofreaderSmallExpert,
+          OnDeviceModelControl::ModelStatus::kReady, base::MiB(300).InBytes()),
+      OnDeviceModelControl::ModelInfo(OnDeviceBaseModel::kV3NanoGpu,
+                                      OnDeviceModelControl::ModelStatus::kReady,
+                                      kNanoSize.InBytes()),
+      OnDeviceModelControl::ModelInfo(OnDeviceBaseModel::kGemma4,
+                                      OnDeviceModelControl::ModelStatus::kReady,
+                                      kGemmaSize.InBytes()),
   });
 
   base::ListValue args;
@@ -303,6 +312,8 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   // ASR (3 GiB).
   const base::DictValue& row0 = (*capabilities)[0].GetDict();
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kGemma4), row0.FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
+            row0.FindInt("status"));
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_ON_DEVICE_MODEL_CATEGORY_GENERAL_PURPOSE_TITLE),
             *row0.FindString("categoryTitle"));
@@ -325,6 +336,8 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   const base::DictValue& row1 = (*capabilities)[1].GetDict();
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kV3NanoGpu),
             row1.FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
+            row1.FindInt("status"));
   EXPECT_EQ("Gemini Nano", *row1.FindString("modelName"));
   EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(kNanoSize)),
             *row1.FindString("size"));
@@ -332,6 +345,8 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   const base::DictValue& row2 = (*capabilities)[2].GetDict();
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kSpeechRecognitionSmallExpert),
             row2.FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
+            row2.FindInt("status"));
   EXPECT_EQ(l10n_util::GetStringUTF8(
                 IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_TITLE),
             *row2.FindString("categoryTitle"));
@@ -350,11 +365,13 @@ TEST_F(OnDeviceAiSettingsHandlerTest, HandleDeleteOnDeviceAiCapability) {
   const base::ByteSize kNanoSize = base::GiB(1);
   const base::ByteSize kGemmaSize = base::GiB(2);
 
-  fake_control.SetInstalledModels({
-      OnDeviceModelControl::InstalledModel(OnDeviceBaseModel::kV3NanoGpu,
-                                           kNanoSize.InBytes()),
-      OnDeviceModelControl::InstalledModel(OnDeviceBaseModel::kGemma4,
-                                           kGemmaSize.InBytes()),
+  fake_control.SetModels({
+      OnDeviceModelControl::ModelInfo(OnDeviceBaseModel::kV3NanoGpu,
+                                      OnDeviceModelControl::ModelStatus::kReady,
+                                      kNanoSize.InBytes()),
+      OnDeviceModelControl::ModelInfo(OnDeviceBaseModel::kGemma4,
+                                      OnDeviceModelControl::ModelStatus::kReady,
+                                      kGemmaSize.InBytes()),
   });
 
   // Hidden/unmapped models (e.g. kClassifier) should not be uninstallable.
@@ -388,9 +405,17 @@ TEST_F(OnDeviceAiSettingsHandlerTest, HandleDeleteOnDeviceAiCapability) {
 
   const base::ListValue* capabilities = result.FindList("capabilities");
   ASSERT_NE(nullptr, capabilities);
-  ASSERT_EQ(1u, capabilities->size());
+  ASSERT_EQ(2u, capabilities->size());
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kV3NanoGpu),
             (*capabilities)[0].GetDict().FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
+            (*capabilities)[0].GetDict().FindInt("status"));
+  EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kGemma4),
+            (*capabilities)[1].GetDict().FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kDownloadable),
+            (*capabilities)[1].GetDict().FindInt("status"));
+  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(0))),
+            *(*capabilities)[1].GetDict().FindString("size"));
 }
 
 }  // namespace settings

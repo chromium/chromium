@@ -33,12 +33,14 @@ namespace {
 
 struct VisibleCapabilityRow {
   optimization_guide::OnDeviceBaseModel base_model;
+  optimization_guide::OnDeviceModelControl::ModelStatus status;
   optimization_guide::OnDeviceModelUiMetadata metadata;
   base::ByteSize size;
 
   base::DictValue ToDict() const {
     base::DictValue item;
     item.Set("id", static_cast<int>(base_model));
+    item.Set("status", static_cast<int>(status));
     item.Set("categoryTitle", metadata.category_title);
     item.Set("description", metadata.category_description);
     item.Set("modelName", metadata.model_display_name);
@@ -210,15 +212,14 @@ void OnDeviceAiSettingsHandler::QueryAndResolveCapabilities(
     OnCapabilitiesLoaded(callback_id, {});
     return;
   }
-  model_control->GetInstalledModels(
+  model_control->GetModels(
       base::BindOnce(&OnDeviceAiSettingsHandler::OnCapabilitiesLoaded,
                      weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
 void OnDeviceAiSettingsHandler::OnCapabilitiesLoaded(
     const std::string& callback_id,
-    std::vector<optimization_guide::OnDeviceModelControl::InstalledModel>
-        models) {
+    std::vector<optimization_guide::OnDeviceModelControl::ModelInfo> models) {
   std::vector<VisibleCapabilityRow> rows;
   base::ByteSize total_size;
 
@@ -232,6 +233,7 @@ void OnDeviceAiSettingsHandler::OnCapabilitiesLoaded(
     total_size += model_size;
     rows.push_back(VisibleCapabilityRow{
         .base_model = model.base_model,
+        .status = model.status,
         .metadata = std::move(*metadata),
         .size = model_size,
     });
@@ -239,8 +241,8 @@ void OnDeviceAiSettingsHandler::OnCapabilitiesLoaded(
 
   std::ranges::sort(
       rows, [](const VisibleCapabilityRow& a, const VisibleCapabilityRow& b) {
-        return std::tie(a.metadata.category, b.size, a.base_model) <
-               std::tie(b.metadata.category, a.size, b.base_model);
+        return std::tie(a.metadata.category, b.size, a.status, a.base_model) <
+               std::tie(b.metadata.category, a.size, b.status, b.base_model);
       });
 
   base::ListValue capabilities_list;

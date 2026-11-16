@@ -322,8 +322,8 @@ void ManifestBrokerState::GetStateInfo(
                  models_with_paths) {
             for (auto& [model_info, path] : models_with_paths) {
               if (!path.empty()) {
-                model_info->folder_size = static_cast<uint64_t>(
-                    base::ComputeDirectorySize(path));
+                model_info->folder_size =
+                    static_cast<uint64_t>(base::ComputeDirectorySize(path));
               }
               result->models.push_back(std::move(model_info));
             }
@@ -355,6 +355,17 @@ void ManifestBrokerState::UninstallModels() {
       weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ManifestBrokerState::InstallCapability(OnDeviceBaseModel base_model) {
+  EnsureInitialization(base::BindOnce(
+      [](base::WeakPtr<ManifestBrokerState> self, OnDeviceBaseModel base_model,
+         const on_device_model::Capabilities&) {
+        if (self && self->asset_manager_) {
+          self->asset_manager_->InstallCapability(base_model);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), base_model));
+}
+
 void ManifestBrokerState::UninstallCapability(OnDeviceBaseModel base_model) {
   EnsureInitialization(base::BindOnce(
       [](base::WeakPtr<ManifestBrokerState> self, OnDeviceBaseModel base_model,
@@ -366,33 +377,27 @@ void ManifestBrokerState::UninstallCapability(OnDeviceBaseModel base_model) {
       weak_ptr_factory_.GetWeakPtr(), base_model));
 }
 
-void ManifestBrokerState::GetInstalledModels(InstalledModelsCallback callback) {
+void ManifestBrokerState::GetModels(ModelsCallback callback) {
   EnsureInitialization(base::BindOnce(
-      [](base::WeakPtr<ManifestBrokerState> self,
-         InstalledModelsCallback callback,
+      [](base::WeakPtr<ManifestBrokerState> self, ModelsCallback callback,
          const on_device_model::Capabilities&) {
-        std::vector<std::pair<OnDeviceBaseModel, base::FilePath>>
-            models_with_paths;
+        std::vector<std::pair<ModelInfo, base::FilePath>> models_with_paths;
         if (self && self->asset_manager_) {
-          models_with_paths = self->asset_manager_->GetInstalledBaseModels();
+          models_with_paths = self->asset_manager_->GetBaseModels();
         }
         base::ThreadPool::PostTaskAndReplyWithResult(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
             base::BindOnce(
-                [](std::vector<std::pair<OnDeviceBaseModel, base::FilePath>>
+                [](std::vector<std::pair<ModelInfo, base::FilePath>>
                        models_with_paths) {
-                  std::vector<InstalledModel> result;
+                  std::vector<ModelInfo> result;
                   result.reserve(models_with_paths.size());
-                  for (const auto& [base_model, path] : models_with_paths) {
-                    uint64_t size_bytes =
-                        path.empty()
-                            ? 0
-                            : static_cast<uint64_t>(
-                                  base::ComputeDirectorySize(path));
-                    result.push_back(InstalledModel{
-                        .base_model = base_model,
-                        .size_bytes = size_bytes,
-                    });
+                  for (auto& [model_info, path] : models_with_paths) {
+                    model_info.size_bytes =
+                        path.empty() ? 0
+                                     : static_cast<uint64_t>(
+                                           base::ComputeDirectorySize(path));
+                    result.push_back(std::move(model_info));
                   }
                   return result;
                 },

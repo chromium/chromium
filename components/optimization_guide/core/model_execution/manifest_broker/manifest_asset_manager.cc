@@ -543,6 +543,24 @@ void ManifestAssetManager::UninstallAllAssets() {
   RecomputeAssetPriorities();
 }
 
+void ManifestAssetManager::InstallCapability(OnDeviceBaseModel base_model) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base_model == OnDeviceBaseModel::kUnknown) {
+    return;
+  }
+  for (const auto& [asset_id, _] :
+       factory_->manifest().GetAssets().on_demand_components()) {
+    if (ConvertComponentKeyToEnum(asset_id) != base_model) {
+      continue;
+    }
+    for (const auto& use_case_name :
+         factory_->manifest().GetUseCasesRequiringAsset(asset_id)) {
+      usage_tracker_->RaisePriority(use_case_name,
+                                    UsageTracker::Priority::kUserBlocking);
+    }
+  }
+}
+
 void ManifestAssetManager::UninstallCapability(OnDeviceBaseModel base_model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (base_model == OnDeviceBaseModel::kUnknown) {
@@ -972,15 +990,17 @@ ManifestAssetManager::GetBrokerModels() const {
   return factory_->GetBrokerModels();
 }
 
-std::vector<std::pair<OnDeviceBaseModel, base::FilePath>>
-ManifestAssetManager::GetInstalledBaseModels() const {
+std::vector<std::pair<OnDeviceModelControl::ModelInfo, base::FilePath>>
+ManifestAssetManager::GetBaseModels() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!factory_) {
     return {};
   }
 
   const Manifest& manifest = factory_->manifest();
-  base::flat_map<OnDeviceBaseModel, base::FilePath> models_by_base_model;
+  base::flat_map<OnDeviceBaseModel,
+                 std::pair<OnDeviceModelControl::ModelInfo, base::FilePath>>
+      models_by_base_model;
 
   for (const auto& [_, recipe] : manifest.GetRecipes().base_models()) {
     const Manifest::AssetId& asset_id = recipe.weights_file().asset_id();
@@ -995,15 +1015,31 @@ ManifestAssetManager::GetInstalledBaseModels() const {
     }
     const ComponentContext* context =
         ledger_.GetContext(component->public_key());
-    if (!context || context->state() != ComponentState::kReady ||
-        !context->install_dir().has_value() ||
-        !asset_priorities_.IsAtLeast(AssetPriority::kEvictable, asset_id)) {
-      continue;
-    }
-    models_by_base_model.emplace(base_model, *context->install_dir());
+    const bool is_ready =
+        context &&
+        asset_priorities_.IsAtLeast(AssetPriority::kEvictable, asset_id) &&
+        context->IsReadyFor(component->target_version());
+    OnDeviceModelControl::ModelStatus status =
+        is_ready ? OnDeviceModelControl::ModelStatus::kReady
+                 : OnDeviceModelControl::ModelStatus::kDownloadable;
+    base::FilePath install_dir =
+        is_ready ? *context->install_dir() : base::FilePath();
+    models_by_base_model.emplace(
+        base_model, std::make_pair(
+                        OnDeviceModelControl::ModelInfo{
+                            .base_model = base_model,
+                            .status = status,
+                        },
+                        std::move(install_dir)));
   }
 
-  return std::move(models_by_base_model).extract();
+  std::vector<std::pair<OnDeviceModelControl::ModelInfo, base::FilePath>>
+      result;
+  result.reserve(models_by_base_model.size());
+  for (auto& [_, entry] : models_by_base_model) {
+    result.push_back(std::move(entry));
+  }
+  return result;
 }
 
 OnDeviceModelControl::ModelInstallState

@@ -72,8 +72,7 @@ class OnDeviceAiSettingsHandler : public SettingsPageUIHandler {
   // Callback invoked when installed models and their disk sizes are loaded.
   void OnCapabilitiesLoaded(
       const std::string& callback_id,
-      std::vector<optimization_guide::OnDeviceModelControl::InstalledModel>
-          models);
+      std::vector<optimization_guide::OnDeviceModelControl::ModelInfo> models);
 
   // Called when the kOnDeviceAiEnabled preference changes.
   void OnPrefChange();

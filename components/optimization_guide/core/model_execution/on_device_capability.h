@@ -363,7 +363,7 @@ class OnDeviceSession {
   virtual void SetPriority(on_device_model::mojom::Priority priority) = 0;
 };
 
-// Interface for managing and observing installed on-device models.
+// Interface for managing, observing, and controlling on-device models.
 class OnDeviceModelControl {
  public:
   // Persistent base model status in prefs; do not renumber.
@@ -386,32 +386,45 @@ class OnDeviceModelControl {
     virtual void OnModelUninstalled(OnDeviceBaseModel base_model);
   };
 
-  // A base model whose weights component is installed on disk.
-  struct InstalledModel {
-    bool operator==(const InstalledModel& other) const = default;
+  // Installation status of a base model supported by the current manifest.
+  enum class ModelStatus {
+    // Model is downloaded on disk and ready to serve requests.
+    kReady = 0,
+    // Model is supported on this device and available to be downloaded.
+    kDownloadable = 1,
+  };
 
-    // Identifier of the installed base model.
+  // Information about a base model in the manifest.
+  struct ModelInfo {
+    bool operator==(const ModelInfo& other) const = default;
+
+    // Identifier of the base model.
     OnDeviceBaseModel base_model = OnDeviceBaseModel::kUnknown;
+    // Current installation status of the model.
+    ModelStatus status = ModelStatus::kReady;
     // Disk size of the installed base model directory in bytes (computed via
-    // base::ComputeDirectorySize()).
+    // base::ComputeDirectorySize()), or 0 if `status` is not `kReady`.
     uint64_t size_bytes = 0;
   };
-  using InstalledModelsCallback =
-      base::OnceCallback<void(std::vector<InstalledModel>)>;
+  using ModelsCallback = base::OnceCallback<void(std::vector<ModelInfo>)>;
 
   virtual ~OnDeviceModelControl() = default;
 
   // Uninstalls all downloaded on-device models and clears their usage history.
   virtual void UninstallModels() = 0;
 
+  // Installs a specific base model capability identified by `base_model` along
+  // with any dependent adaptations and safety models.
+  virtual void InstallCapability(OnDeviceBaseModel base_model) = 0;
+
   // Uninstalls a specific base model capability identified by `base_model`
   // along with any dependent adaptations and unshared safety models.
   virtual void UninstallCapability(OnDeviceBaseModel base_model) = 0;
 
   // Waits for broker initialization (raising manifest load priority), then
-  // replies on the calling sequence with installed base models and their sizes
-  // already computed.
-  virtual void GetInstalledModels(InstalledModelsCallback callback) = 0;
+  // replies on the calling sequence with supported base models, their status,
+  // and their sizes (for `kReady` models) already computed.
+  virtual void GetModels(ModelsCallback callback) = 0;
 
   // Returns the ledger-tracked installation status for `base_model`.
   virtual ModelInstallState GetModelInstallState(
