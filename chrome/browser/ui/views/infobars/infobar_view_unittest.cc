@@ -10,13 +10,18 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/animation/tween.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -56,6 +61,7 @@ class TestInfoBarViewWithLabelAndIcon : public InfoBarView {
   }
 
   views::Label* test_label() { return test_label_; }
+  gfx::SlideAnimation* mutable_animation() { return animation(); }
   int GetPublicEndX() const { return GetEndX(); }
   int GetTotalHeight() const {
     return ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -395,5 +401,103 @@ TEST_F(InfoBarViewUnitTest, InfobarEliding) {
   widget->LayoutRootViewIfNecessary();
   EXPECT_FALSE(label->IsDisplayTextTruncated());
 
+  widget->CloseNow();
+}
+
+TEST_F(InfoBarViewUnitTest, ShowAndHideApplyMotionCurves) {
+  base::test::ScopedFeatureList feature_list(features::kInfoBarQueuedCountPill);
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  auto reduced_motion =
+      gfx::AnimationTestApi::SetPrefersReducedMotionForTesting(false);
+
+  auto delegate = std::make_unique<TestInfoBarDelegateWithIcon>();
+  auto infobar_view =
+      std::make_unique<TestInfoBarViewWithLabelAndIcon>(std::move(delegate));
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+  widget->SetContentsView(infobar_view.get());
+  widget->SetBounds(gfx::Rect(0, 0, 500, 50));
+  widget->Show();
+
+  gfx::SlideAnimation* slide_animation = infobar_view->mutable_animation();
+  gfx::AnimationTestApi anim_api(slide_animation);
+  const base::TimeTicks start = base::TimeTicks::Now();
+  const base::TimeDelta quarter = slide_animation->GetSlideDuration() / 4;
+  ASSERT_GT(quarter, base::TimeDelta());
+
+  // Enter animation uses LINEAR_OUT_SLOW_IN (fast entry, decelerating into
+  // rest), so at 25% of duration it has covered more than 25% of distance.
+  infobar_view->Show(/*animate=*/true);
+  anim_api.SetStartTime(start);
+  anim_api.Step(start + quarter);
+  EXPECT_DOUBLE_EQ(
+      gfx::Tween::CalculateValue(gfx::Tween::LINEAR_OUT_SLOW_IN, 0.25),
+      slide_animation->GetCurrentValue());
+  EXPECT_GT(slide_animation->GetCurrentValue(), 0.25);
+
+  // Exit animation uses FAST_OUT_LINEAR_IN (accelerating from rest out of
+  // scene), so at 25% of duration it has covered less than 25% of the exit.
+  slide_animation->Reset(1.0);
+  infobar_view->Hide(/*animate=*/true);
+  anim_api.SetStartTime(start);
+  anim_api.Step(start + quarter);
+  EXPECT_DOUBLE_EQ(
+      1.0 - gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_LINEAR_IN, 0.25),
+      slide_animation->GetCurrentValue());
+  EXPECT_GT(slide_animation->GetCurrentValue(), 0.75);
+
+  // Stop before completion so the unowned test InfoBar does not self-delete.
+  slide_animation->Stop();
+  widget->CloseNow();
+}
+
+TEST_F(InfoBarViewUnitTest, ShowAndHideKeepLinearTweenWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kInfoBarQueuedCountPill);
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  auto reduced_motion =
+      gfx::AnimationTestApi::SetPrefersReducedMotionForTesting(false);
+
+  auto delegate = std::make_unique<TestInfoBarDelegateWithIcon>();
+  auto infobar_view =
+      std::make_unique<TestInfoBarViewWithLabelAndIcon>(std::move(delegate));
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+  widget->SetContentsView(infobar_view.get());
+  widget->SetBounds(gfx::Rect(0, 0, 500, 50));
+  widget->Show();
+
+  gfx::SlideAnimation* slide_animation = infobar_view->mutable_animation();
+  gfx::AnimationTestApi anim_api(slide_animation);
+  const base::TimeTicks start = base::TimeTicks::Now();
+  const base::TimeDelta quarter = slide_animation->GetSlideDuration() / 4;
+  ASSERT_GT(quarter, base::TimeDelta());
+
+  infobar_view->Show(/*animate=*/true);
+  anim_api.SetStartTime(start);
+  anim_api.Step(start + quarter);
+  EXPECT_DOUBLE_EQ(0.25, slide_animation->GetCurrentValue());
+
+  slide_animation->Reset(1.0);
+  infobar_view->Hide(/*animate=*/true);
+  anim_api.SetStartTime(start);
+  anim_api.Step(start + quarter);
+  EXPECT_DOUBLE_EQ(0.75, slide_animation->GetCurrentValue());
+
+  slide_animation->Stop();
   widget->CloseNow();
 }

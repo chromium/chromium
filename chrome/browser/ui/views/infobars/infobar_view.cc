@@ -10,7 +10,9 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,6 +25,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
@@ -99,6 +102,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   SetNotifier(std::make_unique<
               gfx::AnimationDelegateNotifier<views::AnimationDelegateViews>>(
       this, this));
+  if (base::FeatureList::IsEnabled(features::kInfoBarQueuedCountPill)) {
+    animation()->SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
+  }
 
   set_owned_by_client(OwnedByClientPassKey());  // InfoBar deletes itself at the
                                                 // appropriate time.
@@ -454,6 +460,11 @@ int InfoBarView::OffsetY(views::View* view) const {
 }
 
 void InfoBarView::PlatformSpecificShow(bool animate) {
+  if (animate &&
+      base::FeatureList::IsEnabled(features::kInfoBarQueuedCountPill)) {
+    animation()->SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
+  }
+
   // If we gain focus, we want to restore it to the previously-focused element
   // when we're hidden. So when we're in a Widget, create a focus tracker so
   // that if we gain focus we'll know what the previously-focused element was.
@@ -475,6 +486,10 @@ void InfoBarView::PlatformSpecificHide(bool animate) {
 
   if (!animate) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kInfoBarQueuedCountPill)) {
+    animation()->SetTweenType(gfx::Tween::FAST_OUT_LINEAR_IN);
   }
 
   // Do not restore focus (and active state with it) if some other top-level
