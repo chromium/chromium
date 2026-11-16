@@ -2,6 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("custom_ui") {
+  sources = [
+    "gemini_block_data_types.h",
+    "gemini_custom_ui_delegate.h",
+    "gemini_custom_ui_handler.h",
+    "gemini_custom_ui_handler.mm",
+    "gemini_custom_ui_view_provider.h",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("model") {
   sources = [
     "bwg_link_opening_delegate.h",
@@ -293,6 +305,7 @@ source_set("gateway_manager") {
     "gemini_gateway_manager.mm",
   ]
   deps = [
+    ":custom_ui",
     ":model",
     "//base",
     "//components/feature_engagement/public",
@@ -352,12 +365,15 @@ source_set("utils") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "fake_gemini_block_data_types.h",
+    "fake_gemini_block_data_types.mm",
     "fake_gemini_capabilities_manager.h",
     "fake_gemini_capabilities_manager.mm",
     "fake_gemini_service.h",
     "fake_gemini_service.mm",
   ]
   public_deps = [
+    ":custom_ui",
     ":gemini_capabilities_manager",
     ":gemini_service",
     "//ios/chrome/browser/intelligence/bwg/metrics",
@@ -373,6 +389,7 @@ source_set("unit_tests") {
     "gemini_capabilities_manager_factory_unittest.mm",
     "gemini_capabilities_manager_unittest.mm",
     "gemini_configuration_unittest.mm",
+    "gemini_custom_ui_handler_unittest.mm",
     "gemini_gateway_manager_unittest.mm",
     "gemini_link_opening_handler_unittest.mm",
     "gemini_page_context_unittest.mm",

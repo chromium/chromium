@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_consent_provider_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_custom_ui_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
@@ -75,6 +76,13 @@
       initWithPrefService:profile->GetPrefs()];
   _gateway.consentProviderHandler = _consentProviderHandler;
 
+  _customUIHandler = [[GeminiCustomUIHandler alloc] init];
+  // TODO(crbug.com/582724370): Remove the check when internal implements the
+  // property.
+  if ([_gateway respondsToSelector:@selector(setCustomUIHandler:)]) {
+    _gateway.customUIHandler = _customUIHandler;
+  }
+
   if (gemini::IsFeatureAvailable(gemini::Feature::kImageRemix, profile)) {
     _cameraHandler =
         [[GeminiCameraHandler alloc] initWithPrefService:profile->GetPrefs()];
@@ -115,6 +123,7 @@
   [_actuationHandler disconnect];
   _actuationHandler = nil;
   _suggestionHandler = nil;
+  _customUIHandler = nil;
   _gateway = nil;
 }
 

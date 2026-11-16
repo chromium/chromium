@@ -11,6 +11,7 @@ class Browser;
 @class GeminiActuationHandler;
 @class GeminiCameraHandler;
 @class GeminiConsentProviderHandler;
+@class GeminiCustomUIHandler;
 @class GeminiPageStateChangeHandler;
 @class GeminiSessionHandler;
 @class GeminiSuggestionHandler;
@@ -37,6 +38,7 @@ class Browser;
     GeminiConsentProviderHandler* consentProviderHandler;
 @property(nonatomic, readonly) GeminiSuggestionHandler* suggestionHandler;
 @property(nonatomic, readonly) GeminiActuationHandler* actuationHandler;
+@property(nonatomic, readonly) GeminiCustomUIHandler* customUIHandler;
 
 // Initializes the manager and sets up gateway and handlers for the given
 // browser and view state delegate.

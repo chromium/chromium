@@ -11,12 +11,13 @@
 @protocol GeminiPageStateChangeDelegate;
 @protocol GeminiCameraDelegate;
 @protocol GeminiConsentProviderDelegate;
+@protocol GeminiCustomUIDelegate;
 @protocol GeminiSessionDelegate;
 @protocol GeminiSuggestionDelegate;
 @protocol GeminiTabPickerDelegate;
 
 // Protocol for the BWG gateway, exposing what's needed upstream.
-@protocol BWGGatewayProtocol
+@protocol BWGGatewayProtocol <NSObject>
 
 // Handlers for BWG protocols.
 @property(nonatomic, weak) id<GeminiActuationDelegate> actuationHandler;
@@ -28,6 +29,10 @@
 @property(nonatomic, weak) id<GeminiSessionDelegate> sessionHandler;
 @property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
 @property(nonatomic, weak) id<GeminiTabPickerDelegate> tabPickerHandler;
+
+// TODO(crbug.com/582724370): Remove optional when internal is implemented.
+@optional
+@property(nonatomic, weak) id<GeminiCustomUIDelegate> customUIHandler;
 
 @end
 
