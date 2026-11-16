@@ -38,27 +38,6 @@ public class TranslateOptions {
             mLanguageCode = languageCode;
             mLanguageRepresentation = languageRepresentation;
         }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof TranslateLanguageData)) return false;
-            TranslateLanguageData other = (TranslateLanguageData) obj;
-            return this.mLanguageCode.equals(other.mLanguageCode)
-                    && this.mLanguageRepresentation.equals(other.mLanguageRepresentation);
-        }
-
-        @Override
-        public int hashCode() {
-            return (mLanguageCode + mLanguageRepresentation).hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return "mLanguageCode:"
-                    + mLanguageCode
-                    + " - mLanguageRepresentation "
-                    + mLanguageRepresentation;
-        }
     }
 
     // Values must be numerated from 0 and can't have gaps
@@ -278,19 +257,5 @@ public class TranslateOptions {
 
     private boolean canSetLanguage(String sourceCode, String targetCode) {
         return isValidLanguageCode(sourceCode) && isValidLanguageCode(targetCode);
-    }
-
-    @Override
-    public String toString() {
-        return sourceLanguageCode()
-                + " -> "
-                + targetLanguageCode()
-                + " - "
-                + "Never Language:"
-                + mOptions[Type.NEVER_LANGUAGE]
-                + " Always Language:"
-                + mOptions[Type.ALWAYS_LANGUAGE]
-                + " Never Domain:"
-                + mOptions[Type.NEVER_DOMAIN];
     }
 }
