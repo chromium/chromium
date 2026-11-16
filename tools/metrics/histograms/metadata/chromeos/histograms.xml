@@ -1468,7 +1468,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Display.Startup.AmbientLightSensorEnabled"
-    enum="BooleanEnabled" expires_after="2026-12-31">
+    enum="BooleanEnabled" expires_after="2027-06-30">
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
