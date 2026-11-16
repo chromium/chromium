@@ -29,6 +29,7 @@ class ActionItem;
 
 namespace page_actions {
 
+struct PageActionVisibilityConfig;
 struct SuggestionChipConfig;
 class PageActionModelObserver;
 enum class PageActionColorSource;
@@ -50,6 +51,9 @@ class PageActionModelInterface {
       PageActionPassKey pass_key,
       const actions::ActionItem* action_item) = 0;
   virtual void SetShowRequested(PageActionPassKey pass_key, bool requested) = 0;
+  virtual void SetVisibilityConfig(
+      PageActionPassKey pass_key,
+      const PageActionVisibilityConfig& config) = 0;
   virtual void SetShouldShowSuggestionChip(PageActionPassKey pass_key,
                                            bool show) = 0;
   virtual void SetSuggestionChipConfig(PageActionPassKey pass_key,
@@ -104,6 +108,7 @@ class PageActionModelInterface {
   virtual void SetIsChipShowing(PageActionPassKey pass_key,
                                 bool is_chip_showing) = 0;
   virtual void SetDidAnimateImage(PageActionPassKey pass_key) = 0;
+  virtual void SetDidAnimateVisibility(PageActionPassKey pass_key) = 0;
   virtual void SetIsAnchoredMessageShowing(
       PageActionPassKey pass_key,
       bool is_anchored_message_showing) = 0;
@@ -114,6 +119,8 @@ class PageActionModelInterface {
   virtual void SetShowTrailingIcon(PageActionPassKey pass_key, bool show) = 0;
 
   virtual bool GetVisible() const = 0;
+  virtual bool GetShouldAnimateVisibilityOut() const = 0;
+  virtual bool GetShouldAnimateVisibilityIn() const = 0;
   virtual bool IsChipShowing() const = 0;
   virtual bool ShouldShowSuggestionChip() const = 0;
   virtual bool GetShouldAnimateChipOut() const = 0;
@@ -167,6 +174,8 @@ class PageActionModel : public PageActionModelInterface {
   void SetActionItemProperties(PageActionPassKey pass_key,
                                const actions::ActionItem* action_item) override;
   void SetShowRequested(PageActionPassKey pass_key, bool requested) override;
+  void SetVisibilityConfig(PageActionPassKey pass_key,
+                           const PageActionVisibilityConfig& config) override;
   void SetShouldShowSuggestionChip(PageActionPassKey pass_key,
                                    bool show) override;
   void SetSuggestionChipConfig(PageActionPassKey pass_key,
@@ -230,6 +239,7 @@ class PageActionModel : public PageActionModelInterface {
                         bool is_chip_showing) override;
 
   void SetDidAnimateImage(PageActionPassKey pass_key) override;
+  void SetDidAnimateVisibility(PageActionPassKey pass_key) override;
 
   void SetIsAnchoredMessageShowing(PageActionPassKey pass_key,
                                    bool is_anchored_message_showing) override;
@@ -241,6 +251,8 @@ class PageActionModel : public PageActionModelInterface {
 
   // The model distills all visibility properties into a single result.
   bool GetVisible() const override;
+  bool GetShouldAnimateVisibilityOut() const override;
+  bool GetShouldAnimateVisibilityIn() const override;
   bool IsChipShowing() const override;
   bool ShouldShowSuggestionChip() const override;
   bool GetShouldAnimateChipOut() const override;
@@ -279,6 +291,7 @@ class PageActionModel : public PageActionModelInterface {
   // per-property reentrancy checks.
   enum class Property {
     kShowRequested,
+    kVisibilityConfig,
     kShouldShowSuggestionChip,
     kSuggestionChipConfig,
     kTabActive,
@@ -308,6 +321,8 @@ class PageActionModel : public PageActionModelInterface {
   using PropertySet =
       base::EnumSet<Property, Property::kShowRequested, Property::kMaxValue>;
 
+  bool IsRequestedVisible() const;
+
   // Notifies observers of a model change. `property` identifies the property
   // that was modified, used for reentrancy checks. Re-entrant modifications to
   // the same property CHECK-fail, as they would cause an infinite notification
@@ -328,12 +343,17 @@ class PageActionModel : public PageActionModelInterface {
   // Represents whether a feature requested to show this page action.
   bool show_requested_ = false;
 
+  bool should_animate_visibility_ = true;
+
+  // Whether the current visible stint has already animated in.
+  bool did_animate_visibility_ = false;
+
   // Represents whether the page action associated with this model should show
   // as suggestion chip.
   bool should_show_suggestion_chip_ = false;
 
   // Represents whether suggestion chips should animate in/out.
-  bool should_animate_ = true;
+  bool should_animate_chip_ = true;
 
   // Represents whether the suggestion chip is fully expanded or not (in/out
   // animation is completed). Therefore, it should not be animating.

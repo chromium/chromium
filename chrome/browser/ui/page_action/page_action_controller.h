@@ -141,6 +141,15 @@ struct AnchoredMessageExpandableContent {
   bool operator==(const AnchoredMessageExpandableContent&) const = default;
 };
 
+// Configuration for showing a page action. Applies until the next
+// `PageActionController::Show` call, including the matching `Hide`.
+struct PageActionVisibilityConfig {
+  // Whether showing and hiding the page action should animate.
+  bool should_animate = true;
+
+  bool operator==(const PageActionVisibilityConfig&) const = default;
+};
+
 // Configuration for a page action's suggestion chip.
 struct SuggestionChipConfig {
   // Whether the chip should have expand/collapse animations.
@@ -213,6 +222,7 @@ class PageActionController {
     using IsChipShowingChangedCallback =
         base::RepeatingCallback<void(bool is_chip_showing)>;
     using ImageAnimationStartedCallback = base::RepeatingClosure;
+    using VisibilityAnimationStartedCallback = base::RepeatingClosure;
     using AnchoredMessageCloseCallback = base::RepeatingClosure;
     using AnchoredMessageExpandCallback = base::RepeatingClosure;
     using AnchoredMessageCollapseCallback = base::RepeatingClosure;
@@ -223,6 +233,10 @@ class PageActionController {
         IsChipShowingChangedCallback callback) = 0;
     virtual void SetImageAnimationStartedCallback(
         ImageAnimationStartedCallback callback) = 0;
+    // No-op by default for delegates that do not animate visibility (e.g.
+    // WebUI).
+    virtual void SetVisibilityAnimationStartedCallback(
+        VisibilityAnimationStartedCallback callback) {}
     virtual void SetAnchoredMessageCloseCallback(
         AnchoredMessageCloseCallback callback) = 0;
     virtual void SetAnchoredMessageExpandCallback(
@@ -238,6 +252,8 @@ class PageActionController {
 
   // Requests that the page action be shown or hidden.
   virtual void Show(actions::ActionId action_id) = 0;
+  virtual void Show(actions::ActionId action_id,
+                    const PageActionVisibilityConfig& config) = 0;
   virtual void Hide(actions::ActionId action_id) = 0;
 
   // Request that the page action's chip state shown or hidden. Note that a
@@ -411,6 +427,8 @@ class PageActionControllerImpl : public PageActionController,
 
   // PageActionController:
   void Show(actions::ActionId action_id) override;
+  void Show(actions::ActionId action_id,
+            const PageActionVisibilityConfig& config) override;
   void Hide(actions::ActionId action_id) override;
   void ShowSuggestionChip(actions::ActionId action_id) override;
   void ShowSuggestionChip(actions::ActionId action_id,
@@ -507,6 +525,10 @@ class PageActionControllerImpl : public PageActionController,
   // Triggered when `page_action_view` plays the image transition animation
   // prior to updating to the new image.
   void OnImageAnimationStarted(actions::ActionId id);
+
+  // Triggered when `page_action_view` handles a pending visibility entrance
+  // (whether or not motion runs) so repeated updates do not replay it.
+  void OnVisibilityAnimationStarted(actions::ActionId id);
 
   PageActionModelInterface& FindPageActionModel(
       actions::ActionId action_id) const;

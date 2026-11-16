@@ -23,6 +23,8 @@ class MockPageActionModel : public PageActionModelInterface {
 
   MOCK_METHOD(actions::ActionId, GetActionId, (), (const, override));
   MOCK_METHOD(bool, GetVisible, (), (const, override));
+  MOCK_METHOD(bool, GetShouldAnimateVisibilityOut, (), (const, override));
+  MOCK_METHOD(bool, GetShouldAnimateVisibilityIn, (), (const, override));
   MOCK_METHOD(bool, IsChipShowing, (), (const, override));
   MOCK_METHOD(bool, ShouldShowSuggestionChip, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnimateChipOut, (), (const, override));
@@ -96,6 +98,10 @@ class MockPageActionModel : public PageActionModelInterface {
               (PageActionPassKey, bool requested),
               (override));
   MOCK_METHOD(void,
+              SetVisibilityConfig,
+              (PageActionPassKey, const PageActionVisibilityConfig& config),
+              (override));
+  MOCK_METHOD(void,
               SetShouldShowSuggestionChip,
               (PageActionPassKey, bool show),
               (override));
@@ -131,6 +137,7 @@ class MockPageActionModel : public PageActionModelInterface {
               (PageActionPassKey, bool is_chip_showing),
               (override));
   MOCK_METHOD(void, SetDidAnimateImage, (PageActionPassKey), (override));
+  MOCK_METHOD(void, SetDidAnimateVisibility, (PageActionPassKey), (override));
   MOCK_METHOD(void,
               SetIsAnchoredMessageShowing,
               (PageActionPassKey, bool is_anchored_message_showing),

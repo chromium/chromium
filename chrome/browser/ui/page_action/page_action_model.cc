@@ -38,6 +38,20 @@ void PageActionModel::SetShowRequested(PageActionPassKey, bool requested) {
   NotifyChange(Property::kShowRequested);
 }
 
+void PageActionModel::SetVisibilityConfig(
+    PageActionPassKey,
+    const PageActionVisibilityConfig& config) {
+  // Re-showing an already-visible action must not replay its enter animation.
+  if (GetVisible()) {
+    did_animate_visibility_ = true;
+  }
+  if (should_animate_visibility_ == config.should_animate) {
+    return;
+  }
+  should_animate_visibility_ = config.should_animate;
+  NotifyChange(Property::kVisibilityConfig);
+}
+
 void PageActionModel::SetShouldShowSuggestionChip(PageActionPassKey,
                                                   bool show) {
   did_show_chip_ = false;
@@ -51,11 +65,11 @@ void PageActionModel::SetShouldShowSuggestionChip(PageActionPassKey,
 void PageActionModel::SetSuggestionChipConfig(
     PageActionPassKey,
     const SuggestionChipConfig& config) {
-  if (should_animate_ == config.should_animate &&
+  if (should_animate_chip_ == config.should_animate &&
       should_announce_chip_ == config.should_announce_chip) {
     return;
   }
-  should_animate_ = config.should_animate;
+  should_animate_chip_ = config.should_animate;
   should_announce_chip_ = config.should_announce_chip;
   NotifyChange(Property::kSuggestionChipConfig);
 }
@@ -65,6 +79,9 @@ void PageActionModel::SetTabActive(PageActionPassKey, bool is_active) {
     return;
   }
   is_tab_active_ = is_active;
+  if (is_active && IsRequestedVisible()) {
+    did_animate_visibility_ = true;
+  }
   NotifyChange(Property::kTabActive);
 }
 
@@ -111,12 +128,24 @@ void PageActionModel::SetActionItemProperties(PageActionPassKey,
   }
 }
 
-bool PageActionModel::GetVisible() const {
-  const bool hidden_by_omnibox =
-      is_suppressed_by_omnibox_ && !is_exempt_from_omnibox_suppression_;
+bool PageActionModel::IsRequestedVisible() const {
+  return action_item_enabled_ && action_item_visible_ && show_requested_ &&
+         !has_pinned_icon_;
+}
 
-  return is_tab_active_ && !hidden_by_omnibox && action_item_enabled_ &&
-         action_item_visible_ && show_requested_ && !has_pinned_icon_;
+bool PageActionModel::GetVisible() const {
+  return is_tab_active_ && !IsAffectedByOmniboxSuppression() &&
+         IsRequestedVisible();
+}
+
+bool PageActionModel::GetShouldAnimateVisibilityOut() const {
+  return features::IsPageActionsElevatedToolbarEnabled() && is_tab_active_ &&
+         should_animate_visibility_ && !IsAffectedByOmniboxSuppression();
+}
+
+bool PageActionModel::GetShouldAnimateVisibilityIn() const {
+  return features::IsPageActionsElevatedToolbarEnabled() &&
+         should_animate_visibility_ && !did_animate_visibility_;
 }
 
 bool PageActionModel::IsChipShowing() const {
@@ -128,12 +157,12 @@ bool PageActionModel::ShouldShowSuggestionChip() const {
 }
 
 bool PageActionModel::GetShouldAnimateChipOut() const {
-  return should_animate_;
+  return should_animate_chip_;
 }
 
 bool PageActionModel::GetShouldAnimateChipIn() const {
   // Only animate in if the chip was not shown yet.
-  return should_animate_ && !did_show_chip_;
+  return should_animate_chip_ && !did_show_chip_;
 }
 
 bool PageActionModel::GetShouldAnimateImage() const {
@@ -318,6 +347,12 @@ void PageActionModel::RemoveObserver(PageActionModelObserver* observer) {
 }
 
 void PageActionModel::NotifyChange(Property property) {
+  // Re-arm the enter animation once the action is hidden for a non-temporary
+  // reason (ignoring tab switches and omnibox suppression).
+  if (!IsRequestedVisible()) {
+    did_animate_visibility_ = false;
+  }
+
   // Crash if the same property is modified again during notification, as this
   // would cause an infinite loop (A notifies -> observer sets A -> notifies
   // -> ...).
@@ -407,6 +442,10 @@ void PageActionModel::SetIsAnchoredMessageShowing(
 
 void PageActionModel::SetDidAnimateImage(PageActionPassKey pass_key) {
   did_animate_image_ = true;
+}
+
+void PageActionModel::SetDidAnimateVisibility(PageActionPassKey pass_key) {
+  did_animate_visibility_ = true;
 }
 
 const std::u16string& PageActionModel::GetAnchoredMessageText() const {

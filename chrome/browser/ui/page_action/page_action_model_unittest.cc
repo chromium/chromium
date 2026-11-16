@@ -146,6 +146,117 @@ TEST_F(PageActionModelTest, ShouldAnimateChip) {
   EXPECT_EQ(model_.GetShouldAnimateChipIn(), false);
 }
 
+TEST_F(PageActionModelTest, ShouldAnimateVisibility) {
+  {
+    base::test::ScopedFeatureList disabled_feature;
+    disabled_feature.InitAndDisableFeature(
+        features::kPageActionsElevatedToolbar);
+    model_.SetActionItemProperties(
+        PassKey(),
+        ActionItem::Builder().SetEnabled(true).SetVisible(true).Build().get());
+    model_.SetTabActive(PassKey(), true);
+    model_.SetShowRequested(PassKey(), true);
+    EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+    EXPECT_FALSE(model_.GetShouldAnimateVisibilityOut());
+    model_.SetShowRequested(PassKey(), false);
+    model_.SetTabActive(PassKey(), false);
+  }
+
+  base::test::ScopedFeatureList enabled_feature{
+      features::kPageActionsElevatedToolbar};
+  EXPECT_TRUE(model_.GetShouldAnimateVisibilityIn());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityOut());
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetVisibilityConfig(PassKey(), {.should_animate = false});
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityOut());
+  EXPECT_TRUE(model_.GetShouldAnimateChipIn());
+  EXPECT_TRUE(model_.GetShouldAnimateChipOut());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(0);
+  model_.SetVisibilityConfig(PassKey(), {.should_animate = false});
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  model_.SetVisibilityConfig(PassKey(), {.should_animate = true});
+  model_.SetActionItemProperties(
+      PassKey(),
+      ActionItem::Builder().SetEnabled(true).SetVisible(true).Build().get());
+  model_.SetTabActive(PassKey(), true);
+  model_.SetShowRequested(PassKey(), true);
+  ASSERT_TRUE(model_.GetVisible());
+  EXPECT_TRUE(model_.GetShouldAnimateVisibilityIn());
+
+  model_.SetDidAnimateVisibility(PassKey());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+  EXPECT_TRUE(model_.GetShouldAnimateVisibilityOut());
+
+  model_.SetOverrideText(PassKey(), kOverrideText);
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+
+  model_.SetTabActive(PassKey(), false);
+  ASSERT_FALSE(model_.GetVisible());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityOut());
+  model_.SetTabActive(PassKey(), true);
+  ASSERT_TRUE(model_.GetVisible());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+  EXPECT_TRUE(model_.GetShouldAnimateVisibilityOut());
+
+  model_.SetShowRequested(PassKey(), false);
+  ASSERT_FALSE(model_.GetVisible());
+  model_.SetShowRequested(PassKey(), true);
+  ASSERT_TRUE(model_.GetVisible());
+  EXPECT_TRUE(model_.GetShouldAnimateVisibilityIn());
+
+  model_.SetDidAnimateVisibility(PassKey());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
+  ASSERT_FALSE(model_.GetVisible());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityOut());
+  model_.SetIsSuppressedByOmnibox(PassKey(), false);
+  ASSERT_TRUE(model_.GetVisible());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+
+  model_.SetShowRequested(PassKey(), false);
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
+  model_.SetVisibilityConfig(PassKey(), {.should_animate = true});
+  model_.SetShowRequested(PassKey(), true);
+  model_.SetVisibilityConfig(PassKey(), {.should_animate = true});
+  model_.SetShowRequested(PassKey(), true);
+  ASSERT_FALSE(model_.GetVisible());
+  model_.SetIsSuppressedByOmnibox(PassKey(), false);
+  ASSERT_TRUE(model_.GetVisible());
+  EXPECT_TRUE(model_.GetShouldAnimateVisibilityIn());
+  model_.SetDidAnimateVisibility(PassKey());
+
+  model_.SetShowRequested(PassKey(), false);
+  model_.SetTabActive(PassKey(), false);
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
+  model_.SetShowRequested(PassKey(), true);
+  model_.SetTabActive(PassKey(), true);
+  model_.SetIsSuppressedByOmnibox(PassKey(), false);
+  ASSERT_TRUE(model_.GetVisible());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+
+  model_.SetShowRequested(PassKey(), false);
+  model_.SetTabActive(PassKey(), false);
+  model_.SetShowRequested(PassKey(), true);
+  model_.SetTabActive(PassKey(), true);
+  ASSERT_TRUE(model_.GetVisible());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+
+  model_.SetShowRequested(PassKey(), false);
+  model_.SetVisibilityConfig(PassKey(), {.should_animate = false});
+  model_.SetShowRequested(PassKey(), true);
+  ASSERT_TRUE(model_.GetVisible());
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+  model_.SetVisibilityConfig(PassKey(), {.should_animate = true});
+  EXPECT_FALSE(model_.GetShouldAnimateVisibilityIn());
+  EXPECT_TRUE(model_.GetShouldAnimateVisibilityOut());
+}
+
 TEST_F(PageActionModelTest, ShouldAnimateIn) {
   model_.SetSuggestionChipConfig(PassKey(), {.should_animate = true});
   model_.SetShouldShowSuggestionChip(PassKey(), true);

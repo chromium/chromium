@@ -20,6 +20,10 @@ class MockPageActionController : public PageActionController {
   ~MockPageActionController() override;
 
   MOCK_METHOD(void, Show, (actions::ActionId), (override));
+  void Show(actions::ActionId action_id,
+            const PageActionVisibilityConfig& config) override {
+    Show(action_id);
+  }
   MOCK_METHOD(void, Hide, (actions::ActionId), (override));
   void ShowSuggestionChip(actions::ActionId action_id) override {
     ShowSuggestionChip(action_id, SuggestionChipConfig());

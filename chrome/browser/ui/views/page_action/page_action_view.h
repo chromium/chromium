@@ -103,6 +103,8 @@ class PageActionView : public IconLabelBubbleView,
       IsChipShowingChangedCallback callback) override;
   void SetImageAnimationStartedCallback(
       ImageAnimationStartedCallback callback) override;
+  void SetVisibilityAnimationStartedCallback(
+      VisibilityAnimationStartedCallback callback) override;
   void SetAnchoredMessageCloseCallback(
       base::RepeatingClosure callback) override;
   void SetAnchoredMessageExpandCallback(
@@ -237,6 +239,11 @@ class PageActionView : public IconLabelBubbleView,
 
   // Client-provided callbacks for when image animation starts.
   ImageAnimationStartedCallback image_animation_started_callback_ =
+      base::DoNothing();
+
+  // Client-provided callback run when a pending visibility entrance is
+  // consumed, whether or not the view animates it.
+  VisibilityAnimationStartedCallback visibility_animation_started_callback_ =
       base::DoNothing();
 
   // The last "chip showing" state that was sent for a notification.

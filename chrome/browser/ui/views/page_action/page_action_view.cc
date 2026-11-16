@@ -144,6 +144,11 @@ void PageActionView::SetImageAnimationStartedCallback(
   image_animation_started_callback_ = std::move(callback);
 }
 
+void PageActionView::SetVisibilityAnimationStartedCallback(
+    VisibilityAnimationStartedCallback callback) {
+  visibility_animation_started_callback_ = std::move(callback);
+}
+
 void PageActionView::SetAnchoredMessageCloseCallback(
     base::RepeatingClosure callback) {
   anchored_message_close_callback_ = std::move(callback);
@@ -195,6 +200,7 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
   } else {
     SetIsChipShowingChangedCallback(base::DoNothing());
     SetImageAnimationStartedCallback(base::DoNothing());
+    SetVisibilityAnimationStartedCallback(base::DoNothing());
     SetAnchoredMessageCloseCallback(base::DoNothing());
     SetClickCallback(base::DoNothing());
     SetAnchoredMessageExpandCallback(base::DoNothing());

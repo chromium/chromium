@@ -80,6 +80,10 @@ class TestDelegate : public PageActionController::Delegate {
       IsChipShowingChangedCallback callback) override {}
   void SetImageAnimationStartedCallback(
       ImageAnimationStartedCallback callback) override {}
+  void SetVisibilityAnimationStartedCallback(
+      VisibilityAnimationStartedCallback callback) override {
+    visibility_animation_started_callback_ = std::move(callback);
+  }
   void SetAnchoredMessageCloseCallback(
       base::RepeatingClosure callback) override {}
   void SetAnchoredMessageExpandCallback(
@@ -102,6 +106,7 @@ class TestDelegate : public PageActionController::Delegate {
   base::RepeatingClosure expand_callback_;
   base::RepeatingClosure collapse_callback_;
   base::RepeatingClosure downgrade_callback_;
+  base::RepeatingClosure visibility_animation_started_callback_;
   base::RepeatingCallback<void(PageActionTrigger)> click_callback_;
 };
 
@@ -639,6 +644,47 @@ TEST_F(PageActionControllerMockModelTest, TabDeactivation) {
   EXPECT_CALL(models().Get(kFirstActionItemId), SetTabActive(_, false))
       .Times(1);
   tab_interface().Deactivate();
+}
+
+TEST_F(PageActionControllerMockModelTest, ShowWithVisibilityConfig) {
+  {
+    base::test::ScopedFeatureList disabled_feature;
+    disabled_feature.InitAndDisableFeature(
+        features::kPageActionsElevatedToolbar);
+    EXPECT_CALL(models().Get(kFirstActionItemId), SetVisibilityConfig).Times(0);
+    EXPECT_CALL(models().Get(kFirstActionItemId), SetShowRequested(_, true))
+        .Times(1);
+    controller().Show(kFirstActionItemId);
+  }
+
+  base::test::ScopedFeatureList enabled_feature{
+      features::kPageActionsElevatedToolbar};
+  testing::InSequence seq;
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetVisibilityConfig(
+                  _, PageActionVisibilityConfig{.should_animate = true}))
+      .Times(1);
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetShowRequested(_, true))
+      .Times(1);
+  controller().Show(kFirstActionItemId);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetVisibilityConfig(
+                  _, PageActionVisibilityConfig{.should_animate = false}))
+      .Times(1);
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetShowRequested(_, true))
+      .Times(1);
+  controller().Show(kFirstActionItemId, {.should_animate = false});
+}
+
+TEST_F(PageActionControllerMockModelTest, VisibilityAnimationStartedCallback) {
+  TestDelegate delegate;
+  controller().RegisterCallbacks(PageActionPassKey::PassKeyForTesting(),
+                                 kFirstActionItemId, &delegate);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetDidAnimateVisibility(_))
+      .Times(1);
+  delegate.visibility_animation_started_callback_.Run();
 }
 
 TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {

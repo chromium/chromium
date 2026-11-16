@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/page_action/page_action_model.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/tabs/public/tab_interface.h"
@@ -165,8 +166,16 @@ void PageActionControllerImpl::Register(
 }
 
 void PageActionControllerImpl::Show(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowRequested(PageActionPassKey(),
-                                                  /*requested=*/true);
+  Show(action_id, PageActionVisibilityConfig());
+}
+
+void PageActionControllerImpl::Show(actions::ActionId action_id,
+                                    const PageActionVisibilityConfig& config) {
+  PageActionModelInterface& model = FindPageActionModel(action_id);
+  if (features::IsPageActionsElevatedToolbarEnabled()) {
+    model.SetVisibilityConfig(PageActionPassKey(), config);
+  }
+  model.SetShowRequested(PageActionPassKey(), /*requested=*/true);
 }
 
 void PageActionControllerImpl::Hide(actions::ActionId action_id) {
@@ -620,6 +629,9 @@ void PageActionControllerImpl::RegisterCallbacks(PageActionPassKey,
   delegate->SetImageAnimationStartedCallback(
       base::BindRepeating(&PageActionControllerImpl::OnImageAnimationStarted,
                           weak_factory_.GetWeakPtr(), action_id));
+  delegate->SetVisibilityAnimationStartedCallback(base::BindRepeating(
+      &PageActionControllerImpl::OnVisibilityAnimationStarted,
+      weak_factory_.GetWeakPtr(), action_id));
   delegate->SetAnchoredMessageCloseCallback(
       base::BindRepeating(&PageActionControllerImpl::HideAnchoredMessage,
                           weak_factory_.GetWeakPtr(), action_id));
@@ -669,6 +681,11 @@ void PageActionControllerImpl::OnIsChipShowingChanged(
 void PageActionControllerImpl::OnImageAnimationStarted(
     actions::ActionId action_id) {
   FindPageActionModel(action_id).SetDidAnimateImage(PageActionPassKey());
+}
+
+void PageActionControllerImpl::OnVisibilityAnimationStarted(
+    actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetDidAnimateVisibility(PageActionPassKey());
 }
 
 std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config) {
