@@ -301,6 +301,9 @@ export class OmniboxEverywhereComposeboxElement extends
   }
 
   override computeShowDropdown(): boolean {
+    if (this.isPendingContextUpload) {
+      return false;
+    }
     return this.isContextMenuOpen || super.computeShowDropdown();
   }
 
@@ -315,6 +318,10 @@ export class OmniboxEverywhereComposeboxElement extends
 
   override addFileContextFromBrowser(
       uuid: UnguessableToken, fileInfo: SelectedFileInfo) {
+    // When a screenshot or file chooser upload finishes, exit the collapsed
+    // `isPendingContextUpload` pill state and trigger the entry glow animation
+    // plus fresh tab/autocomplete suggestions that were suppressed while the
+    // native picker was open.
     const wasPendingContextUpload = this.isPendingContextUpload;
     this.isPendingContextUpload = false;
     super.addFileContextFromBrowser(uuid, fileInfo);

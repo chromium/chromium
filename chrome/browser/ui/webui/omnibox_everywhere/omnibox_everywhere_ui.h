@@ -31,10 +31,10 @@ class ContextualSearchboxHandler;
 class MostVisitedHandler;
 class MostVisitedPrefObserver;
 class OmniboxContextMenu;
+class OmniboxEverywhereFileSelector;
 class OmniboxEverywhereHandler;
 class OmniboxEverywherePageHandler;
 class OmniboxEverywhereUI;
-class OmniboxPopupFileSelector;
 class Profile;
 
 namespace contextual_search {
@@ -264,6 +264,7 @@ class OmniboxEverywhereUI
       base::WeakPtr<ContextualSearchboxScreenshareController> controller);
   void OnScreenshotCaptureDone(
       const std::optional<base::UnguessableToken>& token);
+  void OnContextUploadCanceled();
   void ResetScreenshotMenu();
   void SynthesizeMouseMoveEvent();
 
@@ -303,7 +304,7 @@ class OmniboxEverywhereUI
   base::WeakPtr<ContextualSearchboxScreenshareController>
       active_screenshot_controller_;
 
-  std::unique_ptr<OmniboxPopupFileSelector> file_selector_;
+  std::unique_ptr<OmniboxEverywhereFileSelector> file_selector_;
   std::unique_ptr<OmniboxContextMenu> context_menu_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_{this};

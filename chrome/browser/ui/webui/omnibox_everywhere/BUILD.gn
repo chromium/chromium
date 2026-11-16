@@ -9,6 +9,7 @@ if (is_win || is_mac) {
     testonly = true
     sources = [
       "debug/omnibox_everywhere_debug_page_handler_unittest.cc",
+      "omnibox_everywhere_file_selector_unittest.cc",
       "omnibox_everywhere_handler_unittest.cc",
       "omnibox_everywhere_hotkey_bubble_view_unittest.cc",
     ]
@@ -46,6 +47,7 @@ if (is_win || is_mac) {
       "//ui/base",
       "//ui/color:color_headers",
       "//ui/display",
+      "//ui/shell_dialogs:test_support",
       "//ui/views",
       "//ui/views:test_support",
       "//url",
@@ -56,6 +58,7 @@ if (is_win || is_mac) {
 source_set("omnibox_everywhere") {
   sources = [
     "composebox_everywhere_handler.cc",
+    "omnibox_everywhere_file_selector.cc",
     "omnibox_everywhere_handler.cc",
     "omnibox_everywhere_hotkey_bubble_view.cc",
     "omnibox_everywhere_page_handler.cc",
@@ -63,6 +66,7 @@ source_set("omnibox_everywhere") {
   ]
   public = [
     "composebox_everywhere_handler.h",
+    "omnibox_everywhere_file_selector.h",
     "omnibox_everywhere_handler.h",
     "omnibox_everywhere_hotkey_bubble_view.h",
     "omnibox_everywhere_page_handler.h",

@@ -185,6 +185,12 @@ export class OmniboxEverywhereAppElement extends
 
   private isPersistentMode_: boolean =
       loadTimeData.getBoolean('isPersistentMode');
+  // Tracks whether the current pending context upload (screenshot capture or
+  // native file chooser) was initiated while the user was in the Searchbox
+  // (`!isComposeboxMode_`) rather than already inside the Composebox. If the
+  // user cancels the picker, this flag tells `onScreenshotCaptureCancelled` to
+  // return the view back to the Searchbox instead of leaving an empty
+  // Composebox open.
   private contextUploadOriginWasSearchbox_: boolean = false;
   private eventTracker_ = new EventTracker();
   private mostVisitedListenerId_: number|null = null;
@@ -283,10 +289,22 @@ export class OmniboxEverywhereAppElement extends
       }
     };
 
+    // Invoked when a pending screenshot capture or native file chooser is
+    // cancelled. If the upload flow started from the Searchbox (which
+    // pre-transitioned into the collapsed Composebox pill so the widget could
+    // shrink before presenting the native UI), restore the Searchbox view and
+    // focus its input; otherwise keep the existing Composebox open and restore
+    // its suggestions.
+    // TODO(b/581982262): Rename `onScreenshotCaptureCancelled` (and its mojom
+    // method) to `onContextUploadCancelled` now that it is shared with the
+    // native file chooser.
     const onScreenshotCaptureCancelled = async () => {
       this.isPendingContextUpload_ = false;
       if (this.contextUploadOriginWasSearchbox_) {
         this.contextUploadOriginWasSearchbox_ = false;
+        // TODO(b/585172152): Preserve any query text typed in the searchbox
+        // when reverting a cancelled screenshot or file upload back to the
+        // searchbox.
         this.setIsComposebox_(false);
         await this.updateComplete;
         this.searchbox?.focusInput?.();
@@ -381,31 +399,32 @@ export class OmniboxEverywhereAppElement extends
     if (this.isComposeboxMode_) {
       this.isPendingContextUpload_ = isPendingContextUpload;
       this.contextUploadOriginWasSearchbox_ = false;
-      if (this.composebox) {
-        this.composebox.isPendingContextUpload = isPendingContextUpload;
-      }
-      if (!this.composebox || !state) {
-        return;
-      }
-      for (const file of state.files ?? []) {
-        if ('tabId' in file) {
-          this.composebox.addTabContextHandleCallback(file);
-        } else if ('token' in file && 'fileInfo' in file) {
-          this.composebox.addFileContextFromBrowser(file.token, file.fileInfo);
+      if (this.composebox && state) {
+        for (const file of state.files ?? []) {
+          if ('tabId' in file) {
+            this.composebox.addTabContextHandleCallback(file);
+          } else if ('token' in file && 'fileInfo' in file) {
+            this.composebox.addFileContextFromBrowser(
+                file.token, file.fileInfo);
+          }
+        }
+        if (state.mode !== undefined && state.mode !== ToolMode.kUnspecified) {
+          this.composebox.getSearchboxHandler().setActiveToolMode(
+              state.mode, false);
+        }
+        if (state.model !== undefined &&
+            state.model !== ModelMode.kUnspecified) {
+          this.composebox.getSearchboxHandler().setActiveModelMode(
+              state.model, false);
         }
       }
-      if (state.mode !== undefined && state.mode !== ToolMode.kUnspecified) {
-        this.composebox.getSearchboxHandler().setActiveToolMode(
-            state.mode, false);
-      }
-      if (state.model !== undefined && state.model !== ModelMode.kUnspecified) {
-        this.composebox.getSearchboxHandler().setActiveModelMode(
-            state.model, false);
-      }
-      // Focus the input after a + menu action (e.g. picking a model), as
-      // entering composebox mode does below.
-      if (!isPendingContextUpload) {
-        this.composebox.focusInput();
+      if (this.composebox) {
+        this.composebox.isPendingContextUpload = isPendingContextUpload;
+        // Focus the input after a + menu action (e.g. picking a model), as
+        // entering composebox mode does below.
+        if (!isPendingContextUpload && state) {
+          this.composebox.focusInput();
+        }
       }
       return;
     }
@@ -717,7 +736,23 @@ export class OmniboxEverywhereAppElement extends
   }
 
   private onWindowBlur_() {
-    if (this.isHotkeyDropdownOpen_) {
+    // Ignore transient `window` blur events while a native modal UI (the hotkey
+    // dropdown, screenshot picker, or native file chooser sheet) temporarily
+    // takes OS window focus away from the Omnibox Everywhere WebContents.
+    // Otherwise, in persistent mode, `this.isActive_ = false` would shrink the
+    // widget width (`smallLoomnibox_ = true`) while the native sheet/picker is
+    // anchored to it.
+    //
+    // Once `<omnibox-everywhere-composebox>` is mounted, read its live
+    // `composebox.isPendingContextUpload` property rather than `app.ts`'s
+    // initial `this.isPendingContextUpload_` field: when a file upload
+    // completes (`addFileContextFromBrowser`) or the user types in the input
+    // (`onInputInput`), `composebox.ts` clears its own `isPendingContextUpload`
+    // flag directly without notifying `app.ts`, so consulting `this.composebox`
+    // ensures subsequent real window blurs deactivate the app normally.
+    if (this.isHotkeyDropdownOpen_ ||
+        (this.composebox ? this.composebox.isPendingContextUpload :
+                           this.isPendingContextUpload_)) {
       return;
     }
     if (this.isPersistentMode_) {
