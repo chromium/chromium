@@ -223,36 +223,36 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
   CHECK(raster_context_provider_);
   raster_context_provider_->AddObserver(this);
 
-  if (auto* sii = context_provider_wrapper_->ContextProvider()
-                      .SharedImageInterface()) {
-    // These SharedImages are both read and written by the raster interface and
-    // can be put into AcceleratedStaticBitmapImages that are copied into GL
-    // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
-    gpu::SharedImageUsageSet shared_image_usage_flags =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-        gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-    // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
-    if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
-      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-    }
+  auto* sii =
+      context_provider_wrapper_->ContextProvider().SharedImageInterface();
+  CHECK(sii);
 
-    gpu::ImageInfo image_info(
-        info_.size, info_.format, shared_image_usage_flags, info_.color_space,
-        kTopLeft_GrSurfaceOrigin, info_.alpha_type,
-        /*buffer_usage=*/std::nullopt, /*is_software=*/false);
-
-    std::optional<base::TimeDelta> expiration_time =
-        (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-            ? std::make_optional(kUnusedResourceExpirationTime)
-            : std::nullopt;
-
-    image_pool_ = gpu::SharedImagePool<gpu::ClientImage>::Create(
-        image_info, sii, "CanvasResourceRaster", kMaxRecycledImages,
-        expiration_time);
-    current_image_ = image_pool_->GetImage();
+  // These SharedImages are both read and written by the raster interface and
+  // can be put into AcceleratedStaticBitmapImages that are copied into GL
+  // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
+  gpu::SharedImageUsageSet shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
+  if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
+    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
+
+  gpu::ImageInfo image_info(
+      info_.size, info_.format, shared_image_usage_flags, info_.color_space,
+      kTopLeft_GrSurfaceOrigin, info_.alpha_type,
+      /*buffer_usage=*/std::nullopt, /*is_software=*/false);
+
+  std::optional<base::TimeDelta> expiration_time =
+      (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
+          ? std::make_optional(kUnusedResourceExpirationTime)
+          : std::nullopt;
+
+  image_pool_ = gpu::SharedImagePool<gpu::ClientImage>::Create(
+      image_info, sii, "CanvasResourceRaster", kMaxRecycledImages,
+      expiration_time);
+  current_image_ = image_pool_->GetImage();
 }
 
 VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
@@ -260,9 +260,7 @@ VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
 }
 
 void VideoFrameAcceleratedSnapshotPool::OnContextLost() {
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
+  image_pool_->Clear();
 }
 
 // static
@@ -280,7 +278,7 @@ void VideoFrameAcceleratedSnapshotPool::OnImageReleased(
   // `image_pool_` for reuse. (If `image` is still `pool->current_image_`,
   // `pool->current_image_` holds a second reference and will be reused directly
   // on the next draw.)
-  if (image->HasOneRef() && pool && pool->image_pool_) {
+  if (image->HasOneRef() && pool) {
     pool->image_pool_->ReleaseImage(std::move(image));
   }
 }
