@@ -194,8 +194,7 @@ class TestMessageReceiver : public blink::WebMessagePort::MessageReceiver {
  private:
   bool OnMessage(blink::WebMessagePort::Message message) override {
     std::string message_text;
-    if (!base::UTF16ToUTF8(message.data.data(), message.data.size(),
-                           &message_text)) {
+    if (!base::UTF16ToUTF8(message.data, &message_text)) {
       return false;
     }
 
