@@ -345,58 +345,47 @@ TEST_F(ComposeboxInputStateManagerTest, ToolDisabled_ServerSideEnabled) {
               testing::Contains(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
 }
 
-// Tests that onItemsUpdated correctly updates the tool mode in image generation
-// mode.
-TEST_F(ComposeboxInputStateManagerTest, OnItemsUpdated_ImageGenerationMode) {
+// Tests that `onItemsUpdated` keeps `TOOL_MODE_IMAGE_GEN` active when attaching
+// and removing an image in image generation mode.
+TEST_F(ComposeboxInputStateManagerTest,
+       OnItemsUpdatedInImageGenerationModeKeepsImageGenToolActive) {
   EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
       .WillRepeatedly(testing::Return(true));
-
   omnibox::SearchboxConfig config;
-  config.mutable_rule_set()->add_allowed_tools(
-      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  config.mutable_rule_set();
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  tool_config->mutable_rule()->set_allow_all_input_types(true);
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&config));
-  if (aim_eligibility_callback_) {
-    aim_eligibility_callback_.Run();
-  }
-
-  // Set active mode to image generation.
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
   mode_holder_.mode = ComposeboxMode::kImageGeneration;
-
-  // Initially no items, should be TOOL_MODE_IMAGE_GEN.
-  EXPECT_EQ(manager_.inputState->active_tool,
+  ASSERT_TRUE(manager_.inputState.has_value());
+  ASSERT_EQ(manager_.inputState->active_tool,
             omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
 
-  // Add an image to the collection.
-  ComposeboxInputItemCollection* collection =
+  ComposeboxInputItemCollection* image_collection =
       [[ComposeboxInputItemCollection alloc] init];
-  [collection
+  [image_collection
       addItem:[[ComposeboxInputItem alloc]
                   initWithComposeboxInputItemType:
                       ComposeboxInputItemType::kComposeboxInputItemTypeImage
                                            source:ComposeboxInputItemSource::
                                                       kGalleryPicker]];
-
-  manager_.items = collection;
-
-  // Notify items updated.
+  manager_.items = image_collection;
   [manager_ onItemsUpdated];
 
-  // Should now be TOOL_MODE_IMAGE_GEN_UPLOAD.
+  ASSERT_TRUE(manager_.inputState.has_value());
   EXPECT_EQ(manager_.inputState->active_tool,
-            omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+            omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
 
-  // Remove items.
-  ComposeboxInputItemCollection* emptyCollection =
+  ComposeboxInputItemCollection* empty_collection =
       [[ComposeboxInputItemCollection alloc] init];
-  manager_.items = emptyCollection;
-
-  // Notify items updated.
+  manager_.items = empty_collection;
   [manager_ onItemsUpdated];
 
-  // Should fallback to TOOL_MODE_IMAGE_GEN.
+  ASSERT_TRUE(manager_.inputState.has_value());
   EXPECT_EQ(manager_.inputState->active_tool,
             omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
 }

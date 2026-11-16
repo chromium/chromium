@@ -566,8 +566,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                               bool add_tool_rule = true) {
     if (createImagesEligible) {
       SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN, add_tool_rule);
-      SetToolAllowed(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD,
-                     add_tool_rule);
     }
 
     ForwardSearchboxConfig();
