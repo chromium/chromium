@@ -84,7 +84,9 @@ PrintJobWorkerOop::PrintJobWorkerOop(
       print_from_system_dialog_(print_from_system_dialog) {}
 
 PrintJobWorkerOop::~PrintJobWorkerOop() {
-  CHECK(!service_manager_client_id_.has_value(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/586019434): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!service_manager_client_id_.has_value());
 }
 
 void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
