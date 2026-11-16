@@ -1,3 +1,11 @@
+Include <stdlib.h> in RegsInfo.h
+
+RegsInfo.h calls abort() without including <stdlib.h>. Android builds
+fail without it (first seen on android-x86-rel, crbug.com/376278210):
+  RegsInfo.h:46:7: error: use of undeclared identifier 'abort'
+
+Chromium commit 215bddf in libunwindstack.git.
+
 diff --git a/src/libunwindstack/RegsInfo.h b/src/libunwindstack/RegsInfo.h
 index 28b297e..d6f495b 100644
 --- a/src/libunwindstack/RegsInfo.h

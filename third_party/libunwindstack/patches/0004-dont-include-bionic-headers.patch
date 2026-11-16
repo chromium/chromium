@@ -1,3 +1,11 @@
+Use <bionic/mte.h> and <bionic/pac.h> only outside the NDK
+
+NDK builds define __BIONIC__, but the NDK sysroot has no bionic/
+headers, so guard them and their uses in MemoryMte.cpp and
+RegsArm64.cpp with !defined(__ANDROID_NDK__).
+
+Chromium commit 53d2d81 in libunwindstack.git.
+
 diff --git a/src/libunwindstack/MemoryMte.cpp b/src/libunwindstack/MemoryMte.cpp
 index 3841744..681aea6 100644
 --- a/src/libunwindstack/MemoryMte.cpp

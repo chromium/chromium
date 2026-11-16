@@ -1,3 +1,9 @@
+Remove an extra semicolon in Unwinder.h
+
+Chromium builds with -Wextra-semi (build/config/compiler/BUILD.gn).
+
+Chromium commit 3796f6e in libunwindstack.git.
+
 diff --git a/src/libunwindstack/include/unwindstack/Unwinder.h b/src/libunwindstack/include/unwindstack/Unwinder.h
 index d78da5c..91fd1d5 100644
 --- a/src/libunwindstack/include/unwindstack/Unwinder.h

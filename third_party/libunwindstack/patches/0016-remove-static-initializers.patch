@@ -1,3 +1,13 @@
+Remove static initializers from DexFile
+
+Make DexFile's static cache and its lock function-local statics that
+are never destroyed. Chromium's android-binary-size check fails on new
+static initializers, which blocked rolls (crbug.com/375463618).
+
+Chromium commits 6c22811 and d1e3895 in libunwindstack.git. The
+dex_file_loader and mem_map part of the same change is
+art/patches/0016.
+
 diff --git a/src/libunwindstack/DexFile.cpp b/src/libunwindstack/DexFile.cpp
 index 0bb069f..c187315 100644
 --- a/src/libunwindstack/DexFile.cpp

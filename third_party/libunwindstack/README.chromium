@@ -1,8 +1,8 @@
 Name: libunwindstack
 URL: https://android.googlesource.com/platform/system/unwinding
-Revision: 0928ad0d25e4af07c8be5ab06d0ca584f9f4ceb5
 Date: 2023-01-29
 Version: N/A
+Revision: 9ebb4981c2b9ba73018702531ded8de9c169958a
 License: Apache-2.0, BSD-2-Clause
 License File: LICENSE
 Shipped: yes
@@ -97,50 +97,22 @@ Steps to update `libunwindstack`:
    build, so step 1 cannot land on its own.
 
 
-Local modifications:
+Local Modifications:
 The libbase and ART patches are in libbase/patches/ and art/patches/.
-
-- `0002-create-local-process-memory.patch:`:
-
-  Exposes an interface to create and return a `Memory` subclass for reading
-  local process memory, as a `unique_ptr`.
-
-- `0004-dont-include-bionic-headers.patch`:
-
-  Some bionic headers are not part of NDK even though build flag `__BIONIC__`
-  is defined when building with NDK. Adds extra check of
-  `!defined(__ANDROID_NDK__)` to not include those headers.
-
-- `0005-stub-out-logging-libunwindstack.patch`:
-
-  Stubs out `libunwindstack` log methods. It helps to suppress log statements
-  and avoid `liblog` dependency which the upstream `libunwindstack` depends on.
-
-- `0006-remove-extra-semicolon.patch`:
-
-  Chromium builds with `-Wextra-semi`, so redundant semicolons need to be
-  removed to build successfully.
-
-- `0013-use-third-party-rustc-demangle.patch`:
-
-  Correctly uses the version of `rustc_demangle` currently available in
-  Chromium's `third_party`.
-
-- `0016-remove-static-initializers.patch`:
-
-  Remove static initializers from DexFile (art/patches/0016 does
-  dex_file_loader and mem_map).
-
-- `0017-add-type-cast.patch`:
-
-  Add type cast and fix increment.
-
-- `0018-handle-process-vm-readv-availability.patch`:
-
-  Handle the case where process_vm_readv is not available, given it is gated
-  on __ANDROID_API__ >= 23 in
-  third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/uio.h
-
-- `0019-add-missing-include-in-regsinfo-header.patch`:
-
-  Add a missing include for abort() in RegsInfo.h.
+- 0002-create-local-process-memory.patch: add
+  Memory::CreateLocalProcessMemory().
+- 0004-dont-include-bionic-headers.patch: no <bionic/mte.h> or
+  <bionic/pac.h> in NDK builds.
+- 0005-stub-out-logging-libunwindstack.patch: no-op log functions, so
+  no liblog.
+- 0006-remove-extra-semicolon.patch: no extra semicolon in Unwinder.h.
+- 0013-use-third-party-rustc-demangle.patch: use Chromium's
+  rustc_demangle() C API.
+- 0016-remove-static-initializers.patch: no static initializers in
+  DexFile.
+- 0017-add-type-cast.patch: fix the DwarfSection postfix ++/-- step and
+  cast MapInfo flags.
+- 0018-handle-process-vm-readv-availability.patch: no
+  process_vm_readv() below Android API 23.
+- 0019-add-missing-include-in-regsinfo-header.patch: include
+  <stdlib.h> in RegsInfo.h.

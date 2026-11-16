@@ -1,3 +1,12 @@
+Use Chromium's rustc_demangle() C API in Demangle.cpp
+
+The rustc-demangle C API in Chromium's third_party/rust is
+int rustc_demangle(const char*, char*, size_t), not the upstream form
+that returns a malloc()ed string. Demangle into a 1 MiB buffer, the
+size Breakpad uses.
+
+Chromium commit 8d71305 in libunwindstack.git.
+
 diff --git a/src/libunwindstack/Demangle.cpp b/src/libunwindstack/Demangle.cpp
 index 8d0bfd6..b2fedac 100644
 --- a/src/libunwindstack/Demangle.cpp

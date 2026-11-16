@@ -1,3 +1,22 @@
+Fix DwarfSection's postfix ++/-- and cast MapInfo flags
+
+The compiler passes 0 to a postfix operator's int parameter, so
+DwarfSection's iterator operator++(int) and operator--(int), which used
+it as the step, did not move; make them add and subtract 1. Cast
+MapInfo's uint64_t flags argument to its uint16_t flags_ explicitly.
+Both failed under //build/config/compiler:prevent_unsafe_narrowing
+while a draft of https://crrev.com/c/5937826 built the unwinder in
+base (crbug.com/375463618):
+  DwarfSection.h:70:17: error: implicit conversion changes signedness:
+  'int' to 'size_t' (aka 'unsigned long') [-Werror,-Wsign-conversion]
+  MapInfo.h:45:16: error: implicit conversion loses integer precision:
+  'uint64_t' (aka 'unsigned long') to 'uint16_t' (aka 'unsigned short')
+  [-Werror,-Wimplicit-int-conversion]
+base:native_unwinder_android, which compiles these headers today, does
+not use that config.
+
+Chromium commit 0c3e395 in libunwindstack.git.
+
 diff --git a/src/libunwindstack/include/unwindstack/DwarfSection.h b/src/libunwindstack/include/unwindstack/DwarfSection.h
 index 24931b8..83ee955 100644
 --- a/src/libunwindstack/include/unwindstack/DwarfSection.h
@@ -22,7 +41,7 @@ index 24931b8..83ee955 100644
 +      --index_;
        return *this;
      }
-
+ 
 diff --git a/src/libunwindstack/include/unwindstack/MapInfo.h b/src/libunwindstack/include/unwindstack/MapInfo.h
 index 9f025ff..61eb548 100644
 --- a/src/libunwindstack/include/unwindstack/MapInfo.h
@@ -44,3 +63,4 @@ index 9f025ff..61eb548 100644
 +        flags_(static_cast<uint16_t>(flags)),
          name_(name),
          elf_fields_(nullptr) {}
+ 

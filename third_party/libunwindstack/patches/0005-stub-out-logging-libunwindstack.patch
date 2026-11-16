@@ -1,3 +1,11 @@
+Make the log functions in LogAndroid.cpp no-ops
+
+This suppresses log statements and avoids the liblog dependency
+(<log/log.h>, <async_safe/log.h>) that upstream libunwindstack has.
+
+Chromium commits 53d2d81 (#if 0 the bodies) and 8d71305 (empty bodies,
+includes deleted) in libunwindstack.git.
+
 diff --git a/src/libunwindstack/LogAndroid.cpp b/src/libunwindstack/LogAndroid.cpp
 index 6fb613f..b88b8d9 100644
 --- a/src/libunwindstack/LogAndroid.cpp

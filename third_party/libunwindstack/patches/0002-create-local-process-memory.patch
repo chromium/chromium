@@ -1,3 +1,11 @@
+Add Memory::CreateLocalProcessMemory()
+
+MemoryLocal moved into a private header upstream. Expose a function
+that creates one as a std::unique_ptr<Memory>, for
+base/profiler/native_unwinder_android.cc.
+
+Chromium commit 11659d4 in libunwindstack.git.
+
 diff --git a/src/libunwindstack/Memory.cpp b/src/libunwindstack/Memory.cpp
 index 0594a7a..ff78df7 100644
 --- a/src/libunwindstack/Memory.cpp

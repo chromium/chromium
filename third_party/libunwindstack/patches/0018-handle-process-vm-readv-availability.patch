@@ -1,3 +1,14 @@
+Call process_vm_readv() only from Android API 23
+
+With the NDK's default strict availability, sys/uio.h declares
+process_vm_readv() only for API level 23 and up; below that, read
+nothing. Chromium builds with __ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__
+(build/config/android/BUILD.gn), which declares it at every level, and
+config.gni asserts an API level of at least 23, so the #else branch is
+not compiled in Chromium today.
+
+Chromium commit 8f9ed31 in libunwindstack.git.
+
 diff --git a/src/libunwindstack/Memory.cpp b/src/libunwindstack/Memory.cpp
 index ff78df7..6f3ac27 100644
 --- a/src/libunwindstack/Memory.cpp
