@@ -161,13 +161,15 @@ std::string GetSubsegmentKey(const std::string& segmentation_key);
 const char kLegacyNegativeLabel[] = "Other";
 
 // Labels for adaptive toolbar model.
-const char kAdaptiveToolbarModelLabelNewTab[] = "NewTab";
-const char kAdaptiveToolbarModelLabelShare[] = "Share";
-const char kAdaptiveToolbarModelLabelVoice[] = "Voice";
-const char kAdaptiveToolbarModelLabelTranslate[] = "Translate";
-const char kAdaptiveToolbarModelLabelAddToBookmarks[] = "AddToBookmarks";
-const char kAdaptiveToolbarModelLabelReadAloud[] = "ReadAloud";
-const char kAdaptiveToolbarModelLabelOpenInBrowser[] = "OpenInBrowser";
+inline constexpr char kAdaptiveToolbarModelLabelNewTab[] = "NewTab";
+inline constexpr char kAdaptiveToolbarModelLabelShare[] = "Share";
+inline constexpr char kAdaptiveToolbarModelLabelVoice[] = "Voice";
+inline constexpr char kAdaptiveToolbarModelLabelTranslate[] = "Translate";
+inline constexpr char kAdaptiveToolbarModelLabelAddToBookmarks[] =
+    "AddToBookmarks";
+inline constexpr char kAdaptiveToolbarModelLabelReadAloud[] = "ReadAloud";
+inline constexpr char kAdaptiveToolbarModelLabelOpenInBrowser[] =
+    "OpenInBrowser";
 
 // Labels for contextual page actions model.
 const char kContextualPageActionModelLabelDiscounts[] = "discounts";
