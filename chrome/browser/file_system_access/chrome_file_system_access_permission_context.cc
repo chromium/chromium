@@ -750,6 +750,14 @@ GenerateBlockPaths(bool should_normalize_file_path) {
   return block_path_rules;
 }
 
+// Match case aliases conservatively when revoking grants, as for removals.
+// This may also revoke a distinct case-variant path on a case-sensitive volume.
+bool IsSamePathIgnoreCase(const base::FilePath& first,
+                          const base::FilePath& second) {
+  return std::ranges::equal(first.GetComponents(), second.GetComponents(),
+                            base::FilePath::CompareEqualIgnoreCase);
+}
+
 // Returns true if `child_components` is the same as or a descendant of
 // `parent_components`, ignoring case differences.
 bool IsPathOrDescendantIgnoreCase(
@@ -1618,8 +1626,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   // Updates the in-memory permission grant for the `new_path` in the `grants`
   // map using the same grant from the `old_path`, and removes the grant entry
   // for the `old_path`.
-  // If `allow_overwrite` is true, this will replace any pre-existing grant at
-  // `new_path`.
+  // If `allow_overwrite` is true, revoke existing destination grants using
+  // case-insensitive path matching, except the source grant on case-only moves.
   static void UpdateGrantPath(
       std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>&
           grants,
@@ -1627,58 +1635,38 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       const content::PathInfo& new_path,
       bool allow_overwrite) {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-    auto old_path_it =
-        std::ranges::find_if(grants, [&old_path](const auto& entry) {
-          return entry.first == old_path.path;
-        });
+    auto old_path_it = grants.find(old_path.path);
+    scoped_refptr<PermissionGrantImpl> grant_to_move =
+        old_path_it == grants.end() ? nullptr : old_path_it->second.get();
 
-    if (old_path_it == grants.end()) {
-      // There must be an entry for an ancestor of this entry. Nothing to do
-      // here.
-      //
+    if (allow_overwrite) {
+      // Revoke every spelling of the destination, even if the source grant is
+      // inherited from an ancestor. Keep the source itself for case-only moves.
+      // Hold the removed grants alive and finish iterating before notifying
+      // observers, which can release other grants in the map.
+      std::vector<scoped_refptr<PermissionGrantImpl>> grants_to_revoke;
+      std::erase_if(grants, [&](const auto& entry) {
+        const auto& [path, grant] = entry;
+        if (grant.get() != grant_to_move.get() &&
+            IsSamePathIgnoreCase(path, new_path.path)) {
+          grants_to_revoke.emplace_back(grant.get());
+          return true;
+        }
+        return false;
+      });
+      for (const auto& grant : grants_to_revoke) {
+        grant->SetStatus(
+            PermissionStatus::DENIED,
+            // NotifyEntryMoved handles persisted destination grants separately.
+            PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+      }
+    }
+
+    if (!grant_to_move) {
+      // There must be an entry for an ancestor of this entry. Nothing to move.
       // TODO(crbug.com/40245144): Consolidate superfluous child grants
       // to support directory moves.
       return;
-    }
-
-    scoped_refptr<PermissionGrantImpl> grant_to_move =
-        old_path_it->second.get();
-
-    if (allow_overwrite) {
-      // Check for a collision at the new path. If a different grant already
-      // exists at the destination, its status must be set to DENIED before it
-      // is replaced in the `grants` map.
-      //
-      // This prevents a DCHECK failure in `PermissionGrantDestroyed()` that can
-      // occur depending on object destruction order. Consider this scenario:
-      //   1. `grant1` (for `handle1`) exists for `path1`.
-      //   2. `handle2` (with `grant2`) is moved to `path1`.
-      //   3. The `grants` map entry for `path1` is updated to point to
-      //   `grant2`,
-      //      orphaning `grant1`. `grant1` is now untracked but still `GRANTED`.
-      //   4. If `handle2` is destroyed first, the map entry for `path1` is
-      //   removed.
-      //   5. When `handle1` is later destroyed, `PermissionGrantDestroyed()` is
-      //      called for `grant1`. It fails a DCHECK because the grant is not in
-      //      the map and its status is `GRANTED` instead of the expected
-      //      `DENIED`.
-      //
-      // By setting the orphaned grant's status to DENIED here, the DCHECK will
-      // pass regardless of destruction order.
-      auto new_path_it = grants.find(new_path.path);
-      if (new_path_it != grants.end() &&
-          new_path_it->second.get() != grant_to_move.get()) {
-        // A different grant exists at the destination. Revoke it before it gets
-        // orphaned.
-        scoped_refptr<PermissionGrantImpl> grant_to_revoke =
-            new_path_it->second.get();
-        grants.erase(new_path_it);
-        grant_to_revoke->SetStatus(
-            PermissionStatus::DENIED,
-            // Only update the in-memory permission, as the persistent
-            // permission should be updated by the call site.
-            PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
-      }
     }
 
     // `insert_or_assign` is used when overwriting is allowed, as it will
@@ -1902,20 +1890,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     }
 
     path_info_ = new_path;
-
-    if (context_ && base::FeatureList::IsEnabled(
-                        features::kFileSystemAccessPersistentPermissions)) {
-      const std::unique_ptr<Object> object = context_->GetGrantedObject(
-          origin_, PathAsPermissionKey(path_info_.path));
-      if (object) {
-        base::DictValue new_object = object->value.Clone();
-        new_object.Set(kPermissionPathKey,
-                       base::FilePathToValue(new_path.path));
-        new_object.Set(kPermissionDisplayNameKey, new_path.display_name);
-        context_->UpdateObjectPermission(origin_, object->value,
-                                         std::move(new_object));
-      }
-    }
 
     // May destroy `this`.
     NotifyPermissionStatusChanged();
@@ -3145,6 +3119,24 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
       features::kFileSystemAccessMoveWithOverwrite);
 
   bool updated = false;
+  if (allow_overwrite &&
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    // A destination grant can outlive all its handles. Revoke persisted aliases
+    // even without a persisted source grant, before notifying active grants.
+    // Preserve the source object so it can be migrated for a case-only move.
+    for (const auto& object :
+         ObjectPermissionContextBase::GetGrantedObjects(origin)) {
+      std::optional<base::FilePath> path =
+          base::ValueToFilePath(object->value.Find(kPermissionPathKey));
+      if (path && *path != old_path.path &&
+          IsSamePathIgnoreCase(*path, new_path.path)) {
+        RevokeObjectPermission(origin, object->value);
+        updated = true;
+      }
+    }
+  }
+
   bool old_path_was_downgraded = false;
   auto it = active_permissions_map_.find(origin);
   if (it != active_permissions_map_.end()) {
@@ -3154,12 +3146,20 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
     PermissionGrantImpl::UpdateGrantPath(it->second.read_grants, old_path,
                                          new_path, allow_overwrite);
     if (base::FeatureList::IsEnabled(
-            blink::features::kFileSystemAccessRevokeReadOnRemove) &&
-        it->second.downgraded_read_paths.erase(old_path.path)) {
-      // The downgraded read grant moved along with the entry; carry the
-      // downgraded state to `new_path` so a later write there can restore it.
-      it->second.downgraded_read_paths.insert(new_path.path);
-      old_path_was_downgraded = true;
+            blink::features::kFileSystemAccessRevokeReadOnRemove)) {
+      auto& downgraded_paths = it->second.downgraded_read_paths;
+      // Save the source state before clearing destination aliases, including
+      // when this is a case-only rename.
+      old_path_was_downgraded = downgraded_paths.erase(old_path.path) != 0;
+      if (allow_overwrite) {
+        std::erase_if(downgraded_paths, [&](const base::FilePath& path) {
+          return IsSamePathIgnoreCase(path, new_path.path);
+        });
+      }
+      if (old_path_was_downgraded) {
+        // Carry only the moved entry's state, so a later write can restore it.
+        downgraded_paths.insert(new_path.path);
+      }
     }
     updated = true;
   }
@@ -3170,14 +3170,6 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
     const std::unique_ptr<Object> object =
         GetGrantedObject(origin, PathAsPermissionKey(old_path.path));
     if (object) {
-      if (allow_overwrite) {
-        // Revoke any pre-existing permission at the destination first. This is
-        // a no-op if no permission exists. Otherwise this will notify
-        // permission observers twice: once for revocation and once for update.
-        const std::string new_key(PathAsPermissionKey(new_path.path));
-        RevokeObjectPermission(origin, new_key);
-      }
-
       base::DictValue new_object = object->value.Clone();
       new_object.Set(kPermissionPathKey, base::FilePathToValue(new_path.path));
       new_object.Set(kPermissionDisplayNameKey, new_path.display_name);

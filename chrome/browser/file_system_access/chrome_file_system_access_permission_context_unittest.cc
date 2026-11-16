@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
@@ -13,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
@@ -6132,6 +6134,347 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       AccessTrigger::kProgrammaticRead);
   EXPECT_EQ(old_file2_read_grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_EQ(old_file2_write_grant->GetStatus(), PermissionStatus::ASK);
+}
+
+// An overwrite must revoke every spelling of the destination, not just the
+// spelling passed to move(). A revoked source must not regain read permission.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_RevokesCaseAliases) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kFileSystemAccessMoveWithOverwrite,
+       features::kFileSystemAccessPersistentPermissions,
+       blink::features::kFileSystemAccessRevokeReadOnRemove},
+      {});
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  const PathInfo source(kTestPathInfo.path.AppendASCII("source.txt"));
+  const PathInfo destination(kTestPathInfo.path.AppendASCII("DECOY.TXT"));
+  const PathInfo lower(kTestPathInfo.path.AppendASCII("decoy.txt"));
+  const PathInfo mixed(kTestPathInfo.path.AppendASCII("Decoy.txt"));
+  const PathInfo unrelated(kTestPathInfo.path.AppendASCII("decoy.txt.other"));
+  auto source_read = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, source, HandleType::kFile, AccessTrigger::kSave);
+  auto source_write = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, source, HandleType::kFile, AccessTrigger::kSave);
+  permission_context()->NotifyEntryRemoved(kTestOrigin, source);
+  ASSERT_EQ(source_read->GetStatus(), PermissionStatus::DENIED);
+  ASSERT_EQ(source_write->GetStatus(), PermissionStatus::GRANTED);
+
+  std::vector<scoped_refptr<content::FileSystemAccessPermissionGrant>> aliases;
+  for (const auto& path : {destination, lower, mixed}) {
+    aliases.push_back(permission_context()->GetReadPermissionGrant(
+        kTestOrigin, path, HandleType::kFile, AccessTrigger::kSave));
+    aliases.push_back(permission_context()->GetWritePermissionGrant(
+        kTestOrigin, path, HandleType::kFile, AccessTrigger::kSave));
+  }
+  for (const auto& grant : aliases) {
+    ASSERT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+  }
+  auto unrelated_read = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, unrelated, HandleType::kFile, AccessTrigger::kSave);
+  auto unrelated_write = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, unrelated, HandleType::kFile, AccessTrigger::kSave);
+
+  permission_context()->NotifyEntryMoved(kTestOrigin, source, destination);
+
+  for (const auto& grant : aliases) {
+    EXPECT_EQ(grant->GetStatus(), PermissionStatus::DENIED);
+  }
+  EXPECT_EQ(source_read->GetPath(), destination.path);
+  EXPECT_EQ(source_read->GetStatus(), PermissionStatus::DENIED);
+  EXPECT_EQ(source_write->GetPath(), destination.path);
+  EXPECT_EQ(source_write->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(unrelated_read->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(unrelated_write->GetStatus(), PermissionStatus::GRANTED);
+  for (const auto& path : {lower, mixed}) {
+    for (auto type : {GrantType::kRead, GrantType::kWrite}) {
+      EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+          kTestOrigin, path, HandleType::kFile, type));
+    }
+  }
+  EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, destination, HandleType::kFile, GrantType::kRead));
+  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, destination, HandleType::kFile, GrantType::kWrite));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Overwriting an entry must discard its restoration bookkeeping and retain
+// only the source entry's read state.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_ClearsDowngradedDestinationAliases) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kFileSystemAccessMoveWithOverwrite,
+       features::kFileSystemAccessPersistentPermissions,
+       blink::features::kFileSystemAccessRevokeReadOnRemove},
+      {});
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  for (bool downgrade_source : {false, true}) {
+    SCOPED_TRACE(downgrade_source);
+    const auto directory = kTestPathInfo.path.AppendASCII(
+        downgrade_source ? "revoked" : "readable");
+    const PathInfo source(directory.AppendASCII("source.txt"));
+    const PathInfo destination(directory.AppendASCII("DECOY.TXT"));
+    const PathInfo alias(directory.AppendASCII("decoy.txt"));
+    const PathInfo unrelated(directory.AppendASCII("decoy.txt.other"));
+    auto source_read = permission_context()->GetReadPermissionGrant(
+        kTestOrigin, source, HandleType::kFile, AccessTrigger::kSave);
+    auto source_write = permission_context()->GetWritePermissionGrant(
+        kTestOrigin, source, HandleType::kFile, AccessTrigger::kSave);
+    auto destination_read = permission_context()->GetReadPermissionGrant(
+        kTestOrigin, destination, HandleType::kFile, AccessTrigger::kSave);
+    auto alias_read = permission_context()->GetReadPermissionGrant(
+        kTestOrigin, alias, HandleType::kFile, AccessTrigger::kSave);
+    permission_context()->NotifyEntryRemoved(kTestOrigin, destination);
+    permission_context()->NotifyEntryRemoved(kTestOrigin, unrelated);
+    if (downgrade_source) {
+      permission_context()->NotifyEntryRemoved(kTestOrigin, source);
+    }
+    for (const auto& path : {destination, alias, unrelated}) {
+      ASSERT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+          kTestOrigin, path.path));
+    }
+
+    permission_context()->NotifyEntryMoved(kTestOrigin, source, destination);
+
+    EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+        kTestOrigin, source.path));
+    EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+        kTestOrigin, alias.path));
+    EXPECT_EQ(permission_context()->IsPathInDowngradedReadPathsForTesting(
+                  kTestOrigin, destination.path),
+              downgrade_source);
+    EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+        kTestOrigin, unrelated.path));
+    EXPECT_EQ(source_read->GetStatus(), downgrade_source
+                                            ? PermissionStatus::DENIED
+                                            : PermissionStatus::GRANTED);
+    EXPECT_EQ(destination_read->GetStatus(), PermissionStatus::DENIED);
+    EXPECT_EQ(alias_read->GetStatus(), PermissionStatus::DENIED);
+    // Persisted grants must migrate even with active read and write grants.
+    for (auto type : {GrantType::kRead, GrantType::kWrite}) {
+      EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+          kTestOrigin, source, HandleType::kFile, type));
+    }
+    EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+        kTestOrigin, destination, HandleType::kFile, GrantType::kWrite));
+    EXPECT_EQ(
+        permission_context()->HasExtendedPermissionForTesting(
+            kTestOrigin, destination, HandleType::kFile, GrantType::kRead),
+        !downgrade_source);
+
+    permission_context()->NotifyEntryModified(kTestOrigin, destination);
+    EXPECT_EQ(source_read->GetStatus(), PermissionStatus::GRANTED);
+    EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+        kTestOrigin, destination.path));
+    EXPECT_EQ(alias_read->GetStatus(), PermissionStatus::DENIED);
+  }
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_CaseOnlyRenamePreservesDowngradedSource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kFileSystemAccessMoveWithOverwrite,
+       blink::features::kFileSystemAccessRevokeReadOnRemove},
+      {});
+  const PathInfo source(kTestPathInfo.path.AppendASCII("source.txt"));
+  const PathInfo destination(kTestPathInfo.path.AppendASCII("SOURCE.TXT"));
+  const PathInfo alias(kTestPathInfo.path.AppendASCII("Source.txt"));
+  auto source_read = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, source, HandleType::kFile, AccessTrigger::kSave);
+  auto alias_read = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, alias, HandleType::kFile, AccessTrigger::kSave);
+  permission_context()->NotifyEntryRemoved(kTestOrigin, source);
+  ASSERT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, alias.path));
+
+  permission_context()->NotifyEntryMoved(kTestOrigin, source, destination);
+
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, source.path));
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, alias.path));
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, destination.path));
+  EXPECT_EQ(source_read->GetStatus(), PermissionStatus::DENIED);
+  permission_context()->NotifyEntryModified(kTestOrigin, destination);
+  EXPECT_EQ(source_read->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(alias_read->GetStatus(), PermissionStatus::DENIED);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Destination invalidation must not depend on an explicit source grant: a
+// source can inherit its permission from a directory grant.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_RevokesAliasesWithoutSourceGrant) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kFileSystemAccessMoveWithOverwrite);
+  const PathInfo source(kTestPathInfo.path.AppendASCII("source.txt"));
+  const PathInfo destination(kTestPathInfo.path.AppendASCII("DECOY.TXT"));
+  const PathInfo alias(kTestPathInfo.path.AppendASCII("decoy.txt"));
+  auto read = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, alias, HandleType::kFile, AccessTrigger::kSave);
+  auto write = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, alias, HandleType::kFile, AccessTrigger::kSave);
+  ASSERT_EQ(read->GetStatus(), PermissionStatus::GRANTED);
+  ASSERT_EQ(write->GetStatus(), PermissionStatus::GRANTED);
+
+  permission_context()->NotifyEntryMoved(kTestOrigin, source, destination);
+
+  EXPECT_EQ(read->GetStatus(), PermissionStatus::DENIED);
+  EXPECT_EQ(write->GetStatus(), PermissionStatus::DENIED);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_RevokesPersistedOnlyAliases) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kFileSystemAccessMoveWithOverwrite,
+       features::kFileSystemAccessPersistentPermissions},
+      {});
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  const PathInfo source(kTestPathInfo.path.AppendASCII("source.txt"));
+  const PathInfo destination(kTestPathInfo.path.AppendASCII("DECOY.TXT"));
+  const PathInfo alias(kTestPathInfo.path.AppendASCII("decoy.txt"));
+  {
+    auto read = permission_context()->GetReadPermissionGrant(
+        kTestOrigin, alias, HandleType::kFile, AccessTrigger::kSave);
+    auto write = permission_context()->GetWritePermissionGrant(
+        kTestOrigin, alias, HandleType::kFile, AccessTrigger::kSave);
+    ASSERT_EQ(read->GetStatus(), PermissionStatus::GRANTED);
+    ASSERT_EQ(write->GetStatus(), PermissionStatus::GRANTED);
+  }
+  for (auto type : {GrantType::kRead, GrantType::kWrite}) {
+    ASSERT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+        kTestOrigin, alias, HandleType::kFile, type));
+  }
+
+  permission_context()->NotifyEntryMoved(kTestOrigin, source, destination);
+
+  for (auto type : {GrantType::kRead, GrantType::kWrite}) {
+    EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+        kTestOrigin, alias, HandleType::kFile, type));
+  }
+  auto read = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, alias, HandleType::kFile, AccessTrigger::kProgrammaticRead);
+  auto write = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, alias, HandleType::kFile, AccessTrigger::kProgrammaticWrite);
+  EXPECT_EQ(read->GetStatus(), PermissionStatus::ASK);
+  EXPECT_EQ(write->GetStatus(), PermissionStatus::ASK);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_CaseOnlyRenamePreservesSource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kFileSystemAccessMoveWithOverwrite,
+       features::kFileSystemAccessPersistentPermissions},
+      {});
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  const PathInfo source(kTestPathInfo.path.AppendASCII("source.txt"));
+  const PathInfo destination(kTestPathInfo.path.AppendASCII("SOURCE.TXT"));
+  auto read = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, source, HandleType::kFile, AccessTrigger::kSave);
+  auto write = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, source, HandleType::kFile, AccessTrigger::kSave);
+
+  permission_context()->NotifyEntryMoved(kTestOrigin, source, destination);
+
+  EXPECT_EQ(read->GetPath(), destination.path);
+  EXPECT_EQ(write->GetPath(), destination.path);
+  EXPECT_EQ(read->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(write->GetStatus(), PermissionStatus::GRANTED);
+  for (auto type : {GrantType::kRead, GrantType::kWrite}) {
+    EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+        kTestOrigin, source, HandleType::kFile, type));
+    EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+        kTestOrigin, destination, HandleType::kFile, type));
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_RevokesDormantDestinationGrants) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kFileSystemAccessMoveWithOverwrite,
+       features::kFileSystemAccessPersistentPermissions},
+      {});
+  const PathInfo source(kTestPathInfo.path.AppendASCII("source.txt"));
+  const PathInfo destination(kTestPathInfo.path.AppendASCII("DECOY.TXT"));
+  const PathInfo alias(kTestPathInfo.path.AppendASCII("decoy.txt"));
+  for (const auto& path : {source, destination, alias}) {
+    auto read = permission_context()->GetReadPermissionGrant(
+        kTestOrigin, path, HandleType::kFile, AccessTrigger::kSave);
+    auto write = permission_context()->GetWritePermissionGrant(
+        kTestOrigin, path, HandleType::kFile, AccessTrigger::kSave);
+    ASSERT_EQ(read->GetStatus(), PermissionStatus::GRANTED);
+    ASSERT_EQ(write->GetStatus(), PermissionStatus::GRANTED);
+  }
+  ASSERT_EQ(permission_context()->GetPersistedGrantTypeForTesting(kTestOrigin),
+            PersistedGrantType::kDormant);
+  // The UI-facing list excludes dormant grants. Check the backing store too.
+  ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
+              testing::IsEmpty());
+  ASSERT_THAT(
+      permission_context()->ObjectPermissionContextBase::GetGrantedObjects(
+          kTestOrigin),
+      testing::SizeIs(3));
+
+  permission_context()->NotifyEntryMoved(kTestOrigin, source, destination);
+
+  EXPECT_THAT(
+      permission_context()->ObjectPermissionContextBase::GetGrantedObjects(
+          kTestOrigin),
+      testing::SizeIs(1));
+  permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
+  for (auto type : {GrantType::kRead, GrantType::kWrite}) {
+    EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+        kTestOrigin, source, HandleType::kFile, type));
+    EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+        kTestOrigin, alias, HandleType::kFile, type));
+    EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
+        kTestOrigin, destination, HandleType::kFile, type));
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryMoved_CaseAliasObserversReleaseGrants) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kFileSystemAccessMoveWithOverwrite);
+  const PathInfo source(kTestPathInfo.path.AppendASCII("source.txt"));
+  const PathInfo destination(kTestPathInfo.path.AppendASCII("DECOY.TXT"));
+  const PathInfo lower(kTestPathInfo.path.AppendASCII("decoy.txt"));
+  const PathInfo mixed(kTestPathInfo.path.AppendASCII("Decoy.txt"));
+  auto source_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, source, HandleType::kFile, AccessTrigger::kSave);
+  auto lower_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, lower, HandleType::kFile, AccessTrigger::kSave);
+  auto mixed_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, mixed, HandleType::kFile, AccessTrigger::kSave);
+  auto source_observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(source_grant));
+  auto lower_observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(lower_grant));
+  auto mixed_observer =
+      SelfDestructingPermissionGrantObserver::Create(std::move(mixed_grant));
+
+  permission_context()->NotifyEntryMoved(kTestOrigin, source, destination);
+
+  EXPECT_FALSE(source_observer);
+  EXPECT_FALSE(lower_observer);
+  EXPECT_FALSE(mixed_observer);
 }
 
 // Regression test for crbug.com/499078161.
