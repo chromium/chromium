@@ -891,6 +891,37 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
       SearchJourneyCueOutcome::kChipClicked, 1);
 }
 
+// Tests that dismissing the cue from its menu records the dismissal for the
+// journey.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, RecordsCueDismissal) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // `ContextualCueingController` calls this when the user picks "Dismiss"
+  // from the cue's menu.
+  contextual_cueing::CueTarget* cue_target = GetCueTarget(source_tab);
+  ASSERT_TRUE(cue_target);
+  cue_target->OnDismissed();
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Dismissed.WordCount", 4, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Clicked"),
+            0);
+}
+
 // Tests that the cue shows at most once per journey, even if the user returns
 // to the source tab again after it's gone.
 IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest, ShowsCueOncePerJourney) {

@@ -292,6 +292,14 @@ class SearchJourneyTracker : public KeyedService,
   // anchored message; the journey is restored only if the user then clicks it.
   void OnJourneyCueChipClicked(SessionID source_tab_id);
 
+  // Records that the user dismissed the contextual cue for the journey whose
+  // Tab A is `source_tab_id`.
+  void OnJourneyCueDismissed(SessionID source_tab_id);
+
+  // Records that the user opened the suggestions settings from the contextual
+  // cue for the journey whose Tab A is `source_tab_id`.
+  void OnJourneyCueSuggestionsSettingsOpened(SessionID source_tab_id);
+
   // Clears copy records for `tab_id` and any journey whose Tab A is `tab_id`.
   // Journeys whose Tab B is `tab_id` are kept and marked as closed.
   void OnTabDestroyed(SessionID tab_id);

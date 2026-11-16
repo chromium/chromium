@@ -94,6 +94,14 @@ void TestCueTarget::OnEditPrompt(CueActionData data) {
   edit_prompt_data = std::move(data);
 }
 
+void TestCueTarget::OnDismissed() {
+  dismissed = true;
+}
+
+void TestCueTarget::OnSuggestionsSettingsOpened() {
+  suggestions_settings_opened = true;
+}
+
 ui::ImageModel TestCueTarget::GetAnchoredMessageIcon() const {
   return {};
 }

@@ -1024,6 +1024,57 @@ TEST_F(SearchJourneyTrackerTest, ChipClickWithoutShownCueIsIgnored) {
   EXPECT_FALSE(GetJourney(kSourceTab1)->cue_chip_clicked);
 }
 
+TEST_F(SearchJourneyTrackerTest, RecordsCueDismissedMetrics) {
+  base::HistogramTester histogram_tester;
+  const std::u16string kQuery = u"how do ocean tides work";
+  tracker_.OnCopyRecorded(kSourceTab1, kNavEntryId, kQuery);
+  StartJourney(kSourceTab1, kSearchTab1, kQuery);
+  ASSERT_TRUE(tracker_.OnAimPromoParamsReceived(
+      kSearchTab1, kQuery, CreatePromoParams(),
+      {AimPromoQueryHint::kEduConceptual}));
+
+  // A dismissal before the cue shows isn't recorded.
+  tracker_.OnJourneyCueDismissed(kSourceTab1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SearchJourney.Cue.Dismissed.CopyMatch", 0);
+
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/true);
+  tracker_.OnJourneyCueDismissed(kSourceTab1);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Dismissed.CopyMatch", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Dismissed.ContextMenuSearch", false,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Dismissed.QueryHint",
+      AimPromoQueryHint::kEduConceptual, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.Dismissed.WordCount", 5, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SearchJourney.Cue.SettingsOpened.CopyMatch", 0);
+  // Dismissing the cue doesn't end the journey.
+  EXPECT_TRUE(GetJourney(kSourceTab1));
+}
+
+TEST_F(SearchJourneyTrackerTest, RecordsCueSettingsOpenedMetrics) {
+  base::HistogramTester histogram_tester;
+  StartJourney(kSourceTab1, kSearchTab1, u"quantum computing");
+  tracker_.OnJourneyCueShown(kSourceTab1, /*is_anchored_message=*/false);
+
+  tracker_.OnJourneyCueSuggestionsSettingsOpened(kSourceTab1);
+  // Settings opened for a tab without a journey isn't recorded.
+  tracker_.OnJourneyCueSuggestionsSettingsOpened(kSourceTab2);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.SettingsOpened.CopyMatch", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.Cue.SettingsOpened.QueryHint",
+      AimPromoQueryHint::kNone, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.SearchJourney.Cue.Dismissed.CopyMatch", 0);
+}
+
 TEST_F(SearchJourneyTrackerTest,
        CopyMatchDistinguishesClipboardCopyFromContextMenuSearch) {
   base::HistogramTester histogram_tester;

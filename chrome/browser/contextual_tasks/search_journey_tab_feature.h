@@ -66,6 +66,13 @@ class SearchJourneyTabFeature : public content::WebContentsObserver {
   // this tab's journey.
   void OnCueChipClicked();
 
+  // Records that the user dismissed the contextual cue for this tab's journey.
+  void OnCueDismissed();
+
+  // Records that the user opened the suggestions settings from the contextual
+  // cue for this tab's journey.
+  void OnCueSuggestionsSettingsOpened();
+
   // content::WebContentsObserver:
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;

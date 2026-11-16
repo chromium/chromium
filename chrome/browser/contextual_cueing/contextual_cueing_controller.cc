@@ -1600,6 +1600,9 @@ void ContextualCueingController::OnCueInteraction(
 
   switch (interaction_type) {
     case ContextualCueingInteraction::kCueDismissed:
+      if (CueTarget* target = GetTarget(cue_type)) {
+        target->OnDismissed();
+      }
       contextual_cueing_service_->OnCueDismissed(
           cue_type, ShouldRecordUcbStats(cue_type));
       MaybeLaunchDismissHatsSurvey(cue_type, cuj);
@@ -1610,6 +1613,9 @@ void ContextualCueingController::OnCueInteraction(
       }
       break;
     case ContextualCueingInteraction::kCueSuggestionsSettings:
+      if (CueTarget* target = GetTarget(cue_type)) {
+        target->OnSuggestionsSettingsOpened();
+      }
 #if !BUILDFLAG(IS_ANDROID)
       chrome::ShowSettingsSubPageForProfile(tab_->GetProfile(),
                                             chrome::kSuggestionsSubPage);

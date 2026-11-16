@@ -466,6 +466,21 @@ void SearchJourneyTracker::OnJourneyCueChipClicked(SessionID source_tab_id) {
       base::UserMetricsAction("ContextualTasks.SearchJourney.Cue.ChipClicked"));
 }
 
+void SearchJourneyTracker::OnJourneyCueDismissed(SessionID source_tab_id) {
+  auto it = active_journeys_.find(source_tab_id);
+  if (it != active_journeys_.end() && it->second.cue_shown) {
+    RecordCueSliceMetrics("Dismissed", it->second);
+  }
+}
+
+void SearchJourneyTracker::OnJourneyCueSuggestionsSettingsOpened(
+    SessionID source_tab_id) {
+  auto it = active_journeys_.find(source_tab_id);
+  if (it != active_journeys_.end() && it->second.cue_shown) {
+    RecordCueSliceMetrics("SettingsOpened", it->second);
+  }
+}
+
 void SearchJourneyTracker::OnTabDestroyed(SessionID tab_id) {
   // Journeys past their TTL are recorded as expired rather than closed.
   EvictExpiredRecords();

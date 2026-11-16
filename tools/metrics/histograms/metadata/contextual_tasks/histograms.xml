@@ -26,8 +26,11 @@ chromium-metrics-reviews@google.com.
 <variants name="AbaSearchJourneyCueInteraction">
   <variant name="Clicked"
       summary="clicked to restore the journey in the side panel"/>
+  <variant name="Dismissed" summary="dismissed from its menu"/>
   <variant name="Eligible"
       summary="eligible on the first qualifying return to the source tab"/>
+  <variant name="SettingsOpened"
+      summary="used to open the suggestions settings from its menu"/>
   <variant name="Shown" summary="shown on the source tab"/>
 </variants>
 

@@ -30,6 +30,10 @@ bool CueTarget::SupportsEditPrompt() const {
   return false;
 }
 
+void CueTarget::OnDismissed() {}
+
+void CueTarget::OnSuggestionsSettingsOpened() {}
+
 bool CueTarget::OverridesUcbScoring() const {
   return false;
 }
