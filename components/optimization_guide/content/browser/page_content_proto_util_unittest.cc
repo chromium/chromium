@@ -1554,6 +1554,18 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
       ->text = "option text";
   form_control_node->content_attributes->form_control_data->select_options[0]
       ->is_selected = true;
+  form_control_node->content_attributes->form_control_data->select_options[0]
+      ->disabled = false;
+  form_control_node->content_attributes->form_control_data->select_options
+      .push_back(blink::mojom::AIPageContentSelectOption::New());
+  form_control_node->content_attributes->form_control_data->select_options[1]
+      ->value = "disabled option value";
+  form_control_node->content_attributes->form_control_data->select_options[1]
+      ->text = "disabled option text";
+  form_control_node->content_attributes->form_control_data->select_options[1]
+      ->is_selected = false;
+  form_control_node->content_attributes->form_control_data->select_options[1]
+      ->disabled = true;
   // The canonical redaction signal now lives on ContentAttributes. The proto
   // form-control field is kept only for compatibility.
   form_control_node->content_attributes->redaction_decision =
@@ -1586,10 +1598,19 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
                   .interaction_info()
                   .is_disabled());
   EXPECT_TRUE(form_control_data_proto.is_readonly());
-  ASSERT_EQ(form_control_data_proto.select_options_size(), 1);
+  ASSERT_EQ(form_control_data_proto.select_options_size(), 2);
   EXPECT_EQ(form_control_data_proto.select_options(0).value(), "option value");
   EXPECT_EQ(form_control_data_proto.select_options(0).text(), "option text");
   EXPECT_TRUE(form_control_data_proto.select_options(0).is_selected());
+  EXPECT_TRUE(form_control_data_proto.select_options(0).has_is_disabled());
+  EXPECT_FALSE(form_control_data_proto.select_options(0).is_disabled());
+  EXPECT_EQ(form_control_data_proto.select_options(1).value(),
+            "disabled option value");
+  EXPECT_EQ(form_control_data_proto.select_options(1).text(),
+            "disabled option text");
+  EXPECT_FALSE(form_control_data_proto.select_options(1).is_selected());
+  EXPECT_TRUE(form_control_data_proto.select_options(1).has_is_disabled());
+  EXPECT_TRUE(form_control_data_proto.select_options(1).is_disabled());
   EXPECT_EQ(
       page_content.proto.root_node()
           .children_nodes(0)

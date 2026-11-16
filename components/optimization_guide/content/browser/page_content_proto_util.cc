@@ -776,6 +776,7 @@ void ConvertFormControlData(
       proto_select_option->set_text(*select_option->text);
     }
     proto_select_option->set_is_selected(select_option->is_selected);
+    proto_select_option->set_is_disabled(select_option->disabled);
   }
 
   // Incorporate any information received from Autofill.
