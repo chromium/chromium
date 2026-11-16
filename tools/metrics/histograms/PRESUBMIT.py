@@ -20,9 +20,8 @@ _NEW_HISTOGRAMS_THRESHOLD = 500
 
 # PRESUBMIT infrastructure doesn't guarantee that the cwd() will be on
 # path requiring manual path manipulation to call setup_modules.
-# TODO(crbug.com/488351821): Consider using subprocesses to run actual
-#                            test as recommended by presubmit docs:
-# https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
+# CheckBooleansAreEnums and CheckHistogramsChanges run in-process: they read
+# the changed lines and the old file contents from input_api.
 sys.path.append('.')
 import setup_modules  # pylint: disable=unused-import
 
