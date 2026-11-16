@@ -72,7 +72,8 @@ class ClientIdBackupCorrectnessFixFieldTrial50PercentTest
 INSTANTIATE_TEST_SUITE_P(All,
                          ClientIdBackupCorrectnessFixFieldTrial50PercentTest,
                          ::testing::Values(version_info::Channel::CANARY,
-                                           version_info::Channel::DEV),
+                                           version_info::Channel::DEV,
+                                           version_info::Channel::BETA),
                          &ChannelParamName);
 
 TEST_P(ClientIdBackupCorrectnessFixFieldTrial50PercentTest,
@@ -99,8 +100,7 @@ class ClientIdBackupCorrectnessFixFieldTrialDefaultTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ClientIdBackupCorrectnessFixFieldTrialDefaultTest,
-                         ::testing::Values(version_info::Channel::BETA,
-                                           version_info::Channel::STABLE,
+                         ::testing::Values(version_info::Channel::STABLE,
                                            version_info::Channel::UNKNOWN),
                          &ChannelParamName);
 
