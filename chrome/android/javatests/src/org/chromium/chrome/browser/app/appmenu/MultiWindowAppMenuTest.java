@@ -73,7 +73,6 @@ public class MultiWindowAppMenuTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // https://crbug.com/500749408
     public void testOpenNewWindow_fromIncognitoNtp() {
         doTestOpenNewWindow_fromIncognitoNtp();
     }

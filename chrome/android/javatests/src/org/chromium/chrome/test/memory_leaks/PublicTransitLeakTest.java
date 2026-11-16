@@ -113,8 +113,6 @@ public class PublicTransitLeakTest {
 
     @Test
     @LargeTest
-    // For some reason, this test is flaky on desktop.
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void searchActivityTest() {
         var page = mChromeTabbedActivityTestRule.startOnBlankPage();
         var activity = mChromeTabbedActivityTestRule.getActivity();
