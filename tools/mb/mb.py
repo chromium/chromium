@@ -2109,6 +2109,7 @@ class MetaBuildWrapper:
         {
           'status': 'No dependency',
           'compile_targets': [],
+          'gn_labels': [],
           'test_targets': [],
         },
         output_path,
@@ -2165,27 +2166,32 @@ class MetaBuildWrapper:
       if 'invalid_targets' in gn_outp:
         outp['invalid_targets'] = gn_outp['invalid_targets']
       if 'compile_targets' in gn_outp:
+        # compile_targets are ninja targets to build. gn_labels are the GN
+        # labels of what the caller builds, for tools such as "gn check" that
+        # take labels: the compile targets and the affected test targets.
+        labels = gn_outp['compile_targets']
         all_input_compile_targets = sorted(
           set(inp['test_targets'] + inp['additional_compile_targets'])
         )
+        all_input_labels = (
+          gn_inp['test_targets'] + gn_inp['additional_compile_targets']
+        )
 
-        # If we're building 'all', we can throw away the rest of the targets
-        # since they're redundant.
-        if 'all' in gn_outp['compile_targets']:
-          outp['compile_targets'] = ['all']
-        else:
-          outp['compile_targets'] = gn_outp['compile_targets']
-
-        # crbug.com/736215: When GN returns targets back, for targets in
-        # the default toolchain, GN will have generated a phony ninja
-        # target matching the label, and so we can safely (and easily)
-        # transform any GN label into the matching ninja target. For
-        # targets in other toolchains, though, GN doesn't generate the
-        # phony targets, and we don't know how to turn the labels into
-        # compile targets. In this case, we also conservatively give up
-        # and build everything. Probably the right thing to do here is
-        # to have GN return the compile targets directly.
-        if any("(" in target for target in outp['compile_targets']):
+        if 'all' in labels:
+          # If we're building 'all', we can throw away the rest of the targets
+          # since they're redundant.
+          compile_targets = ['all']
+          gn_labels = ['all']
+        elif any("(" in label for label in labels):
+          # crbug.com/736215: When GN returns targets back, for targets in
+          # the default toolchain, GN will have generated a phony ninja
+          # target matching the label, and so we can safely (and easily)
+          # transform any GN label into the matching ninja target. For
+          # targets in other toolchains, though, GN doesn't generate the
+          # phony targets, and we don't know how to turn the labels into
+          # compile targets. In this case, we also conservatively give up
+          # and build everything. Probably the right thing to do here is
+          # to have GN return the compile targets directly.
           self.Print(
             (
               'WARNING: targets with non-default toolchains were '
@@ -2193,11 +2199,11 @@ class MetaBuildWrapper:
             ),
             file=sys.stderr,
           )
-          outp['compile_targets'] = all_input_compile_targets
+          compile_targets = all_input_compile_targets
+          gn_labels = all_input_labels
         else:
-          outp['compile_targets'] = [
-            label.replace('//', '') for label in outp['compile_targets']
-          ]
+          compile_targets = [label.replace('//', '') for label in labels]
+          gn_labels = labels + gn_outp.get('test_targets', [])
 
         # Windows has a maximum command line length of 8k; even Linux
         # maxes out at 128k; if analyze returns a *really long* list of
@@ -2209,7 +2215,7 @@ class MetaBuildWrapper:
         # https://crbug.com/946266
         max_cmd_length_kb = 64 if platform.system() == 'Linux' else 7
 
-        if len(' '.join(outp['compile_targets'])) > max_cmd_length_kb * 1024:
+        if len(' '.join(compile_targets)) > max_cmd_length_kb * 1024:
           self.Print(
             'WARNING: Too many compile targets were affected.', file=sys.stderr
           )
@@ -2220,7 +2226,13 @@ class MetaBuildWrapper:
             ),
             file=sys.stderr,
           )
-          outp['compile_targets'] = all_input_compile_targets
+          compile_targets = all_input_compile_targets
+          gn_labels = all_input_labels
+
+        outp['compile_targets'] = compile_targets
+        outp['gn_labels'] = (
+          ['all'] if 'all' in gn_labels else sorted(set(gn_labels))
+        )
 
       if 'test_targets' in gn_outp:
         outp['test_targets'] = [
