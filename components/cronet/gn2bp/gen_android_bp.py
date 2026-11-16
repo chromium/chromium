@@ -1145,9 +1145,9 @@ def extract_copybara_paths(
             and license_file_path
             and license_file_path.startswith("//")
         ):
-            rel_license_dir = license_file_path[
-                2 : license_file_path.rfind("/")
-            ]
+            rel_license_dir = license_utils.get_rust_crate_license_directory(
+                license_file_path
+            )
         else:
             rel_license_dir = readme_dir_rel
         _add_path(f"{rel_license_dir}/LICENSE")

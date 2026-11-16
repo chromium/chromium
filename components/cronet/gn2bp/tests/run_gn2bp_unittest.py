@@ -22,6 +22,11 @@ import components.cronet.gn2bp.gn_utils as gn_utils  # noqa: E402
 import components.cronet.gn2bp.run_gn2bp as run_gn2bp  # noqa: E402
 import components.cronet.tools.breakages_constants as breakages_constants  # noqa: E402
 
+sys.path.insert(
+    0, os.path.join(REPOSITORY_ROOT, "components", "cronet", "license")
+)
+import create_android_metadata_license  # noqa: E402
+
 
 class TestRunGN2BPUnitTest(unittest.TestCase):
     def setUp(self):
@@ -357,6 +362,117 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         self.assertNotIn("out/tmp/gen/generated.h", generated_paths)
         self.assertNotIn("components/prefs/prefs.gni", generated_paths)
         self.assertNotIn(":tot_cronet_other_mod", generated_paths)
+
+    def test_extract_copybara_paths_rust_crate_with_license_of_other_crate(
+        self,
+    ):
+        # Like alloc-stdlib, which doesn't contain its LICENSE: it's the one of
+        # alloc-no-stdlib.
+        gn = gn_utils.GnParser({}, {})
+        rust_lib = gn_utils.GnParser.Target(
+            "//third_party/rust/alloc_stdlib/v0_3:lib", "rust_library"
+        )
+        rust_lib.build_file_path = "third_party/rust/alloc_stdlib/v0_3"
+        gn.all_targets[rust_lib.name] = rust_lib
+
+        with (
+            tempfile.TemporaryDirectory() as tmp_dir,
+            unittest.mock.patch.object(
+                gen_android_bp, "REPOSITORY_ROOT", tmp_dir
+            ),
+        ):
+            readme_file = (
+                pathlib.Path(tmp_dir)
+                / "third_party/rust/alloc_stdlib/v0_3/README.chromium"
+            )
+            readme_file.parent.mkdir(parents=True, exist_ok=True)
+            readme_file.write_text(
+                "Name: alloc-stdlib\n"
+                "URL: https://crates.io/crates/alloc-stdlib\n"
+                "Version: 0.3.0\n"
+                "License: BSD-3-Clause\n"
+                "License File: //third_party/rust/chromium_crates_io/vendor/"
+                "alloc-stdlib-v0_3/../alloc-no-stdlib-v3/LICENSE\n"
+            )
+            generated_paths = set(gen_android_bp.extract_copybara_paths(gn))
+
+        # The license files of the crate are next to its Android.bp, in the
+        # directory of the crate, and its LICENSE links to the other crate's.
+        vendor = "third_party/rust/chromium_crates_io/vendor"
+        expected_subset = {
+            f"{vendor}/alloc-no-stdlib-v3/LICENSE",
+            f"{vendor}/alloc-stdlib-v0_3/LICENSE",
+            f"{vendor}/alloc-stdlib-v0_3/METADATA",
+            f"{vendor}/alloc-stdlib-v0_3/MODULE_LICENSE_BSD_3_CLAUSE",
+        }
+        self.assertTrue(expected_subset.issubset(generated_paths))
+        self.assertNotIn(
+            f"{vendor}/alloc-no-stdlib-v3/METADATA", generated_paths
+        )
+
+    def test_update_license_rust_crate_with_license_of_other_crate(self):
+        # Like alloc-stdlib, which doesn't contain its LICENSE: it's the one of
+        # alloc-no-stdlib.
+        with (
+            tempfile.TemporaryDirectory() as repo_dir,
+            tempfile.TemporaryDirectory() as dest_dir,
+        ):
+            vendor = "third_party/rust/chromium_crates_io/vendor"
+            repo_vendor = pathlib.Path(repo_dir) / vendor
+            (repo_vendor / "alloc-no-stdlib-v3").mkdir(parents=True)
+            (repo_vendor / "alloc-no-stdlib-v3/LICENSE").write_text("License")
+            (repo_vendor / "alloc-stdlib-v0_3").mkdir()
+            for readme_dir, name, license_file in (
+                ("alloc_no_stdlib/v3", "alloc-no-stdlib", "alloc-no-stdlib-v3"),
+                (
+                    "alloc_stdlib/v0_3",
+                    "alloc-stdlib",
+                    "alloc-stdlib-v0_3/../alloc-no-stdlib-v3",
+                ),
+            ):
+                readme_file = (
+                    pathlib.Path(repo_dir)
+                    / "third_party/rust"
+                    / readme_dir
+                    / "README.chromium"
+                )
+                readme_file.parent.mkdir(parents=True)
+                readme_file.write_text(
+                    f"Name: {name}\n"
+                    f"URL: https://crates.io/crates/{name}\n"
+                    "Version: 1.0.0\n"
+                    "License: BSD-3-Clause\n"
+                    f"License File: //{vendor}/{license_file}/LICENSE\n"
+                )
+
+            create_android_metadata_license.update_license(
+                repo_path=repo_dir,
+                reachable_through_dependencies=False,
+                dest_path=dest_dir,
+            )
+
+            # The license files of the crate are next to its Android.bp, in the
+            # directory of the crate, and its LICENSE links to the other
+            # crate's, whose METADATA stays the other crate's.
+            dest_vendor = pathlib.Path(dest_dir) / vendor
+            self.assertEqual(
+                os.readlink(dest_vendor / "alloc-stdlib-v0_3/LICENSE"),
+                "../alloc-no-stdlib-v3/LICENSE",
+            )
+            self.assertTrue(
+                (
+                    dest_vendor
+                    / "alloc-stdlib-v0_3/MODULE_LICENSE_BSD_3_CLAUSE"
+                ).exists()
+            )
+            self.assertIn(
+                'name: "alloc-stdlib"',
+                (dest_vendor / "alloc-stdlib-v0_3/METADATA").read_text(),
+            )
+            self.assertIn(
+                'name: "alloc-no-stdlib"',
+                (dest_vendor / "alloc-no-stdlib-v3/METADATA").read_text(),
+            )
 
     def test_write_copybara_paths_file(self):
         with tempfile.TemporaryDirectory() as tmp_dir:

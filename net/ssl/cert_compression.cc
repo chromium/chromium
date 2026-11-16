@@ -13,12 +13,8 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "net/base/features.h"
-#include "net/net_buildflags.h"
-#include "third_party/brotli/include/brotli/decode.h"
-
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
 #include "net/filter/rust_brotli_decoder.h"
-#endif
+#include "third_party/brotli/include/brotli/decode.h"
 #endif
 
 namespace net {
@@ -31,7 +27,6 @@ namespace {
 // bytes. Like `BrotliDecoderDecompress()`, it ignores bytes after the stream.
 bool DecompressBrotli(base::span<const uint8_t> encoded,
                       base::span<uint8_t> decoded) {
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
   if (base::FeatureList::IsEnabled(features::kRustBrotliInNet)) {
     // RFC 8879 only allows brotli as RFC 7932 defines it, so like
     // `BrotliDecoderDecompress()`, the decoder rejects the large-window
@@ -42,7 +37,6 @@ bool DecompressBrotli(base::span<const uint8_t> encoded,
     return result.result == BROTLI_DECODER_RESULT_SUCCESS &&
            result.bytes_written == decoded.size();
   }
-#endif
   size_t decoded_size = decoded.size();
   return BrotliDecoderDecompress(encoded.size(), encoded.data(), &decoded_size,
                                  decoded.data()) ==

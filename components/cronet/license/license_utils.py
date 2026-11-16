@@ -35,6 +35,10 @@ PATTERN_DEPENDENCY_DIVIDER = re.compile(r"^-{20} DEPENDENCY DIVIDER -{20}$")
 # The delimiter used to separate multiple values for one metadata field.
 VALUE_DELIMITER = ","
 
+# The directory that contains the sources of the third-party Rust crates, one
+# subdirectory per crate.
+_RUST_CRATES_VENDOR_DIRECTORY = "third_party/rust/chromium_crates_io/vendor/"
+
 
 def get_license_type(license_name: str) -> LicenseType:
     """Return the equivalent license type for the provided string license."""
@@ -162,3 +166,35 @@ def resolve_license_path(readme_chromium_path: str, license_path: str) -> str:
     # until the README.chromium so it becomes a relative path from the root of
     # repo.
     return os.path.join(readme_chromium_path, license_path)
+
+
+def get_rust_crate_license_directory(license_file_path: str) -> str:
+    """
+    Returns the directory of the LICENSE, METADATA and MODULE_LICENSE_XYZ files
+    of a third-party Rust crate, relative to the root of the repository.
+
+    Chromium stores the README.chromium of a crate in a different directory than
+    its sources, so the directory comes from the `License File` of the
+    README.chromium instead. For a crate in `_RUST_CRATES_VENDOR_DIRECTORY`, it
+    is the directory of the crate, where gn2bp puts the Android.bp of the crate
+    (see `_locate_android_bp_destination()` in gen_android_bp.py), whose license
+    module refers to the LICENSE next to it. This holds even if the license file
+    is elsewhere, e.g. in another crate:
+    "//third_party/rust/chromium_crates_io/vendor/foo-v1/../bar-v1/LICENSE" ->
+    "third_party/rust/chromium_crates_io/vendor/foo-v1".
+
+    :param license_file_path: The field value of `License File` in the
+    README.chromium of the crate, which must start with `//`.
+    :return: The relative path from the repository root to the directory.
+    """
+    if not license_file_path.startswith("//"):
+        raise ValueError(
+            "Rust third-party crate's `License File` is expected to be "
+            "absolute path (Absolute GN labels are expected to start with //), "
+            f"but found {license_file_path}"
+        )
+    path = license_file_path[2:]
+    if path.startswith(_RUST_CRATES_VENDOR_DIRECTORY):
+        crate = path.removeprefix(_RUST_CRATES_VENDOR_DIRECTORY).split("/")[0]
+        return _RUST_CRATES_VENDOR_DIRECTORY + crate
+    return path[: path.rfind("/")]

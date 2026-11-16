@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/cert/x509_util.h"
-#include "net/net_buildflags.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
@@ -187,18 +186,9 @@ bool IsDecompressionError(uint32_t error) {
          ERR_GET_REASON(error) == SSL_R_CERT_DECOMPRESSION_FAILED;
 }
 
-// The values of the parameter. The Rust decoder is only tested where //net
-// builds it (see `use_rust_brotli_decoder` in //net/BUILD.gn).
-constexpr bool kRustBrotliInNetValues[] = {
-    false,
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
-    true,
-#endif
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          CertCompressionTest,
-                         testing::ValuesIn(kRustBrotliInNetValues),
+                         testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "RustBrotli" : "CBrotli";
                          });

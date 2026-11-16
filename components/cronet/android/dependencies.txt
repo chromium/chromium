@@ -70,8 +70,11 @@
 //third_party/protobuf
 //third_party/re2
 //third_party/rust-toolchain/lib/third_party/crubit
+//third_party/rust/alloc_no_stdlib
+//third_party/rust/alloc_stdlib
 //third_party/rust/anstyle
 //third_party/rust/base64
+//third_party/rust/brotli_decompressor
 //third_party/rust/clap
 //third_party/rust/clap_builder
 //third_party/rust/clap_lex

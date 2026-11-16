@@ -30,7 +30,6 @@
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/mock_source_stream.h"
-#include "net/net_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/brotli/include/brotli/decode.h"
@@ -199,18 +198,9 @@ class BrotliSourceStreamTest : public PlatformTest,
   scoped_refptr<IOBufferWithSize> out_buffer_;
 };
 
-// The values of the parameter. The Rust decoder is only tested where //net
-// builds it (see `use_rust_brotli_decoder` in //net/BUILD.gn).
-constexpr bool kRustBrotliInNetValues[] = {
-    false,
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
-    true,
-#endif
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          BrotliSourceStreamTest,
-                         testing::ValuesIn(kRustBrotliInNetValues),
+                         testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "RustBrotli" : "CBrotli";
                          });

@@ -144,22 +144,6 @@ def _maybe_create_license_file_symlink(
         os.symlink(rel_target, license_symlink_path)
 
 
-def _map_rust_license_path_to_directory(license_file_path: str) -> str:
-    """Returns the canonical path of the parent directory that includes
-    the LICENSE file for rust crates.
-
-    :param license_file_path: This is the filepath found in the README.chromium
-    and the expected format is //some/path/license_file
-    """
-    if not license_file_path.startswith("//"):
-        raise ValueError(
-            f"Rust third-party crate's `License File` is expected to be absolute path "
-            f"(Absolute GN labels are expected to start with //), "
-            f"but found {license_file_path}"
-        )
-    return license_file_path[2 : license_file_path.rfind("/")]
-
-
 def get_all_readme(repo_path: str):
     """Fetches all README.chromium files under |repo_path|."""
     return glob.glob("**/README.chromium", root_dir=repo_path, recursive=True)
@@ -299,7 +283,9 @@ def update_license(
             # in a different directory than where the src/LICENSE is stored.
             license_directory = os.path.join(
                 repo_path,
-                _map_rust_license_path_to_directory(license_file_path),
+                license_utils.get_rust_crate_license_directory(
+                    license_file_path
+                ),
             )
 
         # Map license_directory to dest_path

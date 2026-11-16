@@ -1211,9 +1211,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(
 
 // Decode brotli with the Rust `brotli-decompressor` crate instead of the C
 // library in //third_party/brotli. This covers the `br` content encoding (also
-// with a shared dictionary) and TLS certificate compression. It has no effect
-// where //net doesn't build the Rust decoder, as in Cronet (see
-// `use_rust_brotli_decoder` in //net/BUILD.gn).
+// with a shared dictionary) and TLS certificate compression.
 NET_EXPORT BASE_DECLARE_FEATURE(kRustBrotliInNet);
 
 // If enabled, proxy server ports are checked against

@@ -21,14 +21,10 @@
 #include "base/timer/elapsed_timer.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
+#include "net/filter/rust_brotli_decoder.h"
 #include "net/filter/source_stream_type.h"
-#include "net/net_buildflags.h"
 #include "third_party/brotli/include/brotli/decode.h"
 #include "third_party/brotli/include/brotli/shared_dictionary.h"
-
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
-#include "net/filter/rust_brotli_decoder.h"
-#endif
 
 namespace net {
 
@@ -64,14 +60,12 @@ constexpr HistogramNames kDecodingThroughputHistograms = {
     "Net.BrotliFilter.DecodingThroughput.Dcb"};
 // LINT.ThenChange(//tools/metrics/histograms/variants.xml:BrotliFilterEncoding)
 
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
 // The values of `rust_brotli::DecodeResult::result` (see
 // //net/filter/rust_brotli_decoder.rs).
 static_assert(BROTLI_DECODER_RESULT_ERROR == 0);
 static_assert(BROTLI_DECODER_RESULT_SUCCESS == 1);
 static_assert(BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT == 2);
 static_assert(BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT == 3);
-#endif
 
 struct BrotliDecoderStateDeleter {
   void operator()(BrotliDecoderState* ptr) const {
@@ -89,7 +83,6 @@ class BrotliSourceStream : public FilterSourceStream {
       : FilterSourceStream(SourceStreamType::kBrotli, std::move(upstream)),
         dictionary_(std::move(dictionary)),
         dictionary_size_(dictionary_size) {
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
     if (base::FeatureList::IsEnabled(features::kRustBrotliInNet)) {
       rust_decoder_ = std::make_unique<rust_brotli::Decoder>();
       if (dictionary_) {
@@ -97,7 +90,6 @@ class BrotliSourceStream : public FilterSourceStream {
       }
       return;
     }
-#endif
     // The nullptrs mean the decoder will use malloc() and free() directly.
     brotli_state_.reset(BrotliDecoderCreateInstance(nullptr, nullptr, nullptr));
     CHECK(brotli_state_);
@@ -229,7 +221,6 @@ class BrotliSourceStream : public FilterSourceStream {
   // this stream, and removes the bytes that it read and wrote from them.
   BrotliDecoderResult Decompress(base::span<const uint8_t>& input,
                                  base::span<uint8_t>& output) {
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
     if (rust_decoder_) {
       const base::span<const uint8_t> dictionary =
           dictionary_ ? dictionary_->first(dictionary_size_)
@@ -240,7 +231,6 @@ class BrotliSourceStream : public FilterSourceStream {
       output = output.subspan(result.bytes_written);
       return static_cast<BrotliDecoderResult>(result.result);
     }
-#endif
     const uint8_t* next_in = input.data();
     size_t available_in = input.size();
     uint8_t* next_out = output.data();
@@ -257,11 +247,9 @@ class BrotliSourceStream : public FilterSourceStream {
   // value that isn't negative if there is none. It's an `int`, because codes
   // that the Rust crate may add wouldn't be valid `BrotliDecoderErrorCode`s.
   int GetErrorCode() const {
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
     if (rust_decoder_) {
       return rust_decoder_->error_code();
     }
-#endif
     return BrotliDecoderGetErrorCode(brotli_state_.get());
   }
 
@@ -280,9 +268,7 @@ class BrotliSourceStream : public FilterSourceStream {
   // Only one of these is set, depending on `features::kRustBrotliInNet`. The C
   // decoder keeps a pointer to `dictionary_`, so it must be destroyed first.
   std::unique_ptr<BrotliDecoderState, BrotliDecoderStateDeleter> brotli_state_;
-#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
   std::unique_ptr<rust_brotli::Decoder> rust_decoder_;
-#endif
 
   DecodingStatus decoding_status_ = DecodingStatus::DECODING_IN_PROGRESS;
 
