@@ -80,7 +80,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -675,13 +674,12 @@ class IdentityTestWithSignin : public AsyncExtensionBrowserTest {
  protected:
   // Signs in and returns the account ID of the primary account. The account is
   // also added to the Gaia cookie jar, as it would be in production.
-  CoreAccountId SignIn(
-      const std::string& email,
-      signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin) {
+  CoreAccountId SignIn(const std::string& email) {
     auto account_info = identity_test_env()->MakeAccountAvailable(
-        email,
-        {.primary_account_consent_level = consent_level, .set_cookie = true});
-    EXPECT_TRUE(identity_manager()->HasPrimaryAccount(consent_level));
+        email, {.primary_account_consent_level = signin::ConsentLevel::kSignin,
+                .set_cookie = true});
+    EXPECT_TRUE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
     return account_info.GetAccountId();
   }
 
@@ -946,38 +944,27 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, NotSignedIn) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest, ExtensionSync) {
-  constexpr char kEmail[] = "president@example.com";
-#if BUILDFLAG(IS_CHROMEOS)
-  SignIn(kEmail, signin::ConsentLevel::kSync);
-#else
-  SignIn(kEmail);
-  SyncServiceFactory::GetForProfile(profile())
-      ->GetUserSettings()
-      ->SetSelectedTypes(
-          /*sync_everything=*/false,
-          /*types=*/{syncer::UserSelectableType::kExtensions});
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  SignIn("president@example.com");
+  ASSERT_TRUE(SyncServiceFactory::GetForProfile(profile())
+                  ->GetUserSettings()
+                  ->GetSelectedTypes()
+                  .Has(syncer::UserSelectableType::kExtensions));
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
-  EXPECT_EQ(kEmail, info->email);
+  EXPECT_EQ("president@example.com", info->email);
   EXPECT_EQ("gaia_id_for_president_example.com", info->id);
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
-                       SignedInUnconsented) {
+                       ExtensionSyncDisabled) {
   SignIn("test@example.com");
+  SyncServiceFactory::GetForProfile(profile())
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kExtensions, false);
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
-  // The account is only returned if extensions are syncing. Whether or not
-  // extensions sync upon sign-in depends on
-  // `syncer::IsReplaceSyncPromosWithSignInPromosEnabled()`.
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    EXPECT_EQ("test@example.com", info->email);
-    EXPECT_EQ("gaia_id_for_test_example.com", info->id);
-  } else {
-    EXPECT_TRUE(info->email.empty());
-    EXPECT_TRUE(info->id.empty());
-  }
+  EXPECT_TRUE(info->email.empty());
+  EXPECT_TRUE(info->id.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
@@ -1061,47 +1048,33 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
     ExtensionSync) {
-  constexpr char kEmail[] = "test@example.com";
-#if BUILDFLAG(IS_CHROMEOS)
-  SignIn(kEmail, signin::ConsentLevel::kSync);
-#else
-  SignIn(kEmail);
-  SyncServiceFactory::GetForProfile(profile())
-      ->GetUserSettings()
-      ->SetSelectedTypes(
-          /*sync_everything=*/false,
-          /*types=*/{syncer::UserSelectableType::kExtensions});
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  SignIn("test@example.com");
+  ASSERT_TRUE(SyncServiceFactory::GetForProfile(profile())
+                  ->GetUserSettings()
+                  ->GetSelectedTypes()
+                  .Has(syncer::UserSelectableType::kExtensions));
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
-  EXPECT_EQ(kEmail, info->email);
+  EXPECT_EQ("test@example.com", info->email);
   EXPECT_EQ("gaia_id_for_test_example.com", info->id);
 }
 
 IN_PROC_BROWSER_TEST_P(
     IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam,
-    SignedInUnconsented) {
+    ExtensionSyncDisabled) {
   SignIn("test@example.com");
+  SyncServiceFactory::GetForProfile(profile())
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kExtensions, false);
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
 
-  // The unconsented (Sync off) primary account is returned conditionally,
-  // depending on the accountStatus parameter.
   if (account_status() == "ANY") {
     EXPECT_EQ("test@example.com", info->email);
     EXPECT_EQ("gaia_id_for_test_example.com", info->id);
   } else {
-    // accountStatus is SYNC or unspecified. In this case, the account is only
-    // returned if extensions are syncing. Whether or not extensions sync upon
-    // sign-in depends on
-    // `syncer::IsReplaceSyncPromosWithSignInPromosEnabled()`.
-    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-      EXPECT_EQ("test@example.com", info->email);
-      EXPECT_EQ("gaia_id_for_test_example.com", info->id);
-    } else {
-      EXPECT_TRUE(info->email.empty());
-      EXPECT_TRUE(info->id.empty());
-    }
+    EXPECT_TRUE(info->email.empty());
+    EXPECT_TRUE(info->id.empty());
   }
 }
 

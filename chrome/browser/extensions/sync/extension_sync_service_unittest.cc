@@ -45,7 +45,6 @@
 #include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -1788,16 +1787,12 @@ TEST_F(ExtensionSyncServiceTest, AccountExtensionTypeChangesWithSync) {
   const std::string first_extension_id = first_extension->id();
   ASSERT_TRUE(registry()->enabled_extensions().GetByID(first_extension_id));
 
-  // Use a test identity environment to mimic signing a user in with sync
-  // enabled.
+  // Use a test identity environment to mimic signing a user in.
   auto identity_test_env_profile_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
   identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable(
-          "testy@mctestface.com",
-          syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-              ? signin::ConsentLevel::kSignin
-              : signin::ConsentLevel::kSync);
+      ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                    signin::ConsentLevel::kSignin);
 
   scoped_refptr<const Extension> second_extension =
       load_extension("simple_with_icon");
