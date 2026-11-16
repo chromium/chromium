@@ -519,5 +519,66 @@ TEST_F(MediaWebContentsObserverTest, GrantRevokedOnDisconnect) {
   EXPECT_FALSE(AudibilityBypassTracker::ClaimGrant(player_id));
 }
 
+class ReentrantFrameDetacherObserver : public WebContentsObserver {
+ public:
+  ReentrantFrameDetacherObserver(WebContents* web_contents,
+                                 RenderFrameHost* frame_to_detach)
+      : WebContentsObserver(web_contents), frame_to_detach_(frame_to_detach) {}
+
+  void MediaStoppedPlaying(
+      const MediaPlayerInfo& video_type,
+      const MediaPlayerId& id,
+      WebContentsObserver::MediaStoppedReason reason) override {
+    if (frame_to_detach_) {
+      RenderFrameHost* rfh = frame_to_detach_.ExtractAsDangling();
+      RenderFrameHostTester::For(rfh)->Detach();
+    }
+  }
+
+ private:
+  raw_ptr<RenderFrameHost> frame_to_detach_;
+};
+
+TEST_F(MediaWebContentsObserverTest,
+       ReentrantRenderFrameDeletedDuringPlayerInfoDestruction) {
+  RenderFrameHost* main_rfh = contents()->GetPrimaryMainFrame();
+  RenderFrameHostTester::For(main_rfh)->InitializeRenderFrameIfNeeded();
+
+  RenderFrameHost* child_a =
+      RenderFrameHostTester::For(main_rfh)->AppendChild("child_a");
+  ASSERT_NE(child_a, nullptr);
+  RenderFrameHostTester::For(child_a)->InitializeRenderFrameIfNeeded();
+
+  RenderFrameHost* child_b =
+      RenderFrameHostTester::For(main_rfh)->AppendChild("child_b");
+  ASSERT_NE(child_b, nullptr);
+  RenderFrameHostTester::For(child_b)->InitializeRenderFrameIfNeeded();
+
+  // Ensure child_a sorts before child_b in player_info_map_.
+  ASSERT_LT(child_a->GetGlobalId(), child_b->GetGlobalId());
+
+  mojo::AssociatedRemote<media::mojom::MediaPlayerHost> host_a;
+  contents()->media_web_contents_observer()->BindMediaPlayerHost(
+      child_a->GetGlobalId(), host_a.BindNewEndpointAndPassDedicatedReceiver());
+  auto player_a = CreateAndAddPlayer(host_a, 1);
+  SetMediaMetadata(player_a.observer, /*has_audio=*/true, /*has_video=*/true);
+
+  mojo::AssociatedRemote<media::mojom::MediaPlayerHost> host_b;
+  contents()->media_web_contents_observer()->BindMediaPlayerHost(
+      child_b->GetGlobalId(), host_b.BindNewEndpointAndPassDedicatedReceiver());
+  auto player_b = CreateAndAddPlayer(host_b, 1);
+  SetMediaMetadata(player_b.observer, /*has_audio=*/true, /*has_video=*/true);
+  PlayMedia(player_b.observer);
+
+  // When child_b is deleted, ~PlayerInfo() for player_b synchronously calls
+  // WebContentsObserver::MediaStoppedPlaying(). If an observer detaches
+  // child_a during that callback, RenderFrameDeleted(child_a) is re-entered
+  // while the outer RenderFrameDeleted(child_b) loop holds a live iterator.
+  ReentrantFrameDetacherObserver detacher(contents(), child_a);
+  RenderFrameHostTester::For(child_b)->Detach();
+
+  EXPECT_EQ(media_web_contents_observer().GetCurrentlyPlayingVideoCount(), 0);
+}
+
 }  // namespace
 }  // namespace content

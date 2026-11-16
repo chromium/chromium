@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <tuple>
+#include <vector>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -186,24 +187,28 @@ void MediaWebContentsObserver::RenderFrameDeleted(
 
   GlobalRenderFrameHostId frame_routing_id = render_frame_host->GetGlobalId();
 
-  // This cannot just use `base::EraseIf()`, because some observers call back
-  // into `this` and query player info when a PlayerInfo is destroyed (!!).
-  // Re-entering a container while erasing an entry is generally not very safe
-  // or robust.
-  for (auto it = player_info_map_.begin(); it != player_info_map_.end();) {
-    if (it->first.frame_routing_id != frame_routing_id) {
-      ++it;
-      continue;
-    }
-    // Instead, remove entries in a multi-step process:
-    // 1. Move ownership of the PlayerInfo out of the map.
-    // 2. Erase the entry from the map.
-    // 3. Destroy the PlayerInfo (by letting it go out of scope).
-    //    Because the entry is already gone from the map, GetPlayerInfo() will
-    //    return null instead of trying to compare keys that are potentially
-    //    destroyed.
-    auto player_info = std::move(it->second);
-    it = player_info_map_.erase(it);
+  // This cannot just destroy `PlayerInfo` entries in-place inside
+  // `base::EraseIf()`, because `~PlayerInfo()` notifies `WebContentsObserver`s
+  // that may call back into `this` (e.g. querying `GetPlayerInfo()` or
+  // triggering a nested `RenderFrameDeleted()`). Re-entering `player_info_map_`
+  // while erasing an entry or while holding a live iterator into the
+  // underlying `base::flat_map` invalidates iterators.
+  //
+  // Instead:
+  // 1. Move ownership of all matching `PlayerInfo` entries out of
+  //    `player_info_map_` during `base::EraseIf()`.
+  // 2. Destroy them only after `base::EraseIf()` completes, when no iterator
+  //    into `player_info_map_` is live and all matching entries are already
+  //    removed from the map.
+  {
+    std::vector<std::unique_ptr<PlayerInfo>> removed_player_infos;
+    base::EraseIf(player_info_map_, [&](PlayerInfoMap::value_type& entry) {
+      if (entry.first.frame_routing_id == frame_routing_id) {
+        removed_player_infos.push_back(std::move(entry.second));
+        return true;
+      }
+      return false;
+    });
   }
 
   base::EraseIf(media_player_hosts_,
