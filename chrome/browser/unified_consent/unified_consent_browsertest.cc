@@ -7,9 +7,9 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedConsentBrowserTest,
   pref_service0->SetBoolean(pref_A, false);
   pref_service0->SetBoolean(pref_B, false);
   // Make sure the updates are committed before proceeding with the test.
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
 
   // Second client: Turn off both prefs while sync is off.
   pref_service1->SetBoolean(pref_A, false);
