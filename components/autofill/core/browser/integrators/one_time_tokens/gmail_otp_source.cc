@@ -95,8 +95,15 @@ void GmailOtpSource::Start(const OtpTarget& target) {
   if (!gmail_otp_service_ || target.origin.opaque()) {
     return;
   }
-  continuous_subscriptions_per_origin_.try_emplace(target.origin);
-  EnsureContinuousSubscriptionForOrigin(target.origin);
+  if (!UserOptedIntoGmailOtpFilling()) {
+    continuous_subscriptions_per_origin_.try_emplace(target.origin);
+    return;
+  }
+  if (HasActiveSubscriptionForOrigin(target.origin)) {
+    ProlongSubscriptionForOrigin(target.origin);
+    return;
+  }
+  CreateNewSubscriptionForOrigin(target.origin);
   FetchFreshestCachedOtpForOrigin(target.origin);
 }
 
@@ -172,8 +179,7 @@ bool GmailOtpSource::HasActiveSubscriptionForOriginForTesting(
   return HasActiveSubscriptionForOrigin(origin);
 }
 
-void GmailOtpSource::EnsureContinuousSubscriptionForOrigin(
-    const url::Origin& origin) {
+void GmailOtpSource::ProlongSubscriptionForOrigin(const url::Origin& origin) {
   CHECK(gmail_otp_service_);
   one_time_tokens::ExpiringSubscription* subscription =
       base::FindOrNull(continuous_subscriptions_per_origin_, origin);
@@ -186,6 +192,13 @@ void GmailOtpSource::EnsureContinuousSubscriptionForOrigin(
     return;
   }
   *subscription = SubscribeToService(origin, expiration);
+}
+
+void GmailOtpSource::CreateNewSubscriptionForOrigin(const url::Origin& origin) {
+  CHECK(gmail_otp_service_);
+  CHECK(UserOptedIntoGmailOtpFilling());
+  continuous_subscriptions_per_origin_.insert_or_assign(
+      origin, SubscribeToService(origin, ComputeSubscriptionExpiration()));
 }
 
 void GmailOtpSource::FetchFreshestCachedOtpForOrigin(
@@ -208,7 +221,7 @@ one_time_tokens::ExpiringSubscription GmailOtpSource::SubscribeToService(
       origin, /*allow_psl_matching=*/true, expiration,
       base::BindRepeating(&GmailOtpSource::OnIncomingTokenReceived,
                           weak_ptr_factory_.GetWeakPtr(), origin),
-      base::BindOnce(&GmailOtpSource::EnsureContinuousSubscriptionForOrigin,
+      base::BindOnce(&GmailOtpSource::ProlongSubscriptionForOrigin,
                      weak_ptr_factory_.GetWeakPtr(), origin));
 }
 
@@ -221,7 +234,11 @@ void GmailOtpSource::OnGmailOtpFillingEnabledPrefChanged() {
     return;
   }
   for (const auto& [origin, _] : continuous_subscriptions_per_origin_) {
-    EnsureContinuousSubscriptionForOrigin(origin);
+    if (HasActiveSubscriptionForOrigin(origin)) {
+      ProlongSubscriptionForOrigin(origin);
+      continue;
+    }
+    CreateNewSubscriptionForOrigin(origin);
     FetchFreshestCachedOtpForOrigin(origin);
   }
 }

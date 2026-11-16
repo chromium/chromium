@@ -48,7 +48,8 @@ class FormData;
 // `OtpSuggestionDropdownDispatcher`.
 //
 // While active in a tab, `OtpCoordinator`'s `OtpSecurityGateway` must be the
-// sole caller of the single-flight `AutofillClient::GetOtpPhishGuardDelegate()`.
+// sole caller of the single-flight
+// `AutofillClient::GetOtpPhishGuardDelegate()`.
 class OtpCoordinator : public OtpSource::Observer {
  public:
   class Observer : public base::CheckedObserver {
@@ -75,9 +76,10 @@ class OtpCoordinator : public OtpSource::Observer {
   void StopListeningForForm(FormGlobalId form_id,
                             const base::flat_set<FieldGlobalId>& except = {});
 
-  // Returns verified, unused OTPs available for `target`.
-  std::vector<one_time_tokens::OneTimeToken> GetAvailableTokens(
-      const OtpTarget& target) const;
+  // Returns verified, unused OTPs available for `target`, and renews OTP
+  // source subscriptions if `target` has an active delivery.
+  std::vector<one_time_tokens::OneTimeToken>
+  RenewSubscriptionsAndRetrieveAvailableTokens(const OtpTarget& target);
 
   // `observer` must be non-null and is retained until `UnregisterObserver()` is
   // called or `this` is destroyed.

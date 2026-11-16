@@ -312,7 +312,9 @@ TEST_F(OtpCoordinatorTest, IgnoresIneligibleTargets) {
       url::Origin::Create(GURL(kTestUrl)), autofill_driver().GetFrameToken(),
       FormGlobalId(), FieldGlobalId(), autofill_driver().GetFrameToken());
   coordinator_->StartListeningForOtp(ineligible_target);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(ineligible_target), IsEmpty());
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  ineligible_target),
+              IsEmpty());
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
 }
 
@@ -343,24 +345,30 @@ TEST_F(OtpCoordinatorTest, RenewsSmsSubscriptionAfterError) {
 TEST_F(OtpCoordinatorTest,
        ReactiveDeliveryExpirationAndPrefGatingAcrossSmsAndGmailOrigins) {
   const OtpTarget target = AddOtpForm()[0];
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      IsEmpty());
 
   sms_otp_service_->SimulateOtpArrived(OneTimeToken(
       OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()));
   phish_guard_delegate_->WaitForChecks();
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 1u);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("111111"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("111111"));
 
   const OtpTarget same_site_second_target = AddOtpForm()[0];
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 2u);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(same_site_second_target),
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  same_site_second_target),
               HasValue("111111"));
 
   const OtpTarget other_origin_target =
       AddOtpForm(1, GURL("https://other.test"))[0];
   phish_guard_delegate_->WaitForChecks();
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 3u);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target),
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  other_origin_target),
               HasValue("111111"));
 
   const base::Time t0 = base::Time::Now();
@@ -369,35 +377,52 @@ TEST_F(OtpCoordinatorTest,
   SendGmailOtp("222222", t0 + base::Seconds(20));
   phish_guard_delegate_->WaitForChecks();
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 4u);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target),
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("222222"));
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  other_origin_target),
               HasValue("111111"));
 
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      IsEmpty());
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("222222"));
 
   SendGmailOtp("000000", t0 + base::Seconds(5));
   SendGmailOtp("333333", t0 + base::Seconds(25), std::nullopt,
                "noreply@other.test");
   phish_guard_delegate_->WaitForChecks();
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 5u);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target),
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("222222"));
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  other_origin_target),
               HasValue("333333"));
 
   // Gmail tokens remain valid at 2 minutes and expire after the 3-minute TTL
   // (and a newly added field on `other.test` does not inherit the expired
   // candidate "333333").
   task_environment_.AdvanceClock(base::Minutes(2));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("222222"));
   task_environment_.AdvanceClock(base::Seconds(61));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
-  EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      IsEmpty());
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  other_origin_target),
+              IsEmpty());
   const OtpTarget late_other_origin_target =
       AddOtpForm(1, GURL("https://other.test"))[0];
-  EXPECT_THAT(coordinator_->GetAvailableTokens(late_other_origin_target),
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  late_other_origin_target),
               IsEmpty());
 }
 
@@ -428,11 +453,17 @@ TEST_F(OtpCoordinatorTest,
   std::move(phish_guard_delegate_->held_callbacks()[1])
       .Run(/*is_phishing=*/false);
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 2u);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), HasValue("222222"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[1]), HasValue("222222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
+      HasValue("222222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[1]),
+      HasValue("222222"));
 
   frame_observer_.reset();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
+      IsEmpty());
 }
 
 TEST_F(OtpCoordinatorTest, PhishingVerdictBlocksSiteFrameAndClearsOriginCache) {
@@ -445,8 +476,12 @@ TEST_F(OtpCoordinatorTest, PhishingVerdictBlocksSiteFrameAndClearsOriginCache) {
   phish_guard_delegate_->WaitForHeldCallbacks(1u);
   std::move(phish_guard_delegate_->held_callbacks()[0])
       .Run(/*is_phishing=*/true);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), IsEmpty());
-  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[1]), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
+      IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[1]),
+      IsEmpty());
 
   // After a phishing verdict, subsequent candidates and newly added fields on
   // the same `(origin, frame)` remain blocked and the origin cache is cleared,
@@ -457,12 +492,16 @@ TEST_F(OtpCoordinatorTest, PhishingVerdictBlocksSiteFrameAndClearsOriginCache) {
   const OtpTarget other_site_target =
       AddOtpForm(1, GURL("https://sub.example.test"))[0];
   phish_guard_delegate_->WaitForHeldCallbacks(2u);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), IsEmpty());
-  EXPECT_THAT(coordinator_->GetAvailableTokens(post_phishing_target),
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
+      IsEmpty());
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  post_phishing_target),
               IsEmpty());
   std::move(phish_guard_delegate_->held_callbacks()[1])
       .Run(/*is_phishing=*/false);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(other_site_target),
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  other_site_target),
               HasValue("444444"));
 }
 
@@ -479,14 +518,18 @@ TEST_F(OtpCoordinatorTest,
 
   task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      IsEmpty());
 
   SendGmailOtp("222222", base::Time::Now());
   phish_guard_delegate_->WaitForHeldCallbacks(2u);
   std::move(phish_guard_delegate_->held_callbacks()[1])
       .Run(/*is_phishing=*/false);
   EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("222222"));
 }
 
 TEST_F(OtpCoordinatorTest, ServesCommandLineMockOtpWithoutStartingSources) {
@@ -496,13 +539,17 @@ TEST_F(OtpCoordinatorTest, ServesCommandLineMockOtpWithoutStartingSources) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       one_time_tokens::switches::kMockOtpValue, "999999");
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("999999"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("999999"));
 
   OtpCoordinator mock_coordinator(&autofill_client());
   TestFrameObserver mock_observer(&autofill_manager(), &mock_coordinator);
   mock_coordinator.StartListeningForOtp(target);
   EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
-  EXPECT_THAT(mock_coordinator.GetAvailableTokens(target), HasValue("999999"));
+  EXPECT_THAT(
+      mock_coordinator.RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("999999"));
 }
 
 TEST_F(OtpCoordinatorTest,
@@ -520,22 +567,29 @@ TEST_F(OtpCoordinatorTest,
       base::TimeTicks::Now() - (base::Minutes(2) + base::Seconds(50));
   coordinator_->OnOtpFilled(site1_target, "000999");
   SendGmailOtp("000999", t0, t_sms - base::Seconds(3));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      IsEmpty());
 
   sms_otp_service_->SimulateOtpArrived(
       OneTimeToken(OneTimeTokenType::kSmsOtp, "111111", t_sms));
   phish_guard_delegate_->WaitForChecks(2u);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),
-              HasValue("111111"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[0]),
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      HasValue("111111"));
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  site2_targets[0]),
               HasValue("111111"));
 
   // Filling on `site1_target` consumes `site1_target`'s delivery and suppresses
   // older/matching codes on `site1_target.origin`, without consuming
   // `site2_targets`'s already-validated delivery on another origin.
   coordinator_->OnOtpFilled(site1_target, "111111");
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[0]),
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      IsEmpty());
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  site2_targets[0]),
               HasValue("111111"));
 
   // Advance 20s: `Now() - t_sms` is now 3m10s (> 3m), while `Now() -
@@ -543,40 +597,51 @@ TEST_F(OtpCoordinatorTest,
   task_environment_.AdvanceClock(base::Seconds(20));
   SendGmailOtp("000000", t0 + base::Seconds(5), t_sms - base::Seconds(5));
   SendGmailOtp("111111", t0, base::TimeTicks::Now());
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      IsEmpty());
 
   SendGmailOtp("222222", t0 + base::Seconds(30), base::TimeTicks::Now());
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),
-              HasValue("222222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      HasValue("222222"));
 
   // Submitting with a different typed value (e.g. a typo) drops the form's
   // delivery and records the typed value, without consuming the offered code
   // "222222". Re-listening on `site1_target` re-delivers "222222".
   coordinator_->OnOtpFormSubmitted(
       BuildFormWithFieldValue(site1_target, "999888"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      IsEmpty());
   EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
 
   coordinator_->StartListeningForOtp(site1_target);
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),
-              HasValue("222222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      HasValue("222222"));
 
   // Submitting with the offered value "222222" consumes "222222", so
   // re-listening on `site1_target` keeps "222222" suppressed until its
   // 3-minute used-code TTL expires.
   coordinator_->OnOtpFormSubmitted(
       BuildFormWithFieldValue(site1_target, "222222"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      IsEmpty());
   coordinator_->StartListeningForOtp(site1_target);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      IsEmpty());
 
   task_environment_.AdvanceClock(base::Minutes(4));
   SendGmailOtp("222222", base::Time::Now());
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),
-              HasValue("222222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(site1_target),
+      HasValue("222222"));
 
   // Submitting a split single-character multi-box form on `site2_targets`
   // concatenates its field values ("4" + "2" -> "42") and suppresses "42" on
@@ -588,9 +653,11 @@ TEST_F(OtpCoordinatorTest,
   test_api(split_form).field(1).set_value(u"2");
   coordinator_->OnOtpFormSubmitted(split_form);
   coordinator_->StartListeningForOtp(site2_targets[0]);
-  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
-      OneTimeTokenType::kSmsOtp, "42", base::TimeTicks::Now()));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[0]), IsEmpty());
+  sms_otp_service_->SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "42", base::TimeTicks::Now()));
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  site2_targets[0]),
+              IsEmpty());
 }
 
 TEST_F(OtpCoordinatorTest,
@@ -616,13 +683,18 @@ TEST_F(OtpCoordinatorTest,
   phish_guard_delegate_->WaitForHeldCallbacks(2u);
   std::move(phish_guard_delegate_->held_callbacks()[1])
       .Run(/*is_phishing=*/false);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[0]), IsEmpty());
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[1]),
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  site2_targets[0]),
+              IsEmpty());
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  site2_targets[1]),
               HasValue("333333"));
 
   coordinator_->OnOtpFormSubmitted(
       BuildFormWithFieldValue(site2_targets[1], "333333"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(site2_targets[1]), IsEmpty());
+  EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+                  site2_targets[1]),
+              IsEmpty());
 
   const OtpTarget site2_after_submit_target =
       AddOtpForm(/*fields=*/1, GURL("https://sub.example.test"))[0];
@@ -646,8 +718,12 @@ TEST_F(OtpCoordinatorTest,
       OneTimeTokenType::kSmsOtp, "654321", base::TimeTicks::Now()));
   phish_guard_delegate_->WaitForChecks();
 
-  EXPECT_THAT(coordinator_->GetAvailableTokens(field0), HasValue("654321"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(field1), HasValue("654321"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(field0),
+      HasValue("654321"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(field1),
+      HasValue("654321"));
   EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(field1.field));
 
   // Registering a second 2-field form on the same site when "654321" is already
@@ -679,7 +755,9 @@ TEST_F(OtpCoordinatorTest, OnOtpSuggestionsShownDeduplicatesByTimestamp) {
                                field0.field);
   SendGmailOtp("654321", t0);
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(field0), HasValue("654321"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(field0),
+      HasValue("654321"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
 
   // Mark `field0` as shown (`OnOtpSuggestionsShown` records across all fields
@@ -709,7 +787,9 @@ TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
                                non_otp_field);
   SendGmailOtp("888999", t0 + base::Seconds(10));
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("888999"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("888999"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
 
   const OtpTarget new_target =
@@ -717,11 +797,15 @@ TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
   coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
                                new_target.form, new_target.field);
   coordinator_->StartListeningForOtp(new_target);
-  EXPECT_THAT(coordinator_->GetAvailableTokens(new_target), HasValue("888999"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(new_target),
+      HasValue("888999"));
   EXPECT_THAT(frame_observer_->triggered_fields(),
               ElementsAre(new_target.field));
 }
 
+// Verifies that proactive triggers are suppressed when the focused OTP field
+// itself contains non-empty user-typed input, and allowed once cleared.
 TEST_F(OtpCoordinatorTest,
        SuppressesProactiveTriggerWhenOtpFieldContainsUserTypedInput) {
   const OtpTarget typed_target =
@@ -732,8 +816,9 @@ TEST_F(OtpCoordinatorTest,
 
   SendGmailOtp("956789", base::Time::Now());
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(typed_target),
-              HasValue("956789"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(typed_target),
+      HasValue("956789"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
 
   // If the user clears the OTP field, a newly arriving OTP triggers
@@ -744,8 +829,9 @@ TEST_F(OtpCoordinatorTest,
       ->set_value(u"");
   SendGmailOtp("956790", base::Time::Now() + base::Seconds(10));
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(typed_target),
-              HasValue("956790"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(typed_target),
+      HasValue("956790"));
   EXPECT_THAT(frame_observer_->triggered_fields(),
               ElementsAre(typed_target.field));
 }
@@ -767,7 +853,9 @@ TEST_F(OtpCoordinatorTest,
 
   SendGmailOtp("314159", t0 + base::Seconds(10));
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), HasValue("314159"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
+      HasValue("314159"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
 
   // Tab becomes visible while window is still unfocused and focus moves to the
@@ -789,12 +877,16 @@ TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsDeliveries) {
   sms_otp_service_->SimulateOtpArrived(OneTimeToken(
       OneTimeTokenType::kSmsOtp, "111111", base::TimeTicks::Now()));
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("111111"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("111111"));
 
   autofill_driver().SetIsActive(false);
   coordinator_->OnFrameBecameInactive(autofill_driver().GetFrameToken());
   EXPECT_THAT(test_api_coordinator().deliveries(), IsEmpty());
-  EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      IsEmpty());
 }
 
 TEST_F(OtpCoordinatorTest, RecordsGmailSuggestionReadyLatency) {
@@ -809,7 +901,9 @@ TEST_F(OtpCoordinatorTest, RecordsGmailSuggestionReadyLatency) {
 
   const std::vector<OtpTarget> targets = AddOtpForm(2);
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(coordinator_->GetAvailableTokens(targets[0]), HasValue("111222"));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
+      HasValue("111222"));
   histogram_tester.ExpectTotalCount(kHistogram, 0);
 
   sms_otp_service_->SimulateOtpArrived(OneTimeToken(
@@ -837,6 +931,64 @@ TEST_F(OtpCoordinatorTest, RecordsGmailSuggestionReadyLatency) {
   phish_guard_delegate_->WaitForChecks();
   histogram_tester.ExpectTotalCount(kHistogram, 2);
   histogram_tester.ExpectBucketCount(kHistogram, 800, 1);
+}
+
+// Verifies that querying `RenewSubscriptionsAndRetrieveAvailableTokens()`
+// renews all source subscriptions both when no OTP is ready and when an older
+// unexpired SMS OTP is already available, allowing a subsequent resent SMS OTP
+// to arrive and trigger proactively.
+TEST_F(OtpCoordinatorTest,
+       RenewSubscriptionsAndRetrieveAvailableTokensRenewsSourceSubscriptions) {
+  const OtpTarget target = AddOtpForm().front();
+  EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
+  EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
+  EXPECT_EQ(gmail_service_->num_get_freshest_cached_otp_calls(), 1u);
+
+  // Expire the initial SMS subscription without receiving an OTP.
+  task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
+  EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
+
+  // Querying `RenewSubscriptionsAndRetrieveAvailableTokens()` returns empty
+  // immediately and renews all source subscriptions without re-fetching cached
+  // Gmail OTPs.
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      IsEmpty());
+  EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
+  EXPECT_EQ(gmail_service_->num_callbacks(), 1u);
+  EXPECT_EQ(gmail_service_->num_get_freshest_cached_otp_calls(), 1u);
+
+  // When an SMS OTP arrives asynchronously, it triggers a proactive popup on
+  // the focused OTP field.
+  coordinator_->OnFocusChanged(target.frame, target.form, target.field);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "444555", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("444555"));
+
+  // Expire the 1-minute SMS subscription while "444555" is still within its
+  // 3-minute TTL. Querying `RenewSubscriptionsAndRetrieveAvailableTokens()`
+  // still returns "444555" and renews the SMS subscription so a resent SMS code
+  // can be received.
+  frame_observer_->clear_triggered_fields();
+  task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
+  EXPECT_EQ(sms_otp_service_->num_subscribers(), 0u);
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("444555"));
+  EXPECT_EQ(sms_otp_service_->num_subscribers(), 1u);
+  EXPECT_EQ(gmail_service_->num_get_freshest_cached_otp_calls(), 1u);
+
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "666777", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
+      HasValue("666777"));
 }
 
 }  // namespace

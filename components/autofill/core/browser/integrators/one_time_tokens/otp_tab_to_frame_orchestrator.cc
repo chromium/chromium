@@ -61,8 +61,9 @@ void OtpTabToFrameOrchestrator::GetOtpSuggestions(
   }
 
   last_queried_otp_field_ = field.global_id();
-  std::move(callback).Run(coordinator_->GetAvailableTokens(
-      BuildOtpTarget(*owner_, form, *autofill_field)));
+  std::move(callback).Run(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
+          BuildOtpTarget(*owner_, form, *autofill_field)));
 }
 
 void OtpTabToFrameOrchestrator::OnAutofillManagerStateChanged(

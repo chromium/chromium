@@ -81,7 +81,8 @@ class GmailOtpSource : public OtpSource {
                     const OtpTokenIdentity& rhs) const;
   };
 
-  void EnsureContinuousSubscriptionForOrigin(const url::Origin& origin);
+  void ProlongSubscriptionForOrigin(const url::Origin& origin);
+  void CreateNewSubscriptionForOrigin(const url::Origin& origin);
   void FetchFreshestCachedOtpForOrigin(const url::Origin& origin);
   one_time_tokens::ExpiringSubscription SubscribeToService(
       const url::Origin& origin,
