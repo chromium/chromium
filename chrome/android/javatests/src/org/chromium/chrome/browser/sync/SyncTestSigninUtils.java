@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Promise;
 import org.chromium.chrome.test.util.browser.signin.LiveSigninTestUtil;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
@@ -63,7 +64,14 @@ final class SyncTestSigninUtils {
     /** Signs out from the current test account. */
     @CalledByNative
     private static void signOutForTesting() {
-        sSigninTestRule.signOut();
+        if (sSigninTestRule != null) {
+            sSigninTestRule.signOut();
+            return;
+        }
+        // `sSigninTestRule` is only initialized by `setUpFakeAuthForTesting()`. Live sync tests
+        // sign in via `setUpLiveAccountAndSignInForTesting()` without initializing
+        // `sSigninTestRule`.
+        SigninTestUtil.signOut();
     }
 
     /** Sets up the fake authentication environment. */

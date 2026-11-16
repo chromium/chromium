@@ -197,7 +197,8 @@ public final class SigninTestUtil {
         SyncTestUtil.waitForHistorySyncEnabled();
     }
 
-    static void signOut() {
+    /** Signs out from the current account. */
+    public static void signOut() {
         signOut(SignoutReason.TEST);
     }
 
