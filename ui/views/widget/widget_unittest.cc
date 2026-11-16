@@ -180,6 +180,70 @@ class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
   std::set<raw_ptr<View, SetExperimental>> removed_views_;
 };
 
+class MakeCloseSynchronousReceiver {
+ public:
+  MakeCloseSynchronousReceiver() = default;
+
+  MakeCloseSynchronousReceiver(const MakeCloseSynchronousReceiver&) = delete;
+  MakeCloseSynchronousReceiver& operator=(const MakeCloseSynchronousReceiver&) =
+      delete;
+
+  ~MakeCloseSynchronousReceiver() = default;
+
+  void OnCloseRequested(Widget::ClosedReason reason) {
+    ++call_count_;
+    last_reason_ = reason;
+  }
+
+  int call_count() const { return call_count_; }
+  Widget::ClosedReason last_reason() const { return last_reason_; }
+
+  base::WeakPtr<MakeCloseSynchronousReceiver> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  void InvalidateWeakPtrs() { weak_factory_.InvalidateWeakPtrs(); }
+
+ private:
+  int call_count_ = 0;
+  Widget::ClosedReason last_reason_ = Widget::ClosedReason::kUnspecified;
+  base::WeakPtrFactory<MakeCloseSynchronousReceiver> weak_factory_{this};
+};
+
+class ReentrantCloseOnDestroyedObserver : public WidgetObserver {
+ public:
+  explicit ReentrantCloseOnDestroyedObserver(Widget* widget) {
+    observation_.Observe(widget);
+  }
+
+  ReentrantCloseOnDestroyedObserver(const ReentrantCloseOnDestroyedObserver&) =
+      delete;
+  ReentrantCloseOnDestroyedObserver& operator=(
+      const ReentrantCloseOnDestroyedObserver&) = delete;
+
+  ~ReentrantCloseOnDestroyedObserver() override = default;
+
+  bool on_widget_destroyed_completed() const {
+    return on_widget_destroyed_completed_;
+  }
+  std::optional<Widget::ClosedReason> destroyed_closed_reason() const {
+    return destroyed_closed_reason_;
+  }
+
+  // WidgetObserver:
+  void OnWidgetDestroyed(Widget* widget) override {
+    destroyed_closed_reason_ = widget->closed_reason();
+    observation_.Reset();
+    widget->Close();
+    on_widget_destroyed_completed_ = true;
+  }
+
+ private:
+  bool on_widget_destroyed_completed_ = false;
+  std::optional<Widget::ClosedReason> destroyed_closed_reason_;
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+};
+
 }  // namespace
 
 class WidgetTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
@@ -7581,6 +7645,108 @@ TEST_F(WidgetTest, NonClientViewOverlayViewOwnership) {
 
   non_client_view->SetOverlayView(std::unique_ptr<View>());
   EXPECT_FALSE(tracker2.view());
+}
+
+TEST_F(WidgetTest, MakeCloseSynchronousCancelledCallbackFallsThroughToClose) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  MakeCloseSynchronousReceiver receiver;
+  widget->MakeCloseSynchronous(base::BindOnce(
+      &MakeCloseSynchronousReceiver::OnCloseRequested, receiver.GetWeakPtr()));
+
+  // Invalidating WeakPtrs cancels `override_close_` without making it null, so
+  // CloseWithReason() should still fall through and close the widget.
+  receiver.InvalidateWeakPtrs();
+  widget->CloseWithReason(Widget::ClosedReason::kEscKeyPressed);
+
+  EXPECT_EQ(receiver.call_count(), 0);
+  EXPECT_TRUE(widget->IsClosed());
+  EXPECT_EQ(widget->closed_reason(), Widget::ClosedReason::kEscKeyPressed);
+}
+
+TEST_F(WidgetTest, MakeCloseSynchronousCloseDuringCloseNowDoesNotFireEarly) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  ReentrantCloseOnDestroyedObserver observer(widget.get());
+
+  int override_close_count = 0;
+  bool destroyed_before_override = false;
+  widget->MakeCloseSynchronous(
+      base::BindLambdaForTesting([&](Widget::ClosedReason) {
+        ++override_close_count;
+        destroyed_before_override = observer.on_widget_destroyed_completed();
+      }));
+
+  widget->CloseNow();
+
+  EXPECT_EQ(override_close_count, 1);
+  EXPECT_TRUE(destroyed_before_override);
+}
+
+TEST_F(WidgetTest, MakeCloseSynchronousDestructorDoesNotFireOverrideClose) {
+  int override_close_count = 0;
+
+  // 1. Synchronous native widget destruction during ~Widget() (before member
+  // destructors run) must not invoke `override_close_`.
+  {
+    auto widget = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    auto native_widget =
+        std::make_unique<testing::NiceMock<MockNativeWidget>>(widget.get());
+    ON_CALL(*native_widget, CreateFrameView).WillByDefault([]() {
+      return std::make_unique<FrameView>();
+    });
+    ON_CALL(*native_widget, Close).WillByDefault([widget_ptr = widget.get()]() {
+      static_cast<internal::NativeWidgetDelegate*>(widget_ptr)
+          ->OnNativeWidgetDestroyed();
+    });
+    params.native_widget = native_widget.get();
+    widget->Init(std::move(params));
+
+    widget->MakeCloseSynchronous(base::BindLambdaForTesting(
+        [&](Widget::ClosedReason) { ++override_close_count; }));
+    widget.reset();
+  }
+  EXPECT_EQ(override_close_count, 0);
+
+  // 2. An observer calling Close() during ~Widget() must also early-out without
+  // invoking `override_close_`.
+  {
+    std::unique_ptr<Widget> widget =
+        CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+    ReentrantCloseOnDestroyedObserver observer(widget.get());
+    widget->MakeCloseSynchronous(base::BindLambdaForTesting(
+        [&](Widget::ClosedReason) { ++override_close_count; }));
+    widget.reset();
+  }
+  EXPECT_EQ(override_close_count, 0);
+}
+
+TEST_F(WidgetTest, MakeCloseSynchronousLatchesClosedReasonUnlessBlocked) {
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  // Blocking close (not resetting/closing the widget in the callback) must
+  // leave `closed_reason()` as `kUnspecified`.
+  std::optional<Widget::ClosedReason> blocked_reason;
+  widget->MakeCloseSynchronous(base::BindLambdaForTesting(
+      [&](Widget::ClosedReason reason) { blocked_reason = reason; }));
+  widget->CloseWithReason(Widget::ClosedReason::kCloseButtonClicked);
+  EXPECT_EQ(blocked_reason, Widget::ClosedReason::kCloseButtonClicked);
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_EQ(widget->closed_reason(), Widget::ClosedReason::kUnspecified);
+
+  // Resetting the widget from the callback must expose the latched reason to
+  // destruction observers.
+  ReentrantCloseOnDestroyedObserver observer(widget.get());
+  widget->MakeCloseSynchronous(base::BindLambdaForTesting(
+      [&](Widget::ClosedReason) { widget.reset(); }));
+  widget->CloseWithReason(Widget::ClosedReason::kEscKeyPressed);
+  EXPECT_FALSE(widget);
+  EXPECT_EQ(observer.destroyed_closed_reason(),
+            Widget::ClosedReason::kEscKeyPressed);
 }
 
 }  // namespace views::test

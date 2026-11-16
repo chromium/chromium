@@ -280,6 +280,10 @@ Widget::~Widget() {
   // is unnecessary.
   is_destroying_ = true;
   widget_closed_ = true;
+  // `override_close_` is still set here when the owner destroys the widget
+  // directly via `widget_.reset()` without calling `Close()`. Reset it now so
+  // native widget teardown below cannot run it during `~Widget()`.
+  override_close_.Reset();
   autosize_task_factory_.InvalidateWeakPtrs();
 
   // The following Notification order is preserved here:
@@ -997,21 +1001,33 @@ void Widget::SetShape(std::unique_ptr<ShapeRects> shape) {
 }
 
 void Widget::CloseWithReason(ClosedReason closed_reason) {
-  // This logic intentionally exists before the 5 early returns below. If a
-  // client does not want a Widget to Close(), the client should not call
-  // Close(). Each of the cases below is to handle client-specific cases that
-  // added logic into this class, rather than modifying the client to not call
-  // Close().
-  if (override_close_) {
-    std::move(override_close_).Run(closed_reason);
-    return;
-  }
-
   if (widget_closed_) {
     // It appears we can hit this code path if you close a modal dialog then
     // close the last browser before the destructor is hit, which triggers
     // invoking Close again.
     return;
+  }
+
+  // This logic intentionally exists before the 4 early returns below. If a
+  // client does not want a Widget to Close(), the client should not call
+  // Close(). Each of the cases below is to handle client-specific cases that
+  // added logic into this class, rather than modifying the client to not call
+  // Close().
+  if (override_close_) {
+    auto override_close = std::move(override_close_);
+    // Cancelling a callback via `WeakPtr` invalidation does not make it null.
+    // Skip cancelled callbacks so the `return` below does not swallow the close
+    // request after a no-op `Run()`.
+    if (!override_close.IsCancelled()) {
+      const ClosedReason previous_closed_reason = closed_reason_;
+      closed_reason_ = closed_reason;
+      auto weak_this = GetWeakPtr();
+      std::move(override_close).Run(closed_reason);
+      if (weak_this && !widget_closed_) {
+        closed_reason_ = previous_closed_reason;
+      }
+      return;
+    }
   }
   if (block_close_) {
     return;
