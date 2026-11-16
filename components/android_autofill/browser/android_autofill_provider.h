@@ -143,6 +143,8 @@ class AndroidAutofillProvider : public AutofillProvider,
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
+  void MaybeHidePopupAndResetCredMan(content::GlobalRenderFrameHostId rfh_id);
+
   // Returns true the first time it is called after a bottom sheet was shown.
   // This is intended to be used only by the keyboard suppressor, which calls it
   // once in OnAfterAskForValuesToFill to determine whether it should continue
@@ -268,9 +270,8 @@ class AndroidAutofillProvider : public AutofillProvider,
     kClosed,     // The sheet was dismissed and shouldn't be auto-shown again.
   };
 
-  // Sets `credman_sheet_status_` to `new_status`, clears the completion
-  // callback on the `WebAuthnCredManDelegate` of `credman_sheet_rfh_id_`, and
-  // resets `credman_sheet_rfh_id_`.
+  // Clears the completion callback of the WebAuthnCredManDelegate, and updates
+  // `credman_sheet_status_` and `credman_sheet_rfh_id_`.
   void ClearCredManCompletionCallback(CredManBottomSheetLifecycle new_status);
 
   // Stops the keyboard suppression. Called when the CredMan UI was closed. If

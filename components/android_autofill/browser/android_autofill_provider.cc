@@ -136,20 +136,9 @@ void AndroidAutofillProvider::AttachToJavaAutofillProvider(
 
 void AndroidAutofillProvider::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
-  // If the popup menu has been triggered from within an iframe and that frame
-  // is deleted, hide the popup. This is necessary because the popup may
-  // actually be shown by the AutofillExternalDelegate of an ancestor frame,
-  // which is not notified about `rfh`'s destruction and therefore won't close
-  // the popup.
-  if (session_state_ && session_state_->manager &&
-      session_state_->last_queried_field_rfh_id == rfh->GetGlobalId()) {
-    OnHidePopup(session_state_->manager.get());
-  }
-  if (credman_sheet_rfh_id_ == rfh->GetGlobalId()) {
-    // `WebAuthnCredManDelegateFactory` takes care of cleaning up
-    // `GetCredManDelegate(rfh)`.
-    ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kNotShown);
-  }
+  // RenderFrameHostStateChanged() is not called on FrameTree::Shutdown():
+  // crbug.com/40693086.
+  MaybeHidePopupAndResetCredMan(rfh->GetGlobalId());
 }
 
 void AndroidAutofillProvider::RenderFrameHostStateChanged(
@@ -170,13 +159,7 @@ void AndroidAutofillProvider::RenderFrameHostStateChanged(
   };
 
   if (should_hide_popup(new_state)) {
-    if (session_state_ && session_state_->manager &&
-        session_state_->last_queried_field_rfh_id == rfh->GetGlobalId()) {
-      OnHidePopup(session_state_->manager.get());
-    }
-    if (credman_sheet_rfh_id_ == rfh->GetGlobalId()) {
-      ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kNotShown);
-    }
+    MaybeHidePopupAndResetCredMan(rfh->GetGlobalId());
   }
 }
 
@@ -186,18 +169,27 @@ void AndroidAutofillProvider::DidFinishNavigation(
       navigation_handle->IsSameDocument()) {
     return;
   }
+  MaybeHidePopupAndResetCredMan(
+      navigation_handle->GetPreviousRenderFrameHostId());
+}
 
+void AndroidAutofillProvider::MaybeHidePopupAndResetCredMan(
+    content::GlobalRenderFrameHostId rfh_id) {
+  CHECK(rfh_id);
+  // If the popup menu has been triggered from within an iframe and that frame
+  // becomes inactive, navigates, or is deleted, hide the popup. This is
+  // necessary because `session_state_->manager` may belong to an ancestor
+  // frame, which is not reset and therefore won't close the popup via
+  // OnManagerResetOrDestroyed().
   if (session_state_ && session_state_->manager &&
-      session_state_->last_queried_field_rfh_id ==
-          navigation_handle->GetPreviousRenderFrameHostId()) {
+      session_state_->last_queried_field_rfh_id == rfh_id) {
     OnHidePopup(session_state_->manager.get());
   }
-
-  if (credman_sheet_rfh_id_ ==
-      navigation_handle->GetPreviousRenderFrameHostId()) {
+  if (credman_sheet_rfh_id_ == rfh_id) {
     // Clear the callback to prevent a race condition where the platform UI
-    // dismissal (triggered by navigation) calls back and overwrites the
-    // `credman_sheet_status_` to `kClosed` after we reset it to `kNotShown`.
+    // dismissal calls back and overwrites `credman_sheet_status_` to `kClosed`
+    // after we reset it to `kNotShown`. `WebAuthnCredManDelegateFactory` takes
+    // care of cleaning up `WebAuthnCredManDelegate` itself on frame deletion.
     ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kNotShown);
   }
 }

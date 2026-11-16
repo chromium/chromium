@@ -108,7 +108,7 @@ void AutofillPopupHideHelper::RenderFrameHostStateChanged(
 
 void AutofillPopupHideHelper::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
-  // RenderFrameHostStateChanged() is not called when on FrameTree::Shutdown():
+  // RenderFrameHostStateChanged() is not called on FrameTree::Shutdown():
   // crbug.com/40693086.
   // For the primary frame tree, this is caught by WebContentsDestroyed(), but
   // for embedded frame trees we observe RenderFrameDeleted() to compensate for
