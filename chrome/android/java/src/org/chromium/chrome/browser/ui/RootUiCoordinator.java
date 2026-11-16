@@ -1497,7 +1497,7 @@ public class RootUiCoordinator
                         assertNonNull(getBottomSheetController()),
                         mActivityTabProvider,
                         mBrowserControlsManager,
-                        mToolbarThemeColorProvider);
+                        mTopUiThemeColorProvider);
         if (mReaderModeTabObserver != null) {
             mReaderModeTabObserver.destroy();
             mReaderModeTabObserver = null;
@@ -3133,5 +3133,10 @@ public class RootUiCoordinator
 
     public void setScrimManagerForTesting(ScrimManager scrimManager) {
         mScrimManagerSupplier.set(scrimManager);
+    }
+
+    public @Nullable ReaderModeBottomSheetManager initReaderModeBottomSheetManagerForTesting() {
+        initReaderModeBottomSheetManager();
+        return mReaderModeBottomSheetManager;
     }
 }

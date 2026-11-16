@@ -236,4 +236,8 @@ public class ReaderModeBottomSheetManager implements Destroyable {
             mCoordinator.hide();
         }
     }
+
+    public ThemeColorProvider getThemeColorProviderForTesting() {
+        return mThemeColorProvider;
+    }
 }
