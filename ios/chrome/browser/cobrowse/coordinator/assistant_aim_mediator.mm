@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
-#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
@@ -132,13 +131,6 @@
     _cobrowseBrowserAgent = cobrowseBrowserAgent;
     if (_cobrowseBrowserAgent) {
       _context = _cobrowseBrowserAgent->GetCobrowseContext();
-    }
-    if (!_context) {
-      _context = [CobrowseContext defaultContext];
-      _context.entrypoint = AssistantAimEntrypoint::kLocationBarAction;
-      if (_cobrowseBrowserAgent) {
-        _cobrowseBrowserAgent->SetCobrowseContext(_context);
-      }
     }
     _isDarkMode =
         (UITraitCollection.currentTraitCollection.userInterfaceStyle ==

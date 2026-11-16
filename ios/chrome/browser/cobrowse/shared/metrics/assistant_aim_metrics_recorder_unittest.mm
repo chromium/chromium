@@ -29,11 +29,11 @@ class AssistantAIMMetricsRecorderTest : public PlatformTest {
 // logs entrypoint, unengaged duration, and immediate dismissal.
 TEST_F(AssistantAIMMetricsRecorderTest, ImmediateUnengagedDismissal) {
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
 
   histogram_tester_.ExpectUniqueSample(
       kAssistantAimEntrypointHistogram,
-      AssistantAimEntrypoint::kLocationBarAction, 1);
+      AssistantAimEntrypoint::kAskAboutCurrentPage, 1);
 
   task_environment_.FastForwardBy(base::Seconds(1));
   [recorder_ recordClosedSnackbarResolvedWithUndo:NO];
@@ -103,7 +103,7 @@ TEST_F(AssistantAIMMetricsRecorderTest,
 // transition state.
 TEST_F(AssistantAIMMetricsRecorderTest, CloseUndoRestoresState) {
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
 
   [recorder_ recordClosedSnackbarResolvedWithUndo:YES];
 
@@ -120,7 +120,7 @@ TEST_F(AssistantAIMMetricsRecorderTest, CloseUndoRestoresState) {
 TEST_F(AssistantAIMMetricsRecorderTest,
        HeaderActionsRecordMetricsAndEngagement) {
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
 
   [recorder_ recordHeaderAction:AssistantAimHeaderAction::kCloseButtonTapped];
   [recorder_ recordSessionEnded];
@@ -133,7 +133,7 @@ TEST_F(AssistantAIMMetricsRecorderTest,
 
   // Start a second session and exercise non-close header actions.
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
   [recorder_ recordHeaderAction:AssistantAimHeaderAction::kThreadHistoryTapped];
   [recorder_ recordHeaderAction:AssistantAimHeaderAction::kMyActivityTapped];
   [recorder_ recordHeaderAction:AssistantAimHeaderAction::kHelpTapped];
@@ -160,7 +160,7 @@ TEST_F(AssistantAIMMetricsRecorderTest,
 // link click state when a new session starts.
 TEST_F(AssistantAIMMetricsRecorderTest, LinkClickedAndReturnFromMinimized) {
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
 
   [recorder_ recordLinkClicked];
   [recorder_ recordDetentChanged:AssistantContainerDetent::kMinimized];
@@ -184,7 +184,7 @@ TEST_F(AssistantAIMMetricsRecorderTest, LinkClickedAndReturnFromMinimized) {
   // Starting a new session should reset `_linksClickedCount` and
   // `_awaitingReturnFromLinkClick`.
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
   [recorder_ recordDetentChanged:AssistantContainerDetent::kLarge];
   [recorder_ recordSessionEnded];
 
@@ -200,7 +200,7 @@ TEST_F(AssistantAIMMetricsRecorderTest, LinkClickedAndReturnFromMinimized) {
 // `ReturnedAfterLinkClick` as false.
 TEST_F(AssistantAIMMetricsRecorderTest, LinkClickedWithoutReturn) {
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
 
   [recorder_ recordLinkClicked];
   [recorder_ recordDetentChanged:AssistantContainerDetent::kMinimized];
@@ -260,7 +260,7 @@ TEST_F(AssistantAIMMetricsRecorderTest, FollowupSubmissionsPerSession) {
 // the session ends, and logs false when a session ends without removing one.
 TEST_F(AssistantAIMMetricsRecorderTest, AutoAddedTabRemoved) {
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
 
   [recorder_ recordAutoAddedTabRemoved];
   [recorder_ recordSessionEnded];
@@ -271,7 +271,7 @@ TEST_F(AssistantAIMMetricsRecorderTest, AutoAddedTabRemoved) {
   // Starting a new session should reset `_autoAddedTabRemoved` and log false if
   // no auto-added tab is removed during the session.
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
   [recorder_ recordSessionEnded];
 
   histogram_tester_.ExpectBucketCount(kAssistantAimAutoAddedTabRemovedHistogram,
@@ -286,7 +286,7 @@ TEST_F(AssistantAIMMetricsRecorderTest, AutoAddedTabRemoved) {
 // `FRENoticeAction`.
 TEST_F(AssistantAIMMetricsRecorderTest, FRENoticeActions) {
   [recorder_ recordSessionStartedWithEntrypoint:AssistantAimEntrypoint::
-                                                    kLocationBarAction];
+                                                    kAskAboutCurrentPage];
 
   [recorder_ recordFRENoticeAction:AssistantAimFRENoticeAction::kShown];
   [recorder_

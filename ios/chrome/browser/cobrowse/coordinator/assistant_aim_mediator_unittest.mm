@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
@@ -108,18 +109,9 @@ class AssistantAIMMediatorTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    auto fake_web_state = std::make_unique<web::FakeWebState>();
-    fake_web_state->SetNavigationManager(
-        std::make_unique<web::FakeNavigationManager>());
+    std::unique_ptr<web::FakeWebState> fake_web_state =
+        CreateConfiguredFakeWebState();
     fake_web_state_ = fake_web_state.get();
-    fake_web_state->SetBrowserState(profile_);
-    auto manager = std::make_unique<web::FakeWebFramesManager>();
-    fake_web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
-                                        std::move(manager));
-    AssistantAimTabHelper::CreateForWebState(
-        fake_web_state.get(),
-        IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_),
-        profile_->GetPrefs());
     web::test::OverrideJavaScriptFeatures(
         profile_, {AimCobrowseJavaScriptFeature::GetInstance()});
 
@@ -149,6 +141,23 @@ class AssistantAIMMediatorTest : public PlatformTest {
     mediator_.consumer = mock_consumer_;
   }
 
+  // Creates a configured `FakeWebState` with navigation and web frames
+  // managers and `AssistantAimTabHelper` attached.
+  std::unique_ptr<web::FakeWebState> CreateConfiguredFakeWebState() {
+    auto fake_web_state = std::make_unique<web::FakeWebState>();
+    fake_web_state->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
+    fake_web_state->SetBrowserState(profile_);
+    auto manager = std::make_unique<web::FakeWebFramesManager>();
+    fake_web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
+                                        std::move(manager));
+    AssistantAimTabHelper::CreateForWebState(
+        fake_web_state.get(),
+        IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_),
+        profile_->GetPrefs());
+    return fake_web_state;
+  }
+
   void TearDown() override {
     browser_web_state_delegate_.ClearLastProxyAuthenticationRequest();
     fake_web_state_ = nullptr;
@@ -158,6 +167,18 @@ class AssistantAIMMediatorTest : public PlatformTest {
     browser_.reset();
     profile_ = nullptr;
     PlatformTest::TearDown();
+  }
+
+  // Sets a default `CobrowseContext` on the browser agent, loads it in the
+  // mediator, and resets the navigation manager so subsequent reloads can be
+  // observed cleanly.
+  void SetDefaultContextAndResetNavigationManager() {
+    CobrowseBrowserAgent* agent =
+        CobrowseBrowserAgent::FromBrowser(browser_.get());
+    agent->SetCobrowseContext([CobrowseContext defaultContext]);
+    [mediator_ updateContext];
+    fake_web_state_->SetNavigationManager(
+        std::make_unique<web::FakeNavigationManager>());
   }
 
   // Simulates a network change and waits until it has been delivered to the
@@ -871,10 +892,7 @@ TEST_F(AssistantAIMMediatorTest, DidGetSelectedThreadURLDoesNotAnimateDetent) {
 // Tests that the AIM URL is reloaded when the network reconnects after a page
 // load failure.
 TEST_F(AssistantAIMMediatorTest, ReloadsOnReconnectAfterPageLoadFailure) {
-  // Replace the navigation manager to clear the initial load triggered during
-  // `SetUp()`.
-  fake_web_state_->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+  SetDefaultContextAndResetNavigationManager();
   fake_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
 
   // Simulate the error-page placeholder navigation starting with an error; this
@@ -910,10 +928,7 @@ TEST_F(AssistantAIMMediatorTest, ReloadsOnReconnectAfterPageLoadFailure) {
 // `CONNECTION_NONE` after a page load failure.
 TEST_F(AssistantAIMMediatorTest,
        DoesNotReloadWhenDisconnectedAfterPageLoadFailure) {
-  // Replace the navigation manager to clear the initial load triggered during
-  // `SetUp()`.
-  fake_web_state_->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+  SetDefaultContextAndResetNavigationManager();
   fake_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
 
   NotifyNetworkChangeAndWait(net::NetworkChangeNotifier::CONNECTION_NONE);
@@ -927,10 +942,7 @@ TEST_F(AssistantAIMMediatorTest,
 // Tests that when the AIM page loads successfully while online, a subsequent
 // network disconnection and reconnection does not reload the page.
 TEST_F(AssistantAIMMediatorTest, DoesNotReloadOnReconnectAfterPageLoadSuccess) {
-  // Replace the navigation manager to clear the initial load triggered during
-  // `SetUp()`.
-  fake_web_state_->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+  SetDefaultContextAndResetNavigationManager();
   fake_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 
   NotifyNetworkChangeAndWait(net::NetworkChangeNotifier::CONNECTION_NONE);
@@ -947,10 +959,7 @@ TEST_F(AssistantAIMMediatorTest, DoesNotReloadOnReconnectAfterPageLoadSuccess) {
 // non-error navigation has already started after a page load failure.
 TEST_F(AssistantAIMMediatorTest,
        DoesNotReloadOnReconnectAfterNewNavigationStarts) {
-  // Replace the navigation manager to clear the initial load triggered during
-  // `SetUp()`.
-  fake_web_state_->SetNavigationManager(
-      std::make_unique<web::FakeNavigationManager>());
+  SetDefaultContextAndResetNavigationManager();
   fake_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
 
   web::FakeNavigationContext context;
@@ -1119,4 +1128,78 @@ TEST_F(AssistantAIMMediatorTest,
 
   [mock_recorder verify];
   [mock_recorder stopMocking];
+}
+
+// Tests that initializing the mediator when `CobrowseBrowserAgent` has no
+// context leaves the agent's context nil and does not load a URL.
+TEST_F(AssistantAIMMediatorTest,
+       KeepsContextNilAndDoesNotLoadURLWhenAgentContextIsNil) {
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetCobrowseContext(nil);
+
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      CreateConfiguredFakeWebState();
+  web::FakeWebState* web_state_ptr = fake_web_state.get();
+
+  AssistantAIMMediator* mediator = [[AssistantAIMMediator alloc]
+             initWithWebState:std::move(fake_web_state)
+      browserWebStateDelegate:&browser_web_state_delegate_
+         cobrowseBrowserAgent:agent
+             containerHandler:mock_container_handler_
+       contextualTasksService:nullptr
+                    URLLoader:url_loader_
+        authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                  profile_)];
+  id consumer = OCMProtocolMock(@protocol(AssistantAIMConsumer));
+
+  mediator.consumer = consumer;
+
+  EXPECT_EQ(agent->GetCobrowseContext(), nil);
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          web_state_ptr->GetNavigationManager());
+  EXPECT_FALSE(navigation_manager->LoadURLWithParamsWasCalled());
+
+  [mediator disconnect];
+}
+
+// Tests that initializing the mediator when `CobrowseBrowserAgent` already has
+// a context loads its URL and preserves the context and entrypoint on the
+// agent.
+TEST_F(AssistantAIMMediatorTest, LoadsExistingContextFromAgentOnInit) {
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  CobrowseContext* initial_context = [CobrowseContext defaultContext];
+  initial_context.entrypoint = AssistantAimEntrypoint::kAskAboutCurrentPage;
+  agent->SetCobrowseContext(initial_context);
+
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      CreateConfiguredFakeWebState();
+  web::FakeWebState* web_state_ptr = fake_web_state.get();
+
+  AssistantAIMMediator* mediator = [[AssistantAIMMediator alloc]
+             initWithWebState:std::move(fake_web_state)
+      browserWebStateDelegate:&browser_web_state_delegate_
+         cobrowseBrowserAgent:agent
+             containerHandler:mock_container_handler_
+       contextualTasksService:nullptr
+                    URLLoader:url_loader_
+        authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                  profile_)];
+  id consumer = OCMProtocolMock(@protocol(AssistantAIMConsumer));
+
+  mediator.consumer = consumer;
+
+  EXPECT_EQ(agent->GetCobrowseContext(), initial_context);
+  EXPECT_EQ(agent->GetCobrowseContext().entrypoint,
+            AssistantAimEntrypoint::kAskAboutCurrentPage);
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          web_state_ptr->GetNavigationManager());
+  ASSERT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(navigation_manager->GetLastLoadURLWithParams()->url,
+            GURL(kAimZeroStateURL));
+
+  [mediator disconnect];
 }
