@@ -15,5 +15,10 @@ builds into its libunwindstack target.
 
 src/ holds that file from the upstream repository root, unchanged.
 
-To update, copy include/procinfo/process_map.h at the new revision into
-src/include/procinfo/ and update Revision above.
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./
+
+copy.bara.sky lists every file it imports. If the new upstream version
+adds a file Chromium needs, add it there and to
+//third_party/libunwindstack/BUILD.gn.

@@ -1,0 +1,7 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = [
+        "include/procinfo/process_map.h",
+    ],
+)
