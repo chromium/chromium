@@ -1023,8 +1023,6 @@ bool UpdateLcppStatWithLcppDataInputs(const LcppDataInputs& inputs,
       blink::features::kLCPPDeferUnusedPreloadSlidingWindowSize.Get(),
       blink::features::kLCPPDeferUnusedPreloadMaxHistogramBuckets.Get(),
       inputs.unused_preload_resources, stat);
-  base::UmaHistogramCounts10000("Blink.LCPP.ReportedFontCount",
-                                base::checked_cast<int>(inputs.font_url_count));
   if (inputs.font_url_count > 0 && inputs.font_urls.size() > 0) {
     base::UmaHistogramCounts10000(
         "Blink.LCPP.RecordedFontUrlHitCountForPagesWithFonts",
