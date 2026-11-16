@@ -792,8 +792,9 @@ ConstructSignatureBaseImpl(const mojom::SRIMessageSignaturePtr& signature,
         // Fortunately, we only support one header at the moment, so the list is
         // manageable.
         if (component->name == "unencoded-digest") {
-          // TODO(mkwst): We shouldn't parse this header both here and in Blink.
-          // Ideally we'll migrate the implementation into the network stack.
+          // Unencoded-Digest is parsed into `network::mojom::UnencodedDigests`
+          // in the network stack upon receiving headers. For signature-base
+          // construction, re-serialize the dictionary as required by RFC 9421.
           std::optional<net::structured_headers::Dictionary> dict =
               net::structured_headers::ParseDictionary(header.value());
           if (!dict.has_value()) {
