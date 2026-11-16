@@ -30,6 +30,27 @@ suite('ModuleHeaderV2', () => {
     assertTrue(isVisible(moduleHeader.$.title));
   });
 
+  test('renders slotted title icon before title', async () => {
+    const slot = moduleHeader.shadowRoot.querySelector<HTMLSlotElement>(
+        'slot[name="title-icon"]');
+    assertTrue(!!slot);
+    assertEquals(0, slot.assignedElements().length);
+
+    const icon = document.createElement('cr-icon');
+    icon.setAttribute('slot', 'title-icon');
+    icon.setAttribute('icon', 'modules:tune');
+    moduleHeader.headerText = 'foo';
+    moduleHeader.appendChild(icon);
+    await microtasksFinished();
+
+    assertEquals(1, slot.assignedElements().length);
+    assertEquals(icon, slot.assignedElements()[0]);
+    assertTrue(isVisible(icon));
+    assertTrue(
+        !!(slot.compareDocumentPosition(moduleHeader.$.title) &
+           Node.DOCUMENT_POSITION_FOLLOWING));
+  });
+
   test('clicking the menu button shows the action menu', async () => {
     // Act.
     moduleHeader.$.menuButton.click();

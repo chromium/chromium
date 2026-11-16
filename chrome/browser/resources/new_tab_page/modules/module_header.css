@@ -29,6 +29,13 @@
   padding: 12px 12px 8px 12px;
 }
 
+::slotted([slot='title-icon']) {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  flex-shrink: 0;
+  margin-inline-end: 8px;
+}
+
 #title {
   color: var(--color-new-tab-page-primary-foreground);
   font-size: 13px;

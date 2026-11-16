@@ -1,4 +1,5 @@
 <div id="titleContainer">
+  <slot name="title-icon"></slot>
   <h2 id="title" ?hidden="${!this.headerText}">${this.headerText}</h2>
   <div id="headerSpacer"></div>
   <slot name="title-actions"></slot>
