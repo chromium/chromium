@@ -39,6 +39,7 @@ constexpr net::NetworkTrafficAnnotationTag kGcaTrafficAnnotation =
           "OAuth 2.0 tokens are also sent to authenticate and authorize the "
           "requests."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "aicode.googleapis.com"
         internal {
           contacts {
             owners: "//chrome/browser/devtools/OWNERS"

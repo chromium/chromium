@@ -25,6 +25,7 @@ const net::NetworkTrafficAnnotationTag kAidaTrafficAnnotation =
         data: "Prompt for AIDA endpoint, containing instructions, error and "
           "sometimes some additional context information."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "aida.googleapis.com"
         internal {
           contacts {
             email: "chrome-devtools@google.com"

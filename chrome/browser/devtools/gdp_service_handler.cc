@@ -26,6 +26,7 @@ constexpr net::NetworkTrafficAnnotationTag kGdpTrafficAnnotation =
           "The data sent consists of the user's access token for their Google "
           "Developer Profile and the specific badge name being awarded."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "developers.googleapis.com"
         internal {
           contacts {
             email: "chrome-devtools@google.com"
