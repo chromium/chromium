@@ -215,9 +215,14 @@ void EnableEnterpriseUrlFilteringPrefs() {
   AppLaunchConfiguration config;
 
   // Use commandline args to insert fake unsafe URLs into the Safe Browsing
+  // database. For HPRT Incognito tests, omit `--mark_as_phishing` so that
+  // `_phishingURL` is only marked unsafe in `V5SearchHashesCache` (via
+  // `--mark_as_v5_search_hashes_phishing`) and not in the local prefix
   // database.
-  config.additional_args.push_back(std::string("--mark_as_phishing=") +
-                                   _phishingURL.spec());
+  if (![self isRunningHprtIncognitoTest]) {
+    config.additional_args.push_back(std::string("--mark_as_phishing=") +
+                                     _phishingURL.spec());
+  }
   config.additional_args.push_back(std::string("--mark_as_malware=") +
                                    _malwareURL.spec());
   config.additional_args.push_back(
@@ -235,6 +240,17 @@ void EnableEnterpriseUrlFilteringPrefs() {
           isRunningTest:@selector(testProceedingPastMalwareWarningReported)]) {
     config.additional_args.push_back(std::string(
         "--disable-features=SafeBrowsingHashPrefixRealTimeLookups"));
+  } else if ([self isRunningTest:
+                       @selector(
+                           testHashPrefixRealTimeLookupsInIncognitoDisabled)]) {
+    config.additional_args.push_back(
+        std::string("--enable-features=SafeBrowsingHashPrefixRealTimeLookups"));
+    config.additional_args.push_back(std::string(
+        "--disable-features=HashPrefixRealTimeLookupsOnIncognitoAndGuest"));
+  } else if ([self isRunningHprtIncognitoTest]) {
+    config.additional_args.push_back(
+        std::string("--enable-features=SafeBrowsingHashPrefixRealTimeLookups,"
+                    "HashPrefixRealTimeLookupsOnIncognitoAndGuest"));
   } else {
     config.additional_args.push_back(
         std::string("--enable-features=SafeBrowsingHashPrefixRealTimeLookups"));
@@ -432,11 +448,25 @@ void EnableEnterpriseUrlFilteringPrefs() {
   [SafeBrowsingAppInterface clearScorer];
   [SafeBrowsingAppInterface setBypassLocalResourceCheckForTesting:NO];
   [SafeBrowsingAppInterface resumeAsyncQueriesForTesting];
+  [SafeBrowsingAppInterface tearDownGoogleChromeBrandingForTesting];
 
   [super tearDownHelper];
 }
 
 #pragma mark - Helper methods
+
+- (BOOL)isRunningHprtIncognitoTest {
+  return
+      [self
+          isRunningTest:@selector(testHashPrefixRealTimeLookupsInIncognito)] ||
+      [self
+          isRunningTest:
+              @selector(
+                  testHashPrefixRealTimeLookupsInIncognitoWithEnhancedProtection)] ||
+      [self
+          isRunningTest:@selector(
+                            testHashPrefixRealTimeLookupsInIncognitoDisabled)];
+}
 
 - (BOOL)isRunningEnterpriseReportingTest {
   return
@@ -1081,6 +1111,72 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:_realTimePhishingURL];
   [ChromeEarlGrey waitForWebStateContainingText:_realTimePhishingContent];
+}
+
+// Verifies that hash-prefix real-time lookups are performed in Incognito mode,
+// allowing safe pages and blocking unsafe pages.
+- (void)assertHashPrefixRealTimeLookupsInIncognito {
+  [SafeBrowsingAppInterface setUpGoogleChromeBrandingForTesting];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+  GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:1  // SBThreatType::SB_THREAT_TYPE_SAFE
+      forHistogram:@"SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Incognito"]);
+  GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:1  // SBThreatType::SB_THREAT_TYPE_SAFE
+      forHistogram:@"SafeBrowsing.CheckUrl.ThreatType.HashRealTime.Incognito"]);
+
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
+  [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:kPhishingWarningDetails];
+  GREYAssertErrorNil([MetricsAppInterface
+       expectCount:2
+         forBucket:1  // SBThreatType::SB_THREAT_TYPE_SAFE
+      forHistogram:@"SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Incognito"]);
+  GREYAssertErrorNil([MetricsAppInterface
+       expectCount:1
+         forBucket:2  // SBThreatType::SB_THREAT_TYPE_URL_PHISHING
+      forHistogram:@"SafeBrowsing.CheckUrl.ThreatType.HashRealTime.Incognito"]);
+}
+
+// Tests that hash-prefix real-time lookups are performed in Incognito mode
+// under Standard Protection when kHashPrefixRealTimeLookupsOnIncognitoAndGuest
+// is enabled, blocking unsafe pages and allowing safe pages.
+- (void)testHashPrefixRealTimeLookupsInIncognito {
+  [self assertHashPrefixRealTimeLookupsInIncognito];
+}
+
+// Tests that hash-prefix real-time lookups are performed in Incognito mode
+// under Enhanced Protection when kHashPrefixRealTimeLookupsOnIncognitoAndGuest
+// is enabled, blocking unsafe pages and allowing safe pages.
+- (void)testHashPrefixRealTimeLookupsInIncognitoWithEnhancedProtection {
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnhanced];
+  [self assertHashPrefixRealTimeLookupsInIncognito];
+}
+
+// Tests that hash-prefix real-time lookups are not performed in Incognito mode
+// when kHashPrefixRealTimeLookupsOnIncognitoAndGuest is disabled.
+- (void)testHashPrefixRealTimeLookupsInIncognitoDisabled {
+  [SafeBrowsingAppInterface setUpGoogleChromeBrandingForTesting];
+
+  // Load the phishing page and verify that no warning is shown.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_phishingContent];
+  GREYAssertErrorNil([MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:
+              @"SafeBrowsing.CheckUrl.ThreatType.HashRealTime.Incognito"]);
+  GREYAssertErrorNil([MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:
+              @"SafeBrowsing.CheckUrl.ThreatType.HashDatabase.Incognito"]);
 }
 
 // Tests that when a page identified as unsafe by real-time Safe Browsing is

@@ -65,6 +65,13 @@ NS_ASSUME_NONNULL_BEGIN
 // testing.
 + (void)resumeAsyncQueriesForTesting;
 
+// Enables Google Chrome branding in the app process for testing so that
+// hash-prefix real-time lookups are eligible on non-branded builds.
++ (void)setUpGoogleChromeBrandingForTesting;
+
+// Resets the Google Chrome branding override for testing.
++ (void)tearDownGoogleChromeBrandingForTesting;
+
 @end
 
 NS_ASSUME_NONNULL_END

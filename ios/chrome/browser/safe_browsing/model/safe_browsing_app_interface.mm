@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/ios/browser/client_side_detection_feature_cache.h"
@@ -45,6 +46,16 @@ network::TestURLLoaderFactory* GetTestURLLoaderFactory() {
 base::WeakPtr<web::WebState>& GetPausedWebState() {
   static base::NoDestructor<base::WeakPtr<web::WebState>> web_state;
   return *web_state;
+}
+
+std::unique_ptr<safe_browsing::hash_realtime_utils::
+                    GoogleChromeBrandingPretenderForTesting>&
+GetBrandingPretender() {
+  static base::NoDestructor<
+      std::unique_ptr<safe_browsing::hash_realtime_utils::
+                          GoogleChromeBrandingPretenderForTesting>>
+      branding_pretender;
+  return *branding_pretender;
 }
 }  // namespace
 
@@ -219,6 +230,18 @@ base::WeakPtr<web::WebState>& GetPausedWebState() {
   }
   query_manager->ResumeAsyncQueriesForTesting();
   GetPausedWebState().reset();
+}
+
++ (void)setUpGoogleChromeBrandingForTesting {
+  if (!GetBrandingPretender()) {
+    GetBrandingPretender() =
+        std::make_unique<safe_browsing::hash_realtime_utils::
+                             GoogleChromeBrandingPretenderForTesting>();
+  }
+}
+
++ (void)tearDownGoogleChromeBrandingForTesting {
+  GetBrandingPretender().reset();
 }
 
 @end

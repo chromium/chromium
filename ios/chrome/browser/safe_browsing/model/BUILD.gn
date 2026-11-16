@@ -218,6 +218,7 @@ source_set("eg_app_support+eg2") {
     "//base/test:test_support",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/phishing_classifier",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/ios/browser:client_side_detection_images_cache",
