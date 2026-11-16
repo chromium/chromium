@@ -42,6 +42,7 @@
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -141,7 +142,6 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
           .selected_accuracy = GeolocationAccuracy::kPrecise});
     }
     manager_->Accept(prompt_options);
-    task_environment()->RunUntilIdle();
   }
 
   void AcceptThisTime(PromptOptions prompt_options = std::monostate()) {
@@ -152,23 +152,13 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
           .selected_accuracy = GeolocationAccuracy::kPrecise});
     }
     manager_->AcceptThisTime(prompt_options);
-    task_environment()->RunUntilIdle();
   }
 
-  void Deny() {
-    manager_->Deny(/*prompt_options=*/std::monostate());
-    task_environment()->RunUntilIdle();
-  }
+  void Deny() { manager_->Deny(/*prompt_options=*/std::monostate()); }
 
-  void Dismiss() {
-    manager_->Dismiss(/*prompt_options=*/std::monostate());
-    task_environment()->RunUntilIdle();
-  }
+  void Dismiss() { manager_->Dismiss(/*prompt_options=*/std::monostate()); }
 
-  void Ignore() {
-    manager_->Ignore(/*prompt_options=*/std::monostate());
-    task_environment()->RunUntilIdle();
-  }
+  void Ignore() { manager_->Ignore(/*prompt_options=*/std::monostate()); }
 
   void OpenHelpCenterLink() {
 #if !BUILDFLAG(IS_ANDROID)
@@ -181,18 +171,19 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
         ui::PointerDetails(ui::EventPointerType::kTouch, 1));
 #endif
     manager_->OpenHelpCenterLink(event);
-    task_environment()->RunUntilIdle();
   }
 
   void WaitForFrameLoad() {
     // PermissionRequestManager ignores all parameters. Yay?
     manager_->DOMContentLoaded(nullptr);
-    task_environment()->RunUntilIdle();
   }
 
   void WaitForBubbleToBeShown() {
     manager_->DocumentOnLoadCompletedInPrimaryMainFrame();
-    task_environment()->RunUntilIdle();
+    if (!manager_->IsRequestInProgress() && manager_->has_pending_requests()) {
+      PermissionRequestObserver observer(web_contents());
+      observer.Wait();
+    }
   }
 
   void MockTabSwitchAway() {
@@ -395,8 +386,8 @@ TEST_F(PermissionRequestManagerTest, RequestsDontNeedUserGesture) {
                        CreateRequest(iframe_request_other_domain_));
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        CreateRequest(request2_));
-  task_environment()->RunUntilIdle();
 
+  WaitForBubbleToBeShown();
   EXPECT_TRUE(prompt_factory_->is_visible());
 }
 
@@ -687,6 +678,7 @@ TEST_F(PermissionRequestManagerTest, MicCameraPtzDifferentOrigins) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_LT(prompt_factory_->request_count(), 3);
   Accept();
+  WaitForBubbleToBeShown();
 
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_LT(prompt_factory_->request_count(), 3);
@@ -795,7 +787,6 @@ TEST_F(PermissionRequestManagerTest, SameRequestRejected) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_EQ(prompt_factory_->request_count(), 1);
   Accept();
-  task_environment()->RunUntilIdle();
   EXPECT_TRUE(request1_state->granted);
   EXPECT_FALSE(prompt_factory_->is_visible());
 }
@@ -1049,6 +1040,7 @@ TEST_F(PermissionRequestManagerTest, MainFrameAndIFrameRequestOtherDomain) {
     EXPECT_FALSE(iframe_request_other_domain_state.finished);
   }
 
+  WaitForBubbleToBeShown();
   EXPECT_TRUE(prompt_factory_->is_visible());
   Dismiss();
   EXPECT_TRUE(iframe_request_other_domain_state.finished);
@@ -1074,6 +1066,7 @@ TEST_F(PermissionRequestManagerTest, IFrameRequestWhenMainRequestVisible) {
       CreateRequest(iframe_request_same_domain_,
                     iframe_request_other_domain_state.GetWeakPtr()));
   WaitForFrameLoad();
+  WaitForBubbleToBeShown();
   ASSERT_EQ(prompt_factory_->request_count(), 1);
   Dismiss();
   if (PermissionUtil::DoesPlatformSupportChip()) {
@@ -1084,6 +1077,7 @@ TEST_F(PermissionRequestManagerTest, IFrameRequestWhenMainRequestVisible) {
     EXPECT_FALSE(iframe_request_other_domain_state.finished);
   }
 
+  WaitForBubbleToBeShown();
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_EQ(prompt_factory_->request_count(), 1);
   Dismiss();
@@ -1111,6 +1105,7 @@ TEST_F(PermissionRequestManagerTest,
       CreateRequest(iframe_request_other_domain_,
                     iframe_request_other_domain_state.GetWeakPtr()));
   WaitForFrameLoad();
+  WaitForBubbleToBeShown();
   Dismiss();
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_other_domain_state.finished);
@@ -1120,6 +1115,7 @@ TEST_F(PermissionRequestManagerTest,
     EXPECT_FALSE(iframe_request_other_domain_state.finished);
   }
 
+  WaitForBubbleToBeShown();
   EXPECT_TRUE(prompt_factory_->is_visible());
   Dismiss();
   if (PermissionUtil::DoesPlatformSupportChip()) {
@@ -1203,12 +1199,17 @@ class MockNotificationGeolocationPermissionUiSelector
     selected_ui_to_use_ = true;
     if (async_delay_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, base::BindOnce(std::move(callback), decision_),
+          FROM_HERE,
+          base::BindOnce(
+              &MockNotificationGeolocationPermissionUiSelector::RunCallback,
+              weak_factory_.GetWeakPtr(), std::move(callback)),
           async_delay_.value());
     } else {
       std::move(callback).Run(decision_);
     }
   }
+
+  void Cancel() override { weak_factory_.InvalidateWeakPtrs(); }
 
   bool IsPermissionRequestSupported(RequestType request_type) override {
     return request_type == RequestType::kNotifications ||
@@ -1234,11 +1235,17 @@ class MockNotificationGeolocationPermissionUiSelector
   bool selected_ui_to_use() const { return selected_ui_to_use_; }
 
  private:
+  void RunCallback(DecisionMadeCallback callback) {
+    std::move(callback).Run(decision_);
+  }
+
   Decision decision_;
   std::optional<PermissionUiSelector::PredictionGrantLikelihood>
       prediction_likelihood_;
   std::optional<base::TimeDelta> async_delay_;
   bool selected_ui_to_use_ = false;
+  base::WeakPtrFactory<MockNotificationGeolocationPermissionUiSelector>
+      weak_factory_{this};
 };
 
 // Same as the MockNotificationGeolocationPermissionUiSelector but handling only
@@ -1448,7 +1455,8 @@ TEST_F(PermissionRequestManagerTest,
 
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        std::move(request));
-  WaitForBubbleToBeShown();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return manager_->IsRequestInProgress(); }));
 
   EXPECT_FALSE(prompt_factory_->is_visible());
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -3019,7 +3027,6 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  WaitForBubbleToBeShown();
   AcceptThisTime(GeolocationPromptOptions{accuracy});
 
   histograms.ExpectUniqueSample(
@@ -3049,9 +3056,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  WaitForBubbleToBeShown();
   manager_->Deny(GeolocationPromptOptions{accuracy});
-  task_environment()->RunUntilIdle();
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Geolocation.Denied.Accuracy",
@@ -3079,9 +3084,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  WaitForBubbleToBeShown();
   manager_->Dismiss(GeolocationPromptOptions{accuracy});
-  task_environment()->RunUntilIdle();
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Geolocation.Dismissed.Accuracy",
@@ -3109,9 +3112,7 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  WaitForBubbleToBeShown();
   manager_->Ignore(GeolocationPromptOptions{accuracy});
-  task_environment()->RunUntilIdle();
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Geolocation.Ignored.Accuracy",
