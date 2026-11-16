@@ -968,6 +968,15 @@ void MenuItemView::ChildrenChanged() {
   if (controller_ptr) {
     UpdateEmptyMenusAndMetrics();
 
+    // The border has no bottom inset while the last item is a highlighted
+    // footnote, so it must follow the items before the bounds are recomputed.
+    if (submenu_) {
+      if (MenuScrollViewContainer* const container =
+              submenu_->scroll_view_container()) {
+        container->UpdateBorderForFootnote();
+      }
+    }
+
     // Certain accessibility callbacks could destroy the menu indirectly through
     // activation changes.
     const auto controller = controller_ptr->AsWeakPtr();

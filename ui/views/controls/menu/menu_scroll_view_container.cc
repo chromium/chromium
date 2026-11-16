@@ -533,6 +533,13 @@ void MenuScrollViewContainer::UpdatePinnedItems() {
         base::NotFatalUntil::M163);
 }
 
+void MenuScrollViewContainer::UpdateBorderForFootnote() {
+  const bool has_footnote = GetFootnote() != nullptr;
+  if (has_footnote != border_has_footnote_) {
+    CreateBorder();
+  }
+}
+
 std::vector<MenuItemView*> MenuScrollViewContainer::pinned_header_region()
     const {
   return GetMenuItemChildren(header_container_);
@@ -722,6 +729,7 @@ void MenuScrollViewContainer::DidScrollAwayFromBottom() {
 }
 
 void MenuScrollViewContainer::CreateBorder() {
+  border_has_footnote_ = GetFootnote() != nullptr;
   if (HasBubbleBorder()) {
     CreateBubbleBorder();
   } else {

@@ -59,6 +59,12 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View,
   // the menu doesn't use a scroll bar.
   void UpdatePinnedItems();
 
+  // Recreates the border if a highlighted footnote was added or removed since
+  // the border was created, since the footnote determines whether the menu has
+  // a bottom inset. Called by MenuItemView::ChildrenChanged() before the menu
+  // bounds are recomputed.
+  void UpdateBorderForFootnote();
+
   // External function to check if the bubble border is used.
   bool HasBubbleBorder() const;
 
@@ -153,6 +159,10 @@ class VIEWS_EXPORT MenuScrollViewContainer : public View,
 
   // Any additional insets to add inside the border.
   gfx::Insets additional_insets_;
+
+  // Whether the border was created with a highlighted footnote as the last
+  // item, in which case it has no bottom inset.
+  bool border_has_footnote_ = false;
 
   // Whether the menu uses ash system UI layout.
   const bool use_ash_system_ui_layout_;

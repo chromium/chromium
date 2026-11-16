@@ -93,7 +93,6 @@
 #include "ui/views/rect_based_targeting_utils.h"
 #endif
 
-
 #if BUILDFLAG(SUPPORTS_OZONE_X11)
 #include "ui/events/test/events_test_utils_x11.h"
 #endif
@@ -4414,6 +4413,33 @@ TEST_F(MenuControllerTest, MenuHostHasCorrectZOrderLevel) {
 
   // Ensure that the menu host has the correct z order level.
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow, host->GetZOrderLevel());
+}
+
+// The menu has no bottom inset while its last item is a highlighted footnote,
+// which paints the rounded bottom corners itself. Removing or restoring the
+// footnote after the menu is shown must update the border accordingly.
+TEST_F(MenuControllerTest, BorderFollowsHighlightedFootnote) {
+  CreateMenu({.show = false});
+  MenuItemView* const footnote = menu_item()->AppendMenuItemImpl(
+      5, u"Footnote", ui::ImageModel(), MenuItemView::Type::kHighlighted);
+  CreateMenu();
+  MenuScrollViewContainer* const container =
+      menu_item()->GetSubmenu()->GetScrollViewContainer();
+  ASSERT_TRUE(container);
+  const gfx::Insets insets_with_footnote = container->GetInsets();
+
+  // Removing the footnote restores the bottom inset.
+  menu_item()->RemoveMenuItem(footnote);
+  menu_item()->ChildrenChanged();
+  const gfx::Insets insets_without_footnote = container->GetInsets();
+  EXPECT_GT(insets_without_footnote.bottom(), insets_with_footnote.bottom());
+  EXPECT_EQ(insets_without_footnote.top(), insets_with_footnote.top());
+
+  // Adding a footnote back drops it again.
+  menu_item()->AppendMenuItemImpl(6, u"Footnote", ui::ImageModel(),
+                                  MenuItemView::Type::kHighlighted);
+  menu_item()->ChildrenChanged();
+  EXPECT_EQ(container->GetInsets(), insets_with_footnote);
 }
 
 // Tests that updating an empty menu's children, while the "empty item"

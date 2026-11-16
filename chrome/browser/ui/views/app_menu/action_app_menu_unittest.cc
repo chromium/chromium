@@ -3472,6 +3472,45 @@ TEST_F(ActionAppMenuWithSearchTest, SearchResultsKeepMenuWidth) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuWithSearchTest, SearchResultsRestoreBottomInset) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::SubmenuView* submenu = root->GetSubmenu();
+  views::MenuScrollViewContainer* const container =
+      submenu->GetScrollViewContainer();
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  ASSERT_FALSE(container->pinned_footer_region().empty());
+  const gfx::Insets insets_with_footer = container->GetInsets();
+
+  // The search results have no footer, so the rows end above the corners.
+  search_bar->SetText(u"Downloads");
+  ASSERT_TRUE(container->pinned_footer_region().empty());
+  const gfx::Insets insets_with_results = container->GetInsets();
+  EXPECT_GT(insets_with_results.bottom(), insets_with_footer.bottom());
+  EXPECT_EQ(insets_with_results.top(), insets_with_footer.top());
+  ASSERT_FALSE(submenu->children().empty());
+  const views::View* const last_row = submenu->children().back();
+  EXPECT_EQ(
+      last_row->GetBoundsInScreen().bottom() + insets_with_results.bottom(),
+      container->GetBoundsInScreen().bottom());
+
+  // Clearing the query restores the footer, which is flush with the bottom
+  // again.
+  views::test::ButtonTestApi(GetClearButton(search_bar))
+      .NotifyDefaultMouseClick();
+  ASSERT_FALSE(container->pinned_footer_region().empty());
+  EXPECT_EQ(container->GetInsets(), insets_with_footer);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuWithSearchTest,
        NotificationStaysAboveSearchBarDuringSearch) {
   if (!browser_defaults::kShowUpgradeMenuItem) {
