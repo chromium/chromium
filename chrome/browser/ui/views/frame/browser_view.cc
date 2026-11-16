@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/browser_window_theme_observer/browser_window_theme_observer.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -1444,7 +1445,6 @@ bool BrowserView::ShouldDrawTabStrokes() const {
   // enough contrast, fall back to a stroke.  Always compute the contrast ratio
   // against the active frame color, to avoid toggling the stroke on and off as
   // the window activation state changes.
-  constexpr float kMinimumContrastRatioForOutlines = 1.3f;
   const SkColor background_color = TabStyle::Get()->GetTabBackgroundColor(
       TabStyle::TabSelectionState::kActive, /*hovered=*/false,
       /*frame_active=*/true, GetColorProvider());
@@ -1452,7 +1452,7 @@ bool BrowserView::ShouldDrawTabStrokes() const {
       GetFrameView()->GetFrameColor(BrowserFrameActiveState::kActive);
   const float contrast_ratio =
       color_utils::GetContrastRatio(background_color, frame_color);
-  return contrast_ratio < kMinimumContrastRatioForOutlines;
+  return contrast_ratio < kMinimumActiveTabContrastRatio;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 

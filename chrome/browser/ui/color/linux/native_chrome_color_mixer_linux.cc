@@ -66,6 +66,41 @@ ui::ColorTransform GetToolbarTopSeparatorColorTransform(
                        : base::BindRepeating(generator, std::move(transform));
 }
 
+// Lightens the native toolbar color until it contrasts with both the active
+// and inactive frame colors. The active tab uses the toolbar color, so this
+// keeps it distinguishable from the tab strip background. Many dark GTK themes
+// (e.g. Adwaita-dark, Yaru-dark) use nearly the same color for the headerbar
+// and the window background, and exactly the same color for an unfocused
+// headerbar. Light frames are left alone, since the toolbar usually can't get
+// any lighter than them.
+ui::ColorTransform EnsureToolbarContrastsWithFrame() {
+  const auto generator = [](SkColor input_color, const ui::ColorMixer& mixer) {
+    const SkColor toolbar =
+        mixer.GetResultColor(ui::kColorNativeToolbarBackground);
+    const SkColor frame_active = mixer.GetResultColor(ui::kColorFrameActive);
+    const SkColor frame_inactive =
+        mixer.GetResultColor(ui::kColorFrameInactive);
+    const SkColor lighter_frame =
+        color_utils::GetRelativeLuminance(frame_active) >
+                color_utils::GetRelativeLuminance(frame_inactive)
+            ? frame_active
+            : frame_inactive;
+    SkColor result_color = toolbar;
+    if (color_utils::IsDark(lighter_frame)) {
+      result_color = color_utils::BlendForMinContrast(
+                         toolbar, lighter_frame, SK_ColorWHITE,
+                         kMinimumActiveTabContrastRatio)
+                         .color;
+    }
+    DVLOG(2) << "ColorTransform EnsureToolbarContrastsWithFrame:"
+             << " Toolbar: " << ui::SkColorName(toolbar)
+             << " Lighter Frame: " << ui::SkColorName(lighter_frame)
+             << " Result Color: " << ui::SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator);
+}
+
 // If the GTK/Qt menu colors and Chrome's light/dark setting agree (both dark
 // or both light), keep Chrome's designated colors. If they are different,
 // use a color based on the GTK/Qt theme instead.
@@ -146,7 +181,12 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabStrokeFrameActive] = {kColorToolbarTopSeparatorFrameActive};
   mixer[kColorTabStrokeFrameInactive] = {
       kColorToolbarTopSeparatorFrameInactive};
-  mixer[kColorToolbar] = {ui::kColorNativeToolbarBackground};
+  mixer[kColorToolbar] = EnsureToolbarContrastsWithFrame();
+  // The active tab blends into the toolbar. The GTK/Qt theme suppliers also
+  // provide an active tab color, which is overridden here so it can't diverge
+  // from the adjusted toolbar color.
+  mixer[kColorTabBackgroundActiveFrameActive] = {kColorToolbar};
+  mixer[kColorTabBackgroundActiveFrameInactive] = {kColorToolbar};
   mixer[kColorToolbarButtonIcon] = {kColorToolbarText};
   mixer[kColorToolbarButtonIconHovered] = {kColorToolbarButtonIcon};
   mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarSeparator};
@@ -157,8 +197,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   const bool high_contrast =
       key.contrast_mode == ui::ColorProviderKey::ContrastMode::kHigh;
   mixer[kColorToolbarTopSeparatorFrameActive] =
-      GetToolbarTopSeparatorColorTransform(ui::kColorNativeToolbarBackground,
-                                           high_contrast);
+      GetToolbarTopSeparatorColorTransform(kColorToolbar, high_contrast);
   mixer[kColorToolbarTopSeparatorFrameInactive] = {
       kColorToolbarTopSeparatorFrameActive};
 

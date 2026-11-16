@@ -15,6 +15,10 @@
 
 inline constexpr SkAlpha kToolbarInkDropHighlightVisibleAlpha = 0x14;
 
+// The minimum contrast ratio between the active tab and the frame for system
+// themes. Below it, tab strokes are drawn to tell the active tab apart.
+inline constexpr float kMinimumActiveTabContrastRatio = 1.3f;
+
 // Converts ColorId if |color_id| is in CHROME_COLOR_IDS.
 std::string ChromeColorIdName(ui::ColorId color_id);
 

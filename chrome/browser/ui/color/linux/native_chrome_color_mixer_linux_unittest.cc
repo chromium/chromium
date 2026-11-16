@@ -5,11 +5,15 @@
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -269,18 +273,33 @@ TEST_F(NativeChromeColorMixerLinuxTest, DefaultSystemThemeUnchanged) {
 class TestNativeThemeSupplier
     : public ui::ColorProviderKey::ThemeInitializerSupplier {
  public:
-  TestNativeThemeSupplier() : ThemeInitializerSupplier(ThemeType::kNativeX11) {}
+  // `active_tab`, if set, is returned for the active tab background colors,
+  // like GtkUi::GetColor() does.
+  explicit TestNativeThemeSupplier(
+      std::optional<SkColor> active_tab = std::nullopt)
+      : ThemeInitializerSupplier(ThemeType::kNativeX11),
+        active_tab_(active_tab) {}
 
   // ui::ColorProviderKey::ThemeInitializerSupplier:
   void AddColorMixers(ui::ColorProvider* provider,
                       const ui::ColorProviderKey& key) const override {}
-  bool GetColor(int id, SkColor* color) const override { return false; }
+  bool GetColor(int id, SkColor* color) const override {
+    if (active_tab_ &&
+        (id == ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE ||
+         id == ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE)) {
+      *color = *active_tab_;
+      return true;
+    }
+    return false;
+  }
   bool GetTint(int id, color_utils::HSL* hsl) const override { return false; }
   bool GetDisplayProperty(int id, int* result) const override { return false; }
   bool HasCustomImage(int id) const override { return false; }
 
  private:
   ~TestNativeThemeSupplier() override = default;
+
+  const std::optional<SkColor> active_tab_;
 };
 
 // Builds a provider for a toolkit that supplies the toolbar color but not the
@@ -330,6 +349,71 @@ TEST(NativeChromeColorMixerLinuxChipTest, LightToolbarLightModeReadable) {
   ExpectLocationIconChipReadable(*provider);
   EXPECT_EQ(provider->GetColor(kColorOmniboxIconBackground),
             provider->GetColor(kColorToolbar));
+}
+
+// Builds a provider for a dark GTK system theme with the given toolbar and
+// frame colors, as provided by the GTK color mixer and GtkUi.
+std::unique_ptr<ui::ColorProvider> CreateDarkFrameProvider(
+    SkColor toolbar,
+    SkColor frame_active,
+    SkColor frame_inactive) {
+  ui::ColorProviderKey key;
+  key.color_mode = ColorMode::kDark;
+  key.system_theme = ui::SystemTheme::kGtk;
+  key.custom_theme = base::MakeRefCounted<TestNativeThemeSupplier>(toolbar);
+
+  auto provider = std::make_unique<ui::ColorProvider>();
+  ui::AddColorMixers(provider.get(), key);
+  ui::ColorMixer& toolkit_mixer = provider->AddMixer();
+  toolkit_mixer[ui::kColorNativeToolbarBackground] = {toolbar};
+  toolkit_mixer[ui::kColorFrameActive] = {frame_active};
+  toolkit_mixer[ui::kColorFrameInactive] = {frame_inactive};
+  AddChromeColorMixers(provider.get(), key);
+  return provider;
+}
+
+// Expects the active tab to be distinguishable from the tab strip background
+// in both window activation states, and to have the toolbar color.
+void ExpectActiveTabContrastsWithFrame(const ui::ColorProvider& provider) {
+  EXPECT_EQ(provider.GetColor(kColorTabBackgroundActiveFrameActive),
+            provider.GetColor(kColorToolbar));
+  EXPECT_EQ(provider.GetColor(kColorTabBackgroundActiveFrameInactive),
+            provider.GetColor(kColorToolbar));
+  constexpr std::pair<ui::ColorId, ui::ColorId> kPairs[] = {
+      {kColorTabBackgroundActiveFrameActive,
+       kColorTabBackgroundInactiveFrameActive},
+      {kColorTabBackgroundActiveFrameInactive,
+       kColorTabBackgroundInactiveFrameInactive},
+  };
+  for (const auto& [active_id, inactive_id] : kPairs) {
+    const SkColor active = provider.GetColor(active_id);
+    const SkColor inactive = provider.GetColor(inactive_id);
+    EXPECT_GE(color_utils::GetContrastRatio(active, inactive),
+              kMinimumActiveTabContrastRatio)
+        << ui::ColorIdName(active_id) << " " << ui::SkColorName(active)
+        << " vs " << ui::ColorIdName(inactive_id) << " "
+        << ui::SkColorName(inactive);
+  }
+}
+
+// A dark theme whose toolbar is slightly darker than the unfocused headerbar
+// (in Yaru-dark they are the same color).
+TEST(NativeChromeColorMixerLinuxFrameTest, DarkToolbarActiveTabContrast) {
+  auto provider = CreateDarkFrameProvider(
+      /*toolbar=*/SkColorSetRGB(0x2C, 0x2C, 0x2C),
+      /*frame_active=*/SkColorSetRGB(0x22, 0x22, 0x22),
+      /*frame_inactive=*/SkColorSetRGB(0x30, 0x30, 0x30));
+  ExpectActiveTabContrastsWithFrame(*provider);
+}
+
+// Toolbars that already contrast with the frame are kept.
+TEST(NativeChromeColorMixerLinuxFrameTest, ContrastingDarkToolbarUnchanged) {
+  constexpr SkColor kToolbar = SkColorSetRGB(0x50, 0x50, 0x50);
+  auto provider = CreateDarkFrameProvider(
+      kToolbar, /*frame_active=*/SkColorSetRGB(0x20, 0x20, 0x20),
+      /*frame_inactive=*/SkColorSetRGB(0x28, 0x28, 0x28));
+  ExpectActiveTabContrastsWithFrame(*provider);
+  EXPECT_EQ(provider->GetColor(kColorToolbar), kToolbar);
 }
 
 }  // namespace

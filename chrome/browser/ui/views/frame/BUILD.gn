@@ -841,6 +841,7 @@ source_set("browser_view") {
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/browser_window_theme_observer",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/find_bar",
