@@ -20435,6 +20435,27 @@
             ]
         }
     ],
+    "V8AlwaysSpecializeForScriptContext": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261116",
+                    "enable_features": [
+                        "V8Flag_always_specialize_for_script_context"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8CodeCacheSourceHashSha256": [
         {
             "platforms": [
