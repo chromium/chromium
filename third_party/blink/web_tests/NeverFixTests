@@ -1869,3 +1869,6 @@ crbug.com/452389538 virtual/prefetch-force-off-the-main-thread-wculf/external/wp
 
 # OOM crash on Windows, marked as WontFix
 crbug.com/379516106 [ Win ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Skip ]
+
+# MediaFoundation for Clear DirectComposition only tests clear playback, not EME.
+crbug.com/1362106 virtual/media-foundation-for-clear-dcomp/media/encrypted-media/* [ Skip ]
