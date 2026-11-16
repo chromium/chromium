@@ -11,6 +11,7 @@ namespace tabs {
 // LINT.IfChange(TabAlert)
 enum class TabAlert {
   kNone = -1,
+  kMinValue = kNone,
   kMediaRecording = 0,   // Audio/Video [both] being recorded, consumed by tab.
   kTabCapturing,         // Tab contents being captured.
   kAudioPlaying,         // Audible audio is playing from the tab.
@@ -30,9 +31,10 @@ enum class TabAlert {
   kAiModeSharing,          // The tab's contents are shared with AI Mode.
   kActorAccessing,         // Actor is accessing the tab's contents.
   kActorWaitingOnUser,     // Actor is waiting on user to respond.
+  kMaxValue = kActorWaitingOnUser,
 };
-// Any changes to the TabAlert enum needs to be updated in CompareAlerts as
-// well.
+// Any changes to the TabAlert enum needs to be updated in kTabAlertPriority
+// in tab_alert_controller.cc as well.
 // LINT.ThenChange(/chrome/browser/ui/tabs/alert/tab_alert_controller.cc,/chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java:TabAlert)
 }  // namespace tabs
 

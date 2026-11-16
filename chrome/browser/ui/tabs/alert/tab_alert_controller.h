@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/enum_set.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -30,12 +30,6 @@ enum class TabIndicatorStatus;
 }  // namespace actor::ui
 
 namespace tabs {
-
-// Comparator used to determine which tab alert has a higher priority to be
-// shown.
-struct CompareAlerts {
-  bool operator()(TabAlert first, TabAlert second) const;
-};
 
 // Observes the corresponding web contents for the tab to keep track of all
 // active alerts. Callers can subscribe and be notified when the tab alert that
@@ -136,9 +130,8 @@ class TabAlertController
       base::RepeatingCallbackList<void(std::optional<TabAlert>)>;
   AlertToShowChangedCallbackList alert_to_show_changed_callbacks_;
 
-  // Maintains a sorted collection of all active tab alerts from highest
-  // priority to lowest priority to be shown.
-  base::flat_set<TabAlert, CompareAlerts> active_alerts_;
+  // Maintains all active tab alerts for this tab.
+  base::EnumSet<TabAlert> active_alerts_;
 
   // Observes the MediaStreamCaptureIndicator so the alert controller will be
   // notified when a media stream capture has changed.

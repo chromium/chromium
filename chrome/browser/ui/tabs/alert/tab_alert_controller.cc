@@ -4,14 +4,14 @@
 
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 
+#include <array>
 #include <functional>
 #include <optional>
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -39,38 +39,52 @@ namespace tabs {
 
 DEFINE_USER_DATA(TabAlertController);
 
-// LINT.IfChange(TabAlertPriority)
-bool CompareAlerts::operator()(TabAlert first, TabAlert second) const {
-  // Alerts are ordered from highest priority to be shown to lowest priority.
-  static constexpr auto tab_alert_priority =
-      base::MakeFixedFlatMap<TabAlert, int>(
-          {{TabAlert::kDesktopCapturing, 18},
-           {TabAlert::kTabCapturing, 17},
-           {TabAlert::kMediaRecording, 16},
-           {TabAlert::kAudioRecording, 15},
-           {TabAlert::kVideoRecording, 14},
-           {TabAlert::kBluetoothConnected, 13},
-           {TabAlert::kBluetoothScanActive, 12},
-           {TabAlert::kUsbConnected, 11},
-           {TabAlert::kHidConnected, 10},
-           {TabAlert::kSerialConnected, 9},
-           {TabAlert::kActorWaitingOnUser, 8},
-           {TabAlert::kActorAccessing, 7},
-           {TabAlert::kGlicAccessing, 6},
-           {TabAlert::kGlicSharing, 5},
-           {TabAlert::kAiModeSharing, 4},
-           // NOTE: VR must take priority over the audio alert ones
-           // because most VR content has audio and its usage is implied by the
-           // VR icon.
-           {TabAlert::kVrPresentingInHeadset, 3},
-           {TabAlert::kPipPlaying, 2},
-           {TabAlert::kAudioMuting, 1},
-           {TabAlert::kAudioPlaying, 0},
-           {TabAlert::kNone, -1}});
+namespace {
 
-  return tab_alert_priority.at(first) > tab_alert_priority.at(second);
-}
+// LINT.IfChange(TabAlertPriority)
+// Alerts are ordered from highest priority to be shown to lowest priority.
+constexpr std::array<TabAlert, 19> kTabAlertPriority = {
+    TabAlert::kDesktopCapturing,
+    TabAlert::kTabCapturing,
+    TabAlert::kMediaRecording,
+    TabAlert::kAudioRecording,
+    TabAlert::kVideoRecording,
+    TabAlert::kBluetoothConnected,
+    TabAlert::kBluetoothScanActive,
+    TabAlert::kUsbConnected,
+    TabAlert::kHidConnected,
+    TabAlert::kSerialConnected,
+    TabAlert::kActorWaitingOnUser,
+    TabAlert::kActorAccessing,
+    TabAlert::kGlicAccessing,
+    TabAlert::kGlicSharing,
+    TabAlert::kAiModeSharing,
+    // NOTE: VR must take priority over the audio alert ones
+    // because most VR content has audio and its usage is implied by the
+    // VR icon.
+    TabAlert::kVrPresentingInHeadset,
+    TabAlert::kPipPlaying,
+    TabAlert::kAudioMuting,
+    TabAlert::kAudioPlaying,
+};
 // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java:TabAlertPriority)
+
+static_assert(
+    []() consteval {
+      base::EnumSet<TabAlert> seen;
+      for (TabAlert alert : kTabAlertPriority) {
+        if (alert == TabAlert::kNone || seen.Has(alert)) {
+          return false;
+        }
+        seen.Put(alert);
+      }
+      seen.Put(TabAlert::kNone);
+      return seen == base::EnumSet<TabAlert>::All();
+    }(),
+    "kTabAlertPriority must contain every TabAlert value (except kNone) "
+    "exactly once.");
+
+}  // namespace
 
 // Helper class that notifies subscribers if the alert state has changed when
 // the ScopedAlertNotifier is destroyed.
@@ -316,15 +330,31 @@ std::optional<TabAlert> TabAlertController::GetAlertToShow() const {
     return std::nullopt;
   }
 
-  return *active_alerts_.begin();
+  for (TabAlert alert : kTabAlertPriority) {
+    if (active_alerts_.Has(alert)) {
+      return alert;
+    }
+  }
+  NOTREACHED();
 }
 
 std::vector<TabAlert> TabAlertController::GetAllActiveAlerts() const {
-  return base::ToVector(active_alerts_);
+  if (active_alerts_.empty()) {
+    return {};
+  }
+
+  std::vector<TabAlert> alerts;
+  alerts.reserve(active_alerts_.size());
+  for (TabAlert alert : kTabAlertPriority) {
+    if (active_alerts_.Has(alert)) {
+      alerts.push_back(alert);
+    }
+  }
+  return alerts;
 }
 
 bool TabAlertController::IsAlertActive(TabAlert alert) const {
-  return active_alerts_.contains(alert);
+  return active_alerts_.Has(alert);
 }
 
 void TabAlertController::OnDiscardContents(TabInterface* tab_interface,
@@ -531,15 +561,12 @@ void TabAlertController::OnTabDidInsert(TabInterface* tab_interface) {
 }
 
 void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {
+  CHECK_NE(alert, TabAlert::kNone);
   if (alert == TabAlert::kAudioRecording ||
       alert == TabAlert::kVideoRecording) {
     UpdateMediaAlert();
   } else {
-    if (is_active) {
-      active_alerts_.insert(alert);
-    } else {
-      active_alerts_.erase(alert);
-    }
+    active_alerts_.PutOrRemove(alert, is_active);
   }
 }
 
@@ -562,16 +589,16 @@ void TabAlertController::UpdateMediaAlert() {
       media_stream_capture_indicator->IsCapturingVideo(web_contents) ||
       is_child_alert_active(TabAlert::kVideoRecording) || child_media;
 
-  active_alerts_.erase(TabAlert::kMediaRecording);
-  active_alerts_.erase(TabAlert::kVideoRecording);
-  active_alerts_.erase(TabAlert::kAudioRecording);
+  active_alerts_.RemoveAll({TabAlert::kMediaRecording,
+                            TabAlert::kVideoRecording,
+                            TabAlert::kAudioRecording});
 
   if (is_capturing_video && is_capturing_audio) {
-    active_alerts_.insert(TabAlert::kMediaRecording);
+    active_alerts_.Put(TabAlert::kMediaRecording);
   } else if (is_capturing_video) {
-    active_alerts_.insert(TabAlert::kVideoRecording);
+    active_alerts_.Put(TabAlert::kVideoRecording);
   } else if (is_capturing_audio) {
-    active_alerts_.insert(TabAlert::kAudioRecording);
+    active_alerts_.Put(TabAlert::kAudioRecording);
   }
 }
 }  // namespace tabs
