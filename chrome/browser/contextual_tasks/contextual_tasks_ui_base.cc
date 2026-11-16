@@ -397,7 +397,9 @@ class ContextualTasksUIBase::CookieJarObserver
     if (auto* identity_manager =
             IdentityManagerFactory::GetForProfile(profile_)) {
       observation_.Observe(identity_manager);
-    } else if (profile_ && profile_->IsOffTheRecord()) {
+    } else if (profile_ && profile_->IsOffTheRecord() &&
+               contextual_tasks::
+                   IsContextualTasksSidePanelRearchitectureEnabled()) {
       if (content::StoragePartition* partition =
               profile_->GetDefaultStoragePartition()) {
         partition->GetCookieManagerForBrowserProcess()->AddCookieChangeListener(
