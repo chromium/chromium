@@ -11,8 +11,11 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/whitespace_constants.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/orb/orb_sniffers_rust.h"
 
 namespace network::orb {
 
@@ -125,8 +128,10 @@ SniffingResult MaybeSkipHtmlComment(std::string_view& data) {
 
 }  // namespace
 
+namespace internal {
+
 // This function is a slight modification of `net::SniffForHTML`.
-SniffingResult SniffForHTML(std::string_view data) {
+SniffingResult SniffForHTMLCpp(std::string_view data) {
   // The content sniffers used by Chrome and Firefox are using "<!--" as one of
   // the HTML signatures, but it also appears in valid JavaScript, considered as
   // well-formed JS by the browser. Since we do not want to block any JS, we
@@ -175,7 +180,7 @@ SniffingResult SniffForHTML(std::string_view data) {
   return SniffingResult::kMaybe;
 }
 
-SniffingResult SniffForXML(std::string_view data) {
+SniffingResult SniffForXMLCpp(std::string_view data) {
   data = StripUtf8Bom(data);
   data = TrimLeadingWhitespace(data);
   static constexpr auto kXmlSignatures =
@@ -183,7 +188,7 @@ SniffingResult SniffForXML(std::string_view data) {
   return MatchesSignature(data, kXmlSignatures, base::CompareCase::SENSITIVE);
 }
 
-SniffingResult SniffForJSON(std::string_view data) {
+SniffingResult SniffForJSONCpp(std::string_view data) {
   // Currently this function looks for an opening brace ('{'), followed by a
   // double-quoted string literal, followed by a colon. Importantly, such a
   // sequence is a Javascript syntax error: although the JSON object syntax is
@@ -246,7 +251,7 @@ SniffingResult SniffForJSON(std::string_view data) {
   return SniffingResult::kMaybe;
 }
 
-SniffingResult SniffForFetchOnlyResource(std::string_view data) {
+SniffingResult SniffForFetchOnlyResourceCpp(std::string_view data) {
   // kScriptBreakingPrefixes contains prefixes that are conventionally used to
   // prevent a JSON response from becoming a valid Javascript program (an attack
   // vector known as XSSI). The presence of such a prefix is a strong signal
@@ -293,7 +298,49 @@ SniffingResult SniffForFetchOnlyResource(std::string_view data) {
   }
 
   // A non-empty JSON object also effectively introduces a JS syntax error.
-  return SniffForJSON(data);
+  return SniffForJSONCpp(data);
+}
+
+SniffingResult SniffForHTMLRust(std::string_view data) {
+  return rust::sniff_for_html(data);
+}
+
+SniffingResult SniffForXMLRust(std::string_view data) {
+  return rust::sniff_for_xml(data);
+}
+
+SniffingResult SniffForJSONRust(std::string_view data) {
+  return rust::sniff_for_json(data);
+}
+
+SniffingResult SniffForFetchOnlyResourceRust(std::string_view data) {
+  return rust::sniff_for_fetch_only_resource(data);
+}
+
+}  // namespace internal
+
+SniffingResult SniffForHTML(std::string_view data) {
+  return base::FeatureList::IsEnabled(features::kOrbSniffersInRust)
+             ? internal::SniffForHTMLRust(data)
+             : internal::SniffForHTMLCpp(data);
+}
+
+SniffingResult SniffForXML(std::string_view data) {
+  return base::FeatureList::IsEnabled(features::kOrbSniffersInRust)
+             ? internal::SniffForXMLRust(data)
+             : internal::SniffForXMLCpp(data);
+}
+
+SniffingResult SniffForJSON(std::string_view data) {
+  return base::FeatureList::IsEnabled(features::kOrbSniffersInRust)
+             ? internal::SniffForJSONRust(data)
+             : internal::SniffForJSONCpp(data);
+}
+
+SniffingResult SniffForFetchOnlyResource(std::string_view data) {
+  return base::FeatureList::IsEnabled(features::kOrbSniffersInRust)
+             ? internal::SniffForFetchOnlyResourceRust(data)
+             : internal::SniffForFetchOnlyResourceCpp(data);
 }
 
 }  // namespace network::orb

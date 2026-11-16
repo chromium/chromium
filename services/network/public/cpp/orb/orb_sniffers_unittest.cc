@@ -9,11 +9,32 @@
 #include <utility>
 
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace network::orb {
+namespace {
 
-TEST(OrbSnifferTest, SniffForHTML) {
+class OrbSnifferTest : public ::testing::TestWithParam<bool> {
+ public:
+  OrbSnifferTest() {
+    features_.InitWithFeatureState(features::kOrbSniffersInRust, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         OrbSnifferTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Rust" : "Cpp";
+                         });
+
+TEST_P(OrbSnifferTest, SniffForHTML) {
   // Something that technically matches the start of a valid HTML tag.
   EXPECT_EQ(SniffingResult::kYes,
             SniffForHTML("  \t\r\n    <HtMladfokadfkado"));
@@ -123,7 +144,7 @@ TEST(OrbSnifferTest, SniffForHTML) {
   EXPECT_EQ(SniffingResult::kYes, SniffForHTML("\xEF\xBB\xBF<html><body>"));
 }
 
-TEST(OrbSnifferTest, SniffForXML) {
+TEST_P(OrbSnifferTest, SniffForXML) {
   std::string_view xml_data(
       "   \t \r \n \f    <?xml version=\"1.0\"?>\n <catalog");
   std::string_view non_xml_data("        var name=window.location;\nadfadf");
@@ -141,7 +162,7 @@ TEST(OrbSnifferTest, SniffForXML) {
             SniffForXML("\xEF\xBB\xBF<?xml version=\"1.0\"?>\n <catalog"));
 }
 
-TEST(OrbSnifferTest, SniffForJSON) {
+TEST_P(OrbSnifferTest, SniffForJSON) {
   std::string_view json_data("\t\t\r\n   { \"name\" : \"chrome\", ");
   std::string_view json_corrupt_after_first_key(
       "\t\t\r\n\f   { \"name\" :^^^^!!@#\1\", ");
@@ -194,7 +215,7 @@ TEST(OrbSnifferTest, SniffForJSON) {
             SniffForJSON("\xEF\xBB\xBF   { \"name\" : \"chrome\", "));
 }
 
-TEST(OrbSnifferTest, SniffForFetchOnlyResource) {
+TEST_P(OrbSnifferTest, SniffForFetchOnlyResource) {
   constexpr auto kPrefixes = std::to_array<std::string_view>({
       ")]}'",
       "{}&&",
@@ -243,4 +264,26 @@ TEST(OrbSnifferTest, SniffForFetchOnlyResource) {
   EXPECT_EQ(SniffingResult::kNo, SniffForFetchOnlyResource("var x = 1;"));
 }
 
+void SniffForHTMLParity(std::string_view data) {
+  EXPECT_EQ(internal::SniffForHTMLCpp(data), internal::SniffForHTMLRust(data));
+}
+FUZZ_TEST(OrbSnifferParityTest, SniffForHTMLParity);
+
+void SniffForXMLParity(std::string_view data) {
+  EXPECT_EQ(internal::SniffForXMLCpp(data), internal::SniffForXMLRust(data));
+}
+FUZZ_TEST(OrbSnifferParityTest, SniffForXMLParity);
+
+void SniffForJSONParity(std::string_view data) {
+  EXPECT_EQ(internal::SniffForJSONCpp(data), internal::SniffForJSONRust(data));
+}
+FUZZ_TEST(OrbSnifferParityTest, SniffForJSONParity);
+
+void SniffForFetchOnlyResourceParity(std::string_view data) {
+  EXPECT_EQ(internal::SniffForFetchOnlyResourceCpp(data),
+            internal::SniffForFetchOnlyResourceRust(data));
+}
+FUZZ_TEST(OrbSnifferParityTest, SniffForFetchOnlyResourceParity);
+
+}  // namespace
 }  // namespace network::orb

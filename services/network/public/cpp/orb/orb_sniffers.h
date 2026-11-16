@@ -39,6 +39,29 @@ SniffingResult SniffForJSON(std::string_view data);
 COMPONENT_EXPORT(NETWORK_CPP)
 SniffingResult SniffForFetchOnlyResource(std::string_view data);
 
+// Separate implementations exposed for parity testing.
+// TODO(crbug.com/584780001): Remove C++ implementation once the Rust
+// implementation has launched.
+namespace internal {
+COMPONENT_EXPORT(NETWORK_CPP)
+SniffingResult SniffForHTMLCpp(std::string_view data);
+COMPONENT_EXPORT(NETWORK_CPP)
+SniffingResult SniffForXMLCpp(std::string_view data);
+COMPONENT_EXPORT(NETWORK_CPP)
+SniffingResult SniffForJSONCpp(std::string_view data);
+COMPONENT_EXPORT(NETWORK_CPP)
+SniffingResult SniffForFetchOnlyResourceCpp(std::string_view data);
+
+COMPONENT_EXPORT(NETWORK_CPP)
+SniffingResult SniffForHTMLRust(std::string_view data);
+COMPONENT_EXPORT(NETWORK_CPP)
+SniffingResult SniffForXMLRust(std::string_view data);
+COMPONENT_EXPORT(NETWORK_CPP)
+SniffingResult SniffForJSONRust(std::string_view data);
+COMPONENT_EXPORT(NETWORK_CPP)
+SniffingResult SniffForFetchOnlyResourceRust(std::string_view data);
+}  // namespace internal
+
 }  // namespace network::orb
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_SNIFFERS_H_

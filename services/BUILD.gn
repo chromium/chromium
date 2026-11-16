@@ -80,6 +80,10 @@ test("services_unittests") {
     "CompositingStructTraitsFuzzTest.ThreadFuzz",
     "CompositingStructTraitsFuzzTest.FrameSinkBundleIdFuzz",
     "ConnectionAllowlistFuzz.FuzzConnectionAllowlistParser",
+    "OrbSnifferParityTest.SniffForHTMLParity",
+    "OrbSnifferParityTest.SniffForXMLParity",
+    "OrbSnifferParityTest.SniffForJSONParity",
+    "OrbSnifferParityTest.SniffForFetchOnlyResourceParity",
   ]
 
   data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]

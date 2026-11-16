@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//services/network/public/cpp/features.gni")
@@ -51,6 +53,55 @@ component("crash_keys") {
   ]
   deps = [ "//base" ]
   defines = [ "IS_NETWORK_CPP_CRASH_KEYS_IMPL" ]
+}
+
+config("cpp_impl_config") {
+  visibility = [ ":*" ]
+  defines = [ "IS_NETWORK_CPP_IMPL" ]
+}
+
+source_set("orb_sniffers_headers") {
+  visibility = [ ":*" ]
+  sources = [ "orb/orb_sniffers.h" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("orb_sniffers_headers_impl") {
+  visibility = [ ":*" ]
+  public_configs = [ ":cpp_impl_config" ]
+  public_deps = [ ":orb_sniffers_headers" ]
+}
+
+rust_api_from_cpp("orb_sniffers_rs_api") {
+  visibility = [ ":*" ]
+  bindings_target = ":orb_sniffers_headers_impl"
+  public_headers = [ "orb/orb_sniffers.h" ]
+  root_namespaces = [ "network::orb" ]
+}
+
+rust_static_library("orb_sniffers_rust") {
+  crate_root = "orb/orb_sniffers.rs"
+  sources = [ crate_root ]
+  visibility = [ ":*" ]
+  deps = [ ":orb_sniffers_rs_api" ]
+  cpp_api_from_rust = {
+    target_name = "orb_sniffers_rust_bindings"
+    cpp_namespace = "network::orb::rust"
+    h_out = "${target_gen_dir}/orb/orb_sniffers_rust.h"
+    bindings_deps = [ ":orb_sniffers_rs_api" ]
+  }
+}
+
+source_set("orb_sniffers") {
+  visibility = [ ":cpp" ]
+  public = []
+  sources = [ "orb/orb_sniffers.cc" ]
+  deps = [
+    ":flags_and_switches",
+    ":orb_sniffers_headers_impl",
+    ":orb_sniffers_rust_bindings",
+    "//base",
+  ]
 }
 
 component("cpp") {
@@ -129,8 +180,6 @@ component("cpp") {
     "orb/orb_impl.h",
     "orb/orb_mimetypes.cc",
     "orb/orb_mimetypes.h",
-    "orb/orb_sniffers.cc",
-    "orb/orb_sniffers.h",
     "origin_agent_cluster_parser.cc",
     "origin_agent_cluster_parser.h",
     "parsed_headers.cc",
@@ -198,6 +247,7 @@ component("cpp") {
     ":cpp_base",
     ":flags_and_switches",
     ":is_potentially_trustworthy",
+    ":orb_sniffers_headers",
     "//net",
     "//services/network/public/mojom",
     "//services/network/public/mojom:url_loader_base",
@@ -206,6 +256,7 @@ component("cpp") {
   ]
 
   deps = [
+    ":orb_sniffers",
     "//base",
     "//components/link_header_util",
     "//components/os_crypt/browser",
