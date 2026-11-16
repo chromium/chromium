@@ -1151,6 +1151,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
     "src/org/chromium/chrome/browser/payments/IsReadyToPayServiceHelperTest.java",
     "src/org/chromium/chrome/browser/payments/MockPaymentApp.java",
     "src/org/chromium/chrome/browser/payments/PaymentDetailsUpdateServiceHelperTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentHandlerFacility.java",
     "src/org/chromium/chrome/browser/payments/PaymentManifestDownloaderTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentManifestParserTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentManifestVerifierTest.java",

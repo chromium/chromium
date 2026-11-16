@@ -57,12 +57,10 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.payments.ui.test_support.FakeClock;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -170,17 +168,6 @@ public class ExpandablePaymentHandlerTest {
         showPaymentHandler(paymentHandler, mDefaultActivity);
     }
 
-    private PaymentHandlerCoordinator createPaymentHandlerAndShow(ChromeTabbedActivity cta)
-            throws Throwable {
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandler();
-        showPaymentHandler(paymentHandler, cta);
-        return paymentHandler;
-    }
-
-    private PaymentHandlerCoordinator createPaymentHandlerAndShow() throws Throwable {
-        return createPaymentHandlerAndShow(mDefaultActivity);
-    }
-
     private String getOrigin(EmbeddedTestServer server) {
         String longOrigin = server.getURL("/");
         String begin = "https://";
@@ -224,13 +211,14 @@ public class ExpandablePaymentHandlerTest {
         CriteriaHelper.pollInstrumentationThread(() -> mUiShownCalled);
     }
 
-    private void waitForTitleShown(WebContents paymentAppWebContents) {
-        waitForTitleShown(paymentAppWebContents, "Max Pay");
-    }
-
-    private void waitForTitleShown(WebContents paymentAppWebContents, String title) {
-        CriteriaHelper.pollInstrumentationThread(
-                () -> paymentAppWebContents.getTitle().equals(title));
+    /** Shows a payment handler with the default payment app and waits for its page to load. */
+    private PaymentHandlerFacility<WebPageStation> createAndShowPaymentHandler() throws Throwable {
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandler();
+        return mStartingPage
+                .runTo(() -> showPaymentHandler(paymentHandler))
+                .enterFacility(
+                        new PaymentHandlerFacility<>(
+                                paymentHandler, "Max Pay", getOrigin(mServer)));
     }
 
     private void waitForUiClosed() {
@@ -242,10 +230,10 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testOpenClose() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
+        PaymentHandlerFacility<WebPageStation> sheet = createAndShowPaymentHandler();
         waitForUiShown();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
+        sheet.hide();
         waitForUiClosed();
     }
 
@@ -255,9 +243,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testSwipeDownCloseUi() throws Throwable {
         startDefaultServer();
-        createPaymentHandlerAndShow();
-
-        waitForUiShown();
+        createAndShowPaymentHandler();
 
         View sheetControlContainer =
                 mRule.getActivity().findViewById(R.id.bottom_sheet_control_container);
@@ -284,8 +270,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testClickCloseButtonCloseUi() throws Throwable {
         startDefaultServer();
-        createPaymentHandlerAndShow();
-        waitForUiShown();
+        createAndShowPaymentHandler();
 
         mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
         onView(withId(R.id.close)).perform(click());
@@ -297,8 +282,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testCloseButtonInputProtection() throws Throwable {
         startDefaultServer();
-        createPaymentHandlerAndShow();
-        waitForUiShown();
+        createAndShowPaymentHandler();
 
         // Clicking close immediately is prevented.
         onView(withId(R.id.close)).perform(click());
@@ -320,10 +304,10 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testWebContentsInitializedCallbackInvoked() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
+        PaymentHandlerFacility<WebPageStation> sheet = createAndShowPaymentHandler();
         waitForUiShown();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
+        sheet.hide();
         waitForUiClosed();
     }
 
@@ -332,13 +316,12 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testWebContentsDestroy() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
-        waitForUiShown();
+        PaymentHandlerFacility<WebPageStation> sheet = createAndShowPaymentHandler();
 
-        Assert.assertFalse(paymentHandler.getWebContentsForTest().isDestroyed());
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
+        Assert.assertFalse(sheet.webContentsElement.value().isDestroyed());
+        sheet.hide();
         waitForUiClosed();
-        Assert.assertTrue(paymentHandler.getWebContentsForTest().isDestroyed());
+        Assert.assertTrue(sheet.webContentsElement.getFromPast().isDestroyed());
     }
 
     @Test
@@ -351,8 +334,8 @@ public class ExpandablePaymentHandlerTest {
                 mStartingPage
                         .openNewIncognitoTabOrWindowFast()
                         .loadWebPageProgrammatically(UrlConstants.ABOUT_URL);
-        PaymentHandlerCoordinator paymentHandler =
-                createPaymentHandlerAndShow(webPage.getActivity());
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandler();
+        showPaymentHandler(paymentHandler, webPage.getActivity());
         waitForUiShown();
 
         Assert.assertTrue(paymentHandler.getWebContentsForTest().isIncognito());
@@ -366,12 +349,11 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testIncognitoFalse() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
-        waitForUiShown();
+        PaymentHandlerFacility<WebPageStation> sheet = createAndShowPaymentHandler();
 
-        Assert.assertFalse(paymentHandler.getWebContentsForTest().isIncognito());
+        Assert.assertFalse(sheet.webContentsElement.value().isIncognito());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
+        sheet.hide();
         waitForUiClosed();
     }
 
@@ -416,13 +398,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testUiElements() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
-        waitForUiShown();
-
-        onView(withId(R.id.bottom_sheet)).check(matches(isDisplayed()));
-
-        CriteriaHelper.pollInstrumentationThread(
-                () -> paymentHandler.getWebContentsForTest().getTitle().equals("Max Pay"));
+        PaymentHandlerFacility<WebPageStation> sheet = createAndShowPaymentHandler();
 
         onView(withId(R.id.title))
                 .check(matches(isDisplayed()))
@@ -434,12 +410,9 @@ public class ExpandablePaymentHandlerTest {
         onView(withId(R.id.security_icon))
                 .check(matches(isDisplayed()))
                 .check(matches(withContentDescription("Connection is secure")));
-        onView(withId(R.id.origin))
-                .check(matches(isDisplayed()))
-                .check(matches(withText(getOrigin(mServer))));
+        onView(withId(R.id.origin)).check(matches(isDisplayed()));
 
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
-
+        sheet.hide();
         waitForUiClosed();
     }
 
@@ -449,8 +422,8 @@ public class ExpandablePaymentHandlerTest {
     @DisabledTest(message = "https://crbug.com/40074447")
     public void testWebContentsInputProtection() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
-        waitForUiShown();
+        PaymentHandlerFacility<WebPageStation> sheet = createAndShowPaymentHandler();
+        WebContents paymentAppWebContents = sheet.webContentsElement.value();
 
         CallbackHelper callbackHelper = new CallbackHelper();
         WebContentsObserver observer =
@@ -462,32 +435,27 @@ public class ExpandablePaymentHandlerTest {
                 };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    observer.observe(paymentHandler.getWebContentsForTest());
+                    observer.observe(paymentAppWebContents);
                 });
 
-        DOMUtils.waitForNonZeroNodeBounds(paymentHandler.getWebContentsForTest(), "confirmButton");
+        DOMUtils.waitForNonZeroNodeBounds(paymentAppWebContents, "confirmButton");
         // Before advancing the clock, input is intercepted from interacting with the page.
         PaymentHandlerContentFrameLayout contentLayout =
                 (PaymentHandlerContentFrameLayout)
                         mRule.getActivity().findViewById(R.id.payment_handler_content);
         Assert.assertTrue(
                 contentLayout.onInterceptTouchEvent(MotionEvent.obtain(0, 0, 0, 0, 0, 0)));
-        Assert.assertTrue(
-                DOMUtils.clickNode(paymentHandler.getWebContentsForTest(), "confirmButton"));
+        Assert.assertTrue(DOMUtils.clickNode(paymentAppWebContents, "confirmButton"));
         Assert.assertEquals(0, callbackHelper.getCallCount());
 
         mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
         Assert.assertFalse(
                 contentLayout.onInterceptTouchEvent(MotionEvent.obtain(0, 0, 0, 0, 0, 0)));
-        Assert.assertTrue(
-                DOMUtils.clickNode(paymentHandler.getWebContentsForTest(), "confirmButton"));
+        Assert.assertTrue(DOMUtils.clickNode(paymentAppWebContents, "confirmButton"));
         callbackHelper.waitForOnly();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    observer.observe(null);
-                    paymentHandler.hide();
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> observer.observe(null));
+        sheet.hide();
         waitForUiClosed();
     }
 
@@ -497,8 +465,7 @@ public class ExpandablePaymentHandlerTest {
     @DisabledTest(message = "https://crbug.com/40877540")
     public void testOpenPageInfoDialog() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
-        waitForTitleShown(paymentHandler.getWebContentsForTest());
+        PaymentHandlerFacility<WebPageStation> sheet = createAndShowPaymentHandler();
 
         onView(withId(R.id.security_icon)).perform(click());
 
@@ -516,7 +483,7 @@ public class ExpandablePaymentHandlerTest {
 
         onView(withId(R.id.page_info_url)).check(doesNotExist());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
+        sheet.hide();
         waitForUiClosed();
     }
 
@@ -525,34 +492,16 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testNavigateBackWithSystemBackButton() throws Throwable {
         startDefaultServer();
-
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
-
-        waitForTitleShown(paymentHandler.getWebContentsForTest(), "Max Pay");
-        onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
-
-        String anotherUrl =
-                mServer.getURL("/components/test/data/payments/bobpay.test/app1/index.html");
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        paymentHandler
-                                .getWebContentsForTest()
-                                .getNavigationController()
-                                .loadUrl(new LoadUrlParams(anotherUrl)));
-        waitForTitleShown(paymentHandler.getWebContentsForTest(), "Bob Pay 1");
-        onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
-
-        // Press back button would navigate back if it has previous pages.
-        mDevice.pressBack();
-        waitForTitleShown(paymentHandler.getWebContentsForTest(), "Max Pay");
-        onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
-
-        // Press back button would be no-op if it does not have any previous page.
-        mDevice.pressBack();
-        waitForTitleShown(paymentHandler.getWebContentsForTest(), "Max Pay");
-        onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
-
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
+        createAndShowPaymentHandler()
+                .loadUrl(
+                        mServer.getURL(
+                                "/components/test/data/payments/bobpay.test/app1/index.html"),
+                        "Bob Pay 1")
+                // Press back button would navigate back if it has previous pages.
+                .pressBack("Max Pay")
+                // Press back button would be no-op if it does not have any previous page.
+                .pressBackWithNoHistory()
+                .hide();
         waitForUiClosed();
     }
 
@@ -562,7 +511,8 @@ public class ExpandablePaymentHandlerTest {
     @ParameterAnnotations.UseMethodParameter(BadCertParams.class)
     public void testInsecureConnectionNotShowUi(int badCertificate) throws Throwable {
         startServer(badCertificate);
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandler();
+        showPaymentHandler(paymentHandler);
 
         CriteriaHelper.pollInstrumentationThread(
                 () -> paymentHandler.getWebContentsForTest().isDestroyed());
@@ -577,14 +527,13 @@ public class ExpandablePaymentHandlerTest {
     @ParameterAnnotations.UseMethodParameter(GoodCertParams.class)
     public void testSecureConnectionShowUi(int goodCertificate) throws Throwable {
         startServer(goodCertificate);
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
-        waitForTitleShown(paymentHandler.getWebContentsForTest());
+        PaymentHandlerFacility<WebPageStation> sheet = createAndShowPaymentHandler();
 
         onView(withId(R.id.security_icon))
                 .check(matches(isDisplayed()))
                 .check(matches(withContentDescription("Connection is secure")));
 
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
+        sheet.hide();
         waitForUiClosed();
     }
 
@@ -621,20 +570,16 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testOriginNotSpoofedByAboutBlankNavigation() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
-        waitForTitleShown(paymentHandler.getWebContentsForTest(), "Max Pay");
-        onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
-
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                paymentHandler.getWebContentsForTest(),
-                "document.open();"
-                        + "document.write('<title>Spoofed</title>');"
-                        + "document.close();"
-                        + "location.href = '#' + '%20'.repeat(200) + 'paypal.com';");
-        waitForTitleShown(paymentHandler.getWebContentsForTest(), "Spoofed");
-        onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
-
-        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
+        // The Facility checks that the origin shown is the payment app's server origin, before and
+        // after the spoofing attempt.
+        createAndShowPaymentHandler()
+                .executeJavaScript(
+                        "document.open();"
+                                + "document.write('<title>Spoofed</title>');"
+                                + "document.close();"
+                                + "location.href = '#' + '%20'.repeat(200) + 'paypal.com';",
+                        "Spoofed")
+                .hide();
         waitForUiClosed();
     }
 }
