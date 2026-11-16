@@ -54,6 +54,9 @@ public class AccountSelectionIntegrationTestBase {
                     /* brandIconBitmap= */ Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_4444),
                     /* configUrl= */ null,
                     /* loginUrl= */ null,
+                    /* accountManagementUrl= */ GURL.emptyGURL(),
+                    /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                    /* termsOfServiceUrl= */ GURL.emptyGURL(),
                     /* showUseDifferentAccountButton= */ false);
     protected static final IdentityProviderMetadata IDP_METADATA_WITH_ADD_ACCOUNT =
             new IdentityProviderMetadata(
@@ -62,6 +65,9 @@ public class AccountSelectionIntegrationTestBase {
                     /* brandIconBitmap= */ Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_4444),
                     /* configUrl= */ null,
                     /* loginUrl= */ null,
+                    /* accountManagementUrl= */ GURL.emptyGURL(),
+                    /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                    /* termsOfServiceUrl= */ GURL.emptyGURL(),
                     /* showUseDifferentAccountButton= */ true);
 
     protected static final @IdentityRequestDialogDisclosureField int[] DEFAULT_DISCLOSURE_FIELDS =

@@ -211,6 +211,9 @@ public class AccountSelectionJUnitTestBase {
                         Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_4444),
                         mTestConfigUrl,
                         mTestLoginUrl,
+                        /* accountManagementUrl= */ GURL.emptyGURL(),
+                        /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                        /* termsOfServiceUrl= */ GURL.emptyGURL(),
                         /* showUseDifferentAccountButton= */ false);
 
         mIdpMetadataWithoutIcon =
@@ -220,6 +223,9 @@ public class AccountSelectionJUnitTestBase {
                         null,
                         mTestConfigUrl,
                         mTestLoginUrl,
+                        /* accountManagementUrl= */ GURL.emptyGURL(),
+                        /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                        /* termsOfServiceUrl= */ GURL.emptyGURL(),
                         /* showUseDifferentAccountButton= */ false);
 
         mIdpData =
@@ -250,6 +256,9 @@ public class AccountSelectionJUnitTestBase {
                         null,
                         mTestConfigUrl,
                         mTestLoginUrl,
+                        /* accountManagementUrl= */ GURL.emptyGURL(),
+                        /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                        /* termsOfServiceUrl= */ GURL.emptyGURL(),
                         /* showUseDifferentAccountButton= */ true);
         mIdpDataWithUseDifferentAccount =
                 new IdentityProviderData(

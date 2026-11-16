@@ -428,6 +428,9 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                         null,
                         mTestConfigUrl,
                         mTestLoginUrl,
+                        /* accountManagementUrl= */ GURL.emptyGURL(),
+                        /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                        /* termsOfServiceUrl= */ GURL.emptyGURL(),
                         false);
 
         mModel.set(

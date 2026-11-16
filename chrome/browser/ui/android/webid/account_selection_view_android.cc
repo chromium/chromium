@@ -84,7 +84,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
       env, ui::OptionalSkColorToJavaColor(metadata.brand_text_color),
       ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
       metadata.brand_decoded_icon.AsBitmap(), metadata.config_url,
-      metadata.idp_login_url,
+      metadata.idp_login_url, metadata.account_management_url,
+      metadata.privacy_policy_url, metadata.terms_of_service_url,
       // We only support the add account feature on active mode. In both modes,
       // we still show this button in the filtered out accounts case.
       rp_mode == blink::mojom::RpMode::kPassive
