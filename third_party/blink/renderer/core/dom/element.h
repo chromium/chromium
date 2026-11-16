@@ -29,6 +29,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -317,7 +318,18 @@ struct GetAnimationsOptionsResolved {
 typedef HashMap<AtomicString, std::pair<SpecificTrustedType, AtomicString>>
     AttrNameToTrustedType;
 
+// The MSVC ABI does not place derived class members in base class tail
+// padding. On 64-bit Windows, Element is packed to 4 bytes so that subclasses
+// that only add 32-bit members (such as most SVG elements) aren't padded to 8
+// bytes at each level. This doesn't misalign tag_name_, Element's only 64-bit
+// member; see the static_assert in the constructor.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#pragma pack(push, 4)
+#endif
 class CORE_EXPORT Element : public ContainerNode {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#pragma pack(pop)
+#endif
   DEFINE_WRAPPERTYPEINFO();
 
  public:

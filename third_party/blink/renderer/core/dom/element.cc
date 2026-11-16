@@ -725,7 +725,10 @@ inline bool ShouldBlockInlineScriptAttributeSet(
 Element::Element(const QualifiedName& tag_name,
                  Document* document,
                  ConstructionType type)
-    : ContainerNode(document, type), tag_name_(tag_name) {}
+    : ContainerNode(document, type), tag_name_(tag_name) {
+  // Element is packed on 64-bit Windows; see the comment in element.h.
+  static_assert(offsetof(Element, tag_name_) % alignof(QualifiedName) == 0);
+}
 
 Element* Element::GetAnimationTarget() {
   return this;
