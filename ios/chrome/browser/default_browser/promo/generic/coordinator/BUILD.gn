@@ -15,7 +15,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/default_browser/promo/generic/public",
-    "//ios/chrome/browser/default_browser/promo/public:features",
     "//ios/chrome/browser/default_browser/promo/ui",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",

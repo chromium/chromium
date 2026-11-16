@@ -7,7 +7,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h"
 
@@ -40,7 +39,8 @@
 - (void)startDestination {
   switch (_configuration.feature) {
     case PictureInPictureFeature::kDefaultBrowser:
-      OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant());
+      OpenIOSDefaultBrowserSettingsPage(
+          /*force_default_apps_if_available=*/true);
       break;
   }
 }
@@ -51,7 +51,8 @@
   _primaryButtonTapCount++;
   switch (_configuration.feature) {
     case PictureInPictureFeature::kDefaultBrowser:
-      OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant());
+      OpenIOSDefaultBrowserSettingsPage(
+          /*force_default_apps_if_available=*/true);
       break;
   }
 }

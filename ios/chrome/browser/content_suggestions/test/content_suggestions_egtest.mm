@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/content_suggestions/test/new_tab_page_app_interface.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
@@ -170,10 +169,6 @@ id<GREYMatcher> NavigationBarAddButton() {
         {kIOSExpandedSetupList,
          {{kIOSExpandedSetupListVariationParam,
            kIOSExpandedSetupListVariationParamSafariImport}}});
-    config.features_enabled_and_params.push_back(
-        {kDefaultBrowserPictureInPicture,
-         {{kDefaultBrowserPictureInPictureParam,
-           kDefaultBrowserPictureInPictureParamDisabledDefaultApps}}});
   }
 
   return config;

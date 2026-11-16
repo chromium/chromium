@@ -61,7 +61,6 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/default_browser/promo/ui/default_browser_passive_promo_card_item.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
@@ -1703,16 +1702,11 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   id<PictureInPictureCommands> pipHandler = HandlerForProtocol(
       _browser->GetCommandDispatcher(), PictureInPictureCommands);
 
-  if (IsDefaultBrowserPictureInPictureEnabled()) {
+  if (IsDefaultAppsDestinationAvailable()) {
     [self.sceneHandler closePresentedViews];
   }
 
-  BOOL useDefaultAppsDestination =
-      IsDefaultBrowserPictureInPictureEnabled()
-          ? IsDefaultAppsPictureInPictureVariant()
-          : (IsDefaultAppsDestinationAvailable() &&
-             IsUseDefaultAppsDestinationForPromosEnabled());
-  OpenIOSDefaultBrowserSettingsPage(useDefaultAppsDestination,
+  OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/true,
                                     /*ui_application_to_use=*/nil, pipHandler);
 }
 

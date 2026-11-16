@@ -94,7 +94,6 @@
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -1363,7 +1362,7 @@ using segmentation_platform::TipIdentifier;
 - (void)showUIForSelectedSetUpListItem:(SetUpListItemType)type {
   switch (type) {
     case SetUpListItemType::kDefaultBrowser:
-      if (IsDefaultBrowserPictureInPictureEnabled()) {
+      if (IsDefaultAppsDestinationAvailable()) {
         id<SettingsCommands> settingsHandler = HandlerForProtocol(
             self.browser->GetCommandDispatcher(), SettingsCommands);
         [settingsHandler

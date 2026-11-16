@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/content_suggestions/test/new_tab_page_app_interface.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -98,11 +97,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   config.additional_args.push_back("1");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  config.features_enabled_and_params.push_back(
-      {kDefaultBrowserPictureInPicture,
-       {{kDefaultBrowserPictureInPictureParam,
-         kDefaultBrowserPictureInPictureParamDisabledDefaultApps}}});
 
   return config;
 }

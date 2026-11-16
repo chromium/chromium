@@ -380,26 +380,6 @@ constexpr FeatureEntry::FeatureVariation kDownloadListVariations[] = {
     {"Custom UI", kDownloadListCustomUIParam, nullptr},
 };
 
-// Default browser promo refresh feature flag parameters.
-constexpr FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm1[] = {
-    {kDefaultBrowserPictureInPictureParam,
-     kDefaultBrowserPictureInPictureParamEnabled}};
-constexpr FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm2[] = {
-    {kDefaultBrowserPictureInPictureParam,
-     kDefaultBrowserPictureInPictureParamDisabledDefaultApps}};
-constexpr FeatureEntry::FeatureParam kDefaultBrowserPictureInPictureArm3[] = {
-    {kDefaultBrowserPictureInPictureParam,
-     kDefaultBrowserPictureInPictureParamEnabledDefaultApps}};
-constexpr FeatureEntry::FeatureVariation
-    kDefaultBrowserPictureInPictureVariations[] = {
-        {"Picture-in-picture instructions.",
-         kDefaultBrowserPictureInPictureArm1, nullptr},
-        {"No picture in picture, default apps destination.",
-         kDefaultBrowserPictureInPictureArm2, nullptr},
-        {"Picture-in-picture instructions, default apps destination.",
-         kDefaultBrowserPictureInPictureArm3, nullptr},
-};
-
 constexpr FeatureEntry::FeatureParam
     kDefaultBrowserNonModalPromoStringsSkipCopyPaste[] = {
         {kDefaultBrowserNonModalPromoStringsParam, "1"}};
@@ -1865,13 +1845,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          kDefaultBrowserNonModalPromoStrings,
          kDefaultBrowserNonModalPromoStringsVariations,
          "DefaultBrowserNonModalPromoStrings")},
-    {"default-browser-picture-in-picture",
-     flag_descriptions::kDefaultBrowserPictureInPictureName,
-     flag_descriptions::kDefaultBrowserPictureInPictureDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultBrowserPictureInPicture,
-                                    kDefaultBrowserPictureInPictureVariations,
-                                    "DefaultBrowserPictureInPicture")},
     {"default-browser-pip-text-video",
      flag_descriptions::kDefaultBrowserPipTextVideoName,
      flag_descriptions::kDefaultBrowserPipTextVideoDescription,

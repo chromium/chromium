@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/generic/public/default_browser_generic_promo_commands.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/default_browser/promo/ui/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
@@ -28,14 +27,6 @@
 
 using base::RecordAction;
 using base::UserMetricsAction;
-
-namespace {
-// The video name for the settings destination.
-NSString* kDefaultBrowserPromoSettingsDestinationVideo =
-    @"app_specific_settings_instructions_video";
-NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
-    @"default_apps_settings_instructions_video";
-}  // namespace
 
 @interface DefaultBrowserGenericPromoCoordinator () <
     ButtonStackActionDelegate,
@@ -96,11 +87,11 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
   RecordAction(UserMetricsAction(
       "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
 
-  if (IsDefaultBrowserPictureInPictureEnabled()) {
+  if (IsDefaultAppsDestinationAvailable()) {
     [_handler hidePromo];
     id<PictureInPictureCommands> PIPHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), PictureInPictureCommands);
-    OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant(),
+    OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/true,
                                       /*ui_application_to_use=*/nil,
                                       PIPHandler);
     return;
@@ -177,9 +168,8 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
   _viewController = [[DefaultBrowserInstructionsViewController alloc]
           initWithDismissButton:YES
                hasRemindMeLater:hasRemindMeLater
-      useDefaultAppsDestination:IsDefaultBrowserPictureInPictureEnabled()
-                                    ? IsDefaultAppsPictureInPictureVariant()
-                                    : _promoWasFromOffCycleTrigger
+      useDefaultAppsDestination:IsDefaultAppsDestinationAvailable() ||
+                                _promoWasFromOffCycleTrigger
                        hasSteps:NO
                       titleText:nil];
   _viewController.actionDelegate = self;

@@ -1,5 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+ios/chrome/browser/default_browser/promo/public",
-  # keep-sorted end
-]

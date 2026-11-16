@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -80,12 +79,6 @@ void EnsurePipControlsAreVisibleForWindow(XCUIElement* pipWindow,
 @end
 
 @implementation PictureInPictureTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kDefaultBrowserPictureInPicture);
-  return config;
-}
 
 #pragma mark - Tests
 

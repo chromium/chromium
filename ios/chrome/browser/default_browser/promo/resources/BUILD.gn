@@ -46,7 +46,6 @@ bundle_data("animation_files") {
 
 bundle_data("default_browser_promo_videos") {
   sources = [
-    "app_specific_settings_instructions_video.mp4",
     "default_apps_settings_instructions_video.mp4",
     "text_instructions_video.mp4",
   ]

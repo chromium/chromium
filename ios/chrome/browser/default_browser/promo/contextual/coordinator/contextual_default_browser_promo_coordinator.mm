@@ -13,13 +13,13 @@
 #import "ios/chrome/browser/default_browser/promo/contextual/coordinator/contextual_default_browser_promo_mediator.h"
 #import "ios/chrome/browser/default_browser/promo/contextual/public/contextual_default_browser_promo_metrics.h"
 #import "ios/chrome/browser/default_browser/promo/contextual/ui/contextual_default_browser_promo_view_controller.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_default_browser_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 namespace {
@@ -123,11 +123,11 @@ constexpr CGFloat kMaxSheetHeightRatio = 0.75;
   RecordContextualDefaultBrowserPromoAction(
       _promoType, ContextualDefaultBrowserPromoAction::kPrimaryActionTapped);
 
-  if (IsDefaultBrowserPictureInPictureEnabled()) {
+  if (IsDefaultAppsDestinationAvailable()) {
     id<PictureInPictureCommands> pictureInPictureHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), PictureInPictureCommands);
     [self hidePromo];
-    OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant(),
+    OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/true,
                                       /*ui_application_to_use=*/nil,
                                       pictureInPictureHandler);
     return;

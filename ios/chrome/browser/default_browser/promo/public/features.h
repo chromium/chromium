@@ -7,17 +7,8 @@
 
 #import "base/feature_list.h"
 
-// Variations of Default Browser Promo Picture in Picture.
-extern const char kDefaultBrowserPictureInPictureParam[];
-extern const char kDefaultBrowserPictureInPictureParamEnabled[];
-extern const char kDefaultBrowserPictureInPictureParamDisabledDefaultApps[];
-extern const char kDefaultBrowserPictureInPictureParamEnabledDefaultApps[];
-
 // Feature flag to enable default browser iPad specific instructions.
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoIpadInstructions);
-
-// Feature flag to enable the default browser promo Picture in Picture.
-BASE_DECLARE_FEATURE(kDefaultBrowserPictureInPicture);
 
 // Feature flag to enable the Default Browser Non-Modal Promo Strings
 // experiment.
@@ -36,16 +27,6 @@ enum class DefaultBrowserNonModalPromoStringsArm {
 
 // Returns true if the default browser iPad specific instructions are enabled.
 bool IsDefaultBrowserPromoIpadInstructions();
-
-// Returns true if the default browser promo Picture in Picture is enabled.
-bool IsDefaultBrowserPictureInPictureEnabled();
-
-// Returns the default browser promo Picture in Picture param.
-std::string DefaultBrowserPictureInPictureParam();
-
-// Returns true if the default browser promo destination for Picture in
-// Picture flow is default apps.
-bool IsDefaultAppsPictureInPictureVariant();
 
 // Returns true if the Default Browser Non-Modal Promo Strings experiment is
 // enabled.

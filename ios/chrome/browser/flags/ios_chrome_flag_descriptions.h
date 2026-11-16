@@ -614,12 +614,6 @@ inline constexpr char kDefaultBrowserOffCyclePromoName[] =
 inline constexpr char kDefaultBrowserOffCyclePromoDescription[] =
     "When enabled, an off-cycle default browser promo will be shown.";
 
-inline constexpr char kDefaultBrowserPictureInPictureName[] =
-    "Default Browser Promo Picture in Picture";
-inline constexpr char kDefaultBrowserPictureInPictureDescription[] =
-    "When enabled, default browser instructions will be displayed in "
-    "picture-in-picture format over the iOS settings.";
-
 inline constexpr char kDefaultBrowserPipTextVideoName[] =
     "Default Browser PiP Text Video";
 inline constexpr char kDefaultBrowserPipTextVideoDescription[] =

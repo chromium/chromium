@@ -11,7 +11,6 @@ source_set("default_browser") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/default_browser/promo/public:features",
     "//ios/chrome/browser/default_browser/promo/ui",
     "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",

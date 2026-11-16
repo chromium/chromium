@@ -24,7 +24,6 @@
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/promo/contextual/public/contextual_default_browser_promo_constants.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -42,11 +41,6 @@
 extern NSString* const kDefaultBrowserUtilsKey;
 
 namespace {
-
-// The video file to use for the picture-in-picture default browser video
-// instructions for the app-specific settings screen.
-NSString* kAppSpecificSettingsInstructionsVideo =
-    @"app_specific_settings_instructions_video";
 
 // The video file to use for the picture-in-picture default browser video
 // instructions for the default apps destination.
@@ -139,21 +133,11 @@ bool HasRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
 // Shows the default browser Picture-in-Picture.
 void showDefaultBrowserPictureInPictureInstructions(
     id<PictureInPictureCommands> handler) {
-  const std::string pip_param = DefaultBrowserPictureInPictureParam();
-  if (pip_param == kDefaultBrowserPictureInPictureParamDisabledDefaultApps) {
-    OpenIOSDefaultBrowserSettingsPage(true);
-    return;
-  }
-
   PictureInPictureConfiguration* config =
       [[PictureInPictureConfiguration alloc] init];
-  NSString* view_source =
-      pip_param == kDefaultBrowserPictureInPictureParamEnabledDefaultApps
-          ? kDefaultAppsSettingsInstructionsVideo
-          : kAppSpecificSettingsInstructionsVideo;
-  if (IsDefaultBrowserPipTextVideoEnabled()) {
-    view_source = kTextInstructionsVideo;
-  }
+  NSString* view_source = IsDefaultBrowserPipTextVideoEnabled()
+                              ? kTextInstructionsVideo
+                              : kDefaultAppsSettingsInstructionsVideo;
   config.videoURL = [[NSBundle mainBundle] URLForResource:view_source
                                             withExtension:@"mp4"];
   config.title = l10n_util::GetNSString(
@@ -632,7 +616,7 @@ void OpenIOSDefaultBrowserSettingsPage(
     bool force_default_apps_if_available,
     UIApplication* ui_application_to_use,
     id<PictureInPictureCommands> pip_handler) {
-  if (pip_handler && IsDefaultBrowserPictureInPictureEnabled()) {
+  if (pip_handler && IsDefaultAppsDestinationAvailable()) {
     showDefaultBrowserPictureInPictureInstructions(pip_handler);
     return;
   }

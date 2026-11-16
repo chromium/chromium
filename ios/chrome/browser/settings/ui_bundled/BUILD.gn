@@ -135,7 +135,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/default_browser/promo/public:features",
     "//ios/chrome/browser/default_browser/promo/resources",
     "//ios/chrome/browser/default_browser/promo/ui",
     "//ios/chrome/browser/discover_feed/model",

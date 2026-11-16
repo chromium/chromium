@@ -10,10 +10,10 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/post_restore/public/metrics.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -52,7 +52,7 @@
       post_restore_default_browser::kPromptActionHistogramName,
       post_restore_default_browser::PromptActionType::kGoToSettings);
 
-  if (IsDefaultBrowserPictureInPictureEnabled()) {
+  if (IsDefaultAppsDestinationAvailable()) {
     [self.promosManagerHandler dismissCurrentPromo];
   }
 

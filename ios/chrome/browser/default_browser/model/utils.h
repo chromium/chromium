@@ -294,7 +294,7 @@ IOSDefaultBrowserPromoSurface DefaultBrowserPromoLastActionSurface();
 // will be used as the destination if the device supports it. Otherwise, the
 // Chromium settings will be used. The second parameter is to facilitate mocking
 // in unit testing. The third parameter is to trigger the Picture-in-Picture
-// promo if enabled.
+// promo if available.
 void OpenIOSDefaultBrowserSettingsPage(
     bool force_default_apps_if_available = false,
     UIApplication* ui_application_to_use = nil,

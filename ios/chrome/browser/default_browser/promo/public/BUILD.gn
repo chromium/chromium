@@ -7,8 +7,5 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  public_deps = [
-    "//base",
-    "//ios/chrome/browser/shared/public/features",
-  ]
+  public_deps = [ "//base" ]
 }

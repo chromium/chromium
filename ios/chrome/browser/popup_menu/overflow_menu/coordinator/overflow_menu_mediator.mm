@@ -49,7 +49,6 @@
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
@@ -3196,7 +3195,7 @@ void GetPresetNTPBackgroundPreview(
   __weak id<PictureInPictureCommands> weakPipHandler =
       self.pictureInPictureHandler;
   [self dismissMenuWithCompletion:^{
-    OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant(),
+    OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/true,
                                       /*ui_application_to_use=*/nil,
                                       weakPipHandler);
   }];
@@ -3308,7 +3307,7 @@ void GetPresetNTPBackgroundPreview(
   __weak id<PictureInPictureCommands> weakPipHandler =
       self.pictureInPictureHandler;
   [self dismissMenuWithCompletion:^{
-    OpenIOSDefaultBrowserSettingsPage(IsDefaultAppsPictureInPictureVariant(),
+    OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/true,
                                       /*ui_application_to_use=*/nil,
                                       weakPipHandler);
   }];
