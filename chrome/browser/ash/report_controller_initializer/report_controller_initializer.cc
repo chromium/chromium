@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -135,38 +135,42 @@ void RecordMarketSegment(report::MarketSegment market_segment) {
 report::MarketSegment GetMarketSegment(
     policy::DeviceMode device_mode,
     policy::MarketSegment device_market_segment) {
+  using DeviceModeSet =
+      base::EnumSet<policy::DeviceMode, policy::DeviceMode::DEVICE_MODE_PENDING,
+                    policy::DeviceMode::DEVICE_MODE_DEMO>;
+
   // Policy device modes that should be classified as not being set.
-  const std::unordered_set<policy::DeviceMode> kDeviceModeNotSet{
+  static constexpr DeviceModeSet kDeviceModeNotSet{
       policy::DeviceMode::DEVICE_MODE_PENDING,
       policy::DeviceMode::DEVICE_MODE_NOT_SET};
 
   // Policy device modes that should be classified as consumer devices.
-  const std::unordered_set<policy::DeviceMode> kDeviceModeConsumer{
+  static constexpr DeviceModeSet kDeviceModeConsumer{
       policy::DeviceMode::DEVICE_MODE_CONSUMER};
 
   // Policy device modes that should be classified as enterprise devices.
-  const std::unordered_set<policy::DeviceMode> kDeviceModeEnterprise{
+  static constexpr DeviceModeSet kDeviceModeEnterprise{
       policy::DeviceMode::DEVICE_MODE_ENTERPRISE};
 
   // Policy device modes that should be classified as demo devices.
-  const std::unordered_set<policy::DeviceMode> kDeviceModeDemoEnterprise{
+  static constexpr DeviceModeSet kDeviceModeDemoEnterprise{
       policy::DeviceMode::DEVICE_MODE_DEMO};
 
   // Determine Fresnel market segment using the retrieved device policy
   // |device_mode| and |device_market_segment|.
-  if (kDeviceModeNotSet.count(device_mode)) {
+  if (kDeviceModeNotSet.Has(device_mode)) {
     return report::MARKET_SEGMENT_UNKNOWN;
   }
 
-  if (kDeviceModeConsumer.count(device_mode)) {
+  if (kDeviceModeConsumer.Has(device_mode)) {
     return report::MARKET_SEGMENT_CONSUMER;
   }
 
-  if (kDeviceModeDemoEnterprise.count(device_mode)) {
+  if (kDeviceModeDemoEnterprise.Has(device_mode)) {
     return report::MARKET_SEGMENT_ENTERPRISE_DEMO;
   }
 
-  if (kDeviceModeEnterprise.count(device_mode)) {
+  if (kDeviceModeEnterprise.Has(device_mode)) {
     if (device_market_segment == policy::MarketSegment::ENTERPRISE) {
       return report::MARKET_SEGMENT_ENTERPRISE;
     }
