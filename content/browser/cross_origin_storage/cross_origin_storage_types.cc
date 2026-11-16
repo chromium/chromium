@@ -5,11 +5,15 @@
 #include "content/browser/cross_origin_storage/cross_origin_storage_types.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "crypto/hash.h"
 #include "net/base/is_potentially_trustworthy.h"
+#include "net/http/http_response_headers.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -135,6 +139,43 @@ CrossOriginStorageAccessSpec::FromMojo(
       return AllowedOrigins(std::move(deduplicated));
     }
   }
+}
+
+base::flat_set<url::Origin> ParseCrossOriginStorageAllowOriginValue(
+    std::string_view header_value) {
+  if (header_value.empty()) {
+    return {};
+  }
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
+      header_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<url::Origin> origins;
+  origins.reserve(tokens.size());
+  for (std::string_view token : tokens) {
+    GURL url(token);
+    if (!url.is_valid() ||
+        (!url.SchemeIs(url::kHttpScheme) && !url.SchemeIs(url::kHttpsScheme))) {
+      return {};
+    }
+    url::Origin origin = url::Origin::Create(url);
+    if (origin.opaque() || !net::IsOriginPotentiallyTrustworthy(origin)) {
+      return {};
+    }
+    origins.push_back(std::move(origin));
+  }
+  return base::flat_set<url::Origin>(std::move(origins));
+}
+
+base::flat_set<url::Origin> ParseCrossOriginStorageAllowOrigin(
+    const net::HttpResponseHeaders* headers) {
+  if (!headers) {
+    return {};
+  }
+  std::optional<std::string> value =
+      headers->GetNormalizedHeader("Cross-Origin-Storage-Allow-Origin");
+  if (!value) {
+    return {};
+  }
+  return ParseCrossOriginStorageAllowOriginValue(*value);
 }
 
 }  // namespace content

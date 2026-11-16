@@ -45,6 +45,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "crypto/hash.h"
@@ -58,12 +59,14 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
+#include "net/http/http_response_headers.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -197,10 +200,13 @@ class CrossOriginStorageImplTest : public testing::Test {
   }
 
   std::unique_ptr<CrossOriginStorageManagerImpl> CreateManager(
-      const blink::StorageKey& storage_key) {
+      const blink::StorageKey& storage_key,
+      base::flat_set<url::Origin> cos_scope_ceiling = {},
+      WeakDocumentPtr creator_document = {}) {
     return std::make_unique<CrossOriginStorageManagerImpl>(
         registry()->GetWeakPtr(), blob_storage_context_,
-        fsa_manager_->AsWeakPtr(), storage_key);
+        fsa_manager_->AsWeakPtr(), storage_key, std::move(cos_scope_ceiling),
+        std::move(creator_document));
   }
 
   std::unique_ptr<CrossOriginStorageFileHandleImpl> CreateHandle(
@@ -303,6 +309,105 @@ class CrossOriginStorageImplTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<FileSystemAccessManagerImpl> fsa_manager_;
 };
+
+// =============================================================================
+// CrossOriginStorageTypes Tests
+// =============================================================================
+
+TEST(CrossOriginStorageTypesTest, ParseCrossOriginStorageAllowOrigin) {
+  // Single valid HTTPS origin.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue("https://a.example.com"),
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://a.example.com"))));
+  EXPECT_THAT(
+      ParseCrossOriginStorageAllowOriginValue("https://a.example.com:8443"),
+      testing::UnorderedElementsAre(
+          url::Origin::Create(GURL("https://a.example.com:8443"))));
+
+  // Multiple comma-separated HTTPS origins.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue(
+                  "https://a.example.com, https://b.example.com"),
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://a.example.com")),
+                  url::Origin::Create(GURL("https://b.example.com"))));
+
+  // Duplicate origins are deduplicated.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue(
+                  "https://a.example.com, https://a.example.com"),
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://a.example.com"))));
+
+  // Leading, trailing, and inter-token ASCII whitespace trimming.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue(
+                  "  \t https://a.example.com  ,\n  https://b.example.com \t "),
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://a.example.com")),
+                  url::Origin::Create(GURL("https://b.example.com"))));
+
+  // Potentially trustworthy loopback HTTP origin is permitted.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue("http://127.0.0.1:8080"),
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("http://127.0.0.1:8080"))));
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue("http://localhost:8080"),
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("http://localhost:8080"))));
+
+  // Insecure remote HTTP origin fails closed (returns empty set).
+  EXPECT_THAT(
+      ParseCrossOriginStorageAllowOriginValue("http://insecure.example.com"),
+      testing::IsEmpty());
+
+  // Wildcard '*' is rejected and fails closed.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue("*"), testing::IsEmpty());
+  EXPECT_THAT(
+      ParseCrossOriginStorageAllowOriginValue("https://a.example.com, *"),
+      testing::IsEmpty());
+
+  // Non-HTTP(S) schemes fail closed.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue("ftp://a.example.com"),
+              testing::IsEmpty());
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue("data:text/plain,hello"),
+              testing::IsEmpty());
+
+  // Malformed URLs fail closed.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue("not-a-valid-url"),
+              testing::IsEmpty());
+  EXPECT_THAT(
+      ParseCrossOriginStorageAllowOriginValue("https://valid.com, not_a_url"),
+      testing::IsEmpty());
+
+  // Empty strings and comma-only values return an empty set.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue(""), testing::IsEmpty());
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue("   "),
+              testing::IsEmpty());
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue(","), testing::IsEmpty());
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue(",,,  ,  ,"),
+              testing::IsEmpty());
+
+  // Empty tokens between valid entries are ignored.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOriginValue(
+                  "https://a.example.com, , https://b.example.com"),
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://a.example.com")),
+                  url::Origin::Create(GURL("https://b.example.com"))));
+
+  // HttpResponseHeaders normalization with multiple header lines.
+  EXPECT_THAT(ParseCrossOriginStorageAllowOrigin(nullptr), testing::IsEmpty());
+
+  auto empty_headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  EXPECT_THAT(ParseCrossOriginStorageAllowOrigin(empty_headers.get()),
+              testing::IsEmpty());
+
+  auto multi_headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  multi_headers->AddHeader("Cross-Origin-Storage-Allow-Origin",
+                           "https://a.example.com");
+  multi_headers->AddHeader("Cross-Origin-Storage-Allow-Origin",
+                           "https://b.example.com");
+  EXPECT_THAT(ParseCrossOriginStorageAllowOrigin(multi_headers.get()),
+              testing::UnorderedElementsAre(
+                  url::Origin::Create(GURL("https://a.example.com")),
+                  url::Origin::Create(GURL("https://b.example.com"))));
+}
 
 // =============================================================================
 // CrossOriginStorageManagerImpl Tests
@@ -466,7 +571,7 @@ TEST_F(CrossOriginStorageImplTest,
   {
     CrossOriginStorageManagerImpl manager(
         /*registry=*/nullptr, blob_storage_context_, fsa_manager_->AsWeakPtr(),
-        kStorageKey);
+        kStorageKey, /*cos_scope_ceiling=*/{}, /*creator_document=*/{});
     base::test::TestFuture<
         FileSystemAccessErrorPtr,
         mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
@@ -482,7 +587,8 @@ TEST_F(CrossOriginStorageImplTest,
   {
     CrossOriginStorageManagerImpl manager(
         registry()->GetWeakPtr(), /*blob_storage_context=*/nullptr,
-        fsa_manager_->AsWeakPtr(), kStorageKey);
+        fsa_manager_->AsWeakPtr(), kStorageKey, /*cos_scope_ceiling=*/{},
+        /*creator_document=*/{});
     base::test::TestFuture<
         FileSystemAccessErrorPtr,
         mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
@@ -500,7 +606,8 @@ TEST_F(CrossOriginStorageImplTest,
 TEST_F(CrossOriginStorageImplTest, ManagerGetFileHandleReadMissAndSuccess) {
   constexpr std::string_view kPayload = "committed content";
   const CrossOriginStorageHash kHash = ComputeHashForString(kPayload);
-  auto manager_a = CreateManager(blink::StorageKey::CreateFirstParty(kOriginA));
+  auto manager_a = CreateManager(blink::StorageKey::CreateFirstParty(kOriginA),
+                                 /*cos_scope_ceiling=*/{kOriginB});
   auto manager_b = CreateManager(blink::StorageKey::CreateFirstParty(kOriginB));
 
   // 1. Reading a non-existent entry maps kNotFound to FILE_ERROR_NOT_FOUND.
@@ -682,7 +789,8 @@ TEST_F(CrossOriginStorageImplTest, ManagerGetFileHandleReadMissAndSuccess) {
     CrossOriginStorageManagerImpl broken_manager(
         broken_reg->GetWeakPtr(), blob_storage_context_,
         fsa_manager_->AsWeakPtr(),
-        blink::StorageKey::CreateFirstParty(kOriginA));
+        blink::StorageKey::CreateFirstParty(kOriginA),
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{});
     base::test::TestFuture<
         FileSystemAccessErrorPtr,
         mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
@@ -712,6 +820,167 @@ TEST_F(CrossOriginStorageImplTest, ManagerGetFileHandleReadMissAndSuccess) {
   }
 }
 
+TEST_F(CrossOriginStorageImplTest,
+       ManagerGetFileHandleCeilingFiltersAllowedOriginsAndFallback) {
+  const url::Origin kOriginC =
+      url::Origin::Create(GURL("https://c.third.test"));
+
+  // 1. Manager with ceiling {kOriginB}. Write specifies candidate origins
+  // {kOriginB, kOriginC}. kOriginB is preserved, kOriginC is dropped.
+  {
+    constexpr std::string_view kPayload1 = "partial ceiling payload";
+    const CrossOriginStorageHash kHash1 = ComputeHashForString(kPayload1);
+
+    auto manager_a =
+        CreateManager(blink::StorageKey::CreateFirstParty(kOriginA),
+                      /*cos_scope_ceiling=*/{kOriginB});
+    auto manager_b =
+        CreateManager(blink::StorageKey::CreateFirstParty(kOriginB));
+    auto manager_c =
+        CreateManager(blink::StorageKey::CreateFirstParty(kOriginC));
+
+    base::test::TestFuture<
+        FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+        create_future;
+    manager_a->GetFileHandle(
+        ToMojoHash(kHash1),
+        blink::mojom::CrossOriginStorageOrigins::NewOrigins(
+            {kOriginB, kOriginC}),
+        create_future.GetCallback());
+    auto [create_err, pending_write_handle] = create_future.Take();
+    ASSERT_EQ(create_err->status, FileSystemAccessStatus::kOk);
+    ASSERT_TRUE(pending_write_handle.is_valid());
+
+    mojo::Remote<blink::mojom::FileSystemAccessFileHandle> write_handle(
+        std::move(pending_write_handle));
+    base::test::TestFuture<
+        FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+        writer_future;
+    write_handle->CreateFileWriter(
+        /*keep_existing_data=*/false, /*auto_close=*/false,
+        blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+        writer_future.GetCallback());
+    auto [writer_err, pending_writer] = writer_future.Take();
+    ASSERT_EQ(writer_err->status, FileSystemAccessStatus::kOk);
+    mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer(
+        std::move(pending_writer));
+
+    base::test::TestFuture<FileSystemAccessErrorPtr, uint64_t> write_future;
+    writer->Write(0, CreateDataPipeWithPayload(kPayload1),
+                  write_future.GetCallback());
+    ASSERT_EQ(write_future.Get<0>()->status, FileSystemAccessStatus::kOk);
+
+    base::test::TestFuture<FileSystemAccessErrorPtr> close_future;
+    writer->Close(close_future.GetCallback());
+    EXPECT_EQ(close_future.Get()->status, FileSystemAccessStatus::kOk);
+
+    // kOriginB can read the entry.
+    {
+      base::test::TestFuture<
+          FileSystemAccessErrorPtr,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+          read_b_future;
+      manager_b->GetFileHandle(ToMojoHash(kHash1), /*create_origins=*/nullptr,
+                               read_b_future.GetCallback());
+      auto [read_b_err, read_b_handle] = read_b_future.Take();
+      EXPECT_EQ(read_b_err->status, FileSystemAccessStatus::kOk);
+      EXPECT_TRUE(read_b_handle.is_valid());
+    }
+
+    // kOriginC cannot read the entry (was dropped by ceiling).
+    {
+      base::test::TestFuture<
+          FileSystemAccessErrorPtr,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+          read_c_future;
+      manager_c->GetFileHandle(ToMojoHash(kHash1), /*create_origins=*/nullptr,
+                               read_c_future.GetCallback());
+      auto [read_c_err, read_c_handle] = read_c_future.Take();
+      EXPECT_EQ(read_c_err->status, FileSystemAccessStatus::kFileError);
+      EXPECT_EQ(read_c_err->file_error, base::File::FILE_ERROR_NOT_FOUND);
+      EXPECT_FALSE(read_c_handle.is_valid());
+    }
+  }
+
+  // 2. Manager with empty ceiling {}. Candidate origins {kOriginB} are all
+  // dropped -> falls back to same-site baseline (only creator can read).
+  {
+    constexpr std::string_view kPayload2 = "all dropped fallback payload";
+    const CrossOriginStorageHash kHash2 = ComputeHashForString(kPayload2);
+
+    auto manager_a =
+        CreateManager(blink::StorageKey::CreateFirstParty(kOriginA),
+                      /*cos_scope_ceiling=*/{});
+    auto manager_b =
+        CreateManager(blink::StorageKey::CreateFirstParty(kOriginB));
+
+    base::test::TestFuture<
+        FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+        create_future;
+    manager_a->GetFileHandle(
+        ToMojoHash(kHash2),
+        blink::mojom::CrossOriginStorageOrigins::NewOrigins({kOriginB}),
+        create_future.GetCallback());
+    auto [create_err, pending_write_handle] = create_future.Take();
+    ASSERT_EQ(create_err->status, FileSystemAccessStatus::kOk);
+    ASSERT_TRUE(pending_write_handle.is_valid());
+
+    mojo::Remote<blink::mojom::FileSystemAccessFileHandle> write_handle(
+        std::move(pending_write_handle));
+    base::test::TestFuture<
+        FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+        writer_future;
+    write_handle->CreateFileWriter(
+        /*keep_existing_data=*/false, /*auto_close=*/false,
+        blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+        writer_future.GetCallback());
+    auto [writer_err, pending_writer] = writer_future.Take();
+    ASSERT_EQ(writer_err->status, FileSystemAccessStatus::kOk);
+    mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer(
+        std::move(pending_writer));
+
+    base::test::TestFuture<FileSystemAccessErrorPtr, uint64_t> write_future;
+    writer->Write(0, CreateDataPipeWithPayload(kPayload2),
+                  write_future.GetCallback());
+    ASSERT_EQ(write_future.Get<0>()->status, FileSystemAccessStatus::kOk);
+
+    base::test::TestFuture<FileSystemAccessErrorPtr> close_future;
+    writer->Close(close_future.GetCallback());
+    EXPECT_EQ(close_future.Get()->status, FileSystemAccessStatus::kOk);
+
+    // kOriginB cannot read the entry.
+    {
+      base::test::TestFuture<
+          FileSystemAccessErrorPtr,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+          read_b_future;
+      manager_b->GetFileHandle(ToMojoHash(kHash2), /*create_origins=*/nullptr,
+                               read_b_future.GetCallback());
+      auto [read_b_err, read_b_handle] = read_b_future.Take();
+      EXPECT_EQ(read_b_err->status, FileSystemAccessStatus::kFileError);
+      EXPECT_EQ(read_b_err->file_error, base::File::FILE_ERROR_NOT_FOUND);
+      EXPECT_FALSE(read_b_handle.is_valid());
+    }
+
+    // kOriginA (the creator) can read it (same-site baseline).
+    {
+      base::test::TestFuture<
+          FileSystemAccessErrorPtr,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+          read_a_future;
+      manager_a->GetFileHandle(ToMojoHash(kHash2), /*create_origins=*/nullptr,
+                               read_a_future.GetCallback());
+      auto [read_a_err, read_a_handle] = read_a_future.Take();
+      EXPECT_EQ(read_a_err->status, FileSystemAccessStatus::kOk);
+      EXPECT_TRUE(read_a_handle.is_valid());
+    }
+  }
+}
+
 class CrossOriginStorageBinderTest : public RenderViewHostTestHarness {
  protected:
   void TearDown() override {
@@ -722,6 +991,27 @@ class CrossOriginStorageBinderTest : public RenderViewHostTestHarness {
       }
     }
     RenderViewHostTestHarness::TearDown();
+  }
+
+  mojo::Remote<blink::mojom::CrossOriginStorageManager>
+  NavigateAndBindWithAllowOrigin(
+      const GURL& url,
+      std::optional<std::string_view> allow_origin_header = std::nullopt) {
+    auto simulator =
+        NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+    if (allow_origin_header) {
+      auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+      headers->AddHeader("Cross-Origin-Storage-Allow-Origin",
+                         *allow_origin_header);
+      simulator->SetResponseHeaders(headers);
+    }
+    simulator->Commit();
+    mojo::Remote<blink::mojom::CrossOriginStorageManager> remote;
+    CrossOriginStorageManagerImpl::BindForFrame(
+        main_rfh(), remote.BindNewPipeAndPassReceiver());
+    remote.FlushForTesting();
+    RenderFrameHostTester::For(main_rfh())->ClearConsoleMessages();
+    return remote;
   }
 };
 
@@ -746,6 +1036,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     mojo::Remote<blink::mojom::CrossOriginStorageManager> remote;
     CrossOriginStorageManagerImpl::BindForWorker(
         /*worker_host=*/nullptr, locked_process_host, kValidKey,
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         remote.BindNewPipeAndPassReceiver());
     remote.FlushForTesting();
     EXPECT_FALSE(remote.is_connected());
@@ -754,6 +1045,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     mojo::Remote<blink::mojom::CrossOriginStorageManager> remote;
     CrossOriginStorageManagerImpl::BindForWorker(
         &worker_host, /*process_host=*/nullptr, kValidKey,
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         remote.BindNewPipeAndPassReceiver());
     remote.FlushForTesting();
     EXPECT_FALSE(remote.is_connected());
@@ -765,6 +1057,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     mojo::Remote<blink::mojom::CrossOriginStorageManager> remote;
     CrossOriginStorageManagerImpl::BindForWorker(
         &worker_host, locked_process_host, kMismatchedKey,
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         remote.BindNewPipeAndPassReceiver());
     remote.FlushForTesting();
     EXPECT_FALSE(remote.is_connected());
@@ -785,6 +1078,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     CrossOriginStorageManagerImpl::BindForWorker(
         &worker_host, &in_memory_process_host,
         blink::StorageKey::CreateFirstParty(url::Origin()),
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         remote.BindNewPipeAndPassReceiver());
     remote.FlushForTesting();
     EXPECT_FALSE(remote.is_connected());
@@ -801,6 +1095,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     CrossOriginStorageManagerImpl::BindForWorker(
         &worker_host, &custom_process_host,
         blink::StorageKey::CreateFirstParty(url::Origin()),
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         remote.BindNewPipeAndPassReceiver());
     remote.FlushForTesting();
     EXPECT_FALSE(remote.is_connected());
@@ -816,6 +1111,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     CrossOriginStorageManagerImpl::BindForWorker(
         &otr_worker_host, &otr_process_host,
         blink::StorageKey::CreateFirstParty(url::Origin()),
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         remote.BindNewPipeAndPassReceiver());
     remote.FlushForTesting();
     EXPECT_FALSE(remote.is_connected());
@@ -831,6 +1127,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     mojo::Remote<blink::mojom::CrossOriginStorageManager> remote1;
     CrossOriginStorageManagerImpl::BindForWorker(
         &worker_host, locked_process_host, kValidKey,
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         remote1.BindNewPipeAndPassReceiver());
     remote1.FlushForTesting();
     EXPECT_TRUE(remote1.is_connected());
@@ -838,6 +1135,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     mojo::Remote<blink::mojom::CrossOriginStorageManager> remote2;
     CrossOriginStorageManagerImpl::BindForWorker(
         &worker_host, locked_process_host, kValidKey,
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         remote2.BindNewPipeAndPassReceiver());
     remote2.FlushForTesting();
     EXPECT_TRUE(remote2.is_connected());
@@ -848,6 +1146,7 @@ TEST_F(CrossOriginStorageBinderTest, BindForWorkerValidationAndReceiverReuse) {
     mojo::Remote<blink::mojom::CrossOriginStorageManager> bad_origin_remote;
     CrossOriginStorageManagerImpl::BindForWorker(
         &worker_host, locked_process_host, kMismatchedKey,
+        /*cos_scope_ceiling=*/{}, /*creator_document=*/{},
         bad_origin_remote.BindNewPipeAndPassReceiver());
     bad_origin_remote.FlushForTesting();
     EXPECT_FALSE(bad_origin_remote.is_connected());
@@ -981,6 +1280,97 @@ TEST_F(CrossOriginStorageBinderTest,
             "Invalid CrossOriginStorage hash");
   remote2.FlushForTesting();
   EXPECT_FALSE(remote2.is_connected());
+}
+
+TEST_F(CrossOriginStorageBinderTest,
+       CeilingFiltersAllowedOriginsAndLogsConsoleWarnings) {
+  const url::Origin kOriginA =
+      url::Origin::Create(GURL("https://a.example.com"));
+  const url::Origin kOriginB =
+      url::Origin::Create(GURL("https://b.other.test"));
+  const url::Origin kOriginC =
+      url::Origin::Create(GURL("https://c.third.test"));
+  const CrossOriginStorageHash kHash1 = ComputeHashForString("payload 1");
+  const CrossOriginStorageHash kHash2 = ComputeHashForString("payload 2");
+  const CrossOriginStorageHash kHash3 = ComputeHashForString("payload 3");
+
+  // Navigate frame A with Cross-Origin-Storage-Allow-Origin:
+  // https://b.other.test.
+  {
+    mojo::Remote<blink::mojom::CrossOriginStorageManager> remote =
+        NavigateAndBindWithAllowOrigin(GURL("https://a.example.com/index.html"),
+                                       "https://b.other.test");
+
+    // Request writable handle with origins [kOriginB, kOriginC].
+    // kOriginB is authorized by the ceiling; kOriginC is dropped with a console
+    // warning.
+    base::test::TestFuture<
+        FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+        future;
+    remote->GetFileHandle(ToMojoHash(kHash1),
+                          blink::mojom::CrossOriginStorageOrigins::NewOrigins(
+                              {kOriginB, kOriginC}),
+                          future.GetCallback());
+    auto [error, handle] = future.Take();
+    EXPECT_EQ(error->status, FileSystemAccessStatus::kOk);
+    EXPECT_TRUE(handle.is_valid());
+
+    EXPECT_THAT(RenderFrameHostTester::For(main_rfh())->GetConsoleMessages(),
+                testing::ElementsAre(testing::AllOf(
+                    testing::HasSubstr("https://c.third.test"),
+                    testing::HasSubstr("Cross-Origin-Storage-Allow-Origin"))));
+  }
+
+  // Navigate frame A without Cross-Origin-Storage-Allow-Origin header.
+  // Ceilings fail closed to empty set. All candidate origins dropped with
+  // console warnings.
+  {
+    mojo::Remote<blink::mojom::CrossOriginStorageManager> remote =
+        NavigateAndBindWithAllowOrigin(
+            GURL("https://a.example.com/no_header.html"));
+
+    base::test::TestFuture<
+        FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+        future;
+    remote->GetFileHandle(
+        ToMojoHash(kHash2),
+        blink::mojom::CrossOriginStorageOrigins::NewOrigins({kOriginB}),
+        future.GetCallback());
+    auto [error, handle] = future.Take();
+    EXPECT_EQ(error->status, FileSystemAccessStatus::kOk);
+    EXPECT_TRUE(handle.is_valid());
+
+    EXPECT_THAT(RenderFrameHostTester::For(main_rfh())->GetConsoleMessages(),
+                testing::ElementsAre(testing::AllOf(
+                    testing::HasSubstr("https://b.other.test"),
+                    testing::HasSubstr("Cross-Origin-Storage-Allow-Origin"))));
+  }
+
+  // Wildcard (any_origin: true) is not filtered by ceiling and emits no
+  // warnings.
+  {
+    mojo::Remote<blink::mojom::CrossOriginStorageManager> remote =
+        NavigateAndBindWithAllowOrigin(
+            GURL("https://a.example.com/wildcard.html"),
+            "https://b.other.test");
+
+    base::test::TestFuture<
+        FileSystemAccessErrorPtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+        future;
+    remote->GetFileHandle(ToMojoHash(kHash3),
+                          blink::mojom::CrossOriginStorageOrigins::NewAnyOrigin(
+                              blink::mojom::CrossOriginStorageAnyOrigin::New()),
+                          future.GetCallback());
+    auto [error, handle] = future.Take();
+    EXPECT_EQ(error->status, FileSystemAccessStatus::kOk);
+    EXPECT_TRUE(handle.is_valid());
+
+    EXPECT_THAT(RenderFrameHostTester::For(main_rfh())->GetConsoleMessages(),
+                testing::IsEmpty());
+  }
 }
 
 // =============================================================================

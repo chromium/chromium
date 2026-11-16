@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
@@ -161,6 +162,11 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   const PolicyContainerPolicies& creator_policies() const {
     return creator_policies_;
   }
+
+  const base::flat_set<url::Origin>& creator_cos_scope_ceiling() const {
+    return creator_cos_scope_ceiling_;
+  }
+  WeakDocumentPtr creator_document() const { return ancestor_document_; }
 
   void CreateContentSecurityNotifier(
       mojo::PendingReceiver<blink::mojom::ContentSecurityNotifier> receiver);
@@ -480,6 +486,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   // The policies of the creator context. Used for inheritance.
   const PolicyContainerPolicies creator_policies_;
+
+  // The Cross-Origin-Storage-Allow-Origin ceiling for the worker's creator
+  // context (WICG § 7). Fixed at creation time.
+  const base::flat_set<url::Origin> creator_cos_scope_ceiling_;
 
   // The policy container host for this worker. Initialized in
   // `DidStartScriptLoad()`.

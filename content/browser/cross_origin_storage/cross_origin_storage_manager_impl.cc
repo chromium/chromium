@@ -12,10 +12,12 @@
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/self_deleting.h"
+#include "base/strings/strcat.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cross_origin_storage/cross_origin_storage_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,10 +27,14 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/is_potentially_trustworthy.h"
+#include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 
@@ -43,7 +49,9 @@ const void* const kWorkerManagerUserDataKey = &kWorkerManagerUserDataKey;
 std::unique_ptr<CrossOriginStorageManagerImpl> CreateManagerIfAllowed(
     RenderProcessHost* process_host,
     StoragePartition* storage_partition,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    base::flat_set<url::Origin> cos_scope_ceiling,
+    WeakDocumentPtr creator_document) {
   if (!process_host || !storage_partition) {
     return nullptr;
   }
@@ -80,7 +88,8 @@ std::unique_ptr<CrossOriginStorageManagerImpl> CreateManagerIfAllowed(
   return std::make_unique<CrossOriginStorageManagerImpl>(
       registry->GetWeakPtr(),
       base::WrapRefCounted(ChromeBlobStorageContext::GetFor(browser_context)),
-      std::move(file_system_access_manager), storage_key);
+      std::move(file_system_access_manager), storage_key,
+      std::move(cos_scope_ceiling), std::move(creator_document));
 }
 
 // Document-scoped wrapper so frame bindings do not outlive the document across
@@ -125,10 +134,26 @@ void CrossOriginStorageManagerImpl::BindForFrame(
     return;
   }
 
+  RenderFrameHostImpl* rfh_impl = static_cast<RenderFrameHostImpl*>(frame_host);
+  if (rfh_impl->lifecycle_state() ==
+          RenderFrameHostImpl::LifecycleStateImpl::kSpeculative ||
+      rfh_impl->lifecycle_state() ==
+          RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit) {
+    return;
+  }
+
+  const net::HttpResponseHeaders* headers = nullptr;
+  if (frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS() &&
+      frame_host->GetLastResponseHead()) {
+    headers = frame_host->GetLastResponseHead()->headers.get();
+  }
+
   std::unique_ptr<CrossOriginStorageManagerImpl> manager =
       CreateManagerIfAllowed(frame_host->GetProcess(),
                              frame_host->GetStoragePartition(),
-                             frame_host->GetStorageKey());
+                             frame_host->GetStorageKey(),
+                             ParseCrossOriginStorageAllowOrigin(headers),
+                             frame_host->GetWeakDocumentPtr());
   if (!manager) {
     return;
   }
@@ -142,6 +167,8 @@ void CrossOriginStorageManagerImpl::BindForWorker(
     base::SupportsUserData* worker_host,
     RenderProcessHost* process_host,
     const blink::StorageKey& storage_key,
+    base::flat_set<url::Origin> cos_scope_ceiling,
+    WeakDocumentPtr creator_document,
     mojo::PendingReceiver<blink::mojom::CrossOriginStorageManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -162,7 +189,8 @@ void CrossOriginStorageManagerImpl::BindForWorker(
 
   std::unique_ptr<CrossOriginStorageManagerImpl> manager =
       CreateManagerIfAllowed(process_host, process_host->GetStoragePartition(),
-                             storage_key);
+                             storage_key, std::move(cos_scope_ceiling),
+                             std::move(creator_document));
   if (!manager) {
     return;
   }
@@ -175,11 +203,15 @@ CrossOriginStorageManagerImpl::CrossOriginStorageManagerImpl(
     base::WeakPtr<CrossOriginStorageRegistry> registry,
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
     base::WeakPtr<FileSystemAccessManagerImpl> file_system_access_manager,
-    blink::StorageKey storage_key)
+    blink::StorageKey storage_key,
+    base::flat_set<url::Origin> cos_scope_ceiling,
+    WeakDocumentPtr creator_document)
     : registry_(std::move(registry)),
       blob_storage_context_(std::move(blob_storage_context)),
       file_system_access_manager_(std::move(file_system_access_manager)),
-      storage_key_(std::move(storage_key)) {
+      storage_key_(std::move(storage_key)),
+      cos_scope_ceiling_(std::move(cos_scope_ceiling)),
+      creator_document_(std::move(creator_document)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -244,12 +276,48 @@ CrossOriginStorageManagerImpl::HandleGetFileHandle(
       return "Invalid CrossOriginStorage access spec";
     }
 
+    CrossOriginStorageAccessSpec final_spec;
+    if (parsed_spec->any_origin()) {
+      final_spec = std::move(*parsed_spec);
+    } else {
+      bool all_allowed = true;
+      for (const url::Origin& candidate : parsed_spec->allowed_origins()) {
+        if (!cos_scope_ceiling_.contains(candidate)) {
+          all_allowed = false;
+          break;
+        }
+      }
+      if (all_allowed) {
+        final_spec = std::move(*parsed_spec);
+      } else {
+        RenderFrameHost* rfh = creator_document_.AsRenderFrameHostIfValid();
+        std::vector<url::Origin> filtered_origins;
+        filtered_origins.reserve(parsed_spec->allowed_origins().size());
+        for (const url::Origin& candidate : parsed_spec->allowed_origins()) {
+          if (cos_scope_ceiling_.contains(candidate)) {
+            filtered_origins.push_back(candidate);
+          } else if (rfh) {
+            rfh->AddMessageToConsole(
+                blink::mojom::ConsoleMessageLevel::kWarning,
+                base::StrCat(
+                    {"Cross-Origin Storage write dropped target origin '",
+                     candidate.Serialize(),
+                     "' because it is not authorized by the writing "
+                     "context's Cross-Origin-Storage-Allow-Origin "
+                     "response header."}));
+          }
+        }
+        final_spec = CrossOriginStorageAccessSpec::AllowedOrigins(
+            std::move(filtered_origins));
+      }
+    }
+
     mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
         file_handle_remote;
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<CrossOriginStorageFileHandleImpl>(
             registry_, blob_storage_context_, file_system_access_manager_,
-            std::move(*parsed_hash), origin, std::move(*parsed_spec),
+            std::move(*parsed_hash), origin, std::move(final_spec),
             /*is_writable=*/true, /*may_read=*/false),
         file_handle_remote.InitWithNewPipeAndPassReceiver());
 

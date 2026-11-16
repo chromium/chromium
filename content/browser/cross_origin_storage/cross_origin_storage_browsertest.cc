@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/run_until.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -159,6 +161,70 @@ class CrossOriginStorageBrowserTest : public ContentBrowserTest {
  protected:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
+    if (base::StartsWith(request.relative_url, "/empty_with_cos_header.html")) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content("<!DOCTYPE html><html><body></body></html>");
+      std::string header_val;
+      if (net::GetValueForKeyInQuery(request.GetURL(), "allow_origin",
+                                     &header_val)) {
+        response->AddCustomHeader("Cross-Origin-Storage-Allow-Origin",
+                                  header_val);
+      }
+      return response;
+    }
+    if (request.relative_url == "/cos_shared_worker_ceiling.js") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/javascript");
+      response->set_content(R"(
+        self.onconnect = (e) => {
+          const port = e.ports[0];
+          port.onmessage = async (msg) => {
+            if (msg.data.type === 'ping') {
+              port.postMessage('pong');
+              return;
+            }
+            const { digest, content, origins } = msg.data;
+            try {
+              const handle = await navigator.crossOriginStorage.getFileHandle(
+                  {algorithm: 'SHA-256', value: digest},
+                  {create: true, origins: origins});
+              const writable = await handle.createWritable();
+              await writable.write(content);
+              await writable.close();
+              port.postMessage('ok');
+            } catch (err) {
+              port.postMessage(err.name);
+            }
+          };
+        };
+      )");
+      return response;
+    }
+    if (request.relative_url == "/cos_child_worker.js") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/javascript");
+      response->set_content(R"(
+        self.onmessage = async (e) => {
+          const { digest, content, origins } = e.data;
+          try {
+            const handle = await navigator.crossOriginStorage.getFileHandle(
+                {algorithm: 'SHA-256', value: digest},
+                {create: true, origins: origins});
+            const writable = await handle.createWritable();
+            await writable.write(content);
+            await writable.close();
+            self.postMessage('ok');
+          } catch (err) {
+            self.postMessage(err.name);
+          }
+        };
+      )");
+      return response;
+    }
     if (request.relative_url != "/cos_service_worker.js") {
       return nullptr;
     }
@@ -217,6 +283,18 @@ class CrossOriginStorageBrowserTest : public ContentBrowserTest {
   void NavigateToHost(const std::string& host) {
     ASSERT_TRUE(
         NavigateToURL(shell(), https_server()->GetURL(host, "/empty.html")));
+  }
+
+  // Navigates to a page on `host` serving `Cross-Origin-Storage-Allow-Origin`.
+  void NavigateToHostWithAllowOrigin(const std::string& host,
+                                     const std::string& allow_origin,
+                                     Shell* target_shell = nullptr) {
+    ASSERT_TRUE(NavigateToURL(
+        target_shell ? target_shell : shell(),
+        https_server()->GetURL(
+            host, base::StrCat({"/empty_with_cos_header.html?allow_origin=",
+                                base::EscapeQueryParamValue(
+                                    allow_origin, /*use_plus=*/false)}))));
   }
 
   base::FilePath RootDirectory() {
@@ -407,9 +485,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, CrossOriginRead) {
 // rejects with NotFoundError per the WICG spec (§3.1 & §8.4).
 IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
                        CrossOriginReadNotAllowed) {
-  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
   const std::string allowed_origin =
       https_server()->GetOrigin(kOriginC).Serialize();
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToHostWithAllowOrigin(kOriginA, allowed_origin));
   ASSERT_EQ("ok",
             EvalJs(shell(), WriteContentScript(
                                 kContent, kContentDigest,
@@ -426,9 +505,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
 // The storing origin can always read back what it stored, even when the
 // sharing scope names only other origins.
 IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest, StoringOriginCanRead) {
-  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
   const std::string allowed_origin =
       https_server()->GetOrigin(kOriginC).Serialize();
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToHostWithAllowOrigin(kOriginA, allowed_origin));
   ASSERT_EQ("ok",
             EvalJs(shell(), WriteContentScript(
                                 kContent, kContentDigest,
@@ -564,13 +644,13 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
   const std::string origin_c = https_server()->GetOrigin(kOriginC).Serialize();
 
   // Origin A stores with `origins: [origin_b]`.
-  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(kOriginA, origin_b));
   ASSERT_EQ("ok", EvalJs(shell(), WriteContentScript(
                                       kSharedContent, kSharedContentDigest,
                                       base::StrCat({"['", origin_b, "']"}))));
 
   // Origin B stores the same hash with `origins: [origin_c]`.
-  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(kOriginB, origin_c));
   ASSERT_EQ("ok", EvalJs(shell(), WriteContentScript(
                                       kSharedContent, kSharedContentDigest,
                                       base::StrCat({"['", origin_c, "']"}))));
@@ -1543,6 +1623,411 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
 
   EXPECT_FALSE(BlobExistsOnDisk(kSharedContentDigest));
   EXPECT_TRUE(StagingIsEmpty());
+}
+
+// Writing from a document without the Cross-Origin-Storage-Allow-Origin header
+// drops candidate target origins (as ceiling is empty), logs a DevTools console
+// warning, and restricts the entry to same-site baseline (WICG § 3.3 & § 7).
+IN_PROC_BROWSER_TEST_F(
+    CrossOriginStorageBrowserTest,
+    AllowOriginHeaderDropsUnauthorizedOriginAndFallsBackToSameSite) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+
+  // Writer document has no Cross-Origin-Storage-Allow-Origin header.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("*Cross-Origin-Storage-Allow-Origin*");
+
+  ASSERT_EQ("ok", EvalJs(shell(), WriteContentScript(
+                                      kContent, kContentDigest,
+                                      base::StrCat({"['", origin_b, "']"}))));
+
+  // DevTools warning logged on creator frame.
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Target origin B was dropped and cannot read the entry.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+
+  // Storing origin A can still read it (same-site baseline).
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// The Cross-Origin-Storage-Allow-Origin header cannot use wildcard '*'; per
+// WICG § 7, any invalid token causes the ceiling to fail closed to empty set.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       AllowOriginHeaderWildcardFailsClosed) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+
+  // Writer document serves Cross-Origin-Storage-Allow-Origin: *
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(kOriginA, "*"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("*Cross-Origin-Storage-Allow-Origin*");
+
+  ASSERT_EQ("ok", EvalJs(shell(), WriteContentScript(
+                                      kContent, kContentDigest,
+                                      base::StrCat({"['", origin_b, "']"}))));
+
+  // DevTools warning logged on creator frame.
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Target origin B was dropped and cannot read the entry.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+
+  // Storing origin A can still read it.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// DedicatedWorker inherits the creator document's COS scope ceiling.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       DedicatedWorkerInheritsCreatorAllowOriginCeiling) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+
+  // Creator document with ceiling authorizing origin_b.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(kOriginA, origin_b));
+
+  EXPECT_EQ("ok", EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      const workerScript = `
+        self.onmessage = async () => {
+          try {
+            const handle = await navigator.crossOriginStorage.getFileHandle(
+                {algorithm: 'SHA-256', value: ')",
+                                                kContentDigest, R"('},
+                {create: true, origins: [')",
+                                                origin_b, R"(']});
+            const writable = await handle.createWritable();
+            await writable.write(')",
+                                                kContent, R"(');
+            await writable.close();
+            self.postMessage('ok');
+          } catch (err) {
+            self.postMessage(err.name);
+          }
+        };
+      `;
+      const blob = new Blob([workerScript], {type: 'text/javascript'});
+      const worker = new Worker(URL.createObjectURL(blob));
+      return new Promise((resolve) => {
+        worker.onmessage = (e) => resolve(e.data);
+        worker.onerror = () => resolve('worker_error');
+        worker.postMessage('start');
+      });
+    })()
+  )"})));
+
+  // Origin B can read the entry written by the dedicated worker.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// SharedWorker inherits its creator document's COS scope ceiling, fixed at
+// creation time and not modified by documents connecting later.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       SharedWorkerInheritsCreatorCeilingFixedAtCreation) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+
+  // Document 1 creates the shared worker with ceiling authorizing origin_b.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(kOriginA, origin_b));
+
+  EXPECT_EQ("ready", EvalJs(shell(), R"(
+    new Promise((resolve) => {
+      window.sharedWorker = new SharedWorker('/cos_shared_worker_ceiling.js');
+      window.sharedWorker.port.onmessage = (e) => {
+        if (e.data === 'pong') {
+          resolve('ready');
+        }
+      };
+      window.sharedWorker.port.start();
+      window.sharedWorker.port.postMessage({type: 'ping'});
+    })
+  )"));
+
+  // Keep Document 1 alive in `shell()` and open Document 2 in a new window so
+  // that the SharedWorker client count never drops to 0, ensuring the existing
+  // worker instance (created by Document 1) is reused. Document 2 has NO
+  // allow-origin header.
+  Shell* shell2 = CreateBrowser();
+  ASSERT_TRUE(
+      NavigateToURL(shell2, https_server()->GetURL(kOriginA, "/empty.html")));
+
+  EXPECT_EQ("ok", EvalJs(shell2, base::StrCat({R"(
+    (async () => {
+      const worker = new SharedWorker('/cos_shared_worker_ceiling.js');
+      worker.port.start();
+      return new Promise((resolve) => {
+        worker.port.onmessage = (e) => resolve(e.data);
+        worker.port.postMessage({
+          digest: ')",
+                                               kContentDigest, R"(',
+          content: ')",
+                                               kContent, R"(',
+          origins: [')",
+                                               origin_b, R"(']
+        });
+      });
+    })()
+  )"})));
+
+  // Origin B can read the entry written by the shared worker.
+  ASSERT_TRUE(
+      NavigateToURL(shell2, https_server()->GetURL(kOriginB, "/empty.html")));
+  EXPECT_EQ(kContent, EvalJs(shell2, RequestFileTextScript(kContentDigest)));
+}
+
+// A Cross-Origin-Storage-Allow-Origin header with multiple comma-separated
+// origins permits writing to all authorized origins.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       AllowOriginHeaderPermitsMultipleOrigins) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+  const std::string origin_c = https_server()->GetOrigin(kOriginC).Serialize();
+
+  // Document on Origin A authorizes both Origin B and Origin C.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(
+      kOriginA, base::StrCat({origin_b, ", ", origin_c})));
+
+  // Write content targeting both authorized origins.
+  EXPECT_EQ("ok", EvalJs(shell(), WriteContentScript(
+                                      kContent, kContentDigest,
+                                      base::StrCat({"['", origin_b, "', '",
+                                                    origin_c, "']"}))));
+
+  // Both Origin B and Origin C can read the entry.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginC));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// Nested DedicatedWorker inherits its parent worker's ceiling.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       NestedDedicatedWorkerInheritsCreatorAllowOriginCeiling) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+
+  // Creator document with ceiling authorizing origin_b.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(kOriginA, origin_b));
+
+  EXPECT_EQ("ok", EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      const parentScript = `
+        self.onmessage = (e) => {
+          const child = new Worker(e.data.childUrl);
+          child.onmessage = (msg) => self.postMessage(msg.data);
+          child.onerror = () => self.postMessage('child_error');
+          child.postMessage(e.data);
+        };
+      `;
+      const parentBlob = new Blob([parentScript], {type: 'text/javascript'});
+      const parent = new Worker(URL.createObjectURL(parentBlob));
+      return new Promise((resolve) => {
+        parent.onmessage = (e) => resolve(e.data);
+        parent.onerror = () => resolve('parent_error');
+        parent.postMessage({
+          childUrl: new URL('/cos_child_worker.js', window.location.href).href,
+          digest: ')",
+                                                kContentDigest, R"(',
+          content: ')",
+                                                kContent, R"(',
+          origins: [')",
+                                                origin_b, R"(']
+        });
+      });
+    })()
+  )"})));
+
+  // Origin B can read the entry written by the nested dedicated worker.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginB));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// DedicatedWorker drops candidate origins outside the creator's ceiling and
+// logs a DevTools console warning to the creator document.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       DedicatedWorkerRejectsOriginsOutsideAllowOriginCeiling) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+  const std::string origin_c = https_server()->GetOrigin(kOriginC).Serialize();
+
+  // Creator document with ceiling authorizing only origin_b.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(kOriginA, origin_b));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("*Cross-Origin-Storage-Allow-Origin*");
+
+  EXPECT_EQ("ok", EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      const workerScript = `
+        self.onmessage = async () => {
+          try {
+            const handle = await navigator.crossOriginStorage.getFileHandle(
+                {algorithm: 'SHA-256', value: ')",
+                                                kContentDigest, R"('},
+                {create: true, origins: [')",
+                                                origin_c, R"(']});
+            const writable = await handle.createWritable();
+            await writable.write(')",
+                                                kContent, R"(');
+            await writable.close();
+            self.postMessage('ok');
+          } catch (err) {
+            self.postMessage(err.name);
+          }
+        };
+      `;
+      const blob = new Blob([workerScript], {type: 'text/javascript'});
+      const worker = new Worker(URL.createObjectURL(blob));
+      return new Promise((resolve) => {
+        worker.onmessage = (e) => resolve(e.data);
+        worker.onerror = () => resolve('worker_error');
+        worker.postMessage('start');
+      });
+    })()
+  )"})));
+
+  // DevTools warning logged on creator frame.
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Origin C was dropped and cannot read the entry.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginC));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+
+  // Storing origin A can still read it (same-site baseline).
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+}
+
+// Connecting a document with broader ceiling permissions to an existing
+// SharedWorker does NOT escalate the worker's ceiling permissions.
+IN_PROC_BROWSER_TEST_F(
+    CrossOriginStorageBrowserTest,
+    SharedWorkerConnectionReuseDoesNotEscalateCeilingPermissions) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+
+  // Document 1 creates the shared worker with NO allow-origin header (empty
+  // ceiling).
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL(kOriginA, "/empty.html")));
+
+  EXPECT_EQ("ready", EvalJs(shell(), R"(
+    new Promise((resolve) => {
+      window.sharedWorker = new SharedWorker('/cos_shared_worker_ceiling.js');
+      window.sharedWorker.port.onmessage = (e) => {
+        if (e.data === 'pong') {
+          resolve('ready');
+        }
+      };
+      window.sharedWorker.port.start();
+      window.sharedWorker.port.postMessage({type: 'ping'});
+    })
+  )"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("*Cross-Origin-Storage-Allow-Origin*");
+
+  // Keep Document 1 alive in `shell()` and open Document 2 in a new window.
+  // Document 2 serves an allow-origin header authorizing origin_b.
+  Shell* shell2 = CreateBrowser();
+  ASSERT_NO_FATAL_FAILURE(
+      NavigateToHostWithAllowOrigin(kOriginA, origin_b, shell2));
+
+  // Document 2 connects to the existing worker and asks it to write with
+  // origins: [origin_b]. The worker's ceiling remains fixed to Document 1's
+  // empty ceiling, so origin_b is dropped with a console warning.
+  EXPECT_EQ("ok", EvalJs(shell2, base::StrCat({R"(
+    (async () => {
+      const worker = new SharedWorker('/cos_shared_worker_ceiling.js');
+      worker.port.start();
+      return new Promise((resolve) => {
+        worker.port.onmessage = (e) => resolve(e.data);
+        worker.port.postMessage({
+          digest: ')",
+                                               kContentDigest, R"(',
+          content: ')",
+                                               kContent, R"(',
+          origins: [')",
+                                               origin_b, R"(']
+        });
+      });
+    })()
+  )"})));
+
+  // DevTools warning logged on creator frame (Document 1).
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Origin B cannot read the entry because the worker's ceiling dropped
+  // origin_b.
+  ASSERT_TRUE(
+      NavigateToURL(shell2, https_server()->GetURL(kOriginB, "/empty.html")));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell2, RequestFileTextScript(kContentDigest)));
+
+  // Storing origin A can still read it.
+  ASSERT_TRUE(
+      NavigateToURL(shell2, https_server()->GetURL(kOriginA, "/empty.html")));
+  EXPECT_EQ(kContent, EvalJs(shell2, RequestFileTextScript(kContentDigest)));
+}
+
+// Nested DedicatedWorker drops candidate origins outside the root creator's
+// ceiling and logs a DevTools console warning to the creator document.
+IN_PROC_BROWSER_TEST_F(
+    CrossOriginStorageBrowserTest,
+    NestedDedicatedWorkerRejectsOriginsOutsideAllowOriginCeiling) {
+  const std::string origin_b = https_server()->GetOrigin(kOriginB).Serialize();
+  const std::string origin_c = https_server()->GetOrigin(kOriginC).Serialize();
+
+  // Creator document with ceiling authorizing only origin_b.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHostWithAllowOrigin(kOriginA, origin_b));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern("*Cross-Origin-Storage-Allow-Origin*");
+
+  EXPECT_EQ("ok", EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      const parentScript = `
+        self.onmessage = (e) => {
+          const child = new Worker(e.data.childUrl);
+          child.onmessage = (msg) => self.postMessage(msg.data);
+          child.onerror = () => self.postMessage('child_error');
+          child.postMessage(e.data);
+        };
+      `;
+      const parentBlob = new Blob([parentScript], {type: 'text/javascript'});
+      const parent = new Worker(URL.createObjectURL(parentBlob));
+      return new Promise((resolve) => {
+        parent.onmessage = (e) => resolve(e.data);
+        parent.onerror = () => resolve('parent_error');
+        parent.postMessage({
+          childUrl: new URL('/cos_child_worker.js', window.location.href).href,
+          digest: ')",
+                                                kContentDigest, R"(',
+          content: ')",
+                                                kContent, R"(',
+          origins: [')",
+                                                origin_c, R"(']
+        });
+      });
+    })()
+  )"})));
+
+  // DevTools warning logged on root creator frame.
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Origin C was dropped and cannot read the entry.
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginC));
+  EXPECT_EQ("NotFoundError",
+            EvalJs(shell(), RequestFileTextScript(kContentDigest)));
+
+  // Storing origin A can still read it (same-site baseline).
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+  EXPECT_EQ(kContent, EvalJs(shell(), RequestFileTextScript(kContentDigest)));
 }
 
 }  // namespace content

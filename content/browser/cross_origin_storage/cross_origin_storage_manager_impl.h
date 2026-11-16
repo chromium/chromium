@@ -8,12 +8,14 @@
 #include <optional>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/browser/cross_origin_storage/cross_origin_storage_registry.h"
 #include "content/browser/cross_origin_storage/cross_origin_storage_types.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -55,13 +57,17 @@ class CONTENT_EXPORT CrossOriginStorageManagerImpl
       base::SupportsUserData* worker_host,
       RenderProcessHost* process_host,
       const blink::StorageKey& storage_key,
+      base::flat_set<url::Origin> cos_scope_ceiling,
+      WeakDocumentPtr creator_document,
       mojo::PendingReceiver<blink::mojom::CrossOriginStorageManager> receiver);
 
   CrossOriginStorageManagerImpl(
       base::WeakPtr<CrossOriginStorageRegistry> registry,
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
       base::WeakPtr<FileSystemAccessManagerImpl> file_system_access_manager,
-      blink::StorageKey storage_key);
+      blink::StorageKey storage_key,
+      base::flat_set<url::Origin> cos_scope_ceiling,
+      WeakDocumentPtr creator_document);
   CrossOriginStorageManagerImpl(const CrossOriginStorageManagerImpl&) = delete;
   CrossOriginStorageManagerImpl& operator=(
       const CrossOriginStorageManagerImpl&) = delete;
@@ -95,6 +101,15 @@ class CONTENT_EXPORT CrossOriginStorageManagerImpl
 
   // The storage key of the execution context this instance serves.
   const blink::StorageKey storage_key_;
+
+  // The Cross-Origin-Storage-Allow-Origin ceiling for this execution context
+  // (the set of authorized target origins, WICG § 7). Empty if unprovided or
+  // not authorized.
+  const base::flat_set<url::Origin> cos_scope_ceiling_;
+
+  // Weak handle to the document that created this context (for logging DevTools
+  // console warnings when target origins are dropped by the ceiling).
+  const WeakDocumentPtr creator_document_;
 
   mojo::ReceiverSet<blink::mojom::CrossOriginStorageManager> receivers_;
 

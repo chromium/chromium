@@ -924,17 +924,19 @@ void BindCrossOriginStorageManager(
 void BindCrossOriginStorageManagerForDedicatedWorker(
     DedicatedWorkerHost* host,
     mojo::PendingReceiver<blink::mojom::CrossOriginStorageManager> receiver) {
-  CrossOriginStorageManagerImpl::BindForWorker(host, host->GetProcessHost(),
-                                               host->GetWorkerStorageKey(),
-                                               std::move(receiver));
+  CrossOriginStorageManagerImpl::BindForWorker(
+      host, host->GetProcessHost(), host->GetWorkerStorageKey(),
+      host->creator_cos_scope_ceiling(), host->creator_document(),
+      std::move(receiver));
 }
 
 void BindCrossOriginStorageManagerForSharedWorker(
     SharedWorkerHost* host,
     mojo::PendingReceiver<blink::mojom::CrossOriginStorageManager> receiver) {
-  CrossOriginStorageManagerImpl::BindForWorker(host, host->GetProcessHost(),
-                                               host->GetWorkerStorageKey(),
-                                               std::move(receiver));
+  CrossOriginStorageManagerImpl::BindForWorker(
+      host, host->GetProcessHost(), host->GetWorkerStorageKey(),
+      host->creator_cos_scope_ceiling(), host->creator_document(),
+      std::move(receiver));
 }
 
 void BindDevicePostureProvider(

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/shared_worker_instance.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -60,6 +62,7 @@
 #include "third_party/blink/public/mojom/worker/shared_worker_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_host.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 #include "content/browser/compute_pressure/pressure_service_for_shared_worker.h"
@@ -102,7 +105,9 @@ class CONTENT_EXPORT SharedWorkerHost
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
       scoped_refptr<PolicyContainerHost> creator_policy_container_host,
-      net::StorageAccessApiStatus storage_access_api_status);
+      net::StorageAccessApiStatus storage_access_api_status,
+      base::flat_set<url::Origin> creator_cos_scope_ceiling = {},
+      WeakDocumentPtr creator_document = {});
 
   SharedWorkerHost(const SharedWorkerHost&) = delete;
   SharedWorkerHost& operator=(const SharedWorkerHost&) = delete;
@@ -288,6 +293,11 @@ class CONTENT_EXPORT SharedWorkerHost
 
   bool IsFeatureEnabled(network::mojom::PermissionsPolicyFeature feature) const;
 
+  const base::flat_set<url::Origin>& creator_cos_scope_ceiling() const {
+    return creator_cos_scope_ceiling_;
+  }
+  WeakDocumentPtr creator_document() const { return creator_document_; }
+
   void ReportNoBinderForInterface(const std::string& error);
 
   void CreateCodeCacheHost(
@@ -444,6 +454,14 @@ class CONTENT_EXPORT SharedWorkerHost
 
   // Set at construction time and should not change afterwards. Never null.
   const scoped_refptr<PolicyContainerHost> creator_policy_container_host_;
+
+  // The Cross-Origin-Storage-Allow-Origin ceiling for the worker's creator
+  // document (WICG § 7). Fixed at creation time.
+  const base::flat_set<url::Origin> creator_cos_scope_ceiling_;
+
+  // Weak handle to the document that created this worker (for DevTools console
+  // warning reporting).
+  const WeakDocumentPtr creator_document_;
 
   // The worker's own client security state, applied to subresource fetches.
   // This is nullptr until it is computed in `DidStartScriptLoad()`.

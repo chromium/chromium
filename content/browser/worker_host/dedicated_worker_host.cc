@@ -19,6 +19,7 @@
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/cross_origin_storage/cross_origin_storage_types.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
@@ -57,6 +58,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/isolation_info.h"
+#include "net/http/http_response_headers.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -64,6 +66,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
@@ -82,6 +85,40 @@
 #endif
 
 namespace content {
+
+namespace {
+
+base::flat_set<url::Origin> ComputeCreatorCosScopeCeiling(
+    DedicatedWorkerServiceImpl* service,
+    const DedicatedWorkerCreator& creator,
+    RenderFrameHostImpl* ancestor_render_frame_host) {
+  if (!base::FeatureList::IsEnabled(blink::features::kCrossOriginStorage)) {
+    return {};
+  }
+  if (std::holds_alternative<GlobalRenderFrameHostId>(creator)) {
+    if (ancestor_render_frame_host &&
+        ancestor_render_frame_host->lifecycle_state() !=
+            RenderFrameHostImpl::LifecycleStateImpl::kSpeculative &&
+        ancestor_render_frame_host->lifecycle_state() !=
+            RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit &&
+        ancestor_render_frame_host->GetLastCommittedURL()
+            .SchemeIsHTTPOrHTTPS() &&
+        ancestor_render_frame_host->GetLastResponseHead()) {
+      return ParseCrossOriginStorageAllowOrigin(
+          ancestor_render_frame_host->GetLastResponseHead()->headers.get());
+    }
+    return {};
+  }
+  if (std::holds_alternative<blink::DedicatedWorkerToken>(creator)) {
+    if (DedicatedWorkerHost* parent = service->GetDedicatedWorkerHostFromToken(
+            std::get<blink::DedicatedWorkerToken>(creator))) {
+      return parent->creator_cos_scope_ceiling();
+    }
+  }
+  return {};
+}
+
+}  // namespace
 
 DedicatedWorkerHost::DedicatedWorkerHost(
     DedicatedWorkerServiceImpl* service,
@@ -118,7 +155,12 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       storage_access_api_status_(storage_access_api_status),
       network_restrictions_id_(base::UnguessableToken::Create()),
       creator_network_restrictions_id_(creator_network_restrictions_id),
-      creator_policies_(creator_policies.Clone()) {
+      creator_policies_(creator_policies.Clone()),
+      creator_cos_scope_ceiling_(ComputeCreatorCosScopeCeiling(
+          service,
+          creator_,
+          RenderFrameHostImpl::From(
+              ancestor_document_.AsRenderFrameHostIfValid()))) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(worker_process_host_, base::NotFatalUntil::M160);
   CHECK(worker_process_host_->IsInitializedAndNotDead(),

@@ -14,10 +14,15 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/cross_origin_storage/cross_origin_storage.mojom.h"
 #include "url/origin.h"
+
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
 
 namespace content {
 
@@ -126,6 +131,21 @@ class CONTENT_EXPORT CrossOriginStorageAccessSpec {
   bool any_origin_ = false;
   std::vector<url::Origin> allowed_origins_;
 };
+
+// Parses a raw `Cross-Origin-Storage-Allow-Origin` HTTP response header value
+// into a set of authorized origins (the "COS scope ceiling", per WICG § 7
+// `parse a COS scope ceiling`). Returns an empty set if `header_value` is empty
+// or if any token in the header fails URL parsing, is not an HTTP(S) scheme, or
+// is not potentially trustworthy (fail-closed).
+CONTENT_EXPORT base::flat_set<url::Origin>
+ParseCrossOriginStorageAllowOriginValue(std::string_view header_value);
+
+// Convenience helper that extracts the normalized
+// `Cross-Origin-Storage-Allow-Origin` header from `headers` and calls
+// `ParseCrossOriginStorageAllowOriginValue`. Returns an empty set if `headers`
+// is null or does not contain the header.
+CONTENT_EXPORT base::flat_set<url::Origin> ParseCrossOriginStorageAllowOrigin(
+    const net::HttpResponseHeaders* headers);
 
 }  // namespace content
 

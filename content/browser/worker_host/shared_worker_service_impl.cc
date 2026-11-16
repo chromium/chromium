@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
+#include "content/browser/cross_origin_storage/cross_origin_storage_types.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -45,11 +46,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_response_headers.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -534,6 +537,21 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           ? net::StorageAccessApiStatus::kAccessViaAPI
           : net::StorageAccessApiStatus::kNone;
 
+  base::flat_set<url::Origin> creator_cos_scope_ceiling;
+  if (base::FeatureList::IsEnabled(blink::features::kCrossOriginStorage)) {
+    if (creator.lifecycle_state() !=
+            RenderFrameHostImpl::LifecycleStateImpl::kSpeculative &&
+        creator.lifecycle_state() !=
+            RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit &&
+        creator.GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+      if (const network::mojom::URLResponseHead* response =
+              creator.GetLastResponseHead()) {
+        creator_cos_scope_ceiling =
+            ParseCrossOriginStorageAllowOrigin(response->headers.get());
+      }
+    }
+  }
+
   // Create the host. We need to do this even before starting the worker,
   // because we are about to bounce to the IO thread. If another ConnectToWorker
   // request arrives in the meantime, it finds and reuses the host instead of
@@ -542,7 +560,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       worker_hosts_.insert(std::make_unique<SharedWorkerHost>(
           this, instance, std::move(site_instance),
           std::move(content_security_policies),
-          creator.policy_container_host()->Clone(), storage_access_api_status));
+          creator.policy_container_host()->Clone(), storage_access_api_status,
+          std::move(creator_cos_scope_ceiling), creator.GetWeakDocumentPtr()));
   CHECK(insertion_result.second, base::NotFatalUntil::M160);
   SharedWorkerHost* host = insertion_result.first->get();
   shared_worker_hosts_[host->token()] = host;

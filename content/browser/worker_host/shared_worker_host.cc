@@ -168,7 +168,9 @@ SharedWorkerHost::SharedWorkerHost(
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies,
     scoped_refptr<PolicyContainerHost> creator_policy_container_host,
-    net::StorageAccessApiStatus storage_access_api_status)
+    net::StorageAccessApiStatus storage_access_api_status,
+    base::flat_set<url::Origin> creator_cos_scope_ceiling,
+    WeakDocumentPtr creator_document)
     : service_(service),
       token_(blink::SharedWorkerToken()),
       instance_(instance),
@@ -185,6 +187,8 @@ SharedWorkerHost::SharedWorkerHost(
                                             ukm::SourceIdType::WORKER_ID)),
       reporting_source_(base::UnguessableToken::Create()),
       creator_policy_container_host_(std::move(creator_policy_container_host)),
+      creator_cos_scope_ceiling_(std::move(creator_cos_scope_ceiling)),
+      creator_document_(std::move(creator_document)),
       network_restrictions_id_(base::UnguessableToken::Create()),
       storage_access_api_status_(storage_access_api_status) {
   CHECK(GetProcessHost(), base::NotFatalUntil::M160);
