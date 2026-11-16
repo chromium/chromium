@@ -22364,6 +22364,21 @@
             ]
         }
     ],
+    "Win10TaskbarPinFallback": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261114",
+                    "enable_features": [
+                        "Win10TaskbarPinFallback"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinIsolatedProcess": [
         {
             "platforms": [
