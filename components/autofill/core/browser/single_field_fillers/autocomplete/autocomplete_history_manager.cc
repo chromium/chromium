@@ -272,6 +272,13 @@ bool IsHtmlFieldTypeSaveable(HtmlFieldType field_type) {
 
 bool IsHtmlFieldTypeSaveable(const FormFieldData& field,
                              const AutofillField* autofill_field) {
+  // Autofill does not parse password-related autocomplete attributes into
+  // `HtmlFieldType` (they map to `HtmlFieldType::kUnrecognized`), so check for
+  // them directly on the attribute string.
+  if (field.autocomplete_attribute().contains("current-password") ||
+      field.autocomplete_attribute().contains("new-password")) {
+    return false;
+  }
   return (!field.parsed_autocomplete() ||
           IsHtmlFieldTypeSaveable(field.parsed_autocomplete()->field_type)) &&
          (!autofill_field ||

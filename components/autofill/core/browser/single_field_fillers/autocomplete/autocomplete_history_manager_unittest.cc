@@ -1548,6 +1548,16 @@ TEST_F(AutocompleteHistoryManagerTest,
                    .value = u"333",
                    .autocomplete_attribute = "promo-code"},
                   {.name = u"Name not matching CC regex",
+                   .value = u"pass123",
+                   .autocomplete_attribute = "current-password"},
+                  {.name = u"Name not matching CC regex",
+                   .value = u"newpass123",
+                   .autocomplete_attribute = "new-password"},
+                  {.name = u"Name not matching CC regex",
+                   .value = u"webauthnpass123",
+                   .autocomplete_attribute =
+                       "section-login current-password webauthn"},
+                  {.name = u"Name not matching CC regex",
                    .value = u"123456",
                    .autocomplete_attribute = "one-time-code"},
                   {.name = u"Name not matching CC regex",
@@ -1564,27 +1574,33 @@ TEST_F(AutocompleteHistoryManagerTest,
                                                     /*form=*/nullptr);
 }
 
-// Tests that fields with sensitive HTML autocomplete attributes (one-time
-// codes, payment tokens) are not saved in autocomplete history even when their
-// predicted type is UNKNOWN_TYPE.
+// Tests that fields with sensitive HTML autocomplete attributes (passwords,
+// one-time codes, payment tokens) are not saved in autocomplete history even
+// when their predicted type is UNKNOWN_TYPE.
 TEST_F(AutocompleteHistoryManagerTest,
        AutocompleteAttributeBasedFiltering_PasswordAndSensitiveFields) {
   FormData form = test::GetFormData(
       {.fields = {
            {.name = u"f0",
+            .value = u"pass123",
+            .autocomplete_attribute = "current-password"},
+           {.name = u"f1",
+            .value = u"newpass123",
+            .autocomplete_attribute = "new-password"},
+           {.name = u"f2",
             .value = u"123456",
             .autocomplete_attribute = "one-time-code"},
-           {.name = u"f1", .value = u"999", .autocomplete_attribute = "cc-csc"},
-           {.name = u"f2",
+           {.name = u"f3", .value = u"999", .autocomplete_attribute = "cc-csc"},
+           {.name = u"f4",
             .value = u"1234123412341234",
             .autocomplete_attribute = "cc-number"},
-           {.name = u"f3",
+           {.name = u"f5",
             .value = u"DE89370400440532013000",
             .autocomplete_attribute = "iban"},
-           {.name = u"f4",
+           {.name = u"f6",
             .value = u"PROMO2026",
             .autocomplete_attribute = "promo-code"},
-           {.name = u"f5",
+           {.name = u"f7",
             .value = u"John",
             .autocomplete_attribute = "given-name"}}});
   FormStructure form_structure{form};
