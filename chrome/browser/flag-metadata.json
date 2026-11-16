@@ -2633,7 +2633,7 @@
       "kalinino@google.com",
       "//components/critical_actions/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 185
   },
   {
     "name": "cros-components",
