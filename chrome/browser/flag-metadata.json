@@ -9061,11 +9061,6 @@
     "expiry_milestone": 158
   },
   {
-    "name": "single-ca-cert-verification-phase-2",
-    "owners": ["olsa@chromium.org", "chromeos-commercial-networking@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "site-isolation-trial-opt-out",
     "owners": [ "site-isolation-dev@chromium.org", "alexmos@chromium.org", "creis@chromium.org", "lukasza@chromium.org" ],
     // This is useful to opt out of active site isolation modes for debugging

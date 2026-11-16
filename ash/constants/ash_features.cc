@@ -1474,10 +1474,6 @@ BASE_FEATURE(kShowLiveCaptionInVideoConferenceTray,
 BASE_FEATURE(kShowSharingUserInLauncherContinueSection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Use a single CA cert for the EAP network if CA cert was selected, no
-// fallback.
-BASE_FEATURE(kSingleCaCertVerificationPhase2, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling/disabling the Sunfish feature.
 BASE_FEATURE(kSunfishFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 

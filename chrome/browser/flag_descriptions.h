@@ -8151,11 +8151,6 @@ inline constexpr char kAudioFlexibleLoopbackForSystemLoopbackDescription[] =
     "Request a FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK for system "
     "loopback";
 
-inline constexpr char kSingleCaCertVerificationPhase2Name[] =
-    "Use single CA cert for EAP networks if provided phase 2";
-inline constexpr char kSingleCaCertVerificationPhase2Description[] =
-    "Use a single CA cert for server's cert verification, no fallback.";
-
 inline constexpr char kCrosCachedLocationProviderName[] =
     "Use Caching in System Location Provider to optimize GCP utilization";
 inline constexpr char kCrosCachedLocationProviderDescription[] =
