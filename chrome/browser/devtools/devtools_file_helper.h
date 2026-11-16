@@ -147,10 +147,16 @@ class DevToolsFileHelper {
       const HandlePermissionsCallback& show_info_bar_callback);
 
   // Attempts to automatically connect to the |file_system_path| (identified
-  // by path and |file_system_uuid|). If this is the first time that the
-  // |file_system_path| is being connected and |add_if_missing| is true, the
-  // user will be asked to grant permission to do so, and upon confirming,
-  // the |file_system_path| will be remembered in the profile.
+  // by path and |file_system_uuid|). |file_system_path| must be a valid local,
+  // non-root, absolute directory path without NUL, control, BiDi control,
+  // zero-width/line-separator characters (U+200B, U+2028, U+2029, U+2060,
+  // U+FEFF), leading/trailing Unicode whitespace, '.'/'..' path components,
+  // or (on Windows) trailing '.'/space or alternate-data-stream (':')
+  // components (otherwise the connection is rejected synchronously). If this is
+  // the first time that the |file_system_path| is being connected and
+  // |add_if_missing| is true, the user will be asked to grant permission to do
+  // so, and upon confirming, the |file_system_path| will be remembered in the
+  // profile.
   // Invokes |connect_callback| with the result.
   void ConnectAutomaticFileSystem(
       const std::string& file_system_path,

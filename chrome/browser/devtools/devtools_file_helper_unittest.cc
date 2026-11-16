@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_file_helper.h"
 
+#include <string>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -23,6 +24,7 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -37,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::NotNull;
@@ -186,6 +189,12 @@ class DevToolsFileHelperTest : public Test {
     profile_ = builder.Build();
     storage_ = std::make_unique<StrictMock<MockStorage>>();
     delegate_ = std::make_unique<StrictMock<MockDelegate>>();
+    // DevToolsFileWatcher watches real temp directories on a background thread;
+    // OS file watchers (notably FSEvents on macOS) can asynchronously emit
+    // empty FilePathsChanged batches after directory creation before watching
+    // starts.
+    EXPECT_CALL(delegate(), FilePathsChanged(IsEmpty(), IsEmpty(), IsEmpty()))
+        .Times(AnyNumber());
     file_helper_ = std::make_unique<DevToolsFileHelper>(
         profile(), delegate_.get(), storage_.get());
 
@@ -569,6 +578,190 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithSensitivePath) {
 
   EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
               IsEmpty());
+}
+
+TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithRootPath) {
+  std::vector<std::string> root_paths = {"/", "///"};
+#if BUILDFLAG(IS_WIN)
+  root_paths.insert(root_paths.end(), {"C:\\", "c:/", "D:\\", "D:\\\\"});
+#endif
+
+  for (const std::string& path_str : root_paths) {
+    SCOPED_TRACE(path_str);
+    base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
+    EXPECT_CALL(connect_cb, Run(false));
+    EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
+
+    file_helper()->ConnectAutomaticFileSystem(
+        path_str, base::Uuid::GenerateRandomV4(),
+        /* add_if_missing */ true, base::DoNothing(), connect_cb.Get());
+
+    EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
+                IsEmpty());
+  }
+}
+
+TEST_F(DevToolsFileHelperTest,
+       ConnectAutomaticFileSystemWithInvalidCharactersOrDotSegments) {
+  base::ScopedTempDir td;
+  ASSERT_TRUE(td.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
+  const std::string valid_path = td.GetPath().AsUTF8Unsafe();
+
+  std::vector<std::string> invalid_paths = {
+      "",
+      " " + valid_path,
+      valid_path + " ",
+      "/.",
+      "/./",
+      "/foo/./bar",
+      valid_path + std::string("\0/innocent", 10),
+      valid_path + "\n",
+      valid_path + "\x7f",
+      valid_path + "\xc2\x85",
+      valid_path + "\xe2\x80\xae",
+      valid_path + "\xe2\x81\xa6",
+      valid_path + "\xd8\x9c",
+      valid_path + "\xff",
+      valid_path + "\xe2\x80",
+      "\xc2\xa0" + valid_path,
+      valid_path + "\xc2\xa0",
+      valid_path + "\xe2\x80\x8b",
+      valid_path + "\xe2\x80\xa8",
+      valid_path + "\xe2\x80\xa9",
+      valid_path + "\xe2\x81\xa0",
+      valid_path + "\xef\xbb\xbf",
+  };
+#if BUILDFLAG(IS_WIN)
+  invalid_paths.insert(
+      invalid_paths.end(),
+      {"C:\\.", "D:\\. \\", "C:\\foo.\\bar", "C:\\foo:stream"});
+#endif
+
+  for (const std::string& path_str : invalid_paths) {
+    SCOPED_TRACE(testing::PrintToString(path_str));
+    base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
+    EXPECT_CALL(connect_cb, Run(false));
+    EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
+
+    file_helper()->ConnectAutomaticFileSystem(
+        path_str, base::Uuid::GenerateRandomV4(),
+        /* add_if_missing */ true, base::DoNothing(), connect_cb.Get());
+
+    EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
+                IsEmpty());
+  }
+}
+
+TEST_F(DevToolsFileHelperTest,
+       ConnectAutomaticFileSystemWithTrailingSeparatorAndDotProjectDir) {
+  EXPECT_THAT(file_helper()->GetFileSystems(), IsEmpty());
+  base::ScopedTempDir td;
+  ASSERT_TRUE(td.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
+
+  const base::FilePath project_dir = td.GetPath().AppendASCII("project");
+  const base::FilePath trailing_sep_path = project_dir.AsEndingWithSeparator();
+  const base::FilePath dot_app_path = td.GetPath().AppendASCII(".local-app");
+  const base::FilePath utf8_path =
+      td.GetPath().Append(base::FilePath::FromUTF8Unsafe("פרויקט-日-🚀"));
+  const base::FilePath zwj_path =
+      td.GetPath().Append(base::FilePath::FromUTF8Unsafe(
+          "dev-\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x92\xbb"));
+  ASSERT_TRUE(base::CreateDirectory(project_dir));
+  ASSERT_TRUE(base::CreateDirectory(dot_app_path));
+  ASSERT_TRUE(base::CreateDirectory(utf8_path));
+  ASSERT_TRUE(base::CreateDirectory(zwj_path));
+
+  const base::Uuid trailing_sep_uuid = base::Uuid::GenerateRandomV4();
+  ConnectAutomaticFileSystem(trailing_sep_path, trailing_sep_uuid,
+                             /* already_known */ false);
+
+  const base::Uuid dot_app_uuid = base::Uuid::GenerateRandomV4();
+  ConnectAutomaticFileSystem(dot_app_path, dot_app_uuid,
+                             /* already_known */ false);
+
+  const base::Uuid utf8_uuid = base::Uuid::GenerateRandomV4();
+  ConnectAutomaticFileSystem(utf8_path, utf8_uuid, /* already_known */ false);
+
+  const base::Uuid zwj_uuid = base::Uuid::GenerateRandomV4();
+  ConnectAutomaticFileSystem(zwj_path, zwj_uuid, /* already_known */ false);
+
+  const base::DictValue& file_system_paths_value =
+      profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
+  EXPECT_THAT(file_system_paths_value, SizeIs(4));
+  EXPECT_THAT(
+      file_system_paths_value.FindString(trailing_sep_path.AsUTF8Unsafe()),
+      Pointee(trailing_sep_uuid.AsLowercaseString()));
+  EXPECT_THAT(file_system_paths_value.FindString(dot_app_path.AsUTF8Unsafe()),
+              Pointee(dot_app_uuid.AsLowercaseString()));
+  EXPECT_THAT(file_system_paths_value.FindString(utf8_path.AsUTF8Unsafe()),
+              Pointee(utf8_uuid.AsLowercaseString()));
+  EXPECT_THAT(file_system_paths_value.FindString(zwj_path.AsUTF8Unsafe()),
+              Pointee(zwj_uuid.AsLowercaseString()));
+}
+
+TEST_F(DevToolsFileHelperTest,
+       ConnectAutomaticFileSystemWithSensitiveWriteSubdirectories) {
+  EXPECT_THAT(file_helper()->GetFileSystems(), IsEmpty());
+  base::ScopedTempDir repo_dir;
+  ASSERT_TRUE(
+      repo_dir.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
+  const base::FilePath git_dir = repo_dir.GetPath().AppendASCII(".git");
+  const base::FilePath git_hooks_dir = git_dir.AppendASCII("hooks");
+  const base::FilePath git_objects_info_dir =
+      git_dir.AppendASCII("objects").AppendASCII("info");
+  const base::FilePath git_refs_dir = git_dir.AppendASCII("refs");
+  const base::FilePath mvn_dir = repo_dir.GetPath().AppendASCII(".mvn");
+  ASSERT_TRUE(base::CreateDirectory(git_hooks_dir));
+  ASSERT_TRUE(base::CreateDirectory(git_objects_info_dir));
+  ASSERT_TRUE(base::CreateDirectory(git_refs_dir));
+  ASSERT_TRUE(base::CreateDirectory(mvn_dir));
+
+  for (const base::FilePath& blocked_path :
+       {git_dir, git_hooks_dir, git_objects_info_dir, mvn_dir}) {
+    SCOPED_TRACE(blocked_path);
+    base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
+    EXPECT_CALL(connect_cb, Run(false));
+    EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
+
+    base::RunLoop run_loop;
+    ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] {
+      run_loop.Quit();
+    });
+
+    file_helper()->ConnectAutomaticFileSystem(
+        blocked_path.AsUTF8Unsafe(), base::Uuid::GenerateRandomV4(),
+        /* add_if_missing */ true,
+        base::BindLambdaForTesting([&](const std::string&,
+                                       const std::u16string&,
+                                       base::OnceCallback<void(bool)>) {
+          ADD_FAILURE() << "Blocked path should not prompt for permission: "
+                        << blocked_path;
+          run_loop.Quit();
+        }),
+        connect_cb.Get());
+
+    run_loop.Run();
+
+    EXPECT_THAT(profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths),
+                IsEmpty());
+  }
+
+  const base::Uuid repo_uuid = base::Uuid::GenerateRandomV4();
+  ConnectAutomaticFileSystem(repo_dir.GetPath(), repo_uuid,
+                             /* already_known */ false);
+
+  const base::Uuid refs_uuid = base::Uuid::GenerateRandomV4();
+  ConnectAutomaticFileSystem(git_refs_dir, refs_uuid,
+                             /* already_known */ false);
+
+  const base::DictValue& file_system_paths_value =
+      profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
+  EXPECT_THAT(file_system_paths_value, SizeIs(2));
+  EXPECT_THAT(
+      file_system_paths_value.FindString(repo_dir.GetPath().AsUTF8Unsafe()),
+      Pointee(repo_uuid.AsLowercaseString()));
+  EXPECT_THAT(file_system_paths_value.FindString(git_refs_dir.AsUTF8Unsafe()),
+              Pointee(refs_uuid.AsLowercaseString()));
 }
 
 TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemInfoBarDenied) {

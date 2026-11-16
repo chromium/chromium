@@ -4,7 +4,9 @@
 
 #include "chrome/browser/devtools/devtools_file_helper.h"
 
+#include <algorithm>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -12,13 +14,17 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/string_escape.h"
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -120,6 +126,70 @@ void AppendToFile(const base::FilePath& path, const std::string& content) {
     LOG(ERROR) << "Failed to append: " << path.value();
     return;
   }
+}
+
+constexpr bool IsBidiControlCharacter(base_icu::UChar32 code_point) {
+  return code_point == 0x061C ||
+         (code_point >= 0x200E && code_point <= 0x200F) ||
+         (code_point >= 0x202A && code_point <= 0x202E) ||
+         (code_point >= 0x2066 && code_point <= 0x2069);
+}
+
+constexpr bool IsDisallowedUnicodeFormatOrSeparator(
+    base_icu::UChar32 code_point) {
+  // Reject zero-width space, line/paragraph separators, word joiner, and
+  // BOM/ZWNBSP, while preserving U+200C (ZWNJ) and U+200D (ZWJ) for valid
+  // orthography and emoji sequences.
+  return code_point == 0x200B || code_point == 0x2028 || code_point == 0x2029 ||
+         code_point == 0x2060 || code_point == 0xFEFF;
+}
+
+bool IsValidLocalAbsoluteDirectoryPath(std::string_view file_system_path) {
+  if (file_system_path.empty()) {
+    return false;
+  }
+  for (size_t index = 0; index < file_system_path.size(); ++index) {
+    base_icu::UChar32 code_point = 0;
+    if (!base::ReadUnicodeCharacter(file_system_path, &index, &code_point) ||
+        base::IsUnicodeControl(code_point) ||
+        IsBidiControlCharacter(code_point) ||
+        IsDisallowedUnicodeFormatOrSeparator(code_point)) {
+      return false;
+    }
+  }
+
+  std::u16string trimmed;
+  if (base::TrimWhitespace(base::UTF8ToUTF16(file_system_path), base::TRIM_ALL,
+                           &trimmed) != base::TRIM_NONE ||
+      trimmed.empty()) {
+    return false;
+  }
+
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
+  if (!path.IsAbsolute() || path.IsNetwork() || path.ReferencesParent() ||
+      path.StripTrailingSeparators() == path.DirName()) {
+    return false;
+  }
+
+  const std::vector<base::FilePath::StringType> components =
+      path.GetComponents();
+  if (std::ranges::contains(
+          components,
+          base::FilePath::StringViewType(base::FilePath::kCurrentDirectory))) {
+    return false;
+  }
+#if BUILDFLAG(IS_WIN)
+  if (file_system_path.find(':', 2) != std::string_view::npos ||
+      std::ranges::any_of(
+          components, [](const base::FilePath::StringType& component) {
+            return !component.empty() &&
+                   (component.back() == FILE_PATH_LITERAL('.') ||
+                    component.back() == FILE_PATH_LITERAL(' '));
+          })) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 }  // namespace
@@ -302,31 +372,27 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
     ConnectCallback connect_callback) {
   CHECK(file_system_uuid.is_valid(), base::NotFatalUntil::M161);
 
-  // Reject unsafe network, relative, or parent-referencing paths synchronously
-  // to avoid performing any filesystem existence/presence checks.
-  base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
-  if (!path.IsAbsolute() || path.IsNetwork() || path.ReferencesParent()) {
-    LOG(ERROR) << "Rejected automatic file system " << file_system_path
-               << " with UUID " << file_system_uuid
-               << " (not a safe local absolute path).";
+  // Reject invalid, root, network, relative, or dot-referencing paths
+  // synchronously to avoid performing any filesystem existence/presence checks.
+  if (!IsValidLocalAbsoluteDirectoryPath(file_system_path)) {
+    LOG(ERROR) << "Rejected automatic file system "
+               << base::GetQuotedJSONString(file_system_path) << " with UUID "
+               << file_system_uuid << " (not a safe local absolute path).";
     std::move(connect_callback).Run(false);
     FailedToAddFileSystem(kIllegalPath);
     return;
   }
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
 
   auto* permission_context =
       FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
   if (permission_context) {
     content::PathInfo path_info(path);
-    // TODO(crbug.com/545006893): DevTools automatic file systems can write to
-    // disk, but currently use AccessTrigger::kProgrammaticRead. Investigate
-    // updating this to a write trigger. This CL is a pure refactoring so we
-    // avoid making behavioral changes here.
     permission_context->ConfirmSensitiveEntryAccess(
         url::Origin(), path_info,
         content::FileSystemAccessPermissionContext::HandleType::kDirectory,
         content::FileSystemAccessPermissionContext::AccessTrigger::
-            kProgrammaticRead,
+            kProgrammaticWrite,
         content::GlobalRenderFrameHostId(),
         base::BindOnce(
             &DevToolsFileHelper::CheckBlocklistAndConnectAutomaticFileSystem,
