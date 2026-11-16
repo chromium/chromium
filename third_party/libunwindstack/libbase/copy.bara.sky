@@ -1,0 +1,34 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = [
+        "NOTICE",
+        "file.cpp",
+        "include/android-base/errno_restorer.h",
+        "include/android-base/file.h",
+        "include/android-base/logging.h",
+        "include/android-base/macros.h",
+        "include/android-base/mapped_file.h",
+        "include/android-base/off64_t.h",
+        "include/android-base/parseint.h",
+        "include/android-base/stringprintf.h",
+        "include/android-base/strings.h",
+        "include/android-base/thread_annotations.h",
+        "include/android-base/threads.h",
+        "include/android-base/unique_fd.h",
+        "include/android-base/utf8.h",
+        "posix_strerror_r.cpp",
+        "stringprintf.cpp",
+        "strings.cpp",
+        "threads.cpp",
+    ],
+    transformations = [
+        patch.apply(patches = [
+            "patches/0001-disable-fdsan.patch",
+            "patches/0003-remove-file-logging.patch",
+            "patches/0007-disable-thread-annotations.patch",
+            "patches/0015-replace-deprecated-enodata.patch",
+            "patches/0020-add-missing-includes.patch",
+        ]),
+    ],
+)

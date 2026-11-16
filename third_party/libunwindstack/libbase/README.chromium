@@ -4,7 +4,7 @@ Version: N/A
 Revision: a5c86f3574f744b22a82a8cd08e7fa0bf7210c28
 Update Mechanism: Manual
 License: Apache-2.0
-License File: //third_party/libunwindstack/LICENSE
+License File: src/NOTICE
 Shipped: yes
 Security Critical: yes
 
@@ -14,10 +14,11 @@ unique_fd. libunwindstack, libdexfile and libartbase include them as
 "android-base/...", and //third_party/libunwindstack builds them into its
 libunwindstack and posix_strerror_r targets.
 
-src/ holds the files BUILD.gn lists, from the upstream repository root,
-with patches/ applied.
+src/ holds NOTICE and the files BUILD.gn lists, from the upstream
+repository root, with patches/ applied.
 
 Local Modifications:
+The patches are in patches/; copy.bara.sky applies them in this order.
 - 0001-disable-fdsan.patch: use fdsan only from Android API 29.
 - 0003-remove-file-logging.patch: no-op LOG(), PLOG(), CHECK() and
   CHECK_OP() streams, so no logging.cpp is needed.
@@ -27,9 +28,10 @@ Local Modifications:
 - 0020-add-missing-includes.patch: add <type_traits> and <iterator>
   includes.
 
-To update, copy those files at the new revision into src/, then run
-from this directory:
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./
 
-$ for patch in patches/*.patch; do patch -s -p1 < $patch; done
-
-and update Revision.
+copy.bara.sky lists every file it imports. If the new upstream version
+adds a file Chromium needs, add it there and to
+//third_party/libunwindstack/BUILD.gn.
