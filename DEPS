@@ -4367,13 +4367,6 @@ hooks = [
                '-o', 'src/build/util/LASTCHANGE'],
   },
   {
-    # Update MINIBRANCH.
-    'name': 'minibranch',
-    'pattern': '.',
-    'action': ['python3', 'src/build/util/lastchange.py',
-               '--minibranch-out', 'src/build/util/MINIBRANCH'],
-  },
-  {
     # Update lastchange_commit_position.h (only for CrOS).
     'name': 'lastchange_commit_position_cros',
     'pattern': '.',

@@ -1,0 +1,88 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build_overrides/build.gni")
+
+# Detects and validates `//chrome/COMPATIBLE_VERSIONS`, which is checked in only
+# on release branches or minibranches dedicated to building dynamic patch
+# releases (never on `main`).
+#
+# Expected file format (directly consumable by `//build/util/version.py -f`):
+#   COMPATIBLE_VERSIONS=<v1>[,<v2>,...]
+#
+# Rules enforced at `gn gen` time when the file is present:
+# - Single `COMPATIBLE_VERSIONS=...` line (optional trailing newline; no blank
+#   lines, `#` comments, or whitespace, which `version.py` does not strip).
+# - One or more comma-separated, distinct 4-part decimal Chrome versions of the
+#   form `MAJOR.MINOR.BUILD.PATCH` with no leading zeros on multi-digit
+#   components (e.g., `COMPATIBLE_VERSIONS=154.0.8037.97,154.0.8037.98`).
+#
+# Note: `path_exists()` does not add an absent file to `build.ninja.d`, so
+# adding `COMPATIBLE_VERSIONS` to a checkout with an existing build directory
+# will not trigger `gn gen` by itself unless another tracked file (such as
+# `//chrome/VERSION` on a branch switch) also changes. Removing or modifying an
+# existing `COMPATIBLE_VERSIONS` file does trigger a regen via `read_file()`.
+
+compatible_versions_file = "//chrome/COMPATIBLE_VERSIONS"
+has_compatible_versions =
+    build_with_chromium && path_exists(compatible_versions_file)
+
+if (has_compatible_versions) {
+  _raw_contents = string_replace(read_file(compatible_versions_file, "string"),
+                                 "$0x0D$0x0A",
+                                 "$0x0A")
+  assert(string_replace(_raw_contents, "$0x0D", "") == _raw_contents,
+         "$compatible_versions_file must not contain bare CR characters")
+
+  _lines = []
+  _lines = string_split(_raw_contents, "$0x0A")
+  assert(
+      len(_lines) == 1 || (len(_lines) == 2 && _lines[1] == ""),
+      "$compatible_versions_file must contain a single COMPATIBLE_VERSIONS=<v1>[,<v2>,...] line (with no blank lines or comments)")
+
+  _kv = []
+  _kv = string_split(_lines[0], "=")
+  assert(
+      len(_kv) == 2 && _kv[0] == "COMPATIBLE_VERSIONS" && _kv[1] != "",
+      "$compatible_versions_file must contain COMPATIBLE_VERSIONS=<v1>[,<v2>,...]")
+
+  _seen_versions = []
+  foreach(_ver, string_split(_kv[1], ",")) {
+    assert(_ver != "", "Empty version entry in $compatible_versions_file")
+    foreach(_seen, _seen_versions) {
+      assert(_seen != _ver,
+             "Duplicate version '$_ver' in $compatible_versions_file")
+    }
+    _seen_versions += [ _ver ]
+
+    _parts = []
+    _parts = string_split(_ver, ".")
+    assert(
+        len(_parts) == 4,
+        "Invalid version '$_ver' in $compatible_versions_file: expected MAJOR.MINOR.BUILD.PATCH")
+    foreach(_part, _parts) {
+      _non_digits = _part
+      foreach(_digit,
+              [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+              ]) {
+        _non_digits = string_replace(_non_digits, _digit, "")
+      }
+      assert(
+          _part != "" && _non_digits == "" &&
+              (_part == "0" ||
+                   string_replace("^$_part", "^0", "") == "^$_part"),
+          "Invalid version '$_ver' in $compatible_versions_file: components must be non-negative decimal integers without leading zeros")
+    }
+  }
+}

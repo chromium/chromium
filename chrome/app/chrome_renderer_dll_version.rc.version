@@ -37,7 +37,7 @@ BEGIN
             VALUE "CompanyShortName", "@COMPANY_SHORTNAME@"
             VALUE "ProductShortName", "@PRODUCT_SHORTNAME@"
             VALUE "LastChange", "@LASTCHANGE@"
-            VALUE "MinibranchBaseVersion", "@MINIBRANCH_BASE_VERSION@"
+            VALUE "CompatibleVersions", "@COMPATIBLE_VERSIONS@"
             VALUE "Official Build", "@OFFICIAL_BUILD@"
         END
     END

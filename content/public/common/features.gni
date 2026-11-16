@@ -4,6 +4,7 @@
 
 import("//build/config/cast.gni")
 import("//build/config/features.gni")
+import("//build/util/compatible_versions.gni")
 
 declare_args() {
   # Whether or not to use external popup menu.
@@ -15,8 +16,9 @@ declare_args() {
   # In particular, the Desktop PDF viewer (enable_pdf) requires plugin support.
   enable_plugins = !is_android && !is_ios && !is_castos && !is_fuchsia
 
-  # Enables separate renderer binary.
-  enable_separate_renderer_binary = false
+  # Enables building a separate renderer binary. Defaults to true on Windows
+  # when //chrome/COMPATIBLE_VERSIONS is present.
+  enable_separate_renderer_binary = is_win && has_compatible_versions
 }
 
 # Screen capture is enabled on most platforms. Currently, screen capture
