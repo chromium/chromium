@@ -76,8 +76,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
     // chrome.send().
     : TopChromeWebUIController(
           web_ui,
-          /*enable_chrome_send=*/webui::IsWebUIDataSourceShared(web_ui),
-          /*enable_chrome_histograms=*/true),
+          /*enable_chrome_send=*/webui::IsWebUIDataSourceShared(web_ui)),
       webui_load_timer_(web_ui->GetWebContents(),
                         "Tabs.Organizer.WebUI.LoadDocumentTime",
                         "Tabs.Organizer.WebUI.LoadCompletedTime") {

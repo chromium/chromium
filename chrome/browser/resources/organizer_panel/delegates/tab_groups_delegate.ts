@@ -81,12 +81,12 @@ export class TabGroupsDelegate implements
   }
 
   private onCreateTabGroupClick_() {
-    chrome.histograms?.recordUserAction?.('OrganizerPanel.CreateTabGroup');
+    chrome.metricsPrivate?.recordUserAction?.('OrganizerPanel.CreateTabGroup');
     this.browserProxy_.handler.createNewTabGroup();
   }
 
   onItemClick(item: OrganizerListSectionItem<TabGroup>) {
-    chrome.histograms?.recordUserAction?.('OrganizerPanel.OpenTabGroup');
+    chrome.metricsPrivate?.recordUserAction?.('OrganizerPanel.OpenTabGroup');
     const data = item.data;
     assert(data);
     this.browserProxy_.handler.openTabGroup(data.id);
@@ -122,7 +122,8 @@ export class TabGroupsDelegate implements
   private async showContextMenu_(
       id: string,
       anchorRect: {x: number, y: number, width: number, height: number}) {
-    chrome.histograms?.recordUserAction?.('OrganizerPanel.OpenTabGroupMenu');
+    chrome.metricsPrivate?.recordUserAction?.(
+        'OrganizerPanel.OpenTabGroupMenu');
     await this.browserProxy_.handler.showContextMenu(id, anchorRect);
   }
 

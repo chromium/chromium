@@ -76,8 +76,8 @@ build_webui("build") {
   webui_context_type = "trusted"
   ts_composite = true
   ts_definitions = [
-    "//tools/typescript/definitions/chrome_histograms.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
   ts_deps = [

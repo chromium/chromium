@@ -213,7 +213,7 @@ export class OrganizerListSectionHeaderElement extends
 
   private setExpandedFromUser_(expanded: boolean) {
     this.expanded = expanded;
-    chrome.histograms.recordUserAction(
+    chrome.metricsPrivate.recordUserAction(
         expanded ? 'OrganizerPanel.ExpandSection' :
                    'OrganizerPanel.CollapseSection');
     this.fire('toggle-action', {expanded});
@@ -221,7 +221,7 @@ export class OrganizerListSectionHeaderElement extends
 
   protected onMenuButtonClick_(e: Event) {
     e.stopPropagation();
-    chrome.histograms.recordUserAction('OrganizerPanel.OpenSectionMenu');
+    chrome.metricsPrivate.recordUserAction('OrganizerPanel.OpenSectionMenu');
     this.$.menu.showAt(this.$.menuButton, {
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,

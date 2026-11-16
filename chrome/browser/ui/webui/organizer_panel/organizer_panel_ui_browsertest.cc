@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_ui.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,6 +50,11 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUIBrowserTest, RecordsLoadMetrics) {
                                     1);
   histogram_tester.ExpectTotalCount(
       "Tabs.Organizer.PageHandlerConstructionDelay", 1);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !histogram_tester
+                .GetAllSamples("Tabs.Organizer.WebUI.OpenTabsDataReceived")
+                .empty();
+  }));
 }
 
 }  // namespace

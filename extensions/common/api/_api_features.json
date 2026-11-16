@@ -418,6 +418,7 @@
       "chrome://newtab-footer/*",
       "chrome://omnibox-popup.top-chrome/*",
       "chrome://oobe/*",
+      "chrome://organizer-panel.top-chrome/*",
       "chrome://os-settings/*",
       "chrome://password-manager/*",
       "chrome://personalization/*",

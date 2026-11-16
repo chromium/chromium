@@ -49,6 +49,8 @@ export function fakeMetricsPrivate(): MetricsTracker {
   metricsPrivate.recordMediumCount = (m: string, v: number) =>
       metrics.record(m, v);
   metricsPrivate.recordTime = (m: string, v: number) => metrics.record(m, v);
+  metricsPrivate.recordMediumTime = (m: string, v: number) =>
+      metrics.record(m, v);
 
   // Mirror for chrome.histograms callers.
   const histograms =

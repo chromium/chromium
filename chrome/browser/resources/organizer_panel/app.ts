@@ -217,7 +217,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
 
   protected onSearchChanged_(e: CustomEvent<string>) {
     if (!this.hasRecordedSearch_ && e.detail.length > 0) {
-      chrome.histograms.recordUserAction('OrganizerPanel.StartSearch');
+      chrome.metricsPrivate.recordUserAction('OrganizerPanel.StartSearch');
       this.hasRecordedSearch_ = true;
     }
     this.searchQuery_ = e.detail;

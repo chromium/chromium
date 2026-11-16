@@ -127,7 +127,7 @@ export class OpenTabsDelegate implements
   }
 
   onItemClick(item: OrganizerListSectionItem<OpenTabsItem>) {
-    chrome.histograms?.recordUserAction?.('OrganizerPanel.SwitchToTab');
+    chrome.metricsPrivate?.recordUserAction?.('OrganizerPanel.SwitchToTab');
     const data = item.data;
     assert(data);
     const tabId = isSplitTab(data) ? data.tabs[0].tabId : data.tab.tabId;
@@ -139,7 +139,7 @@ export class OpenTabsDelegate implements
   }
 
   onItemActionButtonClicked(item: OrganizerListSectionItem<OpenTabsItem>) {
-    chrome.histograms?.recordUserAction?.('OrganizerPanel.CloseTab');
+    chrome.metricsPrivate?.recordUserAction?.('OrganizerPanel.CloseTab');
     const data = item.data;
     assert(data);
     if (isSplitTab(data)) {
@@ -157,7 +157,7 @@ export class OpenTabsDelegate implements
   private async updateTabs_() {
     const startTime = performance.now();
     const {profileData} = await this.browserProxy_.handler.getProfileData();
-    chrome.histograms?.recordTime?.(
+    chrome.metricsPrivate?.recordTime?.(
         'Tabs.Organizer.WebUI.OpenTabsDataReceived',
         Math.round(performance.now() - startTime));
     this.updateFromProfileData_(profileData);
