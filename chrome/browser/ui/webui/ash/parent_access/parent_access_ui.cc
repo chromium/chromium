@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/check_deref.h"
 #include "base/strings/stringprintf.h"

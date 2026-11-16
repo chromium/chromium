@@ -9,10 +9,10 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/user.h"

@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"

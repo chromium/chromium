@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/account_manager_resources.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/webui_util.h"

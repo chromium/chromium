@@ -27,9 +27,6 @@ specific_include_rules = {
     "+chrome/browser/web_applications/web_app_management_type.h",
     "+chrome/browser/web_applications/web_app_provider.h",
   ],
-  "app_time_controller\\.cc": [
-    "+chrome/grit",
-  ],
 
   ".*test.*": [
     "+chrome/browser/ash/login/test",

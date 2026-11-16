@@ -25,9 +25,8 @@ static_library("account_manager") {
 
   deps = [
     "//ash/constants",
+    "//ash/strings",
     "//build:branding_buildflags",
-    "//chrome/app:generated_resources",
-    "//chrome/app:generated_resources_grit",
     "//chrome/browser:resources",
     "//chrome/browser:resources_grit",
     "//chrome/browser/profiles:profile",

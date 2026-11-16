@@ -42,6 +42,7 @@ static_library("add_supervision") {
     "//url",
   ]
   deps = [
+    "//ash/strings",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:resources",

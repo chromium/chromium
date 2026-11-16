@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 
 #include "ash/login/resources/grit/ash_login_strings.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 

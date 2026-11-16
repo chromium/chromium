@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/profiles",
-  "+chrome/grit",
 
   # Dependencies outside of //chrome:
   "+ui/message_center/message_center.h",

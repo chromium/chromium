@@ -10,17 +10,6 @@
     The application appears to be invalid.
   </message>
 
-  <!-- Website Permission -->
-  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_TITLE" desc="Title of system notification for remote website approvals. This is shown to a child user when a parent has remotely approved their request to access a certain website.">
-    Website request approved
-  </message>
-  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_MESSAGE" desc="Message in system notification for remote website approvals. This is shown to a child user when a parent has remotely approved their request to access a certain website.">
-    Click here to visit <ph name="APPROVED_URL">$1<ex>www.google.com</ex></ph>
-  </message>
-  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_DISPLAY_SOURCE" desc="The string shown as the display source of website approval notifications. Family Link is the name of a Google app.">
-    Family Link
-  </message>
-
   <message name="IDS_WALLPAPER_MANAGER_INVALID_WALLPAPER" desc="The string displayed to user when user selected wallpaper can not be set as a wallpaper.">
     Chrome cannot set wallpaper.
   </message>
@@ -93,52 +82,6 @@
   </message>
   <message name="IDS_CONTROLLED_SETTING_DEMO_SESSION" desc="Text displayed in the controlled settings bubble when a setting's value is enforced by demo session.">
     This setting can't be changed in a demo session.
-  </message>
-
-  <message name="IDS_LOCK_SCREEN_VERIFY_ACCOUNT" desc="Title of online account verification on the lock screen">
-    Verify account
-  </message>
-  <message name="IDS_LOCK_SCREEN_VERIFY_BUTTON" desc="Next button for online account verification on the lock screen">
-    Verify
-  </message>
-  <message name="IDS_LOCK_SCREEN_VERIFY_AGAIN_BUTTON" desc="Next button for 2nd online account verification on the lock screen">
-    Verify again
-  </message>
-  <message name="IDS_LOCK_SCREEN_CANCEL_BUTTON" desc="Cancel button for online account verification on the lock screen">
-    Cancel
-  </message>
-  <message name="IDS_LOCK_SCREEN_CLOSE_BUTTON" desc="Close button for online account verification on the lock screen">
-    Close
-  </message>
-  <message name="IDS_LOCK_SCREEN_VERIFICATION_FAILED" desc="Title of incorrect user online reauthentication on the lock screen">
-    Verification was not successful
-  </message>
-  <message name="IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE1" desc="User that was not logged in tries to unlock the device">
-    The account you verified is not authorized to access this device.
-  </message>
-  <message name="IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE2" desc="User that was not logged in tries to unlock the device">
-    Please make sure you are verifying <ph name="ACCOUNT">$1<ex>test@example.com</ex></ph> to unlock the session.
-  </message>
-  <message name="IDS_LOCK_MANUAL_PASSWORD_SUBTITLE" desc="Subtitle for the manual password setting dialog.">
-    Enter your password again to verify your account.
-  </message>
-  <message name="IDS_LOCK_SAML_NOTICE" desc="Text message displayed above SAML portal to early indicate that the user is being redirected to another sign-in provider. This is the version of the string used in the GAIA flow.">
-    This sign-in service is hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>
-  </message>
-  <message name="IDS_LOCK_PASSWORD_CHANGED_TITLE" desc="Subtitle for the password changed dialog.">
-    Restore local data
-  </message>
-  <message name="IDS_LOCK_PASSWORD_CHANGED_SUBTITLE" desc="Subtitle for the password changed dialog.">
-    Your verification was successful. To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password.
-  </message>
-  <message name="IDS_LOCK_PASSWORD_CHANGED_OLD_PASSWORD_HINT" desc="Old password field hint on the password changed dialog.">
-    Enter old password
-  </message>
-  <message name="IDS_LOCK_SCREEN_NETWORK_TITLE" desc="Title for the network dialog shown on the lock screen">
-    Network not available
-  </message>
-  <message name="IDS_LOCK_SCREEN_NETWORK_SUBTITLE" desc="Subtitle for lock screen network dialog">
-    Please connect to the internet to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
 
   <!-- Idle warning dialog -->
@@ -264,32 +207,6 @@
     Let us know how we’re doing.
   </message>
 
-  <!-- Time limit notification -->
-  <message name="IDS_SCREEN_TIME_NOTIFICATION_TITLE" desc="The title of the notification when screen usage limit reaches before locking the device.">
-    Almost time for a break
-  </message>
-  <message name="IDS_BED_TIME_NOTIFICATION_TITLE" desc="The title of the notification when bedtime reaches before locking the device.">
-    Lights out soon
-  </message>
-  <message name="IDS_TIME_LIMIT_UPDATED_NOTIFICATION_TITLE" desc="The title of the notification displayed when parent updates bedtime or usage limit for kids device.">
-    Update from your parent
-  </message>
-  <message name="IDS_BEDTIME_UPDATED_NOTIFICATION_MESSAGE" desc="The message of the notification when parent updates bedtime limit for kids device.">
-    New bedtime set
-  </message>
-  <message name="IDS_SCREEN_TIME_UPDATED_NOTIFICATION_MESSAGE" desc="The message of the notification when parent updates usage limit for kids device.">
-    New screen time limit
-  </message>
-  <message name="IDS_OVERRIDE_WITH_DURATION_UPDATED_NOTIFICATION_TITLE" desc="The title of the notification when parent granted the child more time on this device.">
-    Bonus! You got more screen time
-  </message>
-  <message name="IDS_OVERRIDE_WITH_DURATION_UPDATED_NOTIFICATION_MESSAGE" desc="The message of the notification when parent granted the child more time on this device. Informs the child of the device's new lock time.">
-    Your device now locks at <ph name="UNLOCK_TIME">$1<ex>9:30 PM</ex></ph>.
-  </message>
-  <message name="IDS_TIME_LIMIT_NOTIFICATION_DISPLAY_SOURCE" desc="The string shown as the display source of the bedtime or screen time notifications.">
-    Family Link
-  </message>
-
   <!-- Mojo service names (displayed in task manager) -->
   <message name="IDS_UTILITY_PROCESS_PDF_SERVICE_NAME" desc="The name of the utility process used for PDF conversions.">
     PDF Service
@@ -372,14 +289,6 @@
     An app is trying to access <ph name="DEVICE_NAME">$1<ex>Camera</ex></ph>. Turn off <ph name="DEVICE_NAME">$1<ex>Camera</ex></ph> privacy switch to allow access.
   </message>
 
-  <!-- Strings for Account Manager error screen -->
-  <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TITLE" desc="Title for the ChromeOS Account Manager error screen when addition of secondary Google Accounts is disabled.">
-    Addition of more Google Accounts is disabled
-  </message>
-  <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT" desc="Text body for the ChromeOS Account Manager error screen when addition of secondary Google Accounts is disabled.">
-    Your administrator has disabled the addition of more Google Accounts
-  </message>
-
   <!-- Strings for Account Manager screens -->
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_TITLE" desc="Title for the ChromeOS 'Add account' dialog.">
     Sign in to add a Google account
@@ -437,20 +346,6 @@
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_SPINNER_TEXT" desc="Text for the spinner during sign-in flow on ChromeOS 'Add account' dialog.">
     Verifying account...
-  </message>
-
-  <!-- Strings for per-account Migration welcome screen -->
-  <message name="IDS_ACCOUNT_MIGRATION_WELCOME_PAGE_TITLE" desc="Title for the Account Migration Welcome page.">
-    Sign in again
-  </message>
-  <message name="IDS_ACCOUNT_MIGRATION_WELCOME_TITLE" desc="Title for the Account Migration Welcome screen.">
-    Sign in again to update <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph>
-  </message>
-  <message name="IDS_ACCOUNT_MIGRATION_WELCOME_TEXT" desc="Text body for the Account Migration Welcome screen.">
-    Please sign in again to confirm that your account <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> can be used with websites, apps, and extensions in Chrome and Google Play. You may also remove this account. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_ACCOUNT_MIGRATION_UPDATE_BUTTON" desc="Label for the button in Account Migration dialog to migrate the account.">
-    Update account
   </message>
 
   <!-- Strings for EDU login flow -->
@@ -518,86 +413,6 @@
   </message>
 
   <!-- Strings for EDU Coexistence flow -->
-
-  <!-- Strings for Add Supervision screen -->
-  <message name="IDS_ADD_SUPERVISION_PAGE_TITLE" desc="Title for the ChromeOS Add Supervision screen. Since the title bar is not visible, this string is only used by screen readers.">
-    Set Up Parental Controls
-  </message>
-  <message name="IDS_ADD_SUPERVISION_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the Add Supervision screen is loading.">
-    Please wait...
-  </message>
-  <message name="IDS_ADD_SUPERVISION_EXIT_DIALOG_TITLE" desc="Title for the dialog shown when attempting to exit the Add Supervision screen.">
-    Are you sure you want to exit?
-  </message>
-  <message name="IDS_ADD_SUPERVISION_EXIT_DIALOG_BODY" desc="Body for the dialog shown when attempting to exit the Add Supervision screen.">
-Supervision is set up for this Google Account. To set up more parental controls, select Continue.
-
-Otherwise, sign out now so that the changes to this account will be reflected on this device.
-
-You can manage this account’s settings by installing the Family Link app on your device.  We sent you instructions in an email.
-  </message>
-  <message name="IDS_ADD_SUPERVISION_EXIT_DIALOG_CANCEL_BUTTON_LABEL" desc="Label for the cancel button on the dialog shown when attempting to exit the Add Supervision screen. 'Continue' means to continue setting up supervision, rather than exiting the dialog">
-    Continue
-  </message>
-  <message name="IDS_ADD_SUPERVISION_EXIT_DIALOG_SIGNOUT_BUTTON_LABEL" desc="Label for the signout button on the dialog shown when attempting to exit the Add Supervision screen.">
-    Sign out
-  </message>
-
-  <!-- Strings for Parent Access screen -->
-  <message name="IDS_PARENT_ACCESS_PAGE_TITLE" desc="Title for the ChromeOS Parent Access screen.">
-    Parent Access
-  </message>
-  <message name="IDS_PARENT_ACCESS_CLOSE_BUTTON_TITLE" desc="Title for the ChromeOS Parent Access Widget close button.">
-    Close
-  </message>
-  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_TITLE" desc="Title for the local web approvals dialog.">
-    Approve web request?
-  </message>
-  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_SUBTITLE" desc="Subtitle for the local web approvals dialog describing that a supervised user is requesting access to a site.">
-    <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> wants to access the following content:
-  </message>
-  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_DETAILS" desc="Details about the local web approvals request, including the domain that access is requested for.">
-    All pages of <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph>
-  </message>
-  <message name="IDS_PARENT_ACCESS_AFTER_APPROVE_BUTTON" desc="Approve button on the local web approvals dialog.">
-    Approve
-  </message>
-  <message name="IDS_PARENT_ACCESS_AFTER_DENY_BUTTON" desc="Deny button on the local web approvals dialog.">
-    Deny
-  </message>
-  <message name="IDS_PARENT_ACCESS_WEBVIEW_LOADING_MESSAGE" desc="Message shown while the parent access screen is loading.">
-    Please wait...
-  </message>
-  <message name="IDS_PARENT_ACCESS_ASK_IN_PERSON_BUTTON" desc="Button shown on the parent access dialog to ask a parent for approval in person.">
-    Ask in person
-  </message>
-  <message name="IDS_PARENT_ACCESS_OK_BUTTON" desc="OK button text on the parent access dialog.">
-    OK
-  </message>
-  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_TITLE" desc="Title for the extension approvals disabled page indicating that extensions can't be used.">
-    Can’t use extension
-  </message>
-  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_DISABLED_SUBTITLE" desc="Text telling the user that an extension cannot be installed because a parent has disallowed it.">
-    You can’t use this extension. Your parent or guardian has turned off “Permissions for sites, apps and extensions” for Chrome.
-  </message>
-  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_BEFORE_TITLE" desc="Title for the dialog asking a supervised user if they would like to ask for approval to install an extension.">
-    Ask your parent to allow an extension
-  </message>
-  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_BEFORE_SUBTITLE" desc="Text indicating that a parent must approve the extension for the supervised user to gain access.">
-    Your parent or guardian has to say it’s OK for you to use this extension
-  </message>
-  <message name="IDS_PARENT_ACCESS_EXTENSION_APPROVALS_AFTER_TITLE" desc="Title for the dialog asking a parent if they would like to allow an extension for a supervised user.">
-    <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> wants to use this extension:
-  </message>
-  <message name="IDS_PARENT_ACCESS_EXTENSION_PERMISSIONS_HEADER" desc="Header that comes before a list of extension permissions.">
-    It can:
-  </message>
-  <message name="IDS_PARENT_ACCESS_EXTENSION_PERMISSION_SHOW_DETAILS" desc="Text for a button that shows details for an extension permission.">
-    Show details
-  </message>
-  <message name="IDS_PARENT_ACCESS_EXTENSION_PERMISSION_HIDE_DETAILS" desc="Text for a button that hides details for an extension permission.">
-    Hide details
-  </message>
 
   <!-- Strings shared among supervised user experiences -->
   <message name="IDS_SUPERVISED_USER_ERROR_TITLE" desc="Title for the UI shown to supervised users when an error has occurred.">

@@ -9,6 +9,7 @@
 
 #include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "chrome/grit/account_manager_resources.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/account_manager_core/account_manager_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"

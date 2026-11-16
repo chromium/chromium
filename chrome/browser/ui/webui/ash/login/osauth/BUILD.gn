@@ -20,7 +20,7 @@ static_library("osauth") {
 
   deps = [
     "//ash/login/resources:login_strings",
-    "//chrome/app:generated_resources",
+    "//ash/strings",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/screens/osauth",
     "//components/login",
