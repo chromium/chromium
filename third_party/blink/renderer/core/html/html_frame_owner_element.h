@@ -127,6 +127,8 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   mojom::blink::ColorScheme GetColorScheme() const override;
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;
   bool ShouldLazyLoadChildren() const final;
+  bool IsDisplayLocked() const final;
+  void UpdateThrottlingStatusAfterMove();
   void DidReportResourceTiming();
   bool HasPendingFallbackTimingInfo() const;
 

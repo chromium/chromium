@@ -3273,7 +3273,7 @@ TEST_F(IntersectionObserverTest,
       ->SetInlineStyleProperty(CSSPropertyID::kContentVisibility, "hidden");
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(middle_view->IsDisplayLocked());
+  EXPECT_TRUE(middle_view->IsDisplayLockThrottled());
   EXPECT_TRUE(inner_view->CanThrottleRendering());
 
   Element* host = inner_document->getElementById(AtomicString("host"));
@@ -3298,7 +3298,7 @@ TEST_F(IntersectionObserverTest,
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_TRUE(middle_view->IsDisplayLocked());
+  EXPECT_TRUE(middle_view->IsDisplayLockThrottled());
   EXPECT_TRUE(shadow_root->NeedsSlotAssignmentRecalc());
   EXPECT_EQ(observer_delegate->CallCount(), 1);
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
@@ -3321,6 +3321,89 @@ TEST_F(IntersectionObserverTest, RootMarginPercentOverflow) {
   ASSERT_FALSE(exception_state.HadException());
   EXPECT_EQ(observer->rootMargin(),
             "3.00000e+9% 3.00000e+9% 3.00000e+9% 3.00000e+9%");
+}
+
+// Regression test for https://crbug.com/583238769 (vulnerability 1):
+// A newly-created iframe inside an already display-locked ancestor frame must
+// initialize its FrameView with IsDisplayLockThrottled() == true so that
+// ComputeIntersections short-circuits before doing a flat-tree walk in a
+// document with pending slot assignment recalc.
+TEST_F(IntersectionObserverTest,
+       DirtySlotAssignmentInNewlyCreatedFrameUnderDisplayLock) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest outer_resource("https://example.com/outer.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id="lock">
+      <iframe id="outer" src="outer.html"></iframe>
+    </div>
+  )HTML");
+  outer_resource.Complete("<!doctype html><body></body>");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Lock `#lock` so that `outer` becomes display-locked.
+  GetDocument()
+      .getElementById(AtomicString("lock"))
+      ->SetInlineStyleProperty(CSSPropertyID::kContentVisibility, "hidden");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* outer_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  ASSERT_TRUE(outer_frame);
+  Document* outer_document = outer_frame->GetFrame()->GetDocument();
+  EXPECT_TRUE(outer_document->View()->IsDisplayLockThrottled());
+
+  // Append a new iframe inside the already display-locked `outer` frame.
+  Element* inner_iframe =
+      outer_document->CreateRawElement(html_names::kIFrameTag);
+  outer_document->body()->AppendChild(inner_iframe);
+  test::RunPendingTasks();
+  auto* inner_frame = To<WebLocalFrameImpl>(outer_frame->FirstChild());
+  ASSERT_TRUE(inner_frame);
+  Document* inner_document = inner_frame->GetFrame()->GetDocument();
+  EXPECT_TRUE(inner_document->View()->IsDisplayLockThrottled());
+
+  inner_document->body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="host">
+      <div id="target">Hello, world!</div>
+      <div id="wrap"></div>
+    </div>
+  )HTML");
+  Element* host = inner_document->getElementById(AtomicString("host"));
+  ASSERT_TRUE(host);
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<slot></slot>");
+
+  // Force layout via script in the inner frame so `target` gets a LayoutObject.
+  inner_document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Element* target = inner_document->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  EXPECT_TRUE(target->GetLayoutObject());
+
+  // Dirty slot assignment in the inner frame and require an intersection
+  // observation on the next frame.
+  Element* wrap = inner_document->getElementById(AtomicString("wrap"));
+  ASSERT_TRUE(wrap);
+  wrap->setAttribute(html_names::kSlotAttr, AtomicString("x"));
+  EXPECT_TRUE(shadow_root.NeedsSlotAssignmentRecalc());
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(*inner_document);
+  IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.root = inner_document, .thresholds = {0}});
+  observer->observe(target);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_TRUE(inner_document->View()->IsDisplayLockThrottled());
+  EXPECT_TRUE(shadow_root.NeedsSlotAssignmentRecalc());
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
 }
 
 }  // namespace blink

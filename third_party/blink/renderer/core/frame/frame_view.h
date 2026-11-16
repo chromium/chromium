@@ -63,10 +63,10 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   bool IsSubtreeThrottled() const { return subtree_throttled_; }
   // This indicates whether this is an iframe whose contents are display-locked
   // due to an active DisplayLock in the parent frame. Note that this value must
-  // be stable between main frames, and only gets updated based on the current
-  // state of display locking in the parent frame when
-  // UpdateViewportIntersection is run during post-lifecycle steps.
-  bool IsDisplayLocked() const { return display_locked_; }
+  // be stable between main frames, and only gets updated when
+  // UpdateRenderThrottlingStatus is called (during FrameView creation, DOM
+  // moves, or UpdateViewportIntersection in post-lifecycle steps).
+  bool IsDisplayLockThrottled() const { return display_lock_throttled_; }
   virtual void UpdateRenderThrottlingStatus(bool hidden_for_throttling,
                                             bool subtree_throttled,
                                             bool display_locked,
@@ -89,8 +89,6 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   // lifecycle updates for a frame outside the viewport.
   void UpdateFrameVisibility(bool);
 
-  bool DisplayLockedInParentFrame();
-
   virtual void VisibilityChanged(mojom::blink::FrameVisibility visibilty) = 0;
   std::optional<mojom::blink::FrameVisibility> frame_visibility() const {
     return frame_visibility_;
@@ -106,7 +104,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   std::optional<mojom::blink::FrameVisibility> frame_visibility_;
   bool hidden_for_throttling_ = false;
   bool subtree_throttled_ = false;
-  bool display_locked_ = false;
+  bool display_lock_throttled_ = false;
 };
 
 template <>

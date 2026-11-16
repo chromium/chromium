@@ -78,6 +78,11 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   // [spec]
   // https://wicg.github.io/anonymous-iframe/#dom-htmliframeelement-credentialless
   virtual bool Credentialless() const { return false; }
+
+  // Returns whether the frame owner is currently inside a display-locked
+  // subtree of its containing Document (if any); or if its containing Frame
+  // has a FrameOwner for which IsDisplayLocked() is true.
+  virtual bool IsDisplayLocked() const { return false; }
 };
 
 }  // namespace blink

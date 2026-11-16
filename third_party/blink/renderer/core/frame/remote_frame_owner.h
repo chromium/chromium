@@ -53,6 +53,7 @@ class CORE_EXPORT RemoteFrameOwner final
   int MarginHeight() const override { return margin_height_; }
   bool AllowFullscreen() const override { return allow_fullscreen_; }
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
+  bool IsDisplayLocked() const override { return is_display_locked_; }
   bool IsDisplayNone() const override { return is_display_none_; }
   mojom::blink::FrameResponsiveSizing GetResponsiveSizing() const override {
     return responsive_sizing_;
@@ -80,6 +81,7 @@ class CORE_EXPORT RemoteFrameOwner final
   void SetAllowPaymentRequest(bool allow_payment_request) {
     allow_payment_request_ = allow_payment_request;
   }
+  void SetIsDisplayLocked(bool is_display_locked);
   void SetIsDisplayNone(bool is_display_none) {
     is_display_none_ = is_display_none;
   }
@@ -111,6 +113,7 @@ class CORE_EXPORT RemoteFrameOwner final
   int margin_height_;
   bool allow_fullscreen_;
   bool allow_payment_request_;
+  bool is_display_locked_;
   bool is_display_none_;
   mojom::blink::FrameResponsiveSizing responsive_sizing_;
   mojom::blink::ColorScheme color_scheme_;

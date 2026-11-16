@@ -30,6 +30,8 @@ RemoteFrameOwner::RemoteFrameOwner(
       margin_height_(frame_owner_properties.margin_height),
       allow_fullscreen_(frame_owner_properties.allow_fullscreen),
       allow_payment_request_(frame_owner_properties.allow_payment_request),
+      // TODO(paint-dev): add `is_display_locked` to WebFrameOwnerProperties
+      is_display_locked_(false),
       is_display_none_(frame_owner_properties.is_display_none),
       responsive_sizing_(frame_owner_properties.responsive_sizing),
       color_scheme_(frame_owner_properties.color_scheme),
@@ -43,6 +45,21 @@ void RemoteFrameOwner::Trace(Visitor* visitor) const {
 
 void RemoteFrameOwner::SetScrollbarMode(mojom::blink::ScrollbarMode mode) {
   scrollbar_ = mode;
+}
+
+void RemoteFrameOwner::SetIsDisplayLocked(bool is_display_locked) {
+  if (is_display_locked_ == is_display_locked) {
+    return;
+  }
+  is_display_locked_ = is_display_locked;
+  if (!frame_) {
+    return;
+  }
+  if (auto* view = frame_->View()) {
+    view->UpdateRenderThrottlingStatus(view->IsHiddenForThrottling(),
+                                       view->IsSubtreeThrottled(),
+                                       is_display_locked, /*recurse=*/true);
+  }
 }
 
 void RemoteFrameOwner::SetContentFrame(Frame& frame) {

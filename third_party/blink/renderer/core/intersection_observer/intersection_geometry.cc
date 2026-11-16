@@ -9,6 +9,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -323,8 +324,13 @@ const LayoutObject* IntersectionGeometry::GetTargetLayoutObject(
     return nullptr;
   }
   // If the target is inside a locked subtree, it isn't ever visible.
-  if (target->GetFrameView()->IsDisplayLocked() ||
-      DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(target_element))
+  if (target->GetFrameView()->IsDisplayLockThrottled()) [[unlikely]] {
+    return nullptr;
+  }
+  CHECK(!target_element.GetDocument()
+             .GetSlotAssignmentEngine()
+             .HasPendingSlotAssignmentRecalc());
+  if (DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(target_element))
       [[unlikely]] {
     return nullptr;
   }

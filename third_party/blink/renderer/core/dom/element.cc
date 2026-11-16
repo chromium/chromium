@@ -4486,10 +4486,39 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   return kInsertionDone;
 }
 
+namespace {
+
+void UpdateSubframeThrottlingAfterMove(Node& root) {
+  // We are only concerned with frame-owning flat tree descendants of root, so
+  // return early if there aren't any.
+  if (!root.GetDocument().ConnectedSubframeCount()) {
+    return;
+  }
+  // ConnectedSubframeCount() is based on the DOM tree, so climb up to the
+  // upper-most shadow host before checking it.
+  Node* count_root = &root;
+  while (Node* host = count_root->OwnerShadowHost()) {
+    count_root = host;
+  }
+  if (!count_root->ConnectedSubframeCount()) {
+    return;
+  }
+  // `root` may have frame-owning descendants, so traverse them
+  for (Node& node : FlatTreeTraversal::InclusiveDescendantsOf(root)) {
+    if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
+      frame_owner->UpdateThrottlingStatusAfterMove();
+    }
+  }
+}
+
+}  // namespace
+
 void Element::MovedFrom(ContainerNode& old_parent) {
   Node::MovedFrom(old_parent);
 
   DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+
+  UpdateSubframeThrottlingAfterMove(*this);
 
   // `old_parent` can be the document.
   if (!old_parent.IsElementNode()) {

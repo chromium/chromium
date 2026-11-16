@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
@@ -818,6 +819,28 @@ void HTMLFrameOwnerElement::CancelPendingLazyLoad() {
 
 bool HTMLFrameOwnerElement::ShouldLazyLoadChildren() const {
   return should_lazy_load_children_;
+}
+
+// This is the FrameOwner concept of display-locked
+bool HTMLFrameOwnerElement::IsDisplayLocked() const {
+  if (Frame* frame = GetDocument().GetFrame()) {
+    if (FrameOwner* owner = frame->Owner(); owner && owner->IsDisplayLocked()) {
+      return true;
+    }
+  }
+  return DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*this);
+}
+
+void HTMLFrameOwnerElement::UpdateThrottlingStatusAfterMove() {
+  if (!ContentFrame()) {
+    return;
+  }
+  if (FrameView* content_view = ContentFrame()->View()) {
+    content_view->UpdateRenderThrottlingStatus(
+        content_view->IsHiddenForThrottling(),
+        content_view->IsSubtreeThrottled(), IsDisplayLocked(),
+        /*recurse=*/true);
+  }
 }
 
 void HTMLFrameOwnerElement::ParseAttribute(

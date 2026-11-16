@@ -209,6 +209,7 @@ void HTMLSelectedContentElement::RemovedFrom(ContainerNode& removed_from) {
 }
 
 void HTMLSelectedContentElement::MovedFrom(ContainerNode& old_parent) {
+  HTMLElement::MovedFrom(old_parent);
   GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
       BindOnce(&HTMLSelectedContentElement::UpdateFromAncestorSelect,
                WrapWeakPersistent(this)));

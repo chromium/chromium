@@ -500,6 +500,17 @@ void LocalFrame::CreateView(const gfx::Size& viewport_size,
     frame_view->SetParentVisible(true);
   }
 
+  bool subtree_throttled = false;
+  if (Frame* parent = Tree().Parent()) {
+    if (FrameView* parent_view = parent->View()) {
+      subtree_throttled = parent_view->CanThrottleRenderingForPropagation();
+    }
+  }
+  frame_view->UpdateRenderThrottlingStatus(
+      /*hidden_for_throttling=*/false, subtree_throttled,
+      /*display_locked=*/Owner() && Owner()->IsDisplayLocked(),
+      /*recurse=*/false);
+
   AttachViewToOwner();
 
   if (Owner()) {

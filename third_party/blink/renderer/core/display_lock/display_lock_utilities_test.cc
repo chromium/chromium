@@ -371,4 +371,39 @@ TEST_F(DisplayLockUtilitiesTest, ScrollMarkerGroupContentVisibilityCrash) {
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_F(DisplayLockUtilitiesTest, MoveBeforeSlotWithSlottedIframe) {
+  SetHtmlInnerHTML(R"HTML(
+    <div id="host">
+      <iframe id="frame"></iframe>
+    </div>
+  )HTML");
+  Element* host = GetElementById("host");
+  ASSERT_TRUE(host);
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="locked" style="content-visibility: hidden"></div>
+    <div id="unlocked"><slot id="slot"></slot></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* locked = shadow_root.getElementById(AtomicString("locked"));
+  Element* unlocked = shadow_root.getElementById(AtomicString("unlocked"));
+  Element* slot = shadow_root.getElementById(AtomicString("slot"));
+  ASSERT_TRUE(locked);
+  ASSERT_TRUE(unlocked);
+  ASSERT_TRUE(slot);
+
+  EXPECT_FALSE(ChildDocument().View()->IsDisplayLockThrottled());
+  EXPECT_FALSE(ChildDocument().View()->ShouldThrottleRenderingForTest());
+
+  locked->moveBefore(slot, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(ChildDocument().View()->IsDisplayLockThrottled());
+  EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRenderingForTest());
+
+  unlocked->moveBefore(slot, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(ChildDocument().View()->IsDisplayLockThrottled());
+  EXPECT_FALSE(ChildDocument().View()->ShouldThrottleRenderingForTest());
+}
+
 }  // namespace blink

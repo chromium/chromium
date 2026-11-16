@@ -121,6 +121,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_metrics_aggregator.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
+#include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/frame/screen_metrics_emulator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -972,6 +973,10 @@ void WebFrameWidgetImpl::UpdateRenderThrottlingStatusForSubFrame(
   // display_locked into the value of subtree throttled here; display_locked
   // should be maintained as a separate bit and transmitted between render
   // processes.
+  if (auto* frame_owner =
+          DynamicTo<RemoteFrameOwner>(LocalRootImpl()->GetFrame()->Owner())) {
+    frame_owner->SetIsDisplayLocked(display_locked);
+  }
   LocalRootImpl()->GetFrameView()->UpdateRenderThrottlingStatus(
       is_throttled, subtree_throttled, display_locked, /*recurse=*/true);
 }

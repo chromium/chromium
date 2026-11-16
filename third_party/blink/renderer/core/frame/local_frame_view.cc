@@ -2355,7 +2355,7 @@ bool LocalFrameView::UpdateAllLifecyclePhases(DocumentUpdateReason reason) {
     // kPrePaintClean.
     ForAllThrottledLocalFrameViews([](LocalFrameView& frame_view) {
       DCHECK(frame_view.intersection_observation_state_ != kRequired ||
-             frame_view.IsDisplayLocked() ||
+             frame_view.IsDisplayLockThrottled() ||
              frame_view.Lifecycle().GetState() >=
                  DocumentLifecycle::kPrePaintClean);
     });
@@ -4322,7 +4322,7 @@ void LocalFrameView::AttachToLayout() {
     SetParentVisible(true);
   UpdateRenderThrottlingStatus(IsHiddenForThrottling(),
                                parent_view->CanThrottleRendering(),
-                               IsDisplayLocked());
+                               IsDisplayLockThrottled());
   if (RuntimeEnabledFeatures::ResponsiveIframesAsyncResizeEnabled() &&
       HasPendingResponsiveIframeResize()) {
     if (Page* page = GetPage()) {
@@ -4363,8 +4363,8 @@ void LocalFrameView::DetachFromLayout() {
 void LocalFrameView::AddPlugin(WebPluginContainerImpl* plugin) {
   DCHECK(!plugins_.Contains(plugin));
   plugins_.insert(plugin);
-  plugin->UpdateRenderThrottlingStatus(IsHiddenForThrottling(),
-                                       IsSubtreeThrottled(), IsDisplayLocked());
+  plugin->UpdateRenderThrottlingStatus(
+      IsHiddenForThrottling(), IsSubtreeThrottled(), IsDisplayLockThrottled());
 }
 
 void LocalFrameView::RemovePlugin(WebPluginContainerImpl* plugin) {
@@ -5099,13 +5099,13 @@ void LocalFrameView::CrossOriginToNearestMainFrameChanged() {
   // If any of these conditions hold, then a change in cross-origin status does
   // not affect throttling.
   if (lifecycle_updates_throttled_ || IsSubtreeThrottled() ||
-      IsDisplayLocked() || !IsHiddenForThrottling()) {
+      IsDisplayLockThrottled() || !IsHiddenForThrottling()) {
     return;
   }
   RenderThrottlingStatusChanged();
   // Immediately propagate changes to children.
   UpdateRenderThrottlingStatus(IsHiddenForThrottling(), IsSubtreeThrottled(),
-                               IsDisplayLocked(), true);
+                               IsDisplayLockThrottled(), true);
 }
 
 void LocalFrameView::CrossOriginToParentFrameChanged() {
@@ -5338,7 +5338,8 @@ bool LocalFrameView::ShouldThrottleRendering() const {
   // geometry. So there is no point in suppressing throttling here.
   auto* local_frame_root_view = GetFrame().LocalFrameRoot().View();
   if (local_frame_root_view->IsUpdatingLifecycle() &&
-      intersection_observation_state_ == kRequired && !IsDisplayLocked()) {
+      intersection_observation_state_ == kRequired &&
+      !IsDisplayLockThrottled()) {
     return Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean;
   }
 
@@ -5352,7 +5353,7 @@ bool LocalFrameView::ShouldThrottleRenderingForTest() const {
 
 bool LocalFrameView::CanThrottleRendering() const {
   if (lifecycle_updates_throttled_ || IsSubtreeThrottled() ||
-      IsDisplayLocked() || throttled_for_view_transition_) {
+      IsDisplayLockThrottled() || throttled_for_view_transition_) {
     return true;
   }
   // We only throttle hidden cross-origin frames. This is to avoid a situation
@@ -5371,7 +5372,7 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
   bool was_throttled = CanThrottleRendering();
   bool was_hidden = IsHiddenForThrottling();
   bool was_subtree_throttled = IsSubtreeThrottled();
-  bool was_display_locked = IsDisplayLocked();
+  bool was_display_locked = IsDisplayLockThrottled();
 
   FrameView::UpdateRenderThrottlingStatus(
       hidden_for_throttling, subtree_throttled, display_locked, recurse);
@@ -5381,10 +5382,11 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
 
   if (was_hidden != IsHiddenForThrottling() ||
       was_subtree_throttled != IsSubtreeThrottled() ||
-      was_display_locked != IsDisplayLocked()) {
+      was_display_locked != IsDisplayLockThrottled()) {
     for (const auto& plugin : plugins_) {
-      plugin->UpdateRenderThrottlingStatus(
-          IsHiddenForThrottling(), IsSubtreeThrottled(), IsDisplayLocked());
+      plugin->UpdateRenderThrottlingStatus(IsHiddenForThrottling(),
+                                           IsSubtreeThrottled(),
+                                           IsDisplayLockThrottled());
     }
   }
 }

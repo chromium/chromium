@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
-#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
@@ -42,31 +41,6 @@ bool FrameView::CanThrottleRenderingForPropagation() const {
     return true;
   LocalFrame* parent_frame = DynamicTo<LocalFrame>(GetFrame().Tree().Parent());
   return (parent_frame && !frame.OwnerLayoutObject());
-}
-
-bool FrameView::DisplayLockedInParentFrame() {
-  Frame& frame = GetFrame();
-  // If the parent frame is display locked, then this frame does not get
-  // lifecycle updates either, regardless of whether the owner element has a
-  // layout object (e.g. if it is display:none).
-  if (Frame* parent_frame = frame.Tree().Parent()) {
-    if (FrameView* parent_view = parent_frame->View();
-        parent_view && parent_view->IsDisplayLocked()) {
-      return true;
-    }
-  }
-  LayoutEmbeddedContent* owner = frame.OwnerLayoutObject();
-  if (!owner)
-    return false;
-  DCHECK(owner->GetFrameView());
-  if (owner->GetFrameView()->IsDisplayLocked())
-    return true;
-  // We check the inclusive ancestor to determine whether the subtree is locked,
-  // since the contents of the frame are in the subtree of the frame, so they
-  // would be locked if the frame owner is itself locked.
-  // We use a paint check here, since as lock as we don't allow paint, we are
-  // display locked.
-  return DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*owner);
 }
 
 void FrameView::UpdateViewportIntersection(
@@ -106,11 +80,11 @@ void FrameView::UpdateViewportIntersection(
 
   LayoutEmbeddedContent* owner_layout_object =
       owner_element->GetLayoutEmbeddedContent();
-  bool display_locked_in_parent_frame = DisplayLockedInParentFrame();
+  bool owner_is_display_locked = owner_element->IsDisplayLocked();
   if (!owner_layout_object ||
       owner_layout_object->PhysicalContentBoxRect().IsEmpty() ||
       flags.Has(IntersectionObservation::kAncestorFrameIsDetachedFromLayout) ||
-      display_locked_in_parent_frame) {
+      owner_is_display_locked) {
     // The frame, or an ancestor frame, is detached from layout, not visible, or
     // zero size, or it's display locked in parent frame; leave
     // viewport_intersection empty, and signal the frame as occluded if
@@ -322,7 +296,7 @@ void FrameView::UpdateViewportIntersection(
         parent_frame->View()->CanThrottleRenderingForPropagation();
   }
   UpdateRenderThrottlingStatus(should_throttle, subtree_throttled,
-                               display_locked_in_parent_frame);
+                               owner_is_display_locked);
 }
 
 void FrameView::UpdateFrameVisibility(bool intersects_viewport) {
@@ -348,11 +322,12 @@ void FrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
                                              bool display_locked,
                                              bool recurse) {
   bool visibility_changed =
-      (hidden_for_throttling_ || subtree_throttled_ || display_locked_) !=
+      (hidden_for_throttling_ || subtree_throttled_ ||
+       display_lock_throttled_) !=
       (hidden_for_throttling || subtree_throttled || display_locked);
   hidden_for_throttling_ = hidden_for_throttling;
   subtree_throttled_ = subtree_throttled;
-  display_locked_ = display_locked;
+  display_lock_throttled_ = display_locked;
   if (visibility_changed)
     VisibilityForThrottlingChanged();
   if (recurse) {
@@ -362,7 +337,9 @@ void FrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
         child_view->UpdateRenderThrottlingStatus(
             child_view->IsHiddenForThrottling(),
             child_view->IsAttached() && CanThrottleRenderingForPropagation(),
-            child_view->IsDisplayLocked(), true);
+            display_lock_throttled_ ||
+                (child->Owner() && child->Owner()->IsDisplayLocked()),
+            true);
       }
     }
   }

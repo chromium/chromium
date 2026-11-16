@@ -669,8 +669,9 @@ bool DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
     const Node& source_node,
     IncludeSelfOrNot self) {
   if (LocalFrameView* frame_view = source_node.GetDocument().View()) {
-    if (frame_view->IsDisplayLocked())
+    if (frame_view->IsDisplayLockThrottled()) {
       return true;
+    }
   }
   const Node* node = &source_node;
 
