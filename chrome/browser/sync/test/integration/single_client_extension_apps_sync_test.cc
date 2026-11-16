@@ -9,7 +9,6 @@
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/sync/base/data_type.h"

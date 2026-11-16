@@ -15,9 +15,6 @@ class SyncServiceImplHarness;
 
 namespace sync_timing_helper {
 
-// Returns the time taken for |client| to complete a single sync cycle.
-base::TimeDelta TimeSyncCycle(SyncServiceImplHarness* client);
-
 // Returns the time taken for both |client| and |partner| to complete a sync
 // cycle.
 base::TimeDelta TimeMutualSyncCycle(SyncServiceImplHarness* client,

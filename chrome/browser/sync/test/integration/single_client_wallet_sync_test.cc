@@ -15,7 +15,6 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -121,21 +120,6 @@ GetCreditCardCloudTokenData(
       .GetValue();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-// Waits until local changes are committed or an auth error is encountered.
-class TestForAuthError : public UpdatedProgressMarkerChecker {
- public:
-  explicit TestForAuthError(syncer::SyncServiceImpl* service)
-      : UpdatedProgressMarkerChecker(service) {}
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for auth error";
-    return service()->GetAuthError() !=
-               GoogleServiceAuthError::AuthErrorNone() ||
-           UpdatedProgressMarkerChecker::IsExitConditionSatisfied(os);
-  }
-};
 
 }  // namespace
 
