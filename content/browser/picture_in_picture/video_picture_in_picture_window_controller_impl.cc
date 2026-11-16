@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/media_session_impl.h"
@@ -116,8 +117,20 @@ void VideoPictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
 }
 
 void VideoPictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
+#if BUILDFLAG(IS_ANDROID)
+  // Android relies on the window being closed before the initiator is focused
+  // to avoid racing with auto picture-in-picture; see
+  // `OverlayWindowAndroid::OnBackToTab()`.
   Close(false /* should_pause_video */);
   FocusInitiator();
+#else
+  // Focus the initiator while the picture-in-picture window is still shown.
+  // Some window systems (e.g. Wayland with xdg-activation) only allow the
+  // activation if it is requested on behalf of a surface the user interacted
+  // with, which is the picture-in-picture window here.
+  FocusInitiator();
+  Close(false /* should_pause_video */);
+#endif
 }
 
 void VideoPictureInPictureWindowControllerImpl::OnWindowDestroyed(

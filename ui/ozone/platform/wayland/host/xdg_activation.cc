@@ -8,11 +8,14 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -42,8 +45,21 @@ class XdgActivation::TokenRequest {
 
   void InitiateRequest();
 
+  // Whether this request has been initiated with `window` as its requestor.
+  bool IsFrom(const WaylandWindow* window) const {
+    return requestor_ && requestor_.get() == window;
+  }
+
+  void AddClosureAfterDone(base::OnceClosure closure) {
+    closures_after_done_.push_back(std::move(closure));
+  }
+  std::vector<base::OnceClosure> TakeClosuresAfterDone() {
+    return std::move(closures_after_done_);
+  }
+
  private:
-  wl_surface* DetermineSurface(const std::optional<wl::Serial>& serial) const;
+  WaylandWindow* DetermineRequestor(
+      const std::optional<wl::Serial>& serial) const;
 
   // xdg_activation_token_v1_listener callbacks:
   static void OnTokenReceived(void* data,
@@ -60,6 +76,10 @@ class XdgActivation::TokenRequest {
   // occurs.
   base::nix::XdgActivationTokenCallback callback_;
   base::OneShotTimer timer_;
+  // The window whose surface was set as the requestor surface.
+  base::WeakPtr<WaylandWindow> requestor_;
+  // Run by XdgActivation after `callback_` ran.
+  std::vector<base::OnceClosure> closures_after_done_;
 };
 
 // static
@@ -138,10 +158,25 @@ void XdgActivation::OnTokenRequestCompleted(
     std::string token) {
   std::move(callback).Run(std::move(token));
   CHECK(!token_request_queue_.empty());
+  auto closures = token_request_queue_.front()->TakeClosuresAfterDone();
   token_request_queue_.pop();
   if (!token_request_queue_.empty()) {
     token_request_queue_.front()->InitiateRequest();
   }
+  for (auto& closure : closures) {
+    std::move(closure).Run();
+  }
+}
+
+bool XdgActivation::RunAfterTokenRequestFrom(const WaylandWindow* window,
+                                             base::OnceClosure closure) const {
+  // Only the front request has been sent to the server.
+  if (token_request_queue_.empty() ||
+      !token_request_queue_.front()->IsFrom(window)) {
+    return false;
+  }
+  token_request_queue_.front()->AddClosureAfterDone(std::move(closure));
+  return true;
 }
 
 XdgActivation::TokenRequest::TokenRequest(
@@ -176,13 +211,15 @@ void XdgActivation::TokenRequest::InitiateRequest() {
     xdg_activation_token_v1_set_serial(token_.get(), serial->value,
                                        connection_->seat()->wl_object());
   }
-  if (auto* surface = DetermineSurface(serial)) {
-    xdg_activation_token_v1_set_surface(token_.get(), surface);
+  if (auto* requestor = DetermineRequestor(serial)) {
+    requestor_ = requestor->AsWeakPtr();
+    xdg_activation_token_v1_set_surface(token_.get(),
+                                        requestor->root_surface()->surface());
   }
   xdg_activation_token_v1_commit(token_.get());
 }
 
-wl_surface* XdgActivation::TokenRequest::DetermineSurface(
+WaylandWindow* XdgActivation::TokenRequest::DetermineRequestor(
     const std::optional<wl::Serial>& serial) const {
   WaylandWindow* window = nullptr;
   auto* const window_manager = connection_->window_manager();
@@ -213,7 +250,7 @@ wl_surface* XdgActivation::TokenRequest::DetermineSurface(
   if (window && window->AsWaylandBubble()) {
     window = window->GetXdgParentWindow();
   }
-  return window ? window->root_surface()->surface() : nullptr;
+  return window;
 }
 
 void XdgActivation::TokenRequest::OnTimeout() {

@@ -16,6 +16,8 @@
 
 namespace ui {
 
+class WaylandWindow;
+
 // Implements the XDG activation Wayland protocol extension.
 class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
  public:
@@ -49,6 +51,18 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
 
   // Whether a new token request can carry a user press serial.
   bool HasUserPressSerial() const;
+
+  // If `window` is the requestor of the token request currently being served,
+  // runs `closure` once that request completes (after its callback ran, or
+  // after it timed out) and returns true. Otherwise, returns false and drops
+  // `closure`.
+  //
+  // Some compositors (e.g. Mutter) validate the requestor surface when the
+  // token is used rather than when it is requested, so a window that hides
+  // itself right after activating another one can use this to stay mapped
+  // until the token has been used.
+  bool RunAfterTokenRequestFrom(const WaylandWindow* window,
+                                base::OnceClosure closure) const;
 
  private:
   class TokenRequest;

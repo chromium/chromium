@@ -175,6 +175,183 @@ TEST_F(XdgActivationTest, RequestNewTokenFromBubbleUsesToplevelSurface) {
   SetPointerFocusedWindow(nullptr);
 }
 
+class XdgActivationDeferredHideTest : public XdgActivationTest {
+ protected:
+  void SetUp() override {
+    XdgActivationTest::SetUp();
+    window_.reset();
+    delegate_ =
+        std::make_unique<MockWaylandPlatformWindowDelegate>(connection_.get());
+    requestor_ = CreateWaylandWindowWithParams(
+        PlatformWindowType::kWindow, kDefaultBounds, delegate_.get(),
+        gfx::kNullAcceleratedWidget, true /*inactive*/);
+    target_ = CreateWaylandWindowWithParams(
+        PlatformWindowType::kWindow, kDefaultBounds, delegate_.get(),
+        gfx::kNullAcceleratedWidget, true /*inactive*/);
+    requestor_id_ = requestor_->root_surface()->get_surface_id();
+    target_id_ = target_->root_surface()->get_surface_id();
+    ActivateSurface(requestor_id_);
+    ActivateSurface(target_id_);
+  }
+
+  void TearDown() override {
+    SetPointerFocusedWindow(nullptr);
+    requestor_.reset();
+    target_.reset();
+    delegate_.reset();
+    XdgActivationTest::TearDown();
+  }
+
+  // Emulates a click in `requestor_` that activates `target_`, which requests
+  // a token on behalf of `requestor_`, and then hides `requestor_`.
+  void ActivateTargetAndHideRequestor() {
+    SetPointerFocusedWindow(requestor_.get());
+    connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 42);
+    PostToServerAndWait(
+        [requestor_id = requestor_id_](wl::TestWaylandServerThread* server) {
+          auto* const requestor_surface =
+              server->GetObject<wl::MockSurface>(requestor_id)->resource();
+          EXPECT_CALL(*server->xdg_activation_v1(),
+                      TokenSetSurface(_, _, requestor_surface));
+        });
+    target_->Activate();
+    requestor_->Hide();
+    EXPECT_FALSE(requestor_->IsVisible());
+  }
+
+  bool IsRequestorMapped() {
+    bool mapped = false;
+    PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+      auto* const xdg_surface =
+          server->GetObject<wl::MockSurface>(requestor_id_)->xdg_surface();
+      mapped = xdg_surface && xdg_surface->xdg_toplevel();
+    });
+    return mapped;
+  }
+
+  std::unique_ptr<MockWaylandPlatformWindowDelegate> delegate_;
+  std::unique_ptr<WaylandWindow> requestor_;
+  std::unique_ptr<WaylandWindow> target_;
+  uint32_t requestor_id_ = 0;
+  uint32_t target_id_ = 0;
+};
+
+// Tests that a toplevel hidden while it is the requestor of an in-flight token
+// request stays mapped until the token has been used to activate another
+// toplevel.
+TEST_F(XdgActivationDeferredHideTest, HideDeferredUntilTokenUsed) {
+  ActivateTargetAndHideRequestor();
+  EXPECT_TRUE(IsRequestorMapped());
+
+  PostToServerAndWait([requestor_id = requestor_id_, target_id = target_id_](
+                          wl::TestWaylandServerThread* server) {
+    auto* const xdg_activation = server->xdg_activation_v1();
+    auto* const requestor_surface =
+        server->GetObject<wl::MockSurface>(requestor_id);
+    auto* const target_surface =
+        server->GetObject<wl::MockSurface>(target_id)->resource();
+    // The requestor must still be mapped when the token is used.
+    EXPECT_CALL(*xdg_activation,
+                Activate(_, _, StrEq(kMockStaticTestToken), target_surface))
+        .WillOnce([requestor_surface]() {
+          EXPECT_TRUE(requestor_surface->xdg_surface());
+        });
+    ASSERT_TRUE(xdg_activation->get_token());
+    xdg_activation_token_v1_send_done(xdg_activation->get_token()->resource(),
+                                      kMockStaticTestToken);
+  });
+  SyncDisplay();
+
+  EXPECT_FALSE(IsRequestorMapped());
+  EXPECT_FALSE(requestor_->IsVisible());
+}
+
+// Tests that a deferred hide also completes if the token request times out.
+TEST_F(XdgActivationDeferredHideTest, HideDeferredUntilTimeout) {
+  ActivateTargetAndHideRequestor();
+  EXPECT_TRUE(IsRequestorMapped());
+
+  task_environment_.FastForwardBy(base::Milliseconds(600));
+  EXPECT_FALSE(IsRequestorMapped());
+}
+
+// Tests that showing the toplevel again finishes a deferred hide right away
+// and maps the window again with a new xdg_toplevel, as configure events were
+// ignored meanwhile.
+TEST_F(XdgActivationDeferredHideTest, ShowFinishesDeferredHideAndRemaps) {
+  ActivateTargetAndHideRequestor();
+  ASSERT_TRUE(IsRequestorMapped());
+  uint32_t old_toplevel_id = 0;
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    old_toplevel_id =
+        wl_resource_get_id(server->GetObject<wl::MockSurface>(requestor_id_)
+                               ->xdg_surface()
+                               ->xdg_toplevel()
+                               ->resource());
+  });
+
+  requestor_->Show(/*inactive=*/true);
+  EXPECT_TRUE(requestor_->IsVisible());
+  ASSERT_TRUE(IsRequestorMapped());
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    EXPECT_NE(
+        old_toplevel_id,
+        wl_resource_get_id(server->GetObject<wl::MockSurface>(requestor_id_)
+                               ->xdg_surface()
+                               ->xdg_toplevel()
+                               ->resource()));
+  });
+
+  // The completion of the token request doesn't hide the window anymore.
+  task_environment_.FastForwardBy(base::Milliseconds(600));
+  EXPECT_TRUE(IsRequestorMapped());
+  EXPECT_TRUE(requestor_->IsVisible());
+}
+
+// Tests that configure, close and input events for a toplevel whose hide is
+// deferred don't reach the delegate, which may already be tearing down (e.g. a
+// closing widget).
+TEST_F(XdgActivationDeferredHideTest, NoDelegateCallsWhileHideDeferred) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+  ActivateTargetAndHideRequestor();
+  ASSERT_TRUE(IsRequestorMapped());
+
+  EXPECT_CALL(*delegate_, GetMinimumSizeForWindow()).Times(0);
+  EXPECT_CALL(*delegate_, OnActivationChanged(_)).Times(0);
+  EXPECT_CALL(*delegate_, OnBoundsChanged(_)).Times(0);
+  EXPECT_CALL(*delegate_, OnCloseRequest()).Times(0);
+  EXPECT_CALL(*delegate_, DispatchEvent(_)).Times(0);
+  PostToServerAndWait([requestor_id =
+                           requestor_id_](wl::TestWaylandServerThread* server) {
+    auto* const xdg_surface =
+        server->GetObject<wl::MockSurface>(requestor_id)->xdg_surface();
+    ASSERT_TRUE(xdg_surface);
+    EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(0);
+    xdg_toplevel_send_close(xdg_surface->xdg_toplevel()->resource());
+    wl_pointer_send_motion(server->seat()->pointer()->resource(),
+                           server->GetNextSerial(), wl_fixed_from_double(10),
+                           wl_fixed_from_double(20));
+    wl_pointer_send_frame(server->seat()->pointer()->resource());
+  });
+  ActivateSurface(requestor_id_);
+  SyncDisplay();
+  ::testing::Mock::VerifyAndClearExpectations(delegate_.get());
+}
+
+// Tests that destroying the toplevel while its hide is deferred is safe.
+TEST_F(XdgActivationDeferredHideTest, DestroyWhileHideDeferred) {
+  ActivateTargetAndHideRequestor();
+  SetPointerFocusedWindow(nullptr);
+  requestor_.reset();
+
+  task_environment_.FastForwardBy(base::Milliseconds(600));
+  SyncDisplay();
+}
+
 // Tests that showing a new window automatically requests a token.
 TEST_F(XdgActivationTest, RequestOnShow) {
   MockWaylandPlatformWindowDelegate delegate(connection_.get());

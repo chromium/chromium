@@ -74,6 +74,8 @@ class WaylandToplevelWindow : public WaylandWindow,
       int32_t height,
       const WindowStates& window_states) override;
   void HandleSurfaceConfigure(uint32_t serial) override;
+  void OnCloseRequest() override;
+  uint32_t DispatchEvent(const PlatformEvent& event) override;
   void OnSequencePoint(int64_t seq) override;
   void OnFrameCommitted(int64_t seq) override;
   bool IsSurfaceConfigured() override;
@@ -233,6 +235,13 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Activates the surface using XDG activation given an activation token.
   void ActivateWithToken(std::string token);
 
+  // Destroys the xdg_toplevel right away, see Hide().
+  void HideNow();
+
+  // Runs a Hide() that was deferred until an activation token request
+  // completed.
+  void OnDeferredHide();
+
   // Whether this toplevel restores a toplevel of a session.
   bool IsRestoredFromSession() const;
 
@@ -330,6 +339,12 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Activation will only be done if the surface is configured.
   // If it is requested before, it is stored and executed in ack configure.
   std::optional<std::string> pending_configure_activation_token_ = std::nullopt;
+
+  // Set while Hide() is deferred until an activation token requested on behalf
+  // of this window has been used. See Hide(). Configure, close and input
+  // events are ignored meanwhile, as the delegate considers the window hidden
+  // and may already be tearing down.
+  bool hide_deferred_ = false;
 
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 

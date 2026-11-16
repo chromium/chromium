@@ -1280,6 +1280,39 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                                         /*should_document_pip=*/false);
 }
 
+// "Back to tab" activates the opener tab, which exits auto picture-in-picture
+// and closes the window before the controller closes it itself.
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       BackToTabClosesVideoAutopip) {
+  LoadAutoVideoPipPage(browser());
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  SwitchToNewTabAndWaitForAutoPip();
+  ASSERT_TRUE(web_contents->HasPictureInPictureVideo());
+
+  content::MediaStartStopObserver exit_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kExitPictureInPicture);
+  EXPECT_TRUE(PictureInPictureWindowManager::GetInstance()
+                  ->ExitPictureInPictureViaWindowUi(
+                      PictureInPictureWindowManager::UiBehavior::
+                          kCloseWindowAndFocusOpener));
+  exit_pip_observer.Wait();
+
+  EXPECT_EQ(web_contents,
+            browser()->GetTabStripModel()->GetActiveWebContents());
+  EXPECT_FALSE(web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(AutoPictureInPictureTabHelper::FromWebContents(web_contents)
+                   ->IsInAutoPictureInPicture());
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::GetInstance()->IsInPictureInPicture());
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotAutopip_WhenTabIsBeingVisiblyCaptured) {
   // Load a page that registers for autopip and start video playback.

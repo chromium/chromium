@@ -155,6 +155,17 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
 }
 
 void WaylandToplevelWindow::Show(bool inactive) {
+  if (hide_deferred_) {
+    // Finish the deferred Hide() now and map the window again from scratch, as
+    // configure events have been ignored meanwhile.
+    hide_deferred_ = false;
+    auto weak_this = AsWeakPtr();
+    HideNow();
+    if (!weak_this) {
+      return;
+    }
+  }
+
   if (xdg_toplevel_) {
     return;
   }
@@ -176,6 +187,27 @@ void WaylandToplevelWindow::Show(bool inactive) {
 }
 
 void WaylandToplevelWindow::Hide() {
+  if (!xdg_toplevel_ || hide_deferred_) {
+    return;
+  }
+
+  // If this window is the requestor of an in-flight activation token request
+  // (e.g. it activated another window right before being hidden), keep it
+  // mapped until the token has been used. Some compositors (e.g. Mutter) check
+  // that the requestor surface still has input focus at that point.
+  if (const auto* xdg_activation = connection()->xdg_activation()) {
+    if (xdg_activation->RunAfterTokenRequestFrom(
+            this, base::BindOnce(&WaylandToplevelWindow::OnDeferredHide,
+                                 weak_ptr_factory_.GetWeakPtr()))) {
+      hide_deferred_ = true;
+      return;
+    }
+  }
+
+  HideNow();
+}
+
+void WaylandToplevelWindow::HideNow() {
   if (!xdg_toplevel_) {
     return;
   }
@@ -218,7 +250,15 @@ void WaylandToplevelWindow::Hide() {
 bool WaylandToplevelWindow::IsVisible() const {
   // X and Windows return true if the window is minimized. For consistency, do
   // the same.
-  return !!xdg_toplevel_;
+  return xdg_toplevel_ && !hide_deferred_;
+}
+
+void WaylandToplevelWindow::OnDeferredHide() {
+  if (!hide_deferred_) {
+    return;
+  }
+  hide_deferred_ = false;
+  HideNow();
 }
 
 void WaylandToplevelWindow::SetTitle(const std::u16string& title) {
@@ -572,6 +612,9 @@ void WaylandToplevelWindow::HandleToplevelConfigure(
     int32_t width_dip,
     int32_t height_dip,
     const WindowStates& window_states) {
+  if (hide_deferred_) {
+    return;
+  }
   // HandleToplevelConfigureWithOrigin() calls into the delegate
   // (OnActivationChanged et al.), which the views layer documents may
   // synchronously close the widget and destroy this platform window. See
@@ -793,7 +836,24 @@ void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
+  if (hide_deferred_) {
+    return;
+  }
   ProcessPendingConfigureState(serial);
+}
+
+void WaylandToplevelWindow::OnCloseRequest() {
+  if (hide_deferred_) {
+    return;
+  }
+  WaylandWindow::OnCloseRequest();
+}
+
+uint32_t WaylandToplevelWindow::DispatchEvent(const PlatformEvent& event) {
+  if (hide_deferred_) {
+    return POST_DISPATCH_STOP_PROPAGATION;
+  }
+  return WaylandWindow::DispatchEvent(event);
 }
 
 void WaylandToplevelWindow::OnSequencePoint(int64_t seq) {

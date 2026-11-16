@@ -176,12 +176,26 @@ class TestWebContentsDelegate : public WebContentsDelegate {
     return PictureInPictureResult::kSuccess;
   }
   void ExitPictureInPicture() override { is_in_picture_in_picture_ = false; }
+  void ActivateContents(WebContents* contents) override {
+    activate_count_++;
+    auto* controller =
+        VideoPictureInPictureWindowControllerImpl::FromWebContents(contents);
+    pip_window_visible_on_activate_ =
+        controller && controller->GetWindowForTesting() &&
+        controller->GetWindowForTesting()->IsVisible();
+  }
 
   bool is_in_picture_in_picture() const { return is_in_picture_in_picture_; }
+  int activate_count() const { return activate_count_; }
+  bool pip_window_visible_on_activate() const {
+    return pip_window_visible_on_activate_;
+  }
 
  private:
   const raw_ptr<Shell, DanglingUntriaged> shell_;
   bool is_in_picture_in_picture_ = false;
+  int activate_count_ = 0;
+  bool pip_window_visible_on_activate_ = false;
 };
 
 class VideoPictureInPictureContentBrowserTest : public ContentBrowserTest {
@@ -827,5 +841,26 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest, GetOrigin) {
   ASSERT_TRUE(origin.has_value());
   EXPECT_EQ(origin.value(), url::Origin::Create(test_page_url));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// "Back to tab" must focus the opener while the picture-in-picture window is
+// still visible, so that window systems that require activation requests to
+// come from the surface the user interacted with (e.g. Wayland xdg-activation)
+// allow it.
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
+                       CloseAndFocusInitiatorFocusesBeforeClosing) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+  ASSERT_TRUE(overlay_window()->IsVisible());
+
+  window_controller()->CloseAndFocusInitiator();
+
+  EXPECT_EQ(1, web_contents_delegate()->activate_count());
+  EXPECT_TRUE(web_contents_delegate()->pip_window_visible_on_activate());
+  EXPECT_FALSE(overlay_window()->IsVisible());
+  EXPECT_FALSE(web_contents_delegate()->is_in_picture_in_picture());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
