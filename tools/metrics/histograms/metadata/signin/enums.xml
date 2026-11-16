@@ -1553,13 +1553,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:SigninFunnelEvent) -->
 
-<enum name="SigninGaiaAuthFetcherIOSCookiesState">
-  <int value="0" label="No Cookies"/>
-  <int value="1" label="All Cookies Insecure"/>
-  <int value="2" label="All Cookies Secure"/>
-  <int value="3" label="Secure and Insecure Cookies"/>
-</enum>
-
 <enum name="SigninGaiaCookieManagerLogout">
   <int value="0" label="Request started"/>
   <int value="1" label="Success"/>

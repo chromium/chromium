@@ -303,11 +303,6 @@ BASE_FEATURE(kDisableFirstRunAnimationsForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kDontIncludeSIDUnsecureCookiesInGaiaAuthFetcher,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Enables fetching sync preview data from the server for accounts with refresh
 // tokens.
 BASE_FEATURE(kEnableAccountPreviewData, base::FEATURE_ENABLED_BY_DEFAULT);

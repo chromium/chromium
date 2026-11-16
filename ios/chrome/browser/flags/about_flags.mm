@@ -2877,12 +2877,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kEnableBulkDataEntryConnectorIOS)},
-    {"gaia-auth-fetcher-dont-send-sid-cookies",
-     flag_descriptions::kGaiaAuthFetcherDontSendSIDCookiesName,
-     flag_descriptions::kGaiaAuthFetcherDontSendSIDCookiesDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         switches::kDontIncludeSIDUnsecureCookiesInGaiaAuthFetcher)},
     {"gemini-quizzes", flag_descriptions::kGeminiQuizzesName,
      flag_descriptions::kGeminiQuizzesDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiQuizzes,

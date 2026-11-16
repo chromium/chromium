@@ -5434,16 +5434,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "gaia-auth-fetcher-dont-send-sid-cookies",
-    "owners": [
-      "msarda@google.com",
-      "alexilin@chromium.org",
-      "bsazonov@chromium.org",
-      "chrome-signin-team@google.com"
-    ],
-    "expiry_milestone": 158
-  },
-  {
     "name": "gamepad-raw-input-change-event",
     "owners": ["gabrielbrito@microsoft.com", "deviceapi-team@google.com" ],
     "expiry_milestone": 152
