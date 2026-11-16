@@ -19675,14 +19675,6 @@ be describing additional metrics about the same event.
     <summary>
       The estimated resident set size of the page, in kilobytes.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="TotalRecentCPUUsageAllPages">
     <summary>
@@ -19691,14 +19683,6 @@ be describing additional metrics about the same event.
       PerformanceMonitor.AverageCPU10.* histograms.) RecentCPUUsage can be
       compared to this to find how the page compares to other open tabs.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.system_ram"/>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
