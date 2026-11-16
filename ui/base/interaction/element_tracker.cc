@@ -265,7 +265,9 @@ TrackedElement* ElementTracker::GetUniqueElement(ElementIdentifier id,
   const auto it = element_data_.find(LookupKey(Unwrap(id), context));
   if (it == element_data_.end() || it->second.num_elements() == 0)
     return nullptr;
-  CHECK_EQ(1U, it->second.num_elements(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585388641): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(1U, it->second.num_elements());
   return it->second.elements().front();
 }
 
