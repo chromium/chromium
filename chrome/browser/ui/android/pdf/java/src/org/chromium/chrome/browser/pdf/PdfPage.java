@@ -114,10 +114,13 @@ public class PdfPage extends BasicNativePage {
         if (!PdfUtils.isReuseFragmentEnabled()) return;
 
         boolean sameUrl = TextUtils.equals(mUrl, url);
-        // Only skip if the PDF is already loaded and has no unsaved changes. If there are
-        // unsaved edits, continue so the reload confirmation dialog can prompt the user and
-        // reload the PDF if they choose to discard their edits.
-        if (sameUrl && !mPdfCoordinator.hasChanges() && mPdfCoordinator.isPdfLoaded()) {
+        // Only skip if the PDF is already loaded (or has a filepath pending initial load before
+        // the view attaches) and has no unsaved changes. If there are unsaved edits, continue so
+        // the reload confirmation dialog can prompt the user and reload the PDF if they choose to
+        // discard their edits.
+        if (sameUrl
+                && !mPdfCoordinator.hasChanges()
+                && (mPdfCoordinator.isPdfLoaded() || mPdfCoordinator.hasPendingLoad())) {
             return;
         }
 

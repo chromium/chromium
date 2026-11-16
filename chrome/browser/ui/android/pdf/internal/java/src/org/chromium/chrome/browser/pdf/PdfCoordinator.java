@@ -196,6 +196,8 @@ public class PdfCoordinator
      */
     private boolean mIsPdfLoaded;
 
+    private boolean mHasPendingLoad;
+
     private boolean mHasMadeAnyChanges;
 
     private boolean mIsFragmentRestored;
@@ -292,8 +294,14 @@ public class PdfCoordinator
                 mIsFragmentRestored = true;
                 mChromePdfViewerFragment.setPagesPerRow(false);
                 if (mPdfFilePath == null) {
+                    String restoredFilePath = mChromePdfViewerFragment.getFilePath();
                     mPdfFilePath =
-                            filepath != null ? filepath : mChromePdfViewerFragment.getFilePath();
+                            isUsableRestoredFilePath(restoredFilePath)
+                                    ? restoredFilePath
+                                    : filepath;
+                }
+                if (mPdfFilePath != null) {
+                    mHasPendingLoad = true;
                 }
                 String restoredFileName = mChromePdfViewerFragment.getFileName();
                 if (mTitle == null && restoredFileName != null) mTitle = restoredFileName;
@@ -1193,7 +1201,7 @@ public class PdfCoordinator
                     final AtomicBoolean handled = new AtomicBoolean(false);
 
                     Consumer<Boolean> onSaveFinished =
-                            (isSuccess) -> {
+                            isSuccess -> {
                                 if (!handled.compareAndSet(false, true)) return;
                                 PostTask.postTask(
                                         TaskTraits.USER_BLOCKING_MAY_BLOCK,
@@ -1871,8 +1879,7 @@ public class PdfCoordinator
     @Override
     public void onDownloadFailed() {
         mProgressBar.setVisibility(View.GONE);
-        Toast.makeText(mView.getContext(), R.string.pdf_download_failed, Toast.LENGTH_SHORT)
-                .show();
+        Toast.makeText(mView.getContext(), R.string.pdf_download_failed, Toast.LENGTH_SHORT).show();
     }
 
     /** Returns the filepath of the pdf document. */
@@ -1921,6 +1928,8 @@ public class PdfCoordinator
             final int finalFd = fd;
             ThreadUtils.postOnUiThread(
                     () -> {
+                        Uri oldUri = null;
+                        boolean uriUpdated = false;
                         if (finalFd >= 0) {
                             String securePath = "/proc/self/fd/" + finalFd;
                             Uri newUri =
@@ -1931,19 +1940,16 @@ public class PdfCoordinator
                                 /* ignore */
                             }
                             if (newUri != null) {
-                                if (mUri != null) {
-                                    PdfContentProvider.removeContentUri(mUri.toString());
-                                }
+                                oldUri = mUri;
                                 mPdfFilePath = newUri.toString();
                                 mUri = newUri;
-                                if (mChromePdfViewerFragment != null) {
-                                    mChromePdfViewerFragment.setDocumentUri(mUri);
-                                    mChromePdfViewerFragment.setFilePath(mPdfFilePath);
-                                    mChromePdfViewerFragment.setFileName(mTitle);
-                                }
+                                uriUpdated = true;
                             }
                         }
-                        onDone.run();
+                        applySavedPdfToFragment(uriUpdated, onDone);
+                        if (oldUri != null && !oldUri.equals(mUri)) {
+                            PdfContentProvider.removeContentUri(oldUri.toString());
+                        }
                     });
         } else {
             if (tempFile == null) {
@@ -1972,6 +1978,9 @@ public class PdfCoordinator
                     }
                 } else if (UrlConstants.CONTENT_SCHEME.equals(scheme)) {
                     overwritten = overwriteOriginalContentUri(tempFile, uri);
+                    if (overwritten) {
+                        updatedFilePath = mPdfFilePath;
+                    }
                 } else {
                     File originalFile = new File(mPdfFilePath);
                     overwritten = overwriteOriginalFile(tempFile, originalFile);
@@ -1998,8 +2007,28 @@ public class PdfCoordinator
                             // mLoadedUrl is intentionally retained to preserve download origin
                             // for transient file cleanup on reload.
                         }
-                        onDone.run();
+                        applySavedPdfToFragment(finalUpdatedFilePath != null, onDone);
                     });
+        }
+    }
+
+    private void applySavedPdfToFragment(boolean shouldUpdate, Runnable onDone) {
+        if (shouldUpdate && mChromePdfViewerFragment != null) {
+            mChromePdfViewerFragment.setFilePath(mPdfFilePath);
+            mChromePdfViewerFragment.setFileName(mTitle);
+        }
+        // finishExitingEditMode() must be called via onDone before updating the
+        // fragment's document URI. Otherwise:
+        // 1. In form filling, setDocumentUri() clears editablePdfDocument before
+        //    finishExitingEditMode() runs, preventing hasUnsavedChanges() from
+        //    detecting changes and failing to clear SavedStateHandle["formEditInfos"].
+        // 2. In toolbar editing, EditableDocumentViewModel.resetState() sets
+        //    PdfEditMode.Disabled before resetting didApplyEdits to false, which
+        //    triggers a duplicate concurrent forceLoadDocument() alongside
+        //    loadDocument().
+        onDone.run();
+        if (shouldUpdate && mChromePdfViewerFragment != null && mUri != null) {
+            mChromePdfViewerFragment.setDocumentUri(mUri);
         }
     }
 
@@ -2038,14 +2067,29 @@ public class PdfCoordinator
         }
     }
 
+    private static boolean isUsableRestoredFilePath(@Nullable String restoredFilePath) {
+        if (restoredFilePath == null) {
+            return false;
+        }
+        Uri uri = Uri.parse(restoredFilePath);
+        String scheme = uri.getScheme();
+        if (UrlConstants.CONTENT_SCHEME.equals(scheme)) {
+            return true;
+        }
+        String path = UrlConstants.FILE_SCHEME.equals(scheme) ? uri.getPath() : restoredFilePath;
+        return path != null && new File(path).exists();
+    }
+
     private void loadPdfFile(@Nullable String pdfFilePath) {
         mPdfFilePath = pdfFilePath;
+        mHasPendingLoad = pdfFilePath != null && !mIsPdfLoaded;
         loadPdfFile();
     }
 
     @Override
     public void resetLoadState() {
         mIsPdfLoaded = false;
+        mHasPendingLoad = false;
         mIsFragmentRestored = false;
         mIsFitToPageActive = TriState.NOT_SET;
         mLastFitZoom = -1f;
@@ -2225,6 +2269,7 @@ public class PdfCoordinator
         if (mUri != null) {
             if (sSkipLoadPdfForTesting) {
                 mIsPdfLoaded = true;
+                mHasPendingLoad = false;
             } else {
                 if (!mChromePdfViewerFragment.isAdded()) {
                     FragmentTransaction transaction = mFragmentManager.beginTransaction();
@@ -2257,6 +2302,7 @@ public class PdfCoordinator
                     Log.e(TAG, "Load pdf fails due to invalid uri.", e);
                 } finally {
                     mIsPdfLoaded = true;
+                    mHasPendingLoad = false;
                 }
             }
         } else {
@@ -2342,6 +2388,11 @@ public class PdfCoordinator
     @Override
     public boolean isPdfLoaded() {
         return mIsPdfLoaded;
+    }
+
+    @Override
+    public boolean hasPendingLoad() {
+        return mHasPendingLoad && !mIsPdfLoaded;
     }
 
     @Override
@@ -2662,6 +2713,7 @@ public class PdfCoordinator
 
     @Override
     public void onDocumentLoadFailed() {
+        mHasPendingLoad = false;
         if (PdfUtils.isInlinePdfV2Enabled()) {
             View fragmentContainerView = mView.findViewById(mFragmentContainerViewId);
             if (fragmentContainerView != null
@@ -2743,7 +2795,7 @@ public class PdfCoordinator
                     mIsDefaultZoomPending = true;
                     fragment.setDefaultZoom(
                             pageIndex,
-                            (defaultZoom) -> {
+                            defaultZoom -> {
                                 mIsInitialZoomPass = false;
                                 mIsDefaultZoomPending = false;
                                 if (mToolbarCoordinator != null) {

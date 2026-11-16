@@ -1509,4 +1509,60 @@ public class PdfPageUnitTest {
 
         pdfPage.destroy();
     }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.PDF_REUSE_FRAGMENT})
+    public void testUpdateForUrl_ContentUriWithFallbackFilePath_BeforeAttach_PreservesFallback() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        String fallbackFilePath = "/data/user/10/com.google.android.apps.chrome/cache/fallback.pdf";
+        PdfInfo pdfInfoWithFallback = new PdfInfo(FILE_NAME, fallbackFilePath, true);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        encodedUrl,
+                        pdfInfoWithFallback,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+
+        Assert.assertFalse(pdfPage.mPdfCoordinator.isPdfLoaded());
+        Assert.assertEquals(fallbackFilePath, pdfPage.mPdfCoordinator.getFilepath());
+
+        // NativePageFactory immediately calls updateForUrl before the view is attached.
+        pdfPage.updateForUrl(encodedUrl);
+
+        Assert.assertEquals(
+                "Fallback annotated file path must not be overwritten by content:// URL",
+                fallbackFilePath,
+                pdfPage.mPdfCoordinator.getFilepath());
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.PDF_REUSE_FRAGMENT})
+    public void testUpdateForUrl_AfterResetLoadState_DoesNotSkipReload() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        String fallbackFilePath = "/data/user/10/com.google.android.apps.chrome/cache/fallback.pdf";
+        PdfInfo pdfInfoWithFallback = new PdfInfo(FILE_NAME, fallbackFilePath, true);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        encodedUrl,
+                        pdfInfoWithFallback,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+
+        Assert.assertTrue(pdfPage.mPdfCoordinator.hasPendingLoad());
+        pdfPage.mPdfCoordinator.resetLoadState();
+        Assert.assertFalse(pdfPage.mPdfCoordinator.hasPendingLoad());
+
+        pdfPage.updateForUrl(encodedUrl);
+        Assert.assertEquals(CONTENT_URL, pdfPage.mPdfCoordinator.getFilepath());
+
+        pdfPage.destroy();
+    }
 }
