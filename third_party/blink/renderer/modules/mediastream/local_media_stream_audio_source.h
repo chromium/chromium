@@ -28,6 +28,17 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
     : public MediaStreamAudioSource,
       public media::AudioCapturerSource::CaptureCallback {
  public:
+  // Computes the effective capture buffer size in frames for a
+  // `LocalMediaStreamAudioSource`:
+  // 1. Uses `requested_buffer_size` when provided (resolved from a `latency`
+  //    constraint during `SelectSettings`); otherwise uses the hardware default
+  //    `device_params.frames_per_buffer()`.
+  // 2. If the resulting buffer size is non-positive (e.g., when `device_params`
+  //    does not specify a buffer size), falls back to `kFallbackAudioLatencyMs`
+  //    (20 ms) of frames at `device_params.sample_rate()`.
+  static int GetFramesPerBuffer(const media::AudioParameters& device_params,
+                                std::optional<int> requested_buffer_size);
+
   // |consumer_frame| references the RenderFrame that will consume the
   // audio data. Audio parameters and (optionally) a pre-existing audio session
   // ID are read from |device_info|. |requested_buffer_size| is the desired
@@ -52,7 +63,7 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
   // MediaStreamAudioSource implementation.
   void ChangeSourceImpl(const MediaStreamDevice& new_device) final;
 
-  std::optional<AudioProcessingProperties> GetAudioProcessingProperties()
+  std::optional<AudioProcessingProperties> GetInitialAudioProcessingProperties()
       const final;
 
  private:

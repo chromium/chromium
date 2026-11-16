@@ -3339,4 +3339,449 @@ TEST_F(
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #endif
 
+TEST_F(UserMediaClientTest,
+       IdenticalUnprocessedRequestsShareOneCaptureSession) {
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().auto_gain_control.SetExact(false);
+    factory.basic().noise_suppression.SetExact(false);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  MediaStreamAudioSource* source1 =
+      MediaStreamAudioSource::From(component1->Source());
+  ASSERT_TRUE(source1);
+  EXPECT_FALSE(source1->IsProcessedSource());
+
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().auto_gain_control.SetExact(false);
+    factory.basic().noise_suppression.SetExact(false);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  MediaStreamAudioSource* source2 =
+      MediaStreamAudioSource::From(component2->Source());
+  ASSERT_TRUE(source2);
+  EXPECT_FALSE(source2->IsProcessedSource());
+  EXPECT_EQ(source1, source2);
+  EXPECT_EQ(source1->device().session_id(), source2->device().session_id());
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(UserMediaClientTest,
+       UnprocessedRequestsWithDifferentLatencyUseSeparateSessions) {
+  constexpr int kSampleRateHz = 44100;
+  constexpr int kDefaultFramesPerBuffer = 441;
+  constexpr int kMinFramesPerBuffer = 441;
+  constexpr int kMaxFramesPerBuffer = 1764;
+  constexpr double kCustomLatencySeconds = 0.02;
+  constexpr int kCustomFramesPerBuffer = 882;
+
+  media_devices_dispatcher_.AudioParameters() =
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             media::ChannelLayoutConfig::Stereo(),
+                             kSampleRateHz, kDefaultFramesPerBuffer,
+                             media::AudioParameters::HardwareCapabilities(
+                                 kMinFramesPerBuffer, kMaxFramesPerBuffer));
+
+  // Request 1: default latency (`kDefaultFramesPerBuffer`).
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  MediaStreamAudioSource* source1 =
+      MediaStreamAudioSource::From(component1->Source());
+  ASSERT_TRUE(source1);
+  EXPECT_FALSE(source1->IsProcessedSource());
+  EXPECT_EQ(source1->GetAudioParameters().frames_per_buffer(),
+            kDefaultFramesPerBuffer);
+
+  // Request 2: `kCustomLatencySeconds` (`kCustomFramesPerBuffer`) must open a
+  // separate unprocessed source rather than reusing `source1`.
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().latency.SetExact(kCustomLatencySeconds);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  MediaStreamAudioSource* source2 =
+      MediaStreamAudioSource::From(component2->Source());
+  ASSERT_TRUE(source2);
+  EXPECT_FALSE(source2->IsProcessedSource());
+  EXPECT_NE(source1, source2);
+  EXPECT_NE(source1->device().session_id(), source2->device().session_id());
+  EXPECT_EQ(source2->GetAudioParameters().frames_per_buffer(),
+            kCustomFramesPerBuffer);
+
+  // Request 3: another request with `kCustomLatencySeconds` reuses `source2`.
+  MediaStreamTrack* track3 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().latency.SetExact(kCustomLatencySeconds);
+    track3 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track3);
+  }
+  MediaStreamComponent* component3 = track3->Component();
+  MediaStreamAudioSource* source3 =
+      MediaStreamAudioSource::From(component3->Source());
+  ASSERT_TRUE(source3);
+  EXPECT_EQ(source2, source3);
+  EXPECT_EQ(source2->device().session_id(), source3->device().session_id());
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component3))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(UserMediaClientTest,
+       ExactNoiseSuppressionOffIsNeverServedNoiseSuppressedAudio) {
+  // 1. Open a ProcessedLocalAudioSource with echoCancellation = false and
+  // noiseSuppression = true.
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().noise_suppression.SetExact(true);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  MediaStreamAudioSource* source1 =
+      MediaStreamAudioSource::From(component1->Source());
+  ASSERT_TRUE(source1);
+  EXPECT_TRUE(source1->IsProcessedSource());
+  EXPECT_EQ(track1->getSettings()->noiseSuppression(), true);
+
+  // 2. A second request with echoCancellation = false and
+  // noiseSuppression: {exact: false} selects the unprocessed candidate and must
+  // open a new LocalMediaStreamAudioSource rather than reusing `source1`.
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().noise_suppression.SetExact(false);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  MediaStreamAudioSource* source2 =
+      MediaStreamAudioSource::From(component2->Source());
+  ASSERT_TRUE(source2);
+  EXPECT_FALSE(source2->IsProcessedSource());
+  EXPECT_NE(source1, source2);
+  EXPECT_NE(source1->device().session_id(), source2->device().session_id());
+  EXPECT_EQ(track2->getSettings()->noiseSuppression(), false);
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(UserMediaClientTest,
+       NoiseSuppressionRequestIsNeverServedUnprocessedAudio) {
+  // 1. Open an unprocessed LocalMediaStreamAudioSource with
+  // echoCancellation = false and noiseSuppression = false.
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().noise_suppression.SetExact(false);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  MediaStreamAudioSource* source1 =
+      MediaStreamAudioSource::From(component1->Source());
+  ASSERT_TRUE(source1);
+  EXPECT_FALSE(source1->IsProcessedSource());
+  EXPECT_EQ(track1->getSettings()->noiseSuppression(), false);
+
+  // 2. A second request with echoCancellation = false and
+  // noiseSuppression: {exact: true} requires WebRTC audio processing and must
+  // open a new ProcessedLocalAudioSource rather than reusing `source1`.
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().noise_suppression.SetExact(true);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  MediaStreamAudioSource* source2 =
+      MediaStreamAudioSource::From(component2->Source());
+  ASSERT_TRUE(source2);
+  EXPECT_TRUE(source2->IsProcessedSource());
+  EXPECT_NE(source1, source2);
+  EXPECT_NE(source1->device().session_id(), source2->device().session_id());
+  EXPECT_EQ(track2->getSettings()->noiseSuppression(), true);
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(UserMediaClientTest,
+       UnprocessedRequestsWithDifferentDisableLocalEchoUseSeparateSessions) {
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().disable_local_echo.SetExact(false);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  MediaStreamAudioSource* source1 =
+      MediaStreamAudioSource::From(component1->Source());
+  ASSERT_TRUE(source1);
+  EXPECT_FALSE(source1->IsProcessedSource());
+  EXPECT_FALSE(source1->disable_local_echo());
+
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().disable_local_echo.SetExact(true);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  MediaStreamAudioSource* source2 =
+      MediaStreamAudioSource::From(component2->Source());
+  ASSERT_TRUE(source2);
+  EXPECT_FALSE(source2->IsProcessedSource());
+  EXPECT_NE(source1, source2);
+  EXPECT_NE(source1->device().session_id(), source2->device().session_id());
+  EXPECT_TRUE(source2->disable_local_echo());
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(
+    UserMediaClientTest,
+    UnprocessedRequestsWithDifferentRenderToAssociatedSinkUseSeparateSessions) {
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().render_to_associated_sink.SetExact(false);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  MediaStreamAudioSource* source1 =
+      MediaStreamAudioSource::From(component1->Source());
+  ASSERT_TRUE(source1);
+  EXPECT_FALSE(source1->IsProcessedSource());
+  EXPECT_FALSE(source1->RenderToAssociatedSinkEnabled());
+
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().render_to_associated_sink.SetExact(true);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  MediaStreamAudioSource* source2 =
+      MediaStreamAudioSource::From(component2->Source());
+  ASSERT_TRUE(source2);
+  EXPECT_FALSE(source2->IsProcessedSource());
+  EXPECT_NE(source1, source2);
+  EXPECT_NE(source1->device().session_id(), source2->device().session_id());
+  EXPECT_TRUE(source2->RenderToAssociatedSinkEnabled());
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(UserMediaClientTest,
+       NativeSampleRateFallbackWithEchoCancellationOffOpensUnprocessedSource) {
+  constexpr int kNativeSampleRateHz = 44100;
+  constexpr int kProcessedSampleRateHz = 48000;
+  constexpr int kDefaultFramesPerBuffer = 441;
+
+  media_devices_dispatcher_.AudioParameters() =
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             media::ChannelLayoutConfig::Stereo(),
+                             kNativeSampleRateHz, kDefaultFramesPerBuffer);
+
+  // 1. Open a ProcessedLocalAudioSource (48 kHz) with echoCancellation = false
+  // and autoGainControl = true.
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().auto_gain_control.SetExact(true);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  MediaStreamAudioSource* source1 =
+      MediaStreamAudioSource::From(component1->Source());
+  ASSERT_TRUE(source1);
+  EXPECT_TRUE(source1->IsProcessedSource());
+  EXPECT_EQ(track1->getSettings()->sampleRate(), kProcessedSampleRateHz);
+  EXPECT_EQ(track1->getSettings()->autoGainControl(), true);
+
+  // 2. A second request with echoCancellation = false and
+  // sampleRate: {exact: kNativeSampleRateHz} falls back to the unprocessed
+  // candidate in SelectSettings and must open a new LocalMediaStreamAudioSource
+  // rather than reusing `source1`.
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().sample_rate.SetExact(kNativeSampleRateHz);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  MediaStreamAudioSource* source2 =
+      MediaStreamAudioSource::From(component2->Source());
+  ASSERT_TRUE(source2);
+  EXPECT_FALSE(source2->IsProcessedSource());
+  EXPECT_NE(source1, source2);
+  EXPECT_NE(source1->device().session_id(), source2->device().session_id());
+  EXPECT_EQ(track2->getSettings()->sampleRate(), kNativeSampleRateHz);
+  EXPECT_EQ(track2->getSettings()->autoGainControl(), false);
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(UserMediaClientTest,
+       PlatformAecWithoutApmSharesUnprocessedSourceAndSplitsFromApmRequest) {
+  // Advertise hardware ECHO_CANCELLER on the device so `echoCancellation: true`
+  // resolves to platform echo cancellation rather than WebRTC APM.
+  media_devices_dispatcher_.AudioParameters().set_effects(
+      media::AudioParameters::ECHO_CANCELLER);
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::ECHO_CANCELLER);
+
+  // 1. Request `echoCancellation: true` with AGC and NS disabled. Because the
+  // device provides hardware AEC and no WebRTC APM effects are enabled, this
+  // creates an unprocessed LocalMediaStreamAudioSource with the platform
+  // ECHO_CANCELLER effect enabled.
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(true);
+    factory.basic().auto_gain_control.SetExact(false);
+    factory.basic().noise_suppression.SetExact(false);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  MediaStreamAudioSource* source1 =
+      MediaStreamAudioSource::From(component1->Source());
+  ASSERT_TRUE(source1);
+  EXPECT_FALSE(source1->IsProcessedSource());
+  EXPECT_TRUE(source1->GetAudioParameters().effects() &
+              media::AudioParameters::ECHO_CANCELLER);
+
+  // 2. An identical platform-AEC-only request reuses `source1`.
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(true);
+    factory.basic().auto_gain_control.SetExact(false);
+    factory.basic().noise_suppression.SetExact(false);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  MediaStreamAudioSource* source2 =
+      MediaStreamAudioSource::From(component2->Source());
+  ASSERT_TRUE(source2);
+  EXPECT_FALSE(source2->IsProcessedSource());
+  EXPECT_EQ(source1, source2);
+  EXPECT_EQ(source1->device().session_id(), source2->device().session_id());
+
+  // 3. A request that also enables WebRTC autoGainControl requires a
+  // ProcessedLocalAudioSource and opens a separate capture session.
+  MediaStreamTrack* track3 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(true);
+    factory.basic().auto_gain_control.SetExact(true);
+    factory.basic().noise_suppression.SetExact(false);
+    track3 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track3);
+  }
+  MediaStreamComponent* component3 = track3->Component();
+  MediaStreamAudioSource* source3 =
+      MediaStreamAudioSource::From(component3->Source());
+  ASSERT_TRUE(source3);
+  EXPECT_TRUE(source3->IsProcessedSource());
+  EXPECT_NE(source1, source3);
+  EXPECT_NE(source1->device().session_id(), source3->device().session_id());
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component3))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
 }  // namespace blink

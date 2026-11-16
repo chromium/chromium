@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_util.h"
 #include "media/audio/audio_source_parameters.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -17,6 +18,20 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
+
+// static
+int LocalMediaStreamAudioSource::GetFramesPerBuffer(
+    const media::AudioParameters& device_params,
+    std::optional<int> requested_buffer_size) {
+  int frames_per_buffer =
+      requested_buffer_size.value_or(device_params.frames_per_buffer());
+  // If the device buffer size was not provided, use a default.
+  if (frames_per_buffer <= 0) {
+    frames_per_buffer =
+        (device_params.sample_rate() * kFallbackAudioLatencyMs) / 1000;
+  }
+  return frames_per_buffer;
+}
 
 LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
     LocalFrame* consumer_frame,
@@ -50,16 +65,9 @@ LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
   SetDevice(device_to_request);
 
   media::AudioParameters params = device_to_request.input;
-  int frames_per_buffer = params.frames_per_buffer();
-  if (requested_buffer_size) {
-    frames_per_buffer = *requested_buffer_size;
-  }
-  // If the device buffer size was not provided, use a default.
-  if (frames_per_buffer <= 0) {
-    frames_per_buffer = (params.sample_rate() * kFallbackAudioLatencyMs) / 1000;
-  }
   params.set_format(media::AudioParameters::AUDIO_PCM_LOW_LATENCY);
-  params.set_frames_per_buffer(frames_per_buffer);
+  params.set_frames_per_buffer(
+      GetFramesPerBuffer(params, base::OptionalFromPtr(requested_buffer_size)));
 
   SetFormat(params);
 }
@@ -158,7 +166,7 @@ void LocalMediaStreamAudioSource::ChangeSourceImpl(
 }
 
 std::optional<blink::AudioProcessingProperties>
-LocalMediaStreamAudioSource::GetAudioProcessingProperties() const {
+LocalMediaStreamAudioSource::GetInitialAudioProcessingProperties() const {
   return processing_layout_.properties();
 }
 

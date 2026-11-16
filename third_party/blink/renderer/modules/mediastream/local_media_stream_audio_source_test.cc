@@ -17,6 +17,9 @@
 namespace blink {
 namespace {
 
+constexpr int kSampleRateHz = 48000;
+constexpr int kDefaultFramesPerBuffer = 512;
+
 enum class SystemAec { kNotSupported, kSupported };
 
 int GetPlatformEffects(SystemAec aec_mode) {
@@ -34,7 +37,8 @@ std::unique_ptr<LocalMediaStreamAudioSource> CreateLocalMediaStreamAudioSource(
   MediaStreamDevice device{};
   device.input =
       media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                             media::ChannelLayoutConfig::Stereo(), 48000, 512);
+                             media::ChannelLayoutConfig::Stereo(),
+                             kSampleRateHz, kDefaultFramesPerBuffer);
   device.input.set_effects(platform_effects);
   return std::make_unique<LocalMediaStreamAudioSource>(
       /*consumer_frame*/ nullptr, device,
@@ -96,6 +100,93 @@ TEST(LocalMediaStreamAudioSourceAecTest, CanEnableSystemAec) {
       EchoCanceller::From(*properties, platform_effects).IsPlatformProvided());
   EXPECT_TRUE(source->GetAudioParameters().effects() &
               media::AudioParameters::ECHO_CANCELLER);
+}
+
+TEST(LocalMediaStreamAudioSourceAecTest,
+     HasSameSessionIdentityPropertiesMatchesEchoCancellationMode) {
+  test::TaskEnvironment task_environment;
+  int platform_effects = GetPlatformEffects(SystemAec::kNotSupported);
+  std::unique_ptr<LocalMediaStreamAudioSource> source =
+      CreateLocalMediaStreamAudioSource(platform_effects,
+                                        /*enable_system_aec=*/false);
+  ASSERT_TRUE(source->GetInitialAudioProcessingProperties().has_value());
+
+  AudioProcessingProperties matching_properties =
+      *source->GetInitialAudioProcessingProperties();
+  EXPECT_TRUE(source->HasSameSessionIdentityProperties(matching_properties));
+
+  AudioProcessingProperties different_ec_properties = matching_properties;
+  different_ec_properties.echo_cancellation_mode =
+      EchoCancellationMode::kBrowserDecides;
+  EXPECT_FALSE(
+      source->HasSameSessionIdentityProperties(different_ec_properties));
+}
+
+TEST(LocalMediaStreamAudioSourceAecTest,
+     GetFramesPerBufferUsesDeviceBufferSizeByDefault) {
+  test::TaskEnvironment task_environment;
+  std::unique_ptr<LocalMediaStreamAudioSource> source =
+      CreateLocalMediaStreamAudioSource(
+          GetPlatformEffects(SystemAec::kNotSupported),
+          /*enable_system_aec=*/false);
+
+  EXPECT_EQ(LocalMediaStreamAudioSource::GetFramesPerBuffer(
+                source->device().input, /*requested_buffer_size=*/std::nullopt),
+            kDefaultFramesPerBuffer);
+  EXPECT_EQ(source->GetAudioParameters().frames_per_buffer(),
+            kDefaultFramesPerBuffer);
+}
+
+TEST(LocalMediaStreamAudioSourceAecTest,
+     GetFramesPerBufferUsesRequestedBufferSizeWhenProvided) {
+  test::TaskEnvironment task_environment;
+  constexpr int kRequestedBufferSize = 1024;
+  MediaStreamDevice device{};
+  device.input =
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             media::ChannelLayoutConfig::Stereo(),
+                             kSampleRateHz, kDefaultFramesPerBuffer);
+  auto source = std::make_unique<LocalMediaStreamAudioSource>(
+      /*consumer_frame=*/nullptr, device, &kRequestedBufferSize,
+      /*disable_local_echo=*/false,
+      MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSourceForTests(
+          /*platform_aec=*/false, device.input.effects()),
+      LocalMediaStreamAudioSource::ConstraintsRepeatingCallback(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+
+  EXPECT_EQ(LocalMediaStreamAudioSource::GetFramesPerBuffer(
+                device.input, kRequestedBufferSize),
+            kRequestedBufferSize);
+  EXPECT_EQ(source->GetAudioParameters().frames_per_buffer(),
+            kRequestedBufferSize);
+}
+
+TEST(LocalMediaStreamAudioSourceAecTest,
+     GetFramesPerBufferFallsBackToDefaultLatencyWhenNonPositive) {
+  test::TaskEnvironment task_environment;
+  constexpr int kUnsetBufferSize = 0;
+  const int kExpectedFallbackFrames =
+      (kSampleRateHz * kFallbackAudioLatencyMs) / 1000;
+  MediaStreamDevice device{};
+  device.input = media::AudioParameters(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Stereo(), kSampleRateHz, kUnsetBufferSize);
+  auto source = std::make_unique<LocalMediaStreamAudioSource>(
+      /*consumer_frame=*/nullptr, device, /*requested_buffer_size=*/nullptr,
+      /*disable_local_echo=*/false,
+      MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSourceForTests(
+          /*platform_aec=*/false, device.input.effects()),
+      LocalMediaStreamAudioSource::ConstraintsRepeatingCallback(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+
+  EXPECT_EQ(LocalMediaStreamAudioSource::GetFramesPerBuffer(
+                device.input, /*requested_buffer_size=*/std::nullopt),
+            kExpectedFallbackFrames);
+  EXPECT_EQ(LocalMediaStreamAudioSource::GetFramesPerBuffer(device.input,
+                                                            kUnsetBufferSize),
+            kExpectedFallbackFrames);
+  EXPECT_EQ(source->GetAudioParameters().frames_per_buffer(),
+            kExpectedFallbackFrames);
 }
 
 }  // namespace
