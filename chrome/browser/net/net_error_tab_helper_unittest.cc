@@ -8,6 +8,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/dino/dino_metrics.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -164,6 +166,20 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
         bogus_url_, (main_frame == MAIN_FRAME) ? main_rfh() : subframe_.get());
     navigation_handle.set_is_in_primary_main_frame(main_frame == MAIN_FRAME);
     navigation_handle.set_net_error_code(net_error);
+    navigation_handle.set_has_committed(true);
+    navigation_handle.set_is_error_page(true);
+    tab_helper_->DidFinishNavigation(&navigation_handle);
+  }
+
+  void DidFinishErrorNavigation(MainFrame main_frame,
+                                const GURL& url,
+                                net::Error net_error,
+                                ui::PageTransition transition) {
+    content::MockNavigationHandle navigation_handle(
+        url, (main_frame == MAIN_FRAME) ? main_rfh() : subframe_.get());
+    navigation_handle.set_is_in_primary_main_frame(main_frame == MAIN_FRAME);
+    navigation_handle.set_net_error_code(net_error);
+    navigation_handle.set_page_transition(transition);
     navigation_handle.set_has_committed(true);
     navigation_handle.set_is_error_page(true);
     tab_helper_->DidFinishNavigation(&navigation_handle);
@@ -461,3 +477,63 @@ TEST_F(NetErrorTabHelperTest, NoDownloadPageLaterForNonHttpSchemes3) {
 }
 
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
+
+TEST_F(NetErrorTabHelperTest, DinoImpressionSourceFromChromeDinoTransitions) {
+  const GURL kDinoUrl("chrome://dino/");
+
+  struct {
+    ui::PageTransition transition;
+    dino::DinoImpressionSource expected_source;
+  } const kCases[] = {
+      {ui::PAGE_TRANSITION_TYPED, dino::DinoImpressionSource::kTyped},
+      {ui::PAGE_TRANSITION_GENERATED,
+       dino::DinoImpressionSource::kOmniboxGenerated},
+      {ui::PAGE_TRANSITION_LINK, dino::DinoImpressionSource::kLink},
+      {ui::PAGE_TRANSITION_RELOAD, dino::DinoImpressionSource::kOther},
+  };
+
+  for (const auto& test_case : kCases) {
+    base::HistogramTester histogram_tester;
+    DidFinishErrorNavigation(MAIN_FRAME, kDinoUrl,
+                             net::ERR_INTERNET_DISCONNECTED,
+                             test_case.transition);
+    histogram_tester.ExpectUniqueSample(dino::kDinoImpressionSourceHistogram,
+                                        test_case.expected_source, 1);
+  }
+}
+
+TEST_F(NetErrorTabHelperTest, DinoImpressionSourceFromOfflineErrorPage) {
+  base::HistogramTester histogram_tester;
+  DidFinishErrorNavigation(MAIN_FRAME, GURL("https://example.com/"),
+                           net::ERR_INTERNET_DISCONNECTED,
+                           ui::PAGE_TRANSITION_TYPED);
+
+  histogram_tester.ExpectUniqueSample(
+      dino::kDinoImpressionSourceHistogram,
+      dino::DinoImpressionSource::kNetworkErrorPage, 1);
+}
+
+TEST_F(NetErrorTabHelperTest,
+       DinoImpressionSourceNotRecordedForOtherNavigations) {
+  base::HistogramTester histogram_tester;
+
+  // Non-offline network errors should not emit DinoImpressionSource.
+  DidFinishErrorNavigation(MAIN_FRAME, GURL("https://example.com/"),
+                           net::ERR_NAME_NOT_RESOLVED,
+                           ui::PAGE_TRANSITION_TYPED);
+  DidFinishErrorNavigation(MAIN_FRAME, GURL("https://example.com/"),
+                           net::ERR_TIMED_OUT, ui::PAGE_TRANSITION_TYPED);
+
+  // Subframe offline errors should not emit DinoImpressionSource.
+  DidFinishErrorNavigation(SUB_FRAME, GURL("https://example.com/"),
+                           net::ERR_INTERNET_DISCONNECTED,
+                           ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+
+  // Debug chrome://network-error navigations should not emit
+  // DinoImpressionSource.
+  DidFinishErrorNavigation(MAIN_FRAME, GURL("chrome://network-error/-106"),
+                           net::ERR_INTERNET_DISCONNECTED,
+                           ui::PAGE_TRANSITION_TYPED);
+
+  histogram_tester.ExpectTotalCount(dino::kDinoImpressionSourceHistogram, 0);
+}

@@ -454,6 +454,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/dino",
     "//chrome/browser/prefs:util",
     "//chrome/common:constants",
     "//chrome/test:test_support",
