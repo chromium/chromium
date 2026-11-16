@@ -1,7 +1,7 @@
 Name: libprocinfo
 URL: https://android.googlesource.com/platform/system/libprocinfo
-Version: N/A
-Revision: 295ed0246f153f155b975acee119d7e3adecadec
+Version: android-17.0.0_r1
+Revision: b58259e79c58deb1132e11d74ea90a2dc441d84f
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/libunwindstack/LICENSE
