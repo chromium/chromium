@@ -11,9 +11,9 @@
 #include "cc/tiles/gpu_image_decode_cache.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/client/context_support.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace content {
 
@@ -92,8 +92,9 @@ WebGraphicsContext3DProviderImpl::GetWebglPreferences() const {
         base::CommandLine::ForCurrentProcess();
     auto gpu_feature_info = GetGpuFeatureInfo();
 
-    if (gpu_feature_info.IsWorkaroundEnabled(MAX_MSAA_SAMPLE_COUNT_2))
+    if (gpu_feature_info.IsWorkaroundEnabled(gpu::MAX_MSAA_SAMPLE_COUNT_2)) {
       prefs.msaa_sample_count = 2;
+    }
 
     if (command_line->HasSwitch(switches::kWebglMSAASampleCount)) {
       std::string sample_count =
