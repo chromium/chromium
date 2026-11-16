@@ -1265,7 +1265,6 @@ NetworkHandler::NetworkHandler(
     const base::UnguessableToken& devtools_token,
     DevToolsIOContext* io_context,
     DevToolsSession* session,
-    StoragePartition* maybe_storage_partition,
     DevToolsAgentHostClient* client,
     base::OnceClosure cleanup_after_modifications_callback)
     : DevToolsDomainHandler(Network::Metainfo::domainName),
@@ -1274,7 +1273,7 @@ NetworkHandler::NetworkHandler(
       io_context_(io_context),
       client_(client),
       browser_context_(nullptr),
-      storage_partition_(maybe_storage_partition),
+      storage_partition_(nullptr),
       host_(nullptr),
       enabled_(false),
 #if BUILDFLAG(ENABLE_REPORTING)

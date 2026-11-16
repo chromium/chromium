@@ -49,6 +49,12 @@ SharedWorkerDevToolsAgentHost::SharedWorkerDevToolsAgentHost(
       instance_(worker_host->instance()),
       browser_context_token_(
           worker_host->GetProcessHost()->GetBrowserContext()->UniqueToken()) {
+  // Let the renderer channel know the process before the renderer is bound, so
+  // that handlers of sessions attached before WorkerReadyForInspection() can
+  // resolve the storage partition and browser context.
+  GetRendererChannel()->SetRenderer(
+      mojo::NullRemote(), mojo::NullReceiver(),
+      worker_host->GetProcessHost()->GetDeprecatedID());
   NotifyCreated();
 }
 
@@ -106,7 +112,7 @@ bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), session,
-      GetProcessHost()->GetStoragePartition(), session->GetClient());
+      session->GetClient());
   // TODO(crbug.com/40154954): support pushing updated loader factories down to
   // renderer.
   session->CreateAndAddHandler<protocol::FetchHandler>(
@@ -157,6 +163,10 @@ void SharedWorkerDevToolsAgentHost::WorkerRestarted(
   CHECK(!worker_host_, base::NotFatalUntil::M159);
   state_ = WORKER_NOT_READY;
   worker_host_ = worker_host;
+  // The restarted worker may live in another process (and storage partition).
+  GetRendererChannel()->SetRenderer(
+      mojo::NullRemote(), mojo::NullReceiver(),
+      worker_host->GetProcessHost()->GetDeprecatedID());
 }
 
 void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {

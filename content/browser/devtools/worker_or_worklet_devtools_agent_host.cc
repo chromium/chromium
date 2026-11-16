@@ -32,6 +32,10 @@ WorkerOrWorkletDevToolsAgentHost::WorkerOrWorkletDevToolsAgentHost(
   CHECK(!devtools_worker_token.is_empty(), base::NotFatalUntil::M159);
   if (auto* rph = RenderProcessHost::FromID(process_id)) {
     process_observation_.Observe(rph);
+    // The process is known before the renderer is bound; expose it to the
+    // handlers of sessions attached in the meantime.
+    GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
+                                      process_id);
   }
   if (base::FeatureList::IsEnabled(
           features::kWorkerOrWorkletAgentDoubleReleaseFix)) {

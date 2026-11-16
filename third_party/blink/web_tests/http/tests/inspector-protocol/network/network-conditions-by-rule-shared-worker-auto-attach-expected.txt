@@ -1,0 +1,5 @@
+Verify that Network.emulateNetworkConditionsByRule sent right after a shared worker is auto-attached (before the worker is resumed) applies to requests made by the worker.
+emulateNetworkConditionsByRule succeeded
+Matching request: fetch failed
+Non-matching request: fetch succeeded with status 200
+

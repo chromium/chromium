@@ -264,7 +264,7 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), session,
-      context_wrapper()->storage_partition(), session->GetClient());
+      session->GetClient());
 
   session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(), session->GetRootSession()->GetClient(),
@@ -396,6 +396,11 @@ void ServiceWorkerDevToolsAgentHost::UpdateProcessHost() {
   process_observation_.Reset();
   if (auto* rph = RenderProcessHost::FromID(worker_process_id_)) {
     process_observation_.Observe(rph);
+    // The process is known before the renderer is bound in
+    // WorkerReadyForInspection(); expose it to the handlers right away.
+    // Installing workers have no process yet, so this is skipped for them.
+    GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
+                                      worker_process_id_.GetUnsafeValue());
   }
 }
 

@@ -83,7 +83,6 @@ class NetworkHandler : public DevToolsDomainHandler,
                  const base::UnguessableToken& devtools_token,
                  DevToolsIOContext* io_context,
                  DevToolsSession* session,
-                 StoragePartition* maybe_storage_partition,
                  DevToolsAgentHostClient* client,
                  base::OnceClosure cleanup_after_modifications_callback =
                      base::OnceClosure());
