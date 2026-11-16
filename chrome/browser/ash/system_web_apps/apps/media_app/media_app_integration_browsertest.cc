@@ -895,6 +895,66 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
   EXPECT_TRUE(system_app->ShouldShowInSearchAndShelf());
 }
 
+namespace {
+
+// Invokes the SubmitForm page handler API from the trusted frame with the
+// given arguments.
+void SubmitFormFromApp(content::WebContents* web_ui,
+                       const std::string& url,
+                       const std::string& header) {
+  constexpr char kSubmitForm[] = R"(
+      (async () => {
+        const {TEST_ONLY} = await import('/launch.js');
+        TEST_ONLY.mediaAppPageHandler.submitForm({url: $1}, [65, 66, 67], $2);
+      })();
+  )";
+  content::ExecuteScriptAsync(web_ui,
+                              content::JsReplace(kSubmitForm, url, header));
+}
+
+constexpr char kSubmitFormBadMessage[] =
+    "Received bad user message: SubmitForm API only works with "
+    "https://lens.google.com and a single Content-Type header";
+
+}  // namespace
+
+// Submitting a form to Lens over https opens a tab to perform the POST.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, SubmitFormOpensLensTab) {
+  content::WebContents* web_ui = LaunchWithNoFiles();
+
+  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
+  SubmitFormFromApp(web_ui, "https://lens.google.com/upload",
+                    "Content-Type: multipart/form-data; boundary=x");
+  content::WebContents* new_tab = tab_waiter.Wait();
+  ASSERT_TRUE(new_tab);
+  EXPECT_EQ(GURL("https://lens.google.com/upload"), new_tab->GetVisibleURL());
+}
+
+// SubmitForm only accepts lens.google.com URLs with the https scheme and
+// default port.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
+                       SubmitFormRequiresHttpsLensUrl) {
+  content::WebContents* web_ui = LaunchWithNoFiles();
+
+  content::RenderProcessHostBadMojoMessageWaiter kill_waiter(
+      web_ui->GetPrimaryMainFrame()->GetProcess());
+  SubmitFormFromApp(web_ui, "https://lens.google.com:8443/upload",
+                    "Content-Type: multipart/form-data; boundary=x");
+  EXPECT_EQ(kSubmitFormBadMessage, kill_waiter.Wait());
+}
+
+// SubmitForm only accepts a single Content-Type header line.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, SubmitFormRejectsExtraHeaders) {
+  content::WebContents* web_ui = LaunchWithNoFiles();
+
+  content::RenderProcessHostBadMojoMessageWaiter kill_waiter(
+      web_ui->GetPrimaryMainFrame()->GetProcess());
+  SubmitFormFromApp(
+      web_ui, "https://lens.google.com/upload",
+      "Content-Type: multipart/form-data; boundary=x\nX-Other: 1");
+  EXPECT_EQ(kSubmitFormBadMessage, kill_waiter.Wait());
+}
+
 // Note: Error reporting tests are limited to one per test instance otherwise we
 // run into "Too many calls to this API" error.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,

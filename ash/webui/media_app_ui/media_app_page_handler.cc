@@ -11,16 +11,16 @@
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_util.h"
+#include "url/origin.h"
 
 namespace ash {
 
 namespace {
-
-constexpr char lensHost[] = "lens.google.com";
 
 void IsFileURLBrowserWritable(
     MediaAppPageHandler::IsFileBrowserWritableCallback callback,
@@ -85,9 +85,15 @@ void MediaAppPageHandler::SubmitForm(const GURL& url,
                                      SubmitFormCallback callback) {
   // We only intend for this API to be used with lens, so crash if used for
   // something else.
-  if (url.GetHost() != lensHost) {
+  const url::Origin kLensOrigin =
+      url::Origin::Create(GURL("https://lens.google.com"));
+  if (!kLensOrigin.IsSameOriginWith(url) ||
+      !base::StartsWith(
+          header, "Content-Type:", base::CompareCase::INSENSITIVE_ASCII) ||
+      !net::HttpUtil::IsValidHeaderValue(header)) {
     receiver_.ReportBadMessage(
-        base::StrCat({"SubmitForm API only works with ", lensHost}));
+        "SubmitForm API only works with https://lens.google.com and a single "
+        "Content-Type header");
     return;
   }
   media_app_ui_->delegate()->SubmitForm(url, payload, header);
