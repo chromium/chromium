@@ -258,10 +258,9 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
       image_pool_ = gpu::SharedImagePool<gpu::ClientImage>::Create(
           image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
           expiration_time);
+      resource_ = image_pool_->GetImage();
     }
   }
-
-  resource_ = NewOrRecycledResource();
 }
 
 VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
@@ -305,21 +304,6 @@ bool VideoFrameAcceleratedSnapshotPool::IsValid() const {
          raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
 }
 
-scoped_refptr<gpu::ClientImage>
-VideoFrameAcceleratedSnapshotPool::NewOrRecycledResource() {
-  if (!image_pool_) {
-    return nullptr;
-  }
-
-  auto resource = image_pool_->GetImage();
-  if (!resource) {
-    return nullptr;
-  }
-
-  DCHECK(resource->HasOneRef());
-  return resource;
-}
-
 bool VideoFrameAcceleratedSnapshotPool::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
   // We have the only ref to the resource which implies there are no active
@@ -343,7 +327,7 @@ void VideoFrameAcceleratedSnapshotPool::EnsureResourceReadyForDraw() {
   if (ShouldReplaceTargetBuffer(cached_content_id_)) {
     cached_content_id_ = PaintImage::kInvalidContentId;
 
-    resource_ = NewOrRecycledResource();
+    resource_ = image_pool_->GetImage();
 
     // As the image might have just been created, we need to ensure that it is
     // cleared on the next BeginRasterCHROMIUM to satisfy service-side security

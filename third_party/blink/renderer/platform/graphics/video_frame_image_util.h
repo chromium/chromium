@@ -80,7 +80,6 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
 
   void EnsureResourceReadyForDraw();
   bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
-  scoped_refptr<gpu::ClientImage> NewOrRecycledResource();
   gpu::raster::RasterInterface* RasterInterface() const;
 
   const CanvasSnapshotInfo info_;
