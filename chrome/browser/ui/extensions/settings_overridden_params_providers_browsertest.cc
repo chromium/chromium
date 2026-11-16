@@ -31,6 +31,7 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/resources_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
@@ -52,6 +53,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
@@ -63,14 +65,18 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
+#include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"  // IWYU pragma: keep
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
@@ -992,10 +998,19 @@ class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
         gfx::kPlaceholderColor + next_icon_offset_++));
   }
 
+  void ExpectNoIconFetch(const GURL& favicon_url) {
+    CHECK(!favicon_url.is_empty());
+    auto* service = static_cast<MockImageFetcherService*>(
+        ImageFetcherServiceFactory::GetForKey(profile()->GetProfileKey()));
+    ASSERT_TRUE(service);
+    EXPECT_CALL(*service->mock_image_fetcher(),
+                FetchImageAndData_(favicon_url, _, _, _))
+        .Times(0);
+  }
+
   // Configures mock icon fetch expectations for the given search engine and
   // returns the expected icon that should appear in the dialog setting.
-  ui::ImageModel SetUpExpectedEngineIcon(const TemplateURL& template_url) {
-    const GURL favicon_url = template_url.favicon_url();
+  ui::ImageModel SetUpExpectedEngineIcon(const GURL& favicon_url) {
     CHECK(!favicon_url.is_empty());
     gfx::Image expected_icon = CreateTestIcon();
     auto* service = static_cast<MockImageFetcherService*>(
@@ -1013,6 +1028,22 @@ class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
     return ui::ImageModel::FromImage(expected_icon);
   }
 
+  ui::ImageModel SetUpExpectedEngineIcon(const TemplateURL& template_url) {
+    if (std::optional<ui::ImageModel> builtin_icon =
+            GetExpectedBuiltinIcon(template_url)) {
+      ExpectNoIconFetch(template_url.favicon_url());
+      return *builtin_icon;
+    }
+    return SetUpExpectedEngineIcon(template_url.favicon_url());
+  }
+
+  ui::ImageModel SetUpExpectedEngineIcon(
+      const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
+    std::unique_ptr<TemplateURLData> data =
+        TemplateURLDataFromPrepopulatedEngine(engine);
+    return SetUpExpectedEngineIcon(TemplateURL(*data));
+  }
+
   // Returns the expected fallback globe icon used when no search engine
   // favicon is available.
   ui::ImageModel GetExpectedFallbackIcon() {
@@ -1020,6 +1051,43 @@ class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
         features::IsRoundedIconsEnabled() ? vector_icons::kGlobeIcon
                                           : vector_icons::kGlobeOldIcon,
         ui::kColorIcon, extension_misc::EXTENSION_ICON_SMALLISH);
+  }
+
+  // Loads and resizes the bundled icon resource for the given search engine, if
+  // one exists. Note that this intentionally mirrors the production resource
+  // lookup: mocking the resource bundle would still require duplicating the
+  // resource ID resolution here while adding significant mock setup and global
+  // state management, so reading the real bundled resource directly is simpler.
+  ui::ImageModel LoadExpectedBuiltinIcon(const std::string& image_resource_id) {
+    const int resource_id =
+        ResourcesUtil::GetThemeResourceId(image_resource_id);
+    CHECK_NE(resource_id, -1);
+    const gfx::ImageSkia* image_skia =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
+    CHECK(image_skia && !image_skia->isNull());
+    gfx::Size icon_size(extension_misc::EXTENSION_ICON_SMALLISH,
+                        extension_misc::EXTENSION_ICON_SMALLISH);
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            *image_skia, skia::ImageOperations::RESIZE_BEST, icon_size));
+  }
+
+  std::optional<ui::ImageModel> GetExpectedBuiltinIcon(
+      const TemplateURL& template_url) {
+    if (!template_url.GetBaseBuiltinResourceId().has_value()) {
+      return std::nullopt;
+    }
+    return LoadExpectedBuiltinIcon(template_url.GetBuiltinImageResourceId());
+  }
+
+  std::optional<ui::ImageModel> GetExpectedBuiltinIcon(
+      const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
+    std::optional<std::string> resource_id =
+        TemplateURL::GetBuiltinImageResourceId(engine);
+    if (!resource_id.has_value()) {
+      return std::nullopt;
+    }
+    return LoadExpectedBuiltinIcon(*resource_id);
   }
 
   // Returns the first non-Google prepopulated search engine from the
@@ -1325,4 +1393,33 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IconsEqual(previous_setting->image, new_setting->image));
 }
 
+// Verifies that a prepopulated search engine without a built-in resource icon
+// (such as Baidu) falls back to fetching its favicon over the network.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
+    PrepopulatedEngineWithoutBuiltinResourceFallsBackToNetworkFetch) {
+  ASSERT_FALSE(
+      GetExpectedBuiltinIcon(TemplateURLPrepopulateData::baidu).has_value());
+  const GURL baidu_favicon_url(TemplateURLPrepopulateData::baidu.favicon_url);
+  EXPECT_FALSE(baidu_favicon_url.is_empty());
+
+  const extensions::Extension* baidu_extension = InstallCustomSearchExtension(
+      "BaiduOverrideExtension", "baidu_ext",
+      "https://www.baidu.com/s?wd={searchTerms}",
+      /*prepopulated_id=*/std::nullopt,
+      GURL("https://example.com/custom_baidu_favicon.ico"));
+  ASSERT_TRUE(baidu_extension);
+
+  const ui::ImageModel expected_baidu_icon =
+      SetUpExpectedEngineIcon(TemplateURLPrepopulateData::baidu);
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      GetSearchOverriddenParamsSync(web_contents());
+  ASSERT_TRUE(params);
+
+  auto new_setting = params->content.new_setting;
+  ASSERT_TRUE(new_setting.has_value());
+  EXPECT_EQ(TemplateURLPrepopulateData::baidu.name, new_setting.value().text);
+  EXPECT_TRUE(IconsEqual(expected_baidu_icon, new_setting.value().image));
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

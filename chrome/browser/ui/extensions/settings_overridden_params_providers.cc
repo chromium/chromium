@@ -25,6 +25,7 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/resources_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/search_override_stack.h"
@@ -57,9 +58,11 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -128,6 +131,45 @@ GetPrepopulatedEngineForSearchUrl(const GURL& search_url) {
   return nullptr;
 }
 
+constexpr extension_misc::ExtensionIcons kDialogIconSize =
+    extension_misc::EXTENSION_ICON_SMALLISH;
+
+// Loads a built-in search engine icon from the resource bundle for the given
+// `image_resource_id`, resized to the dialog icon size.
+ui::ImageModel LoadBuiltinSearchEngineIcon(
+    const std::string& image_resource_id) {
+  const int resource_id = ResourcesUtil::GetThemeResourceId(image_resource_id);
+  CHECK_NE(resource_id, -1);
+  const gfx::ImageSkia* image_skia =
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
+  CHECK(image_skia && !image_skia->isNull());
+  gfx::Size icon_size(kDialogIconSize, kDialogIconSize);
+  return ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          *image_skia, skia::ImageOperations::RESIZE_BEST, icon_size));
+}
+
+// Attempts to load a built-in search engine icon for the given search engine.
+// Returns `std::nullopt` if no built-in resource is available (for example, on
+// non-branded builds or for engines without bundled icon assets).
+std::optional<ui::ImageModel> GetBuiltinSearchEngineIcon(
+    const TemplateURL& template_url) {
+  if (!template_url.GetBaseBuiltinResourceId().has_value()) {
+    return std::nullopt;
+  }
+  return LoadBuiltinSearchEngineIcon(template_url.GetBuiltinImageResourceId());
+}
+
+std::optional<ui::ImageModel> GetBuiltinSearchEngineIcon(
+    const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
+  std::optional<std::string> resource_id =
+      TemplateURL::GetBuiltinImageResourceId(engine);
+  if (!resource_id.has_value()) {
+    return std::nullopt;
+  }
+  return LoadBuiltinSearchEngineIcon(*resource_id);
+}
+
 // Returns the number of extensions that are currently enabled that override the
 // default search setting.
 size_t GetNumberOfExtensionsThatOverrideSearch(Profile* profile) {
@@ -160,7 +202,11 @@ struct SecondarySearchInfo {
   // The name of the search engine, if available.
   std::u16string name;
 
-  // The favicon URL, if available.
+  // A built-in resource icon for the search engine, if available.
+  std::optional<ui::ImageModel> builtin_icon;
+
+  // The favicon URL to fetch over the network when no built-in icon is
+  // available.
   GURL favicon_url;
 };
 
@@ -227,21 +273,28 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
   if (base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog)) {
     if (secondary_extension_search) {
-      // Display the known name and favicon for the secondary extension's
+      // Display the known name and icon for the secondary extension's
       // search, if it is known by the browser. Otherwise, show the formatted
       // search URL and supply no favicon (downstream code can use a fallback
       // icon).
       if (const auto* prepopulated_engine =
               GetPrepopulatedEngineForSearchUrl(search_url)) {
         search_info.name = std::u16string(prepopulated_engine->name);
-        search_info.favicon_url = GURL(prepopulated_engine->favicon_url);
+        search_info.builtin_icon =
+            GetBuiltinSearchEngineIcon(*prepopulated_engine);
+        if (!search_info.builtin_icon) {
+          search_info.favicon_url = GURL(prepopulated_engine->favicon_url);
+        }
       } else {
         search_info.name = FormatSearchUrl(search_url);
         search_info.favicon_url = GURL();
       }
     } else {
       search_info.name = secondary_search->short_name();
-      search_info.favicon_url = secondary_search->favicon_url();
+      search_info.builtin_icon = GetBuiltinSearchEngineIcon(*secondary_search);
+      if (!search_info.builtin_icon) {
+        search_info.favicon_url = secondary_search->favicon_url();
+      }
     }
   } else {
     search_info.name = secondary_search->short_name();
@@ -256,9 +309,6 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
 
   return search_info;
 }
-
-inline constexpr extension_misc::ExtensionIcons kDialogIconSize =
-    extension_misc::EXTENSION_ICON_SMALLISH;
 
 // Creates a fallback icon for a search engine, in case a favicon can't be
 // fetched.
@@ -668,9 +718,13 @@ GetSearchOverriddenParams(Profile* profile) {
     previous_setting.text = secondary_search.name;
     previous_setting.description = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_PREVIOUS_CHOICE);
-    previous_setting.image = CreateFallbackSearchIcon();
-    if (secondary_search.favicon_url.is_valid()) {
-      previous_setting.favicon_url = secondary_search.favicon_url;
+    if (secondary_search.builtin_icon.has_value()) {
+      previous_setting.image = *secondary_search.builtin_icon;
+    } else {
+      previous_setting.image = CreateFallbackSearchIcon();
+      if (secondary_search.favicon_url.is_valid()) {
+        previous_setting.favicon_url = secondary_search.favicon_url;
+      }
     }
 
     // New search engine from the overriding extension:
@@ -680,13 +734,18 @@ GetSearchOverriddenParams(Profile* profile) {
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE);
     new_setting.image = CreateFallbackSearchIcon();
 
-    // Display the known name and favicon for the extension's search,
+    // Display the known name and icon for the extension's search,
     // if it is known by the browser. Otherwise, show the formatted search URL
     // and a generic fallback icon.
     if (const auto* prepopulated_engine =
             GetPrepopulatedEngineForSearchUrl(search_url)) {
       new_setting.text = prepopulated_engine->name;
-      new_setting.favicon_url = GURL(prepopulated_engine->favicon_url);
+      if (std::optional<ui::ImageModel> builtin_icon =
+              GetBuiltinSearchEngineIcon(*prepopulated_engine)) {
+        new_setting.image = *builtin_icon;
+      } else {
+        new_setting.favicon_url = GURL(prepopulated_engine->favicon_url);
+      }
     } else {
       new_setting.text = FormatSearchUrl(search_url);
     }

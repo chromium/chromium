@@ -188,6 +188,7 @@ source_set("impl") {
     ":extension_post_install_dialog",
     ":extensions",
     "//chrome/app:generated_resources",
+    "//chrome/browser:resources_util",
     "//chrome/browser/extensions",
     "//chrome/browser/favicon",
     "//chrome/browser/image_fetcher",
@@ -446,6 +447,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/app:command_ids",
       "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser:resources_util",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/image_fetcher",

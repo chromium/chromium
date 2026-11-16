@@ -333,6 +333,11 @@ bool ComputeIsTrustedGoogleEngine(const TemplateURL& template_url,
              SEARCH_ENGINE_GOOGLE;
 }
 
+std::string GetBuiltinImageResourceIdForBaseId(
+    std::string_view base_resource_id) {
+  return base::StrCat({"IDR_", base_resource_id, "_IMAGE"});
+}
+
 }  // namespace
 
 // TemplateURLRef::SearchTermsArgs --------------------------------------------
@@ -2128,10 +2133,22 @@ std::optional<std::string_view> TemplateURL::GetBaseBuiltinResourceId() const {
   return base_builtin_resource_id_.value();
 }
 
+// static
+std::optional<std::string> TemplateURL::GetBuiltinImageResourceId(
+    const TemplateURLPrepopulateData::PrepopulatedEngine& engine) {
+  if constexpr (kEnableBuiltinSearchProviderAssets) {
+    if (engine.base_builtin_resource_id) {
+      return GetBuiltinImageResourceIdForBaseId(
+          engine.base_builtin_resource_id);
+    }
+  }
+  return std::nullopt;
+}
+
 std::string TemplateURL::GetBuiltinImageResourceId() const {
   std::optional<std::string_view> base_resource_id = GetBaseBuiltinResourceId();
   if (base_resource_id.has_value()) {
-    return base::StrCat({"IDR_", base_resource_id.value(), "_IMAGE"});
+    return GetBuiltinImageResourceIdForBaseId(base_resource_id.value());
   }
   return "IDR_DEFAULT_FAVICON";
 }

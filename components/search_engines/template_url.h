@@ -35,6 +35,10 @@
 
 class TemplateURL;
 
+namespace TemplateURLPrepopulateData {
+struct PrepopulatedEngine;
+}
+
 // TemplateURLRef -------------------------------------------------------------
 
 // A TemplateURLRef represents a single URL within the larger TemplateURL class
@@ -952,6 +956,11 @@ class TemplateURL {
   // Returns the resource ID for the logo (small / favicon style) associated
   // with this template URL, or a default image if none is associated with it.
   std::string GetBuiltinImageResourceId() const;
+
+  // Returns the resource ID for the logo (small / favicon style) associated
+  // with `engine`, if it is provided from built-in data.
+  static std::optional<std::string> GetBuiltinImageResourceId(
+      const TemplateURLPrepopulateData::PrepopulatedEngine& engine);
 
   // Returns the resource ID for the search engine description string associated
   // with this template URL, or an empty string if none is associated with it.
