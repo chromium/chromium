@@ -380,6 +380,43 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION + ":arm/direction_1")
+    public void testSettingsIaReorganization_direction1NestsSiteSettingsAndSafetyCheck() {
+        startSettings();
+
+        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_CONTENT_SETTINGS));
+        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION + ":arm/direction_2")
+    public void testSettingsIaReorganization_direction2NestsSafetyCheck() {
+        startSettings();
+
+        assertSectionId(
+                SettingsIaArmHelper.GROUP_SAFETY_AND_PROTECTION,
+                MainSettings.PREF_CONTENT_SETTINGS);
+        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_SAFETY_HUB));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION + ":arm/direction_3")
+    public void testSettingsIaReorganization_direction3KeepsSiteSettingsAndSafetyCheck() {
+        startSettings();
+
+        assertSectionId(
+                SettingsIaArmHelper.GROUP_SAFETY_AND_PROTECTION,
+                MainSettings.PREF_CONTENT_SETTINGS);
+        if (!DeviceInfo.isAutomotive()) {
+            assertSectionId(
+                    SettingsIaArmHelper.GROUP_SAFETY_AND_PROTECTION, MainSettings.PREF_SAFETY_HUB);
+        }
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)
     public void testSettingsIaReorganizationDisabled_keepsHeadersAndNoGroups() {
         startSettings();

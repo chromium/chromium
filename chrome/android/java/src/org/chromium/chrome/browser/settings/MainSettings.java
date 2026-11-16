@@ -487,16 +487,17 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         if (!shouldShowSafetyHubPref()) {
-            getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_HUB));
+            removePreferenceIfPresent(PREF_SAFETY_HUB);
         } else {
-            findPreference(PREF_SAFETY_HUB)
-                    .setOnPreferenceClickListener(
-                            preference -> {
-                                SafetyHubMetricUtils.recordExternalInteractions(
-                                        SafetyHubMetricUtils.ExternalInteractions
-                                                .OPEN_FROM_SETTINGS_PAGE);
-                                return false;
-                            });
+            // Set on the cached row, which isn't on the screen when the arm nests it in privacy.
+            Preference safetyHub = mAllPreferences.get(PREF_SAFETY_HUB);
+            assumeNonNull(safetyHub);
+            safetyHub.setOnPreferenceClickListener(
+                    preference -> {
+                        SafetyHubMetricUtils.recordExternalInteractions(
+                                SafetyHubMetricUtils.ExternalInteractions.OPEN_FROM_SETTINGS_PAGE);
+                        return false;
+                    });
         }
         maybeAddSearchHeaderPreference();
     }
@@ -563,8 +564,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     /**
      * Drops the category headers, orders the rows by the {@link SettingsIaArmHelper} layout and
-     * records each row's group. Containment then splits cards where the group changes. The promo
-     * card stays on top, outside the groups. The search header is added after this runs.
+     * records each row's group. Containment then splits cards where the group changes. Rows the arm
+     * nests in privacy and security are removed. The promo card stays on top, outside the groups.
+     * The search header is added after this runs.
      */
     private void groupPreferences() {
         for (Preference preference : mAllPreferences.values()) {
@@ -572,6 +574,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
             if (key != null && preference instanceof PreferenceCategory) {
                 removePreferenceIfPresent(key);
             }
+        }
+        for (String key : SettingsIaArmHelper.getRowsNestedInPrivacy()) {
+            removePreferenceIfPresent(key);
         }
 
         // Groups start right after the promo card, which stays at the top.
@@ -1033,7 +1038,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         Context context, SettingsIndexData indexData, Profile profile) {
                     indexData.removeEntry(getUniqueId(PREF_SETTINGS_PROMO_CARD));
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)) {
-                        SettingsIaArmHelper.setGroupHeaders(context, indexData, this);
+                        SettingsIaArmHelper.updateSearchIndex(context, indexData, this);
                     }
                     if (!shouldShowAddressBarPref(context)) {
                         indexData.removeEntry(getUniqueId(PREF_ADDRESS_BAR));

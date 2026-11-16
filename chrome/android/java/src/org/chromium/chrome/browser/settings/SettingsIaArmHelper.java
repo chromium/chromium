@@ -17,7 +17,9 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Holds the layout of the top-level settings page used when SettingsIaReorganization is enabled,
@@ -57,48 +59,75 @@ public final class SettingsIaArmHelper {
         }
     }
 
-    private static final List<Group> GROUPS =
-            List.of(
-                    new Group(
-                            GROUP_USER_AND_ACCOUNT,
-                            R.string.prefs_group_user_and_account,
-                            List.of(MainSettings.PREF_SIGN_IN, MainSettings.PREF_GOOGLE_SERVICES)),
-                    new Group(
-                            GROUP_SAFETY_AND_PROTECTION,
-                            R.string.prefs_group_safety_and_protection,
-                            List.of(
-                                    MainSettings.PREF_PRIVACY,
-                                    // TODO(crbug.com/581489048): Move site settings and safety
-                                    // check into privacy and security for direction 1, and only
-                                    // safety check for direction 2.
-                                    MainSettings.PREF_CONTENT_SETTINGS,
-                                    MainSettings.PREF_SAFETY_HUB,
-                                    MainSettings.PREF_AUTOFILL_AND_PASSWORDS)),
-                    new Group(
-                            GROUP_PERSONALIZATION,
-                            R.string.prefs_group_personalization,
-                            List.of(
-                                    MainSettings.PREF_APPEARANCE,
-                                    // Shown only until they move into appearance.
-                                    MainSettings.PREF_ADDRESS_BAR,
-                                    MainSettings.PREF_HOMEPAGE,
-                                    MainSettings.PREF_TABS,
-                                    MainSettings.PREF_SEARCH_ENGINE,
-                                    MainSettings.PREF_NOTIFICATIONS,
-                                    MainSettings.PREF_ON_STARTUP,
-                                    MainSettings.PREF_DEFAULT_BROWSER,
-                                    MainSettings.PREF_GLIC)),
-                    new Group(
-                            GROUP_SUPPORT,
-                            R.string.prefs_group_support,
-                            List.of(
-                                    MainSettings.PREF_LANGUAGES,
-                                    MainSettings.PREF_DOWNLOADS,
-                                    MainSettings.PREF_ACCESSIBILITY,
-                                    MainSettings.PREF_DEVELOPER,
-                                    MainSettings.PREF_ABOUT_CHROME)));
+    /**
+     * Rows that some arms move from the top level into privacy and security. Direction 1 nests
+     * both, direction 2 nests only safety check and direction 3 keeps both on the top level.
+     */
+    private static final Set<String> NESTED_IN_PRIVACY_DIRECTION_1 =
+            Set.of(MainSettings.PREF_CONTENT_SETTINGS, MainSettings.PREF_SAFETY_HUB);
+
+    private static final Set<String> NESTED_IN_PRIVACY_DIRECTION_2 =
+            Set.of(MainSettings.PREF_SAFETY_HUB);
+
+    private static final List<Group> GROUPS_DIRECTION_1 =
+            createGroups(NESTED_IN_PRIVACY_DIRECTION_1);
+    private static final List<Group> GROUPS_DIRECTION_2 =
+            createGroups(NESTED_IN_PRIVACY_DIRECTION_2);
+    private static final List<Group> GROUPS_DIRECTION_3 = createGroups(Set.of());
 
     private SettingsIaArmHelper() {}
+
+    /**
+     * Returns the top-level groups in display order, leaving out {@code nestedInPrivacy}. The order
+     * follows the desktop Glow Up layout.
+     */
+    private static List<Group> createGroups(Set<String> nestedInPrivacy) {
+        return List.of(
+                new Group(
+                        GROUP_USER_AND_ACCOUNT,
+                        R.string.prefs_group_user_and_account,
+                        List.of(MainSettings.PREF_SIGN_IN, MainSettings.PREF_GOOGLE_SERVICES)),
+                new Group(
+                        GROUP_SAFETY_AND_PROTECTION,
+                        R.string.prefs_group_safety_and_protection,
+                        withoutNested(
+                                nestedInPrivacy,
+                                MainSettings.PREF_AUTOFILL_AND_PASSWORDS,
+                                MainSettings.PREF_PRIVACY,
+                                MainSettings.PREF_CONTENT_SETTINGS,
+                                MainSettings.PREF_SAFETY_HUB)),
+                new Group(
+                        GROUP_PERSONALIZATION,
+                        R.string.prefs_group_personalization,
+                        List.of(
+                                MainSettings.PREF_GLIC,
+                                MainSettings.PREF_APPEARANCE,
+                                // Shown only until they move into appearance.
+                                MainSettings.PREF_ADDRESS_BAR,
+                                MainSettings.PREF_HOMEPAGE,
+                                MainSettings.PREF_TABS,
+                                MainSettings.PREF_NOTIFICATIONS,
+                                MainSettings.PREF_ON_STARTUP,
+                                MainSettings.PREF_DEFAULT_BROWSER,
+                                MainSettings.PREF_SEARCH_ENGINE)),
+                new Group(
+                        GROUP_SUPPORT,
+                        R.string.prefs_group_support,
+                        List.of(
+                                MainSettings.PREF_LANGUAGES,
+                                MainSettings.PREF_DOWNLOADS,
+                                MainSettings.PREF_ACCESSIBILITY,
+                                MainSettings.PREF_DEVELOPER,
+                                MainSettings.PREF_ABOUT_CHROME)));
+    }
+
+    private static List<String> withoutNested(Set<String> nestedInPrivacy, String... keys) {
+        List<String> result = new ArrayList<>();
+        for (String key : keys) {
+            if (!nestedInPrivacy.contains(key)) result.add(key);
+        }
+        return result;
+    }
 
     /** Returns the experiment arm, or {@link Arm#DIRECTION_1} if the param is not a known arm. */
     static @Arm String getArm() {
@@ -112,23 +141,52 @@ public final class SettingsIaArmHelper {
         }
     }
 
-    /**
-     * Returns the top-level groups in display order.
-     *
-     * <p>TODO(crbug.com/581489048): All arms use the same layout until directions 2 and 3 are
-     * defined.
-     */
+    /** Returns the top-level groups of the current arm in display order. */
     static List<Group> getGroups() {
-        return GROUPS;
+        return getGroups(getArm());
+    }
+
+    /** Returns the top-level groups of {@code arm} in display order. */
+    static List<Group> getGroups(@Arm String arm) {
+        switch (arm) {
+            case Arm.DIRECTION_2:
+                return GROUPS_DIRECTION_2;
+            case Arm.DIRECTION_3:
+                return GROUPS_DIRECTION_3;
+            default:
+                return GROUPS_DIRECTION_1;
+        }
+    }
+
+    /** Returns the keys of the top-level rows the current arm moves into privacy and security. */
+    static Set<String> getRowsNestedInPrivacy() {
+        return getRowsNestedInPrivacy(getArm());
+    }
+
+    /** Returns the keys of the top-level rows {@code arm} moves into privacy and security. */
+    static Set<String> getRowsNestedInPrivacy(@Arm String arm) {
+        switch (arm) {
+            case Arm.DIRECTION_2:
+                return NESTED_IN_PRIVACY_DIRECTION_2;
+            case Arm.DIRECTION_3:
+                return Set.of();
+            default:
+                return NESTED_IN_PRIVACY_DIRECTION_1;
+        }
     }
 
     /**
-     * Shows each top-level row under its group's name in the settings search results, since the old
-     * category headers are no longer on the page.
+     * Updates the top-level settings search entries for the current arm: each row is shown under
+     * its group's name, since the old category headers are no longer on the page, and rows nested
+     * in privacy and security are removed from the top level.
      */
-    static void setGroupHeaders(
+    static void updateSearchIndex(
             Context context, SettingsIndexData indexData, BaseSearchIndexProvider provider) {
-        for (Group group : getGroups()) {
+        @Arm String arm = getArm();
+        for (String key : getRowsNestedInPrivacy(arm)) {
+            indexData.removeEntry(provider.getUniqueId(key));
+        }
+        for (Group group : getGroups(arm)) {
             String name = context.getString(group.nameRes);
             for (String key : group.keys) {
                 String id = provider.getUniqueId(key);
