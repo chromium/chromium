@@ -1712,7 +1712,8 @@ int64_t AwContents::StartPrerendering(
           std::move(preload_pipeline_info),
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{},
-          /*allow_reuse=*/false);
+          /*allow_reuse=*/false,
+          /*navigation_ui_data=*/nullptr);
 
   int64_t host_id = -1;
   if (prerender_handle) {

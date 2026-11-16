@@ -381,7 +381,19 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns the page transition type.
   virtual ui::PageTransition GetPageTransition() = 0;
 
-  // Returns the NavigationUIData associated with the navigation.
+  // Returns the `NavigationUIData` associated with the navigation.
+  //
+  // - If upfront `NavigationUIData` was supplied (via `LoadURLParams`,
+  //   `OpenURLParams`, or `WebContents::StartPrerendering()`), this is non-null
+  //   from `NavigationHandle` creation onward, and
+  //   `NavigationUIData::PopulateFromNavigationHandle()` is called in
+  //   `NavigationRequest::StartNavigation()` before `DidStartNavigation()`.
+  // - If no upfront `NavigationUIData` was supplied, this is still `nullptr`
+  //   during `DidStartNavigation()` and is only created in `WillStartRequest()`
+  //   via `ContentBrowserClient::GetNavigationUIData()` (or remains `nullptr`
+  //   if the navigation does not use a `NavigationURLLoader`).
+  //
+  // See `NavigationUIData` for full lifecycle details.
   virtual NavigationUIData* GetNavigationUIData() = 0;
 
   // Whether the target URL cannot be handled by the browser's internal protocol

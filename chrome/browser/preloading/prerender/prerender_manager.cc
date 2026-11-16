@@ -372,7 +372,8 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       /*prerender_navigation_handle_callback=*/
       page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
           chrome_navigation_initiator::kOmniboxDirectUrlInput),
-      /*allow_reuse=*/false);
+      /*allow_reuse=*/false,
+      /*navigation_ui_data=*/nullptr);
 
   if (direct_url_input_prerender_handle_) {
     return direct_url_input_prerender_handle_->GetWeakPtr();
@@ -443,7 +444,8 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
           base::BindRepeating(
               &PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle,
               GetWeakPtr()),
-          /*allow_reuse=*/true);
+          /*allow_reuse=*/true,
+          /*navigation_ui_data=*/nullptr);
 
   if (search_prewarm_handle) {
     auto* service = SearchPreloadProgressServiceFactory::GetForProfile(
@@ -523,7 +525,8 @@ void PrerenderManager::StartPrerenderSearchResult(
           /*prerender_navigation_handle_callback=*/
           page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
               chrome_navigation_initiator::kOmniboxDefaultSearchEngine),
-          features::kPrerender2ReuseSearchResultHost.Get());
+          features::kPrerender2ReuseSearchResultHost.Get(),
+          /*navigation_ui_data=*/nullptr);
 
   if (prerender_handle) {
     CHECK(!search_prerender_task_)

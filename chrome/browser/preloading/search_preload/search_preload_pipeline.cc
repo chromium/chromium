@@ -186,7 +186,8 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrerender(
       content::PreloadingHoldbackStatus::kUnspecified, pipeline_info_, attempt,
       std::move(url_match_predicate),
       /*prerender_navigation_handle_callback=*/{},
-      /*allow_reuse=*/false);
+      /*allow_reuse=*/false,
+      /*navigation_ui_data=*/nullptr);
   return SearchPreloadSignalResult::kPrerenderTriggered;
 }
 

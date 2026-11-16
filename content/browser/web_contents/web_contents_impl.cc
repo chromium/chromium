@@ -160,6 +160,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_throttle_registry.h"
+#include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/preload_pipeline_info.h"
@@ -13451,7 +13452,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
         url_match_predicate,
     base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback,
-    bool allow_reuse) {
+    bool allow_reuse,
+    std::unique_ptr<NavigationUIData> navigation_ui_data) {
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*speculation_rules_params=*/std::nullopt, content::Referrer(),
@@ -13472,6 +13474,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       << "additional_headers is supported only on Android WebView.";
 #endif  // BUILDFLAG(IS_ANDROID)
   attributes.holdback_status_override = holdback_status_override;
+  attributes.navigation_ui_data = std::move(navigation_ui_data);
 
   PrerenderHostId prerender_host_id =
       GetPrerenderHostRegistry()->CreateAndStartHost(attributes,

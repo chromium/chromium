@@ -37,12 +37,15 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/common/frame.mojom.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_details.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -4505,6 +4508,208 @@ TEST_F(NavigationControllerTest, SubFrameNavigationUIData) {
 
   // We DCHECK to prevent misuse of the API.
   EXPECT_DCHECK_DEATH(navigation->Start());
+}
+
+// Records `TestNavigationUIData` state observed at `DidStartNavigation()`.
+class DidStartNavigationUIDataRecorder : public WebContentsObserver {
+ public:
+  explicit DidStartNavigationUIDataRecorder(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~DidStartNavigationUIDataRecorder() override = default;
+
+  void DidStartNavigation(NavigationHandle* navigation_handle) override {
+    observed_count_++;
+    last_navigation_id_ = navigation_handle->GetNavigationId();
+    auto* ui_data = static_cast<TestNavigationUIData*>(
+        navigation_handle->GetNavigationUIData());
+    if (!ui_data) {
+      had_ui_data_ = false;
+      precursor_data_.reset();
+      populated_navigation_id_.reset();
+      return;
+    }
+
+    had_ui_data_ = true;
+    precursor_data_ = ui_data->precursor_data();
+    populated_navigation_id_ = ui_data->populated_navigation_id();
+  }
+
+  int observed_count() const { return observed_count_; }
+  bool had_ui_data() const { return had_ui_data_; }
+  std::optional<int64_t> last_navigation_id() const {
+    return last_navigation_id_;
+  }
+  std::optional<int> precursor_data() const { return precursor_data_; }
+  std::optional<int64_t> populated_navigation_id() const {
+    return populated_navigation_id_;
+  }
+
+ private:
+  int observed_count_ = 0;
+  bool had_ui_data_ = false;
+  std::optional<int64_t> last_navigation_id_;
+  std::optional<int> precursor_data_;
+  std::optional<int64_t> populated_navigation_id_;
+};
+
+// Verifies upfront `NavigationUIData` is populated before `DidStartNavigation`
+// on a standard HTTP main-frame navigation.
+TEST_F(NavigationControllerTest,
+       MainFrameNavigationUIDataPopulatedBeforeDidStartNavigation) {
+  DidStartNavigationUIDataRecorder recorder(contents());
+
+  const GURL kHttpUrl("http://foo1");
+  const int kPrecursorData = 17;
+  auto navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(kHttpUrl, contents());
+  NavigationController::LoadURLParams load_url_params(kHttpUrl);
+  load_url_params.navigation_ui_data =
+      std::make_unique<TestNavigationUIData>(kPrecursorData);
+  navigation->SetLoadURLParams(&load_url_params);
+  navigation->Commit();
+
+  EXPECT_EQ(1, recorder.observed_count());
+  EXPECT_TRUE(recorder.had_ui_data());
+  EXPECT_EQ(kPrecursorData, recorder.precursor_data());
+  EXPECT_EQ(recorder.last_navigation_id(), recorder.populated_navigation_id());
+}
+
+// Verifies an untagged same-document navigation does not allocate
+// `NavigationUIData`.
+TEST_F(NavigationControllerTest,
+       UntaggedSameDocumentNavigationDoesNotAllocateNavigationUIData) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("http://foo1"));
+
+  DidStartNavigationUIDataRecorder recorder(contents());
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://foo1#frag"),
+                                                     main_test_rfh());
+
+  EXPECT_EQ(1, recorder.observed_count());
+  EXPECT_FALSE(recorder.had_ui_data());
+}
+
+// Verifies upfront `NavigationUIData` is populated before `DidStartNavigation`
+// even when the navigation does not use a `NavigationURLLoader`
+// (`about:blank`).
+TEST_F(NavigationControllerTest,
+       AboutBlankNavigationUIDataPopulatedBeforeDidStartNavigation) {
+  DidStartNavigationUIDataRecorder recorder(contents());
+
+  const GURL kAboutBlankUrl(url::kAboutBlankURL);
+  const int kPrecursorData = 29;
+  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      kAboutBlankUrl, contents());
+  NavigationController::LoadURLParams load_url_params(kAboutBlankUrl);
+  load_url_params.navigation_ui_data =
+      std::make_unique<TestNavigationUIData>(kPrecursorData);
+  navigation->SetLoadURLParams(&load_url_params);
+  navigation->Commit();
+
+  EXPECT_EQ(1, recorder.observed_count());
+  EXPECT_TRUE(recorder.had_ui_data());
+  EXPECT_EQ(kPrecursorData, recorder.precursor_data());
+  EXPECT_EQ(recorder.last_navigation_id(), recorder.populated_navigation_id());
+}
+
+// Verifies `OpenURLParams` `NavigationUIData` forwarding and
+// `FromNavigationHandle` re-binding.
+//
+// Scenario:
+//
+// - Construct `OpenURLParams` with upfront `TestNavigationUIData` and convert
+//   to `NavigationController::LoadURLParams`.
+// - Start the first navigation so `PopulateFromNavigationHandle()` records the
+//   first navigation's ID, then build fallback `OpenURLParams` via
+//   `OpenURLParams::FromNavigationHandle()`.
+// - Verify `FromNavigationHandle()` preserves `precursor_data()` while
+//   resetting handle-populated state via `CloneForNewNavigation()`, and
+//   starting the second navigation populates the second navigation's ID.
+TEST_F(NavigationControllerTest,
+       OpenURLParamsNavigationUIDataCloneAndFromNavigationHandle) {
+  const GURL kUrl1("http://foo1");
+  const int kPrecursorData = 73;
+  OpenURLParams open_params(kUrl1, Referrer(),
+                            WindowOpenDisposition::kCurrentTab,
+                            ui::PAGE_TRANSITION_TYPED,
+                            /*is_renderer_initiated=*/false);
+  open_params.navigation_ui_data =
+      std::make_unique<TestNavigationUIData>(kPrecursorData);
+
+  NavigationController::LoadURLParams load_params_1(open_params);
+  ASSERT_NE(nullptr, load_params_1.navigation_ui_data);
+
+  auto nav1 =
+      NavigationSimulatorImpl::CreateBrowserInitiated(kUrl1, contents());
+  nav1->SetLoadURLParams(&load_params_1);
+  nav1->Start();
+
+  NavigationHandle* handle1 = nav1->GetNavigationHandle();
+  ASSERT_NE(nullptr, handle1);
+  const int64_t nav1_id = handle1->GetNavigationId();
+  auto* nav1_ui_data =
+      static_cast<TestNavigationUIData*>(handle1->GetNavigationUIData());
+  ASSERT_NE(nullptr, nav1_ui_data);
+  EXPECT_EQ(kPrecursorData, nav1_ui_data->precursor_data());
+  EXPECT_EQ(nav1_id, nav1_ui_data->populated_navigation_id());
+
+  OpenURLParams fallback_open_params =
+      OpenURLParams::FromNavigationHandle(handle1);
+  ASSERT_NE(nullptr, fallback_open_params.navigation_ui_data);
+  auto* unbound_fallback_ui_data = static_cast<TestNavigationUIData*>(
+      fallback_open_params.navigation_ui_data.get());
+  EXPECT_EQ(kPrecursorData, unbound_fallback_ui_data->precursor_data());
+  EXPECT_EQ(std::nullopt, unbound_fallback_ui_data->populated_navigation_id());
+
+  fallback_open_params.url = GURL("http://foo2");
+  NavigationController::LoadURLParams load_params_2(fallback_open_params);
+  auto nav2 = NavigationSimulatorImpl::CreateBrowserInitiated(
+      fallback_open_params.url, contents());
+  nav2->SetLoadURLParams(&load_params_2);
+  nav2->Start();
+
+  NavigationHandle* handle2 = nav2->GetNavigationHandle();
+  ASSERT_NE(nullptr, handle2);
+  EXPECT_NE(nav1_id, handle2->GetNavigationId());
+  auto* nav2_ui_data =
+      static_cast<TestNavigationUIData*>(handle2->GetNavigationUIData());
+  ASSERT_NE(nullptr, nav2_ui_data);
+  EXPECT_EQ(kPrecursorData, nav2_ui_data->precursor_data());
+  EXPECT_EQ(handle2->GetNavigationId(),
+            nav2_ui_data->populated_navigation_id());
+}
+
+// Verifies `OpenURLParams::FromNavigationHandle()` does not clone
+// `NavigationUIData` from a subframe `NavigationHandle`.
+TEST_F(NavigationControllerTest,
+       FromNavigationHandleOnSubframeDoesNotCloneNavigationUIData) {
+  class TestBrowserClient : public ContentBrowserClient {
+   public:
+    std::unique_ptr<NavigationUIData> GetNavigationUIData(
+        NavigationHandle* navigation_handle) override {
+      return std::make_unique<TestNavigationUIData>(/*precursor_data=*/73);
+    }
+  };
+  TestBrowserClient test_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&test_browser_client);
+
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://foo1"),
+                                                     main_test_rfh());
+  TestRenderFrameHost* subframe = main_test_rfh()->AppendChild("subframe");
+  auto subframe_nav = NavigationSimulator::CreateRendererInitiated(
+      GURL("http://foo1/subframe"), subframe);
+  subframe_nav->Start();
+
+  NavigationHandle* subframe_handle = subframe_nav->GetNavigationHandle();
+  ASSERT_NE(nullptr, subframe_handle);
+  EXPECT_FALSE(subframe_handle->IsInOutermostMainFrame());
+  ASSERT_NE(nullptr, subframe_handle->GetNavigationUIData());
+
+  OpenURLParams params = OpenURLParams::FromNavigationHandle(subframe_handle);
+  EXPECT_EQ(nullptr, params.navigation_ui_data);
+
+  SetBrowserClientForTesting(old_browser_client);
 }
 
 bool SrcDocRewriter(GURL* url, BrowserContext* browser_context) {

@@ -165,7 +165,8 @@ void BookmarkBarPreloadPipeline::StartPrerender(
       preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback),
-      /*allow_reuse=*/false);
+      /*allow_reuse=*/false,
+      /*navigation_ui_data=*/nullptr);
 }
 
 void BookmarkBarPreloadPipeline::

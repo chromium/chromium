@@ -49,6 +49,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
@@ -618,6 +619,7 @@ bool PrerenderHost::StartPrerendering() {
           attributes_.prerendering_url);
 
   load_url_params.is_form_submission = attributes_.form_submission;
+  load_url_params.navigation_ui_data = attributes_.navigation_ui_data.Clone();
 
   // TODO(https://crbug.com/1406149, https://crbug.com/1378921): Set
   // `override_user_agent` for Android. This field is determined on the Java

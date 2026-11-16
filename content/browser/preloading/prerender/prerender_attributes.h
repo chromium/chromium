@@ -12,6 +12,7 @@
 #include "content/browser/preloading/speculation_rules/speculation_rules_params.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
@@ -148,6 +149,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
   base::RepeatingCallback<bool(const GURL&, const std::optional<UrlMatchType>&)>
       url_match_predicate;
 
+  // TODO(https://crbug.com/500965884): Check if
+  // `prerender_navigation_handle_callback` can be removed or cleaned up once
+  // `NavigationInitiatorHolder` is removed.
   base::RepeatingCallback<void(NavigationHandle&)>
       prerender_navigation_handle_callback;
 
@@ -167,6 +171,10 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<base::UnguessableToken> initiator_devtools_navigation_token;
+
+  // Optional upfront `NavigationUIData` passed to the initial prerendering
+  // navigation.
+  CloneableNavigationUIDataPtr navigation_ui_data;
 
   // Serialises this struct into a trace.
   void WriteIntoTrace(perfetto::TracedValue trace_context) const;

@@ -23,10 +23,12 @@
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
+#include "content/public/browser/prerender_handle.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_ui_data.h"
 #include "content/test/mock_commit_deferring_condition.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
@@ -521,6 +523,65 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
   EXPECT_EQ(test::PreloadingAttemptAccessor(preloading_attempt)
                 .GetTriggeringOutcome(),
             PreloadingTriggeringOutcome::kFailure);
+}
+
+// Verifies `StartPrerendering` populates upfront `NavigationUIData`.
+//
+// This is the prerender counterpart to
+// `NavigationControllerTest.MainFrameNavigationUIDataPopulatedBeforeDidStartNavigation`
+// (placed in `PrerenderHostTest` for its `ScopedPrerenderWebContentsDelegate`
+// setup).
+//
+// Scenario:
+//
+// - Trigger embedder prerendering via `WebContents::StartPrerendering()` with a
+//   `TestNavigationUIData` carrying `precursor_data`.
+// - Inspect the initial prerender `NavigationHandle` via
+//   `prerender_navigation_handle_callback` and verify `GetNavigationUIData()`
+//   has `precursor_data` and has already run `PopulateFromNavigationHandle()`.
+TEST_F(PrerenderHostTest, StartPrerenderingPopulatesUpfrontNavigationUIData) {
+  const GURL kPrerenderingUrl("https://example.com/prerender_ui_data");
+  const int kPrecursorData = 91;
+  bool callback_invoked = false;
+  std::optional<int> observed_precursor_data;
+  std::optional<int64_t> observed_populated_navigation_id;
+  std::optional<int64_t> expected_navigation_id;
+
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      contents()->StartPrerendering(
+          kPrerenderingUrl, PreloadingTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          /*additional_headers=*/net::HttpRequestHeaders(),
+          /*no_vary_search_hint=*/std::nullopt,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*should_warm_up_compositor=*/false,
+          /*should_prepare_paint_tree=*/false,
+          PreloadingHoldbackStatus::kUnspecified,
+          PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/PreloadingType::kPrerender),
+          /*preloading_attempt=*/nullptr,
+          /*url_match_predicate=*/{},
+          /*prerender_navigation_handle_callback=*/
+          base::BindLambdaForTesting([&](NavigationHandle& navigation_handle) {
+            callback_invoked = true;
+            expected_navigation_id = navigation_handle.GetNavigationId();
+            auto* ui_data = static_cast<TestNavigationUIData*>(
+                navigation_handle.GetNavigationUIData());
+            if (ui_data) {
+              observed_precursor_data = ui_data->precursor_data();
+              observed_populated_navigation_id =
+                  ui_data->populated_navigation_id();
+            }
+          }),
+          /*allow_reuse=*/false,
+          /*navigation_ui_data=*/
+          std::make_unique<TestNavigationUIData>(kPrecursorData));
+
+  ASSERT_TRUE(prerender_handle);
+  EXPECT_TRUE(callback_invoked);
+  EXPECT_EQ(kPrecursorData, observed_precursor_data);
+  EXPECT_EQ(expected_navigation_id, observed_populated_navigation_id);
 }
 
 TEST(AreHttpRequestHeadersCompatible, IgnoreRTT) {

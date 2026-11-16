@@ -3470,6 +3470,10 @@ void NavigationRequest::StartNavigation() {
   }
 
   navigation_visible_to_embedder_ = true;
+  if (navigation_ui_data_) {
+    navigation_ui_data_->PopulateFromNavigationHandle(*this);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Once the navigation has started, fill in the details in the Java side
   // navigation handle.

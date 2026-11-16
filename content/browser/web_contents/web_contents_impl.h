@@ -1078,7 +1078,8 @@ class CONTENT_EXPORT WebContentsImpl
       base::RepeatingCallback<bool(const GURL&,
                                    const std::optional<UrlMatchType>&)>,
       base::RepeatingCallback<void(NavigationHandle&)>,
-      bool allow_reuse) override;
+      bool allow_reuse,
+      std::unique_ptr<NavigationUIData> navigation_ui_data) override;
   void CancelAllPrerendering() override;
   bool IsAllowedToStartPrerendering() override;
   void BackNavigationLikely(

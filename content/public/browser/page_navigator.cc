@@ -52,9 +52,13 @@ OpenURLParams::OpenURLParams(const GURL& url,
       is_renderer_initiated(is_renderer_initiated),
       user_gesture(!is_renderer_initiated) {}
 
-OpenURLParams::OpenURLParams(const OpenURLParams& other) = default;
-
 OpenURLParams::~OpenURLParams() = default;
+
+OpenURLParams::OpenURLParams(const OpenURLParams& other) = default;
+OpenURLParams& OpenURLParams::operator=(const OpenURLParams& other) = default;
+OpenURLParams::OpenURLParams(OpenURLParams&& other) noexcept = default;
+OpenURLParams& OpenURLParams::operator=(OpenURLParams&& other) noexcept =
+    default;
 
 // static
 OpenURLParams OpenURLParams::FromNavigationHandle(NavigationHandle* handle) {
@@ -71,6 +75,10 @@ OpenURLParams OpenURLParams::FromNavigationHandle(NavigationHandle* handle) {
   params.started_from_context_menu = handle->WasStartedFromContextMenu();
   params.href_translate = handle->GetHrefTranslate();
   params.reload_type = handle->GetReloadType();
+  if (handle->IsInOutermostMainFrame() && handle->GetNavigationUIData()) {
+    params.navigation_ui_data =
+        handle->GetNavigationUIData()->CloneForNewNavigation();
+  }
 
   // NavigationHandle will include all redirects that happened on the way to the
   // the current page in its redirect chain, including the current page itself

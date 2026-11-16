@@ -134,5 +134,6 @@ void NewTabPagePreloadPipeline::StartPrerender(
       /*url_match_predicate=*/{},
       page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
           chrome_navigation_initiator::kNewTabPage),
-      /*allow_reuse=*/false);
+      /*allow_reuse=*/false,
+      /*navigation_ui_data=*/nullptr);
 }

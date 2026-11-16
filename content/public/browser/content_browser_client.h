@@ -1668,8 +1668,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   CreateProcessSelectionDeferringConditionsForNavigation(
       NavigationHandle& navigation_handle);
 
-  // Called at the start of the navigation to get opaque data the embedder
-  // wants to see passed to the corresponding URLRequest on the IO thread.
+  // Called in `NavigationRequest::WillStartRequest()` when no upfront
+  // `NavigationUIData` was supplied for the navigation, to get opaque data the
+  // embedder wants to see passed to the corresponding `NavigationURLLoader`.
+  // Not called if upfront `NavigationUIData` was already provided (in which
+  // case `NavigationUIData::PopulateFromNavigationHandle()` is called in
+  // `NavigationRequest::StartNavigation()` instead) or if the navigation does
+  // not require a `NavigationURLLoader`.
   virtual std::unique_ptr<NavigationUIData> GetNavigationUIData(
       NavigationHandle* navigation_handle);
 
