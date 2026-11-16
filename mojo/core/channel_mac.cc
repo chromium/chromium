@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
+#include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
@@ -50,10 +51,7 @@ namespace {
 // Kill switch.
 BASE_FEATURE(kUseMachVouchers, base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool ShouldUseVouchers() {
-  static bool enabled = base::FeatureList::IsEnabled(kUseMachVouchers);
-  return enabled;
-}
+BASE_FEATURE(kFilterMachVouchers, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr mach_msg_id_t kChannelMacHandshakeMsgId = 'mjhs';
 constexpr mach_msg_id_t kChannelMacInlineMsgId = 'MOJO';
@@ -97,6 +95,8 @@ class ChannelMac : public Channel,
         self_(this),
         io_task_runner_(io_task_runner),
         watch_controller_(FROM_HERE) {
+    DETACH_FROM_SEQUENCE(io_thread_sequence_checker_);
+
     PlatformChannelEndpoint endpoint = connection_params.TakeEndpoint();
 
 #if BUILDFLAG(IS_MAC)
@@ -162,7 +162,7 @@ class ChannelMac : public Channel,
   }
 
   void LeakHandle() override {
-    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_checker_);
     leak_handles_ = true;
   }
 
@@ -238,6 +238,14 @@ class ChannelMac : public Channel,
   ~ChannelMac() override = default;
 
   void StartOnIOThread() {
+    // Bind the sequence checker to this sequence.
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_checker_);
+
+    if (base::FeatureList::IsEnabled(kUseMachVouchers)) {
+      use_mach_vouchers_ = true;
+      filter_mach_vouchers_ = base::FeatureList::IsEnabled(kFilterMachVouchers);
+    }
+
     vm_address_t address = 0;
     const vm_size_t size = getpagesize();
     kern_return_t kr =
@@ -279,7 +287,7 @@ class ChannelMac : public Channel,
       NOTREACHED();
     }
 
-    if (ShouldUseVouchers()) {
+    if (use_mach_vouchers_) {
       kr = mach_port_set_attributes(mach_task_self(), receive_port_.get(),
                                     MACH_PORT_IMPORTANCE_RECEIVER, nullptr, 0);
       MACH_LOG_IF(ERROR, kr != KERN_SUCCESS, kr)
@@ -304,6 +312,8 @@ class ChannelMac : public Channel,
   }
 
   void ShutDownOnIOThread() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_checker_);
+
     base::CurrentThread::Get()->RemoveDestructionObserver(this);
 
     watch_controller_.StopWatchingMachPort();
@@ -716,7 +726,7 @@ class ChannelMac : public Channel,
 
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override {
-    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_checker_);
     if (self_) {
       ShutDownOnIOThread();
     }
@@ -726,7 +736,7 @@ class ChannelMac : public Channel,
   void OnMachMessageReceived(mach_port_t port) override {
     TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"), "Mojo read message");
 
-    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(io_thread_sequence_checker_);
 
     if (!receive_buffer_.address()) {
       return;
@@ -744,7 +754,7 @@ class ChannelMac : public Channel,
         MACH_RCV_MSG | MACH_RCV_TIMEOUT |
         MACH_RCV_TRAILER_TYPE(MACH_MSG_TRAILER_FORMAT_0) |
         MACH_RCV_TRAILER_ELEMENTS(MACH_RCV_TRAILER_AUDIT) |
-        (ShouldUseVouchers() ? MACH_RCV_VOUCHER : 0);
+        (use_mach_vouchers_ ? MACH_RCV_VOUCHER : 0);
     kern_return_t kr =
         mach_msg(header, rcv_options, 0, header->msgh_size, receive_port_.get(),
                  /*timeout=*/0, MACH_PORT_NULL);
@@ -758,11 +768,17 @@ class ChannelMac : public Channel,
     }
 
     scoped_refptr<ipcz_driver::Envelope> envelope;
-    if (ShouldUseVouchers()) {
-      envelope = base::MakeRefCounted<ipcz_driver::Envelope>(
-          base::apple::ScopedMachSendRight(header->msgh_voucher_port));
+    if (use_mach_vouchers_) {
+      base::apple::ScopedMachSendRight voucher(header->msgh_voucher_port);
       header->msgh_voucher_port = MACH_PORT_NULL;
       header->msgh_bits &= ~MACH_MSGH_BITS_VOUCHER_MASK;
+
+      // If kFilterMachVouchers is enabled, only create an Envelope when a valid
+      // voucher is attached (not MACH_PORT_NULL or MACH_PORT_DEAD.)
+      if (!filter_mach_vouchers_ || MACH_PORT_VALID(voucher.get())) {
+        envelope =
+            base::MakeRefCounted<ipcz_driver::Envelope>(std::move(voucher));
+      }
     }
 
     base::ScopedMachMsgDestroy scoped_message(header);
@@ -960,6 +976,9 @@ class ChannelMac : public Channel,
         FROM_HERE, base::BindOnce(&ChannelMac::OnError, this, error));
   }
 
+  // Guards members that should only be accessed on the IO thread.
+  SEQUENCE_CHECKER(io_thread_sequence_checker_);
+
   // Keeps the Channel alive at least until explicit shutdown on the IO thread.
   scoped_refptr<ChannelMac> self_;
 
@@ -1004,6 +1023,12 @@ class ChannelMac : public Channel,
   // Watch controller for |receive_port_|, calls OnMachMessageReceived() when
   // new messages are available.
   base::MessagePumpForIO::MachPortWatchController watch_controller_;
+
+  // Cached feature state that can be accessed on every message.
+  bool use_mach_vouchers_ GUARDED_BY_CONTEXT(io_thread_sequence_checker_) =
+      false;
+  bool filter_mach_vouchers_ GUARDED_BY_CONTEXT(io_thread_sequence_checker_) =
+      false;
 
   // Lock that protects the following members.
   base::Lock write_lock_;
