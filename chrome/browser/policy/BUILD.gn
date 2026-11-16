@@ -422,7 +422,6 @@ source_set("policy_specific_browser_tests") {
       "test/ipv6_reachability_override_policy_browsertest.cc",
       "test/legacy_cookie_scope_browsertest.cc",
       "test/local_fonts_policy_browsertest.cc",
-      "test/media_stream_policy_browsertest.cc",
       "test/partitioned_blob_url_browsertest.cc",
       "test/quic_allowed_browsertest.cc",
       "test/shared_dictionary_policy_browsertest.cc",
@@ -809,20 +808,29 @@ source_set("platform_browser_tests") {
   sources = [
     "policy_prefs_browsertest.cc",
     "test/browsing_history_policy_browsertest.cc",
+    "test/media_stream_policy_browsertest.cc",
   ]
 
   deps = [
     ":test_support",
     "//base",
+    "//chrome/browser/media/webrtc",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",
+    "//components/content_settings/core/common",
     "//components/enterprise:test_support",
+    "//components/permissions",
+    "//components/permissions:test_support",
     "//components/policy/core/browser",
     "//components/policy/core/browser:pref_mapping_test_support",
     "//components/policy/core/common",
     "//components/safe_browsing:buildflags",
+    "//components/webrtc",
+    "//content/public/browser",
     "//content/test:test_support",
+    "//net:test_support",
     "//testing/gmock",
+    "//third_party/blink/public/common",
   ]
 }
 

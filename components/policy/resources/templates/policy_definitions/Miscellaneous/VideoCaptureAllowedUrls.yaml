@@ -20,6 +20,7 @@ schema:
 supported_on:
 - chrome.*:29-
 - chrome_os:29-
+- android:160-
 tags:
 - website-sharing
 type: list

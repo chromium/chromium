@@ -7,8 +7,7 @@
 
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/policy/core/common/policy_map.h"
@@ -19,6 +18,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -37,7 +37,8 @@ class MediaStreamDevicesControllerBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
     request_url_ = embedded_test_server()->GetURL("/simple.html");
     request_pattern_ = request_url_.DeprecatedGetOriginAsURL().spec();
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), request_url_));
+    ASSERT_TRUE(content::NavigateToURL(
+        chrome_test_utils::GetActiveWebContents(this), request_url_));
 
     // Testing both the new (PermissionManager) and old code-paths is not simple
     // since we are already using WithParamInterface. We only test whichever one
@@ -45,7 +46,7 @@ class MediaStreamDevicesControllerBrowserTest
     // for long once we flip the flag.
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents());
+            chrome_test_utils::GetActiveWebContents(this));
     prompt_factory_ =
         std::make_unique<permissions::MockPermissionPromptFactory>(manager);
     prompt_factory_->set_response_type(
@@ -58,7 +59,7 @@ class MediaStreamDevicesControllerBrowserTest
       blink::mojom::MediaStreamType audio_request_type,
       blink::mojom::MediaStreamType video_request_type) {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        chrome_test_utils::GetActiveWebContents(this);
     EXPECT_EQ(request_url_,
               web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
     int render_process_id =
