@@ -19,7 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -288,6 +288,8 @@ public class TabSearchOverlayTest {
 
     @Test
     @MediumTest
+    // History suggestions are replaced by recent tabs when AndroidTabSearchRecentTabs is enabled.
+    @DisableFeatures(OmniboxFeatureList.ANDROID_TAB_SEARCH_RECENT_TABS)
     public void testSelectHistorySuggestion_OpensInNewTab() throws TimeoutException {
         String urlHistory = mTestServer.getURL("/chrome/test/data/android/navigate/one.html");
         String urlCurrent = mTestServer.getURL("/chrome/test/data/android/test.html");
@@ -457,8 +459,6 @@ public class TabSearchOverlayTest {
                         "Android.TabSearch.DismissalReason", TabSearchDismissalReason.TAB_RESTORED);
 
         TabSearchOverlayFacility<CtaPageStation> tabSearchOverlay = mPage.openTabSearchOverlay();
-        // Search by title: a URL-prefix query would let the history match for the same URL win
-        // deduplication (crbug.com/575623966).
         tabSearchOverlay.typeInSearchBox("Two");
 
         TabSuggestionFacility suggestion =
@@ -474,8 +474,7 @@ public class TabSearchOverlayTest {
     @Test
     @MediumTest
     @EnableFeatures(OmniboxFeatureList.ANDROID_TAB_SEARCH_RECENT_TABS)
-    @DisabledTest(message = "crbug.com/575623966")
-    public void testRecentlyClosedTab_UrlPrefixQuery_RestoresTab() {
+    public void testRecentlyClosedTab_UrlQueryMatchingHistory_RestoresTab() {
         closeTabWithHistory();
 
         HistogramWatcher watcher =
@@ -483,7 +482,9 @@ public class TabSearchOverlayTest {
                         "Android.TabSearch.DismissalReason", TabSearchDismissalReason.TAB_RESTORED);
 
         TabSearchOverlayFacility<CtaPageStation> tabSearchOverlay = mPage.openTabSearchOverlay();
-        // A URL-prefix query lets the history match for the same URL compete in deduplication.
+        // A URL-prefix query also matches the history entry for the closed tab's URL. History
+        // suggestions are replaced by recent tabs, so the suggestion must restore the closed tab
+        // rather than open its URL as a new tab from history.
         tabSearchOverlay.typeInSearchBox("127.0");
 
         TabSuggestionFacility suggestion =

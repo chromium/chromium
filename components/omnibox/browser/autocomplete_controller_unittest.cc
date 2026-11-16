@@ -106,6 +106,25 @@ class AutocompleteControllerTest : public testing::Test {
         omnibox::kIntranetRedirectBehavior, static_cast<int>(behavior));
   }
 
+  // Verifies `ShouldRunProvider()` allows exactly `expected` provider types
+  // for a typed input on `page_classification`.
+  void ExpectProvidersRun(
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      const std::set<AutocompleteProvider::Type>& expected) {
+    controller_.input_ = AutocompleteInput(u"a", 1u, page_classification,
+                                           TestSchemeClassifier());
+    // The test controller does not create a recently closed tabs provider.
+    controller_.providers_.push_back(
+        base::MakeRefCounted<FakeAutocompleteProvider>(
+            AutocompleteProvider::Type::kRecentlyClosedTabs));
+    for (auto& provider : controller_.providers()) {
+      EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+                expected.contains(provider->type()))
+          << "Provider Type: "
+          << AutocompleteProvider::TypeToString(provider->type());
+    }
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -2855,52 +2874,53 @@ TEST_F(AutocompleteControllerTest,
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
-  // Regular Hub search (ANDROID_HUB) should run all 4 providers.
-  std::set<AutocompleteProvider::Type> expected_provider_types = {
-      AutocompleteProvider::Type::kSearch, AutocompleteProvider::Type::kOpenTab,
-      AutocompleteProvider::Type::kBookmark,
-      AutocompleteProvider::Type::kHistoryQuick};
-
-  controller_.input_ =
-      AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::ANDROID_HUB,
-                        TestSchemeClassifier());
-  // Recently closed tabs are only supported by the Tab Search overlay.
-  controller_.providers_.push_back(
-      base::MakeRefCounted<FakeAutocompleteProvider>(
-          AutocompleteProvider::Type::kRecentlyClosedTabs));
-  for (auto& provider : controller_.providers()) {
-    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
-              expected_provider_types.contains(provider->type()))
-        << "Provider Type: "
-        << AutocompleteProvider::TypeToString(provider->type());
-  }
+  // Hub search never runs the recently closed tabs provider, even when enabled.
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kAndroidTabSearchRecentTabs);
+  ExpectProvidersRun(metrics::OmniboxEventProto::ANDROID_HUB,
+                     {AutocompleteProvider::Type::kSearch,
+                      AutocompleteProvider::Type::kOpenTab,
+                      AutocompleteProvider::Type::kBookmark,
+                      AutocompleteProvider::Type::kHistoryQuick});
 }
 
-TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidTabSearchOverlay) {
-  // Tab Search Overlay allows search, open tabs, bookmarks, history, and
-  // recently closed tabs.
-  // Note: While AutocompleteController allows them to run, the individual
-  // providers (e.g. SearchProvider, BookmarkProvider) will filter themselves
-  // out in their Start() methods.
-  std::set<AutocompleteProvider::Type> expected_provider_types = {
-      AutocompleteProvider::Type::kSearch, AutocompleteProvider::Type::kOpenTab,
-      AutocompleteProvider::Type::kBookmark,
-      AutocompleteProvider::Type::kHistoryQuick,
-      AutocompleteProvider::Type::kRecentlyClosedTabs};
+// Note: While AutocompleteController allows the providers below to run, some
+// (e.g. SearchProvider, BookmarkProvider) filter themselves out in Start().
+TEST_F(AutocompleteControllerTest,
+       ShouldRunProvider_AndroidTabSearchOverlay_RecentTabsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kAndroidTabSearchRecentTabs);
+  ExpectProvidersRun(metrics::OmniboxEventProto::ANDROID_TAB_SEARCH_OVERLAY,
+                     {AutocompleteProvider::Type::kSearch,
+                      AutocompleteProvider::Type::kOpenTab,
+                      AutocompleteProvider::Type::kBookmark,
+                      AutocompleteProvider::Type::kHistoryQuick});
+}
 
-  AutocompleteInput input(
-      u"a", 1u, metrics::OmniboxEventProto::ANDROID_TAB_SEARCH_OVERLAY,
-      TestSchemeClassifier());
-  controller_.input_ = input;
-  controller_.providers_.push_back(
-      base::MakeRefCounted<FakeAutocompleteProvider>(
-          AutocompleteProvider::Type::kRecentlyClosedTabs));
-  for (auto& provider : controller_.providers()) {
-    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
-              expected_provider_types.contains(provider->type()))
-        << "Provider Type: "
-        << AutocompleteProvider::TypeToString(provider->type());
-  }
+TEST_F(AutocompleteControllerTest,
+       ShouldRunProvider_AndroidTabSearchOverlay_RecentTabsEnabled) {
+  // Recently closed tabs replace history suggestions.
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kAndroidTabSearchRecentTabs);
+  ExpectProvidersRun(metrics::OmniboxEventProto::ANDROID_TAB_SEARCH_OVERLAY,
+                     {AutocompleteProvider::Type::kSearch,
+                      AutocompleteProvider::Type::kOpenTab,
+                      AutocompleteProvider::Type::kBookmark,
+                      AutocompleteProvider::Type::kRecentlyClosedTabs});
+}
+
+TEST_F(AutocompleteControllerTest,
+       ShouldRunProvider_AndroidTabSearchOverlay_RecentTabsEnabledIncognito) {
+  // Recently closed tabs are unavailable in incognito, so history remains.
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kAndroidTabSearchRecentTabs);
+  EXPECT_CALL(*provider_client(), IsOffTheRecord())
+      .WillRepeatedly(testing::Return(true));
+  ExpectProvidersRun(metrics::OmniboxEventProto::ANDROID_TAB_SEARCH_OVERLAY,
+                     {AutocompleteProvider::Type::kSearch,
+                      AutocompleteProvider::Type::kOpenTab,
+                      AutocompleteProvider::Type::kBookmark,
+                      AutocompleteProvider::Type::kHistoryQuick});
 }
 #endif
 

@@ -1221,13 +1221,26 @@ bool AutocompleteController::ShouldRunProvider(
 
 #if BUILDFLAG(IS_ANDROID)
   if (omnibox::IsAndroidHubOrTabSearch(input_.current_page_classification())) {
-    return provider->type() == AutocompleteProvider::Type::kSearch ||
-           provider->type() == AutocompleteProvider::Type::kOpenTab ||
-           provider->type() == AutocompleteProvider::Type::kBookmark ||
-           provider->type() == AutocompleteProvider::Type::kHistoryQuick ||
-           (provider->type() ==
-                AutocompleteProvider::Type::kRecentlyClosedTabs &&
-            omnibox::IsAndroidTabSearch(input_.current_page_classification()));
+    // When recent tabs are enabled for the Tab Search overlay, they replace
+    // history suggestions; otherwise a history match for the same URL competes
+    // with the recently closed tab match during deduplication. Recently closed
+    // tabs are unavailable in incognito, so history remains there.
+    const bool tab_search_recent_tabs =
+        omnibox::IsAndroidTabSearch(input_.current_page_classification()) &&
+        !provider_client_->IsOffTheRecord() &&
+        base::FeatureList::IsEnabled(omnibox::kAndroidTabSearchRecentTabs);
+    switch (provider->type()) {
+      case AutocompleteProvider::Type::kSearch:
+      case AutocompleteProvider::Type::kOpenTab:
+      case AutocompleteProvider::Type::kBookmark:
+        return true;
+      case AutocompleteProvider::Type::kHistoryQuick:
+        return !tab_search_recent_tabs;
+      case AutocompleteProvider::Type::kRecentlyClosedTabs:
+        return tab_search_recent_tabs;
+      default:
+        return false;
+    }
   }
 #endif
 
