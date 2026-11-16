@@ -100,6 +100,7 @@ void UNUSED(const T&...) {
 
 // The FALLTHROUGH_INTENDED macro can be used to annotate implicit fall-through
 // between switch labels:
+//
 //  switch (x) {
 //    case 40:
 //    case 41:
@@ -119,17 +120,11 @@ void UNUSED(const T&...) {
 // only if there are no statements on the execution path between it and the
 // next switch label.
 //
-// When compiled with clang, the FALLTHROUGH_INTENDED macro is expanded to
-// [[clang::fallthrough]] attribute, which is analysed when performing switch
-// labels fall-through diagnostic ('-Wimplicit-fallthrough'). See clang
-// documentation on language extensions for details:
-// http://clang.llvm.org/docs/LanguageExtensions.html#clang__fallthrough
+// The FALLTHROUGH_INTENDED macro expands to [[fallthrough]] which is valid in
+// both C++17 and C23, and is analysed when performing switch label fall-through
+// diagnostic checks with '-Wimplicit-fallthrough'.
 //
-// When used with unsupported compilers, the FALLTHROUGH_INTENDED macro has no
-// effect on diagnostics.
-//
-// In either case this macro has no effect on runtime behavior and performance
-// of code.
+// This macro has no effect on runtime behavior or performance.
 #ifndef FALLTHROUGH_INTENDED
 #define FALLTHROUGH_INTENDED [[fallthrough]]  // NOLINT
 #endif

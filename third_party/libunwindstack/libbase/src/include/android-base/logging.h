@@ -93,6 +93,11 @@ enum LogSeverity {
   FATAL,
 };
 
+// Map from LogSeverity to the corresponding character.
+static constexpr char kSeverityChars[] = "VDIWEFF";
+static_assert(arraysize(kSeverityChars) - 1 == android::base::FATAL + 1,
+              "Mismatch in size of kSeverityChars and values in LogSeverity");
+
 enum LogId {
   DEFAULT,
   MAIN,
@@ -112,6 +117,10 @@ using AbortFunction = std::function<void(const char* /*abort_message*/)>;
 // Loggers for use with InitLogging/SetLogger.
 
 // Log to the kernel log (dmesg).
+// Note that you'll likely need to inherit a /dev/kmsg fd from init.
+// Add `file /dev/kmsg w` to your .rc file.
+// You'll also need to `allow <your_domain> kmsg_device:chr_file w_file_perms;`
+// in `system/sepolocy/private/<your_domain>.te`.
 void KernelLogger(LogId log_buffer_id, LogSeverity severity, const char* tag, const char* file, unsigned int line, const char* message);
 // Log to stderr in the full logcat format (with pid/tid/time/tag details).
 void StderrLogger(LogId log_buffer_id, LogSeverity severity, const char* tag, const char* file, unsigned int line, const char* message);
@@ -120,6 +129,9 @@ void StderrLogger(LogId log_buffer_id, LogSeverity severity, const char* tag, co
 // Errors are also prefixed by the program name (as with err(3)/error(3)).
 // Useful for replacing printf(3)/perror(3)/err(3)/error(3) in command-line tools.
 void StdioLogger(LogId log_buffer_id, LogSeverity severity, const char* tag, const char* file, unsigned int line, const char* message);
+// Returns a log function which tees (outputs to both) log streams.
+// For example: InitLogging(argv, TeeLogger(&StderrLogger, LogdLogger()))
+LogFunction TeeLogger(LogFunction&& l1, LogFunction&& l2);
 
 void DefaultAborter(const char* abort_message);
 
@@ -199,17 +211,16 @@ struct LogAbortAfterFullExpr {
 #define ABORT_AFTER_LOG_FATAL_EXPR(x) ABORT_AFTER_LOG_EXPR_IF(true, x)
 
 // Defines whether the given severity will be logged or silently swallowed.
-#define WOULD_LOG(severity)                                                              \
-  (UNLIKELY(::android::base::ShouldLog(SEVERITY_LAMBDA(severity), _LOG_TAG_INTERNAL)) || \
+#define WOULD_LOG(severity) WOULD_LOG_WITH_TAG(severity, _LOG_TAG_INTERNAL)
+
+#define WOULD_LOG_WITH_TAG(severity, tag)                                  \
+  (UNLIKELY(::android::base::ShouldLog(SEVERITY_LAMBDA(severity), tag)) || \
    MUST_LOG_MESSAGE(severity))
 
 // Get an ostream that can be used for logging at the given severity and to the default
 // destination.
 //
-// Notes:
-// 1) This will not check whether the severity is high enough. One should use WOULD_LOG to filter
-//    usage manually.
-// 2) This does not save and restore errno.
+// Note that this does not save and restore errno.
 #define LOG_STREAM(severity)                                                                    \
   ::android::base::LogMessage(__FILE__, __LINE__, SEVERITY_LAMBDA(severity), _LOG_TAG_INTERNAL, \
                               -1)                                                               \
@@ -226,6 +237,25 @@ class FakeLog {
   operator bool() { return false; }
 };
 #define LOG(severity) false && ::android::base::FakeLog()
+
+// Conditionally logs a message based on a specified severity level and a boolean condition.
+// Logs to logcat on Android, or to stderr on host. See also LOG(severity) above.
+//
+// The message will only be logged if:
+// 1. The provided 'cond' evaluates to true.
+// 2. The 'severity' level is enabled for the current log tag (as determined by the logging
+// configuration).
+//
+// Usage:
+//
+//   LOG_IF(INFO, some_condition) << "This message will be logged if 'some_condition' is true" <<
+//       " and INFO level is enabled.";
+//
+// @param severity The severity level of the log message (e.g., VERBOSE, DEBUG, INFO, WARNING,
+//      ERROR, FATAL).
+// @param cond The boolean condition that determines whether to log the message.
+#define LOG_IF(severity, cond) \
+  if (UNLIKELY(cond) && WOULD_LOG(severity)) LOG(severity)
 
 // Checks if we want to log something, and sets up appropriate RAII objects if
 // so.

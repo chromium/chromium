@@ -1,7 +1,7 @@
 Name: libbase
 URL: https://android.googlesource.com/platform/system/libbase
-Version: N/A
-Revision: a5c86f3574f744b22a82a8cd08e7fa0bf7210c28
+Version: android-17.0.0_r1
+Revision: fef4173e19d97cd4b4fc09a06bccbf800d0d3937
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/NOTICE
@@ -25,8 +25,8 @@ The patches are in patches/; copy.bara.sky applies them in this order.
 - 0007-disable-thread-annotations.patch: no-op thread-safety annotation
   macros.
 - 0015-replace-deprecated-enodata.patch: EIO instead of ENODATA.
-- 0020-add-missing-includes.patch: add <type_traits> and <iterator>
-  includes.
+- 0020-add-missing-includes.patch: add the <type_traits> include to
+  logging.h.
 
 Update instructions:
 Update commit hashes in crowbar.txtpb, then run from this directory:

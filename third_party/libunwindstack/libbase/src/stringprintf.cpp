@@ -32,37 +32,31 @@ void StringAppendV(std::string* dst, const char* format, va_list ap) {
   // of the structure before using it and use that copy instead.
   va_list backup_ap;
   va_copy(backup_ap, ap);
-  int result = vsnprintf(space, sizeof(space), format, backup_ap);
+  int n = vsnprintf(space, sizeof(space), format, backup_ap);
   va_end(backup_ap);
 
-  if (result < static_cast<int>(sizeof(space))) {
-    if (result >= 0) {
+  if (n < static_cast<int>(sizeof(space))) {
+    if (n >= 0) {
       // Normal case -- everything fit.
-      dst->append(space, result);
+      dst->append(space, n);
       return;
     }
 
-    if (result < 0) {
+    if (n < 0) {
       // Just an error.
       return;
     }
   }
 
-  // Increase the buffer size to the size requested by vsnprintf,
-  // plus one for the closing \0.
-  int length = result + 1;
-  char* buf = new char[length];
-
-  // Restore the va_list before we use it again
+  // Since C++11 it's okay to write one past the end,
+  // as long as you only write '\0'.
+  // https://cplusplus.github.io/LWG/issue2475
+  size_t old_size = dst->size();
+  dst->resize(old_size + n);
+  // Reset the va_list before we use it again.
   va_copy(backup_ap, ap);
-  result = vsnprintf(buf, length, format, backup_ap);
+  vsnprintf(dst->data() + old_size, n + 1, format, backup_ap);
   va_end(backup_ap);
-
-  if (result >= 0 && result < length) {
-    // It fit
-    dst->append(buf, result);
-  }
-  delete[] buf;
 }
 
 std::string StringPrintf(const char* fmt, ...) {

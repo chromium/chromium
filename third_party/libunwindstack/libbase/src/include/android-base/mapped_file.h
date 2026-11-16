@@ -19,6 +19,7 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 
 #include "android-base/macros.h"
 #include "android-base/off64_t.h"
@@ -34,46 +35,47 @@ using os_handle = HANDLE;
 using os_handle = int;
 #endif
 
-namespace android {
-namespace base {
+namespace android::base {
 
 /**
  * A region of a file mapped into memory (for grepping: also known as MmapFile or file mapping).
  */
-class MappedFile {
+class MappedFile final {
  public:
   /**
-   * Creates a new mapping of the file pointed to by `fd`. Unlike the underlying OS primitives,
-   * `offset` does not need to be page-aligned. If `PROT_WRITE` is set in `prot`, the mapping
-   * will be writable, otherwise it will be read-only. Mappings are always `MAP_SHARED`.
+   * New factory functions that don't allocate.
+   *
+   * Creates a new mapping of the file pointed to by either `fd`, or the raw OS file handle `h`
+   * (instead of a CRT wrapper). Unlike the underlying OS primitives, `offset` does not need to be
+   * page-aligned. If `PROT_WRITE` is set in `prot`, the mapping will be writable, otherwise it
+   * will be read-only. Mappings are always `MAP_SHARED`.
+   */
+  static std::optional<MappedFile> Create(borrowed_fd fd, off64_t offset, size_t length,
+                                          int prot) noexcept;
+  static std::optional<MappedFile> Create(os_handle h, off64_t offset, size_t length,
+                                          int prot) noexcept;
+
+  /**
+   * Legacy pre-move factory function.
    */
   static std::unique_ptr<MappedFile> FromFd(borrowed_fd fd, off64_t offset, size_t length,
                                             int prot);
 
-  /**
-   * Same thing, but using the raw OS file handle instead of a CRT wrapper.
-   */
-  static std::unique_ptr<MappedFile> FromOsHandle(os_handle h, off64_t offset, size_t length,
-                                                  int prot);
-
-  /**
-   * Removes the mapping.
-   */
-  ~MappedFile();
+  ~MappedFile() noexcept;
 
   /**
    * Not copyable but movable.
    */
-  MappedFile(MappedFile&& other);
-  MappedFile& operator=(MappedFile&& other);
+  MappedFile(MappedFile&& other) noexcept;
+  MappedFile& operator=(MappedFile&& other) noexcept;
 
-  char* data() const { return base_ + offset_; }
-  size_t size() const { return size_; }
+  char* data() const noexcept { return base_ + offset_; }
+  size_t size() const noexcept { return size_; }
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(MappedFile);
 
-  void Close();
+  void close() noexcept;
 
   char* base_;
   size_t size_;
@@ -81,13 +83,13 @@ class MappedFile {
   size_t offset_;
 
 #if defined(_WIN32)
-  MappedFile(char* base, size_t size, size_t offset, HANDLE handle)
+  MappedFile(char* base, size_t size, size_t offset, HANDLE handle) noexcept
       : base_(base), size_(size), offset_(offset), handle_(handle) {}
   HANDLE handle_;
 #else
-  MappedFile(char* base, size_t size, size_t offset) : base_(base), size_(size), offset_(offset) {}
+  MappedFile(char* base, size_t size, size_t offset) noexcept
+      : base_(base), size_(size), offset_(offset) {}
 #endif
 };
 
-}  // namespace base
-}  // namespace android
+}  // namespace android::base

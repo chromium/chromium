@@ -214,24 +214,42 @@ namespace base {
 
 // Versions of standard library APIs that support UTF-8 strings.
 using namespace android::base::utf8;
-
 bool ReadFdToString(borrowed_fd fd, std::string* content) {
-  content->clear();
+  if (struct stat sb; fstat(fd.get(), &sb) != -1 && sb.st_size > 0 && sb.st_size <= SSIZE_MAX) {
+    // Although originally we had small files in mind, this code gets used for very large files too,
+    // where the std::string growth heuristics might not be suitable.
+    // https://code.google.com/p/android/issues/detail?id=258500.
+    // Since we know the file size here we can perform one large allocation up front to avoid
+    // reallocations and copies that would occur as the string size grows as data is read.
+    ssize_t n;
+    content->resize_and_overwrite(sb.st_size, [&n, &fd](char* buf, size_t size) noexcept {
+      std::string::size_type bytes_read = 0;
+      while (bytes_read < size &&
+             (n = TEMP_FAILURE_RETRY(read(fd.get(), buf + bytes_read, size - bytes_read))) > 0) {
+        bytes_read += n;
+      }
+      return bytes_read;
+    });
 
-  // Although original we had small files in mind, this code gets used for
-  // very large files too, where the std::string growth heuristics might not
-  // be suitable. https://code.google.com/p/android/issues/detail?id=258500.
-  struct stat sb;
-  if (fstat(fd.get(), &sb) != -1 && sb.st_size > 0) {
-    content->reserve(sb.st_size);
+    // Shrink the string capacity to fit the file, but if the capacity is only
+    // slightly larger than needed, avoid reallocating.
+    if (content->size() < content->capacity() && content->capacity() - content->size() >= 64) {
+      content->shrink_to_fit();
+    }
+
+    return n >= 0;
   }
 
-  char buf[4096] __attribute__((__uninitialized__));
+  // We have no idea how much to read. Use buffered reading to avoid overallocating the output
+  // string for small files.
+  content->clear();
   ssize_t n;
+  char buf[4096] __attribute__((__uninitialized__));
   while ((n = TEMP_FAILURE_RETRY(read(fd.get(), &buf[0], sizeof(buf)))) > 0) {
     content->append(buf, n);
   }
-  return (n == 0) ? true : false;
+
+  return n == 0;
 }
 
 bool ReadFileToString(const std::string& path, std::string* content, bool follow_symlinks) {
@@ -436,23 +454,21 @@ bool RemoveFileIfExists(const std::string& path, std::string* err) {
 bool Readlink(const std::string& path, std::string* result) {
   result->clear();
 
-  // Most Linux file systems (ext2 and ext4, say) limit symbolic links to
-  // 4095 bytes. Since we'll copy out into the string anyway, it doesn't
-  // waste memory to just start there. We add 1 so that we can recognize
-  // whether it actually fit (rather than being truncated to 4095).
-  std::vector<char> buf(4095 + 1);
-  while (true) {
-    ssize_t size = readlink(path.c_str(), &buf[0], buf.size());
-    // Unrecoverable error?
-    if (size == -1) return false;
-    // It fit! (If size == buf.size(), it may have been truncated.)
-    if (static_cast<size_t>(size) < buf.size()) {
-      result->assign(&buf[0], size);
-      return true;
-    }
-    // Double our buffer and try again.
-    buf.resize(buf.size() * 2);
-  }
+  // Linux limits symlinks to PATH_MAX on creation (symlink() and symlinkat() both call getname()
+  // on both the "to" and "from" names, which calls getname_flags(), which enforces that limit).
+  // The check in getname_flags() _includes_ space for a terminating '\0' -- though we don't need
+  // one because we're using C++ strings -- and readlink() doesn't terminate strings, so we know
+  // that readlink() into a buffer of size PATH_MAX must fit.
+  // Experimentation on macOS 15.6 suggests that their kernel's limit is 1023 bytes,
+  // which is one byte shorter than their PATH_MAX of 1024.
+  char buf[PATH_MAX] __attribute__((__uninitialized__));
+  ssize_t size = readlink(path.c_str(), &buf[0], sizeof(buf));
+  // Unrecoverable error?
+  if (size == -1) return false;
+  // Insurance in case the kernel ever changes...
+  if (static_cast<size_t>(size) >= sizeof(buf)) abort();
+  result->assign(&buf[0], size);
+  return true;
 }
 #endif
 
