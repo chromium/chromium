@@ -4773,7 +4773,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
       if (ElementAnimations* element_animations =
               data->GetElementAnimations()) {
-        element_animations->CssAnimations().Cancel();
+        element_animations->CssAnimations().Cancel(document);
         element_animations->CssImageAnimations().Clear();
       }
     }
@@ -5109,7 +5109,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     if (ElementAnimations* element_animations = data->GetElementAnimations()) {
       if (!performing_reattach) {
         DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
-        element_animations->CssAnimations().Cancel();
+        element_animations->CssAnimations().Cancel(GetDocument());
         element_animations->CssImageAnimations().Clear();
         element_animations->SetAnimationStyleChange(false);
       }
@@ -5965,7 +5965,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
         // means an animation set display:none, and an animation shouldn't
         // cancel itself in this case.
         if (base_is_display_none) {
-          element_animations->CssAnimations().Cancel();
+          element_animations->CssAnimations().Cancel(GetDocument());
           element_animations->CssImageAnimations().Clear();
         }
       }
