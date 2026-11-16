@@ -117,8 +117,7 @@ class OptimizationGuideKeyedService
 
   // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(
-      const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types) override;
+      optimization_guide::OptimizationTypeSet optimization_types) override;
   void CanApplyOptimization(
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
@@ -229,8 +228,7 @@ class OptimizationGuideKeyedService
   // were registered, this will just add the hint for later use.
   void AddHintWithMultipleOptimizationsForTesting(
       const GURL& url,
-      const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types);
+      optimization_guide::OptimizationTypeSet optimization_types);
 
   // Adds hints for a URL with provided optimization types and metadata to the
   // optimization guide. For testing purposes only. This will flush any

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/buildflag.h"
@@ -65,51 +64,49 @@ GetVcnMerchantOptOutOptimizationTypeForCard(const CreditCard& card) {
   return optimization_guide::proto::TYPE_UNSPECIFIED;
 }
 
-std::vector<optimization_guide::proto::OptimizationType>
-GetCardBenefitsOptimizationTypesForCard(
+optimization_guide::OptimizationTypeSet GetCardBenefitsOptimizationTypesForCard(
     const CreditCard& card,
     const PaymentsDataManager& payments_data_manager) {
-  std::vector<optimization_guide::proto::OptimizationType> optimization_types;
+  optimization_guide::OptimizationTypeSet optimization_types;
   if (card.benefit_source() == kAmexCardBenefitSource) {
-    optimization_types.push_back(
-        optimization_guide::proto::
-            AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(optimization_guide::proto::
+                               AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS);
+    optimization_types.Put(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
   } else if (card.benefit_source() == kBmoCardBenefitSource) {
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS);
   } else if (
       card.benefit_source() == kCurinosCardBenefitSource &&
       base::FeatureList::IsEnabled(
           features::
               kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos)) {
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::CURINOS_CREDIT_CARD_FLIGHT_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::CURINOS_CREDIT_CARD_HOTEL_BENEFITS);
-    optimization_types.push_back(
+    optimization_types.Put(
         optimization_guide::proto::CURINOS_CREDIT_CARD_CAR_RENTAL_BENEFITS);
   }
   if (payments_data_manager
@@ -119,23 +116,22 @@ GetCardBenefitsOptimizationTypesForCard(
           .has_value() &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableFlatRateCardBenefitsBlocklist)) {
-    optimization_types.push_back(
-        optimization_guide::proto::
-            SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST);
+    optimization_types.Put(optimization_guide::proto::
+                               SHARED_CREDIT_CARD_FLAT_RATE_BENEFITS_BLOCKLIST);
   }
   return optimization_types;
 }
 
 void AddCreditCardOptimizationTypes(
     const PaymentsDataManager& payments_data_manager,
-    base::flat_set<optimization_guide::proto::OptimizationType>&
-        optimization_types) {
+    optimization_guide::OptimizationTypeSet& optimization_types) {
   for (const CreditCard* card : payments_data_manager.GetServerCreditCards()) {
-    auto vcn_merchant_opt_out_optimization_type =
-        GetVcnMerchantOptOutOptimizationTypeForCard(*card);
+    optimization_guide::proto::OptimizationType
+        vcn_merchant_opt_out_optimization_type =
+            GetVcnMerchantOptOutOptimizationTypeForCard(*card);
     if (vcn_merchant_opt_out_optimization_type !=
         optimization_guide::proto::TYPE_UNSPECIFIED) {
-      optimization_types.insert(vcn_merchant_opt_out_optimization_type);
+      optimization_types.Put(vcn_merchant_opt_out_optimization_type);
     }
 
     // Check if the card is eligible for category-level benefit
@@ -144,27 +140,25 @@ void AddCreditCardOptimizationTypes(
     // optimizations.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCardBenefitsSync)) {
-      optimization_types.insert_range(
-          std::views::as_rvalue(GetCardBenefitsOptimizationTypesForCard(
-              *card, payments_data_manager)));
+      optimization_types.PutAll(GetCardBenefitsOptimizationTypesForCard(
+          *card, payments_data_manager));
     }
   }
 }
 
 void AddAblationOptimizationTypes(
-    base::flat_set<optimization_guide::proto::OptimizationType>&
-        optimization_types) {
-  optimization_types.insert(
+    optimization_guide::OptimizationTypeSet& optimization_types) {
+  optimization_types.Put(
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1);
-  optimization_types.insert(
+  optimization_types.Put(
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST2);
-  optimization_types.insert(
+  optimization_types.Put(
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST3);
-  optimization_types.insert(
+  optimization_types.Put(
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST4);
-  optimization_types.insert(
+  optimization_types.Put(
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST5);
-  optimization_types.insert(
+  optimization_types.Put(
       optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST6);
 }
 
@@ -220,8 +214,7 @@ GetBenefitCategoryForOptimizationType(
 
 void AddOptimizationTypesForBnplIssuers(
     const std::vector<BnplIssuer>& bnpl_issuers,
-    base::flat_set<optimization_guide::proto::OptimizationType>&
-        optimization_types) {
+    optimization_guide::OptimizationTypeSet& optimization_types) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   auto bnpl_issuer_allowlist_can_be_loaded =
@@ -231,7 +224,7 @@ void AddOptimizationTypesForBnplIssuers(
       };
 
   if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplAffirm)) {
-    optimization_types.insert(
+    optimization_types.Put(
         base::FeatureList::IsEnabled(
             features::kAutofillPreferBuyNowPayLaterBlocklists)
 #if BUILDFLAG(IS_ANDROID)
@@ -246,7 +239,7 @@ void AddOptimizationTypesForBnplIssuers(
   }
 
   if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplZip)) {
-    optimization_types.insert(
+    optimization_types.Put(
         base::FeatureList::IsEnabled(
             features::kAutofillPreferBuyNowPayLaterBlocklists)
 #if BUILDFLAG(IS_ANDROID)
@@ -260,7 +253,7 @@ void AddOptimizationTypesForBnplIssuers(
   }
 
   if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplKlarna)) {
-    optimization_types.insert(
+    optimization_types.Put(
         base::FeatureList::IsEnabled(
             features::kAutofillPreferBuyNowPayLaterBlocklists)
 #if BUILDFLAG(IS_ANDROID)
@@ -287,46 +280,42 @@ AutofillOptimizationGuideDecider::~AutofillOptimizationGuideDecider() = default;
 
 void AutofillOptimizationGuideDecider::OnPaymentsDataLoaded(
     const PaymentsDataManager& payments_data_manager) {
-  // This flat set represents all of the optimization types that we need to
+  // This set represents all of the optimization types that we need to
   // register after loading payments data.
-  base::flat_set<optimization_guide::proto::OptimizationType>
-      optimization_types;
+  optimization_guide::OptimizationTypeSet optimization_types;
 
   AddOptimizationTypesForBnplIssuers(payments_data_manager.GetBnplIssuers(),
                                      optimization_types);
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableOmniboxAutofill)) {
-    optimization_types.insert(
+    optimization_types.Put(
         optimization_guide::proto::OMNIBOX_AUTOFILL_IFRAME_ALLOWLIST);
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
-    optimization_types.insert(
+    optimization_types.Put(
         optimization_guide::proto::AUTOFILL_AT_MEMORY_BLOCKED);
   }
 
   // If we do not have any optimization types to register, do not do anything.
   if (!optimization_types.empty()) {
-    decider_->RegisterOptimizationTypes(
-        std::vector<optimization_guide::proto::OptimizationType>(
-            std::move(optimization_types).extract()));
+    decider_->RegisterOptimizationTypes(optimization_types);
   }
 }
 
 void AutofillOptimizationGuideDecider::OnDidParseForm(
     const FormStructure& form_structure,
     const PaymentsDataManager& payments_data_manager) {
-  // This flat set represents all of the optimization types that we need to
+  // This set represents all of the optimization types that we need to
   // register based on `form_structure`.
-  base::flat_set<optimization_guide::proto::OptimizationType>
-      optimization_types;
+  optimization_guide::OptimizationTypeSet optimization_types;
 
   const bool has_iban_field =
       std::ranges::any_of(form_structure, [](const auto& field) {
         return field->Type().GetTypes().contains(IBAN_VALUE);
       });
   if (has_iban_field) {
-    optimization_types.insert(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
+    optimization_types.Put(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
   }
   const bool has_credit_card_field =
       std::ranges::any_of(form_structure, [](const auto& field) {
@@ -347,9 +336,7 @@ void AutofillOptimizationGuideDecider::OnDidParseForm(
   // If we do not have any optimization types to register, do not do anything.
   if (!optimization_types.empty()) {
     // Register all optimization types that we need based on `form_structure`.
-    decider_->RegisterOptimizationTypes(
-        std::vector<optimization_guide::proto::OptimizationType>(
-            std::move(optimization_types).extract()));
+    decider_->RegisterOptimizationTypes(optimization_types);
   }
 }
 
@@ -357,52 +344,52 @@ CreditCardCategoryBenefit::BenefitCategory
 AutofillOptimizationGuideDecider::AttemptToGetEligibleCreditCardBenefitCategory(
     std::string_view benefit_source,
     const GURL& url) const {
-  std::vector<optimization_guide::proto::OptimizationType>
-      issuer_optimization_types;
+  optimization_guide::OptimizationTypeSet issuer_optimization_types;
   if (benefit_source == kAmexCardBenefitSource) {
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
   } else if (benefit_source == kBmoCardBenefitSource) {
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_ALCOHOL_STORE_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_DINING_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_DRUGSTORE_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_ENTERTAINMENT_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_GROCERY_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_OFFICE_SUPPLY_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_RECURRING_BILL_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_TRANSIT_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_TRAVEL_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::BMO_CREDIT_CARD_WHOLESALE_CLUB_BENEFITS);
   } else if (
       benefit_source == kCurinosCardBenefitSource &&
       base::FeatureList::IsEnabled(
           features::
               kAutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos)) {
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::CURINOS_CREDIT_CARD_FLIGHT_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::CURINOS_CREDIT_CARD_HOTEL_BENEFITS);
-    issuer_optimization_types.push_back(
+    issuer_optimization_types.Put(
         optimization_guide::proto::CURINOS_CREDIT_CARD_CAR_RENTAL_BENEFITS);
   }
 
-  for (auto& optimization_type : issuer_optimization_types) {
+  for (optimization_guide::proto::OptimizationType optimization_type :
+       issuer_optimization_types) {
     optimization_guide::OptimizationGuideDecision decision =
         decider_->CanApplyOptimization(url, optimization_type,
                                        /*optimization_metadata=*/nullptr);

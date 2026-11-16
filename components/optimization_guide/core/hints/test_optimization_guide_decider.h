@@ -19,14 +19,13 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
   TestOptimizationGuideDecider();
   ~TestOptimizationGuideDecider() override;
 
-  const std::vector<proto::OptimizationType>& registered_optimization_types()
-      const {
+  OptimizationTypeSet registered_optimization_types() const {
     return registered_optimization_types_;
   }
 
   // OptimizationGuideDecider:
   void RegisterOptimizationTypes(
-      const std::vector<proto::OptimizationType>& optimization_types) override;
+      OptimizationTypeSet optimization_types) override;
   void CanApplyOptimization(
       const GURL& url,
       proto::OptimizationType optimization_type,
@@ -45,7 +44,7 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
 
  private:
   // Stored calls to these methods, for testing usage.
-  std::vector<proto::OptimizationType> registered_optimization_types_;
+  OptimizationTypeSet registered_optimization_types_;
 };
 
 }  // namespace optimization_guide

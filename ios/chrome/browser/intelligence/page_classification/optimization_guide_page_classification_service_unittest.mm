@@ -47,8 +47,7 @@ class FakeOptimizationGuideDecider
   ~FakeOptimizationGuideDecider() override = default;
 
   void RegisterOptimizationTypes(
-      const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types) override {
+      optimization_guide::OptimizationTypeSet optimization_types) override {
     registered_types_ = optimization_types;
   }
 
@@ -95,8 +94,7 @@ class FakeOptimizationGuideDecider
     }
   }
 
-  const std::vector<optimization_guide::proto::OptimizationType>&
-  registered_types() const {
+  optimization_guide::OptimizationTypeSet registered_types() const {
     return registered_types_;
   }
 
@@ -106,7 +104,7 @@ class FakeOptimizationGuideDecider
   }
 
  private:
-  std::vector<optimization_guide::proto::OptimizationType> registered_types_;
+  optimization_guide::OptimizationTypeSet registered_types_;
   GURL last_url_;
   optimization_guide::proto::OptimizationType last_type_ =
       optimization_guide::proto::TYPE_UNSPECIFIED;
@@ -209,9 +207,9 @@ class OptimizationGuidePageClassificationServiceTest : public PlatformTest {
 // Tests that the service registers PAGE_ENTITIES optimization type on init.
 TEST_F(OptimizationGuidePageClassificationServiceTest,
        TestRegistersOptimizationType) {
-  ASSERT_EQ(1u, decider_.registered_types().size());
-  EXPECT_EQ(optimization_guide::proto::PAGE_ENTITIES,
-            decider_.registered_types()[0]);
+  EXPECT_EQ(decider_.registered_types(),
+            optimization_guide::OptimizationTypeSet(
+                {optimization_guide::proto::PAGE_ENTITIES}));
 }
 
 // Tests that null WebState returns an empty result.

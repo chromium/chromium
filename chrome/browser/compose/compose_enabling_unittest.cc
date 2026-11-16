@@ -78,8 +78,7 @@ class CustomMockOptimizationGuideKeyedService
        optimization_guide::OptimizationMetadata* optimization_metadata));
   MOCK_METHOD(void,
               RegisterOptimizationTypes,
-              (const std::vector<optimization_guide::proto::OptimizationType>&
-                   optimization_types));
+              (optimization_guide::OptimizationTypeSet optimization_types));
   MOCK_METHOD(
       void,
       CanApplyOptimizationOnDemand,

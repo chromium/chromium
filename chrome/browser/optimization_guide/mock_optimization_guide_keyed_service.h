@@ -30,7 +30,7 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               (override));
   MOCK_METHOD(void,
               RegisterOptimizationTypes,
-              (const std::vector<optimization_guide::proto::OptimizationType>&),
+              (optimization_guide::OptimizationTypeSet),
               (override));
   MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
               CanApplyOptimization,

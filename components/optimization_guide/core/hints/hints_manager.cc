@@ -1150,13 +1150,13 @@ void HintsManager::OnHintLoaded(base::OnceClosure callback,
 }
 
 void HintsManager::RegisterOptimizationTypes(
-    const std::vector<proto::OptimizationType>& optimization_types) {
+    OptimizationTypeSet optimization_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool should_load_new_optimization_filter = false;
 
   ScopedDictPrefUpdate previously_registered_opt_types(
       pref_service_, prefs::kPreviouslyRegisteredOptimizationTypes);
-  for (const auto optimization_type : optimization_types) {
+  for (proto::OptimizationType optimization_type : optimization_types) {
     if (optimization_type == proto::TYPE_UNSPECIFIED) {
       continue;
     }
@@ -2001,8 +2001,7 @@ void HintsManager::AddHintForTesting(
 
 void HintsManager::AddHintWithMultipleOptimizationsForTesting(
     const GURL& url,
-    const std::vector<optimization_guide::proto::OptimizationType>&
-        optimization_types) {
+    OptimizationTypeSet optimization_types) {
   std::unique_ptr<proto::Hint> hint = std::make_unique<proto::Hint>();
   hint->set_key(url.spec());
   proto::PageHint* page_hint = hint->add_page_hints();

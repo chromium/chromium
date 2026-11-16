@@ -93,8 +93,7 @@ class OptimizationGuideService
 
   // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(
-      const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types) override;
+      optimization_guide::OptimizationTypeSet optimization_types) override;
   void CanApplyOptimization(
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,

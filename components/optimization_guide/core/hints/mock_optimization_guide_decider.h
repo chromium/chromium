@@ -25,7 +25,7 @@ class MockOptimizationGuideDecider : public OptimizationGuideDecider {
 
   MOCK_METHOD(void,
               RegisterOptimizationTypes,
-              (const std::vector<proto::OptimizationType>&),
+              (OptimizationTypeSet),
               (override));
   MOCK_METHOD(void,
               CanApplyOptimization,

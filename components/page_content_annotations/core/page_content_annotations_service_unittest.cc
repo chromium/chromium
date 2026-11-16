@@ -79,13 +79,12 @@ class FakeOptimizationGuideDecider
     : public optimization_guide::TestOptimizationGuideDecider {
  public:
   void RegisterOptimizationTypes(
-      const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types) override {
+      optimization_guide::OptimizationTypeSet optimization_types) override {
     registered_optimization_types_ = optimization_types;
   }
 
-  std::vector<optimization_guide::proto::OptimizationType>
-  registered_optimization_types() {
+  optimization_guide::OptimizationTypeSet registered_optimization_types()
+      const {
     return registered_optimization_types_;
   }
 
@@ -139,8 +138,7 @@ class FakeOptimizationGuideDecider
   }
 
  private:
-  std::vector<optimization_guide::proto::OptimizationType>
-      registered_optimization_types_;
+  optimization_guide::OptimizationTypeSet registered_optimization_types_;
 };
 
 class MockPageContentAnnotationsObserver
@@ -441,13 +439,12 @@ TEST_F(PageContentAnnotationsServiceTest, MAYBE_OlderVisitsDropped) {
 }
 
 TEST_F(PageContentAnnotationsServiceTest, RegistersType) {
-  std::vector<optimization_guide::proto::OptimizationType>
-      registered_optimization_types =
-          optimization_guide_decider()->registered_optimization_types();
-  EXPECT_TRUE(std::ranges::contains(registered_optimization_types,
-                                    optimization_guide::proto::PAGE_ENTITIES));
-  EXPECT_TRUE(std::ranges::contains(registered_optimization_types,
-                                    optimization_guide::proto::SALIENT_IMAGE));
+  optimization_guide::OptimizationTypeSet registered_optimization_types =
+      optimization_guide_decider()->registered_optimization_types();
+  EXPECT_TRUE(registered_optimization_types.Has(
+      optimization_guide::proto::PAGE_ENTITIES));
+  EXPECT_TRUE(registered_optimization_types.Has(
+      optimization_guide::proto::SALIENT_IMAGE));
 }
 
 TEST_F(PageContentAnnotationsServiceTest, DoesNotPersistIfServerHasNoData) {

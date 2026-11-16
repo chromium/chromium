@@ -50,11 +50,10 @@ class TestOptimizationGuideDecider
   ~TestOptimizationGuideDecider() override = default;
 
   void RegisterOptimizationTypes(
-      const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types) override {
-    ASSERT_EQ(optimization_types.size(), 1u);
-    ASSERT_EQ(optimization_guide::proto::HISTORY_CLUSTERS,
-              optimization_types[0]);
+      optimization_guide::OptimizationTypeSet optimization_types) override {
+    ASSERT_EQ(optimization_types,
+              optimization_guide::OptimizationTypeSet(
+                  {optimization_guide::proto::HISTORY_CLUSTERS}));
   }
 
   optimization_guide::OptimizationGuideDecision CanApplyOptimization(

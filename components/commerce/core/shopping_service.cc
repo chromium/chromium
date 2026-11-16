@@ -129,26 +129,24 @@ ShoppingService::ShoppingService(
   // Register for the types of information we're allowed to receive from
   // optimization guide.
   if (opt_guide_) {
-    std::vector<optimization_guide::proto::OptimizationType> types;
+    optimization_guide::OptimizationTypeSet types;
 
-    types.push_back(
-        optimization_guide::proto::OptimizationType::PRICE_TRACKING);
+    types.Put(optimization_guide::proto::OptimizationType::PRICE_TRACKING);
 
     if (IsMerchantViewerEnabled(account_checker_.get())) {
-      types.push_back(optimization_guide::proto::OptimizationType::
-                          MERCHANT_TRUST_SIGNALS_V2);
+      types.Put(optimization_guide::proto::OptimizationType::
+                    MERCHANT_TRUST_SIGNALS_V2);
     }
     if (IsPriceInsightsApiEnabled(account_checker_.get())) {
-      types.push_back(
-          optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
+      types.Put(optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
     }
     if (IsDiscountInfoApiEnabled(account_checker_.get())) {
-      types.push_back(
+      types.Put(
           optimization_guide::proto::OptimizationType::SHOPPING_DISCOUNTS);
     }
 
     if (IsShoppingPageTypesApiEnabled(account_checker_.get())) {
-      types.push_back(
+      types.Put(
           optimization_guide::proto::OptimizationType::SHOPPING_PAGE_TYPES);
     }
 

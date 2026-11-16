@@ -39,7 +39,7 @@ class OptimizationGuideDecider {
   // Registering an OptimizationType will cause data for the type to be fetched
   // and cached on each page load.
   virtual void RegisterOptimizationTypes(
-      const std::vector<proto::OptimizationType>& optimization_types) = 0;
+      OptimizationTypeSet optimization_types) = 0;
 
   // Invokes |callback| with the decision for the URL contained in |url| and
   // |optimization_type|, when sufficient information has been collected to

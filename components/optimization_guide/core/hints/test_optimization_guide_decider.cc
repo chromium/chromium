@@ -10,10 +10,8 @@ TestOptimizationGuideDecider::TestOptimizationGuideDecider() = default;
 TestOptimizationGuideDecider::~TestOptimizationGuideDecider() = default;
 
 void TestOptimizationGuideDecider::RegisterOptimizationTypes(
-    const std::vector<proto::OptimizationType>& optimization_types) {
-  registered_optimization_types_.insert(registered_optimization_types_.end(),
-                                        optimization_types.begin(),
-                                        optimization_types.end());
+    OptimizationTypeSet optimization_types) {
+  registered_optimization_types_.PutAll(optimization_types);
 }
 
 void TestOptimizationGuideDecider::CanApplyOptimization(

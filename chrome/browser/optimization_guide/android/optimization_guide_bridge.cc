@@ -13,7 +13,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/to_vector.h"
 #include "base/strings/string_view_util.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -186,9 +185,8 @@ OptimizationGuideBridge::GetJavaObject() {
 
 void OptimizationGuideBridge::RegisterOptimizationTypes(
     const std::vector<int32_t>& optimization_types) {
-  OptimizationTypeSet opt_types_set = ToOptTypesSet(optimization_types);
   optimization_guide_keyed_service_->RegisterOptimizationTypes(
-      base::ToVector(opt_types_set));
+      ToOptTypesSet(optimization_types));
 }
 
 void OptimizationGuideBridge::CanApplyOptimization(

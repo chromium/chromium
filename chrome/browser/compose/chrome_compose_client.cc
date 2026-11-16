@@ -191,9 +191,9 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_));
 
   if (GetOptimizationGuide()) {
-    std::vector<optimization_guide::proto::OptimizationType> types;
+    optimization_guide::OptimizationTypeSet types;
     if (compose_enabling_->IsEnabled().has_value()) {
-      types.push_back(optimization_guide::proto::OptimizationType::COMPOSE);
+      types.Put(optimization_guide::proto::OptimizationType::COMPOSE);
     }
 
     if (!types.empty()) {

@@ -71,7 +71,7 @@ class MockOptGuideDecider
 
   MOCK_METHOD(void,
               RegisterOptimizationTypes,
-              (const std::vector<OptimizationType>& optimization_types),
+              (OptimizationTypeSet optimization_types),
               (override));
   MOCK_METHOD(void,
               CanApplyOptimizationOnDemand,

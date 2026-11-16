@@ -204,8 +204,7 @@ void OptimizationGuideService::OnNavigationFinish(
 }
 
 void OptimizationGuideService::RegisterOptimizationTypes(
-    const std::vector<optimization_guide::proto::OptimizationType>&
-        optimization_types) {
+    optimization_guide::OptimizationTypeSet optimization_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   hints_manager_->RegisterOptimizationTypes(optimization_types);
 }

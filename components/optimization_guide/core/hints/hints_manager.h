@@ -113,8 +113,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
 
   // Registers the optimization types that have the potential for hints to be
   // called by consumers of the Optimization Guide.
-  void RegisterOptimizationTypes(
-      const std::vector<proto::OptimizationType>& optimization_types);
+  void RegisterOptimizationTypes(OptimizationTypeSet optimization_types);
 
   // Returns the optimization types that are registered.
   OptimizationTypeSet registered_optimization_types() const {
@@ -241,8 +240,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // only.
   void AddHintWithMultipleOptimizationsForTesting(
       const GURL& url,
-      const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types);
+      OptimizationTypeSet optimization_types);
 
   // Add hints to the cache for the provided optimization types and metadata.
   // For testing only.
