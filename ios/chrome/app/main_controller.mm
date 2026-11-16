@@ -1706,6 +1706,14 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 - (void)activateBlockingScene:(UIScene*)requestingScene {
   id<UIBlockerTarget> uiBlocker = self.appState.currentUIBlocker;
   if (!uiBlocker) {
+    for (SceneState* sceneState in self.appState.connectedScenes) {
+      if (sceneState.scene == requestingScene) {
+        uiBlocker = sceneState.profileState.currentUIBlocker;
+        break;
+      }
+    }
+  }
+  if (!uiBlocker) {
     return;
   }
 

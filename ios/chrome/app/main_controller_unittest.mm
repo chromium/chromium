@@ -9,13 +9,20 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -190,6 +197,57 @@ TEST_F(MainControllerTest, TestRemoteNotificationFollowedByForeground) {
   histogram_tester.ExpectUniqueSample(
       "Startup.IOSLaunchReason", IOSLaunchReason::kBackgroundSilentNotification,
       1);
+}
+
+// Tests that `activateBlockingScene:` forwards `bringBlockerToFront:` to a
+// profile-scoped UI blocker associated with the requesting scene's profile.
+TEST_F(MainControllerTest, TestActivateBlockingSceneProfileScoped) {
+  AppState* app_state =
+      [[AppState alloc] initWithStartupInformation:main_controller_];
+  main_controller_.appState = app_state;
+
+  ProfileState* profile_state =
+      [[ProfileState alloc] initWithAppState:app_state];
+  UIWindowScene* requesting_scene = OCMClassMock([UIWindowScene class]);
+  SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.scene = requesting_scene;
+  scene_state.profileState = profile_state;
+  [app_state sceneStateConnected:scene_state];
+  [profile_state sceneStateConnected:scene_state];
+
+  id<UIBlockerTarget> blocker_target =
+      OCMProtocolMock(@protocol(UIBlockerTarget));
+  [profile_state incrementBlockingUICounterForTarget:blocker_target];
+  ASSERT_EQ(app_state.currentUIBlocker, nil);
+  ASSERT_EQ(scene_state.profileState.currentUIBlocker, blocker_target);
+
+  OCMExpect([blocker_target bringBlockerToFront:requesting_scene]);
+  [static_cast<id<BlockingSceneCommands>>(main_controller_)
+      activateBlockingScene:requesting_scene];
+  EXPECT_OCMOCK_VERIFY(static_cast<id>(blocker_target));
+
+  [profile_state decrementBlockingUICounterForTarget:blocker_target];
+}
+
+// Tests that `activateBlockingScene:` forwards `bringBlockerToFront:` to an
+// app-scoped UI blocker when one is present on `AppState`.
+TEST_F(MainControllerTest, TestActivateBlockingSceneAppScoped) {
+  AppState* app_state =
+      [[AppState alloc] initWithStartupInformation:main_controller_];
+  main_controller_.appState = app_state;
+
+  UIWindowScene* requesting_scene = OCMClassMock([UIWindowScene class]);
+  id<UIBlockerTarget> blocker_target =
+      OCMProtocolMock(@protocol(UIBlockerTarget));
+  [app_state incrementBlockingUICounterForTarget:blocker_target];
+  ASSERT_EQ(app_state.currentUIBlocker, blocker_target);
+
+  OCMExpect([blocker_target bringBlockerToFront:requesting_scene]);
+  [static_cast<id<BlockingSceneCommands>>(main_controller_)
+      activateBlockingScene:requesting_scene];
+  EXPECT_OCMOCK_VERIFY(static_cast<id>(blocker_target));
+
+  [app_state decrementBlockingUICounterForTarget:blocker_target];
 }
 
 }  // namespace
