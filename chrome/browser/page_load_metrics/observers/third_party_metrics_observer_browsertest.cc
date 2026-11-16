@@ -4,6 +4,9 @@
 
 #include "components/page_load_metrics/browser/observers/third_party_metrics_observer.h"
 
+#include <optional>
+#include <string>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -19,6 +22,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -148,14 +153,44 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
       const GURL& url,
       page_load_metrics::PageLoadMetricsTestWaiter* waiter,
       page_load_metrics::PageLoadMetricsTestWaiter::TimingField field) {
-    // Waiting for the frame to navigate ensures that any previous RFHs for this
-    // frame have been deleted and therefore won't pollute any future frame
-    // expectations (such as FCP).
-    waiter->AddSubframeNavigationExpectation();
-    NavigateFrameToUrl(url);
-    waiter->Wait();
+    // If the subframe already has a committed non-blank document, navigate it
+    // to about:blank first so any buffered timing updates (such as LCP) from
+    // the unloading RenderFrameHost are flushed and cleared before waiting on
+    // the new navigation's timing expectations.
+    content::RenderFrameHost* current_rfh =
+        ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+    if (current_rfh && !current_rfh->GetLastCommittedURL().is_empty() &&
+        !current_rfh->GetLastCommittedURL().IsAboutBlank()) {
+      // Guard against hanging when the RenderFrameHost is reused across
+      // navigations (e.g., for same-SiteInstance navigations when subframe
+      // RenderDocument is disabled, or without Site Isolation).
+      const bool will_delete_rfh =
+          current_rfh->GetSiteInstance() !=
+          web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+      std::optional<content::RenderFrameDeletedObserver> deleted_observer;
+      if (will_delete_rfh) {
+        deleted_observer.emplace(current_rfh);
+      }
+      waiter->AddSubframeNavigationExpectation();
+      NavigateFrameToUrl(GURL(url::kAboutBlankURL));
+      if (deleted_observer) {
+        deleted_observer->WaitUntilDeleted();
+      }
+      waiter->Wait();
+    }
 
+    waiter->AddSubframeNavigationExpectation();
+    // Also wait for kFirstContentfulPaint when awaiting
+    // kLargestContentfulPaint so that both metrics are guaranteed to be
+    // observed before Wait() resets the waiter's state.
+    if (field == page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
+                     kLargestContentfulPaint) {
+      waiter->AddSubFrameExpectation(
+          page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
+              kFirstContentfulPaint);
+    }
     waiter->AddSubFrameExpectation(field);
+    NavigateFrameToUrl(url);
     waiter->Wait();
   }
 
@@ -215,16 +250,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   histogram_tester.ExpectTotalCount(kSubframeFCPHistogram, 1);
 }
 
-// TODO(crbug.com/334416161): Re-enble this test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ThreeThirdPartyFrames_ThreeTimingsRecorded \
-  DISABLED_ThreeThirdPartyFrames_ThreeTimingsRecorded
-#else
-#define MAYBE_ThreeThirdPartyFrames_ThreeTimingsRecorded \
-  ThreeThirdPartyFrames_ThreeTimingsRecorded
-#endif
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
-                       MAYBE_ThreeThirdPartyFrames_ThreeTimingsRecorded) {
+                       ThreeThirdPartyFrames_ThreeTimingsRecorded) {
   base::HistogramTester histogram_tester;
 
   page_load_metrics::PageLoadMetricsTestWaiter waiter(
