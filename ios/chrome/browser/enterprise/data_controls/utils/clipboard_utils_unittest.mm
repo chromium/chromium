@@ -39,8 +39,8 @@ const char kDestinationUrl[] = "https://test.com";
 
 class MockIOSRulesService : public IOSRulesService {
  public:
-  explicit MockIOSRulesService(ProfileIOS* profile)
-      : IOSRulesService(profile) {}
+  explicit MockIOSRulesService(ProfileIOS& profile)
+      : IOSRulesService(&profile) {}
 
   MOCK_METHOD(Verdict,
               GetPasteVerdict,
@@ -56,18 +56,15 @@ class MockIOSRulesService : public IOSRulesService {
               (const, override));
 };
 
-std::unique_ptr<KeyedService> BuildMockIOSRulesService(ProfileIOS* profile) {
-  return std::make_unique<MockIOSRulesService>(profile);
-}
-
 }  // namespace
 
 class ClipboardUtilsTest : public PlatformTest {
  public:
   ClipboardUtilsTest() {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(IOSRulesServiceFactory::GetInstance(),
-                              base::BindOnce(&BuildMockIOSRulesService));
+    builder.AddTestingFactory(
+        IOSRulesServiceFactory::GetInstance(),
+        base::BindOnce(&std::make_unique<MockIOSRulesService, ProfileIOS&>));
     builder.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
         base::BindOnce(
@@ -80,8 +77,9 @@ class ClipboardUtilsTest : public PlatformTest {
             profile_.get()));
 
     TestProfileIOS::Builder builder2;
-    builder2.AddTestingFactory(IOSRulesServiceFactory::GetInstance(),
-                               base::BindOnce(&BuildMockIOSRulesService));
+    builder2.AddTestingFactory(
+        IOSRulesServiceFactory::GetInstance(),
+        base::BindOnce(&std::make_unique<MockIOSRulesService, ProfileIOS&>));
     builder2.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
         base::BindOnce(
