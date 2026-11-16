@@ -133,6 +133,8 @@ static_library("test_support") {
   sources = [
     "personalization_app_mocha_test_base.cc",
     "personalization_app_mocha_test_base.h",
+    "personalization_app_mojom_banned_mocha_test_base.cc",
+    "personalization_app_mojom_banned_mocha_test_base.h",
     "test_personalization_app_webui_provider.cc",
     "test_personalization_app_webui_provider.h",
     "test_sea_pen_observer.cc",
@@ -152,8 +154,13 @@ static_library("test_support") {
     "//ash",
     "//ash:test_support",
     "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/common:sea_pen",
+    "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app",
     "//ash/webui/personalization_app:test_support",
+    "//ash/webui/personalization_app/mojom",
+    "//base",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
@@ -161,6 +168,8 @@ static_library("test_support") {
     "//chrome/browser/ui/ash/wallpaper",
     "//chrome/test/base:web_ui_mocha_browser_test",
     "//components/manta",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
   ]
 }
 

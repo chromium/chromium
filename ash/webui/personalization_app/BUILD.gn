@@ -59,25 +59,18 @@ source_set("test_support") {
     "test/fake_personalization_app_keyboard_backlight_provider.h",
     "test/fake_personalization_app_user_provider.cc",
     "test/fake_personalization_app_user_provider.h",
-    "test/personalization_app_mojom_banned_mocha_test_base.cc",
-    "test/personalization_app_mojom_banned_mocha_test_base.h",
   ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  public_deps = [ "//chrome/test/base:web_ui_test_support" ]
 
   deps = [
     ":personalization_app",
+    "//ash/constants",
     "//ash/public/cpp",
-    "//ash/webui/common:sea_pen",
-    "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
-    "//ash/webui/personalization_app/proto",
-    "//chrome/test/base:web_ui_mocha_browser_test",
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/base",
+    "//mojo/public/cpp/bindings",
   ]
-
-  data = []
 }
 
 source_set("unit_tests") {

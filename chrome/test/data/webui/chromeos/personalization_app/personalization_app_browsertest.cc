@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/ambient/ambient_client.h"
-#include "ash/webui/personalization_app/test/personalization_app_mojom_banned_mocha_test_base.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_mocha_test_base.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_mojom_banned_mocha_test_base.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash::personalization_app {

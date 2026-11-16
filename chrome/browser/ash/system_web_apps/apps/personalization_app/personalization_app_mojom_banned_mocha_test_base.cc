@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/personalization_app/test/personalization_app_mojom_banned_mocha_test_base.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_mojom_banned_mocha_test_base.h"
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
