@@ -477,7 +477,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                                         assumeNonNull(null),
                                         mWindowAndroid,
                                         mCustomTabDelegateFactory),
-                                null);
+                                params instanceof TabReparentingParams reparentingParams
+                                        ? reparentingParams.getFinalizeCallback()
+                                        : null);
             } else if (warmupManager.hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork())) {
                 // Start hidden as Tab needs to be shown after observers are attached.
                 boolean startHidden = true;

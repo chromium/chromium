@@ -3788,30 +3788,34 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     mConfig != null ? mConfig.densityDpi : -1,
                     getResources().getConfiguration().densityDpi);
         }
-        if (mTabReparentingControllerSupplier.get() != null && !mIsTabReparentingPrepared) {
+        if (!isFinishing()
+                && mTabReparentingControllerSupplier.get() != null
+                && !mIsTabReparentingPrepared) {
             // Must happen before tabs are detached, since detaching destroys tab-scoped views
             // (e.g. the side panel's ThinWebView), losing their focus.
             mRootUiCoordinator.prepareUiState();
             mTabReparentingControllerSupplier.get().prepareTabsForReparenting();
             mIsTabReparentingPrepared = true;
-            if (!isFinishing()) {
-                mIsRecreatingForTabletModeChange = tabletMode.changed;
-                // Store the OnPause timestamp before recreation to capture unfold latency metric
-                // only if the activity is currently not in stopped state, to not capture the time
-                // when system was suspended. Hence, unfolding instances where Chrome wasn't in
-                // foreground are not captured in this metric.
-                if (tabletMode.isTablet
-                        && tabletMode.changed
-                        && ApplicationStatus.getStateForActivity(this) != ActivityState.STOPPED) {
-                    super.setOnPauseBeforeFoldRecreateTimestampMs();
-                }
-                recreate();
-                assert mShowContentRunnable != null;
-                mHandler.removeCallbacks(mShowContentRunnable);
-                return true;
+            mIsRecreatingForTabletModeChange = tabletMode.changed;
+            // Store the OnPause timestamp before recreation to capture unfold latency metric
+            // only if the activity is currently not in stopped state, to not capture the time
+            // when system was suspended. Hence, unfolding instances where Chrome wasn't in
+            // foreground are not captured in this metric.
+            if (tabletMode.isTablet
+                    && tabletMode.changed
+                    && ApplicationStatus.getStateForActivity(this) != ActivityState.STOPPED) {
+                super.setOnPauseBeforeFoldRecreateTimestampMs();
             }
+            recreate();
+            assert mShowContentRunnable != null;
+            mHandler.removeCallbacks(mShowContentRunnable);
+            return true;
         }
         return false;
+    }
+
+    public void setTabReparentingControllerForTesting(TabReparentingController controller) {
+        mTabReparentingControllerSupplier.set(controller);
     }
 
     public @Nullable BookmarkModel getBookmarkModelForTesting() {

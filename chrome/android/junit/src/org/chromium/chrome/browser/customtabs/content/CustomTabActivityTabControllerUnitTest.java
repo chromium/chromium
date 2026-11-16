@@ -21,6 +21,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -42,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -56,6 +58,8 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
@@ -470,6 +474,32 @@ public class CustomTabActivityTabControllerUnitTest {
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();
         assertEquals(tab, env.tabProvider.getTab());
+    }
+
+    @Test
+    public void usesTabFromIntent_RunsFinalizeCallbackAndDetachesBeforeAddTab() {
+        Tab tab = env.prepareTransferredTab();
+        TabModelSelector sourceSelector = mock(TabModelSelector.class);
+        Runnable finalizeCallback = mock(Runnable.class);
+        AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(tab.getId(), new TabReparentingParams(tab, sourceSelector, finalizeCallback));
+        doAnswer(
+                        invocation -> {
+                            Runnable callback = invocation.getArgument(1);
+                            if (callback != null) callback.run();
+                            return null;
+                        })
+                .when(env.reparentingTask)
+                .finish(any(), any());
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        InOrder inOrder = inOrder(finalizeCallback, sourceSelector, env.tabModel);
+        inOrder.verify(finalizeCallback).run();
+        inOrder.verify(sourceSelector).detachTabForReparenting(tab);
+        inOrder.verify(env.tabModel).addTab(eq(tab), anyInt(), anyInt(), anyInt());
     }
 
     @Test

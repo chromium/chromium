@@ -73,7 +73,6 @@ public class TabReparentingController {
 
         // Save all the tabs in memory to be retrieved after restart.
         selector.enterReparentingMode();
-        WeakReference<TabModelSelector> weakSelector = new WeakReference<>(selector);
         WeakReference<Runnable> weakDestroyStore =
                 new WeakReference<>(mDestroyTabPersistentStoreRunnable);
         int tabsAwaitingReparenting = 0;
@@ -99,6 +98,7 @@ public class TabReparentingController {
             TabReparentingParams params =
                     new TabReparentingParams(
                             tab,
+                            selector,
                             () -> {
                                 // Destroy old store first so its observer won't delete persisted
                                 // tab/group rows the new Activity restores; weak refs keep
@@ -106,10 +106,6 @@ public class TabReparentingController {
                                 Runnable destroyStore = weakDestroyStore.get();
                                 if (destroyStore != null) {
                                     destroyStore.run();
-                                }
-                                TabModelSelector oldSelector = weakSelector.get();
-                                if (oldSelector != null) {
-                                    oldSelector.detachTabForReparenting(tab);
                                 }
                             });
             mAsyncTabParamsManager.add(tab.getId(), params);

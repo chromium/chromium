@@ -16,6 +16,10 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
   private var mAddedToIncognitoTabHostRegistry = false
 
   override fun add(tabId: Int, params: AsyncTabParams) {
+    val previous = mAsyncTabParams[tabId]
+    if (previous !== params && previous is TabReparentingParams) {
+      previous.detachFromOriginalModel()
+    }
     mAsyncTabParams.put(tabId, params)
     if (!mAddedToIncognitoTabHostRegistry) {
       // Make sure async incognito tabs are taken into account when, for example,
@@ -59,7 +63,7 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
   }
 
   private class AsyncTabsIncognitoTabHost(
-    private val mAsyncTabParamsManager: AsyncTabParamsManagerImpl
+    private val mAsyncTabParamsManager: AsyncTabParamsManagerImpl,
   ) : IncognitoTabHost {
 
     @SuppressWarnings("UseKtx")

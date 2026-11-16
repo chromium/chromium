@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -66,6 +67,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -138,6 +140,7 @@ public class ChromeActivityUnitTest {
         private boolean mIsInOverviewMode;
         private boolean mAreTabModelsInitialized;
         private boolean mIsTablet;
+        private boolean mIsFinishing;
         private @Nullable Intent mStartedActivityIntent;
 
         public TestChromeActivity() {
@@ -267,6 +270,21 @@ public class ChromeActivityUnitTest {
 
         @Override
         protected void endUmaSession() {}
+
+        @Override
+        public boolean isFinishing() {
+            return mIsFinishing;
+        }
+
+        @Override
+        public TabletMode getTabletMode() {
+            return mock(TabletMode.class);
+        }
+
+        @Override
+        protected boolean doRecreateActivity() {
+            return super.doRecreateActivity();
+        }
     }
 
     @Before
@@ -721,5 +739,17 @@ public class ChromeActivityUnitTest {
 
         chromeActivity.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ false);
         verifyNoMoreInteractions(mInputHintCheckerJni);
+    }
+
+    @Test
+    public void testDoRecreateActivity_SkipsPrepareWhenFinishing() {
+        TabReparentingController reparentingController = mock(TabReparentingController.class);
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        chromeActivity.setTabReparentingControllerForTesting(reparentingController);
+        chromeActivity.mIsFinishing = true;
+
+        assertFalse(chromeActivity.doRecreateActivity());
+        verify(mRootUiCoordinatorMock, never()).prepareUiState();
+        verify(reparentingController, never()).prepareTabsForReparenting();
     }
 }

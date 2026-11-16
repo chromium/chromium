@@ -129,6 +129,20 @@ public class AsyncTabParamsManagerImplUnitTest {
     }
 
     @Test
+    public void testAdd_OverwritingReparentingParamsDetachesFromOriginalModel() {
+        TabModelSelector sourceSelector = mock(TabModelSelector.class);
+        TabReparentingParams params1 =
+                new TabReparentingParams(mRegularTab, sourceSelector, /* finalizeCallback= */ null);
+
+        mManager.add(/* tabId= */ 1, params1);
+        mManager.add(/* tabId= */ 1, params1);
+        verify(sourceSelector, never()).detachTabForReparenting(mRegularTab);
+
+        mManager.add(/* tabId= */ 1, mRegularParams);
+        verify(sourceSelector).detachTabForReparenting(mRegularTab);
+    }
+
+    @Test
     public void testCloseAllIncognitoTabs_IncognitoWebContents() {
         AsyncTabParams incognitoWebContentsParams =
                 createMockAsyncTabParamsWithWebContents(/* isIncognito= */ true);
