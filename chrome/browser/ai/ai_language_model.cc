@@ -14,13 +14,16 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -127,20 +130,30 @@ on_device_model::mojom::InputPtr ConvertToInput(
       AppendToolDeclarations(tools, input->pieces);
     }
 
+    bool added_content = false;
     for (const auto& content : prompt->content) {
       switch (content->which()) {
         case blink::mojom::AILanguageModelPromptContent::Tag::kText:
           input->pieces.push_back(InputPiece::NewText(content->get_text()));
+          added_content = true;
           break;
         case blink::mojom::AILanguageModelPromptContent::Tag::kThought:
-          // TODO(crbug.com/546151578): Handle thought inputs in browser AI.
-          return nullptr;
+          if (prompt->role !=
+                  blink::mojom::AILanguageModelPromptRole::kAssistant ||
+              !base::FeatureList::IsEnabled(
+                  blink::features::kAIPromptAPIThinkingMode)) {
+            return nullptr;
+          }
+          // Silently strip incoming thought content blocks so multi-turn
+          // assistant history can be re-passed without inflating the KV cache.
+          break;
         case blink::mojom::AILanguageModelPromptContent::Tag::kBitmap:
           if (!capabilities.Has(
                   on_device_model::CapabilityFlags::kImageInput)) {
             return nullptr;
           }
           input->pieces.push_back(InputPiece::NewBitmap(content->get_bitmap()));
+          added_content = true;
           break;
         case blink::mojom::AILanguageModelPromptContent::Tag::kAudio: {
           if (!capabilities.Has(
@@ -149,6 +162,7 @@ on_device_model::mojom::InputPtr ConvertToInput(
           }
           input->pieces.push_back(
               InputPiece::NewAudio(content->get_audio().Clone()));
+          added_content = true;
           break;
         }
         case blink::mojom::AILanguageModelPromptContent::Tag::kToolCall: {
@@ -160,6 +174,7 @@ on_device_model::mojom::InputPtr ConvertToInput(
             return nullptr;
           }
           input->pieces.push_back(InputPiece::NewToolCall(std::move(call)));
+          added_content = true;
           break;
         }
         case blink::mojom::AILanguageModelPromptContent::Tag::kToolResponse: {
@@ -173,15 +188,65 @@ on_device_model::mojom::InputPtr ConvertToInput(
           }
           input->pieces.push_back(
               InputPiece::NewToolResponse(std::move(response)));
+          added_content = true;
           break;
         }
       }
+    }
+    // Keep a turn whose content was only thoughts, since the backend drops
+    // turns without content.
+    if (!added_content && !prompt->content.empty()) {
+      input->pieces.push_back(InputPiece::NewText(""));
     }
     if (!prompt->is_prefix) {
       input->pieces.push_back(InputPiece::NewToken(ml::Token::kEnd));
     }
   }
   return input;
+}
+
+// Returns the thinking token budget for `effort`, clamped to leave answer
+// tokens in `available_tokens`. Returns 0 if thinking is off.
+//
+// The defaults are tuned on Gemma 4 E2B, at 1, 2 and 4 times its 512 token
+// sliding attention window.
+// TODO(crbug.com/546151578): Read `thinking_presets` from `PromptApiMetadata`.
+uint32_t ResolveThinkingBudget(
+    blink::mojom::AILanguageModelThinkingEffort effort,
+    uint32_t available_tokens) {
+  static constexpr uint32_t kReservedAnswerTokens = 256;
+  // Keep `const` (not `constexpr`): `kAIPromptAPIThinkingMode` is `dllimport`
+  // on Windows component builds, so its address is not a constant expression.
+  const base::FeatureParam<int> kThinkingEffortLowTokens{
+      &blink::features::kAIPromptAPIThinkingMode, "thinking_effort_low_tokens",
+      512};
+  const base::FeatureParam<int> kThinkingEffortMediumTokens{
+      &blink::features::kAIPromptAPIThinkingMode,
+      "thinking_effort_medium_tokens", 1024};
+  const base::FeatureParam<int> kThinkingEffortHighTokens{
+      &blink::features::kAIPromptAPIThinkingMode, "thinking_effort_high_tokens",
+      2048};
+  int budget = 0;
+  switch (effort) {
+    case blink::mojom::AILanguageModelThinkingEffort::kNone:
+      return 0u;
+    case blink::mojom::AILanguageModelThinkingEffort::kLow:
+      budget = kThinkingEffortLowTokens.Get();
+      break;
+    case blink::mojom::AILanguageModelThinkingEffort::kMedium:
+      budget = kThinkingEffortMediumTokens.Get();
+      break;
+    case blink::mojom::AILanguageModelThinkingEffort::kHigh:
+      budget = kThinkingEffortHighTokens.Get();
+      break;
+  }
+
+  // Keep room for the answer: `kReservedAnswerTokens`, or half of
+  // `available_tokens` if that is smaller.
+  uint32_t reserved_answer_tokens =
+      std::min(kReservedAnswerTokens, available_tokens / 2);
+  return std::min(base::saturated_cast<uint32_t>(budget),
+                  available_tokens - reserved_answer_tokens);
 }
 
 on_device_model::mojom::InputPtr ConvertToInputForExecute(
@@ -253,6 +318,8 @@ class AILanguageModel::PromptState
       mojo::PendingRemote<blink::mojom::ModelStreamingResponder> responder,
       on_device_model::mojom::InputPtr input,
       on_device_model::mojom::ResponseConstraintPtr constraint,
+      blink::mojom::AILanguageModelThinkingEffort thinking_effort,
+      bool include_thoughts,
       base::WeakPtr<OptimizationGuideLogger> logger,
       Mode mode,
       std::unique_ptr<optimization_guide::OnDeviceRequestTelemetryLogger>
@@ -260,6 +327,8 @@ class AILanguageModel::PromptState
       : responder_(std::move(responder)),
         input_(std::move(input)),
         constraint_(std::move(constraint)),
+        thinking_effort_(thinking_effort),
+        include_thoughts_(include_thoughts),
         logger_(std::move(logger)),
         mode_(mode),
         telemetry_logger_(std::move(telemetry_logger)) {
@@ -326,10 +395,15 @@ class AILanguageModel::PromptState
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
 
     if (mode_ == Mode::kAppendAndGenerate) {
+      const uint32_t thinking_token_budget = ResolveThinkingBudget(
+          thinking_effort_,
+          std::min(available_context_tokens, max_output_tokens_));
       auto generate_options = on_device_model::mojom::GenerateOptions::New();
       generate_options->constraint = std::move(constraint_);
       generate_options->max_output_tokens = max_output_tokens_;
       generate_options->add_output_tokens_to_context = true;
+      generate_options->enable_thinking = thinking_token_budget > 0;
+      generate_options->thinking_token_budget = thinking_token_budget;
       session_->Generate(std::move(generate_options),
                          response_receiver_.BindNewPipeAndPassRemote());
       response_receiver_.set_disconnect_with_reason_handler(
@@ -449,6 +523,20 @@ class AILanguageModel::PromptState
 
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override {
+    if (chunk->thought.has_value()) {
+      thought_chunks_++;
+      // Thoughts are dropped here unless the session expects them.
+      if (include_thoughts_ && !chunk->thought->empty()) {
+        responder_->OnStreamingThought(*chunk->thought);
+      }
+      if (chunk->text.empty()) {
+        return;
+      }
+    }
+    // Exclude thought-only chunks from TTFT so it matches `on_device_model`'s
+    // `first_token_time_` and stays consistent with
+    // `summary->output_token_count` (which excludes thoughts) in
+    // `RecordCompletion()`.
     if (output_tokens_ == 0) {
       CHECK(telemetry_logger_);
       telemetry_logger_->RecordFirstResponse();
@@ -471,7 +559,20 @@ class AILanguageModel::PromptState
     // the session and handling overflow.
     response_receiver_.reset();
     // If output hit the token limit, it was truncated, so send an error.
-    if (summary->output_token_count >= max_output_tokens_) {
+    // The backend counts thought tokens and unstreamed channel delimiters
+    // toward `max_output_tokens_`, while `summary->output_token_count` excludes
+    // thought tokens. Estimate generated thought tokens from the received
+    // thought chunk count (`thought_chunks_`) plus `kTruncationTokenSlack` for
+    // delimiters. This heuristic may be inaccurate (for example, MTP
+    // speculative decoding can emit multiple tokens in a single chunk and
+    // undercount).
+    // TODO(crbug.com/546151578): Report an accurate thought token count in
+    // `ResponseSummary` instead of estimating from thought chunks.
+    static constexpr uint32_t kTruncationTokenSlack = 16;
+    uint64_t total_generated_tokens =
+        uint64_t{summary->output_token_count} + thought_chunks_ +
+        (thought_chunks_ > 0 ? kTruncationTokenSlack : 0u);
+    if (total_generated_tokens >= max_output_tokens_) {
       OnError(blink::mojom::ModelStreamingResponseStatus::
                   kErrorResponseExceedsMaxTokens);
       return;
@@ -541,6 +642,9 @@ class AILanguageModel::PromptState
       this};
   on_device_model::mojom::InputPtr input_;
   on_device_model::mojom::ResponseConstraintPtr constraint_;
+  blink::mojom::AILanguageModelThinkingEffort thinking_effort_;
+  // Whether thought chunks are streamed to `responder_`.
+  bool include_thoughts_;
 
   // Called when the full operation has completed or an error has occurred.
   base::OnceClosure callback_;
@@ -553,6 +657,10 @@ class AILanguageModel::PromptState
   std::string full_response_;
   // Number of tokens in the response.
   uint32_t output_tokens_ = 0;
+  // Number of thought chunks received, used as a heuristic estimate of thought
+  // tokens for truncation detection. May undercount when a single chunk carries
+  // multiple tokens (for example, under MTP speculative decoding).
+  uint32_t thought_chunks_ = 0;
   // Generated tool calls retained for context replay.
   std::vector<on_device_model::mojom::ToolCallPtr> tool_calls_;
 
@@ -733,9 +841,13 @@ PromptApiMetadata AILanguageModel::ParseMetadata(
 void AILanguageModel::Initialize(
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
     std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools,
+    blink::mojom::AILanguageModelThinkingEffort thinking_effort,
+    bool include_thoughts,
     mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
         create_client) {
   tools_ = std::move(tools);
+  thinking_effort_ = thinking_effort;
+  include_thoughts_ = include_thoughts;
 
   // If tools are provided but no system prompt exists, prepend a synthetic
   // system prompt so tool declarations have a place to be embedded.
@@ -840,6 +952,13 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
   base::flat_set<blink::mojom::AILanguageModelPromptType> output_types = {
       blink::mojom::AILanguageModelPromptType::kText  // Text always supported.
   };
+  if (base::FeatureList::IsEnabled(blink::features::kAIPromptAPIThinkingMode)) {
+    // Thought input content is accepted and stripped from the context.
+    input_types.insert(blink::mojom::AILanguageModelPromptType::kThought);
+  }
+  if (include_thoughts_) {
+    output_types.insert(blink::mojom::AILanguageModelPromptType::kThought);
+  }
   for (const auto capability : session_params_->capabilities) {
     switch (capability) {
       case on_device_model::CapabilityFlags::kImageInput:
@@ -871,7 +990,7 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
           session_params_->top_k, session_params_->temperature),
       std::move(input_types).extract(), std::move(output_types).extract(),
       audio_sample_rate_hz, audio_channel_count,
-      /*sampling_mode=*/std::nullopt, /*thinking_effort=*/std::nullopt);
+      /*sampling_mode=*/std::nullopt, thinking_effort_);
 }
 
 mojo::PendingRemote<blink::mojom::AILanguageModel>
@@ -990,6 +1109,8 @@ void AILanguageModel::ForkInternal(
   clone->context_ = std::make_unique<Context>(*context_);
 
   clone->tools_ = mojo::Clone(tools_);
+  clone->thinking_effort_ = thinking_effort_;
+  clone->include_thoughts_ = include_thoughts_;
 
   current_session_->Clone(clone->current_session_.BindNewPipeAndPassReceiver());
 
@@ -1019,11 +1140,13 @@ void AILanguageModel::PromptInternal(
           optimization_guide::mojom::OnDeviceFeature::kPromptApi,
           model_client_->base_model());
   auto input = ConvertToInputForExecute(prompts, session_params_->capabilities);
-  // TODO(crbug.com/546151578): Support per prompt thinking effort.
-  bool has_unsupported_thinking_effort =
-      thinking_effort.has_value() &&
-      *thinking_effort != blink::mojom::AILanguageModelThinkingEffort::kNone;
-  if (!input || has_unsupported_thinking_effort) {
+  // A thinking effort other than none requires Thinking Mode.
+  bool thinking_allowed =
+      thinking_effort.value_or(
+          blink::mojom::AILanguageModelThinkingEffort::kNone) ==
+          blink::mojom::AILanguageModelThinkingEffort::kNone ||
+      base::FeatureList::IsEnabled(blink::features::kAIPromptAPIThinkingMode);
+  if (!input || !thinking_allowed) {
     logger->set_result(optimization_guide::OnDeviceRequestTelemetryLogger::
                            Result::kFailedConstructingMessage);
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
@@ -1035,7 +1158,8 @@ void AILanguageModel::PromptInternal(
   }
   prompt_state_ = std::make_unique<PromptState>(
       std::move(pending_responder), input.Clone(), std::move(constraint),
-      logger_, PromptState::Mode::kAppendAndGenerate, std::move(logger));
+      thinking_effort.value_or(thinking_effort_), include_thoughts_, logger_,
+      PromptState::Mode::kAppendAndGenerate, std::move(logger));
   GetSizeInTokens(
       std::move(input),
       base::BindOnce(&AILanguageModel::PromptGetInputSizeComplete,
@@ -1179,7 +1303,9 @@ void AILanguageModel::AppendInternal(
           optimization_guide::mojom::OnDeviceFeature::kPromptApi);
   prompt_state_ = std::make_unique<PromptState>(
       std::move(pending_responder), input.Clone(), /*constraint=*/nullptr,
-      logger_, PromptState::Mode::kAppendOnly, std::move(logger));
+      blink::mojom::AILanguageModelThinkingEffort::kNone,
+      /*include_thoughts=*/false, logger_, PromptState::Mode::kAppendOnly,
+      std::move(logger));
   // The rest of the logic can be shared with Prompt() since PromptState() will
   // handle correctly calling this for append mode.
   GetSizeInTokens(

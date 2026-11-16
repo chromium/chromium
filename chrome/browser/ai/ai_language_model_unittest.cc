@@ -2955,8 +2955,11 @@ blink::mojom::AILanguageModelCreateOptionsPtr MakeThoughtInputOptions() {
   return options;
 }
 
-TEST_F(AILanguageModelTest, RejectsUnimplementedThinkingMode) {
-  // Thinking options and thought inputs/outputs are rejected until supported.
+TEST_F(AILanguageModelTest, ThinkingModeRequiresFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kAIPromptAPIThinkingMode);
+
+  // A thinking effort or thought inputs/outputs need the Thinking Mode feature.
   std::pair<const char*, blink::mojom::AILanguageModelCreateOptionsPtr>
       test_cases[] = {
           {"thinking_effort", MakeThinkingOptions(ThinkingEffort::kLow,
@@ -2996,7 +2999,7 @@ TEST_F(AILanguageModelTest, RejectsUnimplementedThinkingMode) {
   }
   auto session = CreateSession(std::move(none_options));
 
-  // Thought prompt content is rejected.
+  // Thought prompt content is also rejected when the feature is disabled.
   std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
   auto prompt = blink::mojom::AILanguageModelPrompt::New();
   prompt->role = Role::kAssistant;
@@ -3012,7 +3015,8 @@ TEST_F(AILanguageModelTest, RejectsUnimplementedThinkingMode) {
               blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
   }
 
-  // Per prompt thinking effort other than kNone is rejected; kNone is allowed.
+  // Per prompt thinking effort other than `kNone` requires the feature; `kNone`
+  // is allowed.
   {
     AITestUtils::TestStreamingResponder responder;
     session->Prompt(MakeInput("foo"), /*constraint=*/nullptr,
@@ -3027,6 +3031,283 @@ TEST_F(AILanguageModelTest, RejectsUnimplementedThinkingMode) {
                     ThinkingEffort::kNone, responder.BindRemote());
     EXPECT_TRUE(responder.WaitForCompletion());
     EXPECT_THAT(responder.responses(), ElementsAre("UfooEM"));
+  }
+}
+
+class AILanguageModelThinkingModeTest : public AILanguageModelTest {
+ public:
+  AILanguageModelThinkingModeTest() {
+    thinking_mode_feature_list_.InitAndEnableFeature(
+        blink::features::kAIPromptAPIThinkingMode);
+  }
+
+ protected:
+  void SetTokenLimits(uint32_t max_context_tokens, uint32_t max_output_tokens) {
+    auto solution = CreateSolution();
+    solution.mutable_feature()->mutable_input_config()->set_max_context_tokens(
+        max_context_tokens);
+    solution.mutable_feature()->mutable_output_config()->set_max_output_tokens(
+        max_output_tokens);
+    SetSolutionConfig(std::move(solution));
+  }
+
+  // Prompts `model` with "foo" and returns the streamed thoughts.
+  std::vector<std::string> PromptAndGetThoughts(
+      blink::mojom::AILanguageModel& model,
+      std::optional<ThinkingEffort> thinking_effort = std::nullopt) {
+    AITestUtils::TestStreamingResponder responder;
+    model.Prompt(MakeInput("foo"), /*constraint=*/nullptr, thinking_effort,
+                 responder.BindRemote());
+    EXPECT_TRUE(responder.WaitForCompletion());
+    return responder.thoughts();
+  }
+
+ private:
+  base::test::ScopedFeatureList thinking_mode_feature_list_;
+};
+
+TEST_F(AILanguageModelThinkingModeTest, CanCreateWithThinkingOptions) {
+  EnsureModelIsReady();
+  std::pair<const char*, blink::mojom::AILanguageModelCreateOptionsPtr>
+      test_cases[] = {
+          {"thinking_effort", MakeThinkingOptions(ThinkingEffort::kLow,
+                                                  /*include_thoughts=*/false)},
+          {"thought_outputs", MakeThinkingOptions(ThinkingEffort::kNone,
+                                                  /*include_thoughts=*/true)},
+          {"thought_inputs", MakeThoughtInputOptions()},
+      };
+  for (auto& [name, options] : test_cases) {
+    SCOPED_TRACE(name);
+    TestFuture<blink::mojom::ModelAvailabilityCheckResult> availability;
+    GetAIManagerInterface()->CanCreateLanguageModel(std::move(options),
+                                                    availability.GetCallback());
+    EXPECT_EQ(availability.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+}
+
+TEST_F(AILanguageModelThinkingModeTest, EffortAndThoughtVisibility) {
+  // Leave room for the default budgets and the answer.
+  SetTokenLimits(/*max_context_tokens=*/4096, /*max_output_tokens=*/4096);
+
+  const struct {
+    ThinkingEffort effort;
+    bool include_thoughts;
+    std::vector<std::string> expected_thoughts;
+  } kTestCases[] = {
+      {ThinkingEffort::kNone, true, {}},
+      {ThinkingEffort::kLow, true, {"Thinking (budget=512)"}},
+      {ThinkingEffort::kMedium, true, {"Thinking (budget=1024)"}},
+      {ThinkingEffort::kHigh, true, {"Thinking (budget=2048)"}},
+      // Thoughts are dropped unless the session expects them.
+      {ThinkingEffort::kHigh, false, {}},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << test_case.effort << " include_thoughts="
+                                    << test_case.include_thoughts);
+    auto session = CreateSession(
+        MakeThinkingOptions(test_case.effort, test_case.include_thoughts));
+    AITestUtils::TestStreamingResponder responder;
+    session->Prompt(MakeInput("foo"), /*constraint=*/nullptr,
+                    /*thinking_effort=*/std::nullopt, responder.BindRemote());
+    EXPECT_TRUE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.thoughts(), test_case.expected_thoughts);
+    EXPECT_THAT(responder.responses(), ElementsAre("UfooEM"));
+  }
+}
+
+TEST_F(AILanguageModelThinkingModeTest, FeatureParamsSetBudgets) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kAIPromptAPIThinkingMode,
+      {{"thinking_effort_low_tokens", "3"},
+       {"thinking_effort_medium_tokens", "6"},
+       {"thinking_effort_high_tokens", "11"}});
+  const std::pair<ThinkingEffort, const char*> kTestCases[] = {
+      {ThinkingEffort::kLow, "Thinking (budget=3)"},
+      {ThinkingEffort::kMedium, "Thinking (budget=6)"},
+      {ThinkingEffort::kHigh, "Thinking (budget=11)"}};
+  for (const auto& [effort, expected_thought] : kTestCases) {
+    SCOPED_TRACE(testing::Message() << effort);
+    auto session =
+        CreateSession(MakeThinkingOptions(effort, /*include_thoughts=*/true));
+    EXPECT_THAT(PromptAndGetThoughts(*session), ElementsAre(expected_thought));
+  }
+}
+
+TEST_F(AILanguageModelThinkingModeTest, NonPositiveBudgetTurnsThinkingOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kAIPromptAPIThinkingMode,
+      {{"thinking_effort_low_tokens", "0"},
+       {"thinking_effort_high_tokens", "-1"}});
+  for (ThinkingEffort effort : {ThinkingEffort::kLow, ThinkingEffort::kHigh}) {
+    SCOPED_TRACE(testing::Message() << effort);
+    auto session =
+        CreateSession(MakeThinkingOptions(effort, /*include_thoughts=*/true));
+    EXPECT_THAT(PromptAndGetThoughts(*session), testing::IsEmpty());
+  }
+}
+
+TEST_F(AILanguageModelThinkingModeTest, SmallOutputLimitClampsBudget) {
+  SetTokenLimits(/*max_context_tokens=*/4096, /*max_output_tokens=*/300);
+  // With fewer than 512 output tokens, half of them are kept for the answer,
+  // so the high budget, 2048, is clamped to 150.
+  auto session = CreateSession(
+      MakeThinkingOptions(ThinkingEffort::kHigh, /*include_thoughts=*/true));
+  EXPECT_THAT(PromptAndGetThoughts(*session),
+              ElementsAre("Thinking (budget=150)"));
+}
+
+TEST_F(AILanguageModelThinkingModeTest, SmallContextClampsBudget) {
+  SetTokenLimits(/*max_context_tokens=*/1030, /*max_output_tokens=*/4096);
+  // The prompt ("UfooEM", 6 tokens) leaves 1024 context tokens, fewer than
+  // the 1123 output tokens (1023 plus the output buffer of 100), so the
+  // context clamps the high budget, 2048, to leave 256 answer tokens
+  // (1024 - 256 = 768).
+  auto session = CreateSession(
+      MakeThinkingOptions(ThinkingEffort::kHigh, /*include_thoughts=*/true));
+  EXPECT_THAT(PromptAndGetThoughts(*session),
+              ElementsAre("Thinking (budget=768)"));
+}
+
+TEST_F(AILanguageModelThinkingModeTest, PromptOverridesThinkingEffort) {
+  // Small budgets that fit the test context.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kAIPromptAPIThinkingMode,
+      {{"thinking_effort_medium_tokens", "6"},
+       {"thinking_effort_high_tokens", "11"}});
+  auto session = CreateSession(
+      MakeThinkingOptions(ThinkingEffort::kMedium, /*include_thoughts=*/true));
+  // A prompt can raise the session effort or turn thinking off, for that
+  // prompt only.
+  const struct {
+    const char* name;
+    std::optional<ThinkingEffort> effort;
+    std::vector<std::string> expected_thoughts;
+  } kTestCases[] = {
+      {"default_first", std::nullopt, {"Thinking (budget=6)"}},
+      {"override_high", ThinkingEffort::kHigh, {"Thinking (budget=11)"}},
+      {"override_none", ThinkingEffort::kNone, {}},
+      {"default_again", std::nullopt, {"Thinking (budget=6)"}},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    EXPECT_EQ(PromptAndGetThoughts(*session, test_case.effort),
+              test_case.expected_thoughts);
+  }
+}
+
+TEST_F(AILanguageModelThinkingModeTest, StripsInputThoughts) {
+  auto session = CreateSession();
+
+  std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+  auto thought_only_prompt = blink::mojom::AILanguageModelPrompt::New();
+  thought_only_prompt->role = Role::kAssistant;
+  thought_only_prompt->content.push_back(
+      blink::mojom::AILanguageModelPromptContent::NewThought("thought only"));
+  prompts.push_back(std::move(thought_only_prompt));
+  prompts.push_back(MakePrompt(Role::kUser, "next"));
+
+  auto assistant_prompt = blink::mojom::AILanguageModelPrompt::New();
+  assistant_prompt->role = Role::kAssistant;
+  assistant_prompt->content.push_back(
+      blink::mojom::AILanguageModelPromptContent::NewThought("saved thought"));
+  assistant_prompt->content.push_back(
+      blink::mojom::AILanguageModelPromptContent::NewText("visible answer"));
+  prompts.push_back(std::move(assistant_prompt));
+  prompts.push_back(MakePrompt(Role::kUser, "follow up"));
+
+  EXPECT_THAT(Prompt(*session, std::move(prompts)),
+              ElementsAre("MEUnextEMvisible answerEUfollow upEM"));
+}
+
+TEST_F(AILanguageModelThinkingModeTest, RejectsNonAssistantInputThoughts) {
+  auto session = CreateSession();
+
+  for (Role role : {Role::kUser, Role::kSystem}) {
+    SCOPED_TRACE(testing::Message() << role);
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts;
+    auto prompt = blink::mojom::AILanguageModelPrompt::New();
+    prompt->role = role;
+    prompt->content.push_back(
+        blink::mojom::AILanguageModelPromptContent::NewThought("thought"));
+    prompts.push_back(std::move(prompt));
+
+    AITestUtils::TestStreamingResponder responder;
+    session->Prompt(std::move(prompts), /*constraint=*/nullptr,
+                    /*thinking_effort=*/std::nullopt, responder.BindRemote());
+    EXPECT_FALSE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.error_status(),
+              blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
+  }
+}
+
+TEST_F(AILanguageModelThinkingModeTest, InstanceInfo) {
+  constexpr auto kThought = blink::mojom::AILanguageModelPromptType::kThought;
+
+  // Thought inputs are accepted, but thought outputs need to be expected.
+  {
+    TestCreateLanguageModelClient client;
+    GetAIManagerRemote()->CreateLanguageModel(
+        client.BindNewPipeAndPassRemote(),
+        blink::mojom::AILanguageModelCreateOptions::New(),
+        /*monitor=*/mojo::NullRemote());
+    auto result = client.result().Take();
+    ASSERT_OK(result);
+    const auto& info = *result.value().info;
+    EXPECT_THAT(info.input_types,
+                testing::Optional(testing::Contains(kThought)));
+    EXPECT_THAT(info.output_types,
+                testing::Optional(testing::Not(testing::Contains(kThought))));
+    EXPECT_EQ(info.thinking_effort, ThinkingEffort::kNone);
+  }
+
+  // A fork keeps the thinking effort and the thought outputs.
+  auto session = CreateSession(
+      MakeThinkingOptions(ThinkingEffort::kLow, /*include_thoughts=*/true));
+  TestCreateLanguageModelClient fork_client;
+  session->Fork(fork_client.BindNewPipeAndPassRemote());
+  auto fork_result = fork_client.result().Take();
+  ASSERT_OK(fork_result);
+  const auto& fork_info = *fork_result.value().info;
+  EXPECT_THAT(fork_info.output_types,
+              testing::Optional(testing::Contains(kThought)));
+  EXPECT_EQ(fork_info.thinking_effort, ThinkingEffort::kLow);
+}
+
+TEST_F(AILanguageModelThinkingModeTest, ThoughtsCountTowardMaxOutputTokens) {
+  SetTokenLimits(/*max_context_tokens=*/7200, /*max_output_tokens=*/1024);
+  // The 1010 character answer and the EOS token, 1011 output tokens, fit in
+  // `max_output_tokens` (1024) without thinking.
+  fake_broker_->settings().set_execute_result({std::string(1010, 'a')});
+  Prompt(*CreateSession(), MakeInput("foo"));
+
+  // The high budget, 2048, is clamped to leave 256 answer tokens within
+  // `max_output_tokens` (1024 - 256 = 768). The thought chunk and channel
+  // delimiter slack count toward `max_output_tokens`, even when the thoughts
+  // are hidden, so the output is too long.
+  const struct {
+    bool include_thoughts;
+    std::vector<std::string> expected_thoughts;
+  } kTestCases[] = {
+      {true, {"Thinking (budget=768)"}},
+      {false, {}},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "include_thoughts=" << test_case.include_thoughts);
+    auto session = CreateSession(
+        MakeThinkingOptions(ThinkingEffort::kHigh, test_case.include_thoughts));
+    AITestUtils::TestStreamingResponder responder;
+    session->Prompt(MakeInput("foo"), /*constraint=*/nullptr,
+                    /*thinking_effort=*/std::nullopt, responder.BindRemote());
+    EXPECT_FALSE(responder.WaitForCompletion());
+    EXPECT_EQ(responder.thoughts(), test_case.expected_thoughts);
+    EXPECT_EQ(responder.error_status(),
+              blink::mojom::ModelStreamingResponseStatus::
+                  kErrorResponseExceedsMaxTokens);
   }
 }
 

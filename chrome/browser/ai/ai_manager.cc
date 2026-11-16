@@ -908,8 +908,10 @@ void AIManager::CanCreateLanguageModel(
       }
       input_capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
     }
-    // TODO(crbug.com/546151578): Support Thinking Mode in browser AI.
-    if (UsesThinkingMode(*options)) {
+    // Check if Thinking Mode is used without the feature flag.
+    if (UsesThinkingMode(*options) &&
+        !base::FeatureList::IsEnabled(
+            blink::features::kAIPromptAPIThinkingMode)) {
       std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                   kUnavailableModelAdaptationNotAvailable);
       return;
@@ -1109,8 +1111,10 @@ void AIManager::CreateLanguageModelInternal(
     receivers_.ReportBadMessage("Invalid output types");
     return;
   }
-  // TODO(crbug.com/546151578): Support Thinking Mode in browser AI.
-  if (UsesThinkingMode(*options)) {
+  // Check if Thinking Mode is used without the feature flag.
+  if (UsesThinkingMode(*options) &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kAIPromptAPIThinkingMode)) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(client));
     on_device_ai::SendClientRemoteError(
@@ -1151,6 +1155,9 @@ void AIManager::CreateLanguageModelInternal(
     tools = std::move(options->tools.value());
   }
   model->Initialize(std::move(options->initial_prompts), std::move(tools),
+                    options->thinking_effort.value_or(
+                        blink::mojom::AILanguageModelThinkingEffort::kNone),
+                    HasThoughtType(options->expected_outputs),
                     std::move(client));
 
   context_bound_object_set_.AddContextBoundObject(std::move(model));

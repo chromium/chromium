@@ -147,10 +147,13 @@ class AILanguageModel : public AIContextBoundObject,
   static base::flat_set<std::string> GetDefaultSupportedLanguageBaseCodes();
 
   // Format the initial prompts, gets the token count, updates the session,
-  // and reports to `create_client`.
+  // and reports to `create_client`. `thinking_effort` is the default for
+  // prompts, and `include_thoughts` controls whether thoughts are streamed.
   void Initialize(
       std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
       std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools,
+      blink::mojom::AILanguageModelThinkingEffort thinking_effort,
+      bool include_thoughts,
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           create_client);
 
@@ -241,6 +244,12 @@ class AILanguageModel : public AIContextBoundObject,
   on_device_model::mojom::InputPtr initial_input_;
   // The tools declared for this session.
   std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools_;
+  // The default thinking effort for prompts in this session.
+  blink::mojom::AILanguageModelThinkingEffort thinking_effort_ =
+      blink::mojom::AILanguageModelThinkingEffort::kNone;
+  // Whether thoughts are streamed to the client. This is fixed for the session
+  // by whether its expected outputs include thoughts.
+  bool include_thoughts_ = false;
 
   // Contains the current committed session state. This will be replaced after a
   // successful prompt with the latest session state.
