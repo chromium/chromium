@@ -99,6 +99,10 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
   // This synchronously destroys |this|.
   void DidTerminateWorkerThread();
 
+  SharedWorkerThread* GetWorkerThreadForTesting() {
+    return worker_thread_.get();
+  }
+
  private:
   friend class WebSharedWorker;
 

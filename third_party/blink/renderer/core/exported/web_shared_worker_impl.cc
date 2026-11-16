@@ -31,12 +31,19 @@
 #include "third_party/blink/renderer/core/exported/web_shared_worker_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/http/http_response_headers.h"
 #include "net/storage_access_api/status.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
@@ -58,6 +65,8 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
+#include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
@@ -65,11 +74,13 @@
 #include "third_party/blink/renderer/core/workers/shared_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -77,6 +88,37 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+String GetPermissionsPolicyHeader(
+    const WorkerMainScriptLoadParameters& worker_main_script_load_params) {
+  CHECK(worker_main_script_load_params.response_head);
+  if (!worker_main_script_load_params.response_head->headers) {
+    return String();
+  }
+  std::optional<std::string> header =
+      worker_main_script_load_params.response_head->headers
+          ->GetNormalizedHeader(http_names::kPermissionsPolicy.Utf8());
+  return header ? String::FromUtf8(*header) : String();
+}
+
+void ReportPermissionsPolicyMessagesOnWorkerThread(
+    WorkerThread* worker_thread,
+    std::vector<std::pair<mojom::blink::ConsoleMessageLevel, std::string>>
+        messages) {
+  DCHECK(worker_thread->IsCurrentThread());
+  WorkerOrWorkletGlobalScope* global_scope = worker_thread->GlobalScope();
+  if (global_scope) {
+    for (const auto& [level, content] : messages) {
+      global_scope->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kSecurity, level,
+          String::FromUtf8(content)));
+    }
+  }
+}
+
+}  // namespace
 
 WebSharedWorkerImpl::WebSharedWorkerImpl(
     const blink::SharedWorkerToken& token,
@@ -308,17 +350,36 @@ void WebSharedWorkerImpl::StartWorkerContext(
           url::Origin(origin_from_browser)),
       std::move(coep_reporting_observer), std::move(dip_reporting_observer));
 
+  // Console messages generated while parsing the Permissions-Policy header.
+  // They are reported to the worker global scope once it has been created.
+  std::vector<std::pair<mojom::blink::ConsoleMessageLevel, std::string>>
+      permissions_policy_messages;
   if (RuntimeEnabledFeatures::PermissionsPolicyForSharedWorkersEnabled()) {
-    const url::Origin worker_origin =
-        (creation_params->origin_to_use
-             ? creation_params->origin_to_use.get()
-             : outside_settings_object->GetSecurityOrigin())
-            ->ToUrlOrigin();
+    const SecurityOrigin* worker_origin =
+        creation_params->origin_to_use
+            ? creation_params->origin_to_use.get()
+            : outside_settings_object->GetSecurityOrigin();
+
+    CHECK(worker_main_script_load_params);
+    PolicyParserMessageBuffer feature_policy_logger("",
+                                                    /*discard_message=*/true);
+    PolicyParserMessageBuffer permissions_policy_logger(
+        "Error with Permissions-Policy header: ");
+    network::ParsedPermissionsPolicy header_policy =
+        PermissionsPolicyParser::ParseHeader(
+            /*feature_policy_header=*/g_empty_string,
+            GetPermissionsPolicyHeader(*worker_main_script_load_params),
+            *worker_origin, feature_policy_logger, permissions_policy_logger);
+    for (const auto& message : permissions_policy_logger.GetMessages()) {
+      permissions_policy_messages.emplace_back(message.level,
+                                               message.content.Utf8());
+    }
+
     creation_params->worker_permissions_policy =
         network::PermissionsPolicy::CreateFromInheritedPolicy(
-            // TODO(https://crbug.com/562705553): Parse the Permissions-Policy
-            // header and take header_policy into account.
-            permissions_policy, /*header_policy=*/{}, worker_origin);
+            permissions_policy, header_policy, worker_origin->ToUrlOrigin());
+    host_->SetPermissionsPolicyHeader(
+        Vector<network::ParsedPermissionsPolicyDeclaration>(header_policy));
   }
 
   auto thread_startup_data = WorkerBackingThreadStartupData::CreateDefault();
@@ -348,6 +409,15 @@ void WebSharedWorkerImpl::StartWorkerContext(
   // https://html.spec.whatwg.org/C/#shared-workers-and-the-sharedworker-interface
   task_runner_for_connect_event_ =
       GetWorkerThread()->GetTaskRunner(TaskType::kDOMManipulation);
+
+  if (!permissions_policy_messages.empty()) {
+    PostCrossThreadTask(
+        *GetWorkerThread()->GetTaskRunner(TaskType::kInternalDefault),
+        FROM_HERE,
+        CrossThreadBindOnce(&ReportPermissionsPolicyMessagesOnWorkerThread,
+                            CrossThreadUnretained(GetWorkerThread()),
+                            std::move(permissions_policy_messages)));
+  }
 
   switch (script_type) {
     case mojom::blink::ScriptType::kClassic:

@@ -44,10 +44,13 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/network/test/client_security_state_builder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -952,6 +955,68 @@ TEST_F(SharedWorkerHostTest, NetworkResponseDoesNotInheritCreatorSandboxFlags) {
   StartWorker(host.get(), std::move(factory),
               GURL("https://www.example.com/w.js"));
   EXPECT_TRUE(HasServiceWorkerHandle(host.get()));
+}
+
+TEST_F(SharedWorkerHostTest, PermissionsPolicy) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kPermissionsPolicyForSharedWorkers);
+
+  const url::Origin kWorkerOrigin = url::Origin::Create(kWorkerUrl);
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFirstParty(kWorkerOrigin);
+  network::PermissionsPolicyFeaturesBitset allow_parameter;
+  allow_parameter.Add(network::mojom::PermissionsPolicyFeature::kSerial);
+  allow_parameter.Add(network::mojom::PermissionsPolicyFeature::kUsb);
+
+  SharedWorkerInstance instance(
+      kWorkerUrl, blink::mojom::ScriptType::kClassic,
+      network::mojom::CredentialsMode::kSameOrigin, "name", storage_key,
+      storage_key, kWorkerOrigin,
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false, allow_parameter);
+  auto host = std::make_unique<SharedWorkerHost>(
+      &service_, instance, site_instance_,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      base::MakeRefCounted<PolicyContainerHost>(),
+      net::StorageAccessApiStatus::kNone);
+
+  // Initially, `permissions_policy_` is not set until the renderer reports the
+  // parsed Permissions-Policy header.
+  EXPECT_FALSE(host->GetPermissionsPolicy());
+  EXPECT_FALSE(host->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kSerial));
+
+  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
+  MockSharedWorkerFactory factory_impl(
+      factory.InitWithNewPipeAndPassReceiver());
+  base::RunLoop run_loop;
+  factory_impl.SetCreateWorkerCallback(run_loop.QuitClosure());
+  StartWorker(host.get(), std::move(factory));
+  run_loop.Run();
+
+  mojo::Remote<blink::mojom::SharedWorkerHost> worker_host;
+  mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
+  ASSERT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
+      host->instance().url(), host->instance().name(),
+      host->content_security_policies(), &worker_host, &worker_receiver));
+  MockSharedWorker worker(std::move(worker_receiver));
+
+  // Simulate the renderer sending a Permissions-Policy header that disables
+  // `serial` and attempts to enable `hid` (which was not in `allow_parameter`).
+  network::ParsedPermissionsPolicy header_policy(2);
+  header_policy[0].feature = network::mojom::PermissionsPolicyFeature::kSerial;
+  header_policy[1].feature = network::mojom::PermissionsPolicyFeature::kHid;
+  header_policy[1].matches_all_origins = true;
+  worker_host->SetPermissionsPolicyHeader(header_policy);
+  worker_host.FlushForTesting();
+
+  EXPECT_FALSE(host->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kSerial));
+  EXPECT_TRUE(
+      host->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kUsb));
+  EXPECT_FALSE(
+      host->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kHid));
 }
 
 }  // namespace content

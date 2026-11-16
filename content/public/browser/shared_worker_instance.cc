@@ -21,7 +21,7 @@ SharedWorkerInstance::SharedWorkerInstance(
     blink::mojom::SharedWorkerCreationContextType creation_context_type,
     blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
     bool extended_lifetime,
-    const network::PermissionsPolicyFeaturesBitset& permissions_policy)
+    const network::PermissionsPolicyFeaturesBitset& allow_parameter)
     : url_(url),
       script_type_(script_type),
       credentials_mode_(credentials_mode),
@@ -32,7 +32,7 @@ SharedWorkerInstance::SharedWorkerInstance(
       creation_context_type_(creation_context_type),
       same_site_cookies_(same_site_cookies),
       extended_lifetime_(extended_lifetime),
-      permissions_policy_(permissions_policy) {
+      allow_parameter_(allow_parameter) {
   // Ensure the same-origin policy is enforced correctly.
   DCHECK(url.SchemeIs(url::kDataScheme) ||
          GetContentClient()->browser()->DoesSchemeAllowCrossOriginSharedWorker(

@@ -24,6 +24,9 @@ specific_include_rules = {
   "web_view_test.cc": [
     "+ui/base/mojom/menu_source_type.mojom-blink.h",
   ],
+  "web_shared_worker_impl\\.cc": [
+    "+net/http/http_response_headers.h",
+  ],
   "web_media_player_impl_unittest.cc": [
     "+base/command_line.h",
     "+base/run_loop.h",

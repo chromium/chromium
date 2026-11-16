@@ -335,7 +335,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     }
     if (base::FeatureList::IsEnabled(
             blink::features::kPermissionsPolicyForSharedWorkers)) {
-      if (host->instance().permissions_policy() != info->permissions_policy) {
+      if (host->instance().allow_parameter() != info->permissions_policy) {
         ScriptLoadFailed(
             std::move(client),
             "Failed to connect an existing shared worker because the allow "

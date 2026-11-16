@@ -4,19 +4,48 @@
 
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
 
+#include <memory>
 #include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_exception_details.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_host.mojom-blink.h"
+#include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
+#include "third_party/blink/public/platform/web_policy_container.h"
+#include "third_party/blink/public/web/web_shared_worker.h"
+#include "third_party/blink/public/web/web_shared_worker_client.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/exported/web_shared_worker_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/workers/shared_worker_thread.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -26,6 +55,11 @@
 namespace blink {
 
 namespace {
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Optional;
+using ::testing::UnorderedElementsAre;
 
 class ErrorEventListener final : public NativeEventListener {
  public:
@@ -215,6 +249,281 @@ TEST_F(SharedWorkerPermissionsPolicyTest,
             "to the worker script's origin.");
   test::RunPendingTasks();
   EXPECT_EQ(listener->ErrorCount(), 1);
+}
+
+namespace {
+
+class TestSharedWorkerHost final : public mojom::blink::SharedWorkerHost {
+ public:
+  mojo::PendingRemote<mojom::blink::SharedWorkerHost>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  // mojom::blink::SharedWorkerHost:
+  void OnConnected(int connection_request_id) override {}
+  void OnContextClosed() override {}
+  void OnReadyForInspection(
+      mojo::PendingRemote<mojom::blink::DevToolsAgent>,
+      mojo::PendingReceiver<mojom::blink::DevToolsAgentHost>) override {}
+  void OnScriptLoadFailed(const String& error_message) override {}
+  void OnFeatureUsed(mojom::blink::WebFeature feature) override {}
+  void OnReportException(
+      mojom::blink::SharedWorkerExceptionDetailsPtr details) override {}
+  void SetPermissionsPolicyHeader(
+      const Vector<network::ParsedPermissionsPolicyDeclaration>& headers)
+      override {
+    headers_ = headers;
+  }
+
+  const std::optional<Vector<network::ParsedPermissionsPolicyDeclaration>>&
+  headers() const {
+    return headers_;
+  }
+
+ private:
+  std::optional<Vector<network::ParsedPermissionsPolicyDeclaration>> headers_;
+  mojo::Receiver<mojom::blink::SharedWorkerHost> receiver_{this};
+};
+
+class TestSharedWorkerClient final : public WebSharedWorkerClient {
+ public:
+  void WorkerContextDestroyed() override {
+    if (destroyed_closure_) {
+      std::move(destroyed_closure_).Run();
+    }
+  }
+
+  void WaitUntilWorkerDestroyed() {
+    base::RunLoop run_loop;
+    destroyed_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  base::OnceClosure destroyed_closure_;
+};
+
+}  // namespace
+
+class WebSharedWorkerPermissionsPolicyTest : public testing::Test {
+ protected:
+  struct WorkerConsoleMessage {
+    mojom::blink::ConsoleMessageSource source;
+    mojom::blink::ConsoleMessageLevel level;
+    String message;
+  };
+
+  void TearDown() override {
+    if (worker_) {
+      worker_->TerminateWorkerContext();
+      client_.WaitUntilWorkerDestroyed();
+      worker_.reset();
+    }
+  }
+
+  void StartWorker(
+      const std::string& permissions_policy_header,
+      const std::vector<network::mojom::PermissionsPolicyFeature>& allow) {
+    network::PermissionsPolicyFeaturesBitset allow_bitset;
+    for (network::mojom::PermissionsPolicyFeature feature : allow) {
+      allow_bitset.Add(feature);
+    }
+    const KURL kScriptUrl("https://example.com/worker.js");
+    const WebSecurityOrigin kOrigin(SecurityOrigin::Create(kScriptUrl));
+
+    auto load_params = std::make_unique<WorkerMainScriptLoadParameters>();
+    auto head = network::mojom::URLResponseHead::New();
+    net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1), "200 OK");
+    builder.AddHeader("Content-Type", "text/javascript");
+    if (!permissions_policy_header.empty()) {
+      builder.AddHeader("Permissions-Policy", permissions_policy_header);
+    }
+    head->headers = builder.Build();
+    head->headers->GetMimeType(&head->mime_type);
+    load_params->response_head = std::move(head);
+
+    mojo::PendingReceiver<network::mojom::URLLoader> loader;
+    mojo::Remote<network::mojom::URLLoaderClient> loader_client;
+    load_params->url_loader_client_endpoints =
+        network::mojom::URLLoaderClientEndpoints::New(
+            loader.InitWithNewPipeAndPassRemote(),
+            loader_client.BindNewPipeAndPassReceiver());
+    loader_client->OnComplete(network::URLLoaderCompletionStatus(net::OK));
+
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    CHECK_EQ(
+        mojo::CreateDataPipe(1u, producer_handle, load_params->response_body),
+        MOJO_RESULT_OK);
+    producer_handle.reset();
+
+    mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
+        browser_interface_broker;
+    std::ignore = browser_interface_broker.InitWithNewPipeAndPassReceiver();
+
+    auto policy_container = std::make_unique<WebPolicyContainer>(
+        WebPolicyContainerPolicies(),
+        mock_policy_container_host_.BindNewEndpointAndPassDedicatedRemote());
+
+    worker_ = WebSharedWorker::CreateAndStart(
+        SharedWorkerToken(), kScriptUrl, mojom::blink::ScriptType::kClassic,
+        network::mojom::CredentialsMode::kSameOrigin, WebString(), kOrigin,
+        kOrigin, /*is_constructor_secure_context=*/true,
+        WebString("user-agent"), UserAgentMetadata(),
+        /*content_security_policies=*/{},
+        WebFetchClientSettingsObject(
+            WebPolicyContainerPolicies(), kScriptUrl,
+            mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+        /*outside_settings_reporter=*/mojo::NullRemote(),
+        base::UnguessableToken::Create(),
+        /*content_settings=*/mojo::NullRemote(),
+        std::move(browser_interface_broker),
+        /*pause_worker_context_on_start=*/false, std::move(load_params),
+        std::move(policy_container),
+        base::MakeRefCounted<EmptyWebWorkerFetchContext>(),
+        host_.BindNewPipeAndPassRemote(), &client_, ukm::kInvalidSourceId,
+        /*require_cross_site_request_for_cookies=*/false,
+        net::StorageAccessApiStatus::kNone,
+        /*coep_reporting_observer=*/mojo::NullReceiver(),
+        /*dip_reporting_observer=*/mojo::NullReceiver(),
+        /*cross_origin_isolated=*/false, allow_bitset);
+
+    base::RunLoop run_loop;
+    SharedWorkerThread* worker_thread =
+        static_cast<WebSharedWorkerImpl*>(worker_.get())
+            ->GetWorkerThreadForTesting();
+    worker_thread->GetTaskRunner(TaskType::kInternalDefault)
+        ->PostTask(
+            FROM_HERE, base::BindLambdaForTesting([&]() {
+              const network::PermissionsPolicy* policy =
+                  worker_thread->GlobalScope()
+                      ->GetSecurityContext()
+                      .GetPermissionsPolicy();
+              ASSERT_TRUE(policy);
+              for (const auto& [feature, default_value] :
+                   policy->GetFeatureList()) {
+                if (worker_thread->GlobalScope()->IsFeatureEnabled(feature)) {
+                  allowed_features_.push_back(feature);
+                }
+              }
+              ConsoleMessageStorage* storage =
+                  worker_thread->GetConsoleMessageStorage();
+              for (wtf_size_t i = 0; i < storage->size(); ++i) {
+                ConsoleMessage* msg = storage->at(i);
+                console_messages_.push_back(
+                    {msg->GetSource(), msg->GetLevel(), msg->Message()});
+              }
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    host_.FlushForTesting();
+  }
+
+  test::TaskEnvironment task_environment_;
+  ScopedPermissionsPolicyForSharedWorkersForTest scoped_feature_{true};
+  MockPolicyContainerHost mock_policy_container_host_;
+  TestSharedWorkerHost host_;
+  TestSharedWorkerClient client_;
+  std::unique_ptr<WebSharedWorker> worker_;
+  std::vector<network::mojom::PermissionsPolicyFeature> allowed_features_;
+  std::vector<WorkerConsoleMessage> console_messages_;
+};
+
+TEST_F(WebSharedWorkerPermissionsPolicyTest, NoHeaderAndNoAllowOption) {
+  StartWorker("", {});
+  EXPECT_THAT(allowed_features_, IsEmpty());
+  EXPECT_THAT(console_messages_, IsEmpty());
+  EXPECT_THAT(host_.headers(), Optional(IsEmpty()));
+}
+
+TEST_F(WebSharedWorkerPermissionsPolicyTest, HeaderRestrictsDelegatedFeatures) {
+  StartWorker("serial=()", {network::mojom::PermissionsPolicyFeature::kSerial,
+                            network::mojom::PermissionsPolicyFeature::kUsb});
+  EXPECT_THAT(
+      allowed_features_,
+      UnorderedElementsAre(network::mojom::PermissionsPolicyFeature::kUsb));
+  EXPECT_THAT(console_messages_, IsEmpty());
+  EXPECT_THAT(host_.headers(),
+              Optional(ElementsAre(network::ParsedPermissionsPolicyDeclaration(
+                  network::mojom::PermissionsPolicyFeature::kSerial))));
+}
+
+TEST_F(WebSharedWorkerPermissionsPolicyTest,
+       HeaderCannotEnableFeaturesThatWereNotDelegated) {
+  StartWorker("usb=(self)",
+              {network::mojom::PermissionsPolicyFeature::kSerial});
+  EXPECT_THAT(
+      allowed_features_,
+      UnorderedElementsAre(network::mojom::PermissionsPolicyFeature::kSerial));
+  EXPECT_THAT(console_messages_, IsEmpty());
+  EXPECT_THAT(
+      host_.headers(),
+      Optional(ElementsAre(network::ParsedPermissionsPolicyDeclaration(
+          network::mojom::PermissionsPolicyFeature::kUsb,
+          /*allowed_origins=*/{},
+          SecurityOrigin::Create(KURL("https://example.com/worker.js"))
+              ->ToUrlOrigin(),
+          /*matches_all_origins=*/false, /*matches_opaque_src=*/false))));
+}
+
+TEST_F(WebSharedWorkerPermissionsPolicyTest, UnrecognizedFeatureLogsWarning) {
+  StartWorker("serial=(), unknown-feature=()",
+              {network::mojom::PermissionsPolicyFeature::kSerial,
+               network::mojom::PermissionsPolicyFeature::kUsb});
+  EXPECT_THAT(
+      allowed_features_,
+      UnorderedElementsAre(network::mojom::PermissionsPolicyFeature::kUsb));
+  ASSERT_EQ(console_messages_.size(), 1u);
+  EXPECT_EQ(console_messages_[0].source,
+            mojom::blink::ConsoleMessageSource::kSecurity);
+  EXPECT_EQ(console_messages_[0].level,
+            mojom::blink::ConsoleMessageLevel::kWarning);
+  EXPECT_EQ(console_messages_[0].message,
+            "Error with Permissions-Policy header: Unrecognized feature: "
+            "'unknown-feature'.");
+  EXPECT_THAT(host_.headers(),
+              Optional(ElementsAre(network::ParsedPermissionsPolicyDeclaration(
+                  network::mojom::PermissionsPolicyFeature::kSerial))));
+}
+
+TEST_F(WebSharedWorkerPermissionsPolicyTest,
+       MultipleUnrecognizedFeaturesLogMultipleWarnings) {
+  StartWorker("unknown-1=(), unknown-2=()",
+              {network::mojom::PermissionsPolicyFeature::kSerial,
+               network::mojom::PermissionsPolicyFeature::kUsb});
+  EXPECT_THAT(
+      allowed_features_,
+      UnorderedElementsAre(network::mojom::PermissionsPolicyFeature::kSerial,
+                           network::mojom::PermissionsPolicyFeature::kUsb));
+  ASSERT_EQ(console_messages_.size(), 2u);
+  EXPECT_EQ(console_messages_[0].message,
+            "Error with Permissions-Policy header: Unrecognized feature: "
+            "'unknown-1'.");
+  EXPECT_EQ(console_messages_[1].message,
+            "Error with Permissions-Policy header: Unrecognized feature: "
+            "'unknown-2'.");
+  EXPECT_THAT(host_.headers(), Optional(IsEmpty()));
+}
+
+TEST_F(WebSharedWorkerPermissionsPolicyTest,
+       InvalidHeaderLogsErrorAndIsIgnored) {
+  StartWorker("serial=(", {network::mojom::PermissionsPolicyFeature::kSerial,
+                           network::mojom::PermissionsPolicyFeature::kUsb});
+  EXPECT_THAT(
+      allowed_features_,
+      UnorderedElementsAre(network::mojom::PermissionsPolicyFeature::kSerial,
+                           network::mojom::PermissionsPolicyFeature::kUsb));
+  ASSERT_EQ(console_messages_.size(), 1u);
+  EXPECT_EQ(console_messages_[0].source,
+            mojom::blink::ConsoleMessageSource::kSecurity);
+  EXPECT_EQ(console_messages_[0].level,
+            mojom::blink::ConsoleMessageLevel::kError);
+  EXPECT_EQ(console_messages_[0].message,
+            "Error with Permissions-Policy header: Parse of permissions policy "
+            "failed because of errors reported by structured header parser.");
+  EXPECT_THAT(host_.headers(), Optional(IsEmpty()));
 }
 
 }  // namespace blink

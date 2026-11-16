@@ -41,7 +41,7 @@ class CONTENT_EXPORT SharedWorkerInstance {
       blink::mojom::SharedWorkerCreationContextType creation_context_type,
       blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
       bool extended_lifetime,
-      const network::PermissionsPolicyFeaturesBitset& permissions_policy);
+      const network::PermissionsPolicyFeaturesBitset& allow_parameter);
   SharedWorkerInstance(const SharedWorkerInstance& other);
   SharedWorkerInstance(SharedWorkerInstance&& other);
   SharedWorkerInstance& operator=(const SharedWorkerInstance& other) = delete;
@@ -88,8 +88,8 @@ class CONTENT_EXPORT SharedWorkerInstance {
                blink::mojom::SharedWorkerSameSiteCookies::kNone;
   }
   bool extended_lifetime() const { return extended_lifetime_; }
-  const network::PermissionsPolicyFeaturesBitset& permissions_policy() const {
-    return permissions_policy_;
+  const network::PermissionsPolicyFeaturesBitset& allow_parameter() const {
+    return allow_parameter_;
   }
 
  private:
@@ -130,7 +130,7 @@ class CONTENT_EXPORT SharedWorkerInstance {
   const bool extended_lifetime_;
 
   // This is the permissions policy parsed from the `allow` parameter.
-  const network::PermissionsPolicyFeaturesBitset permissions_policy_;
+  const network::PermissionsPolicyFeaturesBitset allow_parameter_;
 };
 
 }  // namespace content

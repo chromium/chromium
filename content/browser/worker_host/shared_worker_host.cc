@@ -373,7 +373,7 @@ void SharedWorkerHost::Start(
       mojo::Clone(content_security_policies_),
       std::move(outside_fetch_client_settings_object),
       std::move(outside_settings_reporter), instance_.same_site_cookies(),
-      instance_.extended_lifetime(), instance_.permissions_policy()));
+      instance_.extended_lifetime(), instance_.allow_parameter()));
 
   auto renderer_preferences = blink::RendererPreferences();
   UpdateRendererPreferencesForWorkerHelper(
@@ -983,6 +983,22 @@ void SharedWorkerHost::OnFeatureUsed(blink::mojom::WebFeature feature) {
   }
 }
 
+void SharedWorkerHost::SetPermissionsPolicyHeader(
+    const network::ParsedPermissionsPolicy& permissions_policy_header) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPermissionsPolicyForSharedWorkers)) {
+    mojo::ReportBadMessage("SWH_PERMISSIONS_POLICY_DISABLED");
+    return;
+  }
+  if (permissions_policy_) {
+    mojo::ReportBadMessage("SWH_PERMISSIONS_POLICY_HEADER_ALREADY_SET");
+    return;
+  }
+  permissions_policy_ = network::PermissionsPolicy::CreateFromInheritedPolicy(
+      instance_.allow_parameter(), permissions_policy_header,
+      instance_.renderer_origin());
+}
+
 void SharedWorkerHost::RenderProcessHostDestroyed(RenderProcessHost* host) {
   // Remove `this` as a RenderProcessHost observer. The destructor for `this`
   // also calls RemoveObserver, but the process may be cleared by the time that
@@ -1041,6 +1057,11 @@ net::NetworkAnonymizationKey SharedWorkerHost::GetNetworkAnonymizationKey()
 
 const blink::StorageKey& SharedWorkerHost::GetWorkerStorageKey() const {
   return instance().worker_storage_key();
+}
+
+bool SharedWorkerHost::IsFeatureEnabled(
+    network::mojom::PermissionsPolicyFeature feature) const {
+  return permissions_policy_ && permissions_policy_->IsFeatureEnabled(feature);
 }
 
 void SharedWorkerHost::ReportNoBinderForInterface(const std::string& error) {
