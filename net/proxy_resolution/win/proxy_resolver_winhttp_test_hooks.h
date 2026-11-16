@@ -19,8 +19,7 @@ using WinHttpGetProxyForUrlFunc = BOOL(WINAPI*)(HINTERNET,
                                                 WINHTTP_PROXY_INFO*);
 
 // Scoped override of the WinHttpGetProxyForUrl function used by
-// ProxyResolverWinHttp. Passing nullptr restores the default
-// (::WinHttpGetProxyForUrl).
+// ProxyResolverWinHttp. The function must be non-null.
 class NET_EXPORT_PRIVATE ScopedWinHttpGetProxyForUrlOverride {
  public:
   explicit ScopedWinHttpGetProxyForUrlOverride(WinHttpGetProxyForUrlFunc func);

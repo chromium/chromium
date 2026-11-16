@@ -41,7 +41,6 @@ specific_include_rules = {
   # Consolidated string functions that depend on icu.
   "net_string_util_icu\\.cc": [
     "+base/i18n/case_conversion.h",
-    "+base/i18n/i18n_constants.h",
     "+base/i18n/icu_string_conversions.h",
     "+third_party/icu/source/common/unicode/ucnv.h"
   ],

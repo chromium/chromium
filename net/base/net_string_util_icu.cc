@@ -7,14 +7,11 @@
 #include <string_view>
 
 #include "base/i18n/case_conversion.h"
-#include "base/i18n/i18n_constants.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 
 namespace net {
-
-const char* const kCharsetLatin1 = base::kCodepageLatin1;
 
 bool ConvertToUtf8(std::string_view text,
                    const char* charset,

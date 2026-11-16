@@ -15,7 +15,7 @@
 
 namespace net {
 
-extern const char* const kCharsetLatin1;
+inline constexpr char kCharsetLatin1[] = "ISO-8859-1";
 
 // Converts |text| using |charset| to UTF-8, and writes it to |output|.
 // On failure, returns false and |output| is cleared.

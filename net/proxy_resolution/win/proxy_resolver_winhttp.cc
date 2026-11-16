@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
@@ -24,10 +25,9 @@ using base::TimeTicks;
 namespace net {
 namespace {
 
-// The WinHttpGetProxyForUrl implementation used by ProxyResolverWinHttp. May be
-// overridden by tests via ScopedWinHttpGetProxyForUrlOverride.
-WinHttpGetProxyForUrlFunc g_winhttp_get_proxy_for_url =
-    &::WinHttpGetProxyForUrl;
+// Optional test override. Taking the address of the DLL-imported
+// WinHttpGetProxyForUrl here would require a static initializer.
+constinit WinHttpGetProxyForUrlFunc g_winhttp_get_proxy_for_url = nullptr;
 
 static void FreeInfo(WINHTTP_PROXY_INFO* info) {
   if (info->lpszProxy)
@@ -138,7 +138,10 @@ int ProxyResolverWinHttp::GetProxyForURL(
   WINHTTP_PROXY_INFO info = {0};
   DCHECK(session_handle_);
 
-  BOOL ok = g_winhttp_get_proxy_for_url(
+  WinHttpGetProxyForUrlFunc get_proxy_for_url =
+      g_winhttp_get_proxy_for_url ? g_winhttp_get_proxy_for_url
+                                  : &::WinHttpGetProxyForUrl;
+  BOOL ok = get_proxy_for_url(
       session_handle_,
       base::as_wcstr(base::ASCIIToUTF16(mutable_query_url.spec())), &options,
       &info);
@@ -227,7 +230,8 @@ int ProxyResolverFactoryWinHttp::CreateProxyResolver(
 ScopedWinHttpGetProxyForUrlOverride::ScopedWinHttpGetProxyForUrlOverride(
     WinHttpGetProxyForUrlFunc func)
     : previous_func_(g_winhttp_get_proxy_for_url) {
-  g_winhttp_get_proxy_for_url = func ? func : &::WinHttpGetProxyForUrl;
+  CHECK(func);
+  g_winhttp_get_proxy_for_url = func;
 }
 
 ScopedWinHttpGetProxyForUrlOverride::~ScopedWinHttpGetProxyForUrlOverride() {

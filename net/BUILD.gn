@@ -248,6 +248,8 @@ if (!disable_brotli_filter) {
 }
 
 component("net") {
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
+
   sources = [
     "base/address_family.cc",
     "base/address_family.h",

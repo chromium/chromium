@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gtest_util.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
@@ -46,6 +47,15 @@ BOOL WINAPI FakeGetProxyForUrlLoginFailure(HINTERNET /*session*/,
   return FALSE;
 }
 
+BOOL WINAPI
+FakeGetProxyForUrlBadAutoProxyScript(HINTERNET /*session*/,
+                                     LPCWSTR /*url*/,
+                                     WINHTTP_AUTOPROXY_OPTIONS* /*options*/,
+                                     WINHTTP_PROXY_INFO* /*info*/) {
+  ::SetLastError(ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT);
+  return FALSE;
+}
+
 std::unique_ptr<ProxyResolver> CreateResolver(
     const scoped_refptr<PacFileData>& script_data) {
   ProxyResolverFactoryWinHttp factory;
@@ -74,6 +84,11 @@ class ProxyResolverWinHttpAuthChallengeTest
 
 }  // namespace
 
+TEST(ProxyResolverWinHttpDeathTest, RejectsNullOverride) {
+  EXPECT_CHECK_DEATH(
+      { ScopedWinHttpGetProxyForUrlOverride override_hook(nullptr); });
+}
+
 // If the server hosting the PAC script requests authentication when the
 // resolver tries to download it, the resolver must not send default
 // credentials and must instead surface a failure to the caller. This mirrors
@@ -95,6 +110,36 @@ TEST_P(ProxyResolverWinHttpAuthChallengeTest, NoAutoLogonOnChallenge) {
       CompletionOnceCallback(), &request, NetLogWithSource());
 
   EXPECT_EQ(ERR_PROXY_AUTH_UNSUPPORTED, rv);
+  EXPECT_EQ(1, g_call_count);
+}
+
+TEST_P(ProxyResolverWinHttpAuthChallengeTest, NestedOverridesRestorePrevious) {
+  const AuthChallengeTestCase& test_case = GetParam();
+  g_expected_pac_url = test_case.expected_pac_url;
+  ScopedWinHttpGetProxyForUrlOverride override_hook(
+      &FakeGetProxyForUrlLoginFailure);
+  std::unique_ptr<ProxyResolver> resolver =
+      CreateResolver(test_case.script_data);
+  ASSERT_TRUE(resolver);
+
+  ProxyInfo results;
+  std::unique_ptr<ProxyResolver::Request> request;
+  {
+    ScopedWinHttpGetProxyForUrlOverride nested_hook(
+        &FakeGetProxyForUrlBadAutoProxyScript);
+    EXPECT_EQ(ERR_PAC_SCRIPT_FAILED,
+              resolver->GetProxyForURL(GURL("https://example.test/"),
+                                       NetworkAnonymizationKey(), &results,
+                                       CompletionOnceCallback(), &request,
+                                       NetLogWithSource()));
+    EXPECT_EQ(0, g_call_count);
+  }
+
+  EXPECT_EQ(ERR_PROXY_AUTH_UNSUPPORTED,
+            resolver->GetProxyForURL(GURL("https://example.test/"),
+                                     NetworkAnonymizationKey(), &results,
+                                     CompletionOnceCallback(), &request,
+                                     NetLogWithSource()));
   EXPECT_EQ(1, g_call_count);
 }
 
