@@ -4,8 +4,8 @@
 
 #include <string>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/time/time.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/cellular/wait_for_service_connected_observer.h"

@@ -31,7 +31,6 @@ static_library("network") {
     "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/profiles:signin_profile_handler",

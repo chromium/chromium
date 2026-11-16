@@ -6,10 +6,10 @@
 #include <string>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/cellular/cellular_util.h"
 #include "chrome/test/base/ash/interactive/cellular/esim_interactive_uitest_base.h"
 #include "chrome/test/base/ash/interactive/cellular/wait_for_service_connected_observer.h"

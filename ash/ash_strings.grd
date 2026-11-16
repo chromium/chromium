@@ -10504,6 +10504,265 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_CLIENT_INFO_BUTTON_TEXT" desc="Text for button which, when pressed, refreshing WiFi Direct clients info.">
         Refresh WiFi Direct Clients Info
       </message>
+
+      <!-- Cellular Setup UI Strings -->
+      <message name="IDS_CELLULAR_SETUP_BACK_LABEL" desc="Label for button to go to previous screen during cellular setup">
+        Back
+      </message>
+      <message name="IDS_CELLULAR_SETUP_DONE_LABEL" desc="Label for button to finish and exit cellular setup">
+        Done
+      </message>
+      <message name="IDS_CELLULAR_SETUP_TRY_AGAIN_LABEL" desc="Label for button to retry a step during cellular setup">
+        Try again
+      </message>
+      <message name="IDS_CELLULAR_SETUP_NEXT_LABEL" desc="Label for button that advances to next step during cellular setup">
+        Next
+      </message>
+      <message name="IDS_CELLULAR_SETUP_SKIP_DISCOVERY_LABEL" desc="Label for button that skips the multiple profile selection step and sets up a new profile during eSIM cellular setup">
+        Skip &amp; set up new profile
+      </message>
+      <message name="IDS_CELLULAR_SETUP_CONFIRM_LABEL" desc="Label for button that verifies the confirmation code entered during cellular setup">
+        Confirm
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_ACTIVATION_CODE" desc="Label for activation code input box">
+        Activation code
+      </message>
+      <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_TITLE" desc="Title for first screen of cellular setup during which ChromeOS is preparing the cellular device for setup.">
+        Preparing to setup your cellular device...
+      </message>
+      <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_TITLE" desc="Title for cellular setup when ChromeOS encounters an error preparing the cellular device for setup.">
+        No network found
+      </message>
+      <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when ChromeOS encounters an error preparing the cellular device for setup and has retry attempts left. Prompts user to insert SIM and try again.">
+        No network found. Please insert your SIM and try again.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_FINAL_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when ChromeOS encounters an error preparing the cellular device for setup and has no retry attempts left. Prompts user to insert SIM, reboot and try again.">
+        No network found. Please insert your SIM and reboot your device before trying again.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_PROVISIONING_PAGE_LOADING_TITLE" desc="Title for cellular setup step which indicates that a connection is in progress to the user's mobile data provider (e.g., Verizon).">
+        Connecting to <ph name="CARRIER_NAME">$1<ex>Google Fi</ex></ph>
+      </message>
+      <message name="IDS_CELLULAR_SETUP_PROVISIONING_PAGE_ERROR_TITLE" desc="Title for cellular setup step which indicates that the Chromebook was unable to establish a connection to the user's mobile data provider (e.g., Verizon).">
+        Couldn't connect to <ph name="CARRIER_NAME">$1<ex>Google Fi</ex></ph>
+      </message>
+      <message name="IDS_CELLULAR_SETUP_PROVISIONING_PAGE_ERROR_MESSAGE" desc="Message for the cellular setup step which indicates that the Chromebook was unable to establish a connection to the user's mobile data provider (e.g., Verizon).">
+        Please try again. For technical support, contact <ph name="CARRIER_NAME">$1<ex>Google Fi</ex></ph>.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_PROVISIONING_PAGE_ACTIVE_TITLE" desc="Title for cellular setup step which indicates that the Chromebook is in the process of connecting to a mobile network.">
+        Connect to mobile network
+      </message>
+      <message name="IDS_CELLULAR_SETUP_FINAL_PAGE_TITLE" desc="Title for the final success screen of cellular setup that tells the user that setup is completed but service is being activated">
+        Mobile data being activated
+      </message>
+      <message name="IDS_CELLULAR_SETUP_PSIM_FINAL_PAGE_MESSAGE" desc="Message displayed under title in final success screen of physical SIM cellular setup that tells user that service may take a while to activate.">
+        Network has been added successfully. It may take several minutes for your cellular network to become active.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_TITLE" desc="Title for the final screen of cellular setup when ChromeOS encountered an error completing activation">
+        Could not activate cellular device
+      </message>
+      <message name="IDS_CELLULAR_SETUP_FINAL_PAGE_ERROR_MESSAGE" desc="Message displayed under title in final screen of cellular setup when ChromeOS encountered an error completing activation.">
+        An error occured during activation.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_SUCCESS_HEADER" desc="Header displayed at the top of the success screen of the eSIM installation flow that tells user that a new eSIM profile has been added.">
+        Network added
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_MESSAGE" desc="Message displayed under title in final success screen of eSIM cellular setup that tells user that their profile has been activated.">
+        This mobile network will be available to all users on this device
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_ERROR_MESSAGE" desc="Message displayed under title in final screen of eSIM cellular setup when ChromeOS encountered an error installing eSIM profiles.">
+        Couldn't install eSIM profile. For help, please contact your carrier.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_TITLE" desc="Title message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
+        Looking for available eSIM profiles
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
+        This may cause your mobile network to disconnect for a few minutes
+      </message>
+      <message name="IDS_CELLULAR_SETUP_PROFILE_DISCOVERY_PAGE_TITLE" desc="Title message informing user that they can choose a profile from the list below to download.">
+        Choose an eSIM profile to download
+      </message>
+      <message name="IDS_CELLULAR_SETUP_CONFIRMATION_CODE_PAGE_TITLE" desc="Title message informing user that they can enter confirmation code in the text box below.">
+        Enter confirmation code
+      </message>
+      <message name="IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE" desc="Label informing the user that they are able to select multiple eSIM profiles for downloading.">
+        We've found multiple profiles available to download. Select the ones you would like to download before proceeding.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE_WITH_LINK" desc="Label informing the user that they can choose to setup an eSIM profile manually.">
+        You can also set up an eSIM profile <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>manually<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE" desc="Label for informing the user on ways to retrieve an eSim profile">
+        Scan a QR Code using your device camera or enter the activation code provided by your carrier.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_NO_PROFILES_FOUND" desc="Label for informing the user on ways to retrieve an eSim profile when no profiles could be automatically discovered.">
+        No profiles were found. Try scanning the QR Code using your device camera or enter the activation code provided by your carrier.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_ENTER_ACTIVATION_CODE" desc="Label for informing the user to enter activation code when no media devices have been found">
+        Please enter the activation code provided by your carrier.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_ENTER_ACTIVATION_CODE_NO_PROFILES_FOUND" desc="Label for informing the user to enter activation code when no media devices have been found and no available profiles could be automatically discovered">
+        No profiles were found. Please enter the activation code provided by your carrier.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_USE_CAMERA" desc="Label for button that uses the camera to scan for QR Codes when clicked.">
+        Use camera to scan QR Code
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SWITCH_CAMERA" desc="Label for button that toggles the camera between user-facing and environment-facing.">
+        Flip camera
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_A11Y_QR_CODE_CAMERA_ON" desc="Accessibility announcement provided during the eSIM setup flow which alerts the user about how to set up an eSIM profile to use for a cellular connection. The flow involves clicking a button to cause the device's webcam to turn on, then the user showing a QR Code to the camera to continue.">
+        Device camera has turned on. Please place your eSIM QR Code in front of the camera.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_A11Y_QR_CODE_CAMERA_SCAN_SUCCESS" desc="Accessibility announcement provided during the eSIM setup flow which alerts the user that a qr code has been succesfully scanned by the device camera.">
+        QR Code has been scanned.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_SUCCESS" desc="Label informing the user that an an activation code was scanned successfully.">
+        Activation code detected
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_USE_CAMERA_AGAIN" desc="Label for button informing the user to click to use the camera to rescan for QR Codes.">
+        Use camera again
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_ERROR" desc="Label informing the user that there was an error detecting activation code.">
+        Error detecting code
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_RETRY" desc="Label for button informing user to retry rescan of QR Codes.">
+        Try again
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_INSTALLING_MESSAGE" desc="Label informing the user that an eSIM profile is being added, and that it may take a couple of minutes before it is complete.">
+        Adding eSIM profile. This may take a few minutes.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INVALID" desc="Label informing the user that the code used to install an eSIM profile is invalid.">
+        Invalid code. Please try again.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INPUT_SUBTITLE" desc="Subtitle for input informing the user that the code used to install an eSIM profile must follow a specific format.">
+        Your entry should have the format <ph name="LPA_0">LPA:1</ph>&#36;<ph name="LPA_1">&lt;</ph>SM-DP+ address<ph name="LPA_2">&gt;</ph>&#36;<ph name="LPA_3">&lt;</ph>optional matching id<ph name="LPA_4">&gt;</ph>
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INPUT_ERROR" desc="Error label for input informing the user that the code used to install an eSIM profile is invalid and must follow a specific format.">
+        Invalid code. Your entry should have the format <ph name="LPA_0">LPA:1</ph>&#36;<ph name="LPA_1">&lt;</ph>SM-DP+ address<ph name="LPA_2">&gt;</ph>&#36;<ph name="LPA_3">&lt;</ph>optional matching id<ph name="LPA_4">&gt;</ph>
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESTABLISH_NETWORK_CONNECTION" desc="Message, informing user that a network connection is being established during cellular setup">
+        Establishing network connection ...
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_MESSAGE" desc="Message, prompting the user to enter the confirmation code to activate an eSIM profile.">
+        Please enter your confirmation code.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT" desc="Label for the input used to enter the confirmation code to activate an eSIM profile.">
+        Confirmation code
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR_LEGACY" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is invalid and to contact their carrier.">
+        Unable to connect to this profile. For technical support, please contact your carrier.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is invalid and to contact their carrier.">
+        Unable to install this profile. For technical support, please contact your carrier.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_LOADING" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is currently being verified.">
+        Verifying confirmation code...
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_TITLE" desc="Title asking for consent to scan automatically for available eSIM profiles.">
+        Automatically scan for available eSIM profiles?
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_MESSAGE_WITH_LINK" desc="Message, informing the user that device information will be shared with third parties.">
+        By continuing, you allow third parties to verify information that identifies this device on the network. If you do not wish to allow third parties access to device information, you can set up an eSIM profile <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>manually<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_SCAN" desc="Label for button to trigger automatic scanning.">
+        Scan
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_CANCEL" desc="Label for button to cancel and return to previous page.">
+        Cancel
+      </message>
+      <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CARRIER_LOCKED_DEVICE" desc="Label for informing the user this device is carrier locked.When carrier locked, device will only allow to connect to specific mobile provider">
+        Downloaded profile may not be usable if mobile network provider is locked. Contact your provider for support.
+      </message>
+
+      <!-- Network enrollment and WiFi dialog -->
+      <message name="IDS_NETWORK_ENROLLMENT_HANDLER_TITLE" desc="Title of the window for generating a new network certificate.">
+        Obtain network certificate
+      </message>
+      <message name="IDS_NETWORK_ENROLLMENT_HANDLER_INSTRUCTIONS" desc="Text in the window used for generating a new network certificate.">
+        The certificate required by network "<ph name="network_name">$1<ex>My Wireless</ex></ph>" is either not installed or is no longer valid.  Please get a new certificate and try connecting again.
+      </message>
+      <message name="IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON" desc="Text of the accept button for generating a new network certificate.">
+        Get new certificate
+      </message>
+      <message name="IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME" desc="OOBE network screen list entry that opens 'Add New WiFi Network' dialog">
+        Add other WiFi network
+      </message>
+
+      <!-- Other Network UI strings -->
+      <message name="IDS_NETWORK_CONNECTION_ERROR_TITLE" desc="Title for network connection error notification">
+        Network connection error
+      </message>
+      <message name="IDS_NETWORK_CONNECTION_ERROR_MESSAGE" desc="Message for network connection error notification">
+        Failed to connect to network '<ph name="name">$1<ex>GoogleGuest</ex></ph>': <ph name="details">$2<ex>Unrecognized error</ex></ph>
+      </message>
+      <message name="IDS_NETWORK_CONNECTION_ERROR_MESSAGE_WITH_SERVER_MESSAGE" desc="Message for network connection error notification with details and a server message">
+        Failed to connect to '<ph name="name">$1<ex>GoogleGuest</ex></ph>': <ph name="details">$2<ex>Unrecognized error</ex></ph>
+    Server message: <ph name="server_msg">$3<ex>Incorrect password</ex></ph>
+      </message>
+      <message name="IDS_NETWORK_CONNECTION_ERROR_MESSAGE_NO_NAME" desc="Message for network connection error where the network name is unavailable">
+        Failed to connect to network: <ph name="details">$1<ex>Unrecognized error</ex></ph>
+      </message>
+      <message name="IDS_NETWORK_VPN_CONNECTION_LOST_TITLE" desc="Title for network notification when VPN connection is lost">
+        VPN disconnected
+      </message>
+      <message name="IDS_NETWORK_VPN_CONNECTION_LOST_BODY" desc="Message for network notification when VPN connection is lost">
+        Connection to <ph name="name">$1<ex>Google VPN</ex></ph> has been lost
+      </message>
+      <message name="IDS_NETWORK_OUT_OF_CREDITS_TITLE" desc="Title for network out of data error notification">
+        Couldn't connect
+      </message>
+      <message name="IDS_NETWORK_OUT_OF_CREDITS_BODY" desc="Message body for network out of data error notification">
+        You may have used up your mobile data allowance. Visit the <ph name="name">$1<ex>GoogleGuest</ex></ph> activation portal to buy more data
+      </message>
+      <message name="IDS_NETWORK_CELLULAR_ACTIVATED_TITLE" desc="Title for cellular activated notification">
+        Mobile data activated
+      </message>
+      <message name="IDS_NETWORK_CELLULAR_ACTIVATED" desc="Text of the cellular activated notification">
+        Your '<ph name="name">$1<ex>Generic Wireless</ex></ph>' data service is ready to use
+      </message>
+      <message name="IDS_NETWORK_ACTIVATION_ERROR_TITLE" desc="Title for network activation error notification">
+        Couldn't connect
+      </message>
+      <message name="IDS_NETWORK_ACTIVATION_NEEDS_CONNECTION" desc="Message when attempting to activate a mobile network that requires a connection">
+        To activate '<ph name="name">$1<ex>Generic Wireless</ex></ph>' data, first connect to a Wi-Fi network
+      </message>
+      <message name="IDS_NETWORK_CARRIER_UNLOCK_TITLE" desc="Title for notification shown when device is carrier unlocked">
+        Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is now unlocked
+      </message>
+      <message name="IDS_NETWORK_CARRIER_UNLOCK_BODY" desc="Message in notification shown when device is carrier unlocked informing the user any eligible mobile network is available for connection">
+        You can connect to any eligible mobile network in Settings
+      </message>
+
+      <!-- Network portal notification -->
+      <message name="IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED" desc="Title for the new system notification that current wired network is behind captive portal">
+        Network Found
+      </message>
+      <message name="IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI" desc="Title for the new system notification that current Wi-Fi network is behind captive portal">
+        WiFi Network Found
+      </message>
+      <message name="IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE" desc="Body of the new system notification that current wired network is behind captive portal">
+        Sign in to "<ph name="NETWORK_ID">$1<ex>Public Network</ex></ph>"
+      </message>
+      <message name="IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON" desc="The text to display on the button when the user needs to sign in to the captive portal">
+        Sign in
+      </message>
+
+      <!-- 3G data Notifications -->
+      <message name="IDS_MOBILE_DATA_NOTIFICATION_TITLE" desc="Title of notification telling that mobile data is enabled.">
+        Mobile data
+      </message>
+      <message name="IDS_3G_NOTIFICATION_MESSAGE" desc="Text of the 3G data notification telling that 3G data is enabled.">
+        Google Chrome will use mobile data if you're not connected to another network.
+      </message>
+
+      <!-- chrome://mobilesetup strings -->
+      <message name="IDS_MOBILE_SETUP_TITLE" desc="ChromeOS mobile device activation page title">
+        Mobile data service management
+      </message>
+      <message name="IDS_MOBILE_VIEW_ACCOUNT_ERROR_TITLE" desc="Error title shown when user failed to view mobile account">
+        Can't access your mobile account
+      </message>
+      <message name="IDS_MOBILE_VIEW_ACCOUNT_ERROR_MESSAGE" desc="Error message shown when user failed to view mobile account">
+        Please contact your mobile provider
+      </message>
     </messages>
   </release>
 </grit>

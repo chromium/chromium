@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_dialog.h"
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/simple_message_box.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"

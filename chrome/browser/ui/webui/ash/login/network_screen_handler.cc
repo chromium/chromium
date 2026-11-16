@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 
 #include "ash/login/resources/grit/ash_login_strings.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"

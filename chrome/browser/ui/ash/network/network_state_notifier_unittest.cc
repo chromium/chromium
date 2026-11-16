@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
 #include "chromeos/ash/components/carrier_lock/common.h"

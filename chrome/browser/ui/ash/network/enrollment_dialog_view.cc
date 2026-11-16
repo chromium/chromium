@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/network/enrollment_dialog_view.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/utility/wm_util.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -12,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"

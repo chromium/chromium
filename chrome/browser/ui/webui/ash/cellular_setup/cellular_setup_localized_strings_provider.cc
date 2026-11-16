@@ -7,11 +7,11 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"

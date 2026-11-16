@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -23,7 +24,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/grit/browser_resources.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state.h"
