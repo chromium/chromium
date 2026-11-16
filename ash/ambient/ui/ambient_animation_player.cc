@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/ambient/ui/ambient_animation_frame_rate_schedule.h"
@@ -14,8 +15,6 @@
 #include "ash/utility/lottie_util.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
-#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "cc/paint/skottie_marker.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -43,15 +42,16 @@ AmbientAnimationFrameRateSchedule BuildSchedule(lottie::Animation* animation) {
 
 std::optional<base::TimeDelta> FindCycleRestartTimestamp(
     const cc::SkottieWrapper& skottie) {
-  static const base::NoDestructor<std::string> kRestartMarkerName(
-      base::StrCat({kLottieCustomizableIdPrefix, "_Marker_CycleRestart"}));
   DCHECK(skottie.is_valid());
   std::optional<base::TimeDelta> restart_timestamp;
   for (const cc::SkottieMarker& marker : skottie.GetAllMarkers()) {
-    if (marker.name != *kRestartMarkerName) {
+    std::string_view marker_name = marker.name;
+    if (!marker_name.starts_with(kLottieCustomizableIdPrefix) ||
+        marker_name.substr(kLottieCustomizableIdPrefix.size()) !=
+            "_Marker_CycleRestart") {
       continue;
     } else if (restart_timestamp.has_value()) {
-      LOG(DFATAL) << "Multiple markers with name " << *kRestartMarkerName
+      LOG(DFATAL) << "Multiple markers with name " << marker_name
                   << " found in animation file. Defaulting to first one.";
     } else {
       // |marker.begin_time| is a normalized timestamp in range [0, 1), where 1

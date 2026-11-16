@@ -8,13 +8,12 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/utility/lottie_util.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "cc/paint/skottie_marker.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -34,11 +33,14 @@ constexpr float kInfiniteTimestamp = std::numeric_limits<float>::max();
 // "_CrOS_Marker_Throttled_<FrameRate>fps".
 //
 // Fills |parsed_fps| with the "FrameRate" embedded in the name on success.
-bool IsFrameRateMarker(const std::string& marker_name, int& parsed_fps) {
-  static const base::NoDestructor<std::string> kMarkerPatternStr(base::StrCat(
-      {kLottieCustomizableIdPrefix, R"(_Marker_Throttled_([[:digit:]]+)fps)"}));
-  static const base::NoDestructor<RE2> kMarkerPattern(*kMarkerPatternStr);
-  return RE2::FullMatch(marker_name, *kMarkerPattern, &parsed_fps);
+bool IsFrameRateMarker(std::string_view marker_name, int& parsed_fps) {
+  if (!marker_name.starts_with(kLottieCustomizableIdPrefix)) {
+    return false;
+  }
+  static constexpr re2::LazyRE2 marker_pattern = {
+      R"(_Marker_Throttled_([[:digit:]]+)fps)"};
+  return RE2::FullMatch(marker_name.substr(kLottieCustomizableIdPrefix.size()),
+                        *marker_pattern, &parsed_fps);
 }
 
 // Returns a new AmbientAnimationFrameRateSection, or nullopt if the |marker| or
