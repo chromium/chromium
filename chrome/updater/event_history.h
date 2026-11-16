@@ -89,6 +89,9 @@ struct HistoryEventError {
   int code = 0;
   int extracode1 = 0;
 
+  friend bool operator==(const HistoryEventError&,
+                         const HistoryEventError&) = default;
+
   // Serializes the error to a `base::DictValue`.
   base::DictValue ToDict() const;
 };
@@ -108,8 +111,13 @@ class HistoryEventBuilder {
     return static_cast<T&>(*this);
   }
 
+  // Adds `error` to the event, unless it is equal to the most recently added
+  // error. Callers may report the same error several times in a row (e.g. with
+  // every update state notification); the repeats carry no information.
   T& AddError(const HistoryEventError& error) {
-    errors_.push_back(error);
+    if (errors_.empty() || errors_.back() != error) {
+      errors_.push_back(error);
+    }
     return static_cast<T&>(*this);
   }
 
@@ -451,7 +459,14 @@ class UpdateEndEvent : public HistoryEventBuilder<UpdateEndEvent> {
   ~UpdateEndEvent() override;
 
   UpdateEndEvent& SetNextVersion(const std::string& next_version);
+
+  // Records that the update entered `state`, unless `state` is the most
+  // recently recorded state. The update service reports the current state with
+  // every progress notification (e.g. once per downloaded chunk), so recording
+  // only transitions keeps the size of the event independent of the size of the
+  // download.
   UpdateEndEvent& AddUpdateState(UpdateService::UpdateState::State state);
+
   UpdateEndEvent& SetResult(UpdateService::Result result);
 
  private:

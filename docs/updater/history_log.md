@@ -25,7 +25,7 @@ All events share a common set of base properties:
 | `pid`           | integer | The process ID of the updater instance that emitted the event.                                                                                                                                  | Yes      |
 | `processToken`  | string  | A per-process random value to discriminate between processes with the same PID due to OS-reuse.                                                                                                 | Yes      |
 | `bound`         | string  | Indicates if the record marks the beginning (`START`), end (`END`), or an instantaneous event (`INSTANT`). Defaults to `INSTANT`.                                                               | No       |
-| `errors`        | array   | An array of error objects encountered during the event. Each object has: `category` (integer), `code` (integer), `extracode1` (integer). An empty array has the same meaning as an unset array. | No       |
+| `errors`        | array   | An array of error objects encountered during the event. Each object has: `category` (integer), `code` (integer), `extracode1` (integer). An error reported several times in a row is recorded once. An empty array has the same meaning as an unset array. | No       |
 
 ## Event Types
 
@@ -123,8 +123,12 @@ The schema defines the following event types:
   * `END`:
     * `nextVersion` (string): The version of the application which the updater
       tried to update to.
-    * `updateStates` (array): A sequence of details on the state of an update.
-      Each item is an object with:
+    * `updateStates` (array): The sequence of states that the update went
+      through, in order. An item is recorded when the update enters a state;
+      repeated notifications of the current state (e.g. download or install
+      progress) are not recorded, so a state appears more than once only if the
+      update re-entered it (e.g. a full download after a failed differential
+      update). Each item is an object with:
       * `deviceUptime` (string): The uptime of the system when the state change
         was observed in integer microseconds.
       * `state` (string, required): The state of the update. Enum: possible

@@ -633,6 +633,9 @@ UpdateEndEvent& UpdateEndEvent::SetNextVersion(
 
 UpdateEndEvent& UpdateEndEvent::AddUpdateState(
     UpdateService::UpdateState::State state) {
+  if (!update_states_.empty() && update_states_.back().state == state) {
+    return *this;
+  }
   update_states_.push_back(
       State{.deviceUptime = base::SysInfo::Uptime(), .state = state});
   return *this;
