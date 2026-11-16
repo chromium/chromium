@@ -8,6 +8,7 @@
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/public/autofill_ai_settings_constants.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/public/autofill_and_passwords_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
@@ -35,8 +36,9 @@ void OpenAutofillAndPasswordsSubpage(NSString* cell_id,
       tapSettingsMenuButton:grey_accessibilityID(
                                 kSettingsAutofillAndPasswordsCellId)];
   // Wait for the "Autofill and passwords" page to be pushed before scrolling.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      grey_accessibilityID(kSettingsPasswordsCellId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kAutofillAndPasswordsPasswordsCellId)];
   id<GREYMatcher> cell_matcher =
       grey_allOf(grey_accessibilityID(cell_id), grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:cell_matcher]
@@ -53,7 +55,7 @@ void OpenAutofillAndPasswordsSubpage(NSString* cell_id,
 
 + (void)openIdentityDocsSettings {
   OpenAutofillAndPasswordsSubpage(
-      kSettingsIdentityDocsCellId,
+      kAutofillAndPasswordsIdentityDocsCellId,
       grey_allOf(grey_text(l10n_util::GetNSString(
                      IDS_AUTOFILL_IDENTITY_DOCS_OPT_IN_TOGGLE_LABEL)),
                  grey_kindOfClass([UILabel class]), nil));
@@ -61,7 +63,7 @@ void OpenAutofillAndPasswordsSubpage(NSString* cell_id,
 
 + (void)openTravelSettings {
   OpenAutofillAndPasswordsSubpage(
-      kSettingsTravelInfoCellId,
+      kAutofillAndPasswordsTravelInfoCellId,
       grey_allOf(grey_text(l10n_util::GetNSString(
                      IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL)),
                  grey_kindOfClass([UILabel class]), nil));
@@ -69,7 +71,7 @@ void OpenAutofillAndPasswordsSubpage(NSString* cell_id,
 
 + (void)openAutofillSettings {
   OpenAutofillAndPasswordsSubpage(
-      kSettingsAutofillSettingsCellId,
+      kAutofillAndPasswordsAutofillSettingsCellId,
       grey_accessibilityID(kEnhancedAutofillSwitchViewId));
 }
 

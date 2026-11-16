@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_view_ios.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
-#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/public/autofill_and_passwords_constants.h"
 #import "ios/chrome/browser/settings/autofill/payments/ui/autofill_add_credit_card_view_controller.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/google_services/public/google_services_settings_constants.h"
@@ -995,11 +995,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)addressesAndMoreButton {
-  return grey_accessibilityID(kSettingsAddressesAndMoreCellId);
+  return grey_accessibilityID(kAutofillAndPasswordsContactInfoCellId);
 }
 
 + (id<GREYMatcher>)paymentMethodsButton {
-  return grey_accessibilityID(kSettingsPaymentMethodsCellId);
+  return grey_accessibilityID(kAutofillAndPasswordsPaymentMethodsCellId);
 }
 
 + (id<GREYMatcher>)languagesButton {
@@ -1199,7 +1199,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsMenuPasswordsButton {
-  return grey_accessibilityID(kSettingsPasswordsCellId);
+  return grey_accessibilityID(kAutofillAndPasswordsPasswordsCellId);
 }
 
 + (id<GREYMatcher>)settingsMenuSafetyCheckButton {

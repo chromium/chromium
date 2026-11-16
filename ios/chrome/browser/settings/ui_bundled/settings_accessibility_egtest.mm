@@ -14,8 +14,10 @@
 #import "ios/testing/earl_grey/matchers.h"
 #import "ios/testing/test_tag_registry.h"
 
+using chrome_test_util::AddressesAndMoreButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContentSettingsButton;
+using chrome_test_util::PaymentMethodsButton;
 using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
@@ -244,8 +246,7 @@ TAG_SMOKE_TEST(SettingsAccessibilityTestCase, testSettingsSwipeDownDismiss);
   [ChromeEarlGreyUI
       tapSettingsMenuButton:grey_accessibilityID(
                                 kSettingsAutofillAndPasswordsCellId)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsPaymentMethodsCellId)]
+  [[EarlGrey selectElementWithMatcher:PaymentMethodsButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   [self closeSubSettingsMenu];
@@ -257,8 +258,7 @@ TAG_SMOKE_TEST(SettingsAccessibilityTestCase, testSettingsSwipeDownDismiss);
   [ChromeEarlGreyUI
       tapSettingsMenuButton:grey_accessibilityID(
                                 kSettingsAutofillAndPasswordsCellId)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsAddressesAndMoreCellId)]
+  [[EarlGrey selectElementWithMatcher:AddressesAndMoreButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   [self closeSubSettingsMenu];

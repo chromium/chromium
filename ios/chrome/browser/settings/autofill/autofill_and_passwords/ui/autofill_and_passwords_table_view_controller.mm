@@ -16,18 +16,33 @@
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/public/autofill_and_passwords_constants.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-NSString* const kAutofillAndPasswordsTableViewIdentifier =
-    @"AutofillAndPasswordsTableViewIdentifier";
-
 namespace {
+
+enum SectionIdentifier : NSInteger {
+  kSignInSection = kSectionIdentifierEnumZero,
+  kBasicsSection,
+};
+
+enum ItemType : NSInteger {
+  kSigninPromoItem = kItemTypeEnumZero,
+  kPasswordsItem,
+  kAutofillCreditCardItem,
+  kAutofillProfileItem,
+  kIdentityDocsItem,
+  kTravelInfoItem,
+  kShoppingInfoItem,
+  kSuggestionsFromGeminiItem,
+  kAutofillSettingsItem,
+};
 
 // Returns the localized "On" or "Off" detail text for `enabled`.
 NSString* DetailTextForEnabledState(bool enabled) {
@@ -38,7 +53,7 @@ NSString* DetailTextForEnabledState(bool enabled) {
 // Returns a configured `TableViewDetailIconItem` for an Autofill and Passwords
 // subpage row.
 TableViewDetailIconItem* DetailItemWithType(
-    SettingsItemType type,
+    ItemType type,
     NSString* text,
     NSString* detail_text,
     NSString* trailing_detail_text,
@@ -119,46 +134,45 @@ TableViewDetailIconItem* DetailItemWithType(
   [super loadModel];
 
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  [model addSectionWithIdentifier:kBasicsSection];
 
   _passwordsDetailItem = [self passwordsItem];
-  [model addItem:_passwordsDetailItem
-      toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  [model addItem:_passwordsDetailItem toSectionWithIdentifier:kBasicsSection];
 
   _autofillCreditCardDetailItem = [self autofillCreditCardItem];
   [model addItem:_autofillCreditCardDetailItem
-      toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+      toSectionWithIdentifier:kBasicsSection];
 
   _autofillProfileDetailItem = [self autofillProfileItem];
   [model addItem:_autofillProfileDetailItem
-      toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+      toSectionWithIdentifier:kBasicsSection];
 
   if (_shouldShowAutofillAIFeatures) {
     _identityDocsDetailItem = [self identityDocsItem];
     [model addItem:_identityDocsDetailItem
-        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+        toSectionWithIdentifier:kBasicsSection];
 
     _travelInfoDetailItem = [self travelInfoItem];
     [model addItem:_travelInfoDetailItem
-        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+        toSectionWithIdentifier:kBasicsSection];
 
     if (autofill::IsAutofillShoppingEnabled()) {
       _shoppingDetailItem = [self shoppingInfoItem];
       [model addItem:_shoppingDetailItem
-          toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+          toSectionWithIdentifier:kBasicsSection];
     }
   }
 
   if (_shouldShowSuggestionsFromGemini) {
     _suggestionsFromGeminiDetailItem = [self suggestionsFromGeminiItem];
     [model addItem:_suggestionsFromGeminiDetailItem
-        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+        toSectionWithIdentifier:kBasicsSection];
   }
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWithDataSchema)) {
     [model addItem:[self autofillSettingsItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+        toSectionWithIdentifier:kBasicsSection];
   }
 
   [self.delegate autofillAndPasswordsTableViewControllerDidLoadContent:self];
@@ -170,45 +184,47 @@ TableViewDetailIconItem* DetailItemWithType(
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
 
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  ItemType itemType = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
 
   switch (itemType) {
-    case SettingsItemTypePasswords:
+    case kPasswordsItem:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectPasswords:self];
       break;
-    case SettingsItemTypeAutofillCreditCard:
+    case kAutofillCreditCardItem:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectAutofillCreditCard:
               self];
       break;
-    case SettingsItemTypeAutofillProfile:
+    case kAutofillProfileItem:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectAutofillProfile:self];
       break;
-    case SettingsItemTypeIdentityDocs:
+    case kIdentityDocsItem:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectIdentityDocs:self];
       break;
-    case SettingsItemTypeTravelInfo:
+    case kTravelInfoItem:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectTravelInfo:self];
       break;
-    case SettingsItemTypeShoppingInfo:
+    case kShoppingInfoItem:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectShopping:self];
       break;
-    case SettingsItemTypeSuggestionsFromGemini:
+    case kSuggestionsFromGeminiItem:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectSuggestionsFromGemini:
               self];
       break;
-    case SettingsItemTypeAutofillSettings:
+    case kAutofillSettingsItem:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:
               self];
       break;
-    default:
+    case kSigninPromoItem:
+      // The sign-in promo cell handles its own taps through its delegate.
       break;
   }
 }
@@ -334,27 +350,24 @@ TableViewDetailIconItem* DetailItemWithType(
     return;
   }
   TableViewModel* model = self.tableViewModel;
-  BOOL hasPromo =
-      [model hasSectionForSectionIdentifier:SettingsSectionIdentifierSignIn];
+  BOOL hasPromo = [model hasSectionForSectionIdentifier:kSignInSection];
 
   if (promoEnabled == hasPromo) {
     return;
   }
 
   if (promoEnabled) {
-    [model insertSectionWithIdentifier:SettingsSectionIdentifierSignIn
-                               atIndex:0];
+    [model insertSectionWithIdentifier:kSignInSection atIndex:0];
 
-    TableViewSigninPromoItem* promoItem = [[TableViewSigninPromoItem alloc]
-        initWithType:SettingsItemTypeSigninPromo];
+    TableViewSigninPromoItem* promoItem =
+        [[TableViewSigninPromoItem alloc] initWithType:kSigninPromoItem];
     promoItem.configurator = promoConfigurator;
     promoItem.text = promoText;
     promoItem.delegate = self.signinPromoDelegate;
 
-    [model addItem:promoItem
-        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+    [model addItem:promoItem toSectionWithIdentifier:kSignInSection];
   } else {
-    [model removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+    [model removeSectionWithIdentifier:kSignInSection];
   }
 
   [self.tableView reloadData];
@@ -363,13 +376,12 @@ TableViewDetailIconItem* DetailItemWithType(
 - (void)configureSigninPromoWithConfigurator:
     (SigninPromoViewConfigurator*)promoConfigurator {
   TableViewModel* model = self.tableViewModel;
-  if (![model hasSectionForSectionIdentifier:SettingsSectionIdentifierSignIn]) {
+  if (![model hasSectionForSectionIdentifier:kSignInSection]) {
     return;
   }
 
-  NSIndexPath* path =
-      [model indexPathForItemType:SettingsItemTypeSigninPromo
-                sectionIdentifier:SettingsSectionIdentifierSignIn];
+  NSIndexPath* path = [model indexPathForItemType:kSigninPromoItem
+                                sectionIdentifier:kSignInSection];
   if (!path) {
     return;
   }
@@ -420,63 +432,63 @@ TableViewDetailIconItem* DetailItemWithType(
 // Returns the passwords item.
 - (TableViewDetailIconItem*)passwordsItem {
   return DetailItemWithType(
-      SettingsItemTypePasswords,
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER),
+      kPasswordsItem, l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER),
       l10n_util::GetNSString(
           IDS_AUTOFILL_AND_PASSWORDS_PASSWORD_MANAGER_SUMMARY),
       DetailTextForEnabledState(_passwordsEnabled),
-      SettingsRootSymbol(SymbolPassword), kSettingsPasswordsCellId);
+      SettingsRootSymbol(SymbolPassword), kAutofillAndPasswordsPasswordsCellId);
 }
 
 // Returns the autofill credit card item.
 - (TableViewDetailIconItem*)autofillCreditCardItem {
   return DetailItemWithType(
-      SettingsItemTypeAutofillCreditCard,
+      kAutofillCreditCardItem,
       l10n_util::GetNSString(IDS_AUTOFILL_PAYMENTS_TITLE),
       l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_PAYMENTS_SUMMARY),
       DetailTextForEnabledState(_autofillCreditCardEnabled),
-      SettingsRootSymbol(SymbolCreditCard), kSettingsPaymentMethodsCellId);
+      SettingsRootSymbol(SymbolCreditCard),
+      kAutofillAndPasswordsPaymentMethodsCellId);
 }
 
 // Returns the autofill profile item.
 - (TableViewDetailIconItem*)autofillProfileItem {
   return DetailItemWithType(
-      SettingsItemTypeAutofillProfile,
+      kAutofillProfileItem,
       l10n_util::GetNSString(IDS_AUTOFILL_CONTACT_INFO_TITLE),
       l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_CONTACT_INFO_SUMMARY),
       DetailTextForEnabledState(_autofillProfileEnabled),
-      SettingsRootSymbol(SymbolEnvelope), kSettingsAddressesAndMoreCellId);
+      SettingsRootSymbol(SymbolEnvelope),
+      kAutofillAndPasswordsContactInfoCellId);
 }
 
 // Returns the identity docs item.
 - (TableViewDetailIconItem*)identityDocsItem {
   return DetailItemWithType(
-      SettingsItemTypeIdentityDocs,
+      kIdentityDocsItem,
       l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_TITLE),
       l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_IDENTITY_DOCS_SUMMARY),
       DetailTextForEnabledState(_identityDocsEnabled),
       SettingsRootSymbol(SymbolPersonTextRectangle),
-      kSettingsIdentityDocsCellId);
+      kAutofillAndPasswordsIdentityDocsCellId);
 }
 
 // Returns the travel info item.
 - (TableViewDetailIconItem*)travelInfoItem {
   return DetailItemWithType(
-      SettingsItemTypeTravelInfo,
-      l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE),
+      kTravelInfoItem, l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE),
       l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_TRAVEL_SUMMARY),
       DetailTextForEnabledState(_travelInfoEnabled),
-      SettingsRootSymbol(SymbolSuitcase), kSettingsTravelInfoCellId);
+      SettingsRootSymbol(SymbolSuitcase),
+      kAutofillAndPasswordsTravelInfoCellId);
 }
 
 // Returns the shopping info item.
 - (TableViewDetailIconItem*)shoppingInfoItem {
   return DetailItemWithType(
-      SettingsItemTypeShoppingInfo,
-      l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE),
+      kShoppingInfoItem, l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE),
       l10n_util::GetNSString(IDS_AUTOFILL_AND_PASSWORDS_SHOPPING_SUMMARY),
       DetailTextForEnabledState(_shoppingEnabled),
-      SettingsRootSymbol(SymbolCart), kSettingsShoppingInfoCellId);
+      SettingsRootSymbol(SymbolCart), kAutofillAndPasswordsShoppingInfoCellId);
 }
 
 // Returns the Suggestions from Gemini item.
@@ -487,20 +499,21 @@ TableViewDetailIconItem* DetailItemWithType(
   UIImage* image = SettingsRootSymbol(SymbolGeminiNonBrandedLogo);
 #endif
   return DetailItemWithType(
-      SettingsItemTypeSuggestionsFromGemini,
+      kSuggestionsFromGeminiItem,
       l10n_util::GetNSString(IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_TITLE),
       l10n_util::GetNSString(
           IDS_IOS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_SUBPAGE_SUMMARY),
       DetailTextForEnabledState(_suggestionsFromGeminiEnabled), image,
-      kSettingsSuggestionsFromGeminiCellId);
+      kAutofillAndPasswordsSuggestionsFromGeminiCellId);
 }
 
 // Returns the autofill settings item.
 - (TableViewDetailIconItem*)autofillSettingsItem {
   return DetailItemWithType(
-      SettingsItemTypeAutofillSettings,
+      kAutofillSettingsItem,
       l10n_util::GetNSString(IDS_IOS_SETTINGS_AUTOFILL_SETTINGS), nil, nil,
-      SettingsRootSymbol(SymbolSettings), kSettingsAutofillSettingsCellId);
+      SettingsRootSymbol(SymbolSettings),
+      kAutofillAndPasswordsAutofillSettingsCellId);
 }
 
 // Presents the Level Up Payment Methods walkthrough IPH if needed.
@@ -513,9 +526,9 @@ TableViewDetailIconItem* DetailItemWithType(
   UIView* targetView = self.view;
   CHECK(targetView.window);
 
-  NSIndexPath* targetIndexPath = [self.tableViewModel
-      indexPathForItemType:SettingsItemTypeAutofillCreditCard
-         sectionIdentifier:SettingsSectionIdentifierBasics];
+  NSIndexPath* targetIndexPath =
+      [self.tableViewModel indexPathForItemType:kAutofillCreditCardItem
+                              sectionIdentifier:kBasicsSection];
 
   if (!targetIndexPath) {
     return;

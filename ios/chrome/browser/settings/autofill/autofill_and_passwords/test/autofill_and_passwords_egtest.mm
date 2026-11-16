@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/public/autofill_ai_settings_constants.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/public/autofill_and_passwords_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
@@ -236,24 +237,24 @@
   [self openAutofillAndPasswordsSettings];
 
   // 1. Password Manager.
-  [self openAndCloseSubpageWithCellID:kSettingsPasswordsCellId
+  [self openAndCloseSubpageWithCellID:kAutofillAndPasswordsPasswordsCellId
                   subpageViewMatchers:@[ grey_accessibilityID(
                                           kPasswordsTableViewID) ]];
 
   // 2. Payments.
-  [self openAndCloseSubpageWithCellID:kSettingsPaymentMethodsCellId
+  [self openAndCloseSubpageWithCellID:kAutofillAndPasswordsPaymentMethodsCellId
                   subpageViewMatchers:@[
                     grey_accessibilityID(kAutofillCreditCardTableViewId),
                   ]];
 
   // 3. Contact info.
-  [self openAndCloseSubpageWithCellID:kSettingsAddressesAndMoreCellId
+  [self openAndCloseSubpageWithCellID:kAutofillAndPasswordsContactInfoCellId
                   subpageViewMatchers:@[
                     grey_accessibilityID(kAutofillProfileTableViewID),
                   ]];
 
   // 4. Identity docs.
-  [self openAndCloseSubpageWithCellID:kSettingsIdentityDocsCellId
+  [self openAndCloseSubpageWithCellID:kAutofillAndPasswordsIdentityDocsCellId
                   subpageViewMatchers:@[
                     grey_allOf(
                         grey_text(l10n_util::GetNSString(
@@ -262,7 +263,7 @@
                   ]];
 
   // 5. Travel.
-  [self openAndCloseSubpageWithCellID:kSettingsTravelInfoCellId
+  [self openAndCloseSubpageWithCellID:kAutofillAndPasswordsTravelInfoCellId
                   subpageViewMatchers:@[
                     grey_allOf(grey_text(l10n_util::GetNSString(
                                    IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL)),
@@ -270,7 +271,7 @@
                   ]];
 
   // 6. Shopping.
-  [self openAndCloseSubpageWithCellID:kSettingsShoppingInfoCellId
+  [self openAndCloseSubpageWithCellID:kAutofillAndPasswordsShoppingInfoCellId
                   subpageViewMatchers:@[
                     grey_allOf(grey_text(l10n_util::GetNSString(
                                    IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_LABEL)),
@@ -278,13 +279,14 @@
                   ]];
 
   // 7. Autofill Settings.
-  [self openAndCloseSubpageWithCellID:kSettingsAutofillSettingsCellId
-                  subpageViewMatchers:@[
-                    chrome_test_util::TableViewSwitchCell(
-                        kEnhancedAutofillSwitchViewId,
-                        /*is_toggled_on=*/NO,
-                        /*is_enabled=*/YES),
-                  ]];
+  [self
+      openAndCloseSubpageWithCellID:kAutofillAndPasswordsAutofillSettingsCellId
+                subpageViewMatchers:@[
+                  chrome_test_util::TableViewSwitchCell(
+                      kEnhancedAutofillSwitchViewId,
+                      /*is_toggled_on=*/NO,
+                      /*is_enabled=*/YES),
+                ]];
 }
 
 // Tests that viewing and editing sensitive Autofill AI data (e.g. Redress
@@ -307,7 +309,7 @@
 
   // Tap Travel row.
   id<GREYMatcher> travelCellMatcher =
-      grey_allOf(grey_accessibilityID(kSettingsTravelInfoCellId),
+      grey_allOf(grey_accessibilityID(kAutofillAndPasswordsTravelInfoCellId),
                  grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:travelCellMatcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
@@ -387,10 +389,11 @@
   [self openAutofillAndPasswordsSettings];
 
   // Tap on Password Manager row.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      grey_accessibilityID(kSettingsPasswordsCellId)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSettingsPasswordsCellId)]
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kAutofillAndPasswordsPasswordsCellId)];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAutofillAndPasswordsPasswordsCellId)]
       performAction:grey_tap()];
 
   // Password Manager should be covered until successful reauthentication.
@@ -415,10 +418,11 @@
                                     ReauthenticationResult::kSuccess];
   [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:YES];
 
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      grey_accessibilityID(kSettingsPasswordsCellId)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSettingsPasswordsCellId)]
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kAutofillAndPasswordsPasswordsCellId)];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAutofillAndPasswordsPasswordsCellId)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       chrome_test_util::PasswordsTableViewMatcher()];

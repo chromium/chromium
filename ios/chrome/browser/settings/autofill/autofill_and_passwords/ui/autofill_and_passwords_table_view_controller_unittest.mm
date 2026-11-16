@@ -10,7 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/public/autofill_and_passwords_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -315,8 +315,8 @@ TEST_F(AutofillAndPasswordsTableViewControllerTest,
                              IDS_IOS_SETTING_ON, 0, 2);
 }
 
-// Verifies that the Level Up walkthrough target item (Payment Methods)
-// exists in AutofillAndPasswordsTableViewController.
+// Tests that the Level Up walkthrough target item (Payment Methods) exists in
+// `AutofillAndPasswordsTableViewController`.
 TEST_F(AutofillAndPasswordsTableViewControllerTest,
        HasPaymentMethodsLevelUpItem) {
   AutofillAndPasswordsTableViewController* view_controller =
@@ -326,9 +326,11 @@ TEST_F(AutofillAndPasswordsTableViewControllerTest,
   [view_controller setAutofillCreditCardEnabled:YES];
   [view_controller loadModel];
 
-  EXPECT_TRUE([view_controller.tableViewModel
-      hasItemForItemType:SettingsItemTypeAutofillCreditCard
-       sectionIdentifier:SettingsSectionIdentifierBasics]);
+  TableViewDetailIconItem* item =
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
+          GetTableViewItem(0, 1));
+  EXPECT_NSEQ(kAutofillAndPasswordsPaymentMethodsCellId,
+              item.accessibilityIdentifier);
 }
 
 }  // namespace

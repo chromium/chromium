@@ -21,20 +21,8 @@ NSString* const kSettingsVoiceSearchCellId = @"kSettingsVoiceSearchCellId";
 NSString* const kSettingsBottomOmniboxCellId = @"kSettingsBottomOmniboxCellId";
 NSString* const kSettingsGoogleServicesCellId =
     @"kSettingsGoogleServicesCellId";
-NSString* const kSettingsPasswordsCellId = @"kSettingsPasswordsCellId";
-NSString* const kSettingsPaymentMethodsCellId =
-    @"kSettingsPaymentMethodsCellId";
-NSString* const kSettingsAddressesAndMoreCellId =
-    @"kSettingsAddressesAndMoreCellId";
-NSString* const kSettingsIdentityDocsCellId = @"kSettingsIdentityDocsCellId";
-NSString* const kSettingsTravelInfoCellId = @"kSettingsTravelInfoCellId";
-NSString* const kSettingsShoppingInfoCellId = @"kSettingsShoppingInfoCellId";
-NSString* const kSettingsSuggestionsFromGeminiCellId =
-    @"kSettingsSuggestionsFromGeminiCellId";
 NSString* const kSettingsAutofillAndPasswordsCellId =
     @"kSettingsAutofillAndPasswordsCellId";
-NSString* const kSettingsAutofillSettingsCellId =
-    @"kSettingsAutofillSettingsCellId";
 NSString* const kSettingsPrivacyCellId = @"kSettingsPrivacyCellId";
 NSString* const kSettingsArticleSuggestionsCellId =
     @"kSettingsArticleSuggestionsCellId";
