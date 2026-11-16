@@ -105,7 +105,8 @@ public class IncognitoNotificationServiceUnitTest {
     public void testCloseAllIncognitoNotification_removesOnlyNonRegularStoppedTasks() {
         ActivityManager am =
                 (ActivityManager)
-                        RuntimeEnvironment.application.getSystemService(Context.ACTIVITY_SERVICE);
+                        RuntimeEnvironment.getApplication()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
         Map<AppTask, RecentTaskInfo> taskInfos = new HashMap<>();
 
         AppTask regularUninitializedTask = createTabbedTask(taskInfos, 1);
@@ -239,7 +240,7 @@ public class IncognitoNotificationServiceUnitTest {
         info.id = taskId;
         info.baseIntent = new Intent();
         info.baseIntent.setClassName(
-                RuntimeEnvironment.application, ChromeTabbedActivity.class.getName());
+                RuntimeEnvironment.getApplication(), ChromeTabbedActivity.class.getName());
         taskInfos.put(task, info);
         return task;
     }
