@@ -143,6 +143,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -391,10 +392,8 @@ public class BookmarkTest {
                 () -> {
                     mBookmarkManagerOpener.showBookmarkManager(
                             mActivityTestRule.getActivity(),
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getActivityTab(),
-                            mActivityTestRule.getProfile(false),
+                            mActivityTestRule.getActivity().getActivityTab(),
+                            mActivityTestRule.getProfile(/* incognito= */ false),
                             mBookmarkModel.getMobileFolderId());
                 });
 
@@ -420,7 +419,7 @@ public class BookmarkTest {
                         mBookmarkManagerOpener.showBookmarkManager(
                                 mActivityTestRule.getActivity(),
                                 mActivityTestRule.getActivityTab(),
-                                mActivityTestRule.getProfile(false),
+                                mActivityTestRule.getProfile(/* incognito= */ false),
                                 mBookmarkModel.getMobileFolderId()));
 
         // Verify that a new tab was opened.
@@ -445,6 +444,117 @@ public class BookmarkTest {
                                         .getSpec()
                                         .contains("chrome-native://bookmarks/"),
                                 Matchers.is(true)));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testUnfoldMovesBookmarkActivityToTab() {
+        BookmarkTestUtil.loadEmptyPartnerBookmarksForTesting(mBookmarkModel);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Tab parentTab = mActivityTestRule.getActivityTab();
+        int initialTabCount = runOnUiThreadBlocking(cta.getTabModelSelector()::getTotalTabCount);
+        String folderUrl =
+                runOnUiThreadBlocking(
+                        () -> {
+                            mBookmarkManagerOpener.showBookmarkManager(
+                                    cta,
+                                    parentTab,
+                                    mActivityTestRule.getProfile(/* incognito= */ false),
+                                    mBookmarkModel.getMobileFolderId());
+                            return BookmarkUiState.createFolderUrl(
+                                            mBookmarkModel.getMobileFolderId())
+                                    .toString();
+                        });
+        mBookmarkActivity = BookmarkTestUtil.waitForBookmarkActivity();
+
+        // Simulate an unfold, then restore the phone width so the tabbed activity isn't affected.
+        runOnUiThreadBlocking(
+                () -> {
+                    int phoneWidth = DisplayUtil.getCurrentSmallestScreenWidth(mBookmarkActivity);
+                    try {
+                        DisplayUtil.setCurrentSmallestScreenWidthForTesting(
+                                DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
+                        mBookmarkActivity.onConfigurationChanged(
+                                mBookmarkActivity.getResources().getConfiguration());
+                    } finally {
+                        DisplayUtil.setCurrentSmallestScreenWidthForTesting(phoneWidth);
+                    }
+                    assertTrue(mBookmarkActivity.isFinishing());
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            cta.getTabModelSelector().getTotalTabCount(), is(initialTabCount + 1));
+                    Tab tab = cta.getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(tab.getUrl().getSpec(), is(folderUrl));
+                    Criteria.checkThat(tab.getParentId(), is(parentTab.getId()));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Restriction({DeviceFormFactor.PHONE})
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testUnfoldWithEditActivityDefersSwapUntilResumed() throws ExecutionException {
+        BookmarkTestUtil.loadEmptyPartnerBookmarksForTesting(mBookmarkModel);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        BookmarkId bookmarkId = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Tab parentTab = mActivityTestRule.getActivityTab();
+        int initialTabCount = runOnUiThreadBlocking(cta.getTabModelSelector()::getTotalTabCount);
+        String folderUrl =
+                runOnUiThreadBlocking(
+                        () -> {
+                            mBookmarkManagerOpener.showBookmarkManager(
+                                    cta,
+                                    parentTab,
+                                    mActivityTestRule.getProfile(/* incognito= */ false),
+                                    mBookmarkModel.getMobileFolderId());
+                            return BookmarkUiState.createFolderUrl(
+                                            mBookmarkModel.getMobileFolderId())
+                                    .toString();
+                        });
+        mBookmarkActivity = BookmarkTestUtil.waitForBookmarkActivity();
+
+        runOnUiThreadBlocking(
+                () ->
+                        mBookmarkManagerOpener.startEditActivity(
+                                mBookmarkActivity,
+                                mActivityTestRule.getProfile(/* incognito= */ false),
+                                bookmarkId));
+        BookmarkEditActivity editActivity = BookmarkTestUtil.waitForEditActivity();
+
+        runOnUiThreadBlocking(
+                () -> {
+                    int phoneWidth = DisplayUtil.getCurrentSmallestScreenWidth(mBookmarkActivity);
+                    try {
+                        DisplayUtil.setCurrentSmallestScreenWidthForTesting(
+                                DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
+                        mBookmarkActivity.onConfigurationChanged(
+                                mBookmarkActivity.getResources().getConfiguration());
+                    } finally {
+                        DisplayUtil.setCurrentSmallestScreenWidthForTesting(phoneWidth);
+                    }
+                    assertFalse(mBookmarkActivity.isFinishing());
+                });
+
+        runOnUiThreadBlocking(editActivity::finish);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mBookmarkActivity.isFinishing(), is(true));
+                    Criteria.checkThat(
+                            cta.getTabModelSelector().getTotalTabCount(), is(initialTabCount + 1));
+                    Tab tab = cta.getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(tab.getUrl().getSpec(), is(folderUrl));
+                    Criteria.checkThat(tab.getParentId(), is(parentTab.getId()));
+                });
     }
 
     @Test

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.isBookmarksPageOverridden;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
@@ -51,11 +53,35 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
             RecordUserAction.record("MobileBookmarkManagerReopenBookmarksInSameSession");
         }
 
+        int parentTabId = tab == null ? Tab.INVALID_TAB_ID : tab.getId();
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            showBookmarkManagerOnTablet(tab, url, profile);
+            showBookmarkManagerOnTablet(
+                    parentTabId,
+                    /* parentComponent= */ activity == null ? null : activity.getComponentName(),
+                    url,
+                    profile.isOffTheRecord());
         } else {
-            showBookmarkManagerOnPhone(activity, url, profile);
+            showBookmarkManagerOnPhone(activity, url, profile, parentTabId);
         }
+    }
+
+    /**
+     * Opens the last used bookmark folder in a new tab. Used to move the bookmark manager out of
+     * {@link BookmarkActivity} when the display grows to tablet width.
+     *
+     * @param profile The profile associated with the bookmarks.
+     * @param parentTabId The ID of the tab the bookmark manager was opened from, or {@link
+     *     Tab#INVALID_TAB_ID}.
+     * @param parentComponent The component of the browsing activity that launched the bookmark
+     *     manager, if known.
+     */
+    public void showBookmarkManagerInTab(
+            Profile profile, int parentTabId, @Nullable ComponentName parentComponent) {
+        showBookmarkManagerOnTablet(
+                parentTabId,
+                parentComponent,
+                getFirstUrlToLoad(/* folderId= */ null, profile),
+                profile.isOffTheRecord());
     }
 
     @Override
@@ -106,13 +132,17 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
                         resolver.getBookmarksPageUrl());
     }
 
-    private void showBookmarkManagerOnPhone(Activity activity, String url, Profile profile) {
+    private void showBookmarkManagerOnPhone(
+            Activity activity, String url, Profile profile, int parentTabId) {
         Intent intent =
                 new Intent(
                         activity == null ? ContextUtils.getApplicationContext() : activity,
                         BookmarkActivity.class);
         ProfileIntentUtils.addProfileToIntent(profile, intent);
         intent.setData(Uri.parse(url));
+        // Lets BookmarkActivity reopen the manager as a child tab if the display becomes tablet
+        // width.
+        intent.putExtra(IntentHandler.EXTRA_PARENT_TAB_ID, parentTabId);
         if (activity != null) {
             // Start from an existing activity.
             intent.putExtra(IntentHandler.EXTRA_PARENT_COMPONENT, activity.getComponentName());
@@ -124,12 +154,19 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
         }
     }
 
-    private void showBookmarkManagerOnTablet(@Nullable Tab tab, String url, Profile profile) {
+    private void showBookmarkManagerOnTablet(
+            int parentTabId,
+            @Nullable ComponentName parentComponent,
+            String url,
+            boolean incognito) {
         // History shows up as a tab on tablets.
-        LoadUrlParams params = new LoadUrlParams(url);
-        ChromeAsyncTabLauncher delegate =
-                new ChromeAsyncTabLauncher(/* incognito= */ profile.isOffTheRecord());
-        delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ tab);
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        AsyncTabCreationParams params =
+                parentComponent != null
+                        ? new AsyncTabCreationParams(loadUrlParams, parentComponent)
+                        : new AsyncTabCreationParams(loadUrlParams);
+        ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(incognito);
+        delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, parentTabId);
     }
 
     // Returns the first URL to load.

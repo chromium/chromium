@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
@@ -29,12 +30,14 @@ import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -68,11 +71,19 @@ public class BookmarkActivity extends SnackbarActivity {
     private @Nullable OnKeyDownHandler mOnKeyDownHandler;
     // Nullable after activity destruction.
     private @Nullable BookmarkUiPrefs mBookmarkUiPrefs;
+    private @Nullable Profile mOriginalProfile;
+    private boolean mIsIncognito;
+    private boolean mIsTabletDisplay;
+    private boolean mIsResumed;
+    private boolean mPendingSwapToTab;
 
     @Override
     protected void onProfileAvailable(Profile profile) {
         super.onProfileAvailable(profile);
         setContentView(R.layout.bookmark_activity);
+        mIsTabletDisplay = BookmarkUtils.isCurrentDisplayTabletWidth(this);
+        mIsIncognito = profile.isOffTheRecord();
+        mPendingSwapToTab = mIsTabletDisplay && BookmarkUtils.isDesktopBookmarksLayoutEnabled();
 
         @Nullable ComponentName parentComponent =
                 IntentUtils.safeGetParcelableExtra(
@@ -81,6 +92,7 @@ public class BookmarkActivity extends SnackbarActivity {
         // activity is still showing (e.g. last incognito tab closed), which would make the
         // supplier return null.
         Profile originalProfile = profile.getOriginalProfile();
+        mOriginalProfile = originalProfile;
         mBookmarkOpener =
                 new BookmarkOpenerImpl(
                         () -> BookmarkModel.getForProfile(originalProfile),
@@ -140,6 +152,7 @@ public class BookmarkActivity extends SnackbarActivity {
         mOnKeyDownHandler =
                 BackPressHelper.create(
                         this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator);
+        maybeSwapToTab();
     }
 
     @Override
@@ -149,6 +162,54 @@ public class BookmarkActivity extends SnackbarActivity {
         }
 
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (mOriginalProfile == null) return;
+        // Size changes don't relaunch this activity. When an unfold crosses the tablet width, move
+        // the manager into a tab, which is how tablets host it. Folding back is a no-op since a
+        // phone-width bookmarks tab is supported. Reads the live width as smallestScreenWidthDp
+        // may be pinned.
+        boolean isTabletDisplay = BookmarkUtils.isCurrentDisplayTabletWidth(this);
+        if (isTabletDisplay == mIsTabletDisplay) return;
+        mIsTabletDisplay = isTabletDisplay;
+        mPendingSwapToTab = isTabletDisplay && BookmarkUtils.isDesktopBookmarksLayoutEnabled();
+        maybeSwapToTab();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        mIsResumed = true;
+        maybeSwapToTab();
+    }
+
+    @Override
+    protected void onPause() {
+        mIsResumed = false;
+        super.onPause();
+    }
+
+    private void maybeSwapToTab() {
+        // Wait until this activity is on top so bookmark dialogs above it aren't orphaned.
+        if (!mPendingSwapToTab || !mIsResumed || isFinishing() || mOriginalProfile == null) return;
+        mPendingSwapToTab = false;
+        int parentTabId =
+                IntentUtils.safeGetIntExtra(
+                        getIntent(), IntentHandler.EXTRA_PARENT_TAB_ID, Tab.INVALID_TAB_ID);
+        @Nullable ComponentName parentComponent =
+                IntentUtils.safeGetParcelableExtra(
+                        getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
+        Profile profile =
+                mIsIncognito && mOriginalProfile.hasPrimaryOtrProfile()
+                        ? assumeNonNull(
+                                mOriginalProfile.getPrimaryOtrProfile(/* createIfNeeded= */ false))
+                        : mOriginalProfile;
+        new BookmarkManagerOpenerImpl()
+                .showBookmarkManagerInTab(profile, parentTabId, parentComponent);
+        finish();
     }
 
     @Override

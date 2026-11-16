@@ -5,8 +5,13 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -17,9 +22,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -57,10 +64,39 @@ public class BookmarkManagerOpenerTest {
         BookmarkUtils.setLastUsedUrl("https://test.com");
         UserActionTester userActionTester = new UserActionTester();
 
-        mBookmarkManagerOpener.showBookmarkManager(mActivity, mCurrentTab, mProfile, /* folderId= */ null);
+        mBookmarkManagerOpener.showBookmarkManager(
+                mActivity, mCurrentTab, mProfile, /* folderId= */ null);
         assertEquals(
                 1,
                 userActionTester.getActionCount(
                         "MobileBookmarkManagerReopenBookmarksInSameSession"));
+    }
+
+    @Test
+    public void testShowBookmarkManagerInTabPreservesParentTabAndFolder() {
+        int parentTabId = 42;
+        doReturn(parentTabId).when(mCurrentTab).getId();
+        BookmarkUtils.setLastUsedUrl("chrome-native://bookmarks/folder/3");
+        BookmarkManagerOpenerImpl opener = new BookmarkManagerOpenerImpl();
+
+        opener.showBookmarkManager(mActivity, mCurrentTab, mProfile, /* folderId= */ null);
+        Intent phoneIntent = shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(phoneIntent);
+        assertEquals(
+                parentTabId,
+                phoneIntent.getIntExtra(IntentHandler.EXTRA_PARENT_TAB_ID, Tab.INVALID_TAB_ID));
+
+        doReturn(true).when(mProfile).isOffTheRecord();
+        opener.showBookmarkManagerInTab(mProfile, parentTabId, mActivity.getComponentName());
+        Intent tabIntent = shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
+        assertNotNull(tabIntent);
+        assertEquals("chrome-native://bookmarks/folder/3", tabIntent.getDataString());
+        assertEquals(
+                parentTabId,
+                tabIntent.getIntExtra(IntentHandler.EXTRA_PARENT_TAB_ID, Tab.INVALID_TAB_ID));
+        assertTrue(
+                tabIntent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, /* defaultValue= */ false));
+        assertEquals(mActivity.getComponentName(), tabIntent.getComponent());
     }
 }
