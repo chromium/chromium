@@ -25,18 +25,11 @@
 
 namespace {
 
-// Creates a BrowserList for the given profile.
-std::unique_ptr<KeyedService> BuildBrowserList(ProfileIOS* profile) {
-  return std::make_unique<BrowserList>();
-}
-
 // Test fixture for TabContextMenuHelper.
 class TabContextMenuHelperTest : public PlatformTest {
  public:
   TabContextMenuHelperTest() {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(BrowserListFactory::GetInstance(),
-                              base::BindRepeating(&BuildBrowserList));
     builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),
         base::BindRepeating(
