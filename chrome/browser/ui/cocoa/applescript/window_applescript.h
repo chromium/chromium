@@ -74,4 +74,15 @@ class Profile;
 
 @end
 
+namespace AppleScript {
+
+// Returns an array of `WindowAppleScript*` for all open non-closing windows,
+// ordered front to back.
+NSArray<WindowAppleScript*>* GetWindows();
+
+// Orders `window` at 0-based `index` within `GetWindows()`.
+void InsertWindowAtIndex(WindowAppleScript* window, int index);
+
+}  // namespace AppleScript
+
 #endif  // CHROME_BROWSER_UI_COCOA_APPLESCRIPT_WINDOW_APPLESCRIPT_H_

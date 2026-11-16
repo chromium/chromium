@@ -196,6 +196,47 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTabViaObject) {
             fake_script_command.scriptErrorNumber);
 }
 
+// Verify that InsertWindowAtIndex() works as expected.
+IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertWindowAtIndex) {
+  // When running a script such as `make new window at end`, the NSCreateCommand
+  // looks like:
+  //
+  // Standard Suite.make
+  //  Direct Parameter: (null)
+  //  Receivers: (null)
+  //  Arguments: {
+  //    Location = "<NSPositionalSpecifier: at the end of (null)>";
+  //    ObjectClass = 1668770158;  /* 'cwin' aka cWindow */
+  //  }
+  //
+  // It would be nice to create such an NSScriptCommand and run it through
+  // end-to-end. Alas, actually creating and processing the Apple Event requires
+  // more Foundation machinery than is available in the testing environment. The
+  // best that can be done is verifying the window insertion code.
+
+  // The existing window will be in the rear, so call it "2".
+  WindowAppleScript* window2 =
+      [[WindowAppleScript alloc] initWithBrowser:browser()];
+  // A window will be in the front, so call it "1".
+  WindowAppleScript* window1 =
+      [[WindowAppleScript alloc] initWithBrowser:CreateBrowser(GetProfile())];
+
+  NSArray<WindowAppleScript*>* windows = GetWindows();
+  EXPECT_EQ(2u, windows.count);
+  EXPECT_NSEQ(window1, windows[0]);
+  EXPECT_NSEQ(window2, windows[1]);
+
+  WindowAppleScript* windowA =
+      [[WindowAppleScript alloc] initWithBrowser:CreateBrowser(GetProfile())];
+  InsertWindowAtIndex(windowA, 2);
+
+  windows = GetWindows();
+  EXPECT_EQ(3u, windows.count);
+  EXPECT_NSEQ(window1, windows[0]);
+  EXPECT_NSEQ(window2, windows[1]);
+  EXPECT_NSEQ(windowA, windows[2]);
+}
+
 }  // namespace
 
 }  // namespace AppleScript

@@ -6,16 +6,11 @@
 
 #include <Foundation/Foundation.h>
 
-#include <map>
-
 #import "base/apple/foundation_util.h"
 #include "base/notimplemented.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_folder_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
@@ -27,33 +22,8 @@ using bookmarks::BookmarkModel;
 
 @implementation BrowserCrApplication (AppleScriptAdditions)
 
-- (NSArray*)appleScriptWindows {
-  std::map<NSWindow*, BrowserWindowInterface*> browsers;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (browser->capabilities()->IsAttemptingToCloseBrowser()) {
-          return true;
-        }
-
-        browsers.emplace(
-            browser->GetWindow()->GetNativeWindow().GetNativeNSWindow(),
-            browser);
-        return true;
-      });
-
-  NSMutableArray* result = [NSMutableArray array];
-  for (NSWindow* window in NSApp.orderedWindows) {
-    const auto& browser_it = browsers.find(window);
-    if (browser_it == browsers.end()) {
-      continue;
-    }
-
-    WindowAppleScript* aWindow =
-        [[WindowAppleScript alloc] initWithBrowser:browser_it->second];
-    [result addObject:aWindow];
-  }
-
-  return result;
+- (NSArray<WindowAppleScript*>*)appleScriptWindows {
+  return AppleScript::GetWindows();
 }
 
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow {
@@ -64,11 +34,10 @@ using bookmarks::BookmarkModel;
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow
                            atIndex:(int)index {
   // AppleScript has already created the window object, so move it to the
-  // correct index.
-  //
-  // Note: AppleScript is 1-based.
-  index--;
-  aWindow.orderedIndex = @(index);
+  // correct index. Note that while AppleScript is 1-based, this call is
+  // scripting KVC, so that offset has already been handled and the index passed
+  // in is 0-based.
+  AppleScript::InsertWindowAtIndex(aWindow, index);
 }
 
 - (void)removeFromAppleScriptWindowsAtIndex:(int)index {

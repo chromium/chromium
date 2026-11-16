@@ -12,30 +12,37 @@
 @class BookmarkFolderAppleScript;
 @class WindowAppleScript;
 
-// Represent the top level application scripting object in applescript.
+// Represent the top level application scripting object in AppleScript.
 @interface BrowserCrApplication (AppleScriptAdditions)
 
-// Application window manipulation methods.
-// Returns an array of |WindowAppleScript*| of all windows present in the
+// ----- General -----
+
+// Always returns nil to indicate that it is the root container object.
+@property(readonly) NSScriptObjectSpecifier* objectSpecifier;
+
+// ----- Windows -----
+
+// Returns an array of `WindowAppleScript*` of all windows present in the
 // application.
-@property(readonly) NSArray* appleScriptWindows;
+@property(readonly) NSArray<WindowAppleScript*>* appleScriptWindows;
 
 // Inserts a window at the beginning.
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow;
 
 // Inserts a window at some position in the list.
-// Called by AppleScript which takes care of bounds checking, make sure of it
-// before calling directly.
+//
+// Called by AppleScript which takes care of bounds checking; caller must do so
+// otherwise.
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow
                            atIndex:(int)index;
 
 // Removes a window from the list.
-// Called by AppleScript which takes care of bounds checking, make sure of it
-// before calling directly.
+//
+// Called by AppleScript which takes care of bounds checking; caller must do so
+// otherwise.
 - (void)removeFromAppleScriptWindowsAtIndex:(int)index;
 
-// Always returns nil to indicate that it is the root container object.
-@property(readonly) NSScriptObjectSpecifier* objectSpecifier;
+// ----- Bookmarks -----
 
 // Returns the other bookmarks bookmark folder,
 // returns nil if there is an error.

@@ -7,6 +7,8 @@
 #import <AppKit/AppKit.h>
 #include <Foundation/Foundation.h>
 
+#include <algorithm>
+#include <map>
 #include <memory>
 
 #import "base/apple/foundation_util.h"
@@ -19,7 +21,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #include "chrome/browser/ui/cocoa/applescript/error_applescript.h"
@@ -335,3 +339,91 @@
 }
 
 @end
+
+namespace AppleScript {
+
+NSArray<WindowAppleScript*>* GetWindows() {
+  std::map<NSWindow*, BrowserWindowInterface*> browsers;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->capabilities()->IsAttemptingToCloseBrowser()) {
+          return true;
+        }
+
+        browsers.emplace(
+            browser->GetWindow()->GetNativeWindow().GetNativeNSWindow(),
+            browser);
+        return true;
+      });
+
+  NSMutableArray<WindowAppleScript*>* result = [NSMutableArray array];
+  for (NSWindow* window in NSApp.orderedWindows) {
+    const auto& browser_it = browsers.find(window);
+    if (browser_it == browsers.end()) {
+      continue;
+    }
+
+    WindowAppleScript* a_window =
+        [[WindowAppleScript alloc] initWithBrowser:browser_it->second];
+    [result addObject:a_window];
+  }
+
+  return result;
+}
+
+void InsertWindowAtIndex(WindowAppleScript* window, int index) {
+  if (!window || index < 0) {
+    AppleScript::SetError(AppleScript::Error::kWrongIndex);
+    return;
+  }
+
+  NSWindow* target_native_window = window.nativeHandle;
+  NSArray<WindowAppleScript*>* container_windows = GetWindows();
+  NSMutableArray<NSWindow*>* other_windows = [NSMutableArray array];
+  for (WindowAppleScript* existing in container_windows) {
+    NSWindow* native_window = existing.nativeHandle;
+    if (native_window && native_window != target_native_window) {
+      [other_windows addObject:native_window];
+    }
+  }
+
+  if (index > static_cast<int>(other_windows.count)) {
+    AppleScript::SetError(AppleScript::Error::kWrongIndex);
+    return;
+  }
+
+  if (!target_native_window || other_windows.count == 0) {
+    return;
+  }
+
+  if (index == 0) {
+    NSInteger first_window_number = other_windows[0].windowNumber;
+    [target_native_window orderWindow:NSWindowAbove
+                           relativeTo:first_window_number];
+  } else {
+    NSInteger anchor_window_number = other_windows[index - 1].windowNumber;
+    [target_native_window orderWindow:NSWindowBelow
+                           relativeTo:anchor_window_number];
+    // At this point, while -[NSApp orderedWindows] returns the new window
+    // order, the order is not reflected on the screen. It seems that doing this
+    // window order manipulation from within an AppleScript handler does not
+    // work. One approach might be to post the window order manipulation to the
+    // main thread for processing after the handler ends, but that would then
+    // create a new issue for subsequent window manipulations from the same
+    // AppleScript, where one window's positioning would not be reflected in the
+    // next.
+    //
+    // Looking at -[NSWindow(NSScripting) setOrderedIndex:] which is used by the
+    // stock AppleScript handlers, after calling -orderWindow:relativeTo:, they
+    // then force the front window to be key. That seems to make the window
+    // order take effect, but has the unfortunate side effect of activating and
+    // ordering the front window to the global front whether or not Chromium is
+    // active itself.
+    //
+    // Use that workaround for now; it matches the (unfortunate) built-in
+    // behavior. Perhaps another, better, way can be discovered.
+    [NSApp.orderedWindows.firstObject makeKeyWindow];
+  }
+}
+
+}  // namespace AppleScript
