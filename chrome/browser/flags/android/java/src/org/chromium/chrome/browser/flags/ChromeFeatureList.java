@@ -1330,15 +1330,9 @@ public abstract class ChromeFeatureList {
             newCachedFlag(GLIC, true, /* defaultValueInTests= */ true);
     public static final CachedFlag sGlicAndroidTablet = newCachedFlag(GLIC_ANDROID_TABLET, false);
     public static final CachedFlag sGlicBackgroundActuation =
-            newCachedFlag(
-                    GLIC_BACKGROUND_ACTUATION,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(GLIC_BACKGROUND_ACTUATION, true);
     public static final CachedFlag sGlicBackgroundActuationTabGroupSync =
-            newCachedFlag(
-                    GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC, true);
     public static final CachedFlag sGlicBackgroundTriggering =
             newCachedFlag(GLIC_BACKGROUND_TRIGGERING, false);
     public static final CachedFlag sHistoryPaneAndroid =
@@ -1777,7 +1771,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sActorLiveNotification =
             newMutableFlagWithSafeDefault(ACTOR_LIVE_NOTIFICATION, true);
     public static final MutableFlagWithSafeDefault sActorNotificationIntentRouting =
-            newMutableFlagWithSafeDefault(ACTOR_NOTIFICATION_INTENT_ROUTING, false);
+            newMutableFlagWithSafeDefault(ACTOR_NOTIFICATION_INTENT_ROUTING, true);
     public static final MutableFlagWithSafeDefault sActorSilenceNotificationsAfterFirstWorking =
             newMutableFlagWithSafeDefault(ACTOR_SILENCE_NOTIFICATIONS_AFTER_FIRST_WORKING, false);
     public static final MutableFlagWithSafeDefault sActorStepProgressNotification =

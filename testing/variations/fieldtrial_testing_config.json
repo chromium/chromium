@@ -9511,26 +9511,6 @@
             ]
         }
     ],
-    "GlicBackgroundActuation": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ActorLiveNotification",
-                        "ActorNotificationIntentRouting",
-                        "ActorStepProgressNotification",
-                        "GlicBackgroundActuation",
-                        "GlicBackgroundActuationTabGroupSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicBottomSheetResizeAndroid": [
         {
             "platforms": [
