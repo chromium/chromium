@@ -213,6 +213,10 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
 
   void RunServiceImpl(mojo::GenericPendingReceiver receiver);
 
+#if BUILDFLAG(IS_ANDROID)
+  bool IsAndroidIsolated();
+#endif
+
   // The serial number of the GpuProcessHost.
   int host_id_;
 
@@ -244,6 +248,12 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
 
   // The GPU process reported failure to initialize.
   bool did_fail_initialize_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Whether the out-of-process GPU process runs under an isolated UID distinct
+  // from the browser process's UID.
+  bool is_gpu_uid_isolated_ = false;
+#endif
 
   // The total number of GPU process crashes.
   static base::subtle::Atomic32 gpu_crash_count_;

@@ -266,6 +266,8 @@ class ChildProcessLauncherHelper
 
   base::android::ChildBindingState GetEffectiveChildBindingState();
 
+  bool HasIsolatedUid() const;
+
   // Dumps the stack of the child process without crashing it.
   void DumpProcessStack();
 

@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Process;
 import android.os.RemoteException;
 
 import org.junit.Assert;
@@ -225,7 +226,11 @@ public class ChildProcessConnectionTest {
 
     private void sendPid(int pid) throws RemoteException {
         mConnectionParentProcess.finishSetupConnection(
-                pid, /* zygotePid= */ 0, /* zygoteStartupTimeMillis= */ -1, /* relroInfo= */ null);
+                pid,
+                Process.myUid(),
+                /* zygotePid= */ 0,
+                /* zygoteStartupTimeMillis= */ -1,
+                /* relroInfo= */ null);
     }
 
     private IChildProcessArgs createTestArgs() {
@@ -469,8 +474,8 @@ public class ChildProcessConnectionTest {
 
         mConnectionParentProcess.finishSetupConnection(
                 /* pid= */ 123,
-                456
-                /* zygotePid= */ ,
+                /* uid= */ Process.myUid(),
+                /* zygotePid= */ 456,
                 /* zygoteStartupTimeMillis= */ 789,
                 /* relroInfo= */ null);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -495,6 +500,7 @@ public class ChildProcessConnectionTest {
         assertNotNull(mFirstServiceConnection);
         mConnectionParentProcess.finishSetupConnection(
                 /* pid= */ 125,
+                /* uid= */ Process.myUid(),
                 /* zygotePid= */ 0,
                 /* zygoteStartupTimeMillis= */ -1,
                 /* relroInfo= */ null);
@@ -519,6 +525,7 @@ public class ChildProcessConnectionTest {
 
         mConnectionParentProcess.finishSetupConnection(
                 126,
+                /* uid= */ Process.myUid(),
                 /* zygotePid= */ 300,
                 /* zygoteStartupTimeMillis= */ -1,
                 /* relroInfo= */ null);
@@ -546,8 +553,8 @@ public class ChildProcessConnectionTest {
         IRelroLibInfo relroInfo = new IRelroLibInfo();
         mConnectionParentProcess.finishSetupConnection(
                 /* pid= */ 123,
-                456
-                /* zygotePid= */ ,
+                /* uid= */ Process.myUid(),
+                /* zygotePid= */ 456,
                 /* zygoteStartupTimeMillis= */ 789,
                 relroInfo);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -576,8 +583,8 @@ public class ChildProcessConnectionTest {
         IRelroLibInfo relroInfo = new IRelroLibInfo();
         mConnectionParentProcess.finishSetupConnection(
                 /* pid= */ 123,
-                456
-                /* zygotePid= */ ,
+                /* uid= */ Process.myUid(),
+                /* zygotePid= */ 456,
                 /* zygoteStartupTimeMillis= */ 789,
                 relroInfo);
 

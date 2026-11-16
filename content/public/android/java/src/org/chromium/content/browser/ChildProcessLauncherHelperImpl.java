@@ -1104,6 +1104,15 @@ public final class ChildProcessLauncherHelperImpl {
         return connection.bindingStateCurrent();
     }
 
+    // Called on client (UI or IO) thread.
+    @CalledByNative
+    private boolean hasIsolatedUid() {
+        ChildProcessConnection connection = mLauncher.getConnection();
+        if (connection == null) return false;
+
+        return connection.hasIsolatedUid();
+    }
+
     /**
      * Dumps the stack of the child process with |pid| without crashing it.
      *

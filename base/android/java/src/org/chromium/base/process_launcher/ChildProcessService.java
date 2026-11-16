@@ -159,12 +159,13 @@ public class ChildProcessService {
                     synchronized (mBinderLock) {
                         if (args.bindToCaller && mBoundCallingPid == 0) {
                             Log.e(TAG, "Service has not been bound with bindToCaller()");
-                            parentProcess.finishSetupConnection(-1, 0, 0, null);
+                            parentProcess.finishSetupConnection(-1, -1, 0, 0, null);
                             return;
                         }
                     }
 
                     int pid = Process.myPid();
+                    int uid = Process.myUid();
                     int zygotePid = 0;
                     long startupTimeMillis = -1;
                     IRelroLibInfo relroInfo = null;
@@ -182,7 +183,7 @@ public class ChildProcessService {
                     // |relroInfo| from this process to ensure that another FD to shared memory
                     // is not sent later.
                     parentProcess.finishSetupConnection(
-                            pid, zygotePid, startupTimeMillis, relroInfo);
+                            pid, uid, zygotePid, startupTimeMillis, relroInfo);
                     mParentProcess = parentProcess;
                     processConnectionArgs(args, callbacks);
                 }

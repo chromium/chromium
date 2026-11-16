@@ -377,6 +377,14 @@ void BrowserChildProcessHostImpl::DumpProcessStack() {
   }
   child_process_launcher_->DumpProcessStack();
 }
+
+bool BrowserChildProcessHostImpl::HasIsolatedUid() const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  if (in_process_ || !child_process_launcher_) {
+    return false;
+  }
+  return child_process_launcher_->HasIsolatedUid();
+}
 #endif
 
 ChildProcessTerminationInfo BrowserChildProcessHostImpl::GetTerminationInfo(

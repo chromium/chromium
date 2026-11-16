@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #include <pthread.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include <charconv>
 #include <set>
@@ -198,7 +199,7 @@ ScopedAStatus ChildProcessService::setupConnection(
     base::AutoLock lock(bind_to_caller_lock_);
     if (args.bindToCaller && bound_calling_pid_ == 0) {
       LOG(ERROR) << "Service has not been bound with bindToCaller()";
-      parentProcess->finishSetupConnection(-1, 0, 0, std::nullopt);
+      parentProcess->finishSetupConnection(-1, -1, 0, 0, std::nullopt);
       return ScopedAStatus::ok();
     }
   }
@@ -214,7 +215,8 @@ ScopedAStatus ChildProcessService::setupConnection(
     child_process_args_signal_.Broadcast();
   }
 
-  parentProcess->finishSetupConnection(base::GetCurrentProcId(), 0, -1,
+  parentProcess->finishSetupConnection(base::GetCurrentProcId(),
+                                       static_cast<int32_t>(getuid()), 0, -1,
                                        std::nullopt);
   return ScopedAStatus::ok();
 }

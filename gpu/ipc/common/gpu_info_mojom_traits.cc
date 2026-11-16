@@ -389,6 +389,9 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
   out->amd_switchable = data.amd_switchable();
   out->gl_reset_notification_strategy = data.gl_reset_notification_strategy();
   out->sandboxed = data.sandboxed();
+#if BUILDFLAG(IS_ANDROID)
+  out->android_isolated = data.android_isolated();
+#endif
   out->in_process_gpu = data.in_process_gpu();
   out->passthrough_cmd_decoder = data.passthrough_cmd_decoder();
   out->can_support_threaded_texture_mailbox =

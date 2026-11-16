@@ -322,6 +322,12 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuInfoDataView,
 
   static bool sandboxed(const gpu::GPUInfo& input) { return input.sandboxed; }
 
+#if BUILDFLAG(IS_ANDROID)
+  static bool android_isolated(const gpu::GPUInfo& input) {
+    return input.android_isolated;
+  }
+#endif
+
   static bool in_process_gpu(const gpu::GPUInfo& input) {
     return input.in_process_gpu;
   }

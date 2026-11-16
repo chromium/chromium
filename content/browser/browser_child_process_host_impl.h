@@ -138,6 +138,7 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
 #if BUILDFLAG(IS_ANDROID)
   void EnableWarmUpConnection();
   void DumpProcessStack();
+  bool HasIsolatedUid() const;
 #endif
 
   BrowserChildProcessHostDelegate* delegate() const { return delegate_; }

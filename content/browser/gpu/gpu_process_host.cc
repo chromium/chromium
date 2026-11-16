@@ -1016,6 +1016,10 @@ void GpuProcessHost::OnProcessLaunched() {
     CHECK_NE(base::kNullProcessId, process_id_, base::NotFatalUntil::M159);
     gpu_host_->SetProcessId(process_id_);
 
+#if BUILDFLAG(IS_ANDROID)
+    is_gpu_uid_isolated_ = process_->HasIsolatedUid();
+#endif
+
 #if BUILDFLAG(IS_MAC)
     if (base::FeatureList::IsEnabled(features::kAdjustGpuProcessPriority)) {
       browser_child_process_backgrounded_bridge_ =
@@ -1065,7 +1069,20 @@ void GpuProcessHost::DidInitialize(
     // listeners.
     gpu_data_manager->UpdateGpuFeatureInfo(gpu_feature_info,
                                            gpu_feature_info_for_hardware_gpu);
+#if BUILDFLAG(IS_ANDROID)
+    const bool android_isolated = IsAndroidIsolated();
+    gpu::GPUInfo resolved_gpu_info = gpu_info;
+    resolved_gpu_info.android_isolated = android_isolated;
+    std::optional<gpu::GPUInfo> resolved_hardware_gpu_info =
+        gpu_info_for_hardware_gpu;
+    if (resolved_hardware_gpu_info.has_value()) {
+      resolved_hardware_gpu_info->android_isolated = android_isolated;
+    }
+    gpu_data_manager->UpdateGpuInfo(resolved_gpu_info,
+                                    resolved_hardware_gpu_info);
+#else
     gpu_data_manager->UpdateGpuInfo(gpu_info, gpu_info_for_hardware_gpu);
+#endif
     gpu_data_manager->UpdateGpuExtraInfo(gpu_extra_info);
     // The GPU process might change the actual GpuMode after initialization.
     mode_ = gpu_data_manager->GetGpuMode();
@@ -1109,7 +1126,14 @@ void GpuProcessHost::MaybeShutdownGpuProcess() {
 }
 
 void GpuProcessHost::DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) {
+#if BUILDFLAG(IS_ANDROID)
+  gpu::GPUInfo resolved_gpu_info = gpu_info;
+  resolved_gpu_info.android_isolated = IsAndroidIsolated();
+  GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(resolved_gpu_info,
+                                                   std::nullopt);
+#else
   GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info, std::nullopt);
+#endif
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1301,6 +1325,18 @@ void GpuProcessHost::DumpProcessStack() {
 void GpuProcessHost::RunServiceImpl(mojo::GenericPendingReceiver receiver) {
   process_->child_process()->BindServiceInterface(std::move(receiver));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool GpuProcessHost::IsAndroidIsolated() {
+  if (in_process_) {
+    return false;
+  }
+  if (!is_gpu_uid_isolated_ && process_) {
+    is_gpu_uid_isolated_ = process_->HasIsolatedUid();
+  }
+  return is_gpu_uid_isolated_;
+}
+#endif
 
 bool GpuProcessHost::LaunchGpuProcess() {
   const base::CommandLine& browser_command_line =

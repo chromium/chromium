@@ -172,6 +172,8 @@ struct GpuInfo {
   gl.mojom.GLImplementationParts gl_implementation_parts;
   string direct_rendering_version;
   bool sandboxed;
+  [EnableIf=is_android]
+  bool android_isolated;
   bool in_process_gpu;
   bool passthrough_cmd_decoder;
   bool can_support_threaded_texture_mailbox;

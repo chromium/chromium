@@ -276,6 +276,9 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     gl::GLImplementationParts gl_implementation_parts;
     std::string direct_rendering_version;
     bool sandboxed;
+#if BUILDFLAG(IS_ANDROID)
+    bool android_isolated;
+#endif
     bool in_process_gpu;
     bool passthrough_cmd_decoder;
     bool can_support_threaded_texture_mailbox;
@@ -345,6 +348,9 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
                         gl_implementation_parts.ToString());
   enumerator->AddString("directRenderingVersion", direct_rendering_version);
   enumerator->AddBool("sandboxed", sandboxed);
+#if BUILDFLAG(IS_ANDROID)
+  enumerator->AddBool("androidIsolated", android_isolated);
+#endif
   enumerator->AddBool("inProcessGpu", in_process_gpu);
   enumerator->AddBool("passthroughCmdDecoder", passthrough_cmd_decoder);
   enumerator->AddBool("isAsan", is_asan);

@@ -399,6 +399,11 @@ struct GPU_CONFIG_EXPORT GPUInfo {
   // Whether the gpu process is running in a sandbox.
   bool sandboxed;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Whether the gpu process is running in an Android isolated process.
+  bool android_isolated = false;
+#endif
+
   // True if the GPU is running in the browser process instead of its own.
   bool in_process_gpu;
 

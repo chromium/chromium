@@ -7,14 +7,14 @@ package org.chromium.base.process_launcher;
 import org.chromium.base.library_loader.IRelroLibInfo;
 
 interface IParentProcess {
-    // Sends the child pid and information from the app zygote (if any) to the
-    // parent process. This will be called before any third-party code is
+    // Sends the child pid, uid, and information from the app zygote (if any) to
+    // the parent process. This will be called before any third-party code is
     // loaded, and will be a no-op after the first call.
     //
     // The |zygotePid| must be 0 if the process does not inherit from an app zygote
     // or its app zygote did not produce a usable shared region containing
     // linker relocations (RELRO FD).
-    oneway void finishSetupConnection(int pid, int zygotePid,
+    oneway void finishSetupConnection(int pid, int uid, int zygotePid,
         long zygoteStartupTimeMillis, in @nullable IRelroLibInfo relroInfo);
 
     // Reports exception before calling into native main method. This is before

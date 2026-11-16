@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Process;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
@@ -255,6 +256,9 @@ public class ChildProcessConnection {
 
     // Process ID of the corresponding child process.
     private int mPid;
+
+    // UID reported by the child process on initial connection setup, or -1 if unknown.
+    private int mChildUid = -1;
 
     // The PID of the app zygote that the child process was spawned from. Zero if no useful
     // information about the app zygote can be obtained.
@@ -737,7 +741,7 @@ public class ChildProcessConnection {
     }
 
     private void onSetupConnectionResultOnLauncherThread(
-            int pid, int zygotePid, @Nullable IRelroLibInfo relroInfo) {
+            int pid, int uid, int zygotePid, @Nullable IRelroLibInfo relroInfo) {
         assert isRunningOnLauncherThread();
 
         // The RELRO parcel should be accepted only when establishing the connection. This is to
@@ -749,6 +753,8 @@ public class ChildProcessConnection {
         }
         mPid = pid;
         assert mPid != 0 : "Child service claims to be run by a process of pid=0.";
+
+        mChildUid = uid;
 
         // Remember zygote pid to detect zygote restarts later.
         mZygotePid = zygotePid;
@@ -791,13 +797,14 @@ public class ChildProcessConnection {
                         @Override
                         public void finishSetupConnection(
                                 int pid,
+                                int uid,
                                 int zygotePid,
                                 long zygoteStartupTimeMillis,
                                 @Nullable IRelroLibInfo relroInfo) {
                             mLauncherHandler.post(
                                     () -> {
                                         onSetupConnectionResultOnLauncherThread(
-                                                pid, zygotePid, relroInfo);
+                                                pid, uid, zygotePid, relroInfo);
                                     });
                         }
 
@@ -1122,6 +1129,14 @@ public class ChildProcessConnection {
         synchronized (mProcessStateLock) {
             return mCleanExit;
         }
+    }
+
+    /**
+     * @return true if the child process reported a valid UID distinct from this (parent) process's
+     *     UID.
+     */
+    public boolean hasIsolatedUid() {
+        return mChildUid >= 0 && mChildUid != Process.myUid();
     }
 
     /**

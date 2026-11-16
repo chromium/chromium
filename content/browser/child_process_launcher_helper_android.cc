@@ -292,6 +292,17 @@ ChildProcessLauncherHelper::GetEffectiveChildBindingState() {
           env, java_peer_));
 }
 
+bool ChildProcessLauncherHelper::HasIsolatedUid() const {
+  CHECK(client_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
+  if (!java_peer_avaiable_on_client_thread_) {
+    return false;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  CHECK(env, base::NotFatalUntil::M160);
+  return Java_ChildProcessLauncherHelperImpl_hasIsolatedUid(env, java_peer_);
+}
+
 void ChildProcessLauncherHelper::DumpProcessStack() {
   if (!child_process_.IsValid()) {
     return;

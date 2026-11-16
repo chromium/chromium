@@ -344,6 +344,11 @@ ChildProcessLauncher::GetEffectiveChildBindingState() {
   return helper_->GetEffectiveChildBindingState();
 }
 
+bool ChildProcessLauncher::HasIsolatedUid() const {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  return helper_->HasIsolatedUid();
+}
+
 void ChildProcessLauncher::DumpProcessStack() {
   GetProcessLauncherTaskRunner()->PostTask(
       FROM_HERE,

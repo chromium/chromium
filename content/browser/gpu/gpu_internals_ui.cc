@@ -130,6 +130,10 @@ base::ListValue GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
       base::Value(gpu_info.passthrough_cmd_decoder)));
   basic_info.Append(
       display::BuildGpuInfoEntry("Sandboxed", base::Value(gpu_info.sandboxed)));
+#if BUILDFLAG(IS_ANDROID)
+  basic_info.Append(display::BuildGpuInfoEntry(
+      "Android isolated", base::Value(gpu_info.android_isolated)));
+#endif
   basic_info.Append(
       display::BuildGpuInfoEntry("GPU0", GPUDeviceToString(gpu_info.gpu)));
   for (size_t i = 0; i < gpu_info.secondary_gpus.size(); ++i) {

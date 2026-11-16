@@ -346,6 +346,10 @@ class CONTENT_EXPORT ChildProcessLauncher
   // Returns the highest binding state for the ChildProcessConnection.
   base::android::ChildBindingState GetEffectiveChildBindingState();
 
+  // Returns whether the child process runs under an isolated UID distinct from
+  // the browser process's UID.
+  bool HasIsolatedUid() const;
+
   // Dumps the stack of the child process without crashing it.
   void DumpProcessStack();
 #endif
