@@ -253,6 +253,21 @@ void ContentAnalysisDelegate::BypassWarnings(
     result_.page_result = true;
     page_print_request_handler_->ReportWarningBypass(user_justification);
   }
+
+  // A warned image is only copied now, so it gets the toast of an allowed one,
+  // if the image itself is allowed.
+  if (access_point_ == DeepScanAccessPoint::COPY && !data_.image.empty() &&
+      result_.image_result &&
+      toast_features::IsEnabled(is_video_frame_
+                                    ? toast_features::kVideoFrameCopiedToast
+                                    : toast_features::kImageCopiedToast)) {
+    if (auto* toast_controller =
+            ToastController::MaybeGetForWebContents(web_contents_.get())) {
+      toast_controller->MaybeShowToast(
+          ToastParams(is_video_frame_ ? ToastId::kVideoFrameCopied
+                                      : ToastId::kImageCopied));
+    }
+  }
 #endif
 
   RunCallback();
@@ -750,6 +765,10 @@ bool ContentAnalysisDelegate::ShowFinalResultInToast() {
       enterprise_data_protection::ClipboardToastTracker::GetForProfile(
           profile_);
   bool is_new_copy = creation_time_ > tracker->last_toast_time();
+  // The video frame mark is taken whatever the verdict, so a later image
+  // copied from the same frame isn't mistaken for a video frame.
+  is_video_frame_ = !data_.image.empty() && data_.initiating_frame_id &&
+                    tracker->TakeVideoFrameCopy(*data_.initiating_frame_id);
   // Shows `toast_id`, unless it's already showing for the same copy.
   // `on_close` runs once the toast closes, for any reason.
   auto maybe_show_toast = [&](ToastId toast_id,
@@ -838,9 +857,11 @@ bool ContentAnalysisDelegate::ShowFinalResultInToast() {
           tracker->set_last_toast_time(base::TimeTicks::Now());
         } else if (is_new_copy && !data_.image.empty() &&
                    toast_features::IsEnabled(
-                       toast_features::kImageCopiedToast)) {
+                       is_video_frame_ ? toast_features::kVideoFrameCopiedToast
+                                       : toast_features::kImageCopiedToast)) {
           // The image is only copied now that the scan allowed it.
-          maybe_show_toast(ToastId::kImageCopied);
+          maybe_show_toast(is_video_frame_ ? ToastId::kVideoFrameCopied
+                                           : ToastId::kImageCopied);
         }
       }
       return false;

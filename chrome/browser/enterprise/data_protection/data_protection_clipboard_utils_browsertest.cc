@@ -29,6 +29,7 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
+#include "chrome/browser/enterprise/data_protection/clipboard_toast_tracker.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -4343,6 +4344,78 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                        ToastId::kEnterpriseCopyAudit, 1);
     histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
                                        ToastId::kImageCopied, copies - 1);
+  }
+}
+
+// Same as Copy_ContentAnalysisAllowed_ImageShowsOneToastPerCopy, for video
+// frames. Later ones show "Video frame copied", also after "Copy anyway".
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       Copy_ContentAnalysis_VideoFrameShowsOneToastPerCopy) {
+  SetupDMToken();
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+      machine_scope());
+  int verdict_count = 0;
+  bool warn = false;
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindLambdaForTesting([&verdict_count, &warn](
+                                         const std::string&,
+                                         const base::FilePath&) {
+            ++verdict_count;
+            if (warn) {
+              return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                  DlpResponse(enterprise_connectors::ContentAnalysisResponse::
+                                  Result::SUCCESS,
+                              "dlp",
+                              enterprise_connectors::ContentAnalysisResponse::
+                                  Result::TriggeredRule::WARN);
+            }
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                SuccessfulResponse({"dlp"});
+          }),
+          "dm_token"));
+
+  auto source = CreateURLClipboardEndpoint("https://google.com");
+  content::ClipboardPasteData bitmap_data;
+  bitmap_data.bitmap.allocN32Pixels(10, 10);
+  bitmap_data.bitmap.eraseColor(SK_ColorRED);
+
+  base::HistogramTester histogram_tester;
+  for (int copies = 1; copies <= 3; ++copies) {
+    // The last copy gets a warning, and the user clicks "Copy anyway".
+    warn = copies == 3;
+    ClipboardToastTracker::GetForProfile(browser()->GetProfile())
+        ->MarkVideoFrameCopy(contents()->GetPrimaryMainFrame()->GetGlobalId());
+    IsClipboardCopyAllowedByPolicy(
+        source,
+        {.size = bitmap_data.size(),
+         .format_type = ui::ClipboardFormatType::BitmapType()},
+        bitmap_data, base::DoNothing());
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return verdict_count == copies; }));
+    if (warn) {
+      enterprise_connectors::CopyWarningDelegateTracker::BypassAndClear(
+          contents());
+    }
+    histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                       ToastId::kEnterpriseCopyAudit, 1);
+    histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                       ToastId::kVideoFrameCopied, copies - 1);
   }
 }
 

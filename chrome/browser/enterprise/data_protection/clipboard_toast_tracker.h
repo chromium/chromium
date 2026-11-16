@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "content/public/browser/global_routing_id.h"
 
 class Profile;
 
@@ -56,10 +57,19 @@ class ClipboardToastTracker : public base::SupportsUserData::Data {
   base::TimeTicks last_toast_time() const { return last_toast_time_; }
   void set_last_toast_time(base::TimeTicks time) { last_toast_time_ = time; }
 
+  // Marks the next image copied from `frame_id` as a video frame, so its scan
+  // shows "Video frame copied" instead of "Image copied".
+  void MarkVideoFrameCopy(content::GlobalRenderFrameHostId frame_id);
+  // Returns whether `frame_id` is marked by `MarkVideoFrameCopy()`, clearing
+  // the mark if so. A mark for another frame is kept.
+  bool TakeVideoFrameCopy(content::GlobalRenderFrameHostId frame_id);
+
  private:
   // Set of toast types that have been shown to the user in this session.
   base::flat_set<CopyToastType> shown_toasts_;
   base::TimeTicks last_toast_time_;
+  // The frame marked by `MarkVideoFrameCopy()`, or falsy if there's none.
+  content::GlobalRenderFrameHostId video_frame_copy_frame_id_;
 };
 
 // Surfaces an informational copy toast corresponding to `type` in the active

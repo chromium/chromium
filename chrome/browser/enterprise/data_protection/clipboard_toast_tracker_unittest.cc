@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,6 +56,23 @@ TEST_F(ClipboardToastTrackerTest, RecordToastShown) {
   tracker->RecordToastShown(CopyToastType::kKeptInManagedChrome);
   EXPECT_FALSE(tracker->ShouldShowToast(CopyToastType::kAudit));
   EXPECT_FALSE(tracker->ShouldShowToast(CopyToastType::kKeptInManagedChrome));
+}
+
+TEST_F(ClipboardToastTrackerTest, TakeVideoFrameCopy) {
+  auto* tracker = ClipboardToastTracker::GetForProfile(profile_);
+  ASSERT_TRUE(tracker);
+  const content::GlobalRenderFrameHostId frame(1, 1);
+  const content::GlobalRenderFrameHostId other_frame(1, 2);
+
+  // A falsy id never matches, even while no frame is marked.
+  EXPECT_FALSE(tracker->TakeVideoFrameCopy(content::GlobalRenderFrameHostId()));
+  EXPECT_FALSE(tracker->TakeVideoFrameCopy(frame));
+
+  // The mark is kept for another frame, and taken once by its frame.
+  tracker->MarkVideoFrameCopy(frame);
+  EXPECT_FALSE(tracker->TakeVideoFrameCopy(other_frame));
+  EXPECT_TRUE(tracker->TakeVideoFrameCopy(frame));
+  EXPECT_FALSE(tracker->TakeVideoFrameCopy(frame));
 }
 
 }  // namespace enterprise_data_protection

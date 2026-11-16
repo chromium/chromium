@@ -528,6 +528,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   base::TimeTicks upload_start_time_;
   base::TimeTicks creation_time_;
 
+  // Whether this copied image is a video frame marked by
+  // `ClipboardToastTracker::MarkVideoFrameCopy()`, known once its verdict is
+  // shown.
+  bool is_video_frame_ = false;
+
   // Custom message for rule.
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
       custom_rule_message_;

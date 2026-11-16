@@ -42,6 +42,20 @@ void ClipboardToastTracker::RecordToastShown(CopyToastType type) {
   shown_toasts_.insert(type);
 }
 
+void ClipboardToastTracker::MarkVideoFrameCopy(
+    content::GlobalRenderFrameHostId frame_id) {
+  video_frame_copy_frame_id_ = frame_id;
+}
+
+bool ClipboardToastTracker::TakeVideoFrameCopy(
+    content::GlobalRenderFrameHostId frame_id) {
+  if (!frame_id || video_frame_copy_frame_id_ != frame_id) {
+    return false;
+  }
+  video_frame_copy_frame_id_ = content::GlobalRenderFrameHostId();
+  return true;
+}
+
 bool MaybeShowCopyToast(Profile* profile,
                         content::WebContents* web_contents,
                         CopyToastType type) {

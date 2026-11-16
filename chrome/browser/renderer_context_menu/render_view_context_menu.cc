@@ -393,6 +393,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/devtools/devtools_policy_dialog.h"
+#include "chrome/browser/enterprise/data_protection/clipboard_toast_tracker.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -5767,13 +5768,21 @@ void RenderViewContextMenu::ExecCopyVideoFrame() {
       blink::mojom::MediaPlayerActionType::kCopyVideoFrame,
       /*enable=*/true));
 #if !BUILDFLAG(IS_ANDROID)
-  if (enterprise_data_protection::IsClipboardCopyAllowedByPolicyForUI(
-          GetWebContentsForDataControls()) &&
+  bool copy_allowed_by_policy =
+      enterprise_data_protection::IsClipboardCopyAllowedByPolicyForUI(
+          GetWebContentsForDataControls());
+  if (copy_allowed_by_policy &&
       toast_features::IsEnabled(toast_features::kVideoFrameCopiedToast)) {
     auto* const toast_controller = GetToastController();
     if (toast_controller) {
       toast_controller->MaybeShowToast(ToastParams(ToastId::kVideoFrameCopied));
     }
+  }
+  if (RenderFrameHost* frame_host = GetRenderFrameHost();
+      !copy_allowed_by_policy && frame_host) {
+    enterprise_data_protection::ClipboardToastTracker::GetForProfile(
+        GetProfile())
+        ->MarkVideoFrameCopy(frame_host->GetGlobalId());
   }
 #endif
 }
