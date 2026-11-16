@@ -61,6 +61,8 @@ class AbortObserver {
 
 class TransactionTestBase : public IndexedDBTestBase {
  public:
+  static constexpr int64_t kObjectStoreId = 1;
+
   explicit TransactionTestBase(bool use_sqlite)
       : IndexedDBTestBase(/*use_default_buckets=*/true, use_sqlite) {}
 
@@ -95,7 +97,7 @@ class TransactionTestBase : public IndexedDBTestBase {
       int priority = 0) {
     if (db_->connections_.empty()) {
       db_->OpenInternal();
-      if (!db_->IsObjectStoreIdInMetadata(1)) {
+      if (!db_->IsObjectStoreIdInMetadata(kObjectStoreId)) {
         PartitionedLockHolder locks;
         lock_manager().AcquireLocks(
             db_->BuildLockRequestsForTransaction(
@@ -110,7 +112,8 @@ class TransactionTestBase : public IndexedDBTestBase {
         CHECK(transaction->Begin(std::move(locks.locks)).ok());
         CHECK(transaction->SetDatabaseVersion(1).ok());
         CHECK(transaction
-                  ->CreateObjectStore(1, u"store", blink::IndexedDBKeyPath(),
+                  ->CreateObjectStore(kObjectStoreId, u"store",
+                                      blink::IndexedDBKeyPath(),
                                       /*auto_increment=*/false)
                   .ok());
         StatusOr<bool> async_work =
@@ -214,7 +217,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(TransactionTest, Timeout) {
-  const std::vector<int64_t> object_store_ids{1};
+  const std::vector<int64_t> object_store_ids{kObjectStoreId};
   std::unique_ptr<Connection> connection = CreateConnection();
   Transaction* transaction =
       CreateTransaction(connection.get(), /*id=*/0, object_store_ids,
@@ -274,12 +277,13 @@ TEST_P(TransactionTest, PreliminarySizeEstimateClamped) {
   MockMojoDatabaseCallbacks callbacks;
   std::unique_ptr<Connection> connection =
       CreateConnection(callbacks.BindNewEndpointAndPassDedicatedRemote());
-  CreateTransaction(connection.get(), /*id=*/0, /*object_store_ids=*/{1},
+  CreateTransaction(connection.get(), /*id=*/0,
+                    /*object_store_ids=*/{kObjectStoreId},
                     blink::mojom::IDBTransactionMode::ReadWrite);
 
   mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
   Transaction* transaction = CreateTransaction(
-      connection.get(), /*id=*/1, /*object_store_ids=*/{1},
+      connection.get(), /*id=*/1, /*object_store_ids=*/{kObjectStoreId},
       blink::mojom::IDBTransactionMode::ReadWrite,
       transaction_remote.BindNewEndpointAndPassDedicatedReceiver());
   ASSERT_EQ(Transaction::CREATED, transaction->state());
@@ -300,11 +304,10 @@ TEST_P(TransactionTest, PreliminarySizeEstimateClamped) {
                                          quota_future.GetCallback());
   ASSERT_FALSE(quota_future.Get());
 
-  transaction_remote->Put(
-      /*object_store_id=*/1, std::move(value),
-      blink::IndexedDBKey(std::u16string(u"key")),
-      blink::mojom::IDBPutMode::AddOrUpdate, /*index_keys=*/{},
-      base::DoNothing());
+  transaction_remote->Put(kObjectStoreId, std::move(value),
+                          blink::IndexedDBKey(std::u16string(u"key")),
+                          blink::mojom::IDBPutMode::AddOrUpdate,
+                          /*index_keys=*/{}, base::DoNothing());
 
   EXPECT_TRUE(blob_receiver.is_valid());
 
@@ -386,7 +389,7 @@ TEST_P(TransactionTest, TimeoutWithPriorities) {
   } const test_cases[] = {
       {0, 0, true}, {0, 1, true}, {1, 1, false}, {1, 0, true}, {2, 1, true}};
 
-  const std::vector<int64_t> object_store_ids{1};
+  const std::vector<int64_t> object_store_ids{kObjectStoreId};
   int txn_id = 0;
 
   int i = 0;
@@ -649,12 +652,10 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(TransactionTest, AbortCancelsLockRequest) {
   std::unique_ptr<Connection> connection = CreateConnection();
 
-  const int64_t object_store_id = 1ll;
-
   // Acquire a lock to block the transaction's lock acquisition.
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
       connection->database()->BuildLockRequestsForTransaction(
-          blink::mojom::IDBTransactionMode::ReadWrite, {object_store_id});
+          blink::mojom::IDBTransactionMode::ReadWrite, {kObjectStoreId});
   bool locks_received = false;
   PartitionedLockHolder temp_lock_receiver;
   lock_manager().AcquireLocks(lock_requests, temp_lock_receiver,
@@ -664,7 +665,7 @@ TEST_P(TransactionTest, AbortCancelsLockRequest) {
   // Create and register the transaction, which should request locks and wait
   // for `temp_lock_receiver` to release the locks.
   Transaction* transaction = CreateTransaction(
-      connection.get(), /*transaction_id=*/0, {object_store_id},
+      connection.get(), /*transaction_id=*/0, {kObjectStoreId},
       blink::mojom::IDBTransactionMode::ReadWrite);
   EXPECT_EQ(transaction->state(), Transaction::CREATED);
 
@@ -689,7 +690,7 @@ TEST_P(TransactionTest, PostedStartTaskRunAfterAbort) {
   std::unique_ptr<Connection> connection = CreateConnection();
 
   int64_t id = 0;
-  const std::vector<int64_t> object_store_ids = {1ll};
+  const std::vector<int64_t> object_store_ids = {kObjectStoreId};
   Transaction* transaction1 =
       CreateTransaction(connection.get(), id, object_store_ids,
                         blink::mojom::IDBTransactionMode::ReadWrite);
@@ -725,12 +726,12 @@ TEST_P(TransactionTest, PostedStartTaskRunAfterAbort) {
 TEST_P(TransactionTest, IsTransactionBlockingOtherClients) {
   std::unique_ptr<Connection> connection = CreateConnection();
 
-  const std::vector<int64_t> object_store_ids = {1ll};
+  const std::vector<int64_t> object_store_ids = {kObjectStoreId};
   Transaction* transaction = CreateTransaction(
       connection.get(),
       /*id=*/0, object_store_ids, blink::mojom::IDBTransactionMode::ReadWrite);
 
-  // Register a transaction with ReadWrite mode to object store 1.
+  // Register a transaction with ReadWrite mode to the object store.
   // The transaction should be started and it's not blocking any others.
   EXPECT_EQ(transaction->state(), Transaction::STARTED);
   EXPECT_FALSE(transaction->IsTransactionBlockingOtherClients());

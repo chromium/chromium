@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="kTransactionPutReadOnly"/>
   <int value="15" label="(Obsolete) kTransactionPutInvalidValue"/>
   <int value="16" label="kTransactionPutInvalidExternalObjects"/>
-  <int value="17" label="kTransactionDoPutInvalidObjectStoreId"/>
+  <int value="17" label="(Obsolete) kTransactionDoPutInvalidObjectStoreId"/>
   <int value="18" label="kTransactionDoPutInvalidIndexId"/>
   <int value="19" label="kTransactionDoPutInvalidKey"/>
   <int value="20" label="kTransactionDoPutInvalidIndexKey"/>
@@ -314,6 +314,8 @@ chromium-metrics-reviews@google.com.
   <int value="27"
       label="kTransactionObjectStoreAndIndexMustExistInvalidIndexId"/>
   <int value="28" label="kTransactionObjectStoreAndIndexMustExistInvalidIds"/>
+  <int value="29" label="kConnectionCreateTransactionDuringVersionChange"/>
+  <int value="30" label="kConnectionCreateTransactionInvalidScope"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/indexed_db/indexed_db_reporting.h:BadMessageReason) -->

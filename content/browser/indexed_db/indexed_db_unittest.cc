@@ -703,6 +703,7 @@ TEST_P(IndexedDBTest, PutOutsideTransactionScope) {
 }
 
 TEST_P(IndexedDBTest, CreateTransactionWithDeletedObjectStore) {
+  base::HistogramTester histograms;
   constexpr int64_t kObjectStoreId = 10;
   mojo::Remote<blink::mojom::IDBFactory> factory;
   BindFactory(factory.BindNewPipeAndPassReceiver(),
@@ -729,6 +730,9 @@ TEST_P(IndexedDBTest, CreateTransactionWithDeletedObjectStore) {
       blink::mojom::IDBTransactionDurability::Relaxed);
   EXPECT_EQ("Invalid object_store_id in transaction scope",
             bad_message_observer.WaitForBadMessage());
+  histograms.ExpectUniqueSample(
+      "IndexedDB.BadMessageReason",
+      BadMessageReason::kConnectionCreateTransactionInvalidScope, 1);
 }
 
 TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {

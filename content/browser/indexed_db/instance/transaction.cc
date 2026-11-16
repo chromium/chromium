@@ -348,9 +348,7 @@ void Transaction::CreateObjectStore(int64_t object_store_id,
                                     const std::u16string& name,
                                     const IndexedDBKeyPath& key_path,
                                     bool auto_increment) {
-  if (!connection_
-           ->GetTransactionAndVerifyState(
-               id(), blink::mojom::IDBTransactionMode::VersionChange)
+  if (!connection_->GetTransactionAndVerifyState(id(), VersionChange)
            .has_value()) {
     return;
   }
@@ -388,9 +386,7 @@ void Transaction::CreateObjectStore(int64_t object_store_id,
 }
 
 void Transaction::DeleteObjectStore(int64_t object_store_id) {
-  if (!connection_
-           ->GetTransactionAndVerifyState(
-               id(), blink::mojom::IDBTransactionMode::VersionChange)
+  if (!connection_->GetTransactionAndVerifyState(id(), VersionChange)
            .has_value()) {
     return;
   }
@@ -403,7 +399,7 @@ void Transaction::DeleteObjectStore(int64_t object_store_id) {
                 object_store_id);
           },
           object_store_id),
-      ObjectStoreMustExist(object_store_id));
+      ObjectStoreMustBeValid(object_store_id));
 }
 
 void Transaction::Put(int64_t object_store_id,
@@ -486,7 +482,7 @@ void Transaction::Put(int64_t object_store_id,
                      object_store_id, std::move(value), std::move(key), mode,
                      std::move(index_keys), std::move(wrapped_callback),
                      std::move(bad_message1)),
-      ObjectStoreMustExist(object_store_id, std::move(bad_message2)));
+      ObjectStoreMustBeValid(object_store_id, std::move(bad_message2)));
 }
 
 Status Transaction::DoPut(int64_t object_store_id,
@@ -635,7 +631,7 @@ void Transaction::SetIndexKeys(int64_t object_store_id,
     return;
   }
 
-  if (mode() != blink::mojom::IDBTransactionMode::VersionChange) {
+  if (mode() != VersionChange) {
     ReportBadMessage(
         BadMessageReason::kTransactionSetIndexKeysWrongMode,
         "SetIndexKeys must be called from a version change transaction.");
@@ -654,7 +650,7 @@ void Transaction::SetIndexKeys(int64_t object_store_id,
                base::BindOnce(&Transaction::DoSetIndexKeys,
                               base::Unretained(this), object_store_id,
                               std::move(primary_key), std::move(index_keys)),
-               ObjectStoreAndIndexMustExist(object_store_id, index_id));
+               ObjectStoreAndIndexMustBeValid(object_store_id, index_id));
 }
 
 Status Transaction::DoSetIndexKeys(int64_t object_store_id,
@@ -663,7 +659,7 @@ Status Transaction::DoSetIndexKeys(int64_t object_store_id,
                                    Transaction* transaction) {
   CHECK_EQ(this, transaction);
   TRACE_EVENT1("IndexedDB", "Database::SetIndexKeysOperation", "txn.id", id());
-  CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
+  CHECK_EQ(mode(), VersionChange);
 
   ASSIGN_OR_RETURN(std::optional<BackingStore::RecordIdentifier> found_record,
                    BackingStoreTransaction()->KeyExistsInObjectStore(
@@ -716,7 +712,7 @@ void Transaction::SetIndexKeysDone() {
     return;
   }
 
-  if (mode() != blink::mojom::IDBTransactionMode::VersionChange) {
+  if (mode() != VersionChange) {
     ReportBadMessage(
         BadMessageReason::kTransactionSetIndexKeysDoneWrongMode,
         "SetIndexKeysDone must be called from a version change transaction.");
@@ -1000,7 +996,7 @@ Status Transaction::CommitPhaseTwo() {
   if (committed) {
     if (mode() != blink::mojom::IDBTransactionMode::ReadOnly) {
       const bool did_sync =
-          mode() == blink::mojom::IDBTransactionMode::VersionChange ||
+          mode() == VersionChange ||
           durability_ == blink::mojom::IDBTransactionDurability::Strict;
       bucket_context_->delegate().on_files_written.Run(did_sync);
     }
@@ -1296,7 +1292,7 @@ blink::mojom::IDBValuePtr Transaction::BuildMojoValue(IndexedDBValue value) {
 }
 
 // static
-Transaction::VerificationCallback Transaction::ObjectStoreMustExist(
+Transaction::VerificationCallback Transaction::ObjectStoreMustBeValid(
     int64_t object_store_id,
     mojo::ReportBadMessageCallback report_bad_message_callback) {
   return base::BindOnce(
@@ -1330,7 +1326,7 @@ Transaction::VerificationCallback Transaction::ObjectStoreMustExist(
 }
 
 // static
-Transaction::VerificationCallback Transaction::ObjectStoreAndIndexMustExist(
+Transaction::VerificationCallback Transaction::ObjectStoreAndIndexMustBeValid(
     int64_t object_store_id,
     std::optional<int64_t> index_id) {
   return base::BindOnce(

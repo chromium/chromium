@@ -137,7 +137,7 @@ enum class BadMessageReason {
   kTransactionPutReadOnly = 14,
   // kTransactionPutInvalidValue = 15,
   kTransactionPutInvalidExternalObjects = 16,
-  kTransactionDoPutInvalidObjectStoreId = 17,
+  // kTransactionDoPutInvalidObjectStoreId = 17,
   kTransactionDoPutInvalidIndexId = 18,
   kTransactionDoPutInvalidKey = 19,
   kTransactionDoPutInvalidIndexKey = 20,
@@ -149,7 +149,9 @@ enum class BadMessageReason {
   kTransactionObjectStoreMustExistInvalidId = 26,
   kTransactionObjectStoreAndIndexMustExistInvalidIndexId = 27,
   kTransactionObjectStoreAndIndexMustExistInvalidIds = 28,
-  kMaxValue = kTransactionObjectStoreAndIndexMustExistInvalidIds,
+  kConnectionCreateTransactionDuringVersionChange = 29,
+  kConnectionCreateTransactionInvalidScope = 30,
+  kMaxValue = kConnectionCreateTransactionInvalidScope,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDBBadMessageReason)
 

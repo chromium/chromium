@@ -53,6 +53,7 @@ using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 using blink::IndexedDBKeyRange;
+using blink::mojom::IDBTransactionMode::VersionChange;
 using std::swap;
 
 namespace blink {
@@ -189,10 +190,9 @@ Transaction* Connection::CreateVersionChangeTransaction(
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
   CHECK(transactions_.empty());
 
-  RecordCreateTransactionHistograms(
-      blink::mojom::IDBTransactionMode::VersionChange);
+  RecordCreateTransactionHistograms(VersionChange);
   return (transactions_[id] = std::make_unique<Transaction>(
-              id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
+              id, this, scope, VersionChange,
               blink::mojom::IDBTransactionDurability::Strict, *bucket_context_,
               std::move(backing_store_transaction)))
       .get();
@@ -290,8 +290,7 @@ void Connection::RenameObjectStore(int64_t transaction_id,
                                    int64_t object_store_id,
                                    const std::u16string& new_name) {
   base::expected<Transaction*, DatabaseError> transaction =
-      GetTransactionAndVerifyState(
-          transaction_id, blink::mojom::IDBTransactionMode::VersionChange);
+      GetTransactionAndVerifyState(transaction_id, VersionChange);
   if (!transaction.has_value()) {
     return;
   }
@@ -306,7 +305,7 @@ void Connection::RenameObjectStore(int64_t transaction_id,
                     ->RenameObjectStore(object_store_id, new_name);
               },
               object_store_id, new_name),
-          Transaction::ObjectStoreMustExist(object_store_id));
+          Transaction::ObjectStoreMustBeValid(object_store_id));
 }
 
 void Connection::CreateTransaction(
@@ -335,19 +334,22 @@ void Connection::CreateTransaction(
   }
 
   if (!transactions_.empty() &&
-      transactions_.begin()->second->mode() ==
-          blink::mojom::IDBTransactionMode::VersionChange) {
+      transactions_.begin()->second->mode() == VersionChange) {
     CHECK_EQ(transactions_.size(), 1U);
     CHECK_EQ(database_->connections().size(), 1U);
-    receiver_->ReportBadMessage(
-        "Cannot create a transaction during a version change transaction");
+    ReportBadMessage(
+        BadMessageReason::kConnectionCreateTransactionDuringVersionChange,
+        "Cannot create a transaction during a version change transaction",
+        receiver_->GetBadMessageCallback());
     return;
   }
 
   if (std::ranges::any_of(object_store_ids, [this](int64_t object_store_id) {
         return !database_->IsObjectStoreIdInMetadata(object_store_id);
       })) {
-    receiver_->ReportBadMessage("Invalid object_store_id in transaction scope");
+    ReportBadMessage(BadMessageReason::kConnectionCreateTransactionInvalidScope,
+                     "Invalid object_store_id in transaction scope",
+                     receiver_->GetBadMessageCallback());
     return;
   }
 
@@ -412,8 +414,8 @@ void Connection::Get(int64_t transaction_id,
           BindWeakOperation(&Database::GetOperation, database_, object_store_id,
                             index_id, std::move(key_range), key_only,
                             std::move(aborting_callback)),
-          Transaction::ObjectStoreAndIndexMustExist(object_store_id,
-                                                    IndexIsOptional(index_id)));
+          Transaction::ObjectStoreAndIndexMustBeValid(
+              object_store_id, IndexIsOptional(index_id)));
 }
 
 void Connection::GetAll(int64_t transaction_id,
@@ -450,8 +452,8 @@ void Connection::GetAll(int64_t transaction_id,
           database_->CreateGetAllOperation(
               object_store_id, index_id, std::move(key_range), result_type,
               max_count, direction, std::move(callback), *transaction),
-          Transaction::ObjectStoreAndIndexMustExist(object_store_id,
-                                                    IndexIsOptional(index_id)));
+          Transaction::ObjectStoreAndIndexMustBeValid(
+              object_store_id, IndexIsOptional(index_id)));
 }
 
 void Connection::OpenCursor(
@@ -479,8 +481,7 @@ void Connection::OpenCursor(
           blink::mojom::IDBDatabaseOpenCursorResultPtr>(
           std::move(callback), (*transaction)->AsWeakPtr());
 
-  if ((*transaction)->mode() !=
-          blink::mojom::IDBTransactionMode::VersionChange &&
+  if ((*transaction)->mode() != VersionChange &&
       task_type == blink::mojom::IDBTaskType::Preemptive) {
     ReportBadMessage(
         BadMessageReason::kConnectionOpenCursorInvalidTaskType,
@@ -514,8 +515,8 @@ void Connection::OpenCursor(
           "OpenCursor",
           BindWeakOperation(&Database::OpenCursorOperation, database_,
                             std::move(params), GetBucketLocator()),
-          Transaction::ObjectStoreAndIndexMustExist(object_store_id,
-                                                    IndexIsOptional(index_id)));
+          Transaction::ObjectStoreAndIndexMustBeValid(
+              object_store_id, IndexIsOptional(index_id)));
 }
 
 void Connection::Count(int64_t transaction_id,
@@ -538,8 +539,8 @@ void Connection::Count(int64_t transaction_id,
           BindWeakOperation(&Database::CountOperation, database_,
                             object_store_id, index_id, std::move(key_range),
                             std::move(wrapped_callback)),
-          Transaction::ObjectStoreAndIndexMustExist(object_store_id,
-                                                    IndexIsOptional(index_id)));
+          Transaction::ObjectStoreAndIndexMustBeValid(
+              object_store_id, IndexIsOptional(index_id)));
 }
 
 void Connection::DeleteRange(int64_t transaction_id,
@@ -561,7 +562,7 @@ void Connection::DeleteRange(int64_t transaction_id,
           BindWeakOperation(&Database::DeleteRangeOperation, database_,
                             object_store_id, std::move(key_range),
                             std::move(wrapped_callback)),
-          Transaction::ObjectStoreMustExist(object_store_id));
+          Transaction::ObjectStoreMustBeValid(object_store_id));
 }
 
 void Connection::GetKeyGeneratorCurrentNumber(
@@ -589,7 +590,7 @@ void Connection::GetKeyGeneratorCurrentNumber(
           BindWeakOperation(&Database::GetKeyGeneratorCurrentNumberOperation,
                             database_, object_store_id,
                             std::move(wrapped_callback)),
-          Transaction::ObjectStoreMustExist(object_store_id));
+          Transaction::ObjectStoreMustBeValid(object_store_id));
 }
 
 void Connection::Clear(int64_t transaction_id,
@@ -608,15 +609,14 @@ void Connection::Clear(int64_t transaction_id,
           "ClearObjectStore",
           BindWeakOperation(&Database::ClearOperation, database_,
                             object_store_id, std::move(wrapped_callback)),
-          Transaction::ObjectStoreMustExist(object_store_id));
+          Transaction::ObjectStoreMustBeValid(object_store_id));
 }
 
 void Connection::CreateIndex(int64_t transaction_id,
                              int64_t object_store_id,
                              const IndexedDBIndexMetadata& index) {
   base::expected<Transaction*, DatabaseError> transaction =
-      GetTransactionAndVerifyState(
-          transaction_id, blink::mojom::IDBTransactionMode::VersionChange);
+      GetTransactionAndVerifyState(transaction_id, VersionChange);
   if (!transaction.has_value()) {
     return;
   }
@@ -663,8 +663,7 @@ void Connection::DeleteIndex(int64_t transaction_id,
                              int64_t object_store_id,
                              int64_t index_id) {
   base::expected<Transaction*, DatabaseError> transaction =
-      GetTransactionAndVerifyState(
-          transaction_id, blink::mojom::IDBTransactionMode::VersionChange);
+      GetTransactionAndVerifyState(transaction_id, VersionChange);
   if (!transaction.has_value()) {
     return;
   }
@@ -679,7 +678,8 @@ void Connection::DeleteIndex(int64_t transaction_id,
                     object_store_id, index_id);
               },
               object_store_id, index_id),
-          Transaction::ObjectStoreAndIndexMustExist(object_store_id, index_id));
+          Transaction::ObjectStoreAndIndexMustBeValid(object_store_id,
+                                                      index_id));
 }
 
 void Connection::RenameIndex(int64_t transaction_id,
@@ -687,8 +687,7 @@ void Connection::RenameIndex(int64_t transaction_id,
                              int64_t index_id,
                              const std::u16string& new_name) {
   base::expected<Transaction*, DatabaseError> transaction =
-      GetTransactionAndVerifyState(
-          transaction_id, blink::mojom::IDBTransactionMode::VersionChange);
+      GetTransactionAndVerifyState(transaction_id, VersionChange);
   if (!transaction.has_value()) {
     return;
   }
@@ -703,7 +702,8 @@ void Connection::RenameIndex(int64_t transaction_id,
                     object_store_id, index_id, new_name);
               },
               object_store_id, index_id, new_name),
-          Transaction::ObjectStoreAndIndexMustExist(object_store_id, index_id));
+          Transaction::ObjectStoreAndIndexMustBeValid(object_store_id,
+                                                      index_id));
 }
 
 void Connection::Abort(int64_t transaction_id) {

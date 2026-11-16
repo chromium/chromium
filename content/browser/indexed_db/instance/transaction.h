@@ -144,14 +144,14 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // Common verifiers for mojo messages:
   // Verifies that `object_store_id` exists for version change transactions,
   // or is in the transaction's validated scope otherwise.
-  static VerificationCallback ObjectStoreMustExist(
+  static VerificationCallback ObjectStoreMustBeValid(
       int64_t object_store_id,
       mojo::ReportBadMessageCallback report_bad_message_callback =
           mojo::GetBadMessageCallback());
   // As above, plus, verifies the given index exists, unless `index_id` is
   // std::nullopt. If not nullopt, it must not be kInvalid and must exist in the
   // provided object store.
-  static VerificationCallback ObjectStoreAndIndexMustExist(
+  static VerificationCallback ObjectStoreAndIndexMustBeValid(
       int64_t object_store_id,
       std::optional<int64_t> index_id);
 
