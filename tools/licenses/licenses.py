@@ -176,6 +176,7 @@ ADDITIONAL_PATHS = (
   os.path.join(
     'third_party', 'devtools-frontend', 'src', 'front_end', 'third_party'
   ),
+  os.path.join('third_party', 'devtools', 'front_end', 'third_party'),
   os.path.join(
     'third_party', 'devtools-frontend-internal', 'front_end', 'third_party'
   ),
