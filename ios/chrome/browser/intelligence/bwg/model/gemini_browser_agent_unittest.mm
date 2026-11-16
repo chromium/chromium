@@ -1299,10 +1299,13 @@ TEST_F(GeminiBrowserAgentTest,
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileGeminiLivePromptSent"));
   EXPECT_EQ(0, user_action_tester.GetActionCount("MobileGeminiChatPromptSent"));
 
-  // Transition to responding, then detach context and transition to
+  // Transition to responding, then listening, detach context, and transition to
   // thinking again.
   gemini_browser_agent_->OnProcessingStatusChanged(
       ios::provider::GeminiClientMode::kResponding,
+      ios::provider::GeminiDormantReason::kUnknown);
+  gemini_browser_agent_->OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode::kListening,
       ios::provider::GeminiDormantReason::kUnknown);
   ios::provider::UpdatePageAttachmentState(
       ios::provider::GeminiPageContextAttachmentState::kDetached);
