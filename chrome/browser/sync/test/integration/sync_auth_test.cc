@@ -13,11 +13,11 @@
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -48,7 +48,7 @@ bool HasUserPrefValue(const PrefService* pref_service,
 }
 
 // Waits until local changes are committed or an auth error is encountered.
-class TestForAuthError : public UpdatedProgressMarkerChecker {
+class TestForAuthError : public CommittedAllNudgedChangesChecker {
  public:
   static bool HasAuthError(syncer::SyncService* service) {
     // Note that depending on the nature of the auth error, sync may become
@@ -64,13 +64,13 @@ class TestForAuthError : public UpdatedProgressMarkerChecker {
   }
 
   explicit TestForAuthError(syncer::SyncServiceImpl* service)
-      : UpdatedProgressMarkerChecker(service) {}
+      : CommittedAllNudgedChangesChecker(service) {}
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for auth error";
     return HasAuthError(service()) ||
-           UpdatedProgressMarkerChecker::IsExitConditionSatisfied(os);
+           CommittedAllNudgedChangesChecker::IsExitConditionSatisfied(os);
   }
 };
 
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_P(SyncAuthTest, TokenExpiry) {
 
   // Verify that the next sync cycle is successful.
   GetFakeServer()->ClearHttpError();
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
 }
 
 class NoAuthErrorChecker : public SingleClientStatusChangeChecker {
