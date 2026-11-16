@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_address_cell_mutator.h"
+
 namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
@@ -18,7 +20,7 @@ class AuthenticationService;
 @protocol AddressListDelegate;
 
 // Object in charge of getting the addresses relevant for the manual fill UI.
-@interface ManualFillAddressMediator : NSObject
+@interface ManualFillAddressMediator : NSObject <ManualFillAddressCellMutator>
 
 // The consumer for addresses updates. Setting it will trigger the consumer
 // methods with the current data.

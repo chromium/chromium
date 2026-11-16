@@ -77,7 +77,7 @@ TEST_F(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
   // Add an address data item.
   ManualFillAddressItem* addressItem =
       [[ManualFillAddressItem alloc] initWithAddress:nil
-                                     contentInjector:nil
+                                             mutator:nil
                                          menuActions:@[]
                                            cellIndex:0
                          cellIndexAccessibilityLabel:nil

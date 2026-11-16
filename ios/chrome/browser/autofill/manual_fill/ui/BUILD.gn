@@ -23,6 +23,7 @@ source_set("ui") {
     "manual_fill_action_cell.mm",
     "manual_fill_address_cell.h",
     "manual_fill_address_cell.mm",
+    "manual_fill_address_cell_mutator.h",
     "manual_fill_card_cell+Testing.h",
     "manual_fill_card_cell.h",
     "manual_fill_card_cell.mm",

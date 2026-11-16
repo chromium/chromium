@@ -4,12 +4,10 @@
 
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_address_cell.h"
 
-#import "base/metrics/histogram_functions.h"
-#import "base/metrics/user_metrics.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/ios/browser/form_suggestion.h"
-#import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
+#import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_address.h"
+#import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_address_cell_mutator.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -19,12 +17,11 @@
 
 @interface ManualFillAddressItem ()
 
-// The content delegate for this item.
-@property(nonatomic, weak, readonly) id<ManualFillContentInjector>
-    contentInjector;
+// The mutator for this item.
+@property(nonatomic, weak, readonly) id<ManualFillAddressCellMutator> mutator;
 
 // The address/profile for this item.
-@property(nonatomic, readonly) ManualFillAddress* address;
+@property(nonatomic, strong, readonly) ManualFillAddress* address;
 
 // The UIActions that should be available from the cell's overflow menu button.
 @property(nonatomic, strong) NSArray<UIAction*>* menuActions;
@@ -43,15 +40,17 @@
   BOOL _showAutofillFormButton;
 }
 
+#pragma mark - Public
+
 - (instancetype)initWithAddress:(ManualFillAddress*)address
-                contentInjector:(id<ManualFillContentInjector>)contentInjector
+                        mutator:(id<ManualFillAddressCellMutator>)mutator
                     menuActions:(NSArray<UIAction*>*)menuActions
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
-    _contentInjector = contentInjector;
+    _mutator = mutator;
     _address = address;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
@@ -62,10 +61,12 @@
   return self;
 }
 
+#pragma mark - TableViewItem
+
 - (void)configureCell:(ManualFillAddressCell*)cell {
   [super configureCell:cell];
   [cell setUpWithAddress:self.address
-                  contentInjector:self.contentInjector
+                          mutator:self.mutator
                       menuActions:self.menuActions
                         cellIndex:_cellIndex
       cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel
@@ -115,8 +116,8 @@
 // A button showing an email address.
 @property(nonatomic, strong) UIButton* emailAddressButton;
 
-// The content delegate for this item.
-@property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
+// The mutator for this cell.
+@property(nonatomic, weak) id<ManualFillAddressCellMutator> mutator;
 
 // Layout guide for the cell's content.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
@@ -128,7 +129,7 @@
 @property(nonatomic, strong) UIButton* autofillFormButton;
 
 // The address data for this cell.
-@property(nonatomic, weak) ManualFillAddress* address;
+@property(nonatomic, strong) ManualFillAddress* address;
 
 @end
 
@@ -176,13 +177,13 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.countryButton setTitle:@"" forState:UIControlStateNormal];
   [self.phoneNumberButton setTitle:@"" forState:UIControlStateNormal];
   [self.emailAddressButton setTitle:@"" forState:UIControlStateNormal];
-  self.contentInjector = nil;
+  self.mutator = nil;
   self.address = nil;
   _showAutofillFormButton = NO;
 }
 
 - (void)setUpWithAddress:(ManualFillAddress*)address
-                contentInjector:(id<ManualFillContentInjector>)contentInjector
+                        mutator:(id<ManualFillAddressCellMutator>)mutator
                     menuActions:(NSArray<UIAction*>*)menuActions
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
@@ -192,7 +193,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
-  self.contentInjector = contentInjector;
+  self.mutator = mutator;
   self.address = address;
 
   if (menuActions && menuActions.count) {
@@ -589,71 +590,43 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
   [self.dynamicConstraints removeAllObjects];
 }
 
+// Called when an address field chip button is tapped.
 - (void)userDidTapAddressInfo:(UIButton*)sender {
-  const char* metricsAction = nullptr;
+  ManualFillAddressFieldType fieldType;
   if (sender == self.firstNameButton) {
-    metricsAction = "ManualFallback_Profiles_SelectFirstName";
+    fieldType = ManualFillAddressFieldType::kFirstName;
   } else if (sender == self.middleNameButton) {
-    metricsAction = "ManualFallback_Profiles_SelectMiddleName";
+    fieldType = ManualFillAddressFieldType::kMiddleName;
   } else if (sender == self.lastNameButton) {
-    metricsAction = "ManualFallback_Profiles_SelectLastName";
+    fieldType = ManualFillAddressFieldType::kLastName;
   } else if (sender == self.companyButton) {
-    metricsAction = "ManualFallback_Profiles_Company";
+    fieldType = ManualFillAddressFieldType::kCompany;
   } else if (sender == self.line1Button) {
-    metricsAction = "ManualFallback_Profiles_Address1";
+    fieldType = ManualFillAddressFieldType::kLine1;
   } else if (sender == self.line2Button) {
-    metricsAction = "ManualFallback_Profiles_Address2";
+    fieldType = ManualFillAddressFieldType::kLine2;
   } else if (sender == self.zipButton) {
-    metricsAction = "ManualFallback_Profiles_Zip";
+    fieldType = ManualFillAddressFieldType::kZip;
   } else if (sender == self.cityButton) {
-    metricsAction = "ManualFallback_Profiles_City";
+    fieldType = ManualFillAddressFieldType::kCity;
   } else if (sender == self.stateButton) {
-    metricsAction = "ManualFallback_Profiles_State";
+    fieldType = ManualFillAddressFieldType::kState;
   } else if (sender == self.countryButton) {
-    metricsAction = "ManualFallback_Profiles_Country";
+    fieldType = ManualFillAddressFieldType::kCountry;
   } else if (sender == self.phoneNumberButton) {
-    metricsAction = "ManualFallback_Profiles_PhoneNumber";
+    fieldType = ManualFillAddressFieldType::kPhoneNumber;
   } else if (sender == self.emailAddressButton) {
-    metricsAction = "ManualFallback_Profiles_EmailAddress";
+    fieldType = ManualFillAddressFieldType::kEmailAddress;
+  } else {
+    NOTREACHED();
   }
-  DCHECK(metricsAction);
-  base::RecordAction(base::UserMetricsAction(metricsAction));
-
-  [self.contentInjector
-      userDidPickContent:sender.titleLabel.text
-           passwordField:NO
-           requiresHTTPS:NO
-         jumpToNextField:YES
-              actionType:autofill::mojom::FieldActionType::kReplaceAll];
+  [self.mutator didTapChipForAddress:self.address fieldType:fieldType];
 }
 
-// Called when the "Autofill Form" button is tapped. Fills the current form with
-// the address' data.
+// Called when the "Autofill Form" button is tapped.
 - (void)onAutofillFormButtonTapped {
-  base::UmaHistogramSparse(
-      "Autofill.UserAcceptedSuggestionAtIndex.Address.ManualFallback",
-      _cellIndex);
-  base::RecordAction(
-      base::UserMetricsAction("ManualFallback_Profiles_SuggestionAccepted"));
-
-  FormSuggestion* suggestion = [FormSuggestion
-              suggestionWithValue:nil
-                       minorValue:nil
-               displayDescription:nil
-                             icon:nil
-                             type:autofill::SuggestionType::kAddressEntry
-                          payload:autofill::Suggestion::AutofillProfilePayload(
-                                      autofill::Suggestion::Guid(
-                                          base::SysNSStringToUTF8(
-                                              [self.address GUID])))
-      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
-                   requiresReauth:NO
-       acceptanceA11yAnnouncement:
-           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
-
-  [self.contentInjector autofillFormWithSuggestion:suggestion
-                                           atIndex:_cellIndex];
+  [self.mutator didTapAutofillFormButtonForAddress:self.address
+                                         cellIndex:_cellIndex];
 }
 
 // Sets the title and accessbility label of the given `chipButton` using the

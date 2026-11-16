@@ -76,6 +76,7 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "manual_fill_address_mediator_unittest.mm",
     "manual_fill_all_password_coordinator_unittest.mm",
     "manual_fill_card_mediator_unittest.mm",
     "manual_fill_credentials_mediator_unittest.mm",
@@ -85,7 +86,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
+    "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common/mojom:mojo_types_shared",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/strings",
@@ -113,6 +116,8 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }
