@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/strings/string_util.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_rewrite_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/orca_resources.h"
 #include "chrome/grit/orca_resources_map.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"

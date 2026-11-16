@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/projector_system_web_app_info.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/grit/ash_projector_app_untrusted_resources.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 

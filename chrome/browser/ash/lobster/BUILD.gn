@@ -43,6 +43,7 @@ static_library("lobster") {
   deps = [
     "//ash",
     "//ash/public/cpp",
+    "//ash/strings",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/magic_boost",

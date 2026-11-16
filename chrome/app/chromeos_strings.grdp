@@ -2,40 +2,12 @@
 <!-- ChromeOS-specific strings (included from generated_resources.grd).
      Everything in this file is wrapped in <if expr="is_chromeos">. -->
 <grit-part>
-  <message name="IDS_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required.">
-  </message>
-
-  <message name="IDS_WALLPAPER_MANAGER_INVALID_WALLPAPER" desc="The string displayed to user when user selected wallpaper can not be set as a wallpaper.">
-    Chrome cannot set wallpaper.
-  </message>
-
-  <message name="IDS_GETTING_DEVICE_READY" desc="Message that the system is getting the device ready">
-    Getting the device ready...
-  </message>
-
   <!-- ChromeOS Strings -->
-  <message name="IDS_DOWNLOADING" desc="The format for ETA during the update downloading stage">
-    Downloading: <ph name="STATUS">$1<ex>Less than 1 minute left</ex></ph>
-  </message>
   <message name="IDS_LOGIN_GAIA_LOADING_MESSAGE" desc="Message on the OOBE gaia loading screen">
     Please wait...
   </message>
-  <message name="IDS_OOBE_PLAY_ANIMATION_MESSAGE" desc="Accessibility label for the button to play/continue animation">
-    Play animation
-  </message>
-  <message name="IDS_OOBE_PAUSE_ANIMATION_MESSAGE" desc="Accessibility label for the button to pause animation">
-    Pause animation
-  </message>
 
   <!-- ONC (Open Network Configuration) strings have moved to //chromeos/chromeos_strings.grd -->
-
-  <!-- Misc settings related strings -->
-  <message name="IDS_OPTIONS_SETTINGS_TIMEZONE_DISPLAY_TEMPLATE" desc="In the settings tab, the display template of a timezone in the pull-down list of timezones">
-    (<ph name="UTCOffset">$1<ex>UTC-8:00</ex></ph>) <ph name="LongTZName">$2<ex>Pacific Standard Time</ex></ph> (<ph name="ExemplarCity">$3<ex>Los Angeles</ex></ph>)
-  </message>
-  <message name="IDS_OPTIONS_SETTINGS_TIMEZONE_DISPLAY_NAME_UTC" desc="This is the display name of UTC/GMT timezone for timezone option in user settings.">
-    Coordinated Universal Time (UTC/GMT)
-  </message>
 
   <message name="IDS_CONTROLLED_SETTING_WITH_OWNER" desc="Text displayed in the controlled settings bubble when a setting's value can be edited only by the owner.">
     This setting is managed by the device owner, <ph name="OWNER_EMAIL">$1<ex>john@google.com</ex></ph>.
@@ -67,22 +39,6 @@
   </message>
   <message name="IDS_FLAGS_IGNORED_SECONDARY_USERS" desc="Text on an info bar added on flags UI of secondary users." translateable="false">
     Flags will not be applied for secondary users.
-  </message>
-
-  <!-- Genius App -->
-  <message name="IDS_GENIUS_APP_NAME" desc="Name of the genius app in the app shelf">
-    Get Help
-  </message>
-  <message name="IDS_FILEMANAGER_APP_NAME" desc="Name for the File Manager app.">
-    Files
-  </message>
-
-  <!-- Webstore widget -->
-  <message name="IDS_WEBSTORE_WIDGET_LOADING_SPINNER_ALT" desc="Alt text for spinner shown in Chrome Web Store Gallery widget while the widget contents is loading. This is the text that will be read by screen reader when the spinner is focused. The string should be translated as a verb.">
-    Loading
-  </message>
-  <message name="IDS_WEBSTORE_WIDGET_INSTALLING_SPINNER_ALT" desc="Alt text for spinner shown in Chrome Web Store Gallery widget while an app is being installed from the widget. This is the text that will be read by screen reader when the spinner has focus. The string should be translated as a verb.">
-    Installing
   </message>
 
   <!-- Mojo service names (displayed in task manager) -->
@@ -205,74 +161,5 @@
   </message>
   <message name="IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION" desc="Description shown in the UI shown to supervised users when the network is not available.">
     Check your internet connection
-  </message>
-
-  <!-- Strings for emoji picker-->
-  <message name="IDS_ACCNAME_EMOJI_PICKER" desc="The accessible name for the emoji picker.">
-    Emoji Picker
-  </message>
-  <message name="IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD" translateable="false" desc="Message shown to users when they click a gif in emoji picker.">
-    GIF not supported. Copied to clipboard.
-  </message>
-
-  <!-- Strings for orca-->
-  <message name="IDS_ACCNAME_ORCA" desc="The name for the orca feature in the task manager">
-    Tool: Help me write
-  </message>
-
-  <!-- Strings for Projector-->
-  <message name="IDS_PROJECTOR_APP_NAME" desc="Name for the Projector app in the launcher">
-    Screencast
-  </message>
-
-   <!-- Strings for OsFlags -->
-  <message name="IDS_OS_FLAGS_APP_NAME" translateable="false" desc="Name for the system flags app.">
-    Flags
-  </message>
-
-  <!-- App install dialog -->
-  <message name="IDS_APP_INSTALL_DIALOG_OPEN_APP_BUTTON_LABEL" desc="Button label in the app install dialog that opens the app that was just installed.">
-    Open app
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_APP_DETAILS_TEXT" desc="Label in the app install dialog that is displayed in front of the app URL to give the user information about the app.">
-    App details:
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_INSTALL_TITLE" desc="Title shown in the app install dialog asking the user if they want to install the app on their device.">
-    Install app on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_INSTALLING_APP_TITLE" desc="Title shown in the app install dialog after the user has confirmed they want to install the app. It is only displayed for a couple of seconds while the app installs.">
-    Installing app...
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_APP_INSTALLED_TITLE" desc="Title shown in the app install dialog after the app has finished installing.">
-    App installed
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_APP_ALREADY_INSTALLED_TITLE" desc="Title shown in the app install dialog after the app has finished installing.">
-    App is already installed
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_NO_APP_ERROR_TITLE" desc="Title shown in the app install dialog when there is no app data.">
-    App not available
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_NO_APP_ERROR_DESCRIPTION" desc="Description shown in the app install dialog when there is no app data.">
-    Can't find app data
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_CONNECTION_ERROR_TITLE" desc="Title shown in the app install dialog when there was a connection error downloading app data.">
-    Can't install app
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_CONNECTION_ERROR_DESCRIPTION" desc="Description shown in the app install dialog when there was a connection error downloading app data.">
-    Check your internet connection and try again
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL" desc="Button label in the app install dialog that opens the app that was just installed.">
-    Try again
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_FAILED_INSTALL_TITLE" desc="Title shown in the app install dialog if the app failed to install.">
-    Can't install app. Something went wrong.
-  </message>
-  <message name="IDS_APP_INSTALL_DIALOG_APP_ICON_ALT" desc="Alt text for the app icon displayed in the app install dialog. This is the text that will be read by screen reader when the app icon is focused.">
-    <ph name="APP">$1<ex>Google Docs</ex></ph> logo
-  </message>
-
-  <!-- Mall app -->
-  <message name="IDS_MALL_APP_NAME" desc="Name of a system app which can be used to find and install apps and games">
-    Apps &amp; games
   </message>
 </grit-part>

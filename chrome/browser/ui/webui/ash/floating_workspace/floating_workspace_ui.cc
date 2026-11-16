@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/floating_workspace_resources.h"
 #include "chrome/grit/floating_workspace_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"

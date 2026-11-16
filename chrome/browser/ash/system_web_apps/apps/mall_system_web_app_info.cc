@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/grit/ash_mall_cros_app_resources.h"
 #include "ash/webui/mall/url_constants.h"
 #include "base/feature_list.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/constants/chromeos_features.h"

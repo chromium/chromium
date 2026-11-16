@@ -8,12 +8,12 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/lobster/lobster_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "net/base/url_util.h"
 
 namespace ash {

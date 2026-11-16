@@ -26,7 +26,6 @@ static_library("floating_workspace") {
     "//ash/public/cpp",
     "//ash/strings",
     "//ash/webui/common:trusted_types_util",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/resources/chromeos/floating_workspace:resources",
     "//chrome/browser/ui/ash/login",

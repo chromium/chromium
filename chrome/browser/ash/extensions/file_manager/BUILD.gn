@@ -71,6 +71,7 @@ static_library("file_manager") {
   deps = [
     "//ash",
     "//ash/constants",
+    "//ash/strings",
     "//ash/webui/settings/public/constants",
     "//base",
     "//chrome/app/vector_icons",

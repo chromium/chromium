@@ -31,7 +31,6 @@ static_library("multidevice_setup") {
     "//ash/strings",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/app:generated_resources",
     "//chrome/browser:resources",
     "//chrome/browser/ash/login/smart_lock",
     "//chrome/browser/ash/multidevice_setup",

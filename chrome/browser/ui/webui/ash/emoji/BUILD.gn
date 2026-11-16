@@ -58,7 +58,7 @@ static_library("emoji") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
-    "//chrome/app:generated_resources",
+    "//ash/strings",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/chromeos/emoji_picker:resources",
     "//chrome/browser/ui/webui:theme_source",

@@ -65,7 +65,7 @@ static_library("mako") {
     ":mako_bubble",
     "//ash",
     "//ash/constants",
-    "//chrome/app:generated_resources",
+    "//ash/strings",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/lobster",

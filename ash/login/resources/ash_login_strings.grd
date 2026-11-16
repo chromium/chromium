@@ -2749,6 +2749,14 @@
       <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_BUTTON_LABEL" desc="Button label for describing that the device is available for use and user can click on the button to remove the full screen notification.">
         Continue to use the device
       </message>
+
+      <!-- Update and enrollment status strings -->
+      <message name="IDS_GETTING_DEVICE_READY" desc="Message that the system is getting the device ready">
+        Getting the device ready...
+      </message>
+      <message name="IDS_DOWNLOADING" desc="The format for ETA during the update downloading stage">
+        Downloading: <ph name="STATUS">$1<ex>Less than 1 minute left</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

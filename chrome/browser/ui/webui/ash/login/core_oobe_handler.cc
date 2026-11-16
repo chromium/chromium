@@ -9,6 +9,7 @@
 
 #include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "google_apis/google_api_keys.h"
