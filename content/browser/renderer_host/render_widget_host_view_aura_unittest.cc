@@ -529,47 +529,6 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   MockWidget widget_;
 };
 
-class TestScopedKeyboardHook : public aura::ScopedKeyboardHook {
- public:
-  TestScopedKeyboardHook();
-
-  TestScopedKeyboardHook(const TestScopedKeyboardHook&) = delete;
-  TestScopedKeyboardHook& operator=(const TestScopedKeyboardHook&) = delete;
-
-  ~TestScopedKeyboardHook() override;
-
-  // aura::ScopedKeyboardHook override.
-  bool IsKeyLocked(ui::DomCode dom_code) override;
-
-  // Set up the keys being locked for testing.  One of these methods must be
-  // called before using an instance.
-  void LockAllKeys();
-  void LockSpecificKey(ui::DomCode dom_code);
-
- private:
-  bool keyboard_lock_active_ = false;
-  std::optional<ui::DomCode> locked_key_;
-};
-
-TestScopedKeyboardHook::TestScopedKeyboardHook() = default;
-
-TestScopedKeyboardHook::~TestScopedKeyboardHook() = default;
-
-bool TestScopedKeyboardHook::IsKeyLocked(ui::DomCode dom_code) {
-  DCHECK(keyboard_lock_active_) << "Did you forget to reserve keys to lock?";
-  return !locked_key_ || (locked_key_.value() == dom_code);
-}
-
-void TestScopedKeyboardHook::LockAllKeys() {
-  keyboard_lock_active_ = true;
-  locked_key_.reset();
-}
-
-void TestScopedKeyboardHook::LockSpecificKey(ui::DomCode dom_code) {
-  keyboard_lock_active_ = true;
-  locked_key_ = dom_code;
-}
-
 class RenderWidgetHostViewAuraTest : public testing::Test {
  public:
   RenderWidgetHostViewAuraTest() {
@@ -1896,12 +1855,14 @@ TEST_F(RenderWidgetHostViewAuraTest, TouchEventState) {
 
 TEST_F(RenderWidgetHostViewAuraTest,
        KeyEventRoutingWithKeyboardLockActiveForOneKey) {
-  InitViewForFrame(nullptr);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSystemKeyboardLock);
+
+  InitViewForFrame(parent_view_->GetNativeView());
   view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
-  auto test_hook = std::make_unique<TestScopedKeyboardHook>();
-  test_hook->LockSpecificKey(ui::DomCode::US_A);
-  view_->event_handler()->scoped_keyboard_hook_ = std::move(test_hook);
+  ASSERT_TRUE(
+      view_->LockKeyboard(base::flat_set<ui::DomCode>{ui::DomCode::US_A}));
 
   // This locked key will skip the prehandler and be sent to the input handler.
   ui::KeyEvent key_event1(ui::EventType::kKeyPressed,
@@ -1945,12 +1906,14 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
 TEST_F(RenderWidgetHostViewAuraTest,
        KeyEventRoutingWithKeyboardLockActiveForEscKey) {
-  InitViewForFrame(nullptr);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSystemKeyboardLock);
+
+  InitViewForFrame(parent_view_->GetNativeView());
   view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
-  auto test_hook = std::make_unique<TestScopedKeyboardHook>();
-  test_hook->LockSpecificKey(ui::DomCode::ESCAPE);
-  view_->event_handler()->scoped_keyboard_hook_ = std::move(test_hook);
+  ASSERT_TRUE(
+      view_->LockKeyboard(base::flat_set<ui::DomCode>{ui::DomCode::ESCAPE}));
 
   // Although this key was locked, it will still pass through the prehandler as
   // we do not want to prevent ESC from being used to exit fullscreen.
@@ -1981,12 +1944,13 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
 TEST_F(RenderWidgetHostViewAuraTest,
        KeyEventRoutingWithKeyboardLockActiveForAllKeys) {
-  InitViewForFrame(nullptr);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSystemKeyboardLock);
+
+  InitViewForFrame(parent_view_->GetNativeView());
   view_->ShowWithVisibility(PageVisibilityState::kVisible);
 
-  auto test_hook = std::make_unique<TestScopedKeyboardHook>();
-  test_hook->LockAllKeys();
-  view_->event_handler()->scoped_keyboard_hook_ = std::move(test_hook);
+  ASSERT_TRUE(view_->LockKeyboard(std::nullopt));
 
   // These keys will skip the prehandler and be sent to the input handler.
   std::vector<ui::DomCode> dom_codes = {ui::DomCode::US_A, ui::DomCode::US_B,
@@ -2036,6 +2000,9 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
 TEST_F(RenderWidgetHostViewAuraTest,
        KeyEventRoutingKeyboardLockAndChildPopupWithInputGrab) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kSystemKeyboardLock);
+
   parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
   parent_view_->Focus();
   ASSERT_TRUE(parent_view_->HasFocus());
@@ -2055,9 +2022,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
   parent_host->input_handler()->GetAndResetDispatchedMessages();
 
   // The parent view owns the KeyboardLock for this test.
-  auto test_hook = std::make_unique<TestScopedKeyboardHook>();
-  test_hook->LockAllKeys();
-  parent_view_->event_handler()->scoped_keyboard_hook_ = std::move(test_hook);
+  ASSERT_TRUE(parent_view_->LockKeyboard(std::nullopt));
 
   // These keys will not be processed by the parent view but will be handled in
   // the child (popup) view.

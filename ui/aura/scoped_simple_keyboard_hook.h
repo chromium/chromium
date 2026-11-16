@@ -32,8 +32,7 @@ class ScopedSimpleKeyboardHook : public ScopedKeyboardHook {
 
   ~ScopedSimpleKeyboardHook() override;
 
-  // ScopedKeyboardHook override.
-  bool IsKeyLocked(ui::DomCode dom_code) override;
+  bool IsKeyLocked(ui::DomCode dom_code);
 
   base::WeakPtr<ScopedSimpleKeyboardHook> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

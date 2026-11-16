@@ -187,18 +187,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
  private:
   FRIEND_TEST_ALL_PREFIXES(InputMethodResultAuraTest,
                            FinishImeCompositionSession);
-  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
-                           KeyEventRoutingWithKeyboardLockActiveForOneKey);
-  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
-                           KeyEventRoutingWithKeyboardLockActiveForEscKey);
-  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
-                           KeyEventRoutingWithKeyboardLockActiveForAllKeys);
-  FRIEND_TEST_ALL_PREFIXES(
-      RenderWidgetHostViewAuraTest,
-      KeyEventRoutingKeyboardLockAndChildPopupWithInputGrab);
-  FRIEND_TEST_ALL_PREFIXES(
-      RenderWidgetHostViewAuraTest,
-      KeyEventRoutingKeyboardLockAndChildPopupWithoutInputGrab);
   friend class MockPointerLockRenderWidgetHostView;
   friend class FakeRenderWidgetHostViewAura;
 

@@ -1038,7 +1038,8 @@ bool RenderWidgetHostViewEventHandler::IsKeyLocked(const ui::KeyEvent& event) {
   if (!IsKeyboardLocked() || event.code() == ui::DomCode::ESCAPE)
     return false;
 
-  return scoped_keyboard_hook_->IsKeyLocked(event.code());
+  aura::WindowTreeHost* host = window_ ? window_->GetHost() : nullptr;
+  return host && host->IsKeyLocked(event.code());
 }
 
 }  // namespace content
