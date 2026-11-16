@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -50,9 +51,9 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -66,7 +67,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link FullscreenSigninPromoLauncher}.
  *
  * <p>TODO(crbug.com/493130564): Revert to regular runner after
- * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2 launch.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @DisableFeatures({
@@ -84,25 +85,28 @@ public class FullscreenSigninPromoLauncherTest {
 
     @Parameters(name = "{index}_isIdentityMgrMigration={0}")
     public static Collection parameters() {
-        return Arrays.asList(true, false);
+        return Arrays.asList(false, true);
     }
 
-    public FullscreenSigninPromoLauncherTest(boolean isIdentityManagerMigrationEnabled) {
-        FeatureOverrides.overrideFlag(
-                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
-                isIdentityManagerMigrationEnabled);
+    private final boolean mIsIdentityManagerSourceOfAccounts;
+
+    public FullscreenSigninPromoLauncherTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
     }
 
-    @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+    @Rule(order = -2)
+    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade());
 
+    private final FakeIdentityManager mFakeIdentityManager = spy(new FakeIdentityManager());
+
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeAccountManagerFacade);
+            new AccountManagerTestRule(mFakeAccountManagerFacade, mFakeIdentityManager);
 
     @Rule
     public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
@@ -113,8 +117,6 @@ public class FullscreenSigninPromoLauncherTest {
     @Mock private UserPrefs.Natives mUserPrefsNativeMock;
 
     @Mock private PrefService mPrefServiceMock;
-
-    @Mock private IdentityManager mIdentityManagerMock;
 
     @Mock private SigninManager mSigninManagerMock;
     @Mock private SigninAndHistorySyncActivityLauncher mFullscreenSigninLauncherMock;
@@ -133,11 +135,13 @@ public class FullscreenSigninPromoLauncherTest {
 
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+                mIsIdentityManagerSourceOfAccounts);
         mTimeInPast = TimeUtils.currentTimeMillis();
         mFakeTimeTestRule.advanceMillis(TWO_DAYS_IN_MILLIS);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);
-        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME)).thenReturn("");
@@ -161,6 +165,40 @@ public class FullscreenSigninPromoLauncherTest {
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
 
+        if (mIsIdentityManagerSourceOfAccounts) {
+            verify(mFakeIdentityManager).getRefreshTokensLoadingState();
+            verify(mFakeIdentityManager, never())
+                    .getExtendedAccountInfoForAccountsWithRefreshToken();
+            verify(mFakeAccountManagerFacade, never()).getAccounts();
+        } else {
+            verify(mFakeAccountManagerFacade).getAccounts();
+            verify(mFakeIdentityManager, never()).getRefreshTokensLoadingState();
+        }
+        verify(mFullscreenSigninLauncherMock, never())
+                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
+        Assert.assertEquals(
+                mTimeInPast, mPrefManager.getSigninPromoLastShownTimeWithRandomOffset());
+    }
+
+    @Test
+    public void whenAccountFetchFailed() {
+        mAccountManagerTestRule.setAccountFetchFailed();
+        clearInvocations(mFakeAccountManagerFacade, mFakeIdentityManager);
+        mPrefManager.setSigninPromoLastShownTimeWithRandomOffset(mTimeInPast);
+
+        Assert.assertFalse(
+                FullscreenSigninPromoLauncher.launchPromoIfNeeded(
+                        mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
+
+        if (mIsIdentityManagerSourceOfAccounts) {
+            verify(mFakeIdentityManager).getRefreshTokensLoadingState();
+            verify(mFakeIdentityManager, never())
+                    .getExtendedAccountInfoForAccountsWithRefreshToken();
+            verify(mFakeAccountManagerFacade, never()).getAccounts();
+        } else {
+            verify(mFakeAccountManagerFacade).getAccounts();
+            verify(mFakeIdentityManager, never()).getRefreshTokensLoadingState();
+        }
         verify(mFullscreenSigninLauncherMock, never())
                 .createFullscreenSigninIntent(any(), any(), any(), anyInt());
         Assert.assertEquals(
@@ -292,6 +330,8 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
 
         verify(mFakeAccountManagerFacade, never()).getAccounts();
+        verify(mFakeIdentityManager, never()).getRefreshTokensLoadingState();
+        verify(mFakeIdentityManager, never()).getExtendedAccountInfoForAccountsWithRefreshToken();
         verify(mFullscreenSigninLauncherMock, never())
                 .createFullscreenSigninIntent(any(), any(), any(), anyInt());
         Assert.assertEquals(
@@ -317,6 +357,8 @@ public class FullscreenSigninPromoLauncherTest {
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getAccounts();
+        verify(mFakeIdentityManager, never()).getRefreshTokensLoadingState();
+        verify(mFakeIdentityManager, never()).getExtendedAccountInfoForAccountsWithRefreshToken();
         verify(mFullscreenSigninLauncherMock, never())
                 .createFullscreenSigninIntent(any(), any(), any(), anyInt());
     }
@@ -329,7 +371,14 @@ public class FullscreenSigninPromoLauncherTest {
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
 
-        verify(mFakeAccountManagerFacade).getAccounts();
+        if (mIsIdentityManagerSourceOfAccounts) {
+            verify(mFakeIdentityManager).getExtendedAccountInfoForAccountsWithRefreshToken();
+            verify(mFakeAccountManagerFacade, never()).getAccounts();
+        } else {
+            verify(mFakeAccountManagerFacade).getAccounts();
+            verify(mFakeIdentityManager, never())
+                    .getExtendedAccountInfoForAccountsWithRefreshToken();
+        }
         verify(mFullscreenSigninLauncherMock, never())
                 .createFullscreenSigninIntent(any(), any(), any(), anyInt());
         Assert.assertEquals(
@@ -352,6 +401,12 @@ public class FullscreenSigninPromoLauncherTest {
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
 
+        if (mIsIdentityManagerSourceOfAccounts) {
+            verify(mFakeAccountManagerFacade, never()).getAccounts();
+        } else {
+            verify(mFakeIdentityManager, never())
+                    .getExtendedAccountInfoForAccountsWithRefreshToken();
+        }
         verify(mContext).startActivity(mSigninIntent);
         Assert.assertArrayEquals(
                 mPrefManager.getSigninPromoLastAccountEmails().toArray(),

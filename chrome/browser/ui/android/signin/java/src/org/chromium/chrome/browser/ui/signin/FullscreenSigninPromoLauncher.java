@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -22,11 +24,13 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.UiFormat;
-import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -89,9 +93,7 @@ public final class FullscreenSigninPromoLauncher {
 
         prefManager.setSigninPromoLastShownTimeWithRandomOffset(getCurrentTimeWithRandomOffset());
         prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
-        var accounts =
-                AccountUtils.getAccountsIfFulfilledOrEmpty(
-                        AccountManagerFacadeProvider.getInstance().getAccounts());
+        List<AccountInfo> accounts = getAccounts(profile);
         prefManager.setSigninPromoLastAccountEmails(
                 new HashSet<>(AccountUtils.toAccountEmails(accounts)));
         return true;
@@ -256,10 +258,7 @@ public final class FullscreenSigninPromoLauncher {
             return false;
         }
 
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
-        var accounts =
-                AccountUtils.getAccountsIfFulfilledOrEmpty(accountManagerFacade.getAccounts());
+        List<AccountInfo> accounts = getAccounts(profile);
         if (accounts.isEmpty()) {
             // Don't show if the account list isn't available yet or there are no accounts in it.
             return false;
@@ -270,6 +269,20 @@ public final class FullscreenSigninPromoLauncher {
         // Don't show if no new accounts have been added after the last time promo was shown.
         return previousAccountEmails == null
                 || !previousAccountEmails.containsAll(currentAccountEmails);
+    }
+
+    private static List<AccountInfo> getAccounts(Profile profile) {
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            IdentityManager identityManager =
+                    assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
+            return identityManager.getRefreshTokensLoadingState()
+                            == RefreshTokensLoadingState.SUCCEEDED
+                    ? identityManager.getExtendedAccountInfoForAccountsWithRefreshToken()
+                    : List.of();
+        }
+        return AccountUtils.getAccountsIfFulfilledOrEmpty(
+                AccountManagerFacadeProvider.getInstance().getAccounts());
     }
 
     /**
