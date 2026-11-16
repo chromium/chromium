@@ -42,7 +42,7 @@ impl Uuid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Variant, Version};
+    use crate::{NonNilUuid, Variant, Version};
 
     #[cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))]
     use wasm_bindgen_test::*;
@@ -57,6 +57,7 @@ mod tests {
 
         assert_eq!(uuid.get_version(), Some(Version::Random));
         assert_eq!(uuid.get_variant(), Variant::RFC4122);
+        assert!(!NonNilUuid::new_v4().get().is_nil());
     }
 
     #[test]

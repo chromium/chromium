@@ -100,7 +100,7 @@ impl Uuid {
 mod tests {
     use super::*;
 
-    use crate::{std::string::ToString, ContextV1, Variant, Version};
+    use crate::{std::string::ToString, ContextV1, NonNilUuid, Variant, Version};
 
     #[cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))]
     use wasm_bindgen_test::*;
@@ -116,8 +116,11 @@ mod tests {
         let node = [1, 2, 3, 4, 5, 6];
         let context = ContextV1::new(0);
 
-        let uuid = Uuid::new_v1(Timestamp::from_unix(&context, time, time_fraction), &node);
+        let timestamp = Timestamp::from_unix(&context, time, time_fraction);
 
+        let uuid = Uuid::new_v1(timestamp, &node);
+
+        assert_eq!(NonNilUuid::new_v1(timestamp, &node), uuid);
         assert_eq!(uuid.get_version(), Some(Version::Mac));
         assert_eq!(uuid.get_variant(), Variant::RFC4122);
         assert_eq!(
@@ -155,5 +158,6 @@ mod tests {
 
         assert_eq!(uuid.get_version(), Some(Version::Mac));
         assert_eq!(uuid.get_variant(), Variant::RFC4122);
+        assert!(!NonNilUuid::now_v1(&node).get().is_nil());
     }
 }

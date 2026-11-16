@@ -94,6 +94,96 @@ impl NonNilUuid {
     pub const fn get(self) -> Uuid {
         Uuid::from_u128(self.0.get())
     }
+
+    /// Creates a non-nil version 1 UUID.
+    ///
+    /// See [`Uuid::new_v1`] for details.
+    #[cfg(feature = "v1")]
+    pub fn new_v1(ts: crate::Timestamp, node_id: &[u8; 6]) -> Self {
+        // SAFETY: `Uuid::new_v1` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::new_v1(ts, node_id)) }
+    }
+
+    /// Creates a non-nil version 1 UUID from the current time and node ID.
+    ///
+    /// See [`Uuid::now_v1`] for details.
+    #[cfg(all(feature = "v1", feature = "std", feature = "rng"))]
+    pub fn now_v1(node_id: &[u8; 6]) -> Self {
+        // SAFETY: `Uuid::now_v1` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::now_v1(node_id)) }
+    }
+
+    /// Creates a non-nil version 3 UUID from a namespace and name.
+    ///
+    /// See [`Uuid::new_v3`] for details.
+    #[cfg(feature = "v3")]
+    pub fn new_v3(namespace: &Uuid, name: &[u8]) -> Self {
+        // SAFETY: `Uuid::new_v3` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::new_v3(namespace, name)) }
+    }
+
+    /// Creates a non-nil random version 4 UUID.
+    ///
+    /// See [`Uuid::new_v4`] for details.
+    #[cfg(feature = "v4")]
+    pub fn new_v4() -> Self {
+        // SAFETY: `Uuid::new_v4` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::new_v4()) }
+    }
+
+    /// Creates a non-nil version 5 UUID from a namespace and name.
+    ///
+    /// See [`Uuid::new_v5`] for details.
+    #[cfg(feature = "v5")]
+    pub fn new_v5(namespace: &Uuid, name: &[u8]) -> Self {
+        // SAFETY: `Uuid::new_v5` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::new_v5(namespace, name)) }
+    }
+
+    /// Creates a non-nil version 6 UUID from a timestamp and node ID.
+    ///
+    /// See [`Uuid::new_v6`] for details.
+    #[cfg(feature = "v6")]
+    pub fn new_v6(ts: crate::Timestamp, node_id: &[u8; 6]) -> Self {
+        // SAFETY: `Uuid::new_v6` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::new_v6(ts, node_id)) }
+    }
+
+    /// Creates a non-nil version 6 UUID from the current time and node ID.
+    ///
+    /// See [`Uuid::now_v6`] for details.
+    #[cfg(all(feature = "v6", feature = "std", feature = "rng"))]
+    pub fn now_v6(node_id: &[u8; 6]) -> Self {
+        // SAFETY: `Uuid::now_v6` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::now_v6(node_id)) }
+    }
+
+    /// Creates a non-nil version 7 UUID from a timestamp.
+    ///
+    /// See [`Uuid::new_v7`] for details.
+    #[cfg(feature = "v7")]
+    pub fn new_v7(ts: crate::Timestamp) -> Self {
+        // SAFETY: `Uuid::new_v7` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::new_v7(ts)) }
+    }
+
+    /// Creates a non-nil version 7 UUID from the current time.
+    ///
+    /// See [`Uuid::now_v7`] for details.
+    #[cfg(all(feature = "v7", feature = "std"))]
+    pub fn now_v7() -> Self {
+        // SAFETY: `Uuid::now_v7` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::now_v7()) }
+    }
+
+    /// Creates a non-nil version 8 UUID from custom bytes.
+    ///
+    /// See [`Uuid::new_v8`] for details.
+    #[cfg(feature = "v8")]
+    pub const fn new_v8(bytes: [u8; 16]) -> Self {
+        // SAFETY: `Uuid::new_v8` sets the version bits, so its result cannot be nil.
+        unsafe { Self::new_unchecked(Uuid::new_v8(bytes)) }
+    }
 }
 
 impl From<NonNilUuid> for Uuid {

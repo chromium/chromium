@@ -122,7 +122,7 @@ impl Uuid {
 mod tests {
     use super::*;
 
-    use crate::{std::string::ToString, ClockSequence, NoContext, Variant, Version};
+    use crate::{std::string::ToString, ClockSequence, NoContext, NonNilUuid, Variant, Version};
 
     #[cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))]
     use wasm_bindgen_test::*;
@@ -138,9 +138,15 @@ mod tests {
         let seconds = ts / 1000;
         let nanos = ((ts % 1000) * 1_000_000) as u32;
 
-        let uuid = Uuid::new_v7(Timestamp::from_unix(NoContext, seconds, nanos));
+        let timestamp = Timestamp::from_unix(NoContext, seconds, nanos);
+
+        let uuid = Uuid::new_v7(timestamp);
         let uustr = uuid.hyphenated().to_string();
 
+        assert_eq!(
+            NonNilUuid::new_v7(timestamp).get().get_timestamp(),
+            uuid.get_timestamp()
+        );
         assert_eq!(uuid.get_version(), Some(Version::SortRand));
         assert_eq!(uuid.get_variant(), Variant::RFC4122);
         assert!(uuid.hyphenated().to_string().starts_with("017f22e2-79b0-7"));
@@ -162,6 +168,7 @@ mod tests {
 
         assert_eq!(uuid.get_version(), Some(Version::SortRand));
         assert_eq!(uuid.get_variant(), Variant::RFC4122);
+        assert!(!NonNilUuid::now_v7().get().is_nil());
     }
 
     #[test]

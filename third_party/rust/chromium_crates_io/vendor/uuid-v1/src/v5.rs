@@ -45,7 +45,7 @@ mod tests {
     #[cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))]
     use wasm_bindgen_test::*;
 
-    use crate::{std::string::ToString, Variant, Version};
+    use crate::{std::string::ToString, NonNilUuid, Variant, Version};
 
     static FIXTURE: &[(&Uuid, &str, &str)] = &[
         (
@@ -164,6 +164,7 @@ mod tests {
         for &(ns, name, u) in FIXTURE {
             let uuid = Uuid::new_v5(ns, name.as_bytes());
 
+            assert_eq!(NonNilUuid::new_v5(ns, name.as_bytes()), uuid);
             assert_eq!(uuid.get_version(), Some(Version::Sha1));
             assert_eq!(uuid.get_variant(), Variant::RFC4122);
             assert_eq!(Ok(uuid), u.parse());

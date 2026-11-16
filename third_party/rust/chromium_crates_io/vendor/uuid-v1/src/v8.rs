@@ -33,7 +33,7 @@ impl Uuid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Variant, Version};
+    use crate::{NonNilUuid, Variant, Version};
     use std::string::ToString;
 
     #[cfg(all(target_arch = "wasm32", any(target_os = "unknown", target_os = "none")))]
@@ -49,6 +49,7 @@ mod tests {
             0xf, 0xe, 0xd, 0xc, 0xb, 0xa, 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x3, 0x2, 0x1, 0x0,
         ];
         let uuid = Uuid::new_v8(buf);
+        assert_eq!(NonNilUuid::new_v8(buf), uuid);
         assert_eq!(uuid.get_version(), Some(Version::Custom));
         assert_eq!(uuid.get_variant(), Variant::RFC4122);
         assert_eq!(uuid.get_version_num(), 8);
