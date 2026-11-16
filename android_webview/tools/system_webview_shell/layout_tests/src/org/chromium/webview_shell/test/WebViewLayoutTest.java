@@ -5,6 +5,7 @@
 package org.chromium.webview_shell.test;
 
 import android.content.pm.PackageManager;
+import android.media.MediaDrm;
 import android.os.Bundle;
 
 import androidx.test.filters.MediumTest;
@@ -22,7 +23,6 @@ import org.chromium.base.Log;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.webview_shell.WebViewLayoutTestActivity;
@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -48,6 +49,10 @@ public class WebViewLayoutTest {
     private static final String PATH_WEBVIEW_PREFIX = EXTERNAL_PREFIX + BASE_WEBVIEW_TEST_PATH;
 
     private static final long TIMEOUT_SECONDS = 20;
+
+    // Widevine scheme UUID from https://dashif.org/identifiers/content_protection/.
+    private static final UUID WIDEVINE_UUID =
+            UUID.fromString("edef8ba9-79d6-4ace-a3c8-27dcd51d21ed");
 
     // LINT.IfChange
     private static final String EXTRA_REBASELINE =
@@ -162,17 +167,18 @@ public class WebViewLayoutTest {
                 "blink-apis/battery-status/battery-callback-expected.txt");
     }
 
-    /*
-    TODO(aluo): Investigate why this is failing on google devices too and not
-    just aosp per crbug.com/607350
-    */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/607350")
     public void testEMEPermission() throws Exception {
+        if (!isWidevineSupported()) {
+            return;
+        }
         mTestActivity.setGrantPermission(true);
-        runWebViewLayoutTest("blink-apis/eme/eme.html", "blink-apis/eme/eme-expected.txt");
-        mTestActivity.setGrantPermission(false);
+        try {
+            runWebViewLayoutTest("blink-apis/eme/eme.html", "blink-apis/eme/eme-expected.txt");
+        } finally {
+            mTestActivity.setGrantPermission(false);
+        }
     }
 
     // test helper methods
@@ -251,5 +257,10 @@ public class WebViewLayoutTest {
         return ContextUtils.getApplicationContext()
                 .getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_MIDI);
+    }
+
+    /** Checks if the device supports the Widevine MediaDrm scheme. */
+    private static boolean isWidevineSupported() {
+        return MediaDrm.isCryptoSchemeSupported(WIDEVINE_UUID);
     }
 }

@@ -7,7 +7,24 @@
       window.jsTestIsAsync = true;
 
       // TODO(yolandyan) Look into whether more key system need to be added
-      var chromeKeySystem = "com.widevine.alpha"
+      var chromeKeySystem = "com.widevine.alpha";
+      // EME requires at least one codec capability; SW_SECURE_CRYPTO avoids a
+      // console warning on Widevine. Uses standard baseline codecs required on
+      // Android (https://developer.android.com/media/platform/supported-formats).
+      const audioCapabilities = [
+        { contentType: 'audio/webm; codecs="opus"',
+          robustness: 'SW_SECURE_CRYPTO' },
+        { contentType: 'audio/mp4; codecs="mp4a.40.2"',
+          robustness: 'SW_SECURE_CRYPTO' }
+      ];
+      const videoCapabilities = [
+        { contentType: 'video/webm; codecs="vp8"',
+          robustness: 'SW_SECURE_CRYPTO' },
+        { contentType: 'video/webm; codecs="vp9"',
+          robustness: 'SW_SECURE_CRYPTO' },
+        { contentType: 'video/mp4; codecs="avc1.42E01E"',
+          robustness: 'SW_SECURE_CRYPTO' }
+      ];
 
       var tryKeySystem = function(keySystem) {
         debug("keySystem is " + keySystem);
@@ -16,15 +33,24 @@
           [
             { distinctiveIdentifier: "required",
               persistentState: "required",
+              audioCapabilities: audioCapabilities,
+              videoCapabilities: videoCapabilities,
               label: "'distinctiveIdentifier' and 'persistentState' required"
             },
             { distinctiveIdentifier: "required",
+              audioCapabilities: audioCapabilities,
+              videoCapabilities: videoCapabilities,
               label: "'distinctiveIdentifier' required"
             },
             { persistentState: "required",
+              audioCapabilities: audioCapabilities,
+              videoCapabilities: videoCapabilities,
               label: "'persistentState' required"
             },
-            { label: "empty" }
+            { audioCapabilities: audioCapabilities,
+              videoCapabilities: videoCapabilities,
+              label: "default capabilities"
+            }
           ]
         ).then(
           function (mediaKeySystemAccess) {
