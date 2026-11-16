@@ -1741,6 +1741,7 @@ bool LocationBarView::IsContentSettingImageVisible(size_t index) {
 
 void LocationBarView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   RefreshBackground();
+  bounds_in_widget_ = ConvertRectToWidget(GetLocalBounds());
   NotifyBoundsChanged();
 }
 
@@ -1751,6 +1752,16 @@ bool LocationBarView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 void LocationBarView::OnVisibleBoundsChanged() {
   if (GetOmniboxController()->IsPopupOpen()) {
     omnibox_popup_view_->UpdatePopupAppearance();
+  }
+
+  // An ancestor's layout can move this view within the widget without changing
+  // its own bounds, so `OnBoundsChanged()` isn't called. E.g. in a narrow
+  // window, resizing the vertical tab strip moves the toolbar, while the
+  // toolbar's other children absorb the width change.
+  const gfx::Rect bounds_in_widget = ConvertRectToWidget(GetLocalBounds());
+  if (bounds_in_widget != bounds_in_widget_) {
+    bounds_in_widget_ = bounds_in_widget;
+    NotifyBoundsChanged();
   }
 }
 

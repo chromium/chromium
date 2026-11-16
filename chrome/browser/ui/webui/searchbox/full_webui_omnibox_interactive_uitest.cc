@@ -82,6 +82,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
@@ -208,6 +209,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -2184,6 +2186,69 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                   // Resize from the top edge, down and back up.
                   move_window_and_wait(gfx::Vector2d(), 40),
                   move_window_and_wait(gfx::Vector2d(), -40));
+}
+
+// Verifies that the popup stays over the location bar when resizing the
+// vertical tab strip moves the location bar without resizing it. That happens
+// in a narrow window, where the location bar is at its minimum width and other
+// toolbar children, e.g. the profile chip's label, absorb the toolbar's width
+// change. Which children absorb it first varies by platform, so the test fixes
+// the location bar's width instead.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       PopupFollowsLocationBarWhenVerticalTabStripResizes) {
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  LocationBarView* const location_bar =
+      browser_view->toolbar()->location_bar_view();
+  if (!location_bar) {
+    GTEST_SKIP() << "Needs the Views location bar.";
+  }
+  // The popup widget's offset from the location bar.
+  auto get_popup_offset = [&]() {
+    views::Widget* popup_widget = GetPopupWidget(browser());
+    CHECK(popup_widget);
+    return popup_widget->GetWindowBoundsInScreen().origin() -
+           location_bar->GetBoundsInScreen().origin();
+  };
+  gfx::Vector2d initial_offset;
+  gfx::Rect location_bar_bounds;
+  // Resizes the vertical tab strip by `resize_amount`, checks that this moved
+  // the location bar without resizing it, and waits for the popup to be back
+  // over the location bar.
+  auto resize_vertical_tab_strip_and_wait = [&](int resize_amount) {
+    return Steps(
+        Do([&, resize_amount]() {
+          location_bar_bounds = location_bar->GetBoundsInScreen();
+          VerticalTabStripRegionView* const region_view =
+              browser_view->vertical_tab_strip_region_view_for_testing();
+          region_view->OnResize(resize_amount, /*done_resizing=*/false);
+          region_view->OnResize(resize_amount, /*done_resizing=*/true);
+          RunScheduledLayouts();
+        }),
+        CheckResult(
+            [&, resize_amount]() {
+              return location_bar->GetBoundsInScreen() ==
+                     location_bar_bounds + gfx::Vector2d(resize_amount, 0);
+            },
+            true, "CheckLocationBarMovedWithoutResizing"),
+        PollUntil([&]() { return get_popup_offset() == initial_offset; },
+                  "WaitForPopupAlignedWithLocationBar"));
+  };
+  RunTestSequence(
+      EnableVerticalTabs(), FocusOmniboxOnInitialNtp(kTab1),
+      WaitForPopupActive(), Do([&]() {
+        // Keep the location bar at its current width as the toolbar resizes.
+        location_bar->SetPreferredSize(location_bar->size());
+        location_bar->SetProperty(
+            views::kFlexBehaviorKey,
+            views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                     views::MaximumFlexSizeRule::kPreferred));
+        RunScheduledLayouts();
+        initial_offset = get_popup_offset();
+      }),
+      // Narrow the vertical tab strip, then widen it back.
+      resize_vertical_tab_strip_and_wait(-20),
+      resize_vertical_tab_strip_and_wait(20));
 }
 
 // Verifies that the full WebUI omnibox popup loads layout_constants_v0.css and

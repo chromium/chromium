@@ -651,6 +651,10 @@ class LocationBarView
 
   SkColor background_color_ = gfx::kPlaceholderColor;
 
+  // This view's bounds in its widget's coordinates when observers were last
+  // notified of a bounds change. See `OnVisibleBoundsChanged()`.
+  gfx::Rect bounds_in_widget_;
+
   // The focus manager associated with this view. The focus manager is expected
   // to outlive this view.
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;
