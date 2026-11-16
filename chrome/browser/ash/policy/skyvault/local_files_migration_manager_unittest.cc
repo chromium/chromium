@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
@@ -29,16 +29,15 @@
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "profile.h"
@@ -78,22 +77,21 @@ class LocalFilesMigrationManagerTest : public testing::Test {
         /*disabled_features=*/{});
     message_center::MessageCenter::Initialize();
 
-    scoped_profile_ = std::make_unique<TestingProfile>();
-    profile_ = scoped_profile_.get();
-    profile_->SetIsNewProfile(true);
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal()));
 
-    AccountId account_id =
+    const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kEmail, GaiaId("123456"));
-    ash::AnnotatedAccountId::Set(profile_, account_id);
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
 
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    user_manager->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
-        profile_);
-    user_manager->LoginUser(account_id,
-                            /*set_profile_created_flag=*/true);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+    ASSERT_TRUE(profile_);
 
     statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                              "12345689");
@@ -159,8 +157,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
     ash::UserDataAuthClient::OverrideGlobalInstanceForTesting(
         ash::FakeUserDataAuthClient::Get());
     profile_ = nullptr;
-    scoped_user_manager_.reset();
-    scoped_profile_.reset();
+    user_session_test_environment_.reset();
     message_center::MessageCenter::Shutdown();
     testing::Test::TearDown();
   }
@@ -206,9 +203,9 @@ class LocalFilesMigrationManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ash::system::FakeStatisticsProvider statistics_provider_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  std::unique_ptr<TestingProfile> scoped_profile_;
-  raw_ptr<TestingProfile> profile_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<Profile> profile_;
   base::FilePath my_files_dir_;
 };
 
@@ -251,7 +248,8 @@ TEST_F(LocalFilesMigrationManagerTest, ResetStateIfLocalStorageAllowed) {
   SetPrefs(State::kPending,
            /*local_user_files_allowed=*/true);
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.Initialize();
   histogram_tester_.ExpectBucketCount("Enterprise.SkyVault.Migration.Reset",
                                       true, 1);
@@ -263,7 +261,8 @@ TEST_F(LocalFilesMigrationManagerTest, ResetStateIfMigrationDisabled) {
   SetPrefs(State::kInProgress,
            /*local_user_files_allowed=*/false, "read_only");
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.Initialize();
   histogram_tester_.ExpectBucketCount("Enterprise.SkyVault.Migration.Reset",
                                       true, 1);
@@ -275,7 +274,8 @@ TEST_F(LocalFilesMigrationManagerTest, NoResetStateIfAlreadyDisabled) {
   SetPrefs(State::kUninitialized,
            /*local_user_files_allowed=*/false, "read_only");
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.Initialize();
   histogram_tester_.ExpectBucketCount("Enterprise.SkyVault.Migration.Reset",
                                       true, 0);
@@ -309,7 +309,8 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
       std::make_unique<MockMigrationNotificationManager>(profile());
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
   manager.Initialize();
@@ -355,7 +356,8 @@ TEST_F(LocalFilesMigrationManagerTest, RetriesIfAllowed) {
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
       std::make_unique<MockMigrationNotificationManager>(profile());
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
   manager.Initialize();
@@ -395,7 +397,8 @@ TEST_F(LocalFilesMigrationManagerTest, DoesNotRetryWhenFatal) {
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
       std::make_unique<MockMigrationNotificationManager>(profile());
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
   manager.Initialize();
@@ -417,7 +420,8 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesWriteAccessError) {
 
   SetPrefs(State::kCleanup);
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.Initialize();
   // Wait for async functions to complete.
   base::RunLoop().RunUntilIdle();
@@ -441,7 +445,8 @@ TEST_F(LocalFilesMigrationManagerTest, UsesExistingStartTimeFromPrefs) {
 
   SetPrefs(State::kPending);
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
 
   manager.Initialize();
@@ -465,7 +470,8 @@ TEST_F(LocalFilesMigrationManagerTest, InformUserShortTimeJumpsToSecond) {
 
   SetPrefs(State::kPending);
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
 
   manager.Initialize();
@@ -483,7 +489,8 @@ TEST_F(LocalFilesMigrationManagerTest, StoresScheduledTimeToPrefs) {
 
   SetPrefs(State::kPending);
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
 
   manager.Initialize();
@@ -509,7 +516,8 @@ TEST_F(LocalFilesMigrationManagerTest, StartsNowIfStartTimePast) {
   SetPrefs(State::kPending, /*local_user_files_allowed=*/false,
            /*destination=*/"delete");
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
 
   manager.Initialize();
@@ -542,7 +550,8 @@ TEST_F(LocalFilesMigrationManagerTest, StopsWhenLocalStorageAllowed) {
 
   SetPrefs(State::kInProgress);
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
   manager.Initialize();
@@ -578,7 +587,8 @@ TEST_F(LocalFilesMigrationManagerTest, DoesNotRetryDeleteIndefinitely) {
             std::move(callback).Run("Something failed");
           });
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetCleanupHandlerForTesting(cleanup_handler->GetWeakPtr());
   manager.Initialize();
 
@@ -606,7 +616,8 @@ TEST_F(LocalFilesMigrationManagerTest, RetriesDeleteOnSessionStart) {
       std::make_unique<MockCleanupHandler>();
   EXPECT_CALL(*cleanup_handler, Cleanup);
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCleanupHandlerForTesting(cleanup_handler->GetWeakPtr());
   manager.Initialize();
@@ -641,7 +652,8 @@ TEST_P(LocalFilesMigrationManagerStateTest, InitializeFromState) {
       .Times(expected_dialog_count);
   EXPECT_CALL(*coordinator_ptr, Run).Times(expected_run_count);
 
-  LocalFilesMigrationManager manager(local_state(), profile());
+  LocalFilesMigrationManager manager(local_state(), profile(),
+                                     profile()->GetPrefs());
   manager.SetNotificationManagerForTesting(notification_manager.get());
   manager.SetCoordinatorForTesting(std::move(coordinator));
   manager.Initialize();

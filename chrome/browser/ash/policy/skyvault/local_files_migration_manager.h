@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/wall_clock_timer.h"
@@ -53,9 +54,14 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
     virtual void OnMigrationReset() = 0;
   };
 
-  // Creates an instance of LocalFilesMigrationManager.
+  // Creates an instance of LocalFilesMigrationManager. `profile_prefs` is the
+  // owning Profile's own PrefService, already valid at this point (unlike
+  // user_manager::User::GetProfilePrefs(), which isn't wired up until later;
+  // see UserManagerImpl::OnUserProfileCreated()). `profile_prefs` must not be
+  // null and must outlive this instance.
   LocalFilesMigrationManager(PrefService* local_state,
-                             content::BrowserContext* context);
+                             content::BrowserContext* context,
+                             PrefService* profile_prefs);
   LocalFilesMigrationManager(const LocalFilesMigrationManager&) = delete;
   LocalFilesMigrationManager& operator=(const LocalFilesMigrationManager&) =
       delete;
@@ -194,6 +200,10 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Context for which this instance is created.
   raw_ptr<content::BrowserContext> context_;
+
+  // The owning Profile's PrefService. See the constructor's own comment for
+  // why this is sourced this way instead of via user_manager::User.
+  const raw_ref<PrefService> profile_prefs_;
 
   // Shows and manages migration notifications and dialogs.
   raw_ptr<MigrationNotificationManager> notification_manager_;
