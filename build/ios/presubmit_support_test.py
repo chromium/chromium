@@ -97,6 +97,94 @@ class BundleDataPresubmit(unittest.TestCase):
         )
         self.assertEqual(1, len(results))
 
+    def testErrorMessage(self):
+        """
+        Checks that the error explains what changed and gives a fix command
+        with paths relative to the repository root.
+        """
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api, self.mock_output_api, 'test_data/missing', '.'
+        )
+        self.assertEqual(1, len(results))
+        message = results[0].message
+        self.assertIn(
+            'build/ios/test_data/missing.filelist is out of date', message
+        )
+        self.assertIn('File list does not match glob expansion', message)
+        self.assertIn('+ test_data/missing.globlist', message)
+        self.assertIn('generated from the .globlist next to it', message)
+        self.assertIn(
+            'python3 build/ios/update_bundle_filelist.py '
+            'build/ios/test_data/missing.filelist '
+            'build/ios/test_data/missing.globlist build/ios',
+            message,
+        )
+
+    def testUnexpectedHeaderMessage(self):
+        """
+        Checks that a bad header suggests regenerating the file list and does
+        not include absolute paths.
+        """
+        results = presubmit_support.CheckBundleData(
+            self.mock_input_api, self.mock_output_api, 'test_data/comment', '.'
+        )
+        self.assertEqual(1, len(results))
+        message = results[0].message
+        self.assertIn(
+            'Unexpected header for build/ios/test_data/comment.filelist',
+            message,
+        )
+        self.assertNotIn(os.path.abspath(os.path.dirname(__file__)), message)
+        self.assertIn('python3 build/ios/update_bundle_filelist.py', message)
+
+    def testUnreadableGloblistMessage(self):
+        """
+        Checks that a missing globlist asks to fix the globlist rather than to
+        regenerate the file list, and does not include absolute paths.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with open(os.path.join(temp_dir, 'noglob.filelist'), 'w') as f:
+                f.write(_TEMP_FILELIST_CONTENTS)
+            self.mock_input_api.change.RepositoryRoot = lambda: temp_dir
+            self.mock_input_api.PresubmitLocalPath = lambda: temp_dir
+            results = presubmit_support.CheckBundleData(
+                self.mock_input_api, self.mock_output_api, 'noglob'
+            )
+            self.assertEqual(1, len(results))
+            message = results[0].message
+            self.assertIn('noglob.globlist could not be read', message)
+            self.assertIn('Could not read glob list: noglob.globlist', message)
+            self.assertIn('Fix the .globlist', message)
+            self.assertNotIn(temp_dir, message)
+            self.assertNotIn('update_bundle_filelist.py', message)
+
+    def testErrorMessageIsTruncated(self):
+        """
+        Checks that a long list of differences is truncated.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with open(os.path.join(temp_dir, 'long.filelist'), 'w') as f:
+                f.write(_TEMP_FILELIST_CONTENTS)
+                for i in range(30):
+                    f.write('file%02d.txt\n' % i)
+            with open(os.path.join(temp_dir, 'long.globlist'), 'w') as f:
+                f.write(_TEMP_GLOBLIST_CONTENTS)
+            self.mock_input_api.change.RepositoryRoot = lambda: temp_dir
+            self.mock_input_api.PresubmitLocalPath = lambda: temp_dir
+            results = presubmit_support.CheckBundleData(
+                self.mock_input_api, self.mock_output_api, 'long'
+            )
+            self.assertEqual(1, len(results))
+            message = results[0].message
+            self.assertIn('- file00.txt', message)
+            self.assertNotIn('- file29.txt', message)
+            self.assertIn('(11 more lines)', message)
+            self.assertIn(
+                'python3 build/ios/update_bundle_filelist.py '
+                'long.filelist long.globlist .',
+                message,
+            )
+
     def testExtraFilesInFilelist(self):
         """
         Checks the case where extra files have been included in the file list.

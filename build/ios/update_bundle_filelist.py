@@ -58,6 +58,9 @@ _HEADER_PATTERN = re.compile(r"""# Copyright [0-9]+ The Chromium Authors
 
 _HEADER_HEIGHT = 6
 
+# Prefix of the error reported when the .globlist cannot be read or parsed.
+GLOBLIST_READ_ERROR = 'Could not read glob list'
+
 _START_IGNORE_EXPANSIONS_OUTSIDE_GLOBLIST_DIR = '# push(ignore-relative)'
 _STOP_IGNORE_EXPANSIONS_OUTSIDE_GLOBLIST_DIR = '# pop(ignore-relative)'
 
@@ -256,15 +259,26 @@ def write_filelist(filelist_name, files, header):
         return []
 
 
-def process_filelist(filelist, globlist, globroot, check=False, verbose=False):
+def process_filelist(
+    filelist, globlist, globroot, check=False, verbose=False, errors=None
+):
+    """Updates `filelist` (or checks it if `check` is True). Returns 0 on
+    success. If `errors` is a list, a description of any problem found is
+    appended to it, regardless of `verbose`."""
+
+    def report_error(error_message, error_info):
+        if verbose:
+            print_error(error_message, error_info)
+        if errors is not None:
+            errors.append(error_message)
+            if error_info:
+                errors.append(error_info)
+
     files_from_globlist = []
     try:
         files_from_globlist = parse_and_expand_globlist(globlist, globroot)
     except Exception as e:
-        if verbose:
-            print_error(
-                f'Could not read glob list: {globlist}', f'{type(e)}: {e}'
-            )
+        report_error(f'{GLOBLIST_READ_ERROR}: {globlist}', f'{type(e)}: {e}')
         return 1
 
     (files, header) = parse_filelist(filelist)
@@ -291,18 +305,14 @@ def process_filelist(filelist, globlist, globroot, check=False, verbose=False):
 
     if check:
         if not _HEADER_PATTERN.search(header):
-            if verbose:
-                print_error(f'Unexpected header for {filelist}', f'{header}')
+            report_error(f'Unexpected header for {filelist}', f'{header}')
             return 1
         if not additions and not removals:
             return 0
-        if verbose:
-            pretty_additions = ['+ ' + f for f in additions]
-            pretty_removals = ['- ' + f for f in removals]
-            pretty_diff = '\n'.join(pretty_additions + pretty_removals)
-            print_error(
-                'File list does not match glob expansion', f'{pretty_diff}'
-            )
+        pretty_additions = ['+ ' + f for f in additions]
+        pretty_removals = ['- ' + f for f in removals]
+        pretty_diff = '\n'.join(pretty_additions + pretty_removals)
+        report_error('File list does not match glob expansion', pretty_diff)
         return 1
     else:
         write_filelist(filelist, files_from_globlist, header)

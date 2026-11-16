@@ -10,8 +10,12 @@ for more details about the presubmit API built into depot_tools.
 from . import update_bundle_filelist
 
 
+# Maximum number of lines describing why a filelist is out of date that are
+# included in the presubmit error.
+_MAX_BUNDLE_DATA_ERROR_LINES = 20
+
+
 def CheckBundleData(input_api, output_api, base, globroot='//'):
-    root = input_api.change.RepositoryRoot()  # noqa: F841
     filelist = input_api.os_path.join(
         input_api.PresubmitLocalPath(), base + '.filelist'
     )
@@ -26,29 +30,67 @@ def CheckBundleData(input_api, output_api, base, globroot='//'):
         globroot = input_api.os_path.join(
             input_api.PresubmitLocalPath(), globroot
         )
+    errors = []
     if (
         update_bundle_filelist.process_filelist(
-            filelist, globlist, globroot, check=True, verbose=input_api.verbose
+            filelist,
+            globlist,
+            globroot,
+            check=True,
+            verbose=input_api.verbose,
+            errors=errors,
         )
         == 0
     ):
         return []
-    else:
-        script = input_api.os_path.join(
-            input_api.change.RepositoryRoot(),
-            'build',
-            'ios',
-            'update_bundle_filelist.py',
-        )
 
+    def RepositoryRelative(path):
+        relative = input_api.os_path.relpath(
+            path, input_api.change.RepositoryRoot()
+        )
+        return relative.replace('\\', '/')
+
+    relative_filelist = RepositoryRelative(filelist)
+    relative_globlist = RepositoryRelative(globlist)
+
+    # Avoid showing the absolute paths of the machine running the presubmit.
+    details = '\n'.join(errors)
+    details = details.replace(filelist, relative_filelist)
+    details = details.replace(globlist, relative_globlist)
+    details = details.splitlines()
+    if len(details) > _MAX_BUNDLE_DATA_ERROR_LINES:
+        omitted = len(details) - _MAX_BUNDLE_DATA_ERROR_LINES
+        details = details[:_MAX_BUNDLE_DATA_ERROR_LINES]
+        details.append('... (%d more lines)' % omitted)
+    details = '\n'.join(details)
+
+    if errors and errors[0].startswith(
+        update_bundle_filelist.GLOBLIST_READ_ERROR
+    ):
+        # Re-generating the .filelist cannot fix this.
         return [
             output_api.PresubmitError(
-                'Filelist needs to be re-generated. '
-                'Please run \'python3 %s %s %s %s\' '
-                'and include the changes in this CL'
-                % (script, filelist, globlist, globroot)
+                '%s could not be read.\n%s\n\n'
+                '%s is generated from this .globlist. Fix the .globlist, '
+                'then re-run the presubmit.'
+                % (relative_globlist, details, relative_filelist)
             )
         ]
+
+    command = 'python3 build/ios/update_bundle_filelist.py %s %s %s' % (
+        relative_filelist,
+        relative_globlist,
+        RepositoryRelative(globroot),
+    )
+    return [
+        output_api.PresubmitError(
+            '%s is out of date.\n%s\n\n'
+            'This .filelist is generated from the .globlist next to it. To '
+            'fix, run this command from the src/ directory and include the '
+            'updated .filelist in this CL:\n  %s'
+            % (relative_filelist, details, command)
+        )
+    ]
 
 
 def CheckNotFatalUntilAdoption(input_api, output_api, path_filter=None):
