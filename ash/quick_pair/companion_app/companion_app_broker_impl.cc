@@ -5,8 +5,8 @@
 #include "ash/quick_pair/companion_app/companion_app_broker_impl.h"
 
 #include <algorithm>
-#include <set>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/login_status.h"
@@ -14,6 +14,7 @@
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/containers/fixed_flat_set.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/session_manager/core/session.h"
@@ -63,12 +64,21 @@ bool CompanionAppBrokerImpl::MaybeShowCompanionAppActions(
   const std::string& device_ids =
       ash::features::kFastPairPwaCompanionDeviceIds.Get();
 
-  std::set<std::string> target_ids{
-      "08A97F", "5A36A5", "6EDAF7", "9ADB11", "A7D7A0", "C8E228",
-      "D87A3E", "F2020E", "F58DE7", "30346C", "7862CE",
-  };
+  static constexpr auto kTargetIds = base::MakeFixedFlatSet<std::string_view>({
+      "08A97F",
+      "5A36A5",
+      "6EDAF7",
+      "9ADB11",
+      "A7D7A0",
+      "C8E228",
+      "D87A3E",
+      "F2020E",
+      "F58DE7",
+      "30346C",
+      "7862CE",
+  });
 
-  if (!target_ids.contains(metadata_id) &&
+  if (!kTargetIds.contains(metadata_id) &&
       device_ids.find(metadata_id) == std::string::npos) {
     return false;
   }
