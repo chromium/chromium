@@ -144,9 +144,11 @@ void FormatBlockCommand::FormatRange(
   if (outer_block != node_after_insertion_position &&
       To<HTMLElement>(node_after_insertion_position)
           ->hasAttribute(html_names::kStyleAttr)) {
-    block_element->setAttribute(html_names::kStyleAttr,
-                                To<HTMLElement>(node_after_insertion_position)
-                                    ->getAttribute(html_names::kStyleAttr));
+    // Hold a copy: `setAttribute()` can pause in the debugger and reallocate
+    // `node_after_insertion_position`'s attribute storage.
+    const AtomicString style = To<HTMLElement>(node_after_insertion_position)
+                                   ->getAttribute(html_names::kStyleAttr);
+    block_element->setAttribute(html_names::kStyleAttr, style);
   }
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
