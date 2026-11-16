@@ -125,6 +125,17 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // Notifies the page the widget was hidden and performs cleanup.
   virtual void Clear() = 0;
 
+  // The counterpart of `ShowUI()` for a host that hides this content: marks
+  // the WebContents hidden (with `omnibox::kOmniboxWebUIPopupMarkAsHidden`) so
+  // that the compositor can evict its frame, then calls `Clear()`, which
+  // detaches the WebContents once the page has cleared.
+  void HideUI();
+
+  // Returns whether the page has completed its first visually non-empty paint.
+  // The popup keeps its page across shows, so this stays true once the page
+  // first paints.
+  bool CompletedFirstVisuallyNonEmptyPaint();
+
   // Returns the WebContents from within the wrapper. Don't use
   // GetWebContents() since that may be nullptr if the popup isn't visible.
   content::WebContents* GetWrappedWebContents();

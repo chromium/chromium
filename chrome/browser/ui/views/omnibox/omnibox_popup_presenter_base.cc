@@ -150,15 +150,10 @@ void OmniboxPopupPresenterBase::Show() {
   SynchronizePopupBounds();
 
   if (auto* content = GetWebUIContent()) {
+    // Also marks the WebContents visible (`WasShown()`) prior to
+    // `InsertVisualStateCallback()`, so that the callback is not dropped by
+    // the graphics pipeline.
     content->ShowUI();
-
-    // Call WasShown to mark the WebContents as visible so that a frame will
-    // eventually be produced that triggers the OnVisualStateReady callback.
-    // This must be called prior to `LogResultToContentReadyMetric`. If the
-    // WebContents is still technically hidden when the metric attempts to
-    // register its `InsertVisualStateCallback`, the graphics pipeline will
-    // immediately drop the callback, resulting in lost telemetry data.
-    content->GetWebContents()->WasShown();
 
     auto show_request_time = base::TimeTicks::Now();
     auto timeout = config_.defer_until_visual_state;
@@ -348,13 +343,7 @@ void OmniboxPopupPresenterBase::Hide() {
     is_open_ = false;
     widget_->Hide();
     if (auto* content = GetWebUIContent()) {
-      if (base::FeatureList::IsEnabled(
-              omnibox::kOmniboxWebUIPopupMarkAsHidden)) {
-        if (content->GetWebContents()) {
-          content->GetWebContents()->WasHidden();
-        }
-      }
-      content->Clear();
+      content->HideUI();
     }
 
     // Discard the widget so the next show gets a brand new native window that
@@ -813,13 +802,8 @@ bool OmniboxPopupPresenterBase::CompletedFirstVisuallyNonEmptyPaint() {
   if (completed_first_visually_non_empty_paint_for_testing_.has_value()) {
     return *completed_first_visually_non_empty_paint_for_testing_;
   }
-  // The popup keeps its page across shows, so this stays true once the page
-  // first paints. Read the wrapped contents, since `GetWebContents()` creates
-  // new contents while the popup is hidden and its contents are detached.
   OmniboxPopupWebUIBaseContent* content = GetWebUIContent();
-  content::WebContents* web_contents =
-      content ? content->GetWrappedWebContents() : nullptr;
-  return web_contents && web_contents->CompletedFirstVisuallyNonEmptyPaint();
+  return content && content->CompletedFirstVisuallyNonEmptyPaint();
 }
 
 void OmniboxPopupPresenterBase::
