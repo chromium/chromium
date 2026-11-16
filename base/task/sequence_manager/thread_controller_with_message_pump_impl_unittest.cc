@@ -635,7 +635,14 @@ TEST_F(ThreadControllerWithMessagePumpTest, QuitInterruptsBatch) {
   testing::Mock::VerifyAndClearExpectations(message_pump_);
 }
 
-TEST_F(ThreadControllerWithMessagePumpTest, EarlyQuit) {
+// TODO(crbug.com/585642298): Flaky on Android because an earlier test in the
+// same process can leave g_run_tasks_by_batches disabled.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_EarlyQuit DISABLED_EarlyQuit
+#else
+#define MAYBE_EarlyQuit EarlyQuit
+#endif
+TEST_F(ThreadControllerWithMessagePumpTest, MAYBE_EarlyQuit) {
   // This test ensures that a opt-of-runloop Quit() (which is possible with some
   // pump implementations) doesn't affect the next RunLoop::Run call.
 
