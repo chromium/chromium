@@ -243,9 +243,12 @@ class AutofillManager
     // Fired when an autofill of `filling_payload` is previewed or filled.
     // This is not fired for single-field operations (see
     // OnFillOrPreviewField()). `filled_field_ids` represents the IDs of the
-    // fields that were sent to the renderer to be filled: each corresponding
-    // `AutofillField` contains the field type information. `trigger_field_id`
-    // is the ID of the field that initiated/triggered the autofill action.
+    // fields that were sent to the renderer to be filled and are still cached:
+    // each corresponding `AutofillField` contains the field type information.
+    // `trigger_field_id` is the ID of the field that initiated/triggered the
+    // autofill action. For fills (`mojom::ActionPersistence::kFill`), this is
+    // not fired if the form or `trigger_field_id` is no longer cached when
+    // post-fill bookkeeping runs.
     // TODO(crbug.com/40280003): Consider removing the event in favor of
     // OnAfterDidAutofillForm(), which is fired by the renderer.
     // TODO(crbug.com/40227071): Consider removing `action_persistence` as the

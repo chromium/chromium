@@ -16,6 +16,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,6 +42,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -88,9 +90,11 @@ using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Optional;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::VariantWith;
 
 constexpr char kAppLocale[] = "en-US";
 
@@ -3819,6 +3823,60 @@ TEST_F(FormFillerTest, FillOrPreviewForm_LogsPreFillState) {
   EXPECT_THAT(log_receiver.entries(),
               Contains(HasSubstr("Field 1 Fillable - has value: 0->1; "
                                  "autofilled: 0->1.")));
+}
+
+// Tests that previews neither record undo history nor update the cache, but
+// notify observers synchronously.
+TEST_F(FormFillerTest, FillOrPreviewForm_PreviewNotifiesObserversOnly) {
+  FormData form =
+      FormSeen({.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}});
+  const FieldGlobalId first_name_id = form.fields()[0].global_id();
+  const FieldGlobalId last_name_id = form.fields()[1].global_id();
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+
+  AutofillProfile profile = test::GetFullProfile();
+
+  NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&autofill_manager());
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(observer,
+                OnFillOrPreviewForm(
+                    _, form.global_id(), first_name_id,
+                    mojom::ActionPersistence::kPreview,
+                    ElementsAre(first_name_id, last_name_id), _,
+                    VariantWith<const AutofillProfile*>(Pointee(
+                        Property(&AutofillProfile::guid, profile.guid())))));
+    EXPECT_CALL(check, Call);
+  }
+
+  EXPECT_CALL(autofill_driver(), ApplyFormAction)
+      .WillOnce([](mojom::FormActionType, mojom::ActionPersistence,
+                   base::span<const FormFieldData> data, const FillId&, bool,
+                   const url::Origin&,
+                   const absl::flat_hash_map<FieldGlobalId, FieldType>&) {
+        return base::ToVector(data, &FormFieldData::global_id);
+      });
+
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kPreview, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
+  check.Call();
+
+  EXPECT_EQ(form_structure->field(0)->last_modifier(), std::nullopt);
+  EXPECT_EQ(form_structure->field(1)->last_modifier(), std::nullopt);
+  EXPECT_FALSE(form_structure->last_filling_timestamp().has_value());
+
+  // There is no undo history.
+  EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
+  autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
+                                  form.global_id(), first_name_id);
 }
 
 }  // namespace autofill

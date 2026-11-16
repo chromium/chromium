@@ -22,6 +22,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
@@ -46,6 +47,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -116,6 +118,40 @@ constexpr bool SupportsRefills(FillingProduct filling_product) {
       return false;
   }
   NOTREACHED();
+}
+
+// Owning counterpart of `FillingPayload`.
+// LINT.IfChange(OwnedFillingPayload)
+using OwnedFillingPayload = std::variant<AutofillProfile,
+                                         CreditCard,
+                                         EntityInstance,
+                                         VerifiedProfile,
+                                         OtpFillData>;
+// LINT.ThenChange(components/autofill/core/browser/filling/form_filler.h:FillingPayload)
+
+// Deep-copies the object that `filling_payload` points to, so that it can
+// outlive the call of `FormFiller::FillOrPreviewForm()` until the
+// post-`ApplyFormAction()` bookkeeping has run. This happens on every fill
+// (but not on previews, which do not need the payload after
+// `FormFiller::FillOrPreviewForm()` returns). For full server cards, this
+// creates another short-lived copy of the unmasked card number and CVC, which
+// is destroyed together with the `PendingFillData` that owns it.
+OwnedFillingPayload ToOwnedFillingPayload(
+    const FillingPayload& filling_payload) {
+  return std::visit(
+      [](const auto* payload) -> OwnedFillingPayload {
+        return CHECK_DEREF(payload);
+      },
+      filling_payload);
+}
+
+// Returns a non-owning `FillingPayload` that points into
+// `owned_filling_payload`.
+FillingPayload AsFillingPayload(
+    const OwnedFillingPayload& owned_filling_payload LIFETIME_BOUND) {
+  return std::visit(
+      [](const auto& payload) -> FillingPayload { return &payload; },
+      owned_filling_payload);
 }
 
 FillDataType GetFillDataTypeFromFillingPayload(
@@ -337,6 +373,29 @@ struct FormFiller::AugmentedFillingPayload {
             filling_payload)) {}
 
   Variant variant;
+};
+
+// Bundles the in-flight state of a form fill operation so that the
+// post-`ApplyFormAction()` bookkeeping (`OnAfterFillForm()`) can execute
+// without holding raw references to `FormStructure`, `AutofillField`, or
+// caller-owned payload objects.
+struct FormFiller::PendingFillData {
+  // Returns whether the operation is a refill.
+  bool is_refill() const { return refill_trigger_reason.has_value(); }
+
+  FillingProduct filling_product;
+  OwnedFillingPayload filling_payload;
+  FormGlobalId form_id;
+  FieldGlobalId trigger_field_id;
+  AutofillTriggerSource trigger_source;
+  // Set if and only if the operation is a refill.
+  std::optional<RefillTriggerReason> refill_trigger_reason;
+  // The fields that were sent to the renderer with an empty value, e.g.,
+  // because payments swapping cleared them.
+  base::flat_set<FieldGlobalId> emptied_field_ids;
+  absl::flat_hash_map<FieldGlobalId, FieldType> filled_field_types;
+  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons;
+  FormAutofillHistory::PreFillFieldStates pre_fill_field_states;
 };
 
 // Keeps track of the filling context for a form, used to make refill
@@ -935,49 +994,113 @@ void FormFiller::FillOrPreviewForm(
           fill_id, /*supports_refill=*/may_refill_in_future,
           trigger_field.origin(), filled_field_types);
 
-  // This will hold the cached version of `result_fields`.
-  std::vector<const AutofillField*> safe_filled_fields =
-      base::ToVector(safe_filled_field_ids,
-                     [&](FieldGlobalId field_id) -> const AutofillField* {
-                       return form.GetFieldById(field_id);
-                     });
-
-  if (action_persistence == mojom::ActionPersistence::kFill) {
-    form.set_last_filling_timestamp(base::TimeTicks::Now());
-
-    AppendFillLogEvents(form, trigger_field, safe_filled_field_ids,
-                        pre_fill_field_states, skip_reasons, filling_payload,
-                        refill_options.is_refill());
-
-    // Save filling history to support undoing it later if needed.
-    if (ShouldRecordFillingHistory(filling_product)) {
-      base::flat_set<FieldGlobalId> emptied_field_ids;
-      for (const FormFieldData& result_field : result_fields) {
-        if (result_field.value().empty()) {
-          emptied_field_ids.insert(result_field.global_id());
-        }
-      }
-      form_autofill_history_.AddFormFillingEntry(
-          base::MakeFlatMap<FieldGlobalId,
-                            FormAutofillHistory::FieldFillingEntry>(
-              safe_filled_field_ids, {},
-              [&](FieldGlobalId field_id) {
-                return std::pair(field_id,
-                                 std::move(pre_fill_field_states.at(field_id)));
-              }),
-          emptied_field_ids, filling_product, refill_options.is_refill());
-    }
-
-    // If the operation was a persistent fill and not a preview, update the
-    // cache with the information changed during the fill operation.
-    UpdateCacheOnFill(form, result_fields, safe_filled_field_ids,
-                      filled_field_types, filling_product,
-                      augmented_filling_payload);
+  if (action_persistence == mojom::ActionPersistence::kPreview) {
+    // Previews only notify observers, which happens synchronously.
+    std::vector<const AutofillField*> safe_previewed_fields =
+        base::ToVector(safe_filled_field_ids,
+                       [&](FieldGlobalId field_id) -> const AutofillField* {
+                         return form.GetFieldById(field_id);
+                       });
+    manager_->OnDidFillOrPreviewForm(
+        action_persistence, form, trigger_field, safe_previewed_fields,
+        skip_reasons, filling_payload, trigger_source, refill_options.reason());
+    return;
   }
 
-  manager_->OnDidFillOrPreviewForm(
-      action_persistence, form, trigger_field, safe_filled_fields, skip_reasons,
-      filling_payload, trigger_source, refill_options.reason());
+  // The bookkeeping of fills (`OnAfterFillForm()`) may run in a later task. By
+  // then, the form cache may have changed and the caller may have destroyed
+  // `filling_payload`, so it refers to the form and the trigger field by ID and
+  // owns a copy of the payload.
+  base::flat_set<FieldGlobalId> emptied_field_ids;
+  for (const FormFieldData& result_field : result_fields) {
+    if (result_field.value().empty()) {
+      emptied_field_ids.insert(result_field.global_id());
+    }
+  }
+  PendingFillData pending_fill_data{
+      .filling_product = filling_product,
+      .filling_payload = ToOwnedFillingPayload(filling_payload),
+      .form_id = form.global_id(),
+      .trigger_field_id = trigger_field.global_id(),
+      .trigger_source = trigger_source,
+      .refill_trigger_reason = refill_options.reason(),
+      .emptied_field_ids = std::move(emptied_field_ids),
+      .filled_field_types = std::move(filled_field_types),
+      .skip_reasons = std::move(skip_reasons),
+      .pre_fill_field_states = std::move(pre_fill_field_states),
+  };
+  OnAfterFillForm(std::move(pending_fill_data),
+                  std::move(safe_filled_field_ids));
+}
+
+void FormFiller::OnAfterFillForm(
+    PendingFillData pending_fill_data,
+    base::flat_set<FieldGlobalId> safe_filled_field_ids) {
+  FormStructure* form =
+      manager_->FindCachedFormById(pending_fill_data.form_id, /*pass_key=*/{});
+  if (!form) {
+    return;
+  }
+
+  form->set_last_filling_timestamp(base::TimeTicks::Now());
+
+  // The trigger field may have been removed from `form` while other fields were
+  // filled. In that case, the bookkeeping below still runs, and only the
+  // trigger field's fill log event and `OnDidFillOrPreviewForm()` are skipped.
+  AutofillField* trigger_field =
+      form->GetFieldById(pending_fill_data.trigger_field_id);
+
+  // Drop any field IDs that were removed from `form` since filling started.
+  base::EraseIf(safe_filled_field_ids, [&](FieldGlobalId field_id) {
+    return !form->GetFieldById(field_id);
+  });
+  const FillingPayload filling_payload =
+      AsFillingPayload(pending_fill_data.filling_payload);
+  const bool is_refill = pending_fill_data.is_refill();
+
+  AppendFillLogEvents(*form, trigger_field, safe_filled_field_ids,
+                      pending_fill_data.pre_fill_field_states,
+                      pending_fill_data.skip_reasons, filling_payload,
+                      is_refill);
+
+  // Save filling history to support undoing it later if needed.
+  if (ShouldRecordFillingHistory(pending_fill_data.filling_product)) {
+    form_autofill_history_.AddFormFillingEntry(
+        base::MakeFlatMap<FieldGlobalId,
+                          FormAutofillHistory::FieldFillingEntry>(
+            safe_filled_field_ids, {},
+            [&](FieldGlobalId field_id) {
+              return std::pair(
+                  field_id,
+                  std::move(
+                      pending_fill_data.pre_fill_field_states.at(field_id)));
+            }),
+        pending_fill_data.emptied_field_ids, pending_fill_data.filling_product,
+        is_refill);
+  }
+
+  // Update the cache with the information changed during the fill operation.
+  UpdateCacheOnFill(*form, safe_filled_field_ids,
+                    pending_fill_data.emptied_field_ids,
+                    pending_fill_data.filled_field_types,
+                    pending_fill_data.filling_product, filling_payload);
+
+  // `OnDidFillOrPreviewForm()` (observers, key metrics, use counts) requires
+  // the trigger field.
+  if (trigger_field) {
+    // This holds the cached versions of the fields in `safe_filled_field_ids`.
+    // The `CHECK_DEREF` cannot fail because of the `EraseIf` above.
+    std::vector<const AutofillField*> safe_filled_fields =
+        base::ToVector(safe_filled_field_ids,
+                       [&](FieldGlobalId field_id) -> const AutofillField* {
+                         return &CHECK_DEREF(form->GetFieldById(field_id));
+                       });
+    manager_->OnDidFillOrPreviewForm(
+        mojom::ActionPersistence::kFill, *form, *trigger_field,
+        safe_filled_fields, pending_fill_data.skip_reasons, filling_payload,
+        pending_fill_data.trigger_source,
+        pending_fill_data.refill_trigger_reason);
+  }
 }
 
 void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {
@@ -1331,27 +1454,22 @@ void FormFiller::FillField(const ValueAndTypeAndOverride& filling_content,
 
 void FormFiller::UpdateCacheOnFill(
     FormStructure& form,
-    base::span<const FormFieldData> browser_filled_fields,
     const base::flat_set<FieldGlobalId>& safe_filled_field_ids,
+    const base::flat_set<FieldGlobalId>& emptied_field_ids,
     const absl::flat_hash_map<FieldGlobalId, FieldType>& filled_field_types,
     FillingProduct filling_product,
-    const AugmentedFillingPayload& augmented_filling_payload) const {
-  const auto is_newly_autofilled_field_map =
-      base::MakeFlatMap<FieldGlobalId, bool>(
-          browser_filled_fields, {}, [](const FormFieldData& field) {
-            // FormFiller::FillField() does not always set
-            // `field.is_autofilled_according_to_renderer()` to true, so we
-            // inspect the value instead.
-            return std::pair(field.global_id(), !field.value().empty());
-          });
+    const FillingPayload& filling_payload) const {
   for (const std::unique_ptr<AutofillField>& field : form) {
     if (!safe_filled_field_ids.contains(field->global_id())) {
       continue;
     }
     const FieldType& autofilled_type =
         CHECK_DEREF(base::FindOrNull(filled_field_types, field->global_id()));
-    const bool is_newly_autofilled = CHECK_DEREF(
-        base::FindOrNull(is_newly_autofilled_field_map, field->global_id()));
+    // FormFiller::FillField() does not always set
+    // `field.is_autofilled_according_to_renderer()` to true, so we inspect
+    // whether the field was sent with an empty value instead.
+    const bool is_newly_autofilled =
+        !emptied_field_ids.contains(field->global_id());
 
     if (is_newly_autofilled) {
       field->AddFieldModifier(FieldModifier::kAutofill);
@@ -1362,12 +1480,10 @@ void FormFiller::UpdateCacheOnFill(
     field->set_autofilled_type(autofilled_type);
     if (filling_product == FillingProduct::kAddress) {
       field->set_autofill_source_profile_guid(
-          std::get<const AutofillProfile*>(augmented_filling_payload.variant)
-              ->guid());
+          std::get<const AutofillProfile*>(filling_payload)->guid());
     }
     if (filling_product == FillingProduct::kCreditCard &&
-        std::get<const CreditCard*>(augmented_filling_payload.variant)
-            ->is_bnpl_card()) {
+        std::get<const CreditCard*>(filling_payload)->is_bnpl_card()) {
       field->set_was_filled_with_bnpl(true);
     }
   }
@@ -1375,7 +1491,7 @@ void FormFiller::UpdateCacheOnFill(
 
 void FormFiller::AppendFillLogEvents(
     FormStructure& form,
-    AutofillField& trigger_field,
+    AutofillField* trigger_field,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
     const FormAutofillHistory::PreFillFieldStates& pre_fill_field_states,
     const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
@@ -1388,13 +1504,14 @@ void FormFiller::AppendFillLogEvents(
     country_code =
         base::UTF16ToUTF8((*address)->GetRawInfo(ADDRESS_HOME_COUNTRY));
   }
-  TriggerFillFieldLogEvent trigger_fill_field_log_event =
-      TriggerFillFieldLogEvent{
-          .data_type = GetFillDataTypeFromFillingPayload(filling_payload),
-          .associated_country_code = country_code,
-          .timestamp = base::Time::Now()};
-  trigger_field.AppendLogEventIfNotRepeated(trigger_fill_field_log_event);
-  FillEventId fill_event_id = trigger_fill_field_log_event.fill_event_id;
+  const FillEventId fill_event_id = GetNextFillEventId();
+  if (trigger_field) {
+    trigger_field->AppendLogEventIfNotRepeated(TriggerFillFieldLogEvent{
+        .fill_event_id = fill_event_id,
+        .data_type = GetFillDataTypeFromFillingPayload(filling_payload),
+        .associated_country_code = country_code,
+        .timestamp = base::Time::Now()});
+  }
 
   for (const std::unique_ptr<AutofillField>& field : form.fields()) {
     const FieldGlobalId field_id = field->global_id();

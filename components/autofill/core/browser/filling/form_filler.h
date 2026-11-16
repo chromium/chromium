@@ -15,7 +15,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -61,11 +60,13 @@ enum class RefillTriggerReason {
 
 using VerifiedProfile = std::map<FieldType, std::u16string>;
 
+// LINT.IfChange(FillingPayload)
 using FillingPayload = std::variant<const AutofillProfile*,
                                     const CreditCard*,
                                     const EntityInstance*,
                                     const VerifiedProfile*,
                                     const OtpFillData*>;
+// LINT.ThenChange(components/autofill/core/browser/filling/form_filler.cc:OwnedFillingPayload)
 
 // Helper class responsible for [re]filling forms and fields.
 //
@@ -224,6 +225,7 @@ class FormFiller {
   friend class TestFormFiller;
 
   struct AugmentedFillingPayload;
+  struct PendingFillData;
 
   // Stores a refill `context` for `form_id`. If `context` is null, erases the
   // entry corresponding to `form_id`.
@@ -280,24 +282,37 @@ class FormFiller {
                  AutofillTriggerSource trigger_source,
                  bool allow_suggestion_swapping);
 
+  // Completes a form fill operation after `ApplyFormAction()`: If the form is
+  // still cached, updates cached field states, undo history, fill log events,
+  // and metrics. If the trigger field is no longer cached, its
+  // `TriggerFillFieldLogEvent` and `OnDidFillOrPreviewForm()` (observers, key
+  // metrics, use counts) are skipped. (Previews complete synchronously in
+  // `FillOrPreviewForm()`.)
+  void OnAfterFillForm(PendingFillData pending_fill_data,
+                       base::flat_set<FieldGlobalId> safe_filled_field_ids);
+
   // Updates the cached `AutofillField`s in `form` with the information
-  // resulting from a filling operation.
+  // resulting from a filling operation. Of the `safe_filled_field_ids`, the
+  // `emptied_field_ids` (sent to the renderer with an empty value) are marked
+  // as not autofilled, all others as autofilled.
   void UpdateCacheOnFill(
       FormStructure& form,
-      base::span<const FormFieldData> browser_filled_fields,
       const base::flat_set<FieldGlobalId>& safe_filled_field_ids,
+      const base::flat_set<FieldGlobalId>& emptied_field_ids,
       const absl::flat_hash_map<FieldGlobalId, FieldType>& filled_field_types,
       FillingProduct filling_product,
-      const AugmentedFillingPayload& augmented_filling_payload) const;
+      const FillingPayload& filling_payload) const;
 
   // Appends `TriggerFillFieldLogEvent` and `FillFieldLogEvents` to the relevant
   // fields in the `form` if there was a filling operation.
   // `pre_fill_field_states` contains the field states captured prior to
   // filling; fields absent from `pre_fill_field_states` (i.e., fields added to
-  // `form` after the snapshot was taken) are skipped.
+  // `form` after the snapshot was taken) are skipped. `trigger_field` is null
+  // if it was removed from `form` before the bookkeeping ran; then only its
+  // `TriggerFillFieldLogEvent` is skipped.
   void AppendFillLogEvents(
       FormStructure& form,
-      AutofillField& trigger_field,
+      AutofillField* trigger_field,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
       const FormAutofillHistory::PreFillFieldStates& pre_fill_field_states,
       const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
