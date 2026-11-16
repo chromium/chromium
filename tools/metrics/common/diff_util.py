@@ -6,8 +6,6 @@
 user-managed files are correct.
 """
 
-from __future__ import print_function
-
 import difflib
 import logging
 import os

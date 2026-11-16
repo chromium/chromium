@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from contextlib import redirect_stdout
+import contextlib
 import io
 import unittest
 import setup_modules  # pylint: disable=unused-import
@@ -22,7 +22,7 @@ class PrintExpandedHistogramsTest(unittest.TestCase):
   def testSmoke(self):
     """Tests that the script runs to completion with no arguments."""
     mock_stdout = io.StringIO()
-    with redirect_stdout(mock_stdout):
+    with contextlib.redirect_stdout(mock_stdout):
       return_code = print_expanded_histograms.main([])
     self.assertEqual(0, return_code)
     output = mock_stdout.getvalue()
@@ -35,7 +35,7 @@ class PrintExpandedHistogramsTest(unittest.TestCase):
   def testNamesOnly(self):
     """Tests that the script runs to completion with --print-names-only."""
     mock_stdout = io.StringIO()
-    with redirect_stdout(mock_stdout):
+    with contextlib.redirect_stdout(mock_stdout):
       return_code = print_expanded_histograms.main(['--print-names-only'])
     self.assertEqual(0, return_code)
     output = mock_stdout.getvalue()

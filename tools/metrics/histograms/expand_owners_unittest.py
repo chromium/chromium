@@ -9,7 +9,7 @@ import sys
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
-from pathlib import Path
+import pathlib
 
 import mock  # type: ignore
 import setup_modules  # pylint: disable=unused-import
@@ -76,7 +76,7 @@ class ExpandOwnersTest(unittest.TestCase):
     # that scan the checkout in parallel.
     temp_root = tempfile.mkdtemp()
     self.addCleanup(shutil.rmtree, temp_root)
-    fake_src = Path(temp_root) / 'src'
+    fake_src = pathlib.Path(temp_root) / 'src'
     src_patcher = mock.patch.object(path_util, 'CHROMIUM_SRC_PATH', fake_src)
     src_patcher.start()
     self.addCleanup(src_patcher.stop)
@@ -107,7 +107,7 @@ class ExpandOwnersTest(unittest.TestCase):
     os.chmod(fake_dirmd, 0o755)
 
     with mock.patch.object(
-      expand_owners, '_DEPOT_TOOLS_PATH', Path(depot_tools)
+      expand_owners, '_DEPOT_TOOLS_PATH', pathlib.Path(depot_tools)
     ):
       self.assertEqual(
         expand_owners.ExtractComponentViaDirmd(os.path.join(fake_src, 'large')),
@@ -720,7 +720,7 @@ class ExpandOwnersTest(unittest.TestCase):
     Also, checks that there isn't a recursive loop.
     """
     src_owners_path = str(path_util.CHROMIUM_SRC_PATH / 'OWNERS')
-    Path(src_owners_path).touch()
+    pathlib.Path(src_owners_path).touch()
 
     path = expand_owners._GetOwnersFilePath('src/banana/chocolate/OWNERS')
     result = expand_owners._GetHigherLevelOwnersFilePath(path)

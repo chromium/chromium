@@ -20,8 +20,6 @@ changed, a window will be prompted asking for user's consent. The old version
 will also be saved in a backup file.
 """
 
-from __future__ import print_function
-
 __author__ = 'evanm (Evan Martin)'
 
 import ast
@@ -41,9 +39,9 @@ import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 import chromium_src.tools.metrics.actions.actions_model as actions_model
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
-from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH
+import chromium_src.tools.metrics.common.path_util as path_util
 
-_CHROMIUM_SRC_PATH_STR = str(CHROMIUM_SRC_PATH)
+_CHROMIUM_SRC_PATH_STR = str(path_util.CHROMIUM_SRC_PATH)
 
 
 USER_METRICS_ACTION_RE = re.compile(

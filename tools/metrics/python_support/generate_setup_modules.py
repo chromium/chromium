@@ -7,7 +7,7 @@
 # See more details about this system in comments within generated files or
 # in _TARGET_FILE_TEMPLATE below.
 import os
-from pathlib import Path
+import pathlib
 from typing import List
 
 _TOOLS_METRICS_RELATIVE_PATH = 'tools/metrics'
@@ -43,14 +43,14 @@ _TARGET_FILE_TEMPLATE = """# Copyright 2026 The Chromium Authors
 # import chrome_src.tools.metrics.common.models as models
 # ```
 
-from pathlib import Path
+import pathlib
 
 import os
 import sys
 
 _CHROMIUM_SRC_RELATIVE_PATH = '{chromium_src_relative_path}'
 
-base_path = Path(os.path.dirname(os.path.abspath(__file__)))
+base_path = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 
 # Add src/tools/metrics to path temporarily to import the setup_modules_lib.
 chromium_src_path = base_path.joinpath(_CHROMIUM_SRC_RELATIVE_PATH).resolve()
@@ -77,20 +77,20 @@ def _is_excluded(path: str) -> bool:
 
 
 def _generate_helpers(tools_metrics_path_str: str):
-  tools_metrics_path = Path(tools_metrics_path_str).resolve()
-  chromium_src_path = Path(
+  tools_metrics_path = pathlib.Path(tools_metrics_path_str).resolve()
+  chromium_src_path = pathlib.Path(
     tools_metrics_path_str.removesuffix(_TOOLS_METRICS_RELATIVE_PATH)
   ).resolve()
 
   for dirpath, _, _ in os.walk(tools_metrics_path):
-    current_dir = Path(dirpath).resolve()
+    current_dir = pathlib.Path(dirpath).resolve()
 
     # Exclude based on relative path
     relative_path = current_dir.relative_to(tools_metrics_path)
     if _is_excluded(str(relative_path)):
       continue
 
-    chromium_src_relative_path = Path(
+    chromium_src_relative_path = pathlib.Path(
       os.path.relpath(chromium_src_path, current_dir)
     )
     file_content = _TARGET_FILE_TEMPLATE.format(
@@ -107,4 +107,6 @@ def _generate_helpers(tools_metrics_path_str: str):
 
 
 if __name__ == '__main__':
-  _generate_helpers(tools_metrics_path_str=str(Path(__file__).parent.parent))
+  _generate_helpers(
+    tools_metrics_path_str=str(pathlib.Path(__file__).parent.parent)
+  )

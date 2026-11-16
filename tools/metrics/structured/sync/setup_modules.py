@@ -19,14 +19,14 @@
 # import chrome_src.tools.metrics.common.models as models
 # ```
 
-from pathlib import Path
+import pathlib
 
 import os
 import sys
 
 _CHROMIUM_SRC_RELATIVE_PATH = '../../../..'
 
-base_path = Path(os.path.dirname(os.path.abspath(__file__)))
+base_path = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 
 # Add src/tools/metrics to path temporarily to import the setup_modules_lib.
 chromium_src_path = base_path.joinpath(_CHROMIUM_SRC_RELATIVE_PATH).resolve()

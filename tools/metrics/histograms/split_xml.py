@@ -8,7 +8,7 @@ Intended to be used to split up the large histograms.xml or enums.xml file.
 """
 
 import os
-from pathlib import Path
+import pathlib
 import re
 import xml.etree.ElementTree as ET
 
@@ -120,7 +120,7 @@ def _CreateXMLFile(comment, parent_node_string, nodes, output_dir, filename):
   second_comment = f'<!--{SECOND_TOP_LEVEL_COMMENT_TEMPLATE % comment}-->'
   full_xml_string = f'{first_comment}\n{second_comment}\n{xml_string}'
 
-  output_path = str(Path(output_dir) / filename)
+  output_path = str(pathlib.Path(output_dir) / filename)
   if os.path.exists(output_path):
     os.remove(output_path)
 
@@ -201,7 +201,7 @@ def _OutputToFolderAndXML(nodes, output_dir, key):
     key: The prefix of the histograms, also the name of the new folder.
   """
   # Convert CamelCase name to snake_case when creating a directory.
-  output_dir = Path(output_dir) / _CamelCaseToSnakeCase(key)
+  output_dir = pathlib.Path(output_dir) / _CamelCaseToSnakeCase(key)
   output_dir.mkdir(parents=True, exist_ok=True)
   _CreateXMLFile(
     key + ' histograms', 'histograms', nodes, output_dir, 'histograms.xml'
@@ -220,7 +220,7 @@ def _WriteDocumentDict(document_dict, output_dir):
     if isinstance(val, list):
       _OutputToFolderAndXML(val, output_dir, key)
     else:
-      _WriteDocumentDict(val, str(Path(output_dir) / key))
+      _WriteDocumentDict(val, str(pathlib.Path(output_dir) / key))
 
 
 def _AggregateMinorNodes(node_dict):

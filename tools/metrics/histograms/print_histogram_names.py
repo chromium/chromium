@@ -4,8 +4,6 @@
 # found in the LICENSE file.
 """Prints all histogram names."""
 
-from __future__ import print_function
-
 import argparse
 import io
 import os

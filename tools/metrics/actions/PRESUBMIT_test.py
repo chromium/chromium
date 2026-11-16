@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import unittest
-from unittest.mock import MagicMock, patch, call
+from unittest import mock
 import sys
 import os
 import tempfile
@@ -83,37 +83,39 @@ _OWNERS_NEW_XML = """<actions>
 
 class PresubmitTest(unittest.TestCase):
   def testCheckRemovedSegmentationUserActions(self):
-    mock_input_api = MagicMock()
-    mock_output_api = MagicMock()
+    mock_input_api = mock.MagicMock()
+    mock_output_api = mock.MagicMock()
 
     # Create a mock error object to be returned by PresubmitError
-    mock_error = MagicMock()
+    mock_error = mock.MagicMock()
     mock_output_api.PresubmitError.return_value = mock_error
 
-    mock_file = MagicMock()
+    mock_file = mock.MagicMock()
     mock_file.LocalPath.return_value = os.path.join(
       'tools', 'metrics', 'actions', 'actions.xml'
     )
     mock_input_api.AffectedFiles.return_value = [mock_file]
 
     # Mock the imported module
-    mock_print_action_names = MagicMock()
+    mock_print_action_names = mock.MagicMock()
     mock_print_action_names.get_action_diff.return_value = (
       [],
       ['Test.Action.Removed'],
       [],
     )
 
-    mock_generate_histogram_list = MagicMock()
+    mock_generate_histogram_list = mock.MagicMock()
     mock_generate_histogram_list.GetActualActionNames.return_value = {
       'Test.Action.Removed'
     }
 
     with (
-      patch.object(
+      mock.patch.object(
         PRESUBMIT, 'generate_histogram_list', mock_generate_histogram_list
       ),
-      patch.object(PRESUBMIT, 'print_action_names', mock_print_action_names),
+      mock.patch.object(
+        PRESUBMIT, 'print_action_names', mock_print_action_names
+      ),
     ):
       errors = PRESUBMIT.CheckRemovedSegmentationUserActions(
         mock_input_api, mock_output_api
@@ -128,8 +130,8 @@ class PresubmitTest(unittest.TestCase):
     )
 
   def testDetectsHashConflict(self):
-    mock_input_api = MagicMock()
-    mock_output_api = MagicMock()
+    mock_input_api = mock.MagicMock()
+    mock_output_api = mock.MagicMock()
 
     mock_input_api.PresubmitLocalPath.return_value = os.path.dirname(__file__)
 
@@ -154,11 +156,11 @@ class PresubmitTest(unittest.TestCase):
         os.remove(temp_file.name)
 
   def testCheckActionOwners(self):
-    mock_input_api = MagicMock()
-    mock_output_api = MagicMock()
-    mock_error = MagicMock()
+    mock_input_api = mock.MagicMock()
+    mock_output_api = mock.MagicMock()
+    mock_error = mock.MagicMock()
     mock_output_api.PresubmitError.return_value = mock_error
-    mock_file = MagicMock()
+    mock_file = mock.MagicMock()
     # Path used for matching in PRESUBMIT.py
     mock_file.LocalPath.return_value = os.path.join(
       'tools', 'metrics', 'actions', 'actions.xml'
@@ -177,17 +179,17 @@ class PresubmitTest(unittest.TestCase):
     self.assertEqual(mock_output_api.PresubmitError.call_count, 3)
 
     expected_calls = [
-      call(
+      mock.call(
         'Action NewAction.Invalid has no valid owners. If this is an '
         'unrelated change, you can ignore this error and bypass the '
         'presubmit check.'
       ),
-      call(
+      mock.call(
         'Action ModifiedAction.ToInvalid has no valid owners. If this is '
         'an unrelated change, you can ignore this error and bypass the '
         'presubmit check.'
       ),
-      call(
+      mock.call(
         'Action OldAction.Invalid has no valid owners. If this is an '
         'unrelated change, you can ignore this error and bypass the '
         'presubmit check.'

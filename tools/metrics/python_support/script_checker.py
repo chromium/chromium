@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from dataclasses import dataclass
+import dataclasses
 from typing import List
 import sys
 import tempfile
@@ -12,12 +12,10 @@ import subprocess
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.python_support.tests_helpers import (
-  TestableScript,
-)
+import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class FailedScriptResult:
   command: str
   status_code: int
@@ -42,7 +40,7 @@ class FailedScriptResult:
 
 
 def check_scripts(
-  commands_to_check: List[TestableScript],
+  commands_to_check: List[tests_helpers.TestableScript],
   cwd: str,
   display_progressbar: bool = True,
 ) -> List[FailedScriptResult]:

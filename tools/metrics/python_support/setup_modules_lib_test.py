@@ -8,7 +8,7 @@
 import unittest
 import os
 import importlib.util
-from pathlib import Path
+import pathlib
 from typing import List, Tuple
 
 from parameterized import parameterized  # type: ignore
@@ -27,7 +27,7 @@ def _get_python_files() -> List[Tuple[str, str]]:
 
   Returns: List of files found
   """
-  target_path = Path(_TARGET_DIR).resolve()
+  target_path = pathlib.Path(_TARGET_DIR).resolve()
   files_list = []
 
   for root, _, files in os.walk(target_path):
@@ -47,7 +47,7 @@ def _get_python_files() -> List[Tuple[str, str]]:
 class TestImports(unittest.TestCase):
   @parameterized.expand(_get_python_files)
   def test_compiles(self, _, file_path):
-    file_path = Path(file_path)
+    file_path = pathlib.Path(file_path)
 
     try:
       with open(file_path, 'r', encoding='utf-8') as f:
@@ -60,7 +60,7 @@ class TestImports(unittest.TestCase):
 
   @parameterized.expand(_get_python_files)
   def test_imports(self, _, file_path):
-    file_path = Path(file_path)
+    file_path = pathlib.Path(file_path)
     module_name = file_path.stem
 
     try:

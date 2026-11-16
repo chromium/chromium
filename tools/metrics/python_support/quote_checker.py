@@ -4,12 +4,12 @@
 """Helper to check Python files for quote consistency."""
 
 import ast
-from dataclasses import dataclass
+import dataclasses
 import pathlib
 from typing import List, Set
 
 
-@dataclass
+@dataclasses.dataclass
 class ModifiedString:
   # The raw source of the string literal (including prefix and quotes)
   raw_source: str
@@ -19,7 +19,7 @@ class ModifiedString:
   lines: Set[int]
 
 
-@dataclass
+@dataclasses.dataclass
 class _StringLiteralWithContext:
   literal: str
   line_range: tuple[int, int]

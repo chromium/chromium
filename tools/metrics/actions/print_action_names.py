@@ -4,8 +4,6 @@
 # found in the LICENSE file.
 """Prints all user action names."""
 
-from __future__ import print_function
-
 import argparse
 import os
 import subprocess

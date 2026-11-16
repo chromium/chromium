@@ -8,7 +8,6 @@ import collections.abc
 import pathlib
 import sys
 import xml.etree.ElementTree as ET
-from pathlib import Path
 
 import setup_modules  # pylint: disable=unused-import
 

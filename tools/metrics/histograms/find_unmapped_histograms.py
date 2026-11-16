@@ -11,8 +11,6 @@ trials are entirely ignored by this script.
 
 """
 
-from __future__ import print_function
-
 import hashlib
 import logging
 import optparse

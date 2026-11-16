@@ -12,8 +12,6 @@ we need additional customization, like special attribute ordering in tags
 and wrapping text nodes, so we implement our own full custom XML pretty-printer.
 """
 
-from __future__ import with_statement
-
 import argparse
 import sys
 
