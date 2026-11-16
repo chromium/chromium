@@ -10,7 +10,6 @@ import type {NtpSearchboxElement} from './ntp_searchbox.js';
 import {getHtml as getContextualEntrypointHtml} from './ntp_searchbox_contextual_entrypoint.html.js';
 
 export function getHtml(this: NtpSearchboxElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
     @keydown="${this.onInputWrapperKeydown}"
@@ -18,18 +17,14 @@ export function getHtml(this: NtpSearchboxElement) {
     @dragover="${this.dragAndDropHandler?.handleDragOver || nothing}"
     @dragleave="${this.dragAndDropHandler?.handleDragLeave || nothing}"
     @drop="${this.dragAndDropHandler?.handleDrop || nothing}">
-  ${this.ntpRealboxNextEnabled ?
-    html`
-      <search-animated-glow
-        animation-state="${this.animationState}"
-        .isListening="${this.isListening}"
-        .darkThemeColorsEnabled="${false}"
+  ${this.ntpRealboxNextEnabled ? html`
+    <search-animated-glow animation-state="${this.animationState}"
+        .isListening="${this.isListening}" .darkThemeColorsEnabled="${false}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
         part="animated-glow">
-      </search-animated-glow>
-    ` : ''}
-  <cr-searchbox-input id="input"
-      exportparts="searchbox-input"
+    </search-animated-glow>
+  ` : ''}
+  <cr-searchbox-input id="input" exportparts="searchbox-input"
       ?dropdown-is-visible="${this.dropdownIsVisible}"
       ?multi-line-enabled="${this.multiLineEnabled}"
       placeholder-text="${this.computePlaceholderText_(this.placeholderText)}"
@@ -45,15 +40,17 @@ export function getHtml(this: NtpSearchboxElement) {
       @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
       @input-focus-changed="${this.onInputFocusChanged}">
     ${this.ntpRealboxNextEnabled ? html`
-      <div class="contextualEntrypointContainer contextualEntrypointContainerCompact" slot="contextual-entrypoint">
+      <div
+          class="contextualEntrypointContainer contextualEntrypointContainerCompact"
+          slot="contextual-entrypoint">
         ${getContextualEntrypointHtml.bind(this)()}
       </div>
     ` : ''}
     ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
       <div slot="action-buttons" class="searchbox-icon-button-container voice">
         <button id="voiceSearchButton" class="searchbox-icon-button"
-            tabindex="${this.virtualFocusEnabled &&
-                this.dropdownIsVisible ? -1 : 0}"
+            tabindex="${
+                this.virtualFocusEnabled && this.dropdownIsVisible ? -1 : 0}"
             @click="${this.onVoiceSearchClick}"
             title="${this.i18n('voiceSearchButtonLabel')}">
         </button>
@@ -62,8 +59,8 @@ export function getHtml(this: NtpSearchboxElement) {
     ${this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
       <div slot="action-buttons" class="searchbox-icon-button-container lens">
         <button id="lensSearchButton" class="searchbox-icon-button lens"
-            tabindex="${this.virtualFocusEnabled &&
-                this.dropdownIsVisible ? -1 : 0}"
+            tabindex="${
+                this.virtualFocusEnabled && this.dropdownIsVisible ? -1 : 0}"
             @click="${this.onLensSearchClick_}"
             title="${this.i18n('lensSearchButtonLabel')}">
         </button>
@@ -84,8 +81,7 @@ export function getHtml(this: NtpSearchboxElement) {
   </cr-searchbox-input>
   <div class="dropdownContainer">
     <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
-        exportparts="dropdown-content"
-        role="listbox" .result="${this.result}"
+        exportparts="dropdown-content" role="listbox" .result="${this.result}"
         .selection="${this.selection}"
         @selection-changed="${this.onSelectionChanged}"
         selected-match-index="${this.selectedMatchIndex}"
@@ -99,5 +95,4 @@ export function getHtml(this: NtpSearchboxElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

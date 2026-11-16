@@ -11,202 +11,179 @@ import {getHtml as getContextMenuHtml} from './ntp_composebox_context_menu.html.
 
 
 export function getHtml(this: NtpComposeboxElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-    <search-animated-glow id="animatedSearchElement"
-        animation-state="${this.animationState}"
-        .glowMode="${this.willFulfillInAim ? GlowMode.OUTER_GLOW : GlowMode.NONE}"
-        .coloredTicTacVoiceAnimationEnabled="${this.voiceSearchCoherenceEnabled}"
-        .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
-        .transcript="${this.transcript}"
-        .receivedSpeech="${this.receivedSpeech}"
-        .isListening="${this.isListening}"
-        .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
-        .darkThemeColorsEnabled="${false}"
-        exportparts="composebox-background">
-      ${this.showFileCarousel && this.shouldShowVoiceSearchAnimation() &&
-          this.voiceSearchCoherenceEnabled ? html`
-        <div id="voiceCarouselContainer"
-            slot="carousel"
-            part="carousel-container">
-          <div id="voiceCarouselContainerInner"
-              class="carousel-container-inner">
-            <cr-composebox-file-carousel
-              id="voiceSearchCarousel"
-              .files="${this.getFilteredCarouselFiles()}"
-              enable-scrolling
-              @delete-file="${this.onDeleteFile}">
-            </cr-composebox-file-carousel>
-          </div>
-        </div>
+<search-animated-glow id="animatedSearchElement"
+    animation-state="${this.animationState}"
+    .glowMode="${this.willFulfillInAim ? GlowMode.OUTER_GLOW : GlowMode.NONE}"
+    .coloredTicTacVoiceAnimationEnabled="${this.voiceSearchCoherenceEnabled}"
+    .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
+    .transcript="${this.transcript}" .receivedSpeech="${this.receivedSpeech}"
+    .isListening="${this.isListening}"
+    .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
+    .darkThemeColorsEnabled="${false}" exportparts="composebox-background">
+  ${this.showFileCarousel && this.shouldShowVoiceSearchAnimation() &&
+          this.voiceSearchCoherenceEnabled ?
+      html`
+    <div id="voiceCarouselContainer" slot="carousel" part="carousel-container">
+      <div id="voiceCarouselContainerInner" class="carousel-container-inner">
+        <cr-composebox-file-carousel id="voiceSearchCarousel"
+            .files="${this.getFilteredCarouselFiles()}" enable-scrolling
+            @delete-file="${this.onDeleteFile}">
+        </cr-composebox-file-carousel>
+      </div>
+    </div>
+  ` : ''}
+  ${this.shouldShowVoiceSearchAnimation() && this.voiceSearchCoherenceEnabled &&
+          this.inToolMode ?
+      html`
+    <div class="context-menu-container voice-context-menu-container"
+        id="voiceToolChipsContainer" slot="tool-chip"
+        part="tool-chips-container">
+      <cr-composebox-tool-chip exportparts="tool-chip-label"
+          .inputState="${this.inputState}"
+          .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
+          @tool-click="${this.onToolClick}" part="tool-chip">
+      </cr-composebox-tool-chip>
+    </div>
+  ` : ''}
+</search-animated-glow>
+${this.errorMessage ? html`
+  <ntp-error-scrim id="errorScrim" part="error-scrim"
+      ?compact-mode="${
+          this.searchboxLayoutMode === 'Compact' && !this.hasFiles()}"
+      .errorMessage="${this.errorMessage}"
+      @dismiss-error-scrim="${this.onDismissErrorScrim}">
+  </ntp-error-scrim>
+` : ''}
+<div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
+    @dragenter="${this.dragAndDropHandler.handleDragEnter}"
+    @dragover="${this.dragAndDropHandler.handleDragOver}"
+    @dragleave="${this.dragAndDropHandler.handleDragLeave}"
+    @drop="${this.dragAndDropHandler.handleDrop}" @paste="${this.onPaste}">
+  <div id="inputContainer" part="input-container" @keydown="${this.onKeydown}">
+    <cr-composebox-input id="composeboxInput"
+        class="${this.hasTabs() ? 'has-tabs' : ''}"
+        exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
+        .composeboxSkillsEnabled="${this.composeboxSkillsEnabled}"
+        .disableCaretColorAnimation="${
+            this.disableCaretColorAnimation || !this.willFulfillInAim}"
+        .showDropdown="${this.showDropdown}"
+        .inputPlaceholder="${this.inputPlaceholder}" .input="${this.input}"
+        .smartComposeEnabled="${this.smartComposeEnabled}"
+        .smartComposeInlineHint="${this.smartComposeInlineHint}"
+        .submitEnabled="${this.submitEnabled}"
+        .cancelButtonTitle="${this.computeCancelButtonTitle()}"
+        .hideCancel="${this.persistentAimButtonEnabled_}"
+        .skipEmptyHeightLock="${this.persistentAimButtonEnabled_}"
+        @input-input="${this.onInputInput}"
+        @input-focusin="${this.onInputFocusin}"
+        @cancel-click="${this.onCancelClick}"
+        @clear-smart-compose="${this.onClearSmartCompose}">
+      ${this.shouldShowVoiceSearch() ? html`
+        <cr-icon-button id="voiceSearchButton" class="voice-icon"
+            slot="action-buttons" part="voice-icon" iron-icon="cr:mic-filled"
+            @click="${this.onVoiceSearchButtonClick}"
+            title="${this.i18n('voiceSearchButtonLabel')}">
+        </cr-icon-button>
       ` : ''}
-      ${this.shouldShowVoiceSearchAnimation() &&
-            this.voiceSearchCoherenceEnabled && this.inToolMode
-          ? html`<div class=
-              "context-menu-container voice-context-menu-container"
-                    id="voiceToolChipsContainer"
-                    slot="tool-chip"
-                    part="tool-chips-container">
-                  <cr-composebox-tool-chip
-                    exportparts="tool-chip-label"
+      ${this.persistentAimButtonEnabled_ ? html`
+        <cr-composebox-aim-button slot="action-buttons"
+            .mode="${this.getAimButtonMode()}"
+            .showExitIcon="${this.showAimButtonExitIcon_}"
+            .disabled="${this.isAimButtonDisabled()}"
+            .energyEffectAnimationEnabled="${
+                this.energyEffectAnimationEnabled}"
+            .label="${this.i18n('searchboxComposeButtonText')}"
+            .exitTitle="${this.i18n('composeboxAimButtonExitTitle')}"
+            .sendTitle="${this.i18n('composeboxAimButtonSendTitle')}"
+            @aim-button-click="${this.onAimButtonClick}"
+            @focusin="${this.onAimButtonFocusin}">
+        </cr-composebox-aim-button>
+      ` : ''}
+    </cr-composebox-input>
+    <div id="context" part="context-entrypoint">
+      <cr-composebox-file-inputs id="fileInputs"
+          @file-change="${this.onFileChange}"
+          .disableFileInputs="${this.shouldDisableFileInputs()}">
+        <div id="carouselContainer" part="carousel-container">
+          <div class="carousel-container-inner">
+            ${this.showFileCarousel ? html`
+              <cr-composebox-file-carousel part="cr-composebox-file-carousel"
+                  exportparts="thumbnail, thumbnail-title" id="carousel"
+                  .files="${this.getFilteredCarouselFiles()}"
+                  @delete-file="${this.onDeleteFile}">
+              </cr-composebox-file-carousel>
+            ` : ''}
+            ${this.contextMenuEnabled ? html`
+              ${getContextMenuHtml.bind(this)()}
+            ` : ''}
+            ${this.inToolMode ? html`
+              <div class="context-menu-container" id="toolChipsContainer"
+                  part="tool-chips-container">
+                <cr-composebox-tool-chip exportparts="tool-chip-label"
                     .inputState="${this.inputState}"
-                    .isCanvasQuerySubmitted="${
-                        this.isCanvasQuerySubmitted}"
-                    @tool-click="${this.onToolClick}"
-                    part="tool-chip">
-                  </cr-composebox-tool-chip>
-                </div>
-      ` : ''}
-    </search-animated-glow>
-    ${this.errorMessage ?
-      html`<ntp-error-scrim id="errorScrim" part="error-scrim"
-          ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
-                          !this.hasFiles()}"
-          .errorMessage="${this.errorMessage}"
-          @dismiss-error-scrim="${this.onDismissErrorScrim}">
-      </ntp-error-scrim>`
-    : ''}
-    <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
-        @dragenter="${this.dragAndDropHandler.handleDragEnter}"
-        @dragover="${this.dragAndDropHandler.handleDragOver}"
-        @dragleave="${this.dragAndDropHandler.handleDragLeave}"
-        @drop="${this.dragAndDropHandler.handleDrop}"
-        @paste="${this.onPaste}">
-      <div id="inputContainer" part="input-container"
-          @keydown="${this.onKeydown}">
-        <cr-composebox-input id="composeboxInput"
-            class="${this.hasTabs() ? 'has-tabs' : ''}"
-            exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
-            .composeboxSkillsEnabled="${this.composeboxSkillsEnabled}"
-            .disableCaretColorAnimation="${
-                this.disableCaretColorAnimation || !this.willFulfillInAim}"
-            .showDropdown="${this.showDropdown}"
-            .inputPlaceholder="${this.inputPlaceholder}"
-            .input="${this.input}"
-            .smartComposeEnabled="${this.smartComposeEnabled}"
-            .smartComposeInlineHint="${this.smartComposeInlineHint}"
-            .submitEnabled="${this.submitEnabled}"
-            .cancelButtonTitle="${this.computeCancelButtonTitle()}"
-            .hideCancel="${this.persistentAimButtonEnabled_}"
-            .skipEmptyHeightLock="${this.persistentAimButtonEnabled_}"
-            @input-input="${this.onInputInput}"
-            @input-focusin="${this.onInputFocusin}"
-            @cancel-click="${this.onCancelClick}"
-            @clear-smart-compose="${this.onClearSmartCompose}">
-          ${this.shouldShowVoiceSearch() ? html`
-            <cr-icon-button id="voiceSearchButton" class="voice-icon"
-                slot="action-buttons"
-                part="voice-icon" iron-icon="cr:mic-filled"
-                @click="${this.onVoiceSearchButtonClick}"
-                title="${this.i18n('voiceSearchButtonLabel')}">
-            </cr-icon-button>
-          ` : ''}
-          ${this.persistentAimButtonEnabled_ ? html`
-            <cr-composebox-aim-button slot="action-buttons"
-                .mode="${this.getAimButtonMode()}"
-                .showExitIcon="${this.showAimButtonExitIcon_}"
-                .disabled="${this.isAimButtonDisabled()}"
-                .energyEffectAnimationEnabled="${
-                    this.energyEffectAnimationEnabled}"
-                .label="${this.i18n('searchboxComposeButtonText')}"
-                .exitTitle="${this.i18n('composeboxAimButtonExitTitle')}"
-                .sendTitle="${this.i18n('composeboxAimButtonSendTitle')}"
-                @aim-button-click="${this.onAimButtonClick}"
-                @focusin="${this.onAimButtonFocusin}">
-            </cr-composebox-aim-button>
-          ` : ''}
-        </cr-composebox-input>
-        <div id="context" part="context-entrypoint">
-          <cr-composebox-file-inputs id="fileInputs"
-              @file-change="${this.onFileChange}"
-              .disableFileInputs="${this.shouldDisableFileInputs()}">
-            <div id="carouselContainer" part="carousel-container">
-              <div class="carousel-container-inner">
-                ${this.showFileCarousel ? html`
-                  <cr-composebox-file-carousel
-                    part="cr-composebox-file-carousel"
-                    exportparts="thumbnail, thumbnail-title"
-                    id="carousel"
-                    .files="${this.getFilteredCarouselFiles()}"
-                    @delete-file="${this.onDeleteFile}">
-                  </cr-composebox-file-carousel> ` : ''}
-                  ${this.contextMenuEnabled ? html`
-                      ${getContextMenuHtml.bind(this)()}
-                  ` : ''}
-                  ${this.inToolMode ? html`
-                  <div class="context-menu-container" id="toolChipsContainer"
-                      part="tool-chips-container">
-                      <cr-composebox-tool-chip
-                        exportparts="tool-chip-label"
-                        .inputState="${this.inputState}"
-                        .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
-                        @tool-click="${this.onToolClick}"
-                        part="tool-chip">
-                      </cr-composebox-tool-chip>
-                  </div>
-                  ` : ''}
+                    .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
+                    @tool-click="${this.onToolClick}" part="tool-chip">
+                </cr-composebox-tool-chip>
               </div>
-              ${!this.persistentAimButtonEnabled_ &&
-                  this.shouldShowSubmitButton() ? html`
-              <cr-composebox-submit
+            ` : ''}
+          </div>
+          ${!this.persistentAimButtonEnabled_ && this.shouldShowSubmitButton() ?
+              html`
+            <cr-composebox-submit
                 exportparts="action-icon, submit, submit-icon, submit-overlay"
                 ?disabled="${!this.canSubmitFilesAndInput}"
-                .iconType="${this.submitButtonIconType}"
-                .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
+                .iconType="${this.submitButtonIconType}" .submitButtonTitle="${
+                    this.i18n('composeboxSubmitButtonTitle')}"
                 @submit-click="${this.onSubmitClick}"
                 @submit-focusin="${this.onSubmitFocusin}">
-              </cr-composebox-submit>
-              ` : ''}
-            </div>
-            ${this.shouldShowDivider() ? html`
-            <div class="carousel-divider" part="carousel-divider"></div>
-            ` : ''}
-          </cr-composebox-file-inputs>
-          <cr-composebox-dropdown
-              id="matches"
-              part="dropdown"
-              exportparts="match-text-container"
-              role="listbox"
-              .result="${this.result}"
-              .selectedMatchIndex="${this.selectedMatchIndex}"
-              .maxSuggestions="${this.maxSuggestions}"
-              .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
-              .richImageSuggestionsEnabled="${
-                  this.richImageSuggestionsEnabled}"
-              @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-              @match-focusin="${this.onMatchFocusin}"
-              @match-click="${this.onMatchClick}"
-              ?hidden="${this.shouldHideDropdown()}"
-              .lastQueriedInput="${this.lastQueriedInput}">
-          </cr-composebox-dropdown>
+            </cr-composebox-submit>
+          ` : ''}
         </div>
-      </div>
-      ${this.shouldShowSuggestionActivityLink() ? html`
-      <div id="suggestionActivity">
-        <localized-link
+        ${this.shouldShowDivider() ? html`
+          <div class="carousel-divider" part="carousel-divider"></div>
+        ` : ''}
+      </cr-composebox-file-inputs>
+      <cr-composebox-dropdown id="matches" part="dropdown"
+          exportparts="match-text-container" role="listbox"
+          .result="${this.result}"
+          .selectedMatchIndex="${this.selectedMatchIndex}"
+          .maxSuggestions="${this.maxSuggestions}"
+          .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
+          .richImageSuggestionsEnabled="${this.richImageSuggestionsEnabled}"
+          @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
+          @match-focusin="${this.onMatchFocusin}"
+          @match-click="${this.onMatchClick}"
+          ?hidden="${this.shouldHideDropdown()}"
+          .lastQueriedInput="${this.lastQueriedInput}">
+      </cr-composebox-dropdown>
+    </div>
+  </div>
+  ${this.shouldShowSuggestionActivityLink() ? html`
+    <div id="suggestionActivity">
+      <localized-link
           .localizedString="${this.i18nAdvanced('suggestionActivityLink')}"
           @link-clicked="${this.onLinkClicked}">
-        </localized-link>
-      </div>
-      ` : ''}
+      </localized-link>
     </div>
-  ${this.shouldShowVoiceSearch() ? html`
-    <cr-composebox-voice-search id="voiceSearch"
-        @voice-permission-changed="${this.onVoicePermissionChanged}"
-        @voice-search-cancel="${this.onVoiceSearchCancel}"
-        @voice-search-final-result="${this.onVoiceSearchFinalResult}"
-        @voice-search-error="${this.onVoiceSearchError}"
-        @transcript-update="${this.onTranscriptUpdate}"
-        @speech-received="${this.onSpeechReceived}"
-        @recording-stopped="${this.onRecordingStopped}"
-        .submitStopButtonsEnabled="${this.voiceSearchCoherenceEnabled}"
-        .liveTranscriptEnabled="${!this.voiceSearchCoherenceEnabled}"
-        .submitButtonIconType="${this.submitButtonIconType}"
-        .dynamicTimeoutEnabled="${false}"
-        .pageCallbackRouter="${this.getSearchboxCallbackRouter()}"
-        exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
-    </cr-composebox-voice-search>
   ` : ''}
-  <!--_html_template_end_-->`;
-  // clang-format on
+</div>
+${this.shouldShowVoiceSearch() ? html`
+  <cr-composebox-voice-search id="voiceSearch"
+      @voice-permission-changed="${this.onVoicePermissionChanged}"
+      @voice-search-cancel="${this.onVoiceSearchCancel}"
+      @voice-search-final-result="${this.onVoiceSearchFinalResult}"
+      @voice-search-error="${this.onVoiceSearchError}"
+      @transcript-update="${this.onTranscriptUpdate}"
+      @speech-received="${this.onSpeechReceived}"
+      @recording-stopped="${this.onRecordingStopped}"
+      .submitStopButtonsEnabled="${this.voiceSearchCoherenceEnabled}"
+      .liveTranscriptEnabled="${!this.voiceSearchCoherenceEnabled}"
+      .submitButtonIconType="${this.submitButtonIconType}"
+      .dynamicTimeoutEnabled="${false}"
+      .pageCallbackRouter="${this.getSearchboxCallbackRouter()}"
+      exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
+  </cr-composebox-voice-search>
+` : ''}
+<!--_html_template_end_-->`;
 }

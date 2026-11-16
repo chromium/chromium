@@ -8,7 +8,6 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {IconContainerElement} from './icon_container.js';
 
 export function getHtml(this: IconContainerElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="icons-container">
   ${this.getFaviconCells().map(item => html`
@@ -18,15 +17,18 @@ export function getHtml(this: IconContainerElement) {
       </div>
     </div>
   `)}
-  ${this.getEmptyCells().map(() => html`<div class="cell empty"></div>`)}
+  ${this.getEmptyCells().map(() => html`
+    <div class="cell empty"></div>
+  `)}
   ${this.shouldShowOverflow() ? html`
     <div class="cell overflow-count" aria-hidden="true">
       ${this.getOverflowCount() <= 99 ? html`
         +${this.getOverflowCount()}
-      ` : html`99+`}
+      ` : html`
+        99+
+      `}
     </div>
   ` : ''}
-  </div>
+</div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
