@@ -16809,6 +16809,27 @@
             ]
         }
     ],
+    "QuicEnablePortMigration": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_20261105",
+                    "disable_features": [
+                        "QuicEnablePortMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "QuicSocketSendBufferSize": [
         {
             "platforms": [
