@@ -121,8 +121,11 @@ class CORE_EXPORT StyleInvalidator {
           : invalidation_set_(invalidation_set),
             invalidation_limit_(invalidation_limit) {}
 
+      // UnprotectedInReleaseForPerformance: Based on analysis of
+      // blink_perf.css ClassInvalidation. A SiblingData is created on the
+      // stack for every element visited by InvalidateChildren().
       raw_ptr<const SiblingInvalidationSet,
-              UnprotectedInRelease | DanglingUntriaged>
+              UnprotectedInReleaseForPerformance | DanglingUntriaged>
           invalidation_set_;
       unsigned invalidation_limit_;
     };
