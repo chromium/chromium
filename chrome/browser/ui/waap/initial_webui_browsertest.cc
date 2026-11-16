@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tabs/windows_api.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
@@ -693,6 +695,58 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.NewEmptyWindow.WithExistingWindow."
       "BrowserWindowToReloadButton.FirstPaintGap2",
+      1);
+}
+
+class InitialWebUIDeferShowBrowserTest : public InitialWebUIBrowserTestBase {
+ public:
+  InitialWebUIDeferShowBrowserTest()
+      : InitialWebUIBrowserTestBase(
+            {{features::kWebUIReloadButton,
+              {{"WebUIReloadButtonDeferBrowserViewShow", "true"}}}}) {}
+};
+
+// Verifies that showing a new browser window via `ShowInactive()` (e.g.
+// background `Target.createTarget` or inactive window navigations) defers
+// showing the window until the WebUI toolbar loads and records
+// `ShowRequestedToFirstPaint2`.
+IN_PROC_BROWSER_TEST_F(InitialWebUIDeferShowBrowserTest,
+                       RecordsShowRequestedToFirstPaintForShowInactive) {
+  base::HistogramTester histogram_tester;
+
+  BrowserWindowCreateParams params(browser()->GetProfile(),
+                                   /*from_user_gesture=*/true);
+  BrowserWindowInterface* new_browser =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params), waap::NewWindowCreationSource::kNavigation);
+
+  auto* webui_manager = InitialWebUIManager::From(new_browser);
+  ASSERT_TRUE(webui_manager);
+  EXPECT_TRUE(webui_manager->IsInitialWebUIPending());
+
+  auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
+  ASSERT_TRUE(manager);
+  manager->SkipStartupForTesting();
+
+  new_browser->GetWindow()->ShowInactive();
+  EXPECT_TRUE(webui_manager->IsShowPending());
+  EXPECT_FALSE(new_browser->GetWindow()->IsVisible());
+
+  webui_manager->OnWebUIToolbarLoaded();
+  EXPECT_FALSE(webui_manager->IsShowPending());
+  EXPECT_TRUE(new_browser->GetWindow()->IsVisible());
+
+  base::TimeTicks t1 = base::TimeTicks::Now();
+  manager->OnBrowserWindowFirstPresentation(t1);
+  manager->GetMetricsDispatcher().OnFirstPaint(t1 + base::Milliseconds(50));
+
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithExistingWindow.BrowserWindow."
+      "ShowRequestedToFirstPaint2",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.Navigation.WithExistingWindow.BrowserWindow."
+      "ShowRequestedToFirstPaint2",
       1);
 }
 

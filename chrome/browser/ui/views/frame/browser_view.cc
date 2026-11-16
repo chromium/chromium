@@ -1718,9 +1718,19 @@ void BrowserView::Show() {
 }
 
 void BrowserView::ShowInactive() {
-  if (!browser_widget_->IsVisible()) {
-    browser_widget_->ShowInactive();
+  // Attempts to show closed windows should no-op.
+  if (browser_widget_->IsClosed() || browser_widget_->IsVisible()) {
+    return;
   }
+
+  if (auto* manager = InitialWebUIManager::From(browser())) {
+    if (manager->RequestDeferShow(base::BindOnce(
+            &BrowserView::ShowInactive, weak_ptr_factory_.GetWeakPtr()))) {
+      return;
+    }
+  }
+
+  browser_widget_->ShowInactive();
 }
 
 void BrowserView::Hide() {
