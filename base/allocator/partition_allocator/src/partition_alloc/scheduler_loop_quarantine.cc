@@ -167,7 +167,7 @@ namespace {
 // `tcache` is the cache owning this branch, and is null unless `thread_bound`.
 template <bool thread_bound,
           QuarantineTarget quarantine_target,
-          bool allow_clear_bucket>
+          ThreadCache::CacheFillPolicy fill_policy>
 PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     PartitionRoot* root,
     UntaggedSlotStart slot_start,
@@ -191,8 +191,8 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     // poisoning the first cacheline again with `0xbadbad00` when inserting
     // into the `ThreadCache` freelist is redundant.
     std::optional<size_t> slot_size_opt =
-        tcache->MaybePutInCache<allow_clear_bucket, /*poison=*/false>(
-            slot_start, bucket_index);
+        tcache->MaybePutInCache<fill_policy, /*poison=*/false>(slot_start,
+                                                               bucket_index);
 
     if (slot_size_opt.has_value()) [[likely]] {
       PA_DCHECK(slot_size_opt.value() == slot_size);
@@ -591,12 +591,12 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
 
     if (avoid_tcache_overflow) {
       ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
-                               /*allow_clear_bucket=*/false>(
+                               ThreadCache::CacheFillPolicy::kCapAtHalfLimit>(
           allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
           tcache_);
     } else {
       ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
-                               /*allow_clear_bucket=*/true>(
+                               ThreadCache::CacheFillPolicy::kClearOnOverflow>(
           allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
           tcache_);
     }

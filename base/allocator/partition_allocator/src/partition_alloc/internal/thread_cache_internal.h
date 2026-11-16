@@ -204,22 +204,28 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   ThreadCache(const ThreadCache&&) = delete;
   ThreadCache& operator=(const ThreadCache&) = delete;
 
+  enum class CacheFillPolicy {
+    // Insert up to `limit`, and call `ClearBucket(bucket, limit / 2)` on
+    // overflow (`bucket.count > limit`) to amortize `PartitionRootLock`.
+    kClearOnOverflow,
+    // Refuse insertion once `bucket.count >= (limit + 1) / 2` (the post-clear
+    // target) so synchronous bulk callers avoid `ClearBucket()` freelist walks.
+    kCapAtHalfLimit,
+  };
+
   // Tries to put a slot at |slot_start| into the cache.
   // The slot comes from the bucket at index |bucket_index| from the partition
   // this cache is for. `poison` determines whether the slot will be poisoned,
   // which is not necessary if it has already been poisoned.
   //
-  // When `allow_clear_bucket` is false, refuses insertion once the bucket
-  // reaches its post-clearing target (`(limit + 1) / 2`) so bulk callers that
-  // already batch-free to the root avoid repeatedly overflowing and walking the
-  // freelist via `ClearBucket()`.
-  // TODO(crbug.com/579744817): Remove `allow_clear_bucket` once dedicated
-  // batch-free support is implemented in `ThreadCache`.
+  // TODO(crbug.com/579744817): Remove `fill_policy` once dedicated batch-free
+  // support is implemented in `ThreadCache`.
   //
   // Returns the slot size if the insertion succeeds, `nullopt` otherwise.
   // Insertion can fail either because the cache is full or the
   // allocation was too large.
-  template <bool allow_clear_bucket = true, bool poison = true>
+  template <CacheFillPolicy fill_policy = CacheFillPolicy::kClearOnOverflow,
+            bool poison = true>
   PA_ALWAYS_INLINE std::optional<size_t> MaybePutInCache(
       UntaggedSlotStart slot_start,
       size_t bucket_index);
@@ -443,7 +449,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   friend class tools::ThreadCacheInspector;
 };
 
-template <bool allow_clear_bucket, bool poison>
+template <ThreadCache::CacheFillPolicy fill_policy, bool poison>
 PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
     UntaggedSlotStart slot_start,
     size_t bucket_index) {
@@ -465,7 +471,7 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
   // relaxed ordering, and loading into a local variable. Without it, we are
   // gambling that the compiler would not issue multiple loads.
   uint8_t limit = bucket.limit.load(std::memory_order_relaxed);
-  if constexpr (!allow_clear_bucket) {
+  if constexpr (fill_policy == CacheFillPolicy::kCapAtHalfLimit) {
     if (bucket.count >= (limit + 1) / 2) {
       PA_INCREMENT_COUNTER(
           GetEnclosingTls()->thread_cache_stats.cache_fill_misses);
@@ -480,7 +486,7 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
   cached_memory_ += bucket.slot_size;
   PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.cache_fill_hits);
 
-  if constexpr (allow_clear_bucket) {
+  if constexpr (fill_policy == CacheFillPolicy::kClearOnOverflow) {
     // Batched deallocation, amortizing lock acquisitions.
     if (bucket.count > limit) [[unlikely]] {
       ClearBucket(bucket, limit / 2);
