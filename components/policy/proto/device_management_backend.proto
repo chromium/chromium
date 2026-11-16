@@ -2719,7 +2719,7 @@ message ChromeOsUserReportRequest {
 
 // Payload including fields needed to perform attestation,.
 message AttestationPayload {
-  // Timestamp for when the report is generated, in microseconds since epoch.
+  // Timestamp for when the report is generated, in milliseconds since epoch.
   optional string timestamp = 1;
   // A nonce for the report to prevent replay.
   optional string nonce = 2;
