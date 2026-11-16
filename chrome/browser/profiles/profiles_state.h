@@ -69,6 +69,19 @@ base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir);
 // (prefs::kProfileAttributes in `local_state`).
 base::FilePath GetLastUsedProfileBaseName(const PrefService& local_state);
 
+// Returns the profile directory specified with --profile-directory on
+// `command_line`, if multiple profiles are enabled. Returns an empty path if no
+// profile directory is specified, or if
+// --ignore-profile-directory-if-not-exists is also specified and the directory
+// doesn't exist in `user_data_dir`. On Android with
+// AndroidMultiprofileStartupData, also returns an empty path unless the profile
+// has an entry in ProfileAttributesStorage (prefs::kProfileAttributes in
+// `local_state`).
+base::FilePath GetProfileDirFromCommandLine(
+    const base::CommandLine& command_line,
+    const base::FilePath& user_data_dir,
+    const PrefService& local_state);
+
 // Register multi-profile related preferences in Local State.
 void RegisterPrefs(PrefRegistrySimple* registry);
 

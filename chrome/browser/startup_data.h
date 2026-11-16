@@ -22,6 +22,10 @@ class ExtensionsBrowserClient;
 }
 #endif
 
+namespace base {
+class CommandLine;
+}  // namespace base
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -80,11 +84,15 @@ class StartupData {
   const base::FilePath& GetProfilePath() const;
 
   // Returns the base name of the profile directory that InitProfileKey()
-  // builds the ProfileKey and PrefService for: the last used profile in
-  // `local_state` with AndroidMultiprofileStartupData, and the initial profile
-  // otherwise.
+  // builds the ProfileKey and PrefService for. With
+  // AndroidMultiprofileStartupData, it is the profile that
+  // profiles::GetProfileDirFromCommandLine() returns for `command_line`,
+  // `user_data_dir` and `local_state`, if any, and the last used profile
+  // otherwise. Without the flag, it is the initial profile.
   static base::FilePath GetProfileBaseNameForStartup(
-      const PrefService& local_state);
+      const PrefService& local_state,
+      const base::CommandLine& command_line,
+      const base::FilePath& user_data_dir);
 
   void SetProfilePathForTesting(const base::FilePath& profile_path);
 

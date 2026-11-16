@@ -476,18 +476,10 @@ StartupProfileInfo CreateInitialProfile(
   }
 #endif
 
-  bool profile_dir_specified =
-      profiles::IsMultipleProfilesEnabled() &&
-      parsed_command_line.HasSwitch(switches::kProfileDirectory);
   base::FilePath last_used_profile;
-  if (!last_used_profile_set && profile_dir_specified) {
-    last_used_profile =
-        parsed_command_line.GetSwitchValuePath(switches::kProfileDirectory);
-  }
-  if (parsed_command_line.HasSwitch(
-          switches::kIgnoreProfileDirectoryIfNotExists) &&
-      !base::DirectoryExists(user_data_dir.Append(last_used_profile))) {
-    last_used_profile.clear();
+  if (!last_used_profile_set) {
+    last_used_profile = profiles::GetProfileDirFromCommandLine(
+        parsed_command_line, user_data_dir, *g_browser_process->local_state());
   }
   if (!last_used_profile.empty()) {
     profiles::SetLastUsedProfile(last_used_profile);
@@ -523,6 +515,9 @@ StartupProfileInfo CreateInitialProfile(
   }
 
   if (profile_info.mode == StartupProfileMode::kError) {
+    bool profile_dir_specified =
+        profiles::IsMultipleProfilesEnabled() &&
+        parsed_command_line.HasSwitch(switches::kProfileDirectory);
     ProfileErrorType error_type =
         profile_dir_specified ? ProfileErrorType::CREATE_FAILURE_SPECIFIED
                               : ProfileErrorType::CREATE_FAILURE_ALL;

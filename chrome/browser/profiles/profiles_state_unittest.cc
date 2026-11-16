@@ -8,6 +8,8 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -39,6 +42,9 @@
 namespace {
 
 constexpr char kProfile1[] = "Profile 1";
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kExistingProfile[] = "Profile 2";
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 // Params for the parameterized test IsGuestModeRequestedTest.
@@ -228,7 +234,10 @@ class GetLastUsedProfileBaseNameTest : public testing::Test {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  void TestProfileBaseNameForStartupImpl(bool startup_data_enabled);
+  void TestProfileBaseNameForStartupImpl(
+      bool startup_data_enabled,
+      const std::string& command_line_profile,
+      const std::string& expected_profile);
 #endif
 
   TestingPrefServiceSimple local_state_;
@@ -280,25 +289,52 @@ TEST_F(GetLastUsedProfileBaseNameTest,
 }
 
 TEST_F(GetLastUsedProfileBaseNameTest, AndroidStartsWithLastUsedProfile) {
-  TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true);
+  TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
+                                    /*command_line_profile=*/std::string(),
+                                    /*expected_profile=*/kProfile1);
 }
 
 TEST_F(GetLastUsedProfileBaseNameTest,
        AndroidStartsWithInitialProfileWhenDisabled) {
-  TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/false);
+  TestProfileBaseNameForStartupImpl(
+      /*startup_data_enabled=*/false,
+      /*command_line_profile=*/kExistingProfile,
+      /*expected_profile=*/chrome::kInitialProfile);
+}
+
+TEST_F(GetLastUsedProfileBaseNameTest, AndroidStartsWithCommandLineProfile) {
+  TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
+                                    /*command_line_profile=*/kExistingProfile,
+                                    /*expected_profile=*/kExistingProfile);
+}
+
+TEST_F(GetLastUsedProfileBaseNameTest,
+       AndroidIgnoresNonexistentCommandLineProfile) {
+  TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
+                                    /*command_line_profile=*/"Profile 3",
+                                    /*expected_profile=*/kProfile1);
 }
 
 void GetLastUsedProfileBaseNameTest::TestProfileBaseNameForStartupImpl(
-    bool startup_data_enabled) {
+    bool startup_data_enabled,
+    const std::string& command_line_profile,
+    const std::string& expected_profile) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kAndroidMultiprofileStartupData,
-                                    startup_data_enabled);
+  feature_list.InitWithFeatureStates(
+      {{chrome::android::kAndroidMultiprofile, true},
+       {features::kAndroidMultiprofileStartupData, startup_data_enabled}});
   SetLastUsedProfile(kProfile1);
   AddKnownProfile(kProfile1);
+  AddKnownProfile(kExistingProfile);
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  if (!command_line_profile.empty()) {
+    command_line.AppendSwitchASCII(switches::kProfileDirectory,
+                                   command_line_profile);
+  }
 
-  EXPECT_EQ(base::FilePath::FromASCII(
-                startup_data_enabled ? kProfile1 : chrome::kInitialProfile),
-            StartupData::GetProfileBaseNameForStartup(local_state_));
+  EXPECT_EQ(base::FilePath::FromASCII(expected_profile),
+            StartupData::GetProfileBaseNameForStartup(
+                local_state_, command_line, base::FilePath()));
 }
 
 class LastUsedProfileBaseNameTest : public testing::Test {
@@ -364,5 +400,113 @@ TEST_F(GetLastUsedProfileBaseNameTest, ReturnsUnknownLastUsedProfile) {
   SetLastUsedProfile(kProfile1);
 
   EXPECT_EQ(base::FilePath::FromASCII(kProfile1), GetLastUsedProfileBaseName());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+class GetProfileDirFromCommandLineTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    local_state_.registry()->RegisterDictionaryPref(prefs::kProfileAttributes);
+  }
+
+  base::FilePath GetProfileDir() {
+    return profiles::GetProfileDirFromCommandLine(
+        command_line_, user_data_dir_.GetPath(), local_state_);
+  }
+
+  void TestIgnoreIfNotExistsImpl(bool directory_exists);
+#if BUILDFLAG(IS_ANDROID)
+  void TestStartupDataRequiresExistingProfileImpl(bool profile_exists);
+#endif
+
+  base::ScopedTempDir user_data_dir_;
+  base::CommandLine command_line_{base::CommandLine::NO_PROGRAM};
+  TestingPrefServiceSimple local_state_;
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list_{
+      chrome::android::kAndroidMultiprofile};
+#endif
+};
+
+TEST_F(GetProfileDirFromCommandLineTest, ReturnsEmptyPathWithoutSwitch) {
+  EXPECT_TRUE(GetProfileDir().empty());
+}
+
+TEST_F(GetProfileDirFromCommandLineTest, ReturnsProfileDirectory) {
+  command_line_.AppendSwitchASCII(switches::kProfileDirectory, kProfile1);
+
+  EXPECT_EQ(base::FilePath::FromASCII(kProfile1), GetProfileDir());
+}
+
+TEST_F(GetProfileDirFromCommandLineTest,
+       ReturnsExistingDirectoryWithIgnoreIfNotExists) {
+  TestIgnoreIfNotExistsImpl(/*directory_exists=*/true);
+}
+
+TEST_F(GetProfileDirFromCommandLineTest,
+       IgnoresMissingDirectoryWithIgnoreIfNotExists) {
+  TestIgnoreIfNotExistsImpl(/*directory_exists=*/false);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(GetProfileDirFromCommandLineTest,
+       AndroidReturnsEmptyPathWithoutMultipleProfiles) {
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(chrome::android::kAndroidMultiprofile);
+  command_line_.AppendSwitchASCII(switches::kProfileDirectory, kProfile1);
+
+  EXPECT_TRUE(GetProfileDir().empty());
+}
+
+TEST_F(GetProfileDirFromCommandLineTest,
+       AndroidReturnsExistingProfileWithStartupData) {
+  TestStartupDataRequiresExistingProfileImpl(/*profile_exists=*/true);
+}
+
+TEST_F(GetProfileDirFromCommandLineTest,
+       AndroidIgnoresNonexistentProfileWithStartupData) {
+  TestStartupDataRequiresExistingProfileImpl(/*profile_exists=*/false);
+}
+
+TEST_F(GetProfileDirFromCommandLineTest,
+       AndroidRejectsAbsolutePathWithStartupData) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidMultiprofileStartupData);
+  command_line_.AppendSwitchPath(switches::kProfileDirectory,
+                                 user_data_dir_.GetPath());
+
+  EXPECT_TRUE(GetProfileDir().empty());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+void GetProfileDirFromCommandLineTest::TestIgnoreIfNotExistsImpl(
+    bool directory_exists) {
+  if (directory_exists) {
+    ASSERT_TRUE(
+        base::CreateDirectory(user_data_dir_.GetPath().AppendASCII(kProfile1)));
+  }
+  command_line_.AppendSwitchASCII(switches::kProfileDirectory, kProfile1);
+  command_line_.AppendSwitch(switches::kIgnoreProfileDirectoryIfNotExists);
+
+  EXPECT_EQ(directory_exists ? base::FilePath::FromASCII(kProfile1)
+                             : base::FilePath(),
+            GetProfileDir());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void GetProfileDirFromCommandLineTest::
+    TestStartupDataRequiresExistingProfileImpl(bool profile_exists) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidMultiprofileStartupData);
+  if (profile_exists) {
+    ScopedDictPrefUpdate(&local_state_, prefs::kProfileAttributes)
+        ->Set(kProfile1, base::DictValue());
+  }
+  command_line_.AppendSwitchASCII(switches::kProfileDirectory, kProfile1);
+
+  EXPECT_EQ(
+      profile_exists ? base::FilePath::FromASCII(kProfile1) : base::FilePath(),
+      GetProfileDir());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
