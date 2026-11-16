@@ -960,16 +960,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackgroundRestrictions.IsBackgroundRestricted"
-    enum="Boolean" expires_after="2023-04-30">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-segmentation-platform@google.com</owner>
-  <summary>
-    Records whether user has enabled background restriction for chrome. Recorded
-    after native initialization in browser process.
-  </summary>
-</histogram>
-
 <histogram name="Android.BackgroundRestrictions.StandbyBucket"
     enum="StandbyBucket" expires_after="2023-04-30">
   <owner>shaktisahu@chromium.org</owner>

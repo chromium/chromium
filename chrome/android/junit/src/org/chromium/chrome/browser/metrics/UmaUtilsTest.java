@@ -22,8 +22,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 /** Unit tests for {@link UmaUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class UmaUtilsTest {
-    private static final String HISTOGRAM_IS_BACKGROUND_RESTRICTED =
-            "Android.BackgroundRestrictions.IsBackgroundRestricted";
     private static final String HISTOGRAM_STANDBY_BUCKET =
             "Android.BackgroundRestrictions.StandbyBucket";
     private static final String HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION =
@@ -137,7 +135,6 @@ public class UmaUtilsTest {
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(HISTOGRAM_IS_BACKGROUND_RESTRICTED, false)
                         .expectIntRecord(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus)
                         .expectNoRecords(HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION)
                         .build();
@@ -157,7 +154,6 @@ public class UmaUtilsTest {
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(HISTOGRAM_IS_BACKGROUND_RESTRICTED, true)
                         .expectIntRecord(HISTOGRAM_STANDBY_BUCKET, expectedUmaStandbyBucketStatus)
                         .expectIntRecord(
                                 HISTOGRAM_STANDBY_BUCKET_WITH_USER_RESTRICTION,

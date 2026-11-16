@@ -177,8 +177,6 @@ public class UmaUtils {
         ActivityManager activityManager =
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         boolean isBackgroundRestricted = activityManager.isBackgroundRestricted();
-        RecordHistogram.recordBooleanHistogram(
-                "Android.BackgroundRestrictions.IsBackgroundRestricted", isBackgroundRestricted);
 
         int standbyBucketUma = getStandbyBucket(context);
         RecordHistogram.recordEnumeratedHistogram(
