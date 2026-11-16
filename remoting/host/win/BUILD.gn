@@ -233,6 +233,7 @@ source_set("win") {
   libs = [
     "shcore.lib",
     "userenv.lib",
+    "wtsapi32.lib",
   ]
 }
 

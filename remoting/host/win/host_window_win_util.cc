@@ -5,10 +5,12 @@
 #include "remoting/host/win/host_window_win_util.h"
 
 #include <shellscalingapi.h>
+#include <wtsapi32.h>
 
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <iterator>
 #include <optional>
@@ -18,19 +20,78 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/win/access_token.h"
 #include "base/win/current_module.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_gdi_object.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
+#include "base/win/sid.h"
 
 namespace remoting {
 
 namespace {
 
+constexpr wchar_t kAccessibilityRegistryPath[] =
+    L"Software\\Microsoft\\Accessibility";
+constexpr wchar_t kTextScaleFactorValueName[] = L"TextScaleFactor";
+
 bool g_allow_capture_exclusion_failure_for_testing = false;
 std::optional<bool> g_hotkey_registration_override_for_testing;
+std::optional<double> g_text_scale_override_for_testing;
+
+std::optional<double> ReadTextScaleFactorFromKey(HKEY root_key,
+                                                 const wchar_t* subkey) {
+  DWORD scale_percent = 0;
+  base::win::RegKey key(root_key, subkey, KEY_QUERY_VALUE);
+  if (key.Valid() &&
+      key.ReadValueDW(kTextScaleFactorValueName, &scale_percent) ==
+          ERROR_SUCCESS &&
+      scale_percent > 0) {
+    return static_cast<double>(scale_percent) / 100.0;
+  }
+  return std::nullopt;
+}
+
+std::optional<double> QueryRegistryTextScaleFactor() {
+  DWORD session_id = 0;
+  HANDLE raw_user_token = nullptr;
+  // In Me2Me sessions, `remoting_desktop.exe` runs as `NT AUTHORITY\SYSTEM`
+  // inside the interactive user's WTS session, so `HKEY_CURRENT_USER` points to
+  // `.DEFAULT` rather than the logged-in user's hive. Resolve the session
+  // user's SID via `WTSQueryUserToken()` when privileges permit; once
+  // `HKEY_USERS\<sid>` is loaded, treat that hive as authoritative rather than
+  // falling through to `.DEFAULT` when `TextScaleFactor` is unset or zero.
+  if (ProcessIdToSessionId(GetCurrentProcessId(), &session_id) &&
+      WTSQueryUserToken(session_id, &raw_user_token)) {
+    base::win::ScopedHandle user_token(raw_user_token);
+    if (std::optional<base::win::AccessToken> access_token =
+            base::win::AccessToken::FromToken(std::move(user_token))) {
+      if (std::optional<std::wstring> sid_string =
+              access_token->User().ToSddlString()) {
+        base::win::RegKey user_hive(HKEY_USERS, sid_string->c_str(),
+                                    KEY_QUERY_VALUE);
+        if (user_hive.Valid()) {
+          return ReadTextScaleFactorFromKey(user_hive.Handle(),
+                                            kAccessibilityRegistryPath);
+        }
+      }
+    }
+  }
+
+  // Fall back to `HKEY_CURRENT_USER` when `WTSQueryUserToken()` cannot resolve
+  // a loaded user hive—for example, non-SYSTEM processes
+  // (`ERROR_PRIVILEGE_NOT_HELD` in It2Me hosts and unit tests) and the
+  // pre-login screen (`ERROR_NO_TOKEN`, where `HKEY_CURRENT_USER` maps to
+  // `.DEFAULT`).
+  return ReadTextScaleFactorFromKey(HKEY_CURRENT_USER,
+                                    kAccessibilityRegistryPath);
+}
 
 // Callback for `EnumDisplayMonitors()` that collects the virtual-screen
 // bounding rectangle of each active physical display.
@@ -107,6 +168,77 @@ int MeasureWrappedTextHeight(HDC dc,
 
 int ScaleForDpi(int value, UINT dpi) {
   return MulDiv(value, static_cast<int>(dpi), USER_DEFAULT_SCREEN_DPI);
+}
+
+double ComputeNonClientMessageFontScale(const LOGFONTW& message_font) {
+  // Only interpret negative `lfHeight` values (character height). Positive
+  // values specify cell height (character height + internal leading) and would
+  // overestimate relative to `kDefaultSystemMessageFontHeightPx`.
+  if (message_font.lfHeight >= 0) {
+    return kMinTextScaleFactor;
+  }
+
+  // `kDefaultSystemMessageFontHeightPx` (12px) assumes Windows' default 9pt
+  // `Segoe UI` baseline (`kDefaultSystemMessageFontFaceName`) at 96 DPI. Guard
+  // against locales or OEM images configured with a different default
+  // `lfMessageFont` typeface whose baseline height at 100% scale may exceed
+  // 12px.
+  base::span<const wchar_t> face(message_font.lfFaceName);
+  std::wstring_view face_name(
+      face.data(),
+      static_cast<size_t>(std::ranges::find(face, L'\0') - face.begin()));
+  if (!base::EqualsCaseInsensitiveASCII(face_name,
+                                        kDefaultSystemMessageFontFaceName)) {
+    return kMinTextScaleFactor;
+  }
+
+  double raw_scale =
+      static_cast<double>(-static_cast<int64_t>(message_font.lfHeight)) /
+      kDefaultSystemMessageFontHeightPx;
+  return std::clamp(raw_scale, kMinTextScaleFactor, kMaxTextScaleFactor);
+}
+
+double GetSystemTextScaleFactor() {
+  if (g_text_scale_override_for_testing.has_value()) {
+    return std::clamp(*g_text_scale_override_for_testing, kMinTextScaleFactor,
+                      kMaxTextScaleFactor);
+  }
+
+  if (std::optional<double> reg_scale = QueryRegistryTextScaleFactor()) {
+    return std::clamp(*reg_scale, kMinTextScaleFactor, kMaxTextScaleFactor);
+  }
+
+  // When `TextScaleFactor` is unset in the registry, consult the
+  // 96-DPI-normalized system message font height on the interactive window
+  // station (`WinSta0`) so custom `Segoe UI` Win32 `MessageFont` sizes (or
+  // logon-time Text Zoom when the registry value is absent) are respected.
+  NONCLIENTMETRICSW metrics = {};
+  metrics.cbSize = sizeof(metrics);
+  if (SystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, sizeof(metrics),
+                                 &metrics, 0, USER_DEFAULT_SCREEN_DPI)) {
+    return ComputeNonClientMessageFontScale(metrics.lfMessageFont);
+  }
+
+  return kMinTextScaleFactor;
+}
+
+int ScaleFontForDpiAndTextScale(int base_font_size,
+                                UINT dpi,
+                                double text_scale) {
+  if (dpi == 0) {
+    dpi = USER_DEFAULT_SCREEN_DPI;
+  }
+  double clamped_scale =
+      std::clamp(text_scale, kMinTextScaleFactor, kMaxTextScaleFactor);
+  return std::max(1,
+                  base::ClampRound(base_font_size * static_cast<double>(dpi) *
+                                   clamped_scale / USER_DEFAULT_SCREEN_DPI));
+}
+
+base::AutoReset<std::optional<double>> ScopedOverrideTextScaleFactorForTesting(
+    double text_scale) {
+  return base::AutoReset<std::optional<double>>(
+      &g_text_scale_override_for_testing, text_scale);
 }
 
 UINT GetMonitorDpi(HMONITOR monitor, HWND hwnd) {

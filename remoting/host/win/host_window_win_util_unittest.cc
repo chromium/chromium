@@ -6,12 +6,16 @@
 
 #include <windows.h>
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/strings/string_util.h"
+#include "base/test/test_reg_util_win.h"
 #include "base/win/current_module.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "remoting/host/win/core_resource.h"
@@ -21,11 +25,134 @@ namespace remoting {
 
 namespace {
 
+struct HwndDeleter {
+  using pointer = HWND;
+  void operator()(HWND hwnd) const {
+    if (hwnd) {
+      DestroyWindow(hwnd);
+    }
+  }
+};
+using ScopedHwnd = std::unique_ptr<HWND, HwndDeleter>;
+
 TEST(HostWindowWinUtilTest, ScalesValuesForDpi) {
   EXPECT_EQ(ScaleForDpi(100, USER_DEFAULT_SCREEN_DPI), 100);
   EXPECT_EQ(ScaleForDpi(100, 144), 150);
   EXPECT_EQ(ScaleForDpi(100, 192), 200);
   EXPECT_EQ(ScaleForDpi(64, 144), 96);
+}
+
+TEST(HostWindowWinUtilTest,
+     ScalesFontForDpiAndTextScaleWithSingleStepRoundingAndClamping) {
+  EXPECT_EQ(ScaleFontForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 1.0), 18);
+  EXPECT_EQ(ScaleFontForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 1.5), 27);
+  EXPECT_EQ(ScaleFontForDpiAndTextScale(18, 192, 1.5), 54);
+  // Single-step rounding (`14 * 120 * 1.25 / 96 = 21.875 -> 22`, avoiding the
+  // 1px overestimate from rounding `14 * 120 / 96` to `18` first).
+  EXPECT_EQ(ScaleFontForDpiAndTextScale(14, 120, 1.25), 22);
+  EXPECT_EQ(ScaleFontForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 0.5), 18);
+  EXPECT_EQ(ScaleFontForDpiAndTextScale(20, USER_DEFAULT_SCREEN_DPI, 5.0), 45);
+}
+
+TEST(HostWindowWinUtilTest, OverridesAndClampsSystemTextScaleFactor) {
+  EXPECT_GE(GetSystemTextScaleFactor(), kMinTextScaleFactor);
+  EXPECT_LE(GetSystemTextScaleFactor(), kMaxTextScaleFactor);
+
+  {
+    base::AutoReset<std::optional<double>> override_scale =
+        ScopedOverrideTextScaleFactorForTesting(1.75);
+    EXPECT_DOUBLE_EQ(GetSystemTextScaleFactor(), 1.75);
+  }
+
+  {
+    base::AutoReset<std::optional<double>> clamped_high =
+        ScopedOverrideTextScaleFactorForTesting(10.0);
+    EXPECT_DOUBLE_EQ(GetSystemTextScaleFactor(), kMaxTextScaleFactor);
+  }
+
+  {
+    base::AutoReset<std::optional<double>> clamped_low =
+        ScopedOverrideTextScaleFactorForTesting(0.25);
+    EXPECT_DOUBLE_EQ(GetSystemTextScaleFactor(), kMinTextScaleFactor);
+  }
+}
+
+TEST(HostWindowWinUtilTest,
+     ReadsAndClampsTextScaleFactorFromCurrentUserRegistry) {
+  registry_util::RegistryOverrideManager registry_override;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override.OverrideRegistry(HKEY_CURRENT_USER));
+
+  // With an empty overridden `HKEY_CURRENT_USER` (no `Accessibility` subkey),
+  // `GetSystemTextScaleFactor()` falls back cleanly within bounds.
+  EXPECT_GE(GetSystemTextScaleFactor(), kMinTextScaleFactor);
+  EXPECT_LE(GetSystemTextScaleFactor(), kMaxTextScaleFactor);
+
+  base::win::RegKey accessibility_key;
+  ASSERT_EQ(accessibility_key.Create(HKEY_CURRENT_USER,
+                                     L"Software\\Microsoft\\Accessibility",
+                                     KEY_SET_VALUE),
+            ERROR_SUCCESS);
+
+  ASSERT_EQ(
+      accessibility_key.WriteValue(L"TextScaleFactor", static_cast<DWORD>(0)),
+      ERROR_SUCCESS);
+  EXPECT_GE(GetSystemTextScaleFactor(), kMinTextScaleFactor);
+  EXPECT_LE(GetSystemTextScaleFactor(), kMaxTextScaleFactor);
+
+  ASSERT_EQ(
+      accessibility_key.WriteValue(L"TextScaleFactor", static_cast<DWORD>(175)),
+      ERROR_SUCCESS);
+  EXPECT_DOUBLE_EQ(GetSystemTextScaleFactor(), 1.75);
+
+  // An explicit `100` (1.0x) in `TextScaleFactor` takes precedence over any
+  // logon-time `SPI_GETNONCLIENTMETRICS` message font scale.
+  ASSERT_EQ(
+      accessibility_key.WriteValue(L"TextScaleFactor", static_cast<DWORD>(100)),
+      ERROR_SUCCESS);
+  EXPECT_DOUBLE_EQ(GetSystemTextScaleFactor(), 1.0);
+
+  ASSERT_EQ(
+      accessibility_key.WriteValue(L"TextScaleFactor", static_cast<DWORD>(300)),
+      ERROR_SUCCESS);
+  EXPECT_DOUBLE_EQ(GetSystemTextScaleFactor(), kMaxTextScaleFactor);
+
+  ASSERT_EQ(
+      accessibility_key.WriteValue(L"TextScaleFactor", static_cast<DWORD>(50)),
+      ERROR_SUCCESS);
+  EXPECT_DOUBLE_EQ(GetSystemTextScaleFactor(), kMinTextScaleFactor);
+}
+
+TEST(HostWindowWinUtilTest,
+     ComputesNonClientMessageFontScaleGuardingCellHeightAndFaceName) {
+  LOGFONTW segoe_default = {};
+  segoe_default.lfHeight = -12;
+  base::wcslcpy(segoe_default.lfFaceName, L"Segoe UI");
+  EXPECT_DOUBLE_EQ(ComputeNonClientMessageFontScale(segoe_default), 1.0);
+
+  LOGFONTW segoe_enlarged = {};
+  segoe_enlarged.lfHeight = -18;
+  base::wcslcpy(segoe_enlarged.lfFaceName, L"segoe ui");
+  EXPECT_DOUBLE_EQ(ComputeNonClientMessageFontScale(segoe_enlarged), 1.5);
+
+  LOGFONTW segoe_clamped = {};
+  segoe_clamped.lfHeight = -48;
+  base::wcslcpy(segoe_clamped.lfFaceName, L"Segoe UI");
+  EXPECT_DOUBLE_EQ(ComputeNonClientMessageFontScale(segoe_clamped),
+                   kMaxTextScaleFactor);
+
+  // Positive `lfHeight` specifies cell height (including internal leading) and
+  // must not overestimate character height.
+  LOGFONTW positive_cell_height = segoe_default;
+  positive_cell_height.lfHeight = 16;
+  EXPECT_DOUBLE_EQ(ComputeNonClientMessageFontScale(positive_cell_height), 1.0);
+
+  // Non-`Segoe UI` locale/OEM message fonts with baselines > 12px must remain
+  // at 1.0x rather than enlarging the overlay at 100% Text size.
+  LOGFONTW non_segoe_font = {};
+  non_segoe_font.lfHeight = -16;
+  base::wcslcpy(non_segoe_font.lfFaceName, L"Yu Gothic UI");
+  EXPECT_DOUBLE_EQ(ComputeNonClientMessageFontScale(non_segoe_font), 1.0);
 }
 
 TEST(HostWindowWinUtilTest, QueriesMonitorAndWindowDpiWithFallback) {
@@ -54,62 +181,58 @@ TEST(HostWindowWinUtilTest, CreatesOverlayFontAtRequestedWeight) {
 }
 
 TEST(HostWindowWinUtilTest, ReadsFullWindowTextAndMeasuresWidth) {
-  HWND hwnd =
-      CreateWindowExW(0, L"STATIC", L"Sample Control Text", WS_POPUP, 0, 0, 200,
-                      40, nullptr, nullptr, CURRENT_MODULE(), nullptr);
-  ASSERT_NE(hwnd, nullptr);
+  ScopedHwnd hwnd(CreateWindowExW(0, L"STATIC", L"Sample Control Text",
+                                  WS_POPUP, 0, 0, 200, 40, nullptr, nullptr,
+                                  CURRENT_MODULE(), nullptr));
+  ASSERT_NE(hwnd.get(), nullptr);
 
   std::wstring text;
-  EXPECT_TRUE(GetWindowTextString(hwnd, &text));
+  EXPECT_TRUE(GetWindowTextString(hwnd.get(), &text));
   EXPECT_EQ(text, L"Sample Control Text");
 
   LONG width = 0;
-  EXPECT_TRUE(GetControlTextWidth(hwnd, text, /*is_rtl=*/false, &width));
+  EXPECT_TRUE(GetControlTextWidth(hwnd.get(), text, /*is_rtl=*/false, &width));
   EXPECT_GT(width, 0);
-
-  DestroyWindow(hwnd);
 }
 
 TEST(HostWindowWinUtilTest, AppliesCaptureExclusionToLayeredPopupWindow) {
   base::AutoReset<bool> allow_capture_exclusion_failure =
       ScopedAllowCaptureExclusionFailureForTesting();
 
-  HWND hwnd =
-      CreateWindowExW(WS_EX_LAYERED, L"STATIC", L"Layered Popup", WS_POPUP, 0,
-                      0, 100, 100, nullptr, nullptr, CURRENT_MODULE(), nullptr);
-  ASSERT_NE(hwnd, nullptr);
-  ASSERT_TRUE(SetLayeredWindowAttributes(hwnd, 0, 200, LWA_ALPHA));
+  ScopedHwnd hwnd(CreateWindowExW(WS_EX_LAYERED, L"STATIC", L"Layered Popup",
+                                  WS_POPUP, 0, 0, 100, 100, nullptr, nullptr,
+                                  CURRENT_MODULE(), nullptr));
+  ASSERT_NE(hwnd.get(), nullptr);
+  ASSERT_TRUE(SetLayeredWindowAttributes(hwnd.get(), 0, 200, LWA_ALPHA));
 
-  EXPECT_TRUE(ApplyCaptureExclusion(hwnd));
-  EXPECT_NE(GetWindowLongPtr(hwnd, GWL_EXSTYLE) & WS_EX_LAYERED, 0);
+  EXPECT_TRUE(ApplyCaptureExclusion(hwnd.get()));
+  EXPECT_NE(GetWindowLongPtr(hwnd.get(), GWL_EXSTYLE) & WS_EX_LAYERED, 0);
 
   BYTE alpha = 0;
   DWORD flags = 0;
-  ASSERT_TRUE(GetLayeredWindowAttributes(hwnd, nullptr, &alpha, &flags));
+  ASSERT_TRUE(GetLayeredWindowAttributes(hwnd.get(), nullptr, &alpha, &flags));
   EXPECT_EQ(alpha, 200);
   EXPECT_NE(flags & LWA_ALPHA, 0u);
 
   DWORD affinity = 0;
-  if (GetWindowDisplayAffinity(hwnd, &affinity) && affinity != 0) {
+  if (GetWindowDisplayAffinity(hwnd.get(), &affinity) && affinity != 0) {
     EXPECT_EQ(affinity, static_cast<DWORD>(WDA_EXCLUDEFROMCAPTURE));
   }
-
-  DestroyWindow(hwnd);
 }
 
 TEST(HostWindowWinUtilTest,
      ApplyCaptureExclusionFailsClosedByDefaultAndHonorsTestingOverride) {
-  HWND parent_hwnd =
-      CreateWindowExW(0, L"STATIC", L"Parent Popup", WS_POPUP, 0, 0, 100, 100,
-                      nullptr, nullptr, CURRENT_MODULE(), nullptr);
-  ASSERT_NE(parent_hwnd, nullptr);
+  ScopedHwnd parent_hwnd(CreateWindowExW(0, L"STATIC", L"Parent Popup",
+                                         WS_POPUP, 0, 0, 100, 100, nullptr,
+                                         nullptr, CURRENT_MODULE(), nullptr));
+  ASSERT_NE(parent_hwnd.get(), nullptr);
 
   // `SetWindowDisplayAffinity()` only accepts top-level windows and
   // deterministically fails with `ERROR_INVALID_PARAMETER` on `WS_CHILD`
   // controls regardless of display driver.
   HWND child_hwnd =
       CreateWindowExW(0, L"STATIC", L"Child Control", WS_CHILD, 0, 0, 50, 50,
-                      parent_hwnd, nullptr, CURRENT_MODULE(), nullptr);
+                      parent_hwnd.get(), nullptr, CURRENT_MODULE(), nullptr);
   ASSERT_NE(child_hwnd, nullptr);
 
   EXPECT_FALSE(ApplyCaptureExclusion(child_hwnd));
@@ -125,16 +248,14 @@ TEST(HostWindowWinUtilTest,
   }
 
   EXPECT_FALSE(ApplyCaptureExclusion(child_hwnd));
-
-  DestroyWindow(parent_hwnd);
 }
 
 TEST(HostWindowWinUtilTest,
      RegisterDisconnectHotKeyRejectsNullAndHonorsTestingOverride) {
-  HWND hwnd =
-      CreateWindowExW(0, L"STATIC", L"HotKey Target", WS_POPUP, 0, 0, 100, 100,
-                      nullptr, nullptr, CURRENT_MODULE(), nullptr);
-  ASSERT_NE(hwnd, nullptr);
+  ScopedHwnd hwnd(CreateWindowExW(0, L"STATIC", L"HotKey Target", WS_POPUP, 0,
+                                  0, 100, 100, nullptr, nullptr,
+                                  CURRENT_MODULE(), nullptr));
+  ASSERT_NE(hwnd.get(), nullptr);
 
   EXPECT_FALSE(RegisterDisconnectHotKey(nullptr));
   EXPECT_EQ(GetLastError(), static_cast<DWORD>(ERROR_INVALID_WINDOW_HANDLE));
@@ -142,21 +263,19 @@ TEST(HostWindowWinUtilTest,
   {
     base::AutoReset<std::optional<bool>> succeed_override =
         ScopedOverrideHotKeyRegistrationForTesting(true);
-    EXPECT_TRUE(RegisterDisconnectHotKey(hwnd));
+    EXPECT_TRUE(RegisterDisconnectHotKey(hwnd.get()));
     EXPECT_FALSE(RegisterDisconnectHotKey(nullptr));
-    UnregisterDisconnectHotKey(hwnd);
+    UnregisterDisconnectHotKey(hwnd.get());
   }
 
   {
     base::AutoReset<std::optional<bool>> fail_override =
         ScopedOverrideHotKeyRegistrationForTesting(false);
-    EXPECT_FALSE(RegisterDisconnectHotKey(hwnd));
+    EXPECT_FALSE(RegisterDisconnectHotKey(hwnd.get()));
     EXPECT_EQ(GetLastError(),
               static_cast<DWORD>(ERROR_HOTKEY_ALREADY_REGISTERED));
-    UnregisterDisconnectHotKey(hwnd);
+    UnregisterDisconnectHotKey(hwnd.get());
   }
-
-  DestroyWindow(hwnd);
 }
 
 TEST(HostWindowWinUtilTest,

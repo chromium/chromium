@@ -76,8 +76,46 @@ inline constexpr int kMouseJitterThresholdPx = 1;
 // after local input stops.
 inline constexpr base::TimeDelta kAutoHideTimeout = base::Seconds(10);
 
+// Supported range for the user's OS Accessibility text scale factor
+// ("Settings -> Accessibility -> Text size", 100%–225%) and the baseline 96-DPI
+// typeface and pixel height of the default Windows 9pt message font
+// (`lfMessageFont`).
+inline constexpr double kMinTextScaleFactor = 1.0;
+inline constexpr double kMaxTextScaleFactor = 2.25;
+inline constexpr wchar_t kDefaultSystemMessageFontFaceName[] = L"Segoe UI";
+inline constexpr int kDefaultSystemMessageFontHeightPx = 12;
+
 // Scales a 96-DPI base pixel measurement to the specified `dpi`.
 int ScaleForDpi(int value, UINT dpi);
+
+// Queries the active user's OS text scale multiplier (clamped to
+// `[kMinTextScaleFactor, kMaxTextScaleFactor]`). Prefers the Windows
+// Accessibility `TextScaleFactor` registry preference (treating the logged-in
+// WTS session user's `HKEY_USERS\<sid>` hive as authoritative when running as
+// `SYSTEM`, and falling back to `HKEY_CURRENT_USER` only when
+// `WTSQueryUserToken()` fails), and falls back to the 96-DPI-normalized
+// `SPI_GETNONCLIENTMETRICS` `Segoe UI` message font character height when
+// `TextScaleFactor` is unset.
+double GetSystemTextScaleFactor();
+
+// Returns the text scale implied by a 96-DPI `SPI_GETNONCLIENTMETRICS`
+// `lfMessageFont` relative to `kDefaultSystemMessageFontHeightPx` (12px for 9pt
+// `Segoe UI`), or `kMinTextScaleFactor` (1.0) if `message_font` uses a positive
+// cell height (`lfHeight >= 0`, which includes internal leading) or a
+// non-`Segoe UI` typeface whose default baseline may exceed 12px.
+double ComputeNonClientMessageFontScale(const LOGFONTW& message_font);
+
+// Scales a 96-DPI base font/control measurement by both `dpi` and `text_scale`
+// (clamped to `[kMinTextScaleFactor, kMaxTextScaleFactor]`) in a single
+// rounding step.
+int ScaleFontForDpiAndTextScale(int base_font_size,
+                                UINT dpi,
+                                double text_scale);
+
+// Overrides `GetSystemTextScaleFactor()` in unit tests so font layout tests run
+// hermetically regardless of the host machine's accessibility settings.
+base::AutoReset<std::optional<double>> ScopedOverrideTextScaleFactorForTesting(
+    double text_scale);
 
 // Queries the effective per-monitor DPI for `monitor`, falling back to the
 // window DPI of `hwnd` or `USER_DEFAULT_SCREEN_DPI` (96) if unavailable.
