@@ -158,7 +158,9 @@ public class ActorControlCoordinatorTest {
 
     private void assertModelPropertiesMatchState(PeekViewUiState state) {
         assertEquals(
-                state.getTitleTextAppearanceResId(),
+                R.drawable.ic_spark_4c_16dp, mModel.get(TabBottomSheetPeekProperties.PEEK_ICON_ID));
+        assertEquals(
+                R.style.TextAppearance_TextAccentMediumThick_Primary,
                 mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID));
         assertEquals(
                 state.descriptionResId,
@@ -184,7 +186,6 @@ public class ActorControlCoordinatorTest {
         assertEquals(
                 state.buttonHorizontalPaddingResId,
                 mModel.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING_ID));
-        assertEquals(state.peekIconResId, mModel.get(TabBottomSheetPeekProperties.PEEK_ICON_ID));
     }
 
     private void performActorControlClick() {

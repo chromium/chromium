@@ -46,11 +46,7 @@ public class ActorControlMediator {
      */
     void setContent(String title, PeekViewUiState state, @Nullable String stepProgress) {
         String customDescription = !TextUtils.isEmpty(stepProgress) ? stepProgress : null;
-        mModel.set(TabBottomSheetPeekProperties.PEEK_ICON_ID, state.peekIconResId);
         mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, title);
-        mModel.set(
-                TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID,
-                state.getTitleTextAppearanceResId());
         mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID, state.descriptionResId);
         mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT, customDescription);
         mModel.set(

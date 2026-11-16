@@ -52,7 +52,13 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
 
         mModel =
                 new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                        .with(
+                                TabBottomSheetPeekProperties.PEEK_ICON_ID,
+                                R.drawable.ic_spark_4c_16dp)
                         .with(TabBottomSheetPeekProperties.TITLE_TEXT, "")
+                        .with(
+                                TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID,
+                                R.style.TextAppearance_TextAccentMediumThick_Primary)
                         .with(
                                 TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED,
                                 this::onActorControlClicked)
