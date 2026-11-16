@@ -200,11 +200,11 @@ class StructureNode(base.Node):
       data = self.gatherer.GetData(lang, encoding)
     if encoding != util.BINARY:
       data = data.encode(encoding)
-    data = self.CompressDataIfNeeded(data)
     # If the asset is in the Lottie format, indicate it by prepending "LOTTIE".
+    prefix = b''
     if self.attrs['type'] == 'lottie':
-      data = 'LOTTIE'.encode(self.attrs['output_encoding']) + data
-    return data
+      prefix = 'LOTTIE'.encode(self.attrs['output_encoding'])
+    return self.CompressDataIfNeeded(data, prefix=prefix)
 
   def GetHtmlResourceFilenames(self):
     """Returns a set of all filenames inlined by this node."""

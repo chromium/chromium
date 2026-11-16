@@ -15,7 +15,25 @@ from grit import clique
 from grit import exception
 from grit import util
 from grit.node import brotli_util
+from grit.node import compress_util
 import grit.format.gzip_string
+
+
+def _BrotliCompressWithHeader(data):
+  # The length of the uncompressed data as 8 bytes little-endian.
+  size_bytes = struct.pack("<q", len(data))
+  data = brotli_util.BrotliCompress(data)
+  # BROTLI_CONST is prepended to brotli decompressed data in order to
+  # easily check if a resource has been brotli compressed.
+  # The length of the uncompressed data is also appended to the start,
+  # truncated to 6 bytes, little-endian. size_bytes is 8 bytes,
+  # need to truncate further to 6.
+  formatter = b'%ds %dx %ds' % (6, 2, len(size_bytes) - 8)
+  return (
+    constants.BROTLI_CONST
+    + b''.join(struct.unpack(formatter, size_bytes))
+    + data
+  )
 
 
 class Node:
@@ -655,14 +673,16 @@ class Node:
     '''Whether this node is a resource map source.'''
     return False
 
-  def CompressDataIfNeeded(self, data):
+  def CompressDataIfNeeded(self, data, prefix=b''):
     '''Compress data using the format specified in the compress attribute.
 
     Args:
       data: The data to compressed.
+      prefix: Bytes to prepend to the result.
     Returns:
-      The data in gzipped or brotli compressed format. If the format is
-      unspecified then this returns the data uncompressed.
+      The compressed (or uncompressed) bytes, or a concurrent.futures.Future
+      resolving to bytes when called within
+      compress_util.ParallelCompression().
     '''
 
     compress = self.attrs.get('compress')
@@ -678,27 +698,20 @@ class Node:
       'file'
     ).endswith(self._COMPRESS_BY_DEFAULT_EXTENSIONS)
 
+    # Compression may happen asynchronously (see compress_util).
     if compress == 'gzip' or compress_by_default:
-      return grit.format.gzip_string.GzipString(data)
+      return compress_util.CompressMaybeAsync(
+        grit.format.gzip_string.GzipString, data, prefix=prefix
+      )
 
     if compress == 'brotli':
-      # The length of the uncompressed data as 8 bytes little-endian.
-      size_bytes = struct.pack("<q", len(data))
-      data = brotli_util.BrotliCompress(data)
-      # BROTLI_CONST is prepended to brotli decompressed data in order to
-      # easily check if a resource has been brotli compressed.
-      # The length of the uncompressed data is also appended to the start,
-      # truncated to 6 bytes, little-endian. size_bytes is 8 bytes,
-      # need to truncate further to 6.
-      formatter = b'%ds %dx %ds' % (6, 2, len(size_bytes) - 8)
-      return (
-        constants.BROTLI_CONST
-        + b''.join(struct.unpack(formatter, size_bytes))
-        + data
+      return compress_util.CompressMaybeAsync(
+        _BrotliCompressWithHeader, data, prefix=prefix
       )
 
     if compress == 'false' or compress == 'default':
-      return data
+      # |data| may be None (e.g. for missing scaled images).
+      return prefix + data if prefix else data
 
     raise Exception('Invalid value for compression')
 

@@ -8,6 +8,7 @@ files.
 """
 
 import collections
+import contextlib
 import os
 import struct
 import sys
@@ -17,6 +18,7 @@ if __name__ == '__main__':
 
 from grit import constants
 from grit import util
+from grit.node import compress_util
 from grit.node import include
 from grit.node import message
 from grit.node import structure
@@ -88,20 +90,34 @@ def _FormatInternal(root, lang, gender):
   id_map = root.GetIdMap()
   data = {}
   root.info = []
-  for node in root.ActiveDescendants():
-    with node:
-      if isinstance(
-        node,
-        (include.IncludeNode, message.MessageNode, structure.StructureNode),
-      ):
-        value = _GetGenderDedupedValue(node, lang, gender)
-        if value is not None:
-          resource_id = id_map[node.GetTextualIds()[0]]
-          data[resource_id] = value
-          root.info.append(
-            '{},{},{}'.format(node.attrs.get('name'), resource_id, node.source)
-          )
-  return data
+  # Values may be futures for resources being compressed in parallel. Not done
+  # for non-default genders, since _GetGenderDedupedValue() compares values.
+  parallel = (
+    compress_util.ParallelCompression()
+    if gender == constants.DEFAULT_GENDER
+    else contextlib.nullcontext()
+  )
+  with parallel:
+    for node in root.ActiveDescendants():
+      with node:
+        if isinstance(
+          node,
+          (include.IncludeNode, message.MessageNode, structure.StructureNode),
+        ):
+          value = _GetGenderDedupedValue(node, lang, gender)
+          if value is not None:
+            resource_id = id_map[node.GetTextualIds()[0]]
+            data[resource_id] = (node, value)
+            root.info.append(
+              '{},{},{}'.format(
+                node.attrs.get('name'), resource_id, node.source
+              )
+            )
+    ret = {}
+    for resource_id, (node, value) in data.items():
+      with node:
+        ret[resource_id] = compress_util.Resolve(value)
+    return ret
 
 
 # Many strings don't get separate translations per gender. We don't want to

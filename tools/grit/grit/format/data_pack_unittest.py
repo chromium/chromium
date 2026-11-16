@@ -13,11 +13,13 @@ if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 import unittest
+import zlib
 
 from grit import constants
 from grit import grd_reader
 from grit import util
 from grit.format import data_pack
+from grit.node import brotli_util
 
 
 class FormatDataPackUnittest(unittest.TestCase):
@@ -222,6 +224,56 @@ class FormatDataPackUnittest(unittest.TestCase):
       data_pack._FormatInternal(grd, 'fr', constants.GENDER_MASCULINE),
       expected_fr_masculine,
     )
+
+  def testFormatInternalCompressed(self):
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+      <grit latest_public_release="2" source_lang_id="en-US"
+            current_release="3" base_dir=".">
+        <outputs>
+          <output filename="contents.pak" type="data_pack" />
+        </outputs>
+        <release seq="3">
+          <includes>
+            <include name="ID_HTML" file="test_html.html" type="BINDATA" />
+            <include name="ID_TEXT" file="test_text.txt" type="BINDATA"
+                     compress="brotli" />
+          </includes>
+          <structures>
+            <structure name="ID_LOTTIE" file="test_json.json" type="lottie"
+                       compress="brotli" />
+          </structures>
+        </release>
+      </grit>'''
+    test_data_root = util.PathFromRoot('grit/testdata')
+    grd = grd_reader.Parse(io.StringIO(xml), test_data_root)
+    grd.SetOutputLanguage('en')
+    grd.RunGatherers()
+    grd.InitializeIds()
+
+    brotli_util.SetBrotliCommand(
+      [
+        sys.executable,
+        os.path.join(test_data_root, '..', 'node', 'mock_brotli.py'),
+      ]
+    )
+    try:
+      values = data_pack._FormatInternal(grd, 'en', constants.DEFAULT_GENDER)
+    finally:
+      brotli_util.SetBrotliCommand(None)
+
+    id_map = grd.GetIdMap()
+    self.assertEqual(
+      util.ReadFile(
+        os.path.join(test_data_root, 'test_html.html'), util.BINARY
+      ),
+      zlib.decompress(values[id_map['ID_HTML']], 16 + zlib.MAX_WBITS),
+    )
+    mock_output = b'This has been mock compressed!'
+    self.assertEqual(constants.BROTLI_CONST, values[id_map['ID_TEXT']][:2])
+    self.assertEqual(mock_output, values[id_map['ID_TEXT']][8:])
+    self.assertEqual(b'LOTTIE', values[id_map['ID_LOTTIE']][:6])
+    self.assertEqual(constants.BROTLI_CONST, values[id_map['ID_LOTTIE']][6:8])
+    self.assertEqual(mock_output, values[id_map['ID_LOTTIE']][14:])
 
 
 if __name__ == '__main__':

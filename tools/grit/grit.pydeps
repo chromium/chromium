@@ -53,6 +53,7 @@
 //tools/grit/grit/node/__init__.py
 //tools/grit/grit/node/base.py
 //tools/grit/grit/node/brotli_util.py
+//tools/grit/grit/node/compress_util.py
 //tools/grit/grit/node/empty.py
 //tools/grit/grit/node/include.py
 //tools/grit/grit/node/mapping.py

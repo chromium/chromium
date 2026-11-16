@@ -28,6 +28,7 @@
 ../grit/grit/node/__init__.py
 ../grit/grit/node/base.py
 ../grit/grit/node/brotli_util.py
+../grit/grit/node/compress_util.py
 ../grit/grit/node/include.py
 ../grit/grit/node/message.py
 ../grit/grit/node/misc.py
