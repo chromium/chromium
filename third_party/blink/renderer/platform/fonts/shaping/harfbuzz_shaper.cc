@@ -1113,6 +1113,9 @@ ShapeResult* HarfBuzzShaper::Shape(const Font* font,
   const wtf_size_t length = end - start;
   ShapeResult* result =
       MakeGarbageCollected<ShapeResult>(start, length, direction);
+  if (!length) {
+    return result;
+  }
   RangeContext range_data(font, direction, start, end);
   if (text_.Is8Bit()) {
     // 8-bit text is guaranteed to be horizontal latin-1.
@@ -1166,6 +1169,9 @@ ShapeResult* HarfBuzzShaper::Shape(
   const wtf_size_t length = end - start;
   ShapeResult* result =
       MakeGarbageCollected<ShapeResult>(start, length, direction);
+  if (!length) {
+    return result;
+  }
   RangeContext range_data(font, direction, start, end, options);
   for (const RunSegmenter::RunSegmenterRange& segmented_range : ranges) {
     DCHECK_GE(segmented_range.end, segmented_range.start);
@@ -1195,6 +1201,9 @@ ShapeResult* HarfBuzzShaper::Shape(
   const wtf_size_t length = end - start;
   ShapeResult* result =
       MakeGarbageCollected<ShapeResult>(start, length, direction);
+  if (!length) {
+    return result;
+  }
   RangeContext range_data(font, direction, start, end, options);
   ShapeSegment(&range_data, pre_segmented, result);
 
@@ -1215,6 +1224,9 @@ void HarfBuzzShaper::GetGlyphData(const SimpleFontData& font_data,
                                   bool is_horizontal,
                                   TextDirection direction,
                                   GlyphDataList& glyphs) {
+  if (text_.empty()) {
+    return;
+  }
   PooledHarfBuzzBuffer pooled_hb_buffer;
   hb_buffer_t* hb_buffer = pooled_hb_buffer.Get();
   hb_buffer_set_language(hb_buffer, locale.HarfbuzzLanguage());

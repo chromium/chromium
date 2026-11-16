@@ -2406,6 +2406,57 @@ TEST_F(HarfBuzzShaperTest, UnorderedClusterIndex) {
   EXPECT_GE(runs.size(), 1u);
 }
 
+TEST_F(HarfBuzzShaperTest, ShapeNullAndEmptyStrings) {
+  Font* font = MakeGarbageCollected<Font>(font_description);
+
+  // Null String (e.g. constructed from a nullptr base::span).
+  {
+    HarfBuzzShaper shaper{String()};
+    const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+    EXPECT_EQ(0u, result->StartIndex());
+    EXPECT_EQ(0u, result->NumCharacters());
+    EXPECT_EQ(0u, TestInfo(result)->NumberOfRunsForTesting());
+
+    RunSegmenter::RunSegmenterRange empty_range = {
+        0, 0, USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        FontFallbackPriority::kText};
+    result = shaper.Shape(font, TextDirection::kLtr, 0, 0, empty_range);
+    EXPECT_EQ(0u, result->NumCharacters());
+    EXPECT_EQ(0u, TestInfo(result)->NumberOfRunsForTesting());
+
+    Vector<RunSegmenter::RunSegmenterRange> ranges{empty_range};
+    result = shaper.Shape(font, TextDirection::kLtr, 0, 0, ranges);
+    EXPECT_EQ(0u, result->NumCharacters());
+    EXPECT_EQ(0u, TestInfo(result)->NumberOfRunsForTesting());
+
+    const SimpleFontData* primary_font = font->PrimaryFont();
+    ASSERT_TRUE(primary_font);
+    HarfBuzzShaper::GlyphDataList glyphs;
+    shaper.GetGlyphData(*primary_font, font_description.LocaleOrDefault(),
+                        USCRIPT_LATIN, /*is_horizontal=*/true,
+                        TextDirection::kLtr, glyphs);
+    EXPECT_TRUE(glyphs.empty());
+  }
+
+  // Empty 8-bit and 16-bit strings.
+  for (String empty_string : {String(""), To16Bit("")}) {
+    HarfBuzzShaper shaper(empty_string);
+    const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+    EXPECT_EQ(0u, result->StartIndex());
+    EXPECT_EQ(0u, result->NumCharacters());
+    EXPECT_EQ(0u, TestInfo(result)->NumberOfRunsForTesting());
+  }
+
+  // Zero-length subrange inside a non-empty 16-bit string.
+  {
+    HarfBuzzShaper shaper(To16Bit("hello"));
+    const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr, 2, 2);
+    EXPECT_EQ(2u, result->StartIndex());
+    EXPECT_EQ(0u, result->NumCharacters());
+    EXPECT_EQ(0u, TestInfo(result)->NumberOfRunsForTesting());
+  }
+}
+
 namespace {
 
 class FakeIftFont final : public CustomFontData {
