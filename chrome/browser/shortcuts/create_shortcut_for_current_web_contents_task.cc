@@ -57,6 +57,11 @@ void CreateShortcutForCurrentWebContentsTask::CreateAndStart(
     return;
   }
 
+  if (!CanCreateShortcutForWebContents(&web_contents)) {
+    std::move(task_callback).Run(ShortcutCreationTaskResult::kPageInvalidated);
+    return;
+  }
+
   GetOrCreateForCurrentDocument(rfh)->FetchIcons(
       web_contents, std::move(dialog_callback), std::move(task_callback));
 }
@@ -125,6 +130,12 @@ void CreateShortcutForCurrentWebContentsTask::
   if (!web_contents()) {
     OnMetadataFetchCompleteSelfDestruct(
         base::unexpected(ShortcutCreationTaskResult::kInvalidRenderFrameHost));
+    return;
+  }
+
+  if (!CanCreateShortcutForWebContents(web_contents())) {
+    OnMetadataFetchCompleteSelfDestruct(
+        base::unexpected(ShortcutCreationTaskResult::kPageInvalidated));
     return;
   }
 

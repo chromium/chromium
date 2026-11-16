@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
@@ -81,13 +82,16 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
   base::FilePath shortcut_path =
       GetUniquePath(desktop.Append(base::StrCat({shortcut_name, L".lnk"})));
 
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchPath(switches::kProfileDirectory,
+                                shortcut_metadata.profile_path.BaseName());
+  command_line.AppendSwitch(switches::kIgnoreProfileDirectoryIfNotExists);
+  command_line.AppendArg("--");
+  command_line.AppendArg(shortcut_url.spec());
+
   base::win::ShortcutProperties target_and_args_properties;
   target_and_args_properties.set_target(chrome_proxy_path);
-  target_and_args_properties.set_arguments(base::StrCat(
-      {L"--", base::ASCIIToWide(switches::kProfileDirectory), L"=\"",
-       shortcut_metadata.profile_path.BaseName().value(), L"\" --",
-       base::ASCIIToWide(switches::kIgnoreProfileDirectoryIfNotExists), L" ",
-       base::ASCIIToWide(shortcut_url.spec())}));
+  target_and_args_properties.set_arguments(command_line.GetArgumentsString());
   target_and_args_properties.set_icon(icon_path, /*icon_index_in=*/0);
 
   bool res =

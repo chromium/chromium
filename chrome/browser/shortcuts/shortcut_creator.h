@@ -13,7 +13,16 @@
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace shortcuts {
+
+// Returns whether a desktop shortcut can be created for `web_contents` based
+// on its crash state, profile eligibility, navigation entry type, and URL
+// scheme.
+bool CanCreateShortcutForWebContents(content::WebContents* web_contents);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

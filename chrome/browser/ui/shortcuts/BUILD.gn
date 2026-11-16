@@ -11,12 +11,8 @@ source_set("shortcuts") {
   ]
 
   deps = [
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/shortcuts",
     "//components/tabs:public",
     "//content/public/browser",
-    "//content/public/common",
-    "//extensions/buildflags",
-    "//extensions/common:common_constants",
   ]
 }

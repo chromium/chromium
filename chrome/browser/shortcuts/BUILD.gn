@@ -18,7 +18,10 @@ source_set("shortcuts") {
   ]
 
   if (!is_chromeos) {
-    public += [ "create_shortcut_for_current_web_contents_task.h" ]
+    public += [
+      "create_shortcut_for_current_web_contents_task.h",
+      "shortcut_creator.h",
+    ]
 
     sources += [
       "create_shortcut_for_current_web_contents_task.cc",
@@ -27,7 +30,6 @@ source_set("shortcuts") {
       "icon_badging.cc",
       "icon_badging.h",
       "shortcut_creator.cc",
-      "shortcut_creator.h",
     ]
 
     deps += [
@@ -40,7 +42,10 @@ source_set("shortcuts") {
       "//components/webapps/common",
       "//components/webapps/common:mojo_bindings",
       "//content/public/browser",
+      "//content/public/common",
       "//crypto",
+      "//extensions/buildflags",
+      "//extensions/common:common_constants",
       "//mojo/public/cpp/bindings",
       "//skia",
       "//third_party/blink/public/common",
@@ -186,11 +191,7 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "shortcut_creator_win_unittest.cc" ]
-    deps += [
-      "//chrome/browser",
-      "//chrome/browser/profiles:misc",
-      "//chrome/browser/profiles:profile_manager",
-    ]
+    deps += [ "//chrome/common:constants" ]
   }
 
   if (is_mac) {

@@ -16,8 +16,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace shortcuts {
 
@@ -145,6 +150,65 @@ IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest, VisibilityChangeStopsTask) {
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(first_callback.Wait());
   EXPECT_FALSE(first_callback.Get<bool>());
+  histogram_tester.ExpectBucketCount(
+      "Shortcuts.CreationTask.Result",
+      ShortcutCreationTaskResult::kPageInvalidated, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest, IneligibleUrlStopsTask) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<
+      const gfx::ImageSkia&, std::u16string,
+      CreateShortcutForCurrentWebContentsTask::ShortcutsDialogResultCallback>
+      dialog_callback;
+  base::test::TestFuture<bool> final_callback;
+  CreateShortcutForCurrentWebContentsTask::CreateAndStart(
+      *web_contents(), dialog_callback.GetCallback(),
+      final_callback.GetCallback());
+
+  ASSERT_TRUE(final_callback.Wait());
+  EXPECT_FALSE(final_callback.Get<bool>());
+  EXPECT_FALSE(dialog_callback.IsReady());
+  histogram_tester.ExpectBucketCount(
+      "Shortcuts.CreationTask.Result",
+      ShortcutCreationTaskResult::kPageInvalidated, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest,
+                       UrlBecomesIneligibleDuringIconFetchStopsTask) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(kPageWithIcons)));
+  ASSERT_TRUE(CanCreateShortcutForWebContents(web_contents()));
+
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<
+      const gfx::ImageSkia&, std::u16string,
+      CreateShortcutForCurrentWebContentsTask::ShortcutsDialogResultCallback>
+      dialog_callback;
+  base::test::TestFuture<bool> final_callback;
+  CreateShortcutForCurrentWebContentsTask::CreateAndStart(
+      *web_contents(), dialog_callback.GetCallback(),
+      final_callback.GetCallback());
+
+  // Verify the create shortcut task is in progress fetching icons.
+  EXPECT_FALSE(dialog_callback.IsReady());
+  EXPECT_FALSE(final_callback.IsReady());
+
+  // Update the committed entry's URL to an ineligible URL while icon fetching
+  // is in progress (without triggering PrimaryPageChanged, which is tested by
+  // WebContentsNavigatedAway) so that the post-icon-fetch eligibility
+  // re-verification in OnIconsFetchedStartBadgingAndShowDialog is exercised.
+  web_contents()->GetController().GetLastCommittedEntry()->SetVirtualURL(
+      GURL(url::kAboutBlankURL));
+
+  ASSERT_TRUE(final_callback.Wait());
+  EXPECT_FALSE(final_callback.Get<bool>());
+  EXPECT_FALSE(dialog_callback.IsReady());
   histogram_tester.ExpectBucketCount(
       "Shortcuts.CreationTask.Result",
       ShortcutCreationTaskResult::kPageInvalidated, 1);
