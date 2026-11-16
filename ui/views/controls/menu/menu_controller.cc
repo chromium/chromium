@@ -1757,7 +1757,9 @@ void MenuController::OnDragDropWillStart() {
 
 void MenuController::OnDragDropCompleted(bool should_close) {
   ScopedDeletionGuard guard(AsWeakPtr());
-  CHECK(drag_in_progress_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/585718788): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(drag_in_progress_);
   drag_in_progress_ = false;
   // During a drag, mouse events are processed directly by the widget, and not
   // sent to the MenuController. At drag completion, reset pressed state and
