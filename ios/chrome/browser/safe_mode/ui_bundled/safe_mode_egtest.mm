@@ -5,7 +5,6 @@
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
-#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -168,13 +167,6 @@ void AssertTryAgainButtonOnPage() {
 
 // Tests that an NTP is shown after 2 crashes.
 - (void)testPostCrashNTP {
-  // TODO(crbug.com/456803766): Test is flaky on iOS 18 iPad devices.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on pre iOS 26 iPad devices.");
-  }
-#endif
-
   [SafeModeAppInterface setFailedStartupAttemptCount:0];
   [ChromeEarlGrey closeAllTabsInCurrentMode];
   [ChromeEarlGrey openNewTab];

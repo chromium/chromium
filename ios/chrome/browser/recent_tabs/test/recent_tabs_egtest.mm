@@ -381,8 +381,7 @@ TAG_SMOKE_TEST(RecentTabsTestCase, testOpenCloseTabFromRegularWithHistory);
 
 // Tests that for a signed out user, sign-in using the promo then decline
 // history sync promo signs the user out and does not enable history sync.
-// TODO(crbug.com/453011095): Test is failing on the waterfall.
-- (void)DISABLED_testDelineHistorySyncIfSignedOut {
+- (void)testDelineHistorySyncIfSignedOut {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -758,10 +757,6 @@ TAG_SMOKE_TEST(RecentTabsTestCase, testOpenCloseTabFromRegularWithHistory);
 
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
-  // TODO(crbug.com/40149458): Test disabled on iOS14 iPhones.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
-  }
   OpenRecentTabsPanel();
 
   id<GREYMatcher> recentTabsViewController =
@@ -937,8 +932,7 @@ TAG_SMOKE_TEST(RecentTabsTestCase, testOpenCloseTabFromRegularWithHistory);
 }
 
 // Tests the Open in New Window action on a recent tab's context menu.
-// TODO(crbug.com/40807242) Test is flaky.
-- (void)FLAKY_testContextMenuOpenInNewWindow {
+- (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

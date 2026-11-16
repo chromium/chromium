@@ -136,8 +136,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 //
 // Corresponds to VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd
 // in variations_safe_mode_browsertest.cc.
-// TODO(crbug.com/379849501): Test is flaky on various bots.
-- (void)DISABLED_testVariationsSafeModeEndToEnd {
+- (void)testVariationsSafeModeEndToEnd {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
 
   // Set the safe seed value. Validate that the seed is set but not active.

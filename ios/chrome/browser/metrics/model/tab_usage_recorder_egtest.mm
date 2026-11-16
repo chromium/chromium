@@ -194,8 +194,7 @@ void SwitchToNormalMode() {
 }
 
 // Tests that the recorder actual recorde tab state.
-// TODO(crbug.com/41442581) The test is flaky.
-- (void)DISABLED_testTabSwitchRecorder {
+- (void)testTabSwitchRecorder {
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.
@@ -328,8 +327,7 @@ void SwitchToNormalMode() {
 
 // Tests that tabs reloaded on cold start are reported as
 // EVICTED_DUE_TO_COLD_START.
-// TODO(crbug.com/41442581) The test is disabled due to flakiness.
-- (void)DISABLED_testColdLaunchReloadCount {
+- (void)testColdLaunchReloadCount {
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.
@@ -398,8 +396,7 @@ void SwitchToNormalMode() {
 }
 
 // Tests that tabs reloads after backgrounding and eviction.
-// TODO(crbug.com/41442581) The test is flaky.
-- (void)DISABLED_testBackgroundingReloadCount {
+- (void)testBackgroundingReloadCount {
   [ChromeEarlGrey resetTabUsageRecorder];
 
   // Open two tabs with urls.

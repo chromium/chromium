@@ -106,9 +106,7 @@ void RequestDesktopVersion() {
 }
 
 // Verifies that the Badged Manual Translate Trigger feature shows.
-// TODO(crbug.com/40814816): Reenable once new overflow menu supports translate
-// badge.
-- (void)DISABLED_testBadgedTranslateManualTriggerFeatureShows {
+- (void)testBadgedTranslateManualTriggerFeatureShows {
   [self enableDemoModeForFeature:"IPH_BadgedTranslateManualTrigger"];
 
   [ChromeEarlGreyUI openToolsMenu];

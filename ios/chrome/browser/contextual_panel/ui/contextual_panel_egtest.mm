@@ -229,13 +229,6 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 // controller layout and the custom compact layout when multi-window states
 // change.
 - (void)testContexutalPaneliPadMultiwindow {
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    // Fails because it assumes a window will be compact after creating a new
-    // window.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

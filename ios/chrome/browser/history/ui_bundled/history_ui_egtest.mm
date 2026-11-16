@@ -5,7 +5,6 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
@@ -167,11 +166,6 @@ TAG_SMOKE_TEST(HistoryUITestCase, testDisplayHistory);
 
 // Tests that searching history displays only entries matching the search term.
 - (void)testSearchHistory {
-  // TODO(crbug.com/437308717): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   [self addTestURLsToHistory];
   [ChromeCoordinatorAppInterface startHistoryCoordinator];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
@@ -203,11 +197,6 @@ TAG_SMOKE_TEST(HistoryUITestCase, testDisplayHistory);
 // Tests that long press on scrim while search box is enabled dismisses the
 // search controller.
 - (void)testSearchLongPressOnScrimCancelsSearchController {
-  // TODO(crbug.com/437310081): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   [self addTestURLsToHistory];
   [ChromeCoordinatorAppInterface startHistoryCoordinator];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
@@ -546,11 +535,6 @@ TAG_SMOKE_TEST(HistoryUITestCase, testDisplayHistory);
 
 // Tests that the VC can be dismissed by swiping down while its searching.
 - (void)testSwipeDownDismissWhileSearching {
-  // TODO(crbug.com/437314770): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   [self addTestURLsToHistory];
   [ChromeCoordinatorAppInterface startHistoryCoordinator];
 

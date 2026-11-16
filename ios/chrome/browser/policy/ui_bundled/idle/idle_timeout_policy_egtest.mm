@@ -4,7 +4,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import "base/ios/ios_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -338,15 +337,7 @@ void VerifyNoActionsRan() {
 
 // Tests that the idle timeout confirmation dialog is shown on the other window
 // when the window presenting the dialog is closed.
-// TODO(crbug.com/442534095): Re-enable the test once the bug is fixed.
-- (void)DISABLED_testIdleTimeoutDialogWithMultiWindows {
-  // TODO(crbug.com/444650008): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
+- (void)testIdleTimeoutDialogWithMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

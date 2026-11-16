@@ -81,7 +81,7 @@ std::unique_ptr<net::test_server::HttpResponse> LargeLinksPageResponse(
 
 @implementation PageContextTestCase
 
-- (void)DISABLED_testLargePage_RichOn_ActionableOn {
+- (void)testLargePage_RichOn_ActionableOn {
   // TODO(crbug.com/507473141): this test returns null in some cases, but
   // ideally it should not. We appear to run over a size limit with rich +
   // actionable mode on large pages.

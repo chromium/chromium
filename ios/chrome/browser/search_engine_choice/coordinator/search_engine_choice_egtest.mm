@@ -154,8 +154,7 @@
 }
 
 // Test that the snippet can be expanded or collapsed.
-// TODO(crbug.com/333519732): Test is flaky.
-- (void)FLAKY_testUserActionWhenExpandingSnippetChevron {
+- (void)testUserActionWhenExpandingSnippetChevron {
   // Checks that the choice screen is shown
   [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   if ([ChromeEarlGrey isIPadIdiom]) {

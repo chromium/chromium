@@ -758,14 +758,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
                   @"Wrong number of unread entries.");
 }
 
-// TODO(crbug.com/433982582): Reenable on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testMarkAllRead DISABLED_testMarkAllRead
-#else
-#define MAYBE_testMarkAllRead testMarkAllRead
-#endif
 // Marks all unread entries as read.
-- (void)MAYBE_testMarkAllRead {
+- (void)testMarkAllRead {
   AddEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -785,8 +779,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 }
 
 // Marks all read entries as unread.
-// TODO(crbug.com/521260679): Unflake this test
-- (void)FLAKY_testMarkAllUnread {
+- (void)testMarkAllUnread {
   AddEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -876,16 +869,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 }
 
 // Selects read and unread entries and mark them as read.
-// TODO(crbug.com/560368038): Enable this test once flakyness is fixed.
-- (void)FLAKY_testMarkMixedEntriesRead {
-  // TODO(crbug.com/433982582): This test fails on iPad iOS 18 with multitasking
-  // enabled.
-  if (!@available(iOS 26, *)) {
-    if ([ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
-      EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
-    }
-  }
-
+- (void)testMarkMixedEntriesRead {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
   TapEntry(kUnreadTitle);
@@ -950,11 +934,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
-  // TODO(crbug.com/40149458): Test disabled on iOS14 iPhones.
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
-  }
-
   GREYAssertNil(
       [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kUnreadURL]
                                          title:kUnreadTitle
@@ -986,14 +965,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 
 // Tests the Open in New Tab context menu action for a reading list entry.
 - (void)testContextMenuOpenInNewTab {
-#if TARGET_IPHONE_SIMULATOR
-  if (!@available(iOS 26, *)) {
-    // This test fails on iPad iOS 18 with multitasking enabled.
-    if ([ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
-      EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
-    }
-  }
-#endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToTestReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1026,15 +997,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
              @"distillablePageURL should have loaded in incognito");
 }
 
-// TODO(crbug.com/433982582): Reenable on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenuMarkAsReadAndBack \
-  DISABLED_testContextMenuMarkAsReadAndBack
-#else
-#define MAYBE_testContextMenuMarkAsReadAndBack testContextMenuMarkAsReadAndBack
-#endif
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-- (void)MAYBE_testContextMenuMarkAsReadAndBack {
+- (void)testContextMenuMarkAsReadAndBack {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
@@ -1447,14 +1411,6 @@ TAG_SMOKE_TEST(ReadingListTestCase, testContextMenuDelete);
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
         @"Opening in new window from context menu is only supported on iPad.");
-  }
-
-  // TODO(crbug.com/433982582): This test fails on iPad iOS 18 with multitasking
-  // enabled.
-  if (!@available(iOS 26, *)) {
-    if ([ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {
-      EARL_GREY_TEST_DISABLED(@"Disabled for iPad multitasking.");
-    }
   }
 
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));

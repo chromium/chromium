@@ -73,8 +73,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 // Tests that the open extension opens a new tab.
-// TODO(crbug.com/484191734) Test is failing
-- (void)DISABLED_testOpenActivityServiceControllerAndOpenExtension {
+- (void)testOpenActivityServiceControllerAndOpenExtension {
   GURL url = self.testServer->GetURL(kPotatoPath);
 
   // Open page and open the share menu.

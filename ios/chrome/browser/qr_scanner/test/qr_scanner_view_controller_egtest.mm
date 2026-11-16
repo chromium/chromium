@@ -531,15 +531,7 @@ void TapButton(id<GREYMatcher> button) {
 }
 
 // Tests that a new dialog replaces an old dialog if the camera state changes.
-// TODO(crbug.com/40105250): Re-enable test on iOS12.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testDialogIsReplacedIfCameraStateChanges \
-  testDialogIsReplacedIfCameraStateChanges
-#else
-#define MAYBE_testDialogIsReplacedIfCameraStateChanges \
-  DISABLED_testDialogIsReplacedIfCameraStateChanges
-#endif
-- (void)MAYBE_testDialogIsReplacedIfCameraStateChanges {
+- (void)testDialogIsReplacedIfCameraStateChanges {
   id cameraControllerMock =
       [QRScannerAppInterface cameraControllerMockWithAuthorizationStatus:
                                  AVAuthorizationStatusAuthorized];
