@@ -1,7 +1,7 @@
 Name: gvdb
 URL: https://gitlab.gnome.org/GNOME/gvdb
 Version: N/A
-Revision: c6f2359cc1d00f16e0a0e2527fa0bc1882b8b5ab
+Revision: 93b9891602b0428e1303ba6e94b46de6a11314f8
 Update Mechanism: Autoroll
 License: LGPL-2.1
 License File: src/COPYING
