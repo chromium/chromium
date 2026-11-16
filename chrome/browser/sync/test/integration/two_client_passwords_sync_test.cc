@@ -15,9 +15,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
+#include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -26,6 +26,8 @@
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/service/sync_service.h"
@@ -180,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, MergeWithTheMostRecent) {
     ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion());
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   }
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 2).Wait());
 
   // Add the passwords to Client 1.
   GetPasswordStore(1)->AddLogin(password_manager::FromPasswordForm(form0_old));
@@ -321,7 +323,9 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
       kValidPassphrase);
   ASSERT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
   // Wait for the client to commit the updates.
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kCustomPassphrase)
+          .Wait());
 
   // When client 1 hits a passphrase required state, we can infer that
   // client 0's passphrase has been committed. to the server.
@@ -497,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
     ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion());
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   }
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::PASSWORDS, 1).Wait());
 
   // Add the passwords and security issues to Client 1.
   GetPasswordStore(1)->AddLogin(password_manager::FromPasswordForm(form1));
