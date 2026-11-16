@@ -40,17 +40,26 @@ bool GLTextureAndroidImageRepresentation::BeginAccess(GLenum mode) {
 
   if (read_only_mode) {
     base::ScopedFD write_sync_fd;
-    if (!android_backing()->BeginRead(this, &write_sync_fd))
+    if (!android_backing()->BeginRead(this, &write_sync_fd)) {
       return false;
-    if (!gl::InsertEglFenceAndWait(std::move(write_sync_fd)))
+    }
+    if (!gl::InsertEglFenceAndWait(std::move(write_sync_fd))) {
+      android_backing()->EndRead(this, base::ScopedFD());
       return false;
+    }
   } else {
     base::ScopedFD sync_fd;
-    if (!android_backing()->BeginWrite(&sync_fd))
+    if (!android_backing()->BeginWrite(&sync_fd)) {
       return false;
+    }
 
-    if (!gl::InsertEglFenceAndWait(std::move(sync_fd)))
+    if (!gl::InsertEglFenceAndWait(std::move(sync_fd))) {
+      // Note: InsertEglFenceAndWait() closes `sync_fd` on failure, so passing
+      // an empty FD to EndWrite() loses prior synchronization fences and can
+      // leave subsequent accesses unsynchronized.
+      android_backing()->EndWrite(base::ScopedFD());
       return false;
+    }
   }
 
   if (read_only_mode)
