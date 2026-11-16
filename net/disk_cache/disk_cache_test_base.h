@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/buildflag.h"
@@ -227,6 +228,9 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   std::unique_ptr<disk_cache::Backend> cache_;
   raw_ptr<disk_cache::BackendImpl> cache_impl_ = nullptr;
   std::unique_ptr<disk_cache::SimpleFileTracker> simple_file_tracker_;
+  // Used by the simple backend if set.
+  scoped_refptr<disk_cache::BackendFileOperationsFactory>
+      simple_file_operations_factory_;
   raw_ptr<disk_cache::SimpleBackendImpl> simple_cache_impl_ = nullptr;
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
   raw_ptr<disk_cache::SqlBackendImpl> sql_cache_impl_ = nullptr;

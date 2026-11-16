@@ -255,13 +255,11 @@ class SimpleSynchronousEntry {
       uint64_t entry_hash,
       std::unique_ptr<UnboundBackendFileOperations> file_operations);
 
-  // Like |DeleteEntryFiles()| above. Deletes all entries corresponding to the
-  // |key_hashes|. Succeeds only when all entries are deleted. Returns a net
-  // error code.
-  static int DeleteEntrySetFiles(
-      const std::vector<uint64_t>* key_hashes,
-      const base::FilePath& path,
-      std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations);
+  // Like |DeleteEntryFiles()| above, but with bound |file_operations|. Returns
+  // true on success.
+  static bool DeleteFilesForEntryHash(const base::FilePath& path,
+                                      uint64_t entry_hash,
+                                      BackendFileOperations* file_operations);
 
   // N.B. ReadData(), WriteData(), CheckEOFRecord(), ReadSparseData(),
   // WriteSparseData() and Close() may block on IO.
@@ -479,9 +477,6 @@ class SimpleSynchronousEntry {
                                      uint64_t entry_hash,
                                      int file_index,
                                      BackendFileOperations* file_operations);
-  static bool DeleteFilesForEntryHash(const base::FilePath& path,
-                                      uint64_t entry_hash,
-                                      BackendFileOperations* file_operations);
   static bool TruncateFilesForEntryHash(const base::FilePath& path,
                                         uint64_t entry_hash,
                                         BackendFileOperations* file_operations);

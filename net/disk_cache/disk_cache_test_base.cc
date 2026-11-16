@@ -466,7 +466,7 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
           std::make_unique<disk_cache::SimpleFileTracker>(64);
     std::unique_ptr<disk_cache::SimpleBackendImpl> simple_backend =
         std::make_unique<disk_cache::SimpleBackendImpl>(
-            /*file_operations=*/nullptr, cache_path_,
+            simple_file_operations_factory_, cache_path_,
             /* cleanup_tracker = */ nullptr, simple_file_tracker_.get(), size_,
             type_, /*cache_entry_hasher=*/nullptr, /*net_log = */ nullptr);
     simple_backend->Init(cb.callback());

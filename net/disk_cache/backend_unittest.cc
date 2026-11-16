@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -25,6 +26,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -32,6 +34,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/platform_thread.h"
@@ -5154,6 +5157,402 @@ TEST_F(DiskCacheBackendTest, SimpleDontLeakPostDoomCreate) {
   // Should not have leaked files here.
 }
 
+namespace {
+
+// Holds each deletion of chosen files until the test releases it.
+class FileDeletionGate : public base::RefCountedThreadSafe<FileDeletionGate> {
+ public:
+  explicit FileDeletionGate(const std::vector<std::string>& file_names)
+      : gates_(MakeGates(file_names)) {}
+
+  // Waits until a deletion of `file_name` is held.
+  void WaitUntilHeld(const std::string& file_name) {
+    gates_.at(file_name)->held.Wait();
+  }
+
+  void Resume(const std::string& file_name) {
+    gates_.at(file_name)->resumed.Signal();
+  }
+
+  void ResumeAll() {
+    for (auto& [file_name, gate] : gates_) {
+      gate->resumed.Signal();
+    }
+  }
+
+  // Called on the sequence that deletes `path`.
+  void OnDeleteFile(const base::FilePath& path) {
+    auto it = gates_.find(path.BaseName().MaybeAsASCII());
+    if (it != gates_.end()) {
+      it->second->held.Signal();
+      it->second->resumed.Wait();
+    }
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<FileDeletionGate>;
+  ~FileDeletionGate() = default;
+
+  struct Gate {
+    base::WaitableEvent held{base::WaitableEvent::ResetPolicy::AUTOMATIC};
+    base::WaitableEvent resumed{base::WaitableEvent::ResetPolicy::AUTOMATIC};
+  };
+
+  static std::map<std::string, std::unique_ptr<Gate>> MakeGates(
+      const std::vector<std::string>& file_names) {
+    std::map<std::string, std::unique_ptr<Gate>> gates;
+    for (const std::string& file_name : file_names) {
+      gates[file_name] = std::make_unique<Gate>();
+    }
+    return gates;
+  }
+
+  // Const, so any sequence can read it.
+  const std::map<std::string, std::unique_ptr<Gate>> gates_;
+};
+
+class GatedFileOperations : public disk_cache::TrivialFileOperations {
+ public:
+  explicit GatedFileOperations(scoped_refptr<FileDeletionGate> gate)
+      : gate_(std::move(gate)) {}
+
+  bool DeleteFile(const base::FilePath& path, DeleteFileMode mode) override {
+    gate_->OnDeleteFile(path);
+    return TrivialFileOperations::DeleteFile(path, mode);
+  }
+  std::unique_ptr<disk_cache::UnboundBackendFileOperations> Unbind() override;
+
+ private:
+  const scoped_refptr<FileDeletionGate> gate_;
+};
+
+class UnboundGatedFileOperations
+    : public disk_cache::UnboundBackendFileOperations {
+ public:
+  explicit UnboundGatedFileOperations(scoped_refptr<FileDeletionGate> gate)
+      : gate_(std::move(gate)) {}
+
+  std::unique_ptr<disk_cache::BackendFileOperations> Bind(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
+    return std::make_unique<GatedFileOperations>(gate_);
+  }
+
+ private:
+  const scoped_refptr<FileDeletionGate> gate_;
+};
+
+std::unique_ptr<disk_cache::UnboundBackendFileOperations>
+GatedFileOperations::Unbind() {
+  return std::make_unique<UnboundGatedFileOperations>(gate_);
+}
+
+class GatedFileOperationsFactory
+    : public disk_cache::BackendFileOperationsFactory {
+ public:
+  explicit GatedFileOperationsFactory(scoped_refptr<FileDeletionGate> gate)
+      : gate_(std::move(gate)) {}
+
+  std::unique_ptr<disk_cache::BackendFileOperations> Create(
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
+    return std::make_unique<GatedFileOperations>(gate_);
+  }
+  std::unique_ptr<disk_cache::UnboundBackendFileOperations> CreateUnbound()
+      override {
+    return std::make_unique<UnboundGatedFileOperations>(gate_);
+  }
+
+ private:
+  ~GatedFileOperationsFactory() override = default;
+
+  const scoped_refptr<FileDeletionGate> gate_;
+};
+
+}  // namespace
+
+// Tests DoomEntries() on a simple cache, holding its worker before it deletes
+// the files of chosen entries.
+class DiskCacheSimpleMassDoomTest : public DiskCacheBackendTest {
+ protected:
+  static constexpr int kSize = 100;
+
+  // Creates an entry with data for each of `keys`, then dooms them in one
+  // batch, in that order. The batch stops before each of `held_keys` until
+  // Resume() is called for it.
+  void InitAndDoomEntries(const std::vector<std::string>& keys,
+                          const std::vector<std::string>& held_keys) {
+    std::vector<std::string> held_file_names;
+    for (const std::string& key : held_keys) {
+      held_file_names.push_back(FirstFileName(key));
+    }
+    gate_ = base::MakeRefCounted<FileDeletionGate>(held_file_names);
+    simple_file_operations_factory_ =
+        base::MakeRefCounted<GatedFileOperationsFactory>(gate_);
+    SetBackendToTest(BackendToTest::kSimple);
+    InitCache();
+
+    std::vector<uint64_t> entry_hashes;
+    for (const std::string& key : keys) {
+      disk_cache::Entry* entry = nullptr;
+      ASSERT_THAT(CreateEntry(key, &entry), IsOk());
+      EXPECT_EQ(kSize, WriteData(entry, 1, 0, buffer_.get(), kSize, false));
+      entry->Close();
+      entry_hashes.push_back(disk_cache::simple_util::GetEntryHashKey(key));
+    }
+    // Let the closes finish, so that the batch deletes every entry itself.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return simple_cache_impl_->GetNumActiveEntriesForTesting() == 0;
+    }));
+    simple_cache_impl_->DoomEntries(&entry_hashes, doom_callback_.callback());
+  }
+
+  void WaitUntilHeld(const std::string& key) {
+    gate_->WaitUntilHeld(FirstFileName(key));
+  }
+
+  void Resume(const std::string& key) { gate_->Resume(FirstFileName(key)); }
+
+  bool FirstFileExists(const std::string& key) {
+    return base::PathExists(cache_path_.AppendASCII(FirstFileName(key)));
+  }
+
+  void ExpectData(const std::string& key) {
+    disk_cache::Entry* entry = nullptr;
+    ASSERT_THAT(OpenEntry(key, &entry), IsOk());
+    auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
+    EXPECT_EQ(kSize, ReadData(entry, 1, 0, read_buffer.get(), kSize));
+    EXPECT_EQ(buffer_->span(), read_buffer->span());
+    entry->Close();
+  }
+
+  void TearDown() override {
+    if (gate_) {
+      gate_->ResumeAll();
+    }
+    DiskCacheBackendTest::TearDown();
+  }
+
+  const scoped_refptr<net::IOBuffer> buffer_ =
+      CacheTestCreateAndFillBuffer(kSize, false);
+  net::TestCompletionCallback doom_callback_;
+
+ private:
+  static std::string FirstFileName(const std::string& key) {
+    return disk_cache::simple_util::GetFilenameFromKeyAndFileIndex(key, 0);
+  }
+
+  scoped_refptr<FileDeletionGate> gate_;
+};
+
+// An operation on an entry of a mass doom waits only for the files of that
+// entry, not for the whole batch.
+TEST_F(DiskCacheSimpleMassDoomTest, CreateWaitsOnlyForItsEntry) {
+  InitAndDoomEntries({"first", "second", "third", "last"}, {"first", "second"});
+  WaitUntilHeld("first");
+
+  // The create succeeds optimistically, and its write waits for the files.
+  EntryResult result =
+      cache_->CreateEntry("last", net::HIGHEST, base::DoNothing());
+  ASSERT_THAT(result.net_error(), IsOk());
+  disk_cache::Entry* entry = result.ReleaseEntry();
+  net::TestCompletionCallback write_callback;
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            entry->WriteData(1, 0, buffer_.get(), kSize,
+                             write_callback.callback(), false));
+
+  // The batch deletes the files of "last" next, then stops at "second". The
+  // backend hasn't processed the deletion of "last" yet, so this open queues
+  // behind the create.
+  Resume("first");
+  WaitUntilHeld("second");
+  TestEntryResultCompletionCallback open_callback;
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            cache_->OpenEntry("last", net::HIGHEST, open_callback.callback())
+                .net_error());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return write_callback.have_result() && open_callback.have_result();
+  }));
+  EXPECT_EQ(kSize, write_callback.WaitForResult());
+  result = open_callback.WaitForResult();
+  ASSERT_THAT(result.net_error(), IsOk());
+  result.ReleaseEntry()->Close();
+  entry->Close();
+
+  // The batch still waits for the other files.
+  EXPECT_FALSE(doom_callback_.have_result());
+  EXPECT_TRUE(FirstFileExists("third"));
+  Resume("second");
+  EXPECT_THAT(doom_callback_.WaitForResult(), IsOk());
+  EXPECT_FALSE(FirstFileExists("third"));
+  ExpectData("last");
+}
+
+// An operation on an entry whose files are already deleted doesn't wait.
+TEST_F(DiskCacheSimpleMassDoomTest, CreateAfterFilesDeleted) {
+  InitAndDoomEntries({"first", "second", "third"}, {"second"});
+  WaitUntilHeld("second");
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("first", &entry), IsOk());
+  EXPECT_EQ(kSize, WriteData(entry, 1, 0, buffer_.get(), kSize, false));
+  entry->Close();
+
+  EXPECT_FALSE(doom_callback_.have_result());
+  Resume("second");
+  EXPECT_THAT(doom_callback_.WaitForResult(), IsOk());
+  ExpectData("first");
+}
+
+// An operation on the entry the worker is deleting right now waits for those
+// files, and the worker doesn't delete the files of the new entry.
+TEST_F(DiskCacheSimpleMassDoomTest, CreateForEntryBeingDeleted) {
+  InitAndDoomEntries({"first", "second"}, {"first", "second"});
+  WaitUntilHeld("first");
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("first", &entry), IsOk());
+  net::TestCompletionCallback write_callback;
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            entry->WriteData(1, 0, buffer_.get(), kSize,
+                             write_callback.callback(), false));
+  Resume("first");
+  EXPECT_EQ(kSize, write_callback.WaitForResult());
+  entry->Close();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return simple_cache_impl_->GetNumActiveEntriesForTesting() == 0;
+  }));
+
+  // Lets through a second deletion of the files of "first", if the worker
+  // makes one.
+  Resume("first");
+  Resume("second");
+  EXPECT_THAT(doom_callback_.WaitForResult(), IsOk());
+  ExpectData("first");
+}
+
+// Without optimistic operations, the create itself waits for the files.
+TEST_F(DiskCacheSimpleMassDoomTest, AppCacheCreateWaitsOnlyForItsEntry) {
+  SetCacheType(net::APP_CACHE);
+  InitAndDoomEntries({"first", "second", "last"}, {"first", "second"});
+  WaitUntilHeld("first");
+
+  TestEntryResultCompletionCallback create_callback;
+  EntryResult result =
+      cache_->CreateEntry("last", net::HIGHEST, create_callback.callback());
+  EXPECT_EQ(net::ERR_IO_PENDING, result.net_error());
+  Resume("first");
+  result = create_callback.GetResult(std::move(result));
+  ASSERT_THAT(result.net_error(), IsOk());
+  disk_cache::Entry* entry = result.ReleaseEntry();
+  EXPECT_EQ(kSize, WriteData(entry, 1, 0, buffer_.get(), kSize, false));
+  entry->Close();
+
+  EXPECT_FALSE(doom_callback_.have_result());
+  Resume("second");
+  EXPECT_THAT(doom_callback_.WaitForResult(), IsOk());
+  ExpectData("last");
+}
+
+// Once an entry is released early, the end of the batch leaves alone a later
+// doom of that entry.
+TEST_F(DiskCacheSimpleMassDoomTest, DoomAgainAfterEarlyRelease) {
+  InitAndDoomEntries({"first", "second", "last"}, {"first", "second"});
+  WaitUntilHeld("first");
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("last", &entry), IsOk());
+  net::TestCompletionCallback doom_last_callback;
+  EXPECT_EQ(
+      net::ERR_IO_PENDING,
+      cache_->DoomEntry("last", net::HIGHEST, doom_last_callback.callback()));
+  entry->Close();
+  Resume("first");
+  EXPECT_THAT(doom_last_callback.WaitForResult(), IsOk());
+
+  EXPECT_FALSE(doom_callback_.have_result());
+  Resume("second");
+  EXPECT_THAT(doom_callback_.WaitForResult(), IsOk());
+  ASSERT_THAT(CreateEntry("last", &entry), IsOk());
+  entry->Close();
+}
+
+// When a second batch dooms an entry that the first released early, the end
+// of the first batch leaves the doom of the second alone.
+TEST_F(DiskCacheSimpleMassDoomTest, SecondBatchAfterEarlyRelease) {
+  InitAndDoomEntries({"first", "second", "last"}, {"first", "second", "other"});
+  WaitUntilHeld("first");
+
+  // Release "last" from the first batch early.
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("last", &entry), IsOk());
+  net::TestCompletionCallback write_callback;
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            entry->WriteData(1, 0, buffer_.get(), kSize,
+                             write_callback.callback(), false));
+  Resume("first");
+  EXPECT_EQ(kSize, write_callback.WaitForResult());
+  entry->Close();
+  WaitUntilHeld("second");
+
+  ASSERT_THAT(CreateEntry("other", &entry), IsOk());
+  EXPECT_EQ(kSize, WriteData(entry, 1, 0, buffer_.get(), kSize, false));
+  entry->Close();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return simple_cache_impl_->GetNumActiveEntriesForTesting() == 0;
+  }));
+
+  // The second batch holds before "other", so "last" stays doomed by it.
+  std::vector<uint64_t> entry_hashes = {
+      disk_cache::simple_util::GetEntryHashKey("other"),
+      disk_cache::simple_util::GetEntryHashKey("last")};
+  net::TestCompletionCallback second_doom_callback;
+  simple_cache_impl_->DoomEntries(&entry_hashes,
+                                  second_doom_callback.callback());
+  WaitUntilHeld("other");
+
+  ASSERT_THAT(CreateEntry("last", &entry), IsOk());
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            entry->WriteData(1, 0, buffer_.get(), kSize,
+                             write_callback.callback(), false));
+
+  // Ending the first batch doesn't release the write.
+  Resume("second");
+  EXPECT_THAT(doom_callback_.WaitForResult(), IsOk());
+  EXPECT_FALSE(write_callback.have_result());
+
+  Resume("other");
+  EXPECT_EQ(kSize, write_callback.WaitForResult());
+  entry->Close();
+  EXPECT_THAT(second_doom_callback.WaitForResult(), IsOk());
+  ExpectData("last");
+}
+
+// Destroying the backend mid-batch drops the operations waiting for it. The
+// batch still deletes every file.
+TEST_F(DiskCacheSimpleMassDoomTest, DestroyBackendMidBatch) {
+  InitAndDoomEntries({"first", "last"}, {"first"});
+  WaitUntilHeld("first");
+
+  bool doom_last_callback_destroyed = false;
+  EXPECT_EQ(net::ERR_IO_PENDING,
+            cache_->DoomEntry(
+                "last", net::HIGHEST,
+                base::BindOnce(
+                    [](base::ScopedClosureRunner, int) {
+                      ADD_FAILURE() << "Should not run";
+                    },
+                    base::ScopedClosureRunner(base::BindLambdaForTesting(
+                        [&]() { doom_last_callback_destroyed = true; })))));
+
+  ResetCaches();
+  EXPECT_TRUE(doom_last_callback_destroyed);
+  Resume("first");
+  RunUntilIdle();
+  EXPECT_FALSE(doom_callback_.have_result());
+  EXPECT_FALSE(FirstFileExists("first"));
+  EXPECT_FALSE(FirstFileExists("last"));
+}
+
 TEST_F(DiskCacheBackendTest, BlockFileDelayedWriteFailureRecovery) {
   // Test that blockfile recovers appropriately when some entries are
   // in a screwed up state due to an error in delayed writeback.
@@ -6209,8 +6608,19 @@ TEST_P(DiskCacheGenericBackendTest, DeleteBackendWithMassDoom) {
   }
   EXPECT_EQ(result1.net_error(), net::ERR_IO_PENDING);
 
-  EXPECT_EQ(net::OK, cb.GetResult(rv));
+  if (backend_to_test() != BackendToTest::kSimple) {
+    EXPECT_EQ(net::OK, cb.GetResult(rv));
+    run_loop.Run();
+    return;
+  }
+
+  // Simple completes an open as soon as the files of its entry are deleted,
+  // before the DoomEntries() callback. The open callback then deletes the
+  // backend, which cancels the DoomEntries() callback, so `cb` may never run.
   run_loop.Run();
+  if (cb.have_result()) {
+    EXPECT_THAT(cb.WaitForResult(), IsOk());
+  }
 }
 
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)

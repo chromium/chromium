@@ -615,21 +615,6 @@ int SimpleSynchronousEntry::TruncateEntryFiles(
   return deleted_well ? net::OK : net::ERR_FAILED;
 }
 
-// static
-int SimpleSynchronousEntry::DeleteEntrySetFiles(
-    const std::vector<uint64_t>* key_hashes,
-    const FilePath& path,
-    std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations) {
-  auto file_operations = unbound_file_operations->Bind(
-      base::SequencedTaskRunner::GetCurrentDefault());
-  const size_t did_delete_count = std::ranges::count_if(
-      *key_hashes, [&path, &file_operations](const uint64_t& key_hash) {
-        return SimpleSynchronousEntry::DeleteFilesForEntryHash(
-            path, key_hash, file_operations.get());
-      });
-  return (did_delete_count == key_hashes->size()) ? net::OK : net::ERR_FAILED;
-}
-
 void SimpleSynchronousEntry::ReadData(const ReadRequest& in_entry_op,
                                       SimpleEntryStat* entry_stat,
                                       net::IOBuffer* out_buf,

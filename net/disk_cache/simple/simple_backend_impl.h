@@ -35,6 +35,7 @@
 #include "net/disk_cache/simple/post_operation_waiter.h"
 #include "net/disk_cache/simple/simple_entry_impl.h"
 #include "net/disk_cache/simple/simple_index_delegate.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace net {
 class PrioritizedTaskRunner;
@@ -174,6 +175,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   class ActiveEntryProxy;
   friend class ActiveEntryProxy;
 
+  class MassDoom;
+
   // Return value of InitCacheStructureOnDisk().
   struct DiskStatResult {
     base::Time cache_dir_mtime;
@@ -240,6 +243,12 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
       net::RequestPriority request_priority,
       std::vector<base::OnceClosure>* post_doom);
 
+  // Returns the operations queued behind a pending doom of `entry_hash`, or
+  // nullptr if no doom is pending. If the doom is part of a DoomEntries()
+  // batch, asks the batch to delete the files of `entry_hash` next. If they are
+  // already deleted and nothing is queued, ends the doom and returns nullptr.
+  std::vector<base::OnceClosure>* FindPostDoom(uint64_t entry_hash);
+
   // Given a hash, will try to open the corresponding Entry. If we have an Entry
   // corresponding to |hash| in the map of active entries, opens it. Otherwise,
   // a new empty Entry will be created, opened and filled with information from
@@ -261,9 +270,14 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
                              EntryResultCallback callback,
                              EntryResult result);
 
+  // Called when `mass_doom` deleted the files of `entry_hash`, after
+  // FindPostDoom() asked it to delete them next.
+  void OnMassDoomEntryDeleted(scoped_refptr<MassDoom> mass_doom,
+                              uint64_t entry_hash);
+
   // A callback thunk used by DoomEntries to clear the |entries_pending_doom_|
   // after a mass doom.
-  void DoomEntriesComplete(std::unique_ptr<std::vector<uint64_t>> entry_hashes,
+  void DoomEntriesComplete(scoped_refptr<MassDoom> mass_doom,
                            CompletionOnceCallback callback,
                            int result);
 
@@ -294,6 +308,10 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   // is complete. They store a vector of base::OnceClosure's of deferred
   // operations to be run at the completion of the Doom.
   scoped_refptr<SimplePostOperationWaiterTable> post_doom_waiting_;
+
+  // The entries in `post_doom_waiting_` whose doom is a DoomEntries() batch,
+  // mapped to that batch.
+  absl::flat_hash_map<uint64_t, scoped_refptr<MassDoom>> mass_doom_entries_;
 
   // Set of entries which are being opened by hash. We don't have their key,
   // so can't check for collisions on Doom/Open/Create ops until that is

@@ -8,8 +8,10 @@
 #include <cstdlib>
 #include <functional>
 #include <limits>
+#include <optional>
 
 #include "base/byte_size.h"
+#include "base/containers/circular_deque.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -20,9 +22,11 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -41,6 +45,7 @@
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/simple/simple_version_upgrade.h"
 #include "net/disk_cache/trivial_cache_entry_hasher.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <sys/resource.h>
@@ -209,6 +214,117 @@ class SimpleBackendImpl::ActiveEntryProxy
   base::WeakPtr<SimpleBackendImpl> backend_;
 };
 
+// The entries of one DoomEntries() batch. A worker deletes their files one
+// entry at a time, in order, except that entries an operation waits for go
+// first. The backend can then end the doom of each of those as soon as its
+// files are gone, rather than after the whole batch.
+class SimpleBackendImpl::MassDoom
+    : public base::RefCountedThreadSafe<MassDoom> {
+ public:
+  enum class PrioritizeResult {
+    // The worker will call OnMassDoomEntryDeleted() once the files are gone.
+    kWillNotify,
+    // The files are already deleted, and the worker won't call back for them.
+    kAlreadyDeleted,
+  };
+
+  MassDoom(std::vector<uint64_t> entry_hashes,
+           base::WeakPtr<SimpleBackendImpl> backend)
+      : entry_hashes_(std::move(entry_hashes)),
+        backend_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+        backend_(std::move(backend)) {
+    deleted_.reserve(entry_hashes_.size());
+  }
+
+  MassDoom(const MassDoom&) = delete;
+  MassDoom& operator=(const MassDoom&) = delete;
+
+  const std::vector<uint64_t>& entry_hashes() const { return entry_hashes_; }
+
+  // Called on the backend sequence. Moves `entry_hash` to the front of the
+  // queue, unless its files are already deleted.
+  PrioritizeResult Prioritize(uint64_t entry_hash) {
+    base::AutoLock auto_lock(lock_);
+    if (deleted_.contains(entry_hash)) {
+      return PrioritizeResult::kAlreadyDeleted;
+    }
+    if (prioritized_.insert(entry_hash).second) {
+      to_delete_first_.push_back(entry_hash);
+    }
+    return PrioritizeResult::kWillNotify;
+  }
+
+  // Runs on the worker. Returns net::OK if all the files were deleted.
+  int DeleteFiles(
+      const base::FilePath& path,
+      std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations) {
+    auto file_operations = unbound_file_operations->Bind(
+        base::SequencedTaskRunner::GetCurrentDefault());
+    bool deleted_all = true;
+    while (std::optional<uint64_t> entry_hash = TakeNext()) {
+      deleted_all = SimpleSynchronousEntry::DeleteFilesForEntryHash(
+                        path, *entry_hash, file_operations.get()) &&
+                    deleted_all;
+      if (MarkDeleted(*entry_hash) == MarkDeletedResult::kNotifyBackend) {
+        backend_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(&SimpleBackendImpl::OnMassDoomEntryDeleted, backend_,
+                           base::WrapRefCounted(this), *entry_hash));
+      }
+    }
+    return deleted_all ? net::OK : net::ERR_FAILED;
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<MassDoom>;
+
+  enum class MarkDeletedResult {
+    // Prioritize() was called for the entry, so the backend is waiting on it.
+    kNotifyBackend,
+    // Nothing waits on the entry. DoomEntriesComplete() ends its doom.
+    kNoNotification,
+  };
+
+  ~MassDoom() = default;
+
+  // Returns the next entry to delete, or nullopt if none is left.
+  std::optional<uint64_t> TakeNext() {
+    base::AutoLock auto_lock(lock_);
+    while (!to_delete_first_.empty()) {
+      const uint64_t entry_hash = to_delete_first_.front();
+      to_delete_first_.pop_front();
+      if (!deleted_.contains(entry_hash)) {
+        return entry_hash;
+      }
+    }
+    while (next_in_order_ < entry_hashes_.size()) {
+      const uint64_t entry_hash = entry_hashes_[next_in_order_++];
+      if (!deleted_.contains(entry_hash)) {
+        return entry_hash;
+      }
+    }
+    return std::nullopt;
+  }
+
+  MarkDeletedResult MarkDeleted(uint64_t entry_hash) {
+    base::AutoLock auto_lock(lock_);
+    deleted_.insert(entry_hash);
+    return prioritized_.contains(entry_hash)
+               ? MarkDeletedResult::kNotifyBackend
+               : MarkDeletedResult::kNoNotification;
+  }
+
+  const std::vector<uint64_t> entry_hashes_;
+  const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  const base::WeakPtr<SimpleBackendImpl> backend_;
+
+  base::Lock lock_;
+  size_t next_in_order_ GUARDED_BY(lock_) = 0;
+  base::circular_deque<uint64_t> to_delete_first_ GUARDED_BY(lock_);
+  absl::flat_hash_set<uint64_t> prioritized_ GUARDED_BY(lock_);
+  absl::flat_hash_set<uint64_t> deleted_ GUARDED_BY(lock_);
+};
+
 SimpleBackendImpl::SimpleBackendImpl(
     scoped_refptr<BackendFileOperationsFactory> file_operations_factory,
     const FilePath& path,
@@ -308,9 +424,8 @@ void SimpleBackendImpl::DoomEntries(std::vector<uint64_t>* entry_hashes,
   // For each of the entry hashes, there are two cases:
   // 1. There are corresponding entries in active set, pending doom, or both
   //    sets, and so the hash should be doomed individually to avoid flakes.
-  // 2. The hash is not in active use at all, so we can call
-  //    SimpleSynchronousEntry::DeleteEntrySetFiles and delete the files en
-  //    masse.
+  // 2. The hash is not in active use at all, so its files can be deleted in
+  //    the MassDoom batch.
   for (int i = mass_doom_entry_hashes->size() - 1; i >= 0; --i) {
     const uint64_t entry_hash = (*mass_doom_entry_hashes)[i];
     if (!active_entries_.count(entry_hash) &&
@@ -336,18 +451,13 @@ void SimpleBackendImpl::DoomEntries(std::vector<uint64_t>* entry_hashes,
     index_->Remove(*it);
   }
 
-  for (std::vector<uint64_t>::const_iterator
-           it = mass_doom_entry_hashes->begin(),
-           end = mass_doom_entry_hashes->end();
-       it != end; ++it) {
-    index_->Remove(*it);
-    OnDoomStart(*it);
+  auto mass_doom = base::MakeRefCounted<MassDoom>(
+      std::move(*mass_doom_entry_hashes), weak_ptr_factory_.GetWeakPtr());
+  for (uint64_t entry_hash : mass_doom->entry_hashes()) {
+    index_->Remove(entry_hash);
+    OnDoomStart(entry_hash);
+    mass_doom_entries_.emplace(entry_hash, mass_doom);
   }
-
-  // Taking this pointer here avoids undefined behaviour from calling
-  // std::move() before mass_doom_entry_hashes.get().
-  std::vector<uint64_t>* mass_doom_entry_hashes_ptr =
-      mass_doom_entry_hashes.get();
 
   // We don't use priorities (i.e., `prioritized_task_runner_`) here because
   // we don't actually have them here (since this is for eviction based on
@@ -356,12 +466,11 @@ void SimpleBackendImpl::DoomEntries(std::vector<uint64_t>* entry_hashes,
       base::ThreadPool::CreateSequencedTaskRunner(kWorkerPoolTaskTraits);
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&SimpleSynchronousEntry::DeleteEntrySetFiles,
-                     mass_doom_entry_hashes_ptr, path_,
+      base::BindOnce(&MassDoom::DeleteFiles, mass_doom, path_,
                      file_operations_factory_->CreateUnbound()),
       base::BindOnce(&SimpleBackendImpl::DoomEntriesComplete,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(mass_doom_entry_hashes), barrier_callback));
+                     weak_ptr_factory_.GetWeakPtr(), mass_doom,
+                     barrier_callback));
 }
 
 base::expected<int32_t, net::Error> SimpleBackendImpl::GetEntryCount(
@@ -503,6 +612,30 @@ SimpleBackendImpl::MaybeOptimisticCreateForPostDoom(
   }
 
   return simple_entry;
+}
+
+std::vector<base::OnceClosure>* SimpleBackendImpl::FindPostDoom(
+    uint64_t entry_hash) {
+  std::vector<base::OnceClosure>* post_doom =
+      post_doom_waiting_->Find(entry_hash);
+  if (!post_doom) {
+    return nullptr;
+  }
+  auto it = mass_doom_entries_.find(entry_hash);
+  if (it == mass_doom_entries_.end() ||
+      it->second->Prioritize(entry_hash) ==
+          MassDoom::PrioritizeResult::kWillNotify) {
+    return post_doom;
+  }
+  // The files are already deleted. If operations are queued, the current one
+  // has to go after them, so it can't run yet. OnMassDoomEntryDeleted() is on
+  // its way to run the queue, since those operations came through here first.
+  if (!post_doom->empty()) {
+    return post_doom;
+  }
+  mass_doom_entries_.erase(it);
+  post_doom_waiting_->OnOperationComplete(entry_hash);
+  return nullptr;
 }
 
 net::Error SimpleBackendImpl::DoomEntry(const std::string& key,
@@ -786,8 +919,7 @@ SimpleBackendImpl::CreateOrFindActiveOrDoomedEntry(
   DCHECK_EQ(entry_hash, entry_hasher_->GetEntryHashKey(key));
 
   // If there is a doom pending, we would want to serialize after it.
-  std::vector<base::OnceClosure>* post_doom =
-      post_doom_waiting_->Find(entry_hash);
+  std::vector<base::OnceClosure>* post_doom = FindPostDoom(entry_hash);
   if (post_doom) {
     post_operation = post_doom;
     post_operation_queue = PostOperationQueue::kPostDoom;
@@ -837,8 +969,7 @@ SimpleBackendImpl::CreateOrFindActiveOrDoomedEntry(
 
 EntryResult SimpleBackendImpl::OpenEntryFromHash(uint64_t entry_hash,
                                                  EntryResultCallback callback) {
-  std::vector<base::OnceClosure>* post_doom =
-      post_doom_waiting_->Find(entry_hash);
+  std::vector<base::OnceClosure>* post_doom = FindPostDoom(entry_hash);
   if (post_doom) {
     base::OnceCallback<EntryResult(EntryResultCallback)> operation =
         base::BindOnce(&SimpleBackendImpl::OpenEntryFromHash,
@@ -880,8 +1011,7 @@ EntryResult SimpleBackendImpl::OpenEntryFromHash(uint64_t entry_hash,
 net::Error SimpleBackendImpl::DoomEntryFromHash(
     uint64_t entry_hash,
     CompletionOnceCallback callback) {
-  std::vector<base::OnceClosure>* post_doom =
-      post_doom_waiting_->Find(entry_hash);
+  std::vector<base::OnceClosure>* post_doom = FindPostDoom(entry_hash);
   if (post_doom) {
     base::OnceCallback<net::Error(CompletionOnceCallback)> operation =
         base::BindOnce(&SimpleBackendImpl::DoomEntryFromHash,
@@ -912,16 +1042,45 @@ void SimpleBackendImpl::OnEntryOpenedFromHash(uint64_t hash,
   std::move(callback).Run(std::move(result));
 }
 
-void SimpleBackendImpl::DoomEntriesComplete(
-    std::unique_ptr<std::vector<uint64_t>> entry_hashes,
-    CompletionOnceCallback callback,
-    int result) {
+void SimpleBackendImpl::OnMassDoomEntryDeleted(
+    scoped_refptr<MassDoom> mass_doom,
+    uint64_t entry_hash) {
+  // FindPostDoom() may have ended this doom already, and a later doom may own
+  // the entry by now.
+  auto it = mass_doom_entries_.find(entry_hash);
+  if (it == mass_doom_entries_.end() || it->second != mass_doom) {
+    return;
+  }
+  mass_doom_entries_.erase(it);
+
   // Save `post_doom_waiting_` locally in case something invoked from us
   // deletes `this`.
   scoped_refptr<SimplePostOperationWaiterTable> post_doom_waiting =
       post_doom_waiting_;
-  for (const uint64_t& entry_hash : *entry_hashes)
+  post_doom_waiting->OnOperationComplete(entry_hash);
+}
+
+void SimpleBackendImpl::DoomEntriesComplete(scoped_refptr<MassDoom> mass_doom,
+                                            CompletionOnceCallback callback,
+                                            int result) {
+  // Skip the entries whose doom ended early. Find the others before any waiter
+  // runs, since a waiter may delete `this`.
+  std::vector<uint64_t> entry_hashes;
+  for (uint64_t entry_hash : mass_doom->entry_hashes()) {
+    auto it = mass_doom_entries_.find(entry_hash);
+    if (it != mass_doom_entries_.end() && it->second == mass_doom) {
+      mass_doom_entries_.erase(it);
+      entry_hashes.push_back(entry_hash);
+    }
+  }
+
+  // Save `post_doom_waiting_` locally in case something invoked from us
+  // deletes `this`.
+  scoped_refptr<SimplePostOperationWaiterTable> post_doom_waiting =
+      post_doom_waiting_;
+  for (const uint64_t& entry_hash : entry_hashes) {
     post_doom_waiting->OnOperationComplete(entry_hash);
+  }
   std::move(callback).Run(result);
 }
 
