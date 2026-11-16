@@ -36,6 +36,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -93,10 +94,12 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
               base::DoNothing())),
           service_worker_client_(test->service_worker_client_) {}
 
-    void MaybeCreateLoader() {
+    void MaybeCreateLoader(bool is_outermost_main_frame = false,
+                           BrowserContext* browser_context = nullptr) {
       network::ResourceRequest resource_request;
       resource_request.url = request_->url();
       resource_request.destination = destination_;
+      resource_request.is_outermost_main_frame = is_outermost_main_frame;
       resource_request.headers = request()->extra_request_headers();
       DCHECK(!loader_loop_.AnyQuitCalled());
       service_worker_client_->UpdateUrls(
@@ -104,7 +107,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
           blink::StorageKey::CreateFirstParty(
               url::Origin::Create(resource_request.url)));
       handler_->MaybeCreateLoader(
-          resource_request, nullptr,
+          resource_request, browser_context,
           base::BindOnce(
               [](base::OnceClosure closure,
                  std::optional<NavigationLoaderInterceptor::Result>
@@ -614,6 +617,80 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
 
   // The host should still have the correct URL.
   EXPECT_EQ(GURL("https://host/scope/doc"), service_worker_client_->url());
+}
+
+// Verifies that when synthetic response interception is enabled for the URL, a
+// real service worker with an empty skippable fetch handler still skips
+// `ServiceWorkerMainResourceLoader` creation via `CompleteWithoutLoader()`,
+// whereas a synthetic registration (`id <=
+// kSyntheticResponseServiceWorkerRegistrationId`) creates the loader
+// (crbug.com/582423396).
+TEST_F(ServiceWorkerControlleeRequestHandlerTest,
+       SyntheticResponseSkipsRealSkippableRegistration) {
+  class SyntheticResponseContentBrowserClient
+      : public TestContentBrowserClient {
+   public:
+    bool IsServiceWorkerSyntheticResponseAllowed(BrowserContext*,
+                                                 const GURL&) override {
+      return true;
+    }
+  };
+
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kServiceWorkerSyntheticResponse);
+  SyntheticResponseContentBrowserClient test_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&test_browser_client);
+  base::ScopedClosureRunner restore_client(base::BindLambdaForTesting(
+      [&]() { SetBrowserClientForTesting(old_browser_client); }));
+
+  context()->registry().WaitForRegistrationsInitializedForTest();
+
+  // 1. Real skippable service worker (`id >= 0`, `kEmptyFetchHandler`) must
+  // assign the controller and skip loader creation despite synthetic response
+  // eligibility on the outermost main frame.
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler);
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetActiveVersion(version_);
+  base::RunLoop store_loop;
+  context()->registry().StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+        store_loop.Quit();
+      }));
+  store_loop.Run();
+
+  ServiceWorkerRequestTestResources real_resources(
+      this, GURL("https://host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  real_resources.MaybeCreateLoader(/*is_outermost_main_frame=*/true,
+                                   helper_->browser_context());
+  real_resources.WaitLoader();
+
+  EXPECT_FALSE(real_resources.loader());
+  EXPECT_EQ(version_.get(), service_worker_client_->controller());
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.FetchHandler.SkipReason",
+      ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
+          kSkippedForEmptyFetchHandler,
+      1);
+
+  // 2. Positive control: an origin with no real registration falls back to a
+  // synthetic registration (`kNoHandler`) and creates the loader, confirming
+  // `needs_interception_for_synthetic_response_` was active above.
+  ServiceWorkerRequestTestResources synthetic_resources(
+      this, GURL("https://no-sw.host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  synthetic_resources.MaybeCreateLoader(/*is_outermost_main_frame=*/true,
+                                        helper_->browser_context());
+  synthetic_resources.WaitLoader();
+
+  EXPECT_TRUE(synthetic_resources.loader());
+  histogram_tester.ExpectTotalCount("ServiceWorker.FetchHandler.SkipReason", 1);
 }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
