@@ -9,23 +9,10 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "chrome/browser/actor/headless_page_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace actor {
-
-HeadlessWebContentsManager::HeadlessPage::HeadlessPage(
-    std::unique_ptr<content::WebContents> contents)
-    : contents(std::move(contents)),
-      host(std::make_unique<HeadlessPageHost>(this->contents.get(),
-                                              kViewportSize)) {}
-HeadlessWebContentsManager::HeadlessPage::HeadlessPage(
-    HeadlessPage&&) noexcept = default;
-HeadlessWebContentsManager::HeadlessPage&
-HeadlessWebContentsManager::HeadlessPage::operator=(HeadlessPage&&) noexcept =
-    default;
-HeadlessWebContentsManager::HeadlessPage::~HeadlessPage() = default;
 
 HeadlessWebContentsManager::HeadlessWebContentsManager(
     content::BrowserContext* browser_context)
@@ -34,8 +21,8 @@ HeadlessWebContentsManager::HeadlessWebContentsManager(
 }
 
 HeadlessWebContentsManager::~HeadlessWebContentsManager() {
-  while (!pages_.empty()) {
-    Destroy(pages_.back().contents.get());
+  while (!contents_.empty()) {
+    Destroy(contents_.back().get());
   }
 }
 
@@ -45,29 +32,30 @@ content::WebContents* HeadlessWebContentsManager::Create() {
       content::WebContents::Create(params);
   contents->SetDelegate(this);
   contents->Resize(gfx::Rect(kViewportSize));
-  return pages_.emplace_back(std::move(contents)).contents.get();
+  return contents_.emplace_back(std::move(contents)).get();
 }
 
 void HeadlessWebContentsManager::Destroy(content::WebContents* contents) {
-  auto it = FindPage(contents);
-  CHECK(it != pages_.end());
+  auto it = std::ranges::find(contents_, contents,
+                              &std::unique_ptr<content::WebContents>::get);
+  CHECK(it != contents_.end());
 
   for (Observer& observer : observers_) {
     observer.OnHeadlessContentsWillBeDestroyed(contents);
   }
 
   // Unlist before destroying, so the dying WebContents is unreachable.
-  HeadlessPage page = std::move(*it);
-  pages_.erase(it);
+  std::unique_ptr<content::WebContents> owned = std::move(*it);
+  contents_.erase(it);
 }
 
 std::unique_ptr<content::WebContents> HeadlessWebContentsManager::TakeContents(
     content::WebContents* contents) {
-  auto it = FindPage(contents);
-  CHECK(it != pages_.end());
-  it->host.reset();
-  std::unique_ptr<content::WebContents> owned = std::move(it->contents);
-  pages_.erase(it);
+  auto it = std::ranges::find(contents_, contents,
+                              &std::unique_ptr<content::WebContents>::get);
+  CHECK(it != contents_.end());
+  std::unique_ptr<content::WebContents> owned = std::move(*it);
+  contents_.erase(it);
   owned->SetDelegate(nullptr);
   return owned;
 }
@@ -77,14 +65,13 @@ void HeadlessWebContentsManager::AdoptContents(
   CHECK(contents);
   CHECK_EQ(contents->GetBrowserContext(), browser_context_.get());
   contents->SetDelegate(this);
-  pages_.emplace_back(std::move(contents));
+  contents_.push_back(std::move(contents));
 }
 
 bool HeadlessWebContentsManager::Contains(
     const content::WebContents* contents) const {
-  return std::ranges::contains(pages_, contents, [](const HeadlessPage& page) {
-    return page.contents.get();
-  });
+  return std::ranges::contains(contents_, contents,
+                               &std::unique_ptr<content::WebContents>::get);
 }
 
 void HeadlessWebContentsManager::AddObserver(Observer* observer) {
@@ -96,12 +83,5 @@ void HeadlessWebContentsManager::RemoveObserver(Observer* observer) {
 }
 
 void HeadlessWebContentsManager::CloseContents(content::WebContents* source) {}
-
-std::vector<HeadlessWebContentsManager::HeadlessPage>::iterator
-HeadlessWebContentsManager::FindPage(const content::WebContents* contents) {
-  return std::ranges::find(pages_, contents, [](const HeadlessPage& page) {
-    return page.contents.get();
-  });
-}
 
 }  // namespace actor

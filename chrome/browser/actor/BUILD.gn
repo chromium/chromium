@@ -1,7 +1,6 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 
 if (is_android) {
@@ -161,8 +160,6 @@ source_set("impl") {
     "aggregated_journal_render_frame_binder.h",
     "enterprise_policy_checker.cc",
     "execution_engine.cc",
-    "headless_page_host.cc",
-    "headless_page_host.h",
     "headless_web_contents_manager.cc",
     "site_policy.cc",
     "tab_annotation_manager.cc",
@@ -379,12 +376,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
-    ]
-  }
-  if (use_aura) {
-    deps += [
-      "//ui/views",
-      "//ui/views/controls/webview",
     ]
   }
 }

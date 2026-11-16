@@ -21,8 +21,6 @@ class WebContents;
 
 namespace actor {
 
-class HeadlessPageHost;
-
 // Central class responsible for creating and owning headless WebContents, i.e.
 // WebContents that are not attached to a tab or a browser window. Notifies
 // observers about the lifecycle of a headless WebContents.
@@ -82,25 +80,10 @@ class HeadlessWebContentsManager : public content::WebContentsDelegate {
   void CloseContents(content::WebContents* source) override;
 
  private:
-  // A headless page and what keeps it rendering.
-  struct HeadlessPage {
-    explicit HeadlessPage(std::unique_ptr<content::WebContents> contents);
-    HeadlessPage(HeadlessPage&&) noexcept;
-    HeadlessPage& operator=(HeadlessPage&&) noexcept;
-    ~HeadlessPage();
-
-    std::unique_ptr<content::WebContents> contents;
-    std::unique_ptr<HeadlessPageHost> host;
-  };
-
-  // Returns the page for `contents`, which must be owned by this manager.
-  std::vector<HeadlessPage>::iterator FindPage(
-      const content::WebContents* contents);
-
   // The context in which all headless WebContents are created.
   const raw_ptr<content::BrowserContext> browser_context_;
-  // The headless pages owned by this manager.
-  std::vector<HeadlessPage> pages_;
+  // The headless WebContents owned by this manager.
+  std::vector<std::unique_ptr<content::WebContents>> contents_;
   // Observers notified about the lifecycle of the owned WebContents.
   base::ObserverList<Observer> observers_;
 };
