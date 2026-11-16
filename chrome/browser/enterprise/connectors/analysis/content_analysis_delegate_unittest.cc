@@ -1300,6 +1300,25 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageDataCloudScan) {
   EXPECT_TRUE(called);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContentAnalysisDelegateAuditOnlyTest,
+       CopiedImageTooBigToScanShowsToast) {
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data,
+                                                 BULK_DATA_ENTRY));
+  data.image = std::string(
+      data.settings.cloud_or_local_settings.max_file_size() + 1, 'a');
+
+  ScanUpload(contents(), std::move(data), base::DoNothing(),
+             DeepScanAccessPoint::COPY);
+
+  EXPECT_EQ(0,
+            test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
+  EXPECT_TRUE(test::FakeContentAnalysisDelegate::WasToastShown());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, ImageDataLocalScan) {
   enterprise_connectors::test::SetAnalysisConnector(

@@ -515,6 +515,14 @@ void ContentAnalysisDelegate::CreateForWebContents(
           base::NotFatalUntil::M161);
     delegate->FillAllResultsWith(true);
     delegate->RunCallback();
+    // In blocking mode the UI leaves the toast of an image copy to the scan, so
+    // a copied image that isn't scanned gets it here: one over the upload size
+    // limit, or any image if image scanning is off. See
+    // image_request_required().
+    if (wait_for_verdict && access_point == DeepScanAccessPoint::COPY &&
+        !delegate->data_.image.empty()) {
+      delegate->UpdateUI();
+    }
   }
 
   // If all requests are already done, just let `delegate` go out of scope.
