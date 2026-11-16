@@ -231,7 +231,7 @@ MockIOSContextualSearchService::~MockIOSContextualSearchService() = default;
 // static
 std::unique_ptr<MockIOSContextualSearchService>
 MockIOSContextualSearchService::CreateTestingProfileService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   auto* variations_client_service =
       VariationsClientServiceFactory::GetForProfile(profile);
   return std::make_unique<MockIOSContextualSearchService>(

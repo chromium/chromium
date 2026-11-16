@@ -50,7 +50,7 @@ ShoppingServiceFactory::ShoppingServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
     ProfileIOS& profile) const {
-  if (auto service = tests_hook::CreateShoppingService(&profile)) {
+  if (auto service = tests_hook::CreateShoppingService(profile)) {
     return service;
   }
 

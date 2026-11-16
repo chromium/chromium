@@ -24,7 +24,7 @@ namespace {
 std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS& profile) {
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake ExtensionService).
-  if (auto extension_service = tests_hook::CreateExtensionService(&profile)) {
+  if (auto extension_service = tests_hook::CreateExtensionService(profile)) {
     return extension_service;
   }
 

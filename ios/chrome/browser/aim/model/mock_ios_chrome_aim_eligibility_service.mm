@@ -128,13 +128,13 @@ MockIOSChromeAimEligibilityService::~MockIOSChromeAimEligibilityService() =
 // static
 std::unique_ptr<MockIOSChromeAimEligibilityService>
 MockIOSChromeAimEligibilityService::CreateTestingProfileService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   Configuration config;
-  config.is_off_the_record = profile->IsOffTheRecord();
+  config.is_off_the_record = profile.IsOffTheRecord();
   return std::make_unique<MockIOSChromeAimEligibilityService>(
-      *profile->GetPrefs(),
+      *profile.GetPrefs(),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(),
+      profile.GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile), std::move(config));
 }
 

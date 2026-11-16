@@ -104,21 +104,21 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
 }
 
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return nullptr;
 }
 
 std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return nullptr;
 }
 
 std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return nullptr;
 }
 
-std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS* profile) {
+std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS& profile) {
   return nullptr;
 }
 
@@ -195,12 +195,12 @@ UIImage* GetPHPickerViewControllerImage() {
 }
 
 std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return nullptr;
 }
 
 std::unique_ptr<contextual_search::ContextualSearchService>
-CreateContextualSearchService(ProfileIOS* profile) {
+CreateContextualSearchService(ProfileIOS& profile) {
   return nullptr;
 }
 

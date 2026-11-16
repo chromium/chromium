@@ -63,7 +63,7 @@ ContextualSearchServiceFactory::ContextualSearchServiceFactory(PassKey key)
 std::unique_ptr<KeyedService>
 ContextualSearchServiceFactory::BuildServiceInstanceFor(
     ProfileIOS& profile) const {
-  if (auto service = tests_hook::CreateContextualSearchService(&profile)) {
+  if (auto service = tests_hook::CreateContextualSearchService(profile)) {
     return service;
   }
   auto* variations_client_service =

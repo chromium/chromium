@@ -182,21 +182,21 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
 // Allows overriding the TabGroupSyncService factory. The real factory will be
 // used if this hook returns null.
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
-    ProfileIOS* profile);
+    ProfileIOS& profile);
 
 // Allows overriding the ShoppingService factory. The real factory will be used
 // if this hook returns null.
 std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
-    ProfileIOS* profile);
+    ProfileIOS& profile);
 
 // Allows overriding the GCMProfileService factory. The real factory will be
 // used if this hook returns null.
 std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
-    ProfileIOS* profile);
+    ProfileIOS& profile);
 
 // Allows overriding the ExtensionService factory. The real factory will be
 // used if this hook returns null.
-std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS* profile);
+std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS& profile);
 
 // Allows additional test setup for the DataSharingService.
 void DataSharingServiceHooks(
@@ -273,12 +273,12 @@ UIImage* GetPHPickerViewControllerImage();
 // Returns a mock AimEligibilityService for testing.
 // The real factory will be used if this hook returns null.
 std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
-    ProfileIOS* profile);
+    ProfileIOS& profile);
 
 // Returns a mock ContextualSearchService for testing.
 // The real factory will be used if this hook returns null.
 std::unique_ptr<contextual_search::ContextualSearchService>
-CreateContextualSearchService(ProfileIOS* profile);
+CreateContextualSearchService(ProfileIOS& profile);
 
 // Injects fake tabs into the given browser.
 void InjectFakeTabsInBrowser(Browser* browser);

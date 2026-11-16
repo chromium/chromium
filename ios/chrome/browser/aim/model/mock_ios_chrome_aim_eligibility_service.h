@@ -26,7 +26,7 @@ class MockIOSChromeAimEligibilityService : public MockAimEligibilityService {
 
   // Factory method to create a testing instance for the given profile.
   static std::unique_ptr<MockIOSChromeAimEligibilityService>
-  CreateTestingProfileService(ProfileIOS* profile);
+  CreateTestingProfileService(ProfileIOS& profile);
 
   // Enables or disables `tool` in the mock `SearchboxConfig`, updates the
   // matching tool eligibility expectation when applicable, and notifies

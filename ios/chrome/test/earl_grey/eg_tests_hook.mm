@@ -304,7 +304,7 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
 }
 
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (!command_line->HasSwitch(test_switches::kEnableFakeTabGroupSyncService)) {
@@ -320,8 +320,7 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
   std::unique_ptr<tab_groups::TabGroupSyncService> sync_service =
       tab_groups::test::CreateTabGroupSyncService(
           std::move(model), DataTypeStoreServiceFactory::GetForProfile(profile),
-          profile->GetPrefs(), device_info_tracker, opt_guide,
-          identity_manager);
+          profile.GetPrefs(), device_info_tracker, opt_guide, identity_manager);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
 
@@ -340,7 +339,7 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
 }
 
 std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(test_switches::kMockShoppingService)) {
     return nullptr;
@@ -372,19 +371,19 @@ std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
 }
 
 std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
   auto fake_gcm_driver =
       std::make_unique<instance_id::FakeGCMDriverForInstanceID>(
-          profile->GetStatePath().Append(FILE_PATH_LITERAL("gcm_test_store")),
+          profile.GetStatePath().Append(FILE_PATH_LITERAL("gcm_test_store")),
           blocking_task_runner);
   return std::make_unique<FakeGCMProfileService>(std::move(fake_gcm_driver));
 }
 
-std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS* profile) {
+std::unique_ptr<ExtensionService> CreateExtensionService(ProfileIOS& profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(test_switches::kEnableFakeExtensionService)) {
     return nullptr;
@@ -542,13 +541,13 @@ UIImage* GetPHPickerViewControllerImage() {
 }
 
 std::unique_ptr<AimEligibilityService> CreateAimEligibilityService(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return MockIOSChromeAimEligibilityService::CreateTestingProfileService(
       profile);
 }
 
 std::unique_ptr<contextual_search::ContextualSearchService>
-CreateContextualSearchService(ProfileIOS* profile) {
+CreateContextualSearchService(ProfileIOS& profile) {
   return MockIOSContextualSearchService::CreateTestingProfileService(profile);
 }
 

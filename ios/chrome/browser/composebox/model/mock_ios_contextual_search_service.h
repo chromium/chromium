@@ -26,7 +26,7 @@ class MockIOSContextualSearchService : public IOSContextualSearchService {
 
   // Factory method to create a testing instance for the given profile.
   static std::unique_ptr<MockIOSContextualSearchService>
-  CreateTestingProfileService(ProfileIOS* profile);
+  CreateTestingProfileService(ProfileIOS& profile);
 
   MOCK_METHOD(
       std::unique_ptr<contextual_search::ContextualSearchContextController>,

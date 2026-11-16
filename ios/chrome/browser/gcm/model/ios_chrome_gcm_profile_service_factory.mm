@@ -47,7 +47,7 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
   DCHECK(!profile.IsOffTheRecord());
 
   if (std::unique_ptr<gcm::GCMProfileService> test_gcm_service =
-          tests_hook::CreateGCMProfileService(&profile)) {
+          tests_hook::CreateGCMProfileService(profile)) {
     CHECK_IS_TEST();
     return test_gcm_service;
   }
