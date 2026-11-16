@@ -1028,12 +1028,13 @@ class ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase
     : public ChromeAuthenticatorRequestDelegateTest {
  protected:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void SetUpChromeSigninPage() {
+  void SetUpChromeSigninPage(
+      signin_metrics::Reason reason =
+          signin_metrics::Reason::kSigninPrimaryAccount) {
     DiceTabHelper::CreateForWebContents(web_contents());
     DiceTabHelper::FromWebContents(web_contents())
         ->InitializeSigninFlow(
-            GURL(kOrigin), signin_metrics::AccessPoint::kSettings,
-            signin_metrics::Reason::kSigninPrimaryAccount,
+            GURL(kOrigin), signin_metrics::AccessPoint::kSettings, reason,
             signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
             /*record_signin_started_metrics=*/false, base::DoNothing(),
             base::DoNothing(), base::DoNothing());
@@ -1783,6 +1784,27 @@ TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
     histogram_tester_.ExpectTotalCount(engagement_histogram(), 0);
   }
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       NonPrimarySigninRequestRecordsOnlyModalEngagement) {
+  SetUpChromeSigninPage(signin_metrics::Reason::kReauthentication);
+
+  MockCableDiscoveryFactory discovery_factory;
+  std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
+      CreateDelegate(&discovery_factory);
+
+  ShowQrCode(delegate.get());
+  delegate.reset();
+
+  if (GetParam() == HybridQrSurface::kModal) {
+    histogram_tester_.ExpectUniqueSample(engagement_histogram(),
+                                         Engagement::kNoScanDetected, 1);
+  } else {
+    histogram_tester_.ExpectTotalCount(engagement_histogram(), 0);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Tests that a HaT survey is triggered when WebAuthn credentials are used for
 // sign-in.

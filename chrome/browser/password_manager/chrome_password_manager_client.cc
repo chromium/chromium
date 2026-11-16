@@ -1427,10 +1427,10 @@ bool ChromePasswordManagerClient::IsNewTabPage() const {
   return search::IsNewTabPageOrigin(url) || search::IsNewTabOrigin(url);
 }
 
-bool ChromePasswordManagerClient::IsChromeSigninPage() const {
+bool ChromePasswordManagerClient::IsPageEligibleForInlineQrCodeSignin() const {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents());
-  return tab_helper && tab_helper->IsChromeSigninPage();
+  return tab_helper && tab_helper->IsPrimaryChromeSigninPage();
 #else
   return false;
 #endif

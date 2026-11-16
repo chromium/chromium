@@ -243,7 +243,7 @@ bool PasswordManagerClient::IsActorTaskActive() {
 
 void PasswordManagerClient::OnPasswordFilled(PasswordManagerDriver* driver) {}
 
-bool PasswordManagerClient::IsChromeSigninPage() const {
+bool PasswordManagerClient::IsPageEligibleForInlineQrCodeSignin() const {
   return false;
 }
 

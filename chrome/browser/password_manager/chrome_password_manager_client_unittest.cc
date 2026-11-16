@@ -81,6 +81,8 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/content_record_password_state.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
@@ -104,6 +106,10 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_tab_helper.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
@@ -1877,6 +1883,41 @@ TEST_F(ChromePasswordManagerClientTest,
   histogram_tester.ExpectTotalCount("Sync.TrustedVaultKeyRetrievalTrigger", 0);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(ChromePasswordManagerClientTest, IsPageEligibleForInlineQrCodeSignin) {
+  EXPECT_FALSE(GetClient()->IsPageEligibleForInlineQrCodeSignin());
+
+  DiceTabHelper::CreateForWebContents(web_contents());
+  DiceTabHelper* dice_tab_helper =
+      DiceTabHelper::FromWebContents(web_contents());
+  const GURL kSigninUrl("https://accounts.google.com/signin/chrome/sync");
+
+  dice_tab_helper->InitializeSigninFlow(
+      kSigninUrl, signin_metrics::AccessPoint::kSettings,
+      signin_metrics::Reason::kSigninPrimaryAccount,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
+      /*record_signin_started_metrics=*/false, base::DoNothing(),
+      base::DoNothing(), base::DoNothing());
+  EXPECT_TRUE(GetClient()->IsPageEligibleForInlineQrCodeSignin());
+
+  dice_tab_helper->InitializeSigninFlow(
+      kSigninUrl, signin_metrics::AccessPoint::kSettings,
+      signin_metrics::Reason::kReauthentication,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
+      /*record_signin_started_metrics=*/false, base::DoNothing(),
+      base::DoNothing(), base::DoNothing());
+  EXPECT_FALSE(GetClient()->IsPageEligibleForInlineQrCodeSignin());
+
+  dice_tab_helper->InitializeSigninFlow(
+      kSigninUrl, signin_metrics::AccessPoint::kSettings,
+      signin_metrics::Reason::kAddSecondaryAccount,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, GURL(),
+      /*record_signin_started_metrics=*/false, base::DoNothing(),
+      base::DoNothing(), base::DoNothing());
+  EXPECT_FALSE(GetClient()->IsPageEligibleForInlineQrCodeSignin());
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
 class ChromePasswordManagerClientAndroidTest

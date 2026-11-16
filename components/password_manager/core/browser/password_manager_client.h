@@ -579,8 +579,9 @@ class PasswordManagerClient {
   // Returns true if the current page is to the new tab page.
   virtual bool IsNewTabPage() const = 0;
 
-  // Returns true if the current page is a Chrome sign-in page.
-  virtual bool IsChromeSigninPage() const;
+  // Returns true if the current page is eligible for inline passkey QR code
+  // sign-in (i.e. a primary Chrome sign-in page).
+  virtual bool IsPageEligibleForInlineQrCodeSignin() const;
 
   // Returns the WebAuthnCredentialsDelegate for the given driver, if available.
   virtual WebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegateForDriver(

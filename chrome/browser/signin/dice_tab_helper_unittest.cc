@@ -660,11 +660,11 @@ class DiceTabHelperBluetoothTest : public DiceTabHelperTest {
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
   }
 
-  void InitializeSigninTab() {
+  void InitializeSigninTab(signin_metrics::Reason reason =
+                               signin_metrics::Reason::kSigninPrimaryAccount) {
     DiceTabHelper::CreateForWebContents(web_contents());
     InitializeDiceTabHelper(DiceTabHelper::FromWebContents(web_contents()),
-                            signin_metrics::AccessPoint::kSettings,
-                            signin_metrics::Reason::kSigninPrimaryAccount);
+                            signin_metrics::AccessPoint::kSettings, reason);
   }
 
  protected:
@@ -741,6 +741,47 @@ TEST_F(DiceTabHelperBluetoothTest, HybridTransportSupportedMetric) {
   simulator->Start();
   simulator->AbortFromRenderer();
   h_tester.ExpectUniqueSample(kHistogram, true, 2);
+}
+
+TEST_F(DiceTabHelperBluetoothTest, NoAdapterForNonPrimarySignin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kMagiChromePasskeySignIn, {{"flow_type", "autofill"}});
+  EXPECT_CALL(*mock_adapter_, IsPowered()).Times(0);
+
+  InitializeSigninTab(signin_metrics::Reason::kReauthentication);
+  EXPECT_TRUE(mock_adapter_->HasOneRef());
+
+  InitializeSigninTab(signin_metrics::Reason::kAddSecondaryAccount);
+  EXPECT_TRUE(mock_adapter_->HasOneRef());
+}
+
+TEST_F(DiceTabHelperBluetoothTest, ReleasesAdapterWhenReinitializedOrComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kMagiChromePasskeySignIn, {{"flow_type", "autofill"}});
+  EXPECT_CALL(*mock_adapter_, IsPowered()).Times(4);
+
+  InitializeSigninTab(signin_metrics::Reason::kSigninPrimaryAccount);
+  EXPECT_FALSE(mock_adapter_->HasOneRef());
+  EXPECT_TRUE(DiceTabHelper::FromWebContents(web_contents())
+                  ->IsPrimaryChromeSigninPage());
+
+  // Re-initializing the tab for a non-primary sign-in resets the state and
+  // releases the Bluetooth adapter.
+  InitializeSigninTab(signin_metrics::Reason::kReauthentication);
+  EXPECT_TRUE(mock_adapter_->HasOneRef());
+  EXPECT_FALSE(DiceTabHelper::FromWebContents(web_contents())
+                   ->IsPrimaryChromeSigninPage());
+
+  // Re-initializing for primary sign-in acquires the adapter again, and
+  // completing the flow releases it.
+  InitializeSigninTab(signin_metrics::Reason::kSigninPrimaryAccount);
+  EXPECT_FALSE(mock_adapter_->HasOneRef());
+  DiceTabHelper::FromWebContents(web_contents())->OnSigninFlowComplete();
+  EXPECT_TRUE(mock_adapter_->HasOneRef());
+  EXPECT_FALSE(DiceTabHelper::FromWebContents(web_contents())
+                   ->IsPrimaryChromeSigninPage());
 }
 
 class DiceTabHelperPrerenderTest : public DiceTabHelperTest {

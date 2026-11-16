@@ -164,12 +164,11 @@ void DiceTabHelper::InitializeSigninFlow(
   SetIsChromeSigninPage(true);
   signin_page_load_recorded_ = false;
 
-  if (switches::IsMagiChromePasskeyAutofillEnabled()) {
-    KeepBluetoothAdapterAlive();
-  }
-
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
     state_->signin_flow_status = SigninFlowStatus::kStarted;
+    if (switches::IsMagiChromePasskeyAutofillEnabled()) {
+      KeepBluetoothAdapterAlive();
+    }
   }
 
   Profile* profile =
@@ -208,6 +207,10 @@ void DiceTabHelper::InitializeSigninFlow(
 
 bool DiceTabHelper::IsChromeSigninPage() const {
   return is_chrome_signin_page_;
+}
+
+bool DiceTabHelper::IsPrimaryChromeSigninPage() const {
+  return IsChromeSigninPage() && IsChromeSigninInProgress();
 }
 
 bool DiceTabHelper::IsChromeSigninInProgress() const {
@@ -365,7 +368,8 @@ void DiceTabHelper::KeepBluetoothAdapterAlive() {
   // WebAuthn request reuses the adapter. On macOS, the check starts the
   // adapter's first background poll when Bluetooth is present and permitted;
   // until that poll completes, the adapter reports Bluetooth as off. The result
-  // is ignored: only the adapter is needed, to hold it in `bluetooth_adapter_`.
+  // is ignored: only the adapter is needed, to hold it in
+  // `state_->bluetooth_adapter`.
   signin::IsHybridTransportSupportedForQrCodeSignin(base::BindOnce(
       &DiceTabHelper::OnGetBluetoothAdapter, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -373,8 +377,8 @@ void DiceTabHelper::KeepBluetoothAdapterAlive() {
 void DiceTabHelper::OnGetBluetoothAdapter(
     bool hybrid_transport_supported,
     scoped_refptr<device::BluetoothAdapter> adapter) {
-  if (is_chrome_signin_page_) {
-    bluetooth_adapter_ = std::move(adapter);
+  if (IsPrimaryChromeSigninPage()) {
+    state_->bluetooth_adapter = std::move(adapter);
   }
 }
 
@@ -452,7 +456,7 @@ void DiceTabHelper::SetIsChromeSigninPage(bool is_signin_page) {
   }
   is_chrome_signin_page_ = is_signin_page;
   if (!is_chrome_signin_page_) {
-    bluetooth_adapter_.reset();
+    state_->bluetooth_adapter.reset();
   }
 }
 

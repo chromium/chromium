@@ -126,6 +126,11 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // Returns false if the user or the page has navigated away from |signin_url|.
   bool IsChromeSigninPage() const;
 
+  // Returns true if this tab is currently showing the primary Chrome sign-in
+  // page (the signin page is loading or loaded in the tab for a primary
+  // account sign-in flow).
+  bool IsPrimaryChromeSigninPage() const;
+
   // Returns true if a Chrome sign-in flow was initialized on this tab and is
   // not yet complete.
   // Note that there is no guarantee that the flow would ever finish, and in
@@ -221,6 +226,14 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
     base::OneShotTimer retry_interception_bubble_timer;
     // Set while `retry_interception_bubble_timer` is running.
     std::optional<InterceptionRetryParams> interception_retry_params;
+
+    // Never read, but do not remove. Holding this reference while the tab shows
+    // the primary Chrome sign-in page keeps the Bluetooth adapter alive, so the
+    // page's WebAuthn request reuses it instead of creating a new one. On
+    // macOS, a new adapter reports Bluetooth as off until its first background
+    // poll completes, which hides the passkey QR code from the Autofill
+    // suggestions. See crbug.com/568301366.
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter;
   };
 
   // content::WebContentsObserver:
@@ -252,7 +265,7 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   // Gets the Bluetooth adapter via
   // `signin::IsHybridTransportSupportedForQrCodeSignin()` and stores it in
-  // `bluetooth_adapter_`.
+  // `state_->bluetooth_adapter`.
   void KeepBluetoothAdapterAlive();
   void OnGetBluetoothAdapter(bool hybrid_transport_supported,
                              scoped_refptr<device::BluetoothAdapter> adapter);
@@ -263,14 +276,6 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   bool is_chrome_signin_page_ = false;
   bool signin_page_load_recorded_ = false;
-
-  // Never read, but do not remove. Holding this reference while the tab shows
-  // the Chrome sign-in page keeps the Bluetooth adapter alive, so the page's
-  // WebAuthn request reuses it instead of creating a new one. On macOS, a new
-  // adapter reports Bluetooth as off until its first background poll
-  // completes, which hides the passkey QR code from the Autofill suggestions.
-  // See crbug.com/568301366.
-  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   base::WeakPtrFactory<DiceTabHelper> weak_ptr_factory_{this};
 

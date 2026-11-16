@@ -518,7 +518,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
   bool has_qr = false;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   has_qr =
-      password_client_->IsChromeSigninPage() &&
+      password_client_->IsPageEligibleForInlineQrCodeSignin() &&
       switches::IsMagiChromePasskeyAutofillEnabled() &&
       password_client_->GetWebAuthnCredentialsDelegateForDriver(
           password_manager_driver_) &&
@@ -730,7 +730,7 @@ PasswordSuggestionGenerator::GetWebauthnSignInWithAnotherDeviceSuggestion()
 std::optional<autofill::Suggestion>
 PasswordSuggestionGenerator::GetWebauthnInlineQrCodeSuggestion() const {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (!password_client_->IsChromeSigninPage() ||
+  if (!password_client_->IsPageEligibleForInlineQrCodeSignin() ||
       !switches::IsMagiChromePasskeyAutofillEnabled()) {
     return std::nullopt;
   }

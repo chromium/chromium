@@ -220,12 +220,12 @@ bool SkipGpmPasskeyCreationForOwnAccount(
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-bool IsChromeSigninPage(content::RenderFrameHost* rfh) {
+bool IsPrimaryChromeSigninPage(content::RenderFrameHost* rfh) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   DiceTabHelper* tab_helper =
       web_contents ? DiceTabHelper::FromWebContents(web_contents) : nullptr;
-  return tab_helper && tab_helper->IsChromeSigninPage();
+  return tab_helper && tab_helper->IsPrimaryChromeSigninPage();
 }
 #endif
 
@@ -759,7 +759,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   dialog_controller_->set_cable_transport_info(qr_string);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (IsChromeSigninPage(GetRenderFrameHost())) {
+  if (IsPrimaryChromeSigninPage(GetRenderFrameHost())) {
     is_chrome_signin_request_ = true;
 #if BUILDFLAG(IS_WIN)
     if (switches::IsMagiChromePasskeyAutofillEnabled()) {
@@ -932,12 +932,12 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
            AuthenticatorRequestDialogModel::Step::kNotStarted)) {
     // If the inlined QR code suggestion feature is enabled, we do not want to
     // control (block) dispatch for hybrid authenticators during conditional UI,
-    // but only on official Chrome Sign-in pages. This starts the background
+    // but only on primary Chrome sign-in pages. This starts the background
     // hybrid handshake advertising immediately on page load to make the QR
     // string payload instantly available for rendering inside the Autofill
     // popup, while avoiding unnecessary Bluetooth advertising on other pages.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    if (IsChromeSigninPage(GetRenderFrameHost()) &&
+    if (IsPrimaryChromeSigninPage(GetRenderFrameHost()) &&
         switches::IsMagiChromePasskeyAutofillEnabled() &&
         authenticator.AuthenticatorTransport() ==
             device::FidoTransportProtocol::kHybrid) {
