@@ -51,7 +51,9 @@ class OmniboxPopupContentDelegate : public SearchboxHandler::Delegate {
 };
 
 // Optional sizing collaborator for popups whose widget bounds track the
-// WebUI's auto-resized content height.
+// WebUI's auto-resized content height. Hosts whose parent View sets the
+// content's bounds pass a null sizer to the OmniboxPopupWebUIBaseContent
+// constructor.
 class OmniboxPopupContentSizer {
  public:
   virtual ~OmniboxPopupContentSizer() = default;
