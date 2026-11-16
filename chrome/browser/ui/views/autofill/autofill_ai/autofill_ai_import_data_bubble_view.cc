@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -148,6 +149,12 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
   DialogDelegate::SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       controller_->GetSaveUpdateDialogPrimaryButtonText());
+  if (controller_->MustShowEquallyWeightedButtons()) {
+    DialogDelegate::SetButtonStyle(ui::mojom::DialogButton::kCancel,
+                                   ui::ButtonStyle::kTonal);
+    DialogDelegate::SetButtonStyle(ui::mojom::DialogButton::kOk,
+                                   ui::ButtonStyle::kTonal);
+  }
   SetAcceptCallbackWithClose(
       base::BindRepeating(&AutofillAiImportDataBubbleView::OnDialogAccepted,
                           base::Unretained(this)));

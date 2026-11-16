@@ -51,6 +51,7 @@ class MockAutofillAiImportDataController
               (const, override));
   MOCK_METHOD(bool, IsWalletableEntity, (), (const, override));
   MOCK_METHOD(bool, IsBranding2026FeatureEnabled, (), (const, override));
+  MOCK_METHOD(bool, MustShowEquallyWeightedButtons, (), (const, override));
   MOCK_METHOD(bool, IsSavePrompt, (), (const, override));
   MOCK_METHOD(void, OnGoToWalletLinkClicked, (), (override));
   MOCK_METHOD(void, OnPrivacyPolicyLinkClicked, (), (override));

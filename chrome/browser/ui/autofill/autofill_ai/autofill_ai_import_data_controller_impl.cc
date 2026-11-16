@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -34,12 +35,15 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -189,6 +193,15 @@ bool AutofillAiImportDataControllerImpl::IsBranding2026FeatureEnabled() const {
   const EntityInstance& new_entity = GetSaveUpdateState().new_entity;
   return GetWalletPassType(new_entity.type(), new_entity.record_type()) ==
          EntityInstance::WalletPassType::kPrivate;
+}
+
+bool AutofillAiImportDataControllerImpl::MustShowEquallyWeightedButtons()
+    const {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return autofill::MustShowEquallyWeightedButtons(
+      profile ? IdentityManagerFactory::GetForProfile(profile) : nullptr,
+      GetSaveUpdateState().new_entity.type());
 }
 
 void AutofillAiImportDataControllerImpl::OnGoToWalletLinkClicked() {

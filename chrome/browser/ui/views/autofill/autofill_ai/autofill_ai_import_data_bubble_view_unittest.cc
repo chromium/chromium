@@ -26,10 +26,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -44,6 +46,7 @@ namespace autofill {
 
 namespace {
 
+using ::testing::AtLeast;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -401,6 +404,49 @@ TEST_F(AutofillAiImportDataBubbleViewTest, NoPrivacyPolicyLinkForOtherNotices) {
 
   // The subtitle container is the first child of the main content wrapper.
   EXPECT_THAT(view()->children()[0]->children()[0]->children(), SizeIs(1));
+}
+
+// Tests that both the accept and cancel buttons are styled as `kTonal` when
+// `MustShowEquallyWeightedButtons()` returns `true`.
+TEST_F(AutofillAiImportDataBubbleViewTest,
+       EquallyWeightedButtonsShownWhenControllerReturnsTrue) {
+  EXPECT_CALL(mock_controller(), MustShowEquallyWeightedButtons())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  CreateViewAndShow();
+
+  EXPECT_EQ(view()->GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kOk));
+  EXPECT_EQ(view()->GetDialogButtonStyle(ui::mojom::DialogButton::kOk),
+            ui::ButtonStyle::kTonal);
+  EXPECT_EQ(view()->GetDialogButtonStyle(ui::mojom::DialogButton::kCancel),
+            ui::ButtonStyle::kTonal);
+  ASSERT_NE(view()->GetOkButton(), nullptr);
+  ASSERT_NE(view()->GetCancelButton(), nullptr);
+  EXPECT_EQ(view()->GetOkButton()->GetStyle(), ui::ButtonStyle::kTonal);
+  EXPECT_EQ(view()->GetCancelButton()->GetStyle(), ui::ButtonStyle::kTonal);
+}
+
+// Tests that only the accept button is styled as `kProminent` and the cancel
+// button is styled as `kTonal` when `MustShowEquallyWeightedButtons()`
+// returns `false`.
+TEST_F(AutofillAiImportDataBubbleViewTest,
+       EquallyWeightedButtonsNotShownWhenControllerReturnsFalse) {
+  EXPECT_CALL(mock_controller(), MustShowEquallyWeightedButtons())
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(false));
+  CreateViewAndShow();
+
+  EXPECT_EQ(view()->GetDefaultDialogButton(),
+            static_cast<int>(ui::mojom::DialogButton::kOk));
+  EXPECT_EQ(view()->GetDialogButtonStyle(ui::mojom::DialogButton::kOk),
+            ui::ButtonStyle::kProminent);
+  EXPECT_EQ(view()->GetDialogButtonStyle(ui::mojom::DialogButton::kCancel),
+            ui::ButtonStyle::kTonal);
+  ASSERT_NE(view()->GetOkButton(), nullptr);
+  ASSERT_NE(view()->GetCancelButton(), nullptr);
+  EXPECT_EQ(view()->GetOkButton()->GetStyle(), ui::ButtonStyle::kProminent);
+  EXPECT_EQ(view()->GetCancelButton()->GetStyle(), ui::ButtonStyle::kTonal);
 }
 
 }  // namespace

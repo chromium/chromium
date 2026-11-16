@@ -12,6 +12,8 @@
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -24,6 +26,11 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/ui/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -564,6 +571,113 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
   // new prompt.
   first_widget_destroyed_waiter.Wait();
   EXPECT_FALSE(controller()->IsShowingBubble());
+}
+
+// TODO(crbug.com/571821268): Remove separate fixture when cleaning up
+// `kAutofillRegionalizedPrivatePassesUxRefine`.
+template <bool kIsFeatureEnabled>
+class AutofillAiImportDataControllerImplEquallyWeightedButtonsTest
+    : public AutofillAiImportDataControllerImplTest {
+ public:
+  AutofillAiImportDataControllerImplEquallyWeightedButtonsTest() {
+    scoped_features_.InitWithFeatureState(
+        features::kAutofillRegionalizedPrivatePassesUxRefine,
+        kIsFeatureEnabled);
+  }
+
+  void SignInAndSetMustShowEquallyWeightedButtons(
+      std::optional<bool> capability_value) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
+    if (capability_value.has_value()) {
+      AccountCapabilitiesTestMutator(&account_info)
+          .set_must_show_equally_weighted_buttons_for_private_passes_in_autofill(
+              *capability_value);
+      signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+using AutofillAiImportDataControllerImplEquallyWeightedButtonsEnabledTest =
+    AutofillAiImportDataControllerImplEquallyWeightedButtonsTest<true>;
+using AutofillAiImportDataControllerImplEquallyWeightedButtonsDisabledTest =
+    AutofillAiImportDataControllerImplEquallyWeightedButtonsTest<false>;
+
+// Tests that equally weighted buttons are not shown when
+// `kAutofillRegionalizedPrivatePassesUxRefine` is disabled.
+IN_PROC_BROWSER_TEST_F(
+    AutofillAiImportDataControllerImplEquallyWeightedButtonsDisabledTest,
+    MustShowEquallyWeightedButtons_FeatureDisabled) {
+  SignInAndSetMustShowEquallyWeightedButtons(true);
+  SetNewPassportOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewPassportEntity");
+
+  EXPECT_FALSE(controller()->MustShowEquallyWeightedButtons());
+}
+
+// Tests that equally weighted buttons are shown for private passes (both
+// Wallet and local) when the account capability is `kTrue`.
+IN_PROC_BROWSER_TEST_F(
+    AutofillAiImportDataControllerImplEquallyWeightedButtonsEnabledTest,
+    MustShowEquallyWeightedButtons_CapabilityTrue) {
+  SignInAndSetMustShowEquallyWeightedButtons(true);
+  SetNewPassportOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewPassportEntity");
+  EXPECT_TRUE(controller()->MustShowEquallyWeightedButtons());
+  controller()->OnBubbleClosed(
+      AutofillClient::AutofillAiBubbleResult::kAccepted);
+
+  SetNewPassportOptions({.record_type = EntityInstance::RecordType::kLocal});
+  ShowUi("SaveNewPassportEntity");
+  EXPECT_TRUE(controller()->MustShowEquallyWeightedButtons());
+}
+
+// Tests that equally weighted buttons are not shown for a private pass when
+// the account capability is `kFalse`.
+IN_PROC_BROWSER_TEST_F(
+    AutofillAiImportDataControllerImplEquallyWeightedButtonsEnabledTest,
+    MustShowEquallyWeightedButtons_CapabilityFalse) {
+  SignInAndSetMustShowEquallyWeightedButtons(false);
+  SetNewPassportOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewPassportEntity");
+  EXPECT_FALSE(controller()->MustShowEquallyWeightedButtons());
+  controller()->OnBubbleClosed(
+      AutofillClient::AutofillAiBubbleResult::kAccepted);
+}
+
+// Tests that equally weighted buttons are shown for a private pass when the
+// account capability is `kUnknown` to be on the legally safe side. In practice,
+// prompts with an unknown account capability should be blocked.
+IN_PROC_BROWSER_TEST_F(
+    AutofillAiImportDataControllerImplEquallyWeightedButtonsEnabledTest,
+    MustShowEquallyWeightedButtons_CapabilityUnknown) {
+  SignInAndSetMustShowEquallyWeightedButtons(std::nullopt);
+  SetNewPassportOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewPassportEntity");
+  EXPECT_TRUE(controller()->MustShowEquallyWeightedButtons());
+  controller()->OnBubbleClosed(
+      AutofillClient::AutofillAiBubbleResult::kAccepted);
+}
+
+// Tests that equally weighted buttons are not shown for public passes like
+// vehicles, even when the account capability is `kTrue`.
+IN_PROC_BROWSER_TEST_F(
+    AutofillAiImportDataControllerImplEquallyWeightedButtonsEnabledTest,
+    MustShowEquallyWeightedButtons_PublicPass) {
+  SignInAndSetMustShowEquallyWeightedButtons(true);
+  SetNewVehicleOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  ShowUi("SaveNewVehicleEntity");
+
+  EXPECT_FALSE(controller()->MustShowEquallyWeightedButtons());
 }
 
 }  // namespace autofill

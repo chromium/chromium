@@ -79,6 +79,10 @@ class AutofillAiImportDataController {
   // Returns true if the 2026 branding feature is enabled and applicable.
   virtual bool IsBranding2026FeatureEnabled() const = 0;
 
+  // Returns `true` if the save/update dialog must show equally weighted
+  // buttons.
+  virtual bool MustShowEquallyWeightedButtons() const = 0;
+
   // Whether the user clicked the link the dialog subtitle which navigates them
   // to wallet.
   virtual void OnGoToWalletLinkClicked() = 0;

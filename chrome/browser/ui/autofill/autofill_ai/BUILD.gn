@@ -55,6 +55,7 @@ if (!is_android) {
       "//chrome/common:constants",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
+      "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/strings:components_strings_grit",
       "//ui/base",
