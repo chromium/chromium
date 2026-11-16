@@ -51,6 +51,7 @@ class BackgroundActuationCapability;
 #endif  // BUILDFLAG(IS_ANDROID)
 class GlicActorPolicyChecker;
 class GlicKeyedService;
+class GlicProviderSpec;
 namespace prefs {
 enum class FreStatus;
 }  // namespace prefs
@@ -827,6 +828,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
   bool recorded_startup_metrics_ = false;
 
+  const raw_ref<const GlicProviderSpec> provider_spec_;
   raw_ptr<Profile> profile_;
   raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   // Owned by the GlicKeyedService, which also owns this object. May be null.

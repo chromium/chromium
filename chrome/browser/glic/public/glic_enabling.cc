@@ -1534,13 +1534,14 @@ GlicEnabling::GlicEnabling(
     Profile* profile,
     ProfileAttributesStorage* profile_attributes_storage,
     GlicActorPolicyChecker* actor_policy_checker)
-    : profile_(profile),
+    : provider_spec_(GetGlicProviderSpec(profile)),
+      profile_(profile),
       profile_attributes_storage_(profile_attributes_storage),
       actor_policy_checker_(actor_policy_checker) {
   pref_registrar_.Init(profile_->GetPrefs());
   // Only the active provider's FRE pref is observed, so that changes to the
   // other provider's FRE don't notify consent observers.
-  pref_registrar_.Add(GetFreStore(profile_).GetStatusPrefName(),
+  pref_registrar_.Add(provider_spec_->GetFreStore().GetStatusPrefName(),
                       base::BindRepeating(&GlicEnabling::UpdateConsentStatus,
                                           base::Unretained(this)));
   pref_registrar_.Add(
@@ -1558,7 +1559,7 @@ GlicEnabling::GlicEnabling(
   // GeminiSettings policy, server-side user status, and AI subscription tier)
   // don't apply to providers that skip those checks (Gemini Enterprise).
   const bool requires_gemini_account_eligibility =
-      GetGlicProviderSpec(profile_).RequiresGeminiAccountEligibility();
+      provider_spec_->RequiresGeminiAccountEligibility();
   if (requires_gemini_account_eligibility) {
     pref_registrar_.Add(
         optimization_guide::prefs::kGeminiSettings,
@@ -1605,8 +1606,7 @@ GlicEnabling::GlicEnabling(
                 "function call does not violate the 'no virtual functions in "
                 "constructors' style guide rule. Consider a 2-phase setup");
 #if BUILDFLAG(IS_ANDROID)
-  if (GetGlicProviderSpec(profile_).SupportsFeature(
-          GlicFeature::kExperimentalTriggering) &&
+  if (provider_spec_->SupportsFeature(GlicFeature::kExperimentalTriggering) &&
       base::FeatureList::IsEnabled(features::kGlicBackgroundActuation)) {
     background_actuation_capability_ =
         std::make_unique<BackgroundActuationCapability>(
@@ -1639,11 +1639,11 @@ prefs::FreStatus GlicEnabling::GetCompletedFre(Profile* profile) {
 }
 
 prefs::FreStatus GlicEnabling::GetCompletedFre() const {
-  return GetCompletedFre(profile_);
+  return provider_spec_->GetFreStore().GetStatus(profile_);
 }
 
 void GlicEnabling::SetCompletedFre(prefs::FreStatus status) {
-  GetFreStore(profile_).SetStatus(profile_, status);
+  provider_spec_->GetFreStore().SetStatus(profile_, status);
 }
 
 bool GlicEnabling::GetUserEnabledActuationOnWeb() const {
@@ -1674,8 +1674,7 @@ bool GlicEnabling::IsExperimentalTriggeringUserControlled() const {
 }
 
 bool GlicEnabling::ShouldShowExperimentalTriggeringToggle() const {
-  if (!GetGlicProviderSpec(profile_).SupportsFeature(
-          GlicFeature::kExperimentalTriggering)) {
+  if (!provider_spec_->SupportsFeature(GlicFeature::kExperimentalTriggering)) {
     return false;
   }
   if (!ShouldShowWebActuationToggle()) {
@@ -1847,8 +1846,7 @@ GlicEnabling::ComputeExperimentalTriggeringState() const {
     return {State::kUnavailable, Reason::kGlicNotEnabled};
   }
 
-  if (!GetGlicProviderSpec(profile_).SupportsFeature(
-          GlicFeature::kExperimentalTriggering)) {
+  if (!provider_spec_->SupportsFeature(GlicFeature::kExperimentalTriggering)) {
     return {State::kUnavailable, Reason::kFeatureDisabled};
   }
 
@@ -2018,7 +2016,7 @@ void GlicEnabling::OnPrimaryAccountChanged(
 #if BUILDFLAG(IS_ANDROID)
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    GetFreStore(profile_).OnPrimaryAccountCleared(profile_);
+    provider_spec_->GetFreStore().OnPrimaryAccountCleared(profile_);
     profile_->GetPrefs()->ClearPref(prefs::kGlicUserEnabledActuationOnWeb);
     profile_->GetPrefs()->ClearPref(prefs::kGlicGeolocationEnabled);
   }
@@ -2078,7 +2076,7 @@ void GlicEnabling::OnErrorStateOfRefreshTokenUpdatedForAccount(
 }
 
 void GlicEnabling::UpdateEnabledStatus() {
-  if (GetGlicProviderSpec(profile_).RequiresGeminiAccountEligibility()) {
+  if (provider_spec_->RequiresGeminiAccountEligibility()) {
     if (IsAllowed()) {
       profile_->GetPrefs()->SetBoolean(prefs::kGlicPreviouslyNotAllowed, false);
     } else {
