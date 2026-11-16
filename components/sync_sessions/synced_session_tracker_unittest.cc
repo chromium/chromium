@@ -190,8 +190,12 @@ TEST_F(SyncedSessionTrackerTest, PutTabInWindow) {
   // Should clean up memory on its own.
 }
 
+// Verifies that `LookupAllSessions()` filters sessions according to `RAW`,
+// `NAMED`, and `PRESENTABLE` lookup modes.
 TEST_F(SyncedSessionTrackerTest, LookupAllSessions) {
   EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::PRESENTABLE),
+              IsEmpty());
+  EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::NAMED),
               IsEmpty());
 
   tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
@@ -199,6 +203,8 @@ TEST_F(SyncedSessionTrackerTest, LookupAllSessions) {
   tracker_.PutTabInWindow(kTag, kWindow1, kTab1);
 
   EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::RAW),
+              ElementsAre(HasSessionTag(kTag)));
+  EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::NAMED),
               ElementsAre(HasSessionTag(kTag)));
   EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::PRESENTABLE),
               IsEmpty());
@@ -214,6 +220,13 @@ TEST_F(SyncedSessionTrackerTest, LookupAllSessions) {
   tracker_.PutWindowInSession(kTag2, kWindow1);
   tracker_.PutTabInWindow(kTag2, kWindow1, kTab2);
 
+  // `kTag2` has no session name yet, so `NAMED` excludes it while `RAW`
+  // includes it.
+  EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::RAW),
+              ElementsAre(HasSessionTag(kTag), HasSessionTag(kTag2)));
+  EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::NAMED),
+              ElementsAre(HasSessionTag(kTag)));
+
   sessions::SessionTab* tab2 = tracker_.GetTab(kTag2, kTab2);
   ASSERT_TRUE(tab2);
   tab2->navigations.push_back(
@@ -222,15 +235,20 @@ TEST_F(SyncedSessionTrackerTest, LookupAllSessions) {
               ElementsAre(HasSessionTag(kTag), HasSessionTag(kTag2)));
 }
 
+// Verifies that `LookupAllForeignSessions()` excludes local sessions and
+// filters foreign sessions according to `RAW`, `NAMED`, and `PRESENTABLE`
+// lookup modes.
 TEST_F(SyncedSessionTrackerTest, LookupAllForeignSessions) {
   const char kInvalidUrl[] = "invalid.url";
   ON_CALL(sessions_client_, ShouldSyncURL(GURL(kInvalidUrl)))
-      .WillByDefault(testing::Return(false));
+      .WillByDefault(Return(false));
 
   EXPECT_THAT(
       tracker_.LookupAllForeignSessions(SyncedSessionTracker::PRESENTABLE),
       IsEmpty());
-  tracker_.GetSession(kTag);
+  EXPECT_THAT(tracker_.LookupAllForeignSessions(SyncedSessionTracker::NAMED),
+              IsEmpty());
+  tracker_.GetSession(kTag)->SetSessionName(kSessionName);
   tracker_.PutWindowInSession(kTag, kWindow1);
   tracker_.PutTabInWindow(kTag, kWindow1, kTab1);
   sessions::SessionTab* tab = tracker_.GetTab(kTag, kTab1);
@@ -239,7 +257,7 @@ TEST_F(SyncedSessionTrackerTest, LookupAllForeignSessions) {
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
   tab->navigations.back().set_virtual_url(GURL(kValidUrl));
   tracker_.GetSession(kTag2);
-  tracker_.GetSession(kTag3);
+  tracker_.GetSession(kTag3)->SetSessionName(kSessionName);
   tracker_.PutWindowInSession(kTag3, kWindow1);
   tracker_.PutTabInWindow(kTag3, kWindow1, kTab1);
   tab = tracker_.GetTab(kTag3, kTab1);
@@ -248,20 +266,26 @@ TEST_F(SyncedSessionTrackerTest, LookupAllForeignSessions) {
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
   tab->navigations.back().set_virtual_url(GURL(kInvalidUrl));
 
-  // Only the session with a valid window and tab gets returned.
+  // Only the session with a valid window and tab gets returned for
+  // `PRESENTABLE`, while `NAMED` includes named sessions without presentable
+  // tabs (`kTag3`) and excludes unnamed sessions (`kTag2`).
   EXPECT_THAT(
       tracker_.LookupAllForeignSessions(SyncedSessionTracker::PRESENTABLE),
       ElementsAre(HasSessionTag(kTag)));
+  EXPECT_THAT(tracker_.LookupAllForeignSessions(SyncedSessionTracker::NAMED),
+              ElementsAre(HasSessionTag(kTag), HasSessionTag(kTag3)));
   EXPECT_THAT(tracker_.LookupAllForeignSessions(SyncedSessionTracker::RAW),
               ElementsAre(HasSessionTag(kTag), HasSessionTag(kTag2),
                           HasSessionTag(kTag3)));
 
-  // Annotate kTag as local session.
+  // Annotate `kTag` as local session.
   ON_CALL(sessions_client_, IsRecentLocalCacheGuid(kTag))
       .WillByDefault(Return(true));
   EXPECT_THAT(
       tracker_.LookupAllForeignSessions(SyncedSessionTracker::PRESENTABLE),
       IsEmpty());
+  EXPECT_THAT(tracker_.LookupAllForeignSessions(SyncedSessionTracker::NAMED),
+              ElementsAre(HasSessionTag(kTag3)));
   EXPECT_THAT(tracker_.LookupAllForeignSessions(SyncedSessionTracker::RAW),
               ElementsAre(HasSessionTag(kTag2), HasSessionTag(kTag3)));
 }
@@ -970,6 +994,9 @@ TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithTab) {
               MatchesSyncedSession(kTag, /*window_id_to_tabs*/ {}));
 }
 
+// Verifies that an out-of-order tab specifics followed by a `SessionHeader`
+// specifics transitions the session from `RAW`-only to `NAMED` once the header
+// populates the session name.
 TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithTabThenHeader) {
   sync_pb::SessionSpecifics tab;
   tab.set_session_tag(kTag);
@@ -980,9 +1007,14 @@ TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithTabThenHeader) {
 
   EXPECT_THAT(tracker_.LookupSession(kTag),
               MatchesSyncedSession(kTag, /*window_id_to_tabs*/ {}));
+  EXPECT_THAT(tracker_.LookupAllForeignSessions(SyncedSessionTracker::RAW),
+              ElementsAre(HasSessionTag(kTag)));
+  EXPECT_THAT(tracker_.LookupAllForeignSessions(SyncedSessionTracker::NAMED),
+              IsEmpty());
 
   sync_pb::SessionSpecifics header;
   header.set_session_tag(kTag);
+  header.mutable_header()->set_client_name(kSessionName);
   header.mutable_header()->add_window()->set_window_id(kWindow1.id());
   header.mutable_header()->mutable_window(0)->add_tab(kTab1.id());
   UpdateTrackerWithSpecifics(header, base::Time::Now(), &tracker_);
@@ -995,6 +1027,8 @@ TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithTabThenHeader) {
   EXPECT_THAT(tracker_.LookupSession(kTag),
               MatchesSyncedSession(
                   kTag, {{kWindow1.id(), std::vector<int>{kTab1.id()}}}));
+  EXPECT_THAT(tracker_.LookupAllForeignSessions(SyncedSessionTracker::NAMED),
+              ElementsAre(HasSessionTag(kTag)));
 }
 
 TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithTwoTabsSameId) {

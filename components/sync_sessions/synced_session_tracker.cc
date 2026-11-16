@@ -56,6 +56,19 @@ bool IsPresentable(SyncSessionsClient* sessions_client,
   return false;
 }
 
+bool ShouldIncludeSession(SyncSessionsClient* sessions_client,
+                          const SyncedSession& session,
+                          SyncedSessionTracker::SessionLookup lookup) {
+  switch (lookup) {
+    case SyncedSessionTracker::RAW:
+      return true;
+    case SyncedSessionTracker::NAMED:
+      return !session.GetSessionName().empty();
+    case SyncedSessionTracker::PRESENTABLE:
+      return IsPresentable(sessions_client, session);
+  }
+}
+
 // Verify that tab and window IDs appear only once within a session. Intended to
 // prevent http://crbug.com/360822 and crbug.com/803205.
 bool IsValidSessionHeader(const sync_pb::SessionHeader& header) {
@@ -370,7 +383,7 @@ SyncedSessionTracker::LookupSessions(SessionLookup lookup,
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
   for (const auto& [session_tag, tracked_session] : session_map_) {
     const SyncedSession& session = tracked_session.synced_session;
-    if (lookup == PRESENTABLE && !IsPresentable(sessions_client_, session)) {
+    if (!ShouldIncludeSession(sessions_client_, session, lookup)) {
       continue;
     }
     // The comparison against |local_session_tag_| deals with the currently

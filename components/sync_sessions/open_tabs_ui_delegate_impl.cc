@@ -18,21 +18,6 @@
 
 namespace sync_sessions {
 
-namespace {
-
-bool GetForeignSessionsWithLookup(
-    const SyncedSessionTracker& session_tracker,
-    SyncedSessionTracker::SessionLookup lookup,
-    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
-  *sessions = session_tracker.LookupAllForeignSessions(lookup);
-  std::ranges::sort(
-      *sessions, std::greater(),
-      [](const SyncedSession* session) { return session->GetModifiedTime(); });
-  return !sessions->empty();
-}
-
-}  // namespace
-
 OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
     SyncSessionsClient* sessions_client,
     const SyncedSessionTracker* session_tracker,
@@ -46,11 +31,12 @@ OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() = default;
 bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
     std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
     ForeignSessionFilter filter) {
-  GetForeignSessionsWithLookup(
-      *session_tracker_,
-      filter == ForeignSessionFilter::kAll ? SyncedSessionTracker::RAW
-                                           : SyncedSessionTracker::PRESENTABLE,
-      sessions);
+  *sessions = session_tracker_->LookupAllForeignSessions(
+      filter == ForeignSessionFilter::kAll ? SyncedSessionTracker::NAMED
+                                           : SyncedSessionTracker::PRESENTABLE);
+  std::ranges::sort(
+      *sessions, std::greater(),
+      [](const SyncedSession* session) { return session->GetModifiedTime(); });
   // Filter out sessions that the user has hidden via `SessionSyncPrefs` when
   // per-device tab visibility settings are enabled and presentable sessions
   // are requested.
@@ -66,13 +52,7 @@ bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
 
 bool OpenTabsUIDelegateImpl::GetAllRawForeignSessions(
     std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
-  GetForeignSessionsWithLookup(*session_tracker_, SyncedSessionTracker::RAW,
-                               sessions);
-  // Exclude headerless/unnamed sessions so callers never render an empty name.
-  std::erase_if(*sessions, [](const SyncedSession* session) {
-    return session->GetSessionName().empty();
-  });
-  return !sessions->empty();
+  return GetAllForeignSessions(sessions, ForeignSessionFilter::kAll);
 }
 
 base::flat_map<std::string, base::Time>

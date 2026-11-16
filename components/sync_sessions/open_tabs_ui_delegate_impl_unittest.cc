@@ -48,6 +48,10 @@ const SessionID kTabId3 = SessionID::FromSerializedValue(333);
 
 void IgnoreForeignSessionDeletion(const std::string& session_tag) {}
 
+MATCHER_P(HasSessionTag, expected_tag, "") {
+  return arg->GetSessionTag() == expected_tag;
+}
+
 class OpenTabsUIDelegateImplTest : public Test {
  protected:
   OpenTabsUIDelegateImplTest()
@@ -367,6 +371,7 @@ TEST_F(OpenTabsUIDelegateImplTest,
   session_tracker_.PutTabInWindow(kSessionTag1, kWindowId1, kTabId1);
   session_tracker_.GetTab(kSessionTag1, kTabId1)
       ->navigations.push_back(navigation);
+  session_tracker_.GetSession(kSessionTag1)->SetSessionName("device1");
   session_tracker_.GetSession(kSessionTag1)
       ->SetModifiedTime(kTime0 - base::Seconds(1));
 
@@ -374,6 +379,7 @@ TEST_F(OpenTabsUIDelegateImplTest,
   session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
   session_tracker_.GetTab(kSessionTag2, kTabId2)
       ->navigations.push_back(navigation);
+  session_tracker_.GetSession(kSessionTag2)->SetSessionName("device2");
   session_tracker_.GetSession(kSessionTag2)
       ->SetModifiedTime(kTime0 - base::Seconds(2));
 
@@ -440,13 +446,16 @@ TEST_F(OpenTabsUIDelegateImplTest,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Verifies that `GetAllForeignSessions()` with `ForeignSessionFilter::kAll`
-// returns all tracked foreign sessions ordered by recency, including zero-tab
-// (non-presentable) sessions and sessions marked `SessionVisibility::kHidden`.
+// returns all tracked foreign sessions with header data ordered by recency,
+// including zero-tab (non-presentable) sessions and sessions marked
+// `SessionVisibility::kHidden`, while excluding tab-only sessions that have
+// not received a header (empty session name).
 TEST_F(OpenTabsUIDelegateImplTest,
        GetAllForeignSessionsWithFilterAllIncludesZeroTabAndHiddenSessions) {
   const base::Time kTime0 = base::Time::Now();
 
   // `kSessionTag1`: header-only foreign session with zero windows/tabs.
+  session_tracker_.GetSession(kSessionTag1)->SetSessionName("device1");
   session_tracker_.GetSession(kSessionTag1)
       ->SetModifiedTime(kTime0 - base::Seconds(2));
 
@@ -456,10 +465,17 @@ TEST_F(OpenTabsUIDelegateImplTest,
   session_tracker_.GetTab(kSessionTag2, kTabId2)
       ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
                                   CreateNavigationForTest());
+  session_tracker_.GetSession(kSessionTag2)->SetSessionName("device2");
   session_tracker_.GetSession(kSessionTag2)
       ->SetModifiedTime(kTime0 - base::Seconds(1));
   session_sync_prefs_.SetSessionVisibility(kSessionTag2,
                                            SessionVisibility::kHidden);
+
+  // `kSessionTag3`: orphan tab-only foreign session without a header (empty
+  // session name).
+  session_tracker_.GetTab(kSessionTag3, kTabId3)
+      ->navigations.push_back(sessions::SerializedNavigationEntryTestHelper::
+                                  CreateNavigationForTest());
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -469,11 +485,8 @@ TEST_F(OpenTabsUIDelegateImplTest,
 #endif
   EXPECT_TRUE(delegate_.GetAllForeignSessions(
       &sessions, OpenTabsUIDelegate::ForeignSessionFilter::kAll));
-  EXPECT_THAT(
-      sessions,
-      ElementsAre(
-          Pointee(Property(&SyncedSession::GetSessionTag, kSessionTag2)),
-          Pointee(Property(&SyncedSession::GetSessionTag, kSessionTag1))));
+  EXPECT_THAT(sessions, ElementsAre(HasSessionTag(kSessionTag2),
+                                    HasSessionTag(kSessionTag1)));
 }
 
 }  // namespace

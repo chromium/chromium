@@ -39,10 +39,19 @@ class SyncSessionsClient;
 // the local session (whose tag we maintain separately).
 class SyncedSessionTracker {
  public:
-  // Different ways to lookup/filter tabs.
+  // Different ways to lookup/filter sessions.
   enum SessionLookup {
-    RAW,         // Return all foreign sessions.
-    PRESENTABLE  // Have one window with at least one tab with syncable content.
+    // Return all tracked sessions, including incomplete/orphan entries created
+    // from tab specifics before a `SessionHeader` entity arrives.
+    RAW,
+    // Return sessions with a non-empty session name (i.e. sessions populated
+    // by a `SessionHeader` entity, including those with zero tabs or only
+    // non-syncable tabs such as `chrome://` or New Tab Page URLs, while
+    // excluding headerless orphan tab entries).
+    NAMED,
+    // Return sessions that have at least one window with at least one tab
+    // containing a syncable URL (`SyncSessionsClient::ShouldSyncURL()`).
+    PRESENTABLE,
   };
 
   // `sessions_client` must not be null and must outlive this object.
@@ -55,15 +64,14 @@ class SyncedSessionTracker {
 
   // **** Synced session/tab query methods. ****
 
-  // Returns vector with all sessions we're tracking. SyncedSession ownership
-  // remains within the SyncedSessionTracker. Lookup parameter is used to decide
-  // which tabs should be included.
+  // Returns a vector of tracked sessions matching `lookup`. `SyncedSession`
+  // ownership remains within the `SyncedSessionTracker`.
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
   LookupAllSessions(SessionLookup lookup) const;
 
-  // Returns all foreign sessions we're tracking (skips the local session
-  // object). SyncedSession ownership remains within the SyncedSessionTracker.
-  // Lookup parameter is used to decide which foreign tabs should be include.
+  // Returns a vector of tracked foreign sessions matching `lookup` (skips the
+  // local session). `SyncedSession` ownership remains within the
+  // `SyncedSessionTracker`.
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
   LookupAllForeignSessions(SessionLookup lookup) const;
 

@@ -23,13 +23,18 @@ class OpenTabsUIDelegate {
  public:
   // Controls which foreign sessions are returned by `GetAllForeignSessions()`.
   enum class ForeignSessionFilter {
-    // Includes only visible presentable foreign sessions (with at least one
-    // syncable tab, and excluding sessions hidden via `SessionSyncPrefs` when
-    // `kDeviceTabVisibilitySettings` is enabled).
+    // Includes only visible foreign sessions that have at least one window
+    // with a syncable tab URL (`SyncSessionsClient::ShouldSyncURL()`, which
+    // excludes `chrome://` and New Tab Page URLs), and excludes sessions hidden
+    // via `SessionSyncPrefs` when `kDeviceTabVisibilitySettings` is enabled.
     kPresentable,
-    // Includes all tracked foreign sessions, regardless of whether they have
-    // any presentable tabs or are hidden via `SessionSyncPrefs` (maps to
-    // `SyncedSessionTracker::RAW`).
+    // Includes all tracked foreign sessions with a non-empty session name
+    // (maps to `SyncedSessionTracker::NAMED`), including sessions with zero
+    // open tabs, sessions with only non-syncable tabs (e.g., `chrome://` or
+    // New Tab Page URLs), and sessions hidden via `SessionSyncPrefs`. Sessions
+    // with an empty session name are excluded because they represent
+    // incomplete/orphan entries that have only received tab specifics without
+    // a `SessionHeader` entity.
     kAll,
   };
 
@@ -40,11 +45,9 @@ class OpenTabsUIDelegate {
       std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions,
       ForeignSessionFilter filter) = 0;
 
-  // Builds a list of all named foreign sessions (excluding sessions with an
-  // empty name), including those without presentable tabs (e.g., 0 tabs or
-  // only non-syncable/NTP tabs), ordered from most recent to least recent.
-  // Caller does NOT own `SyncedSession` objects. Returns true if foreign
-  // sessions were found, false otherwise.
+  // Same as `GetAllForeignSessions(sessions, ForeignSessionFilter::kAll)`.
+  // TODO(crbug.com/570417844): Remove this method once callers are migrated to
+  // `GetAllForeignSessions()`.
   virtual bool GetAllRawForeignSessions(
       std::vector<raw_ptr<const SyncedSession, VectorExperimental>>*
           sessions) = 0;
