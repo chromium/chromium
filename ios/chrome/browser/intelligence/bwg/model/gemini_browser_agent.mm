@@ -1202,6 +1202,8 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
   processing_status_ = processing_status;
   switch (processing_status) {
     case ios::provider::GeminiClientMode::kListening:
+      // Catches session start after the Live FRE (where `OnModeChanged()` skips
+      // logging until all permissions, including native mic, are granted).
       LogLiveSessionStartedMetrics();
       break;
     case ios::provider::GeminiClientMode::kThinking:
