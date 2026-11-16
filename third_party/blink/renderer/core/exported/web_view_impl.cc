@@ -616,7 +616,9 @@ WebViewImpl::WebViewImpl(
 
 WebViewImpl::~WebViewImpl() {
   DCHECK(!page_);
-  DCHECK(!page_popup_);
+  // A page popup must never outlive its opener WebViewImpl: its
+  // `opener_web_view_` is a raw pointer that would dangle.
+  CHECK(!page_popup_);
 }
 
 void WebViewImpl::SetTabKeyCyclesThroughElements(bool value) {
@@ -1059,6 +1061,10 @@ WebInputEventResult WebViewImpl::SendContextMenuEvent() {
 
 WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
   CHECK(client);
+  if (is_closing_) {
+    // In Close(), we cannot create a new page popup.
+    return nullptr;
+  }
 
   // Make sure there is never more than one page popup active at a time.
   CancelPagePopup();
@@ -1071,7 +1077,21 @@ WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
     return nullptr;
   }
 
-  LocalFrame* opener_frame = client->OwnerElement().GetDocument().GetFrame();
+  // CancelPagePopup() above (and NotifyPopupOpeningObservers() in the callers)
+  // can run author script synchronously, before the popup client has recorded
+  // the popup it is about to open. That script may move the owner element into
+  // a document that belongs to a different WebView, or into one that is no
+  // longer active. A popup created in that state would be bound to `this`
+  // through `opener_web_view_` while ChromeClientImpl::DocumentDetached() no
+  // longer recognizes it as ours, so it would outlive `this`. Refuse to open
+  // the popup unless the owner still lives in an active document of our Page.
+  Document& owner_document = client->OwnerElement().GetDocument();
+  LocalFrame* opener_frame = owner_document.GetFrame();
+  if (!opener_frame || opener_frame->GetPage() != page_.Get() ||
+      !owner_document.IsActive()) {
+    return nullptr;
+  }
+
   WebLocalFrameImpl* web_opener_frame =
       WebLocalFrameImpl::FromFrame(opener_frame);
 
@@ -1197,6 +1217,8 @@ void WebViewImpl::Close() {
   CHECK(page_);
   DCHECK(AllInstances().Contains(this));
   AllInstances().erase(this);
+
+  is_closing_ = true;
 
   // Ensure if we have a page popup we cancel it immediately as we do not
   // want page popups to re-enter WebViewImpl during our shutdown.

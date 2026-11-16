@@ -819,6 +819,13 @@ ColorChooser* ChromeClientImpl::OpenColorChooser(
 #endif
   }
   controller->OpenUI();
+  if (RuntimeEnabledFeatures::PagePopupEnabled() &&
+      !controller->IsPickerVisible()) {
+    // This can happen if the web view is closing (for example, showPicker()
+    // called during pagehide) or if synchronous script moved the owner
+    // element into another Page or an inactive document during popup opening.
+    return nullptr;
+  }
   return controller;
 }
 
@@ -831,8 +838,16 @@ DateTimeChooser* ChromeClientImpl::OpenDateTimeChooser(
   // picker.
 #if !BUILDFLAG(IS_ANDROID)
   if (RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled()) {
-    return MakeGarbageCollected<DateTimeChooserImpl>(frame, picker_client,
-                                                     parameters);
+    auto* chooser = MakeGarbageCollected<DateTimeChooserImpl>(
+        frame, picker_client, parameters);
+    if (!chooser->IsPickerVisible()) {
+      // This can happen if the web view is closing (for example, showPicker()
+      // called during pagehide) or if synchronous script moved the owner
+      // element into another Page or an inactive document during popup
+      // opening.
+      return nullptr;
+    }
+    return chooser;
   }
 #endif
 
