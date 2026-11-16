@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_tree_data.h"
 
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,52 +40,58 @@ std::string AXTreeData::ToString() const {
   if (focused_tree_id != AXTreeIDUnknown())
     result += " has_focused_tree";
 
-  if (!doctype.empty())
-    result += " doctype=" + doctype;
+  if (!doctype.empty()) {
+    base::StrAppend(&result, {" doctype=", doctype});
+  }
   if (loaded)
     result += " loaded=true";
-  if (loading_progress != 0.0f)
-    result += " loading_progress=" + base::NumberToString(loading_progress);
-  if (!mimetype.empty())
-    result += " mimetype=" + mimetype;
-  if (!url.empty())
-    result += " url=" + url;
-  if (!title.empty())
-    result += " title=" + title;
+  if (loading_progress != 0.0f) {
+    base::StrAppend(&result, {" loading_progress=",
+                              base::NumberToString(loading_progress)});
+  }
+  if (!mimetype.empty()) {
+    base::StrAppend(&result, {" mimetype=", mimetype});
+  }
+  if (!url.empty()) {
+    base::StrAppend(&result, {" url=", url});
+  }
+  if (!title.empty()) {
+    base::StrAppend(&result, {" title=", title});
+  }
 
-  if (focus_id != kInvalidAXNodeID)
-    result += " focus_id=" + base::NumberToString(focus_id);
+  if (focus_id != kInvalidAXNodeID) {
+    base::StrAppend(&result, {" focus_id=", base::NumberToString(focus_id)});
+  }
 
   if (sel_anchor_object_id != kInvalidAXNodeID) {
-    result +=
-        (sel_is_backward ? " sel_is_backward=true" : " sel_is_backward=false");
-    result +=
-        " sel_anchor_object_id=" + base::NumberToString(sel_anchor_object_id);
-    result += " sel_anchor_offset=" + base::NumberToString(sel_anchor_offset);
-    result += " sel_anchor_affinity=";
-    result += ui::ToString(sel_anchor_affinity);
+    base::StrAppend(
+        &result,
+        {sel_is_backward ? " sel_is_backward=true" : " sel_is_backward=false",
+         " sel_anchor_object_id=", base::NumberToString(sel_anchor_object_id),
+         " sel_anchor_offset=", base::NumberToString(sel_anchor_offset),
+         " sel_anchor_affinity=", ui::ToString(sel_anchor_affinity)});
     // Omit `sel_anchor_offset_type` when unset (`std::nullopt`) so unaffected
     // tree dumps do not change; any explicitly set value is logged.
     if (sel_anchor_offset_type.has_value()) {
-      result += " sel_anchor_offset_type=";
-      result += ui::ToString(*sel_anchor_offset_type);
+      base::StrAppend(&result, {" sel_anchor_offset_type=",
+                                ui::ToString(*sel_anchor_offset_type)});
     }
   }
   if (sel_focus_object_id != kInvalidAXNodeID) {
-    result +=
-        " sel_focus_object_id=" + base::NumberToString(sel_focus_object_id);
-    result += " sel_focus_offset=" + base::NumberToString(sel_focus_offset);
-    result += " sel_focus_affinity=";
-    result += ui::ToString(sel_focus_affinity);
+    base::StrAppend(
+        &result,
+        {" sel_focus_object_id=", base::NumberToString(sel_focus_object_id),
+         " sel_focus_offset=", base::NumberToString(sel_focus_offset),
+         " sel_focus_affinity=", ui::ToString(sel_focus_affinity)});
     if (sel_focus_offset_type.has_value()) {
-      result += " sel_focus_offset_type=";
-      result += ui::ToString(*sel_focus_offset_type);
+      base::StrAppend(&result, {" sel_focus_offset_type=",
+                                ui::ToString(*sel_focus_offset_type)});
     }
   }
   if (metadata.has_value() && !metadata->empty()) {
     result += "\n<head>\n";
     for (const auto& str : *metadata) {
-      result += "  " + str + "\n";
+      base::StrAppend(&result, {"  ", str, "\n"});
     }
     result += "</head>\n";
   }
