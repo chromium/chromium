@@ -15,6 +15,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "ui/base/device_form_factor.h"
 
@@ -357,10 +358,6 @@ BASE_FEATURE(kContextualTasksCloseTabExpandsSidePanel,
 // Enables the use of APC comparison for webpages in the recontextualization
 // flow.
 BASE_FEATURE(kContextualTasksWebpageApcComparison,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables overriding side panel to show Bottom Sheet on demand.
-BASE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables prefetching of cookies for contextual tasks.
@@ -1275,6 +1272,13 @@ bool IsContextualTasksSingleTabMenuItemEnabled() {
 }
 
 bool IsContextualTasksUIEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, Contextual Tasks is only supported on the desktop form factor.
+  // Phones and tablets are not supported.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_DESKTOP) {
+    return false;
+  }
+#endif
   return base::FeatureList::IsEnabled(kContextualTasksSidePanel) ||
          base::FeatureList::IsEnabled(kContextualTasks) ||
          base::FeatureList::IsEnabled(kContextualTasksRearchitecture) ||
@@ -1336,12 +1340,6 @@ const char kContextualTasksCloseTabExpandsSidePanelName[] =
     "Contextual Tasks Close Tab Expands Side Panel";
 const char kContextualTasksCloseTabExpandsSidePanelDescription[] =
     "Enables expanding the contextual tasks side panel on close tab actions.";
-
-const char kContextualTasksOverrideShowBottomSheetOnLargeScreenName[] =
-    "Override Show Bottom Sheet On Large Screen for Contextual Tasks";
-const char kContextualTasksOverrideShowBottomSheetOnLargeScreenDescription[] =
-    "Enables overriding side panel to show Bottom Sheet on large screens for "
-    "contextual tasks.";
 
 const char kContextualTasksCookiePrefetchName[] =
     "Contextual Tasks Cookie Prefetch";

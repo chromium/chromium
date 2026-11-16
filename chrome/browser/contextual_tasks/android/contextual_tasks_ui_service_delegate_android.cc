@@ -34,7 +34,8 @@ void ContextualTasksUiServiceDelegateAndroid::OpenFeedbackUi(
 
 void ContextualTasksUiServiceDelegateAndroid::ShowUndoSnackbar(
     BrowserWindowInterface* browser_window_interface) {
-  if (ShouldShowSidePanel()) {
+  // The undo snackbar is only shown for the phone/tablet bottom sheet.
+  if (IsAndroidDesktopFormFactor()) {
     return;
   }
 

@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -16,6 +17,10 @@
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 using testing::_;
 using testing::NiceMock;
@@ -106,6 +111,12 @@ ContextualTasksUiServiceTestBase::~ContextualTasksUiServiceTestBase() = default;
 
 void ContextualTasksUiServiceTestBase::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::android::device_info::is_desktop()) {
+    GTEST_SKIP() << "Contextual Tasks UI is only supported on Desktop "
+                    "Android.";
+  }
+#endif
   // IdentityTestEnvironment must be created after the TaskEnvironment.
   identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
 
@@ -197,6 +208,13 @@ void ContextualTasksUiServiceTestBase::SetUp() {
 }
 
 void ContextualTasksUiServiceTestBase::TearDown() {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::android::device_info::is_desktop()) {
+    // SetUp() skipped the test after setting up the harness.
+    content::RenderViewHostTestHarness::TearDown();
+    return;
+  }
+#endif
   real_service_ = nullptr;
   service_for_nav_ = nullptr;
   ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(

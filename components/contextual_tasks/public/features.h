@@ -127,9 +127,6 @@ BASE_DECLARE_FEATURE(kContextualTasksLazyFetchClusterInfo);
 // Enables the use of APC comparison for webpages in the recontextualization
 BASE_DECLARE_FEATURE(kContextualTasksWebpageApcComparison);
 
-// Enables overriding side panel to show Bottom Sheet on demand.
-BASE_DECLARE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen);
-
 // When enabled, AIM must send the browser a message to initiate the cobrowse
 // experience for link clicks.
 BASE_DECLARE_FEATURE(kAimTriggeredThreadLinks);
@@ -274,7 +271,8 @@ bool GetContextualTasksSpatialModelToolbarLayoutNewThreadInOverflow();
 // Returns true if full Contextual Tasks (`kContextualTasks`),
 // infrastructure-only mode (`kContextualTasksSidePanel`), or the Contextual
 // Tasks rearchitecture (`kContextualTasksRearchitecture` /
-// `kContextualTasksSidePanelRearchitecture`) is enabled.
+// `kContextualTasksSidePanelRearchitecture`) is enabled. On Android, always
+// returns false unless the device is a desktop form factor.
 bool IsContextualTasksUIEnabled();
 
 bool IsStickyConversationEnabled();
@@ -758,9 +756,6 @@ extern const char kContextualTasksBackButtonExpandsSidePanelName[];
 extern const char kContextualTasksBackButtonExpandsSidePanelDescription[];
 extern const char kContextualTasksCloseTabExpandsSidePanelName[];
 extern const char kContextualTasksCloseTabExpandsSidePanelDescription[];
-extern const char kContextualTasksOverrideShowBottomSheetOnLargeScreenName[];
-extern const char
-    kContextualTasksOverrideShowBottomSheetOnLargeScreenDescription[];
 extern const char kContextualTasksCookiePrefetchName[];
 extern const char kContextualTasksCookiePrefetchDescription[];
 extern const char kEnableContextualTasksPinButtonInToolbarName[];

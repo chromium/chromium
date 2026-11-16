@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -88,7 +89,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_android.h"
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_desktop_android.h"
 #else
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop.h"
@@ -664,16 +664,6 @@ void SendInjectedInputRemovedUpdate(AimMessagePoster* message_poster,
   message_poster->PostAimMessage(client_to_aim_message);
 }
 
-bool ShouldShowSidePanel() {
-#if BUILDFLAG(IS_ANDROID)
-  return IsAndroidDesktopFormFactor() &&
-         !base::FeatureList::IsEnabled(
-             kContextualTasksOverrideShowBottomSheetOnLargeScreen);
-#else
-  return true;
-#endif
-}
-
 bool IsAndroidMobileFormFactor() {
 #if BUILDFLAG(IS_ANDROID)
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
@@ -703,12 +693,10 @@ bool IsUrlValidForContextSharing(const GURL& url) {
 std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
     BrowserWindowInterface* browser_window) {
 #if BUILDFLAG(IS_ANDROID)
-  if (ShouldShowSidePanel()) {
-    return std::make_unique<ContextualTasksPanelHostDesktopAndroid>(
-        browser_window);
-  } else {
-    return std::make_unique<ContextualTasksPanelHostAndroid>(browser_window);
-  }
+  // We shouldn't reach this method for phones and tablets.
+  CHECK(IsAndroidDesktopFormFactor());
+  return std::make_unique<ContextualTasksPanelHostDesktopAndroid>(
+      browser_window);
 #else
   return std::make_unique<ContextualTasksPanelHostDesktop>(browser_window);
 #endif
