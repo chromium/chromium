@@ -106,11 +106,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // user has opted into Gmail OTP filling.
   void MaybeRetrieveGmailOtp();
 
-  // Stops any in-flight `gmail_otp_retriever_`, invalidates any pending Gmail
-  // PhishGuard check (asynchronously resolving
-  // `last_pending_get_suggestions_callback_` with empty suggestions if no SMS
-  // OTP subscription is active), and clears cached Gmail OTP and proactive
-  // trigger deduplication state.
+  // Stops any in-flight `gmail_otp_retriever_` and pending Gmail PhishGuard
+  // check, clears the cached Gmail OTP and proactive trigger state, and, if no
+  // SMS OTP subscription is active, asynchronously resolves
+  // `last_pending_get_suggestions_callback_` with empty suggestions.
   void ClearGmailOtpState();
 
   // Clears Gmail OTP state, cancels any in-flight SMS PhishGuard check, and
@@ -200,6 +199,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
 
   // Subscription to the `SmsOtpService` for incoming SMS OTPs.
   one_time_tokens::ExpiringSubscription sms_otp_subscription_;
+  // Set when `OnOneTimeTokenReceived()` receives an error during `Subscribe()`,
+  // so the newly created subscription is immediately discarded rather than
+  // stored as active.
+  bool sms_error_during_subscribe_ = false;
   // Subscription to the `GmailOtpService` for incoming Gmail OTP tickles.
   one_time_tokens::ExpiringSubscription gmail_otp_tickle_subscription_;
 
