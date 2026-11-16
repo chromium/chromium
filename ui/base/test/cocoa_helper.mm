@@ -231,10 +231,15 @@ CocoaTestHelper::~CocoaTestHelper() {
       // Autorelease anything thrown up by the event loop.
       @autoreleasepool {
         ++spins;
-        NSEvent* next_event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                                                 untilDate:nil
-                                                    inMode:NSDefaultRunLoopMode
-                                                   dequeue:YES];
+        // Pass a short non-nil expiration date instead of nil. Passing nil
+        // runs CFRunLoop in zero-timeout poll mode, which skips
+        // kCFRunLoopBeforeWaiting observers that AppKit uses on macOS 26 to
+        // release windows after animations, menu tracking, or toolbar updates.
+        NSEvent* next_event = [NSApp
+            nextEventMatchingMask:NSEventMaskAny
+                        untilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]
+                           inMode:NSDefaultRunLoopMode
+                          dequeue:YES];
         [NSApp sendEvent:next_event];
         [NSApp updateWindows];
       }
