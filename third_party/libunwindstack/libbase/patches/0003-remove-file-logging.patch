@@ -1,3 +1,13 @@
+Stub out LOG(), PLOG(), CHECK() and CHECK_OP() streams in logging.h
+
+A no-op FakeLog replaces android::base::LogMessage, so the libbase and
+ART code that logs through logging.h needs no android-base/logging.cpp,
+which BUILD.gn does not build. logging.cpp uses BSD's getprogname(),
+which the NDK has only from API level 21 (https://bit.ly/2nX0nBs).
+
+Chromium commit 1ac11f3 in libunwindstack.git; 72ad10f and 11659d4
+did the same in file.cpp before.
+
 diff --git a/src/include/android-base/logging.h b/src/include/android-base/logging.h
 index 179ddf0..2d21638 100644
 --- a/src/include/android-base/logging.h

@@ -14,10 +14,22 @@ unique_fd. libunwindstack, libdexfile and libartbase include them as
 "android-base/...", and //third_party/libunwindstack builds them into its
 libunwindstack and posix_strerror_r targets.
 
-src/ holds the files BUILD.gn lists, from the upstream repository root.
-Patches 0001, 0003, 0007 and 0015 in patches/ change some of them.
-Chromium also added two #include lines to logging.h and strings.h
-without a patch (libunwindstack.git dcd4e94).
+src/ holds the files BUILD.gn lists, from the upstream repository root,
+with patches/ applied.
 
-To update, copy those files at the new revision into src/, reapply the
-changes above, and update Revision.
+Local Modifications:
+- 0001-disable-fdsan.patch: use fdsan only from Android API 29.
+- 0003-remove-file-logging.patch: no-op LOG(), PLOG(), CHECK() and
+  CHECK_OP() streams, so no logging.cpp is needed.
+- 0007-disable-thread-annotations.patch: no-op thread-safety annotation
+  macros.
+- 0015-replace-deprecated-enodata.patch: EIO instead of ENODATA.
+- 0020-add-missing-includes.patch: add <type_traits> and <iterator>
+  includes.
+
+To update, copy those files at the new revision into src/, then run
+from this directory:
+
+$ for patch in patches/*.patch; do patch -s -p1 < $patch; done
+
+and update Revision.

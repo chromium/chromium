@@ -1,3 +1,9 @@
+Replace ENODATA with EIO in file.cpp
+
+ENODATA is deprecated in ISO C++.
+
+Chromium commit d208908 in libunwindstack.git.
+
 diff --git a/src/file.cpp b/src/file.cpp
 index f71773b..1956266 100644
 --- a/src/file.cpp

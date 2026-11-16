@@ -1,3 +1,10 @@
+Use fdsan in unique_fd.h only from Android API 29
+
+The NDK has fdsan only from API level 29 (https://bit.ly/2W4II7E), so
+use it only when __ANDROID_API__ >= 29.
+
+Chromium commit 5e7475f in libunwindstack.git.
+
 diff --git a/src/include/android-base/unique_fd.h b/src/include/android-base/unique_fd.h
 index 1ffe02f..110712c 100644
 --- a/src/include/android-base/unique_fd.h
