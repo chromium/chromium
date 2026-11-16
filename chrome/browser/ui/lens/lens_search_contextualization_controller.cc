@@ -155,6 +155,10 @@ LensSearchContextualizationController::
 void LensSearchContextualizationController::CancelInFlightContextualization() {
   in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
   is_page_context_eligible_ = false;
+  if (auto* query_controller =
+          lens_search_controller_->lens_overlay_query_controller()) {
+    query_controller->ResetPageContentData();
+  }
   page_contents_.clear();
   primary_content_type_ = lens::MimeType::kUnknown;
   viewport_screenshot_.reset();

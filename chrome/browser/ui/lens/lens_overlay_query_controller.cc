@@ -376,7 +376,8 @@ void LensOverlayQueryController::StartQueryFlow(
   page_url_ = page_url;
   page_title_ = page_title;
   significant_region_boxes_ = std::move(significant_region_boxes);
-  underlying_page_contents_ = underlying_page_contents;
+  underlying_page_contents_.assign(underlying_page_contents.begin(),
+                                   underlying_page_contents.end());
   primary_content_type_ = primary_content_type;
   pdf_current_page_ = pdf_current_page;
   ui_scale_factor_ = ui_scale_factor;
@@ -456,13 +457,14 @@ void LensOverlayQueryController::SendEndTranslateModeQuery() {
 }
 
 void LensOverlayQueryController::ResetPageContentData() {
-  underlying_page_contents_ = base::span<const lens::PageContent>();
+  underlying_page_contents_.clear();
   primary_content_type_ = lens::MimeType::kUnknown;
   pdf_current_page_ = std::nullopt;
   page_url_ = GURL();
   page_title_ = std::nullopt;
-  partial_content_ = base::span<const std::u16string>();
+  partial_content_.clear();
   page_content_request_in_progress_ = false;
+  chunk_upload_access_token_fetcher_.reset();
   upload_chunker_.reset();
 }
 
@@ -478,7 +480,8 @@ void LensOverlayQueryController::SendUpdatedPageContent(
   }
 
   if (underlying_page_content.has_value()) {
-    underlying_page_contents_ = underlying_page_content.value();
+    underlying_page_contents_.assign(underlying_page_content->begin(),
+                                     underlying_page_content->end());
     primary_content_type_ = primary_content_type.value();
     page_url_ = new_page_url.value();
     page_title_ = new_page_title;
@@ -513,7 +516,7 @@ void LensOverlayQueryController::SendPartialPageContentRequest(
   if (IsOff()) {
     return;
   }
-  partial_content_ = partial_content;
+  partial_content_.assign(partial_content.begin(), partial_content.end());
 
   PrepareAndFetchPartialPageContentRequest();
 }
@@ -1376,6 +1379,10 @@ void LensOverlayQueryController::StartChunkedUpload(
     lens::LensOverlayRequestId request_id,
     std::vector<std::string> headers) {
   chunk_upload_access_token_fetcher_.reset();
+  if (underlying_page_contents_.empty() ||
+      underlying_page_contents_.front().bytes_.empty()) {
+    return;
+  }
   pending_upload_chunk_headers_ = headers;
   total_chunk_progress_ = 0;
   total_chunk_upload_size_ = 0;

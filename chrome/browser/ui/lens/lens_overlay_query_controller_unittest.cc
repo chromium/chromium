@@ -5562,4 +5562,131 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.EndQuery();
 }
 
+TEST_F(
+    LensOverlayQueryControllerTest,
+    SendPartialPageContentRequest_ClearedOnResetPageContentDataBeforeDeferredFetch) {
+  InitFeaturesWithClusterInfoOptimization();
+
+  profile()->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  profile()->GetPrefs()->SetBoolean(lens::prefs::kLensSharingPageContentEnabled,
+                                    false);
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::DoNothing(),
+      base::NullCallback(), base::DoNothing(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::vector<lens::PageContent> page_contents(kFakePdfPageContents.begin(),
+                                               kFakePdfPageContents.end());
+  query_controller.StartQueryFlow(
+      bitmap, bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), page_contents,
+      lens::MimeType::kPdf, /*pdf_current_page=*/std::nullopt, 0,
+      base::TimeTicks::Now());
+
+  std::vector<std::u16string> partial_content = {
+      u"this is a page with enough content to make it substantial",
+      u"this is a second page substantial enough content"};
+  query_controller.SendPartialPageContentRequest(partial_content);
+  EXPECT_EQ(query_controller.num_partial_page_content_requests_sent(), 0);
+
+  // Reset page content data and clear caller storage before the deferred
+  // cluster info response runs.
+  query_controller.ResetPageContentData();
+  page_contents.clear();
+  page_contents.shrink_to_fit();
+  partial_content.clear();
+  partial_content.shrink_to_fit();
+
+  query_controller.GrantPermissionForSession();
+  query_controller.MaybeRestartQueryFlow();
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  EXPECT_EQ(query_controller.num_full_image_requests_sent(), 1);
+  EXPECT_EQ(query_controller.num_page_content_update_requests_sent(), 0);
+  EXPECT_EQ(query_controller.num_partial_page_content_requests_sent(), 0);
+
+  query_controller.EndQuery();
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       SendPartialPageContentRequest_RetainsOwnedCopyAcrossDeferredFetch) {
+  InitFeaturesWithClusterInfoOptimization();
+
+  profile()->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  profile()->GetPrefs()->SetBoolean(lens::prefs::kLensSharingPageContentEnabled,
+                                    false);
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::DoNothing(),
+      base::NullCallback(), base::DoNothing(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakePdfPageContents,
+      lens::MimeType::kPdf, /*pdf_current_page=*/std::nullopt, 0,
+      base::TimeTicks::Now());
+
+  {
+    std::vector<std::u16string> partial_content = {
+        u"this is a page with enough content to make it substantial",
+        u"this is a second page substantial enough content"};
+    query_controller.SendPartialPageContentRequest(partial_content);
+  }
+  EXPECT_EQ(query_controller.num_partial_page_content_requests_sent(), 0);
+
+  query_controller.GrantPermissionForSession();
+  query_controller.MaybeRestartQueryFlow();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller.num_partial_page_content_requests_sent() == 1;
+  }));
+
+  const auto& partial_pdf_document =
+      query_controller.last_sent_partial_content();
+  ASSERT_EQ(2, partial_pdf_document.pages_size());
+  EXPECT_EQ("this is a page with enough content to make it substantial",
+            partial_pdf_document.pages(0).text_segments(0));
+  EXPECT_EQ("this is a second page substantial enough content",
+            partial_pdf_document.pages(1).text_segments(0));
+
+  query_controller.EndQuery();
+}
+
 }  // namespace lens
