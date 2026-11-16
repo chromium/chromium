@@ -61,6 +61,12 @@ class OtpSuggestionDropdownDispatcher {
   // for the tab/window to become active.
   bool HasPendingTrigger(FieldGlobalId field) const;
 
+  // Returns true if `identity` is suppressed on `field` because the same or a
+  // newer OTP has already been offered or shown on `field`, i.e. `identity` is
+  // not strictly newer than the last offered OTP.
+  bool IsSuppressedByDeduplication(FieldGlobalId field,
+                                   const OtpTokenIdentity& identity) const;
+
   // Records that `identity` was displayed in an OTP suggestion popup for
   // `field` (`OnSuggestionsShown()` with an OTP suggestion type) so proactive
   // triggers do not re-trigger the same OTP.

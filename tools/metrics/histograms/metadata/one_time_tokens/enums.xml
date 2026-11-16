@@ -261,6 +261,32 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/autofill_page/contact_info/contact_info_page.ts:GmailOtpSettingsChangeOutcome) -->
 
+<!-- LINT.IfChange(OtpProactiveTriggerOutcome) -->
+
+<enum name="OtpProactiveTriggerOutcome">
+  <int value="0" label="Suppressed"/>
+  <int value="1" label="Triggered and suggestions shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/one_time_tokens/otp_types.h:OtpProactiveTriggerOutcome) -->
+
+<!-- LINT.IfChange(OtpProactiveTriggerSuppressionReason) -->
+
+<enum name="OtpProactiveTriggerSuppressionReason">
+  <int value="0" label="Same or newer OTP already offered on the field"/>
+  <int value="1" label="Non-OTP field focused"/>
+  <int value="2" label="Typed input in an OTP field"/>
+  <int value="3" label="Different OTP field focused"/>
+  <int value="4" label="Target OTP field not focused on Android"/>
+  <int value="5" label="Keyboard not visible on Android"/>
+  <int value="6" label="Target field removed or no longer eligible"/>
+  <int value="7" label="Frame inactive"/>
+  <int value="8" label="WebOTP blocked"/>
+  <int value="9" label="User not opted in to Gmail OTP filling"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/one_time_tokens/otp_types.h:OtpProactiveTriggerSuppressionReason) -->
+
 </enums>
 
 </histogram-configuration>

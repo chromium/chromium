@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
@@ -57,6 +58,10 @@ class OtpCoordinatorTestApi {
   const base::flat_map<FieldGlobalId, OtpDelivery>& deliveries() const {
     return coordinator_->deliveries_;
   }
+  const base::flat_map<FieldGlobalId, std::vector<OtpTokenIdentity>>&
+  logged_proactive_outcomes_by_field() const {
+    return coordinator_->logged_proactive_outcomes_by_field_;
+  }
 
  private:
   const raw_ref<OtpCoordinator> coordinator_;
@@ -75,6 +80,10 @@ using ::testing::Property;
 using ::testing::Test;
 
 constexpr char kTestUrl[] = "https://example.test";
+constexpr char kProactiveTriggerOutcomeHistogram[] =
+    "OneTimeTokens.ProactiveTrigger.Outcome";
+constexpr char kProactiveTriggerSuppressionReasonHistogram[] =
+    "OneTimeTokens.ProactiveTrigger.SuppressionReason";
 
 auto HasValue(std::string_view code) {
   return ElementsAre(Property(&OneTimeToken::value, code));
@@ -181,9 +190,18 @@ class TestFrameObserver : public OtpCoordinator::Observer {
   base::OnceClosure on_otp_available_;
 };
 
+class CoordinatorTestAutofillClient : public TestAutofillClient {
+ public:
+  bool DocumentUsedWebOTP() override { return document_used_web_otp_; }
+  void set_document_used_web_otp(bool used) { document_used_web_otp_ = used; }
+
+ private:
+  bool document_used_web_otp_ = false;
+};
+
 class OtpCoordinatorTest
     : public Test,
-      public WithTestAutofillClientDriverManager<TestAutofillClient,
+      public WithTestAutofillClientDriverManager<CoordinatorTestAutofillClient,
                                                  TestAutofillDriver> {
  protected:
   OtpCoordinatorTest() {
@@ -305,6 +323,7 @@ class OtpCoordinatorTest
   raw_ptr<one_time_tokens::FakeGmailOtpService> gmail_service_ = nullptr;
   std::unique_ptr<OtpCoordinator> coordinator_;
   std::unique_ptr<TestFrameObserver> frame_observer_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(OtpCoordinatorTest, IgnoresIneligibleTargets) {
@@ -759,11 +778,12 @@ TEST_F(OtpCoordinatorTest, OnOtpSuggestionsShownDeduplicatesByTimestamp) {
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(field0),
       HasValue("654321"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
 
   // Mark `field0` as shown (`OnOtpSuggestionsShown` records across all fields
   // of `field0.form`), focus `targets[1]`, and unhide: the deferred trigger for
   // `t0` is suppressed on `targets[1]`, while a strictly newer resend (`t0 +
-  // 10s`) triggers proactively.
+  // 10s`) triggers proactively and is recorded once its popup is shown.
   coordinator_->OnOtpSuggestionsShown(field0.field, "000000");
   coordinator_->OnOtpSuggestionsShown(field0.field, "654321");
   coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
@@ -775,6 +795,10 @@ TEST_F(OtpCoordinatorTest, OnOtpSuggestionsShownDeduplicatesByTimestamp) {
   phish_guard_delegate_->WaitForChecks();
   EXPECT_THAT(frame_observer_->triggered_fields(),
               ElementsAre(targets[1].field));
+  coordinator_->OnOtpSuggestionsShown(targets[1].field, "654321");
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
 }
 
 TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
@@ -791,6 +815,12 @@ TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
       HasValue("888999"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(kProactiveTriggerOutcomeHistogram,
+                                       OtpProactiveTriggerOutcome::kSuppressed,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerSuppressionReasonHistogram,
+      OtpProactiveTriggerSuppressionReason::kNonOtpFieldFocused, 1);
 
   const OtpTarget new_target =
       AddOtpForm(/*fields=*/1, GURL(kTestUrl), /*listen=*/false)[0];
@@ -802,6 +832,29 @@ TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
       HasValue("888999"));
   EXPECT_THAT(frame_observer_->triggered_fields(),
               ElementsAre(new_target.field));
+  coordinator_->OnOtpSuggestionsShown(new_target.field, "888999");
+  histogram_tester_.ExpectBucketCount(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
+}
+
+// Tests that `kTriggeredAndSuggestionsShown` is recorded only once the popup of
+// a proactive trigger is shown, and only once if the popup is shown repeatedly
+// for the same OTP on the same field.
+TEST_F(OtpCoordinatorTest, RecordsProactiveTriggerShownOnlyOnceWhenPopupShown) {
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  SendGmailOtp("888999", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+
+  coordinator_->OnOtpSuggestionsShown(target.field, "888999");
+  coordinator_->OnOtpSuggestionsShown(target.field, "888999");
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
 }
 
 // Verifies that proactive triggers are suppressed when the focused OTP field
@@ -820,6 +873,12 @@ TEST_F(OtpCoordinatorTest,
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(typed_target),
       HasValue("956789"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(kProactiveTriggerOutcomeHistogram,
+                                       OtpProactiveTriggerOutcome::kSuppressed,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerSuppressionReasonHistogram,
+      OtpProactiveTriggerSuppressionReason::kTypedInputPresent, 1);
 
   // If the user clears the OTP field, a newly arriving OTP triggers
   // proactively even though `FieldModifier::kUser` remains on the field.
@@ -843,7 +902,7 @@ TEST_F(OtpCoordinatorTest,
 
   // While hidden and unfocused (even if a non-OTP field had focus while
   // backgrounded), arriving OTPs are deferred without evaluating live focus
-  // policy prematurely.
+  // policy prematurely or logging a proactive outcome.
   FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
                               FieldRendererId(999));
   coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
@@ -857,6 +916,7 @@ TEST_F(OtpCoordinatorTest,
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
       HasValue("314159"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
 
   // Tab becomes visible while window is still unfocused and focus moves to the
   // second OTP field `targets[1]`: still deferred.
@@ -864,12 +924,384 @@ TEST_F(OtpCoordinatorTest,
                                targets[1].form, targets[1].field);
   coordinator_->OnTabVisibilityChanged(true);
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
 
   // Window regains focus: deferred trigger now fires once on the newly focused
-  // field `targets[1]`.
+  // field `targets[1]`, and `kTriggeredAndSuggestionsShown` is logged when the
+  // popup is shown.
   coordinator_->OnWindowFocusChanged(true);
   EXPECT_THAT(frame_observer_->triggered_fields(),
               ElementsAre(targets[1].field));
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+  coordinator_->OnOtpSuggestionsShown(targets[1].field, "314159");
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
+}
+
+// Tests that when an OTP arrives for `target_a` while an OTP field `target_b`
+// on another origin has focus, the proactive trigger for `target_a` is
+// suppressed with `kProactiveUnfocusedOnAndroid` on Android and
+// `kDifferentOtpFieldFocused` on other platforms.
+TEST_F(OtpCoordinatorTest,
+       SuppressesProactiveTriggerWhileOtpFieldOnOtherOriginIsFocused) {
+#if BUILDFLAG(IS_ANDROID)
+  constexpr OtpProactiveTriggerSuppressionReason kExpectedReason =
+      OtpProactiveTriggerSuppressionReason::kProactiveUnfocusedOnAndroid;
+#else
+  constexpr OtpProactiveTriggerSuppressionReason kExpectedReason =
+      OtpProactiveTriggerSuppressionReason::kDifferentOtpFieldFocused;
+#endif
+  const OtpTarget target_a = AddOtpForm(/*fields=*/1, GURL(kTestUrl))[0];
+  const OtpTarget target_b =
+      AddOtpForm(/*fields=*/1, GURL("https://other.test"))[0];
+
+  // Focus `target_b` on `https://other.test` while a Gmail OTP arrives for
+  // `target_a` on `https://example.test`.
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target_b.form,
+                               target_b.field);
+  SendGmailOtp("135790", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(
+      coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target_a),
+      HasValue("135790"));
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(kProactiveTriggerOutcomeHistogram,
+                                       OtpProactiveTriggerOutcome::kSuppressed,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerSuppressionReasonHistogram, kExpectedReason, 1);
+}
+
+// Tests that if WebOTP becomes active while a proactive trigger is deferred
+// (because the tab was hidden when the OTP arrived), retrying the deferred
+// trigger when the tab becomes visible suppresses it with `kWebOtpBlocked`.
+TEST_F(OtpCoordinatorTest,
+       SuppressesDeferredProactiveTriggerWhenWebOtpBecomesActive) {
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+
+  // Receive SMS OTP while tab is hidden so validation succeeds and the
+  // proactive trigger is deferred.
+  coordinator_->OnTabVisibilityChanged(false);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "246810", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+
+  // WebOTP becomes active before the tab becomes visible again.
+  autofill_client().set_document_used_web_otp(true);
+  coordinator_->OnTabVisibilityChanged(true);
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(kProactiveTriggerOutcomeHistogram,
+                                       OtpProactiveTriggerOutcome::kSuppressed,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerSuppressionReasonHistogram,
+      OtpProactiveTriggerSuppressionReason::kWebOtpBlocked, 1);
+}
+
+// Tests that if Gmail OTP filling is turned off while a proactive trigger is
+// deferred, retrying the deferred trigger when the tab becomes visible
+// suppresses it with `kUserNotOptedIn`.
+TEST_F(OtpCoordinatorTest,
+       SuppressesDeferredProactiveTriggerWhenGmailConsentRevoked) {
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  coordinator_->OnTabVisibilityChanged(false);
+  SendGmailOtp("975310", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
+  coordinator_->OnTabVisibilityChanged(true);
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(kProactiveTriggerOutcomeHistogram,
+                                       OtpProactiveTriggerOutcome::kSuppressed,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerSuppressionReasonHistogram,
+      OtpProactiveTriggerSuppressionReason::kUserNotOptedIn, 1);
+}
+
+// Tests that an OTP popup shown on a proactively triggered field at the end of
+// the attribution window is still recorded as proactively shown.
+TEST_F(OtpCoordinatorTest, AttributesOtpPopupShownWithinAttributionWindow) {
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "424242", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+
+  task_environment_.AdvanceClock(
+      OtpCoordinator::kProactiveTriggerAttributionWindow);
+  coordinator_->OnOtpSuggestionsShown(target.field, "424242");
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
+}
+
+// Tests that an OTP popup shown on a proactively triggered field after the
+// attribution window (e.g. a user-initiated popup after the renderer dropped
+// the proactive request) is not recorded as proactively shown.
+TEST_F(OtpCoordinatorTest, DoesNotAttributeLateOtpPopupToProactiveTrigger) {
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "424242", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+
+  task_environment_.AdvanceClock(
+      OtpCoordinator::kProactiveTriggerAttributionWindow +
+      base::Milliseconds(1));
+  coordinator_->OnOtpSuggestionsShown(target.field, "424242");
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+}
+
+// Tests that the proactive trigger outcome is recorded once per OTP candidate
+// per field even if the field's delivery is dropped and re-created and the same
+// candidate is re-triggered and shown again, while a strictly newer candidate
+// on the same field is recorded anew.
+TEST_F(OtpCoordinatorTest,
+       ProactiveTriggerOutcomeLoggedOncePerCandidateAcrossReregistration) {
+  const OtpTarget target = AddOtpForm()[0];
+  // A second same-site form keeps "135790" available while `target` is
+  // re-registered.
+  AddOtpForm();
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  SendGmailOtp("135790", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  coordinator_->OnOtpSuggestionsShown(target.field, "135790");
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
+
+  coordinator_->StopListeningForForm(target.form);
+  frame_observer_->clear_triggered_fields();
+  coordinator_->StartListeningForOtp(target);
+  EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  coordinator_->OnOtpSuggestionsShown(target.field, "135790");
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
+
+  frame_observer_->clear_triggered_fields();
+  SendGmailOtp("246802", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  coordinator_->OnOtpSuggestionsShown(target.field, "246802");
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 2);
+}
+
+// Tests that a deferred trigger retargeted to a field whose proactive popup is
+// still awaiting display records no deduplication suppression, so the popup is
+// still recorded as shown.
+TEST_F(OtpCoordinatorTest,
+       DeferredRetryOnFieldAwaitingProactivePopupDoesNotLogDeduplication) {
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "424242", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+
+  // A same-site form detected while the tab is hidden defers its peer-offered
+  // trigger, which is retargeted to the focused `target` on retry.
+  coordinator_->OnTabVisibilityChanged(false);
+  const OtpTarget late_target =
+      AddOtpForm(/*fields=*/1, GURL(kTestUrl), /*listen=*/false)[0];
+  coordinator_->StartListeningForOtp(late_target);
+  coordinator_->OnTabVisibilityChanged(true);
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+
+  coordinator_->OnOtpSuggestionsShown(target.field, "424242");
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
+}
+
+// Tests that reactive popups on a field that was never proactively triggered,
+// or on a field whose delivery was dropped and re-created after the trigger,
+// record no proactive trigger outcome.
+TEST_F(OtpCoordinatorTest, ReactivePopupsAreNotLoggedAsProactivelyShown) {
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               targets[0].form, targets[0].field);
+  SendGmailOtp("246813", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(targets[0].field));
+
+  // Reactive popup on `targets[1]`, which was never proactively triggered.
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               targets[1].form, targets[1].field);
+  coordinator_->OnOtpSuggestionsShown(targets[1].field, "246813");
+
+  // `targets[0]` is dropped before its popup is shown and re-created while
+  // `targets[1]` has focus, so no new proactive trigger is dispatched.
+  coordinator_->StopListeningForForm(targets[0].form,
+                                     /*except=*/{targets[1].field});
+  coordinator_->StartListeningForOtp(targets[0]);
+  EXPECT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(targets[0].field));
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               targets[0].form, targets[0].field);
+  coordinator_->OnOtpSuggestionsShown(targets[0].field, "246813");
+
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+}
+
+// Tests that a deferred retry of a candidate onto a field whose own proactive
+// trigger for that candidate never showed a popup records nothing, even after
+// the attribution window, instead of a deduplication suppression.
+TEST_F(OtpCoordinatorTest,
+       DeferredRetryDoesNotLogDeduplicationAgainstUnshownProactiveTrigger) {
+  const OtpTarget target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "424242", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+
+  // The popup is never shown. After the attribution window, a same-site form
+  // detected while the tab is hidden defers its peer-offered trigger, which is
+  // retargeted to the focused `target` on retry.
+  task_environment_.AdvanceClock(
+      OtpCoordinator::kProactiveTriggerAttributionWindow +
+      base::Milliseconds(1));
+  coordinator_->OnTabVisibilityChanged(false);
+  const OtpTarget late_target =
+      AddOtpForm(/*fields=*/1, GURL(kTestUrl), /*listen=*/false)[0];
+  coordinator_->StartListeningForOtp(late_target);
+  coordinator_->OnTabVisibilityChanged(true);
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+}
+
+// Tests that a candidate whose outcome is recorded after that of a newer
+// candidate on the same field (here, an SMS popup shown after the newer Gmail
+// copy of the code was suppressed) does not let either candidate be recorded
+// again on that field.
+TEST_F(OtpCoordinatorTest,
+       RecordsEachCandidateOncePerFieldWhenRecordedOutOfOrder) {
+  const OtpTarget target = AddOtpForm()[0];
+  // A second same-site form keeps the candidates available while `target` is
+  // re-registered.
+  const OtpTarget peer_target = AddOtpForm()[0];
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               target.field);
+  sms_otp_service_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "424242", base::TimeTicks::Now()));
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+
+  // The user types into the OTP field before the SMS popup is shown, so the
+  // newer Gmail copy of the code is suppressed. Then the SMS popup is shown.
+  FormStructure* form =
+      test_api(autofill_manager()).FindCachedFormById(target.form);
+  form->field(0)->set_value(u"4");
+  form->field(0)->AddFieldModifier(FieldModifier::kUser);
+  SendGmailOtp("424242", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerSuppressionReasonHistogram,
+      OtpProactiveTriggerSuppressionReason::kTypedInputPresent, 1);
+  coordinator_->OnOtpSuggestionsShown(target.field, "424242");
+  histogram_tester_.ExpectBucketCount(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 2);
+
+  // Re-registering `target` re-evaluates the Gmail copy, which is suppressed
+  // again but not recorded again.
+  coordinator_->StopListeningForForm(target.form);
+  coordinator_->StartListeningForOtp(target);
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 2);
+
+  // Once the Gmail copy is gone and the OTP field is cleared, re-adding
+  // `target` after all OTP fields were removed proactively triggers the SMS
+  // copy again, and showing its popup is not recorded again either.
+  gmail_service_->ClearCache();
+  form->field(0)->set_value(u"");
+  coordinator_->StopListeningForForm(target.form);
+  coordinator_->StopListeningForForm(peer_target.form);
+  frame_observer_->clear_triggered_fields();
+  coordinator_->StartListeningForOtp(target);
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
+  coordinator_->OnOtpSuggestionsShown(target.field, "424242");
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 2);
+}
+
+// Tests that a deferred trigger that is retargeted to a field on which the
+// candidate was already shown is recorded as suppressed with
+// `kAlreadyOfferedOrOlderToken`.
+TEST_F(OtpCoordinatorTest, RecordsDeduplicationOfAlreadyShownCandidate) {
+  const std::vector<OtpTarget> targets = AddOtpForm(2);
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               targets[0].form, targets[0].field);
+  SendGmailOtp("135790", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(targets[0].field));
+  // Showing the popup records the OTP as offered on all fields of the form.
+  coordinator_->OnOtpSuggestionsShown(targets[0].field, "135790");
+
+  // A same-site form detected while the tab is hidden defers its peer-offered
+  // trigger, which is retargeted to the focused `targets[1]` on retry.
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
+                               targets[1].form, targets[1].field);
+  coordinator_->OnTabVisibilityChanged(false);
+  const OtpTarget late_target =
+      AddOtpForm(/*fields=*/1, GURL(kTestUrl), /*listen=*/false)[0];
+  coordinator_->StartListeningForOtp(late_target);
+  coordinator_->OnTabVisibilityChanged(true);
+  EXPECT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(targets[0].field));
+  histogram_tester_.ExpectBucketCount(
+      kProactiveTriggerOutcomeHistogram,
+      OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown, 1);
+  histogram_tester_.ExpectBucketCount(kProactiveTriggerOutcomeHistogram,
+                                      OtpProactiveTriggerOutcome::kSuppressed,
+                                      1);
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerSuppressionReasonHistogram,
+      OtpProactiveTriggerSuppressionReason::kAlreadyOfferedOrOlderToken, 1);
+}
+
+// Tests that a deferred proactive trigger whose target field is no longer
+// eligible when it is retried is suppressed with `kTargetFieldMissing`.
+TEST_F(OtpCoordinatorTest,
+       SuppressesDeferredProactiveTriggerWhenTargetFieldIsMissing) {
+  AddOtpForm();
+  coordinator_->OnTabVisibilityChanged(false);
+  SendGmailOtp("112233", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
+
+  // The form is removed from the cache before the deferred trigger is retried.
+  test_api(autofill_manager()).ClearFormStructures();
+  coordinator_->OnTabVisibilityChanged(true);
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  histogram_tester_.ExpectUniqueSample(kProactiveTriggerOutcomeHistogram,
+                                       OtpProactiveTriggerOutcome::kSuppressed,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kProactiveTriggerSuppressionReasonHistogram,
+      OtpProactiveTriggerSuppressionReason::kTargetFieldMissing, 1);
 }
 
 TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsDeliveries) {
@@ -889,10 +1321,28 @@ TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsDeliveries) {
       IsEmpty());
 }
 
+// Tests that logged proactive trigger outcomes, which survive form re-parses,
+// are dropped when the frame hosting the field becomes inactive.
+TEST_F(OtpCoordinatorTest, OnFrameBecameInactiveDropsLoggedProactiveOutcomes) {
+  const OtpTarget target = AddOtpForm()[0];
+  const FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
+                                    FieldRendererId(999));
+  coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), target.form,
+                               non_otp_field);
+  SendGmailOtp("424242", base::Time::Now());
+  phish_guard_delegate_->WaitForChecks();
+  ASSERT_FALSE(
+      test_api_coordinator().logged_proactive_outcomes_by_field().empty());
+
+  autofill_driver().SetIsActive(false);
+  coordinator_->OnFrameBecameInactive(autofill_driver().GetFrameToken());
+  EXPECT_THAT(test_api_coordinator().logged_proactive_outcomes_by_field(),
+              IsEmpty());
+}
+
 TEST_F(OtpCoordinatorTest, RecordsGmailSuggestionReadyLatency) {
   constexpr char kHistogram[] =
       "OneTimeTokens.Gmail.FieldDetectionToOtpSuggestionReadyLatency";
-  base::HistogramTester histogram_tester;
 
   gmail_service_->SetCachedTokens(
       {OneTimeToken(OneTimeTokenType::kGmail, "111222", base::TimeTicks::Now(),
@@ -904,23 +1354,23 @@ TEST_F(OtpCoordinatorTest, RecordsGmailSuggestionReadyLatency) {
   EXPECT_THAT(
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
       HasValue("111222"));
-  histogram_tester.ExpectTotalCount(kHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kHistogram, 0);
 
   sms_otp_service_->SimulateOtpArrived(OneTimeToken(
       OneTimeTokenType::kSmsOtp, "333444", base::TimeTicks::Now()));
   phish_guard_delegate_->WaitForChecks();
-  histogram_tester.ExpectTotalCount(kHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kHistogram, 0);
 
   task_environment_.FastForwardBy(base::Milliseconds(1500));
   SendGmailOtp("123456", base::Time::Now(), base::TimeTicks::Now());
   phish_guard_delegate_->WaitForChecks();
-  histogram_tester.ExpectUniqueTimeSample(kHistogram, base::Milliseconds(1500),
-                                          1);
+  histogram_tester_.ExpectUniqueTimeSample(kHistogram, base::Milliseconds(1500),
+                                           1);
 
   task_environment_.FastForwardBy(base::Milliseconds(500));
   SendGmailOtp("654321", base::Time::Now(), base::TimeTicks::Now());
   phish_guard_delegate_->WaitForChecks();
-  histogram_tester.ExpectTotalCount(kHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kHistogram, 1);
 
   coordinator_->StopListeningForForm(targets[0].form);
   test_api(autofill_manager()).ClearFormStructures();
@@ -929,8 +1379,8 @@ TEST_F(OtpCoordinatorTest, RecordsGmailSuggestionReadyLatency) {
   task_environment_.FastForwardBy(base::Milliseconds(800));
   SendGmailOtp("777888", base::Time::Now(), base::TimeTicks::Now());
   phish_guard_delegate_->WaitForChecks();
-  histogram_tester.ExpectTotalCount(kHistogram, 2);
-  histogram_tester.ExpectBucketCount(kHistogram, 800, 1);
+  histogram_tester_.ExpectTotalCount(kHistogram, 2);
+  histogram_tester_.ExpectBucketCount(kHistogram, 800, 1);
 }
 
 // Verifies that querying `RenewSubscriptionsAndRetrieveAvailableTokens()`

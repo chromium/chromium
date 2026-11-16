@@ -157,6 +157,45 @@ enum class DeliveryState {
   kFieldGone,
 };
 
+// Outcome of evaluating a proactive OTP suggestion popup trigger on a field.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OtpProactiveTriggerOutcome)
+enum class OtpProactiveTriggerOutcome {
+  kSuppressed = 0,
+  kTriggeredAndSuggestionsShown = 1,
+  kMaxValue = kTriggeredAndSuggestionsShown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:OtpProactiveTriggerOutcome)
+
+// Reason a proactive OTP suggestion popup trigger was suppressed after passing
+// verification-stage delivery gates.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OtpProactiveTriggerSuppressionReason)
+enum class OtpProactiveTriggerSuppressionReason {
+  kAlreadyOfferedOrOlderToken = 0,
+  kNonOtpFieldFocused = 1,
+  kTypedInputPresent = 2,
+  kDifferentOtpFieldFocused = 3,
+  kProactiveUnfocusedOnAndroid = 4,
+  // Not recorded until Android soft-keyboard visibility is plumbed into
+  // `OtpSecurityGateway::ProactiveTriggerContext` (crbug.com/451991285).
+  kKeyboardNotVisibleOnAndroid = 5,
+  kTargetFieldMissing = 6,
+  // Currently never recorded: `OtpCoordinator` passes `frame_active = true`
+  // because `IsTargetActiveAndEligible()` already excludes inactive frames.
+  kFrameInactive = 7,
+  // Edge case: the document started using WebOTP after the SMS candidate was
+  // verified, e.g. while its proactive trigger was deferred.
+  kWebOtpBlocked = 8,
+  // Edge case: the user turned off Gmail OTP filling after the candidate was
+  // verified, e.g. while its proactive trigger was deferred.
+  kUserNotOptedIn = 9,
+  kMaxValue = kUserNotOptedIn,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:OtpProactiveTriggerSuppressionReason)
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_TYPES_H_
