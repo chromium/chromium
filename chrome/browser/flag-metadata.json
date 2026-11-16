@@ -9261,7 +9261,7 @@
       "chrome-shopping-eng@google.com",
       "top-chrome-desktop-ui@google.com"
     ],
-    "expiry_milestone": 155
+    "expiry_milestone": 170
   },
   {
     "name": "sync-autofill-valuable",
