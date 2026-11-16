@@ -170,6 +170,10 @@ bool ImageInputType::ShouldRespectHeightAndWidthAttributes() {
   return true;
 }
 
+bool ImageInputType::ShouldRespectHspaceVspaceAndBorderAttributes() {
+  return true;
+}
+
 unsigned ImageInputType::Height() const {
   GetElement().GetDocument().UpdateStyleAndLayoutForNode(
       &GetElement(), DocumentUpdateReason::kJavaScript);

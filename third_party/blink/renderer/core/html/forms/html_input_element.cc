@@ -488,6 +488,8 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
   ValueMode old_value_mode = input_type_->GetValueMode();
   bool did_respect_height_and_width =
       input_type_->ShouldRespectHeightAndWidthAttributes();
+  bool did_respect_hspace_vspace_and_border =
+      input_type_->ShouldRespectHspaceVspaceAndBorderAttributes();
   bool could_be_successful_submit_button = CanBeSuccessfulSubmitButton();
 
   input_type_view_->ClosePopupView();
@@ -642,6 +644,15 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
           html_names::kAlignAttr, align->Value(), align->Value(),
           AttributeModificationReason::kDirectly));
     }
+  }
+
+  if (did_respect_hspace_vspace_and_border !=
+          input_type_->ShouldRespectHspaceVspaceAndBorderAttributes() &&
+      RuntimeEnabledFeatures::HTMLInputHspaceVspaceImageOnlyEnabled()) {
+    EnsureUniqueElementData().SetPresentationAttributeStyleIsDirty(true);
+    SetNeedsStyleRecalc(
+        kLocalStyleChange,
+        StyleChangeReasonForTracing::FromAttribute(html_names::kTypeAttr));
   }
 
   // UA Shadow tree was recreated. We need to set selection again. We do it
@@ -845,12 +856,11 @@ void HTMLInputElement::AccessKeyAction(
 
 bool HTMLInputElement::IsPresentationAttribute(
     const QualifiedName& name) const {
-  // FIXME: Remove type check.
   if (name == html_names::kVspaceAttr || name == html_names::kHspaceAttr ||
       name == html_names::kAlignAttr || name == html_names::kWidthAttr ||
       name == html_names::kHeightAttr ||
       (name == html_names::kBorderAttr &&
-       FormControlType() == FormControlType::kInputImage)) {
+       input_type_->ShouldRespectHspaceVspaceAndBorderAttributes())) {
     return true;
   }
   return TextControlElement::IsPresentationAttribute(name);
@@ -861,11 +871,17 @@ void HTMLInputElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kVspaceAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
+    if (input_type_->ShouldRespectHspaceVspaceAndBorderAttributes() ||
+        !RuntimeEnabledFeatures::HTMLInputHspaceVspaceImageOnlyEnabled()) {
+      AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
+      AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
+    }
   } else if (name == html_names::kHspaceAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginLeft, value);
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginRight, value);
+    if (input_type_->ShouldRespectHspaceVspaceAndBorderAttributes() ||
+        !RuntimeEnabledFeatures::HTMLInputHspaceVspaceImageOnlyEnabled()) {
+      AddHTMLLengthToStyle(style, CSSPropertyID::kMarginLeft, value);
+      AddHTMLLengthToStyle(style, CSSPropertyID::kMarginRight, value);
+    }
   } else if (name == html_names::kAlignAttr) {
     if (input_type_->ShouldRespectAlignAttribute())
       ApplyAlignmentAttributeToStyle(value, style);
@@ -883,10 +899,10 @@ void HTMLInputElement::CollectStyleForPresentationAttribute(
       if (width)
         ApplyAspectRatioToStyle(width, value, style);
     }
-  } else if (name == html_names::kBorderAttr &&
-             FormControlType() ==
-                 FormControlType::kInputImage) {  // FIXME: Remove type check.
-    ApplyBorderAttributeToStyle(value, style);
+  } else if (name == html_names::kBorderAttr) {
+    if (input_type_->ShouldRespectHspaceVspaceAndBorderAttributes()) {
+      ApplyBorderAttributeToStyle(value, style);
+    }
   } else {
     TextControlElement::CollectStyleForPresentationAttribute(name, value,
                                                              style);

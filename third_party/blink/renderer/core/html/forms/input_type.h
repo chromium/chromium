@@ -298,6 +298,9 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual HTMLFormControlElement::PopoverTriggerSupport
   SupportsPopoverTriggering() const;
   virtual bool ShouldRespectHeightAndWidthAttributes();
+  // hspace, vspace and border map to style only in the Image Button state.
+  // https://html.spec.whatwg.org/C/#attributes-for-embedded-content-and-images
+  virtual bool ShouldRespectHspaceVspaceAndBorderAttributes();
   virtual int MaxLength() const;
   virtual int MinLength() const;
   virtual bool SupportsPlaceholder() const;

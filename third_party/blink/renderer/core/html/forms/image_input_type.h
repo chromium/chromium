@@ -61,6 +61,7 @@ class ImageInputType final : public BaseButtonInputType {
   bool IsEnumeratable() override;
   bool IsAutoDirectionalityFormAssociated() const override;
   bool ShouldRespectHeightAndWidthAttributes() override;
+  bool ShouldRespectHspaceVspaceAndBorderAttributes() override;
   unsigned Height() const override;
   unsigned Width() const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;

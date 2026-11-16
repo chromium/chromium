@@ -973,6 +973,10 @@ bool InputType::ShouldRespectHeightAndWidthAttributes() {
   return false;
 }
 
+bool InputType::ShouldRespectHspaceVspaceAndBorderAttributes() {
+  return false;
+}
+
 int InputType::MaxLength() const {
   return -1;
 }

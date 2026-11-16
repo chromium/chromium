@@ -3813,6 +3813,13 @@
       name: "HTMLElementScrollParent",
       status: "experimental",
     },
+    {
+      // Kill switch: map hspace, vspace and border on <input> only in the
+      // Image Button state, including after the type attribute changes.
+      // Ships in M160 and can be removed in M162. https://crbug.com/581012178
+      name: "HTMLInputHspaceVspaceImageOnly",
+      status: "stable",
+    },
     // Adds support for the `::interest-button` pseudo element, which is a sub-
     // feature of the interest invokers feature.
     // https://open-ui.org/components/interest-invokers.explainer/
