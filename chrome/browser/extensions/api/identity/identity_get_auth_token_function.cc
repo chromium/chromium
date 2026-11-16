@@ -499,6 +499,11 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
   CHECK(!waiting_on_account_);
   waiting_on_account_ = true;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // The user may have signed out while a token request was in flight, before
+    // `IdentityManager` observation started.
+    token_key_.account_info = CoreAccountInfo();
+  }
   scoped_identity_manager_observation_.Observe(identity_manager);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -761,13 +766,18 @@ bool IdentityGetAuthTokenFunction::TryRecoverFromServiceAuthError(
 
 void IdentityGetAuthTokenFunction::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
-      signin::PrimaryAccountChangeEvent::Type::kSet) {
+  if (!waiting_on_account_) {
     return;
   }
 
-  if (!waiting_on_account_) {
-    return;
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      token_key_.account_info = CoreAccountInfo();
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      break;
   }
 
   TRACE_EVENT_INSTANT("identity", "OnPrimaryAccountChanged (set)",
@@ -775,9 +785,7 @@ void IdentityGetAuthTokenFunction::OnPrimaryAccountChanged(
 
   const CoreAccountInfo& primary_account_info =
       event_details.GetCurrentState().primary_account;
-  // TODO(crbug.com/583748420): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(token_key_.account_info.IsEmpty());
+  CHECK(token_key_.account_info.IsEmpty(), base::NotFatalUntil::M165);
   token_key_.account_info = primary_account_info;
 
   CHECK(!GetSigninPrimaryAccount(GetProfile()).IsEmpty(),
