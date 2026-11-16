@@ -138,6 +138,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsLensEnabled() const override;
   bool AreLensEntrypointsVisible() const override;
   bool CanOpenCoBrowsePanelWithoutLens() const override;
+  bool CanFulfillContextualSuggestionsWithoutLens() const override;
   std::optional<bool> IsPagePaywalled() const override;
   bool ShouldSendContextualUrlSuggestParam() const override;
   bool ShouldSendPageTitleSuggestParam() const override;

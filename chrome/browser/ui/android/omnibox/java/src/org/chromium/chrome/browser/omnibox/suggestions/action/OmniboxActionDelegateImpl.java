@@ -24,6 +24,7 @@ import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.function.Consumer;
@@ -168,7 +169,14 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
 
     @Override
     public void issueContextualSearchQuery(GURL url) {
-        // Contextual fulfillment is not available; load the suggestion's search URL instead.
-        loadPageInCurrentTab(url.getSpec());
+        Tab tab = mTabSupplier.get();
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
+        if (webContents == null) {
+            loadPageInCurrentTab(url.getSpec());
+            return;
+        }
+        // Falls back to loading the suggestion URL in the tab when the contextual flow is
+        // unavailable (e.g. not on Desktop Android, or the feature param is disabled).
+        ContextualTasksUtils.issueOmniboxContextualQuery(webContents, url);
     }
 }
