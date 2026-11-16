@@ -51,6 +51,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace {
 using TestEvent1 = ukm::builders::PageLoad;
@@ -228,6 +229,11 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
 
     test_user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
     test_user_manager_->Initialize();
+
+    // The detector is a process-wide singleton that only reports activity
+    // once per notification interval, so an earlier test reporting some
+    // swallows the activity this one reports moments later.
+    ui::UserActivityDetector::Get()->ResetStateForTesting();
 
     SetupMultiDeviceFactory();
 
