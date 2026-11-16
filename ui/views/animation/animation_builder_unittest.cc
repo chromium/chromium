@@ -14,6 +14,8 @@
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer_animation_element.h"
+#include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_textured.h"
@@ -105,6 +107,9 @@ class AnimationBuilderTest : public testing::Test {
   void set_expected_observers_deleted(int expected_observers_deleted) {
     expected_observers_deleted_ = expected_observers_deleted;
   }
+
+  // Returns the number of observers that have been deleted so far.
+  int deleted_observers() const { return deleted_observers_; }
 
  private:
   std::vector<std::unique_ptr<TestAnimatibleLayerOwner>> layer_owners_;
@@ -1344,6 +1349,89 @@ TEST_F(AnimationBuilderTest, DestructorLoopUsesLayerDeletedByCallback) {
 
   // Not reached under ASan.
   EXPECT_FALSE(victim);
+}
+
+// Regression test for crbug.com/561996469. The OnEnded callback may destroy
+// the sequence that is notifying the builder's observer. If that is the last
+// sequence the observer is attached to, the observer deletes itself while its
+// OnLayerAnimationEnded() is still on the stack, so it must not use its
+// members after the callback returns.
+//
+// ui::LayerAnimator::FinishAnyAnimationWithZeroDuration() notifies the
+// observers of a zero-duration sequence while the animator still owns the
+// sequence, which is what lets the callback destroy it.
+TEST_F(AnimationBuilderTest, OnEndedCallbackDestroysNotifyingSequence) {
+  TestAnimatibleLayerOwner* target = CreateTestLayerOwner();
+  ui::LayerAnimator* animator = target->layer()->GetAnimator();
+
+  bool ended = false;
+  {
+    AnimationBuilder builder;
+    // With a preemption strategy other than IMMEDIATELY_SET_NEW_TARGET, the
+    // sequences of a target are started as a group. The zero-duration
+    // brightness sequence is then held back until the threaded opacity
+    // sequence starts, so both are still in the animator after the builder is
+    // destroyed.
+    builder
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnEnded(base::BindLambdaForTesting([&]() {
+          ended = true;
+          EXPECT_EQ(0, deleted_observers());
+          // Destroys the zero-duration sequence, which is the one notifying
+          // the observer and the last one it is attached to.
+          animator->StopAnimating();
+          EXPECT_EQ(1, deleted_observers());
+        }));
+    builder.Once().SetDuration(base::Seconds(1)).SetOpacity(target, 0.5f);
+    builder.Once().SetDuration(base::TimeDelta()).SetBrightness(target, 0.5f);
+  }
+  EXPECT_FALSE(ended);
+  EXPECT_TRUE(animator->is_animating());
+
+  // Preempt the opacity sequence. This releases and starts the zero-duration
+  // sequence, which the animator then finishes from
+  // FinishAnyAnimationWithZeroDuration() before returning.
+  AnimationBuilder()
+      .Once()
+      .SetDuration(base::Seconds(1))
+      .SetOpacity(target, 1.0f);
+
+  EXPECT_TRUE(ended);
+  EXPECT_FALSE(animator->is_animating());
+  set_expected_observers_deleted(1);
+}
+
+// Same as above, but for the OnAborted callback. ui::LayerAnimator keeps a
+// sequence alive while notifying its observers that it has been aborted, so
+// this test aborts a sequence that the animator still owns.
+TEST_F(AnimationBuilderTest, OnAbortedCallbackDestroysNotifyingSequence) {
+  TestAnimatibleLayerOwner* target = CreateTestLayerOwner();
+  ui::LayerAnimator* animator = target->layer()->GetAnimator();
+
+  bool aborted = false;
+  AnimationBuilder()
+      .OnAborted(base::BindLambdaForTesting([&]() {
+        aborted = true;
+        EXPECT_EQ(0, deleted_observers());
+        // Destroys the sequence that is notifying the observer, which is the
+        // only one it is attached to.
+        animator->StopAnimating();
+        EXPECT_EQ(1, deleted_observers());
+      }))
+      .Once()
+      .SetDuration(base::Seconds(1))
+      .SetBrightness(target, 0.5f);
+
+  ui::LayerAnimationSequence* sequence =
+      ui::LayerAnimatorTestController(animator).GetRunningSequence(
+          ui::LayerAnimationElement::BRIGHTNESS);
+  ASSERT_TRUE(sequence);
+  sequence->Abort(target->delegate());
+
+  EXPECT_TRUE(aborted);
+  EXPECT_FALSE(animator->is_animating());
+  set_expected_observers_deleted(1);
 }
 
 }  // namespace views

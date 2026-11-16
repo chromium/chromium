@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/sanitized_object.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -108,6 +109,10 @@ class VIEWS_EXPORT AnimationBuilder {
     // can return true before a sequence is started if the duration is zero.
     int sequences_to_run_ = 0;
     raw_ptr<AnimationAbortHandle, DanglingUntriaged> abort_handle_ = nullptr;
+
+    // Used to detect that a callback has deleted this observer by destroying
+    // the last sequence it was attached to.
+    base::WeakPtrFactory<Observer> weak_factory_{this};
   };
 
   AnimationBuilder();

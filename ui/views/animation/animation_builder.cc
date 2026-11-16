@@ -113,7 +113,15 @@ void AnimationBuilder::Observer::OnLayerAnimationEnded(
       // TODO(b/335902543): Remove on_ended_location.
       base::Location on_ended_location = on_ended_location_;
       base::debug::Alias(&on_ended_location);
+      // The callback may destroy `sequence`. If that is the last sequence this
+      // observer is attached to, OnDetachedFromSequence() deletes `this`.
+      base::WeakPtr<Observer> weak_this = weak_factory_.GetWeakPtr();
       std::move(on_ended_).Run();
+      if (!weak_this) {
+        // The abort handle, if any, is not marked as ended, so destroying it
+        // still aborts the animations on its layers.
+        return;
+      }
     }
     if (abort_handle_ && abort_handle_->animation_state() ==
                              AnimationAbortHandle::AnimationState::kRunning) {
@@ -152,7 +160,15 @@ void AnimationBuilder::Observer::OnLayerAnimationAborted(
     // TODO(b/335902543): Remove on_aborted_location_.
     base::Location on_aborted_location = on_aborted_location_;
     base::debug::Alias(&on_aborted_location);
+    // Defensive: ui::LayerAnimator keeps an aborted sequence alive until its
+    // observers have been notified, so the callback cannot delete `this`
+    // there, but nothing requires that of other callers of
+    // LayerAnimationSequence::Abort().
+    base::WeakPtr<Observer> weak_this = weak_factory_.GetWeakPtr();
     std::move(on_aborted_).Run();
+    if (!weak_this) {
+      return;
+    }
   }
   if (abort_handle_ && abort_handle_->animation_state() ==
                            AnimationAbortHandle::AnimationState::kRunning) {
