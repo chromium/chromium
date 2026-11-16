@@ -32,7 +32,6 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -234,10 +233,6 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
     return;
 
   ExecutionContext* context = ExecutionContext::From(script_state);
-
-  UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInMainThread);
-  base::UmaHistogramBoolean("V8.UnhandledExceptionCountInMainThread", true);
-
   SourceLocation* location = CaptureSourceLocation(isolate, message, context);
 
   if (message->ErrorLevel() != v8::Isolate::kMessageError) {
@@ -273,10 +268,6 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   CHECK(context);
-
-  UseCounter::Count(context, WebFeature::kUnhandledExceptionCountInWorker);
-  base::UmaHistogramBoolean("V8.UnhandledExceptionCountInWorker", true);
-
   SourceLocation* location = CaptureSourceLocation(isolate, message, context);
 
   if (message->ErrorLevel() != v8::Isolate::kMessageError) {
