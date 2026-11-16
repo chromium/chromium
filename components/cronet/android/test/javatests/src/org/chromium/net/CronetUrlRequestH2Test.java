@@ -20,6 +20,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.test.Protocol;
+import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 /**
  * Test functionality of CronetUrlRequest under H2 test server
@@ -36,16 +39,21 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
 public class CronetUrlRequestH2Test {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
+    private NativeTestServer mTestServer;
+
     @Before
     public void setUp() throws Exception {
-        assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mTestServer =
+                new NativeTestServer(
+                        mTestRule.getTestFramework().getContext(), Type.HTTPS, Protocol.HTTP2);
+        mTestServer.setSSLConfig(ServerCertificate.CERT_OK);
+        mTestServer.start();
         mTestRule.getTestFramework().startEngine();
     }
 
     @After
     public void tearDown() throws Exception {
-        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
+        mTestServer.close();
     }
 
     @Test
@@ -60,9 +68,7 @@ public class CronetUrlRequestH2Test {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                Http2TestServer.getEchoStreamUrl(),
-                                callback,
-                                callback.getExecutor());
+                                mTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider =
                 new TestUploadDataProvider(
@@ -100,9 +106,7 @@ public class CronetUrlRequestH2Test {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                Http2TestServer.getEchoStreamUrl(),
-                                callback,
-                                callback.getExecutor());
+                                mTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider =
                 new TestUploadDataProvider(
@@ -140,9 +144,7 @@ public class CronetUrlRequestH2Test {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                Http2TestServer.getEchoStreamUrl(),
-                                callback,
-                                callback.getExecutor());
+                                mTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         TestUploadDataProvider dataProvider =
                 new TestUploadDataProvider(
@@ -164,6 +166,9 @@ public class CronetUrlRequestH2Test {
         assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h2");
         assertThat(callback.mResponseAsString).isEqualTo("testtest");
     }
 }

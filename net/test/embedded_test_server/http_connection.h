@@ -26,6 +26,8 @@ class EmbeddedTestServer;
 // If a valid request is parsed, then |callback_| is invoked.
 class HttpConnection {
  public:
+  // Below line is for //net/android:net_java_test_support_enums_srcjar
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net.test
   enum class Protocol { kHttp1, kHttp2 };
 
   explicit HttpConnection(Protocol protocol);

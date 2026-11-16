@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_connection.h"
 
 namespace base {
 class FilePath;
@@ -23,8 +24,10 @@ class NativeTestServerHandleRequestCallback;
 
 class EmbeddedTestServerAdapter {
  public:
-  EmbeddedTestServerAdapter(const base::FilePath& test_files_root,
-                            net::EmbeddedTestServer::Type server_type);
+  EmbeddedTestServerAdapter(
+      const base::FilePath& test_files_root,
+      net::EmbeddedTestServer::Type server_type,
+      net::test_server::HttpConnection::Protocol protocol);
 
   void SetSSLConfigWithServerCertificate(
       JNIEnv* env,
@@ -40,7 +43,6 @@ class EmbeddedTestServerAdapter {
 
   // Starts the server serving files from default test data directory.
   // Returns true if started, false if server is already running.
-  // This will run the server in default mode (HTTP/1 with no SSL)
   bool Start(JNIEnv* env);
 
   void EnableConnectProxy(JNIEnv* env, const std::vector<std::string>& urls);

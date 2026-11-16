@@ -12,6 +12,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.net.test.Protocol;
 import org.chromium.net.test.ResponseType;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.Type;
@@ -29,13 +30,19 @@ public final class NativeTestServer implements AutoCloseable {
     private Long mEmbeddedTestServerAdapter;
 
     public NativeTestServer(Context context, @Type int type) {
+        this(context, type, Protocol.HTTP1);
+    }
+
+    /** See native net::test_server::EmbeddedTestServer(Type, HttpConnection::Protocol). */
+    public NativeTestServer(Context context, @Type int type, @Protocol int protocol) {
         TestFilesInstaller.installIfNeeded(context);
         mEmbeddedTestServerAdapter =
                 NativeTestServerJni.get()
                         .create(
                                 TestFilesInstaller.getInstalledPath(context),
                                 UrlUtils.getIsolatedTestRoot(),
-                                type);
+                                type,
+                                protocol);
     }
 
     /**
@@ -306,7 +313,8 @@ public final class NativeTestServer implements AutoCloseable {
         long create(
                 @JniType("std::string") String filePath,
                 @JniType("std::string") String testDataDir,
-                @JniType("net::EmbeddedTestServer::Type") int type);
+                @JniType("net::EmbeddedTestServer::Type") int type,
+                @JniType("net::test_server::HttpConnection::Protocol") int protocol);
 
         // Note: using different method names because jni_zero does not support overloading.
         void setSSLConfigWithServerCertificate(

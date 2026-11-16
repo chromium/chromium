@@ -253,6 +253,7 @@ java_cpp_template("net_errors_java") {
 java_cpp_enum("net_java_test_support_enums_srcjar") {
   sources = [
     "../test/embedded_test_server/embedded_test_server.h",
+    "../test/embedded_test_server/http_connection.h",
     "../test/url_request/url_request_failed_job.h",
   ]
 }

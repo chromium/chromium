@@ -39,7 +39,6 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.StringFlag;
 import org.chromium.net.ExperimentalCronetEngine;
-import org.chromium.net.Http2TestServer;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.TestBidirectionalStreamCallback;
 import org.chromium.net.TestUploadDataProvider;
@@ -50,7 +49,9 @@ import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
+import org.chromium.net.test.Protocol;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 import java.time.Duration;
 import java.util.AbstractMap;
@@ -735,9 +736,11 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testBidirectionalStream() throws Exception {
-        assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
-                .isTrue();
-        try {
+        try (var testServer =
+                new NativeTestServer(
+                        mTestRule.getTestFramework().getContext(), Type.HTTPS, Protocol.HTTP2)) {
+            testServer.setSSLConfig(ServerCertificate.CERT_OK);
+            testServer.start();
             var callback = new TestBidirectionalStreamCallback();
             callback.addWriteData(
                     ("test long write data which has to be long so that the response "
@@ -748,9 +751,7 @@ public final class CronetLoggerTest {
                             .getTestFramework()
                             .startEngine()
                             .newBidirectionalStreamBuilder(
-                                    Http2TestServer.getEchoStreamUrl(),
-                                    callback,
-                                    callback.getExecutor())
+                                    testServer.getEchoBodyURL(), callback, callback.getExecutor())
                             .addHeader("Content-Type", "test/contenttype")
                             .build();
             stream.start();
@@ -796,8 +797,6 @@ public final class CronetLoggerTest {
             }
             assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
             assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
-        } finally {
-            assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
         }
     }
 

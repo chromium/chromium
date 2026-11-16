@@ -21,6 +21,9 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetLibraryLoader;
+import org.chromium.net.test.Protocol;
+import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 /** Unit tests for {@code MockCertVerifier}. */
 @RunWith(AndroidJUnit4.class)
@@ -31,18 +34,23 @@ import org.chromium.net.impl.CronetLibraryLoader;
 public class MockCertVerifierTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
+    private NativeTestServer mTestServer;
+
     @Before
     public void setUp() throws Exception {
         // Load library first to create MockCertVerifier.
         CronetLibraryLoader.switchToTestLibrary();
         CronetLibraryLoader.loadLibrary();
-        assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mTestServer =
+                new NativeTestServer(
+                        mTestRule.getTestFramework().getContext(), Type.HTTPS, Protocol.HTTP2);
+        mTestServer.setSSLConfig(ServerCertificate.CERT_OK);
+        mTestServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
-        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
+        mTestServer.close();
     }
 
     @Test
@@ -56,7 +64,7 @@ public class MockCertVerifierTest {
                                         builder,
                                         MockCertVerifier.createFreeForAllMockCertVerifier()));
 
-        String url = Http2TestServer.getEchoAllHeadersUrl();
+        String url = mTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
@@ -64,7 +72,7 @@ public class MockCertVerifierTest {
     @Test
     @SmallTest
     public void testRequest_passesWithoutMockVerifier() {
-        String url = Http2TestServer.getEchoAllHeadersUrl();
+        String url = mTestServer.getEchoAllHeadersURL();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }

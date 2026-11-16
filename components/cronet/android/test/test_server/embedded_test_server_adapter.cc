@@ -24,6 +24,7 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
@@ -340,19 +341,22 @@ std::unique_ptr<net::test_server::HttpResponse> CronetTestRequestHandler(
 
 namespace cronet {
 
-static long JNI_NativeTestServer_Create(JNIEnv* env,
-                                        const std::string& test_files_root,
-                                        const std::string& test_data_dir,
-                                        net::EmbeddedTestServer::Type type) {
+static long JNI_NativeTestServer_Create(
+    JNIEnv* env,
+    const std::string& test_files_root,
+    const std::string& test_data_dir,
+    net::EmbeddedTestServer::Type type,
+    net::test_server::HttpConnection::Protocol protocol) {
   base::InitAndroidTestPaths(base::FilePath(test_data_dir));
-  return reinterpret_cast<long>(
-      new EmbeddedTestServerAdapter(base::FilePath(test_files_root), type));
+  return reinterpret_cast<long>(new EmbeddedTestServerAdapter(
+      base::FilePath(test_files_root), type, protocol));
 }
 
 EmbeddedTestServerAdapter::EmbeddedTestServerAdapter(
     const base::FilePath& test_files_root,
-    net::EmbeddedTestServer::Type server_type)
-    : test_server(net::EmbeddedTestServer(server_type)) {
+    net::EmbeddedTestServer::Type server_type,
+    net::test_server::HttpConnection::Protocol protocol)
+    : test_server(net::EmbeddedTestServer(server_type, protocol)) {
   test_server.RegisterRequestHandler(
       base::BindRepeating(&CronetTestRequestHandler, &test_server));
   test_server.ServeFilesFromDirectory(test_files_root);
