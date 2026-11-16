@@ -74,6 +74,8 @@ enum class AndroidSwitcherDefaultBrowserPromoInFREVariationType {
 enum class AndroidSwitcherDefaultBrowserPromoInFREArm {
   // Highlights Google ecosystem integration.
   kGoogleEcosystem = 0,
+  // Combines Google ecosystem utility with Chrome branding.
+  kHybrid = 1,
 };
 
 // Flag to enable the FRE Default Browser Experiment.
@@ -127,6 +129,7 @@ extern const char kAndroidSwitcherDefaultBrowserPromoInFREArmParam[];
 
 // Parameter values for `kAndroidSwitcherDefaultBrowserPromoInFREArmParam`.
 extern const char kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem[];
+extern const char kAndroidSwitcherDefaultBrowserPromoInFREArmHybrid[];
 
 // Returns which variation of the kBestFeaturesScreenInFirstRun feature is
 // enabled or `kDisabled` if the feature is disabled.

@@ -94,6 +94,9 @@ UIView* CreateFeatureIconView(Symbol symbol) {
               ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE_IPAD
               : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE);
     }
+    case first_run::AndroidSwitcherDefaultBrowserPromoInFREArm::kHybrid:
+      return l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_HYBRID_TITLE);
   }
 }
 

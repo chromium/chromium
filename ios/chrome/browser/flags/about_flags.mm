@@ -718,13 +718,31 @@ constexpr FeatureEntry::FeatureParam
         {first_run::kAndroidSwitcherDefaultBrowserPromoInFREArmParam,
          first_run::
              kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem}};
+constexpr FeatureEntry::FeatureParam
+    kAndroidSwitcherDBPInFRESegmentationHybrid[] = {
+        {first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam,
+         first_run::
+             kAndroidSwitcherDefaultBrowserPromoInFREParamSegmentationSignal},
+        {first_run::kAndroidSwitcherDefaultBrowserPromoInFREArmParam,
+         first_run::kAndroidSwitcherDefaultBrowserPromoInFREArmHybrid}};
+constexpr FeatureEntry::FeatureParam
+    kAndroidSwitcherDBPInFRESwitcherInfoHybrid[] = {
+        {first_run::kAndroidSwitcherDefaultBrowserPromoInFREParam,
+         first_run::
+             kAndroidSwitcherDefaultBrowserPromoInFREParamSwitcherInfoSignal},
+        {first_run::kAndroidSwitcherDefaultBrowserPromoInFREArmParam,
+         first_run::kAndroidSwitcherDefaultBrowserPromoInFREArmHybrid}};
 
 constexpr FeatureEntry::FeatureVariation
     kAndroidSwitcherDefaultBrowserPromoInFREVariations[] = {
         {" - Segmentation Signal (Google Ecosystem)",
          kAndroidSwitcherDBPInFRESegmentationGoogleEcosystem, nullptr},
         {" - Switcher Info Signal (Google Ecosystem)",
-         kAndroidSwitcherDBPInFRESwitcherInfoGoogleEcosystem, nullptr}};
+         kAndroidSwitcherDBPInFRESwitcherInfoGoogleEcosystem, nullptr},
+        {" - Segmentation Signal (Hybrid)",
+         kAndroidSwitcherDBPInFRESegmentationHybrid, nullptr},
+        {" - Switcher Info Signal (Hybrid)",
+         kAndroidSwitcherDBPInFRESwitcherInfoHybrid, nullptr}};
 
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "2"}};

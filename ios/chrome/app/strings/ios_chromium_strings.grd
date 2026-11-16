@@ -463,6 +463,9 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD" desc="Subtitle of the Default Browser screen on First run page explaining the default browser feature's utility - iPad expermental version. [iOS only]">
         You can now use Chromium anytime you tap links in emails, documents, and other apps.
       </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_HYBRID_TITLE" desc="Title of the Android switcher Default Browser screen in First Run, telling the user that their favorite Google apps and services (YouTube, Maps, Drive, Photos, Lens) work better with Chromium as the default browser [iOS only]">
+        Your Google favorites are better with Chromium
+      </message>
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE" desc="Subtitle of the Android switcher Default Browser screen in First Run prompting the user to make Chromium their default browser [iOS only]">
         Make Chromium your default browser
       </message>

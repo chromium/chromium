@@ -146,6 +146,8 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
           kGoogleEcosystem:
         return first_run::
             kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem;
+      case first_run::AndroidSwitcherDefaultBrowserPromoInFREArm::kHybrid:
+        return first_run::kAndroidSwitcherDefaultBrowserPromoInFREArmHybrid;
     }
   }
 
@@ -197,8 +199,8 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
   }
 
   // Verifies that the top view controller is an Android Switcher promo
-  // configured with the Google Ecosystem copy.
-  void ExpectGoogleEcosystemCopy() {
+  // configured with `expected_title` and the switcher subtitle.
+  void ExpectAndroidSwitcherCopy(NSString* expected_title) {
     UIViewController* presented_view_controller =
         navigation_controller_.topViewController;
     ASSERT_TRUE([presented_view_controller
@@ -213,18 +215,22 @@ class DefaultBrowserScreenCoordinatorTest : public PlatformTest {
         switcher_view_controller.view.accessibilityIdentifier,
         first_run::
             kFirstRunDefaultBrowserAndroidSwitcherScreenAccessibilityIdentifier);
-    const bool uses_tablet =
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-    EXPECT_NSEQ(
-        switcher_view_controller.titleText,
-        l10n_util::GetNSString(
-            uses_tablet
-                ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE_IPAD
-                : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE));
+    EXPECT_NSEQ(switcher_view_controller.titleText, expected_title);
     EXPECT_NSEQ(
         switcher_view_controller.subtitleText,
         l10n_util::GetNSString(
             IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE));
+  }
+
+  // Verifies that the top view controller is an Android Switcher promo
+  // configured with the Google Ecosystem copy.
+  void ExpectGoogleEcosystemCopy() {
+    const bool uses_tablet =
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+    ExpectAndroidSwitcherCopy(l10n_util::GetNSString(
+        uses_tablet
+            ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE_IPAD
+            : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_GOOGLE_ECOSYSTEM_TITLE));
   }
 
   // Verifies the recorded segmentation result and latency histograms.
@@ -364,6 +370,25 @@ TEST_F(DefaultBrowserScreenCoordinatorTest,
       first_run::GetAndroidSwitcherDefaultBrowserPromoInFREArm(),
       first_run::AndroidSwitcherDefaultBrowserPromoInFREArm::kGoogleEcosystem);
   ExpectGoogleEcosystemCopy();
+}
+
+// Tests that explicitly selecting the Hybrid arm parameter configures the
+// Hybrid title and switcher subtitle.
+TEST_F(DefaultBrowserScreenCoordinatorTest, PresentsHybridArmCopyWhenSelected) {
+  EnableVariation(
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREVariationType::
+          kSegmentationSignal,
+      first_run::AndroidSwitcherDefaultBrowserPromoInFREArm::kHybrid);
+  ConfigureSegmentationLabels(std::vector<std::string>{
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
+  SignIn();
+
+  [coordinator_ start];
+
+  EXPECT_EQ(first_run::GetAndroidSwitcherDefaultBrowserPromoInFREArm(),
+            first_run::AndroidSwitcherDefaultBrowserPromoInFREArm::kHybrid);
+  ExpectAndroidSwitcherCopy(l10n_util::GetNSString(
+      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_HYBRID_TITLE));
 }
 
 // Tests that enabling `kAndroidSwitcherDefaultBrowserPromoInFRE` without

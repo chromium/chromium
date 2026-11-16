@@ -51,6 +51,8 @@ const char kAndroidSwitcherDefaultBrowserPromoInFREArmParam[] =
 const char kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem[] =
     "google-ecosystem";
 
+const char kAndroidSwitcherDefaultBrowserPromoInFREArmHybrid[] = "hybrid";
+
 BASE_FEATURE_PARAM(int,
                    kBestFeaturesScreenInFirstRunParamFeature,
                    &kBestFeaturesScreenInFirstRun,
@@ -96,6 +98,8 @@ constexpr base::FeatureParam<AndroidSwitcherDefaultBrowserPromoInFREArm>::Option
     kAndroidSwitcherDefaultBrowserPromoInFREArmOptions[] = {
         {AndroidSwitcherDefaultBrowserPromoInFREArm::kGoogleEcosystem,
          kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem},
+        {AndroidSwitcherDefaultBrowserPromoInFREArm::kHybrid,
+         kAndroidSwitcherDefaultBrowserPromoInFREArmHybrid},
 };
 
 BASE_FEATURE_ENUM_PARAM(
