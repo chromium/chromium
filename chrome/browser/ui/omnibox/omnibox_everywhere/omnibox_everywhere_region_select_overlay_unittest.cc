@@ -407,7 +407,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   EXPECT_EQ(future.Get().width(), 60);
   EXPECT_EQ(future.Get().height(), 60);
   EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorBLUE);
-  EXPECT_TRUE(overlay->GetActiveWidgetForTesting()->IsClosed());
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
@@ -802,14 +802,35 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   ASSERT_TRUE(overlay);
   ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
 
-  // Closing the first widget closes all widgets in unison.
+  // Closing the first widget synchronously closes all widgets in unison and
+  // runs the completion callback.
   overlay->widgets_for_testing()[0]->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
 
-  ASSERT_TRUE(future.Wait());
+  ASSERT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
-  EXPECT_TRUE(overlay->widgets_for_testing()[0]->IsClosed());
-  EXPECT_TRUE(overlay->widgets_for_testing()[1]->IsClosed());
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
+       MultiDisplay_CloseNowOnOneWidgetClosesAllInUnison) {
+  SetDisplays({display::Display(1, gfx::Rect(0, 0, 800, 600)),
+               display::Display(2, gfx::Rect(800, 0, 800, 600))});
+
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      CreateTestBitmap(1600, 600), RegionCaptureSource::AllDisplays(),
+      future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+  ASSERT_EQ(overlay->widgets_for_testing().size(), 2u);
+
+  // Destroying one widget without going through the overlay synchronously
+  // cancels the selection and closes the remaining widgets.
+  overlay->widgets_for_testing()[0]->CloseNow();
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
@@ -842,8 +863,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorBLUE);
 
   // Both widgets closed in unison.
-  EXPECT_TRUE(overlay->widgets_for_testing()[0]->IsClosed());
-  EXPECT_TRUE(overlay->widgets_for_testing()[1]->IsClosed());
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
@@ -987,8 +1007,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   EXPECT_EQ(future.Get().getColor(19, 100), SK_ColorGREEN);
   EXPECT_EQ(future.Get().getColor(20, 100), SK_ColorBLUE);
   EXPECT_EQ(future.Get().getColor(119, 100), SK_ColorBLUE);
-  EXPECT_TRUE(overlay->widgets_for_testing()[0]->IsClosed());
-  EXPECT_TRUE(overlay->widgets_for_testing()[1]->IsClosed());
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest, GestureTapCancelResetsDrag) {
@@ -1016,7 +1035,7 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest, GestureTapCancelResetsDrag) {
 
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
-  EXPECT_TRUE(overlay->GetActiveWidgetForTesting()->IsClosed());
+  EXPECT_TRUE(overlay->widgets_for_testing().empty());
 }
 
 TEST_F(OmniboxEverywhereRegionSelectOverlayTest,

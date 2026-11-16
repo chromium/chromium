@@ -11,14 +11,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace omnibox_everywhere {
 
@@ -26,7 +24,7 @@ class RegionSelectOverlayView;
 
 // Manages frameless fullscreen overlay widgets displaying desktop screenshots
 // for region selection across all connected displays.
-class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
+class OmniboxEverywhereRegionSelectOverlay {
  public:
   using RegionCaptureSource = OmniboxEverywhereService::RegionCaptureSource;
   using CompleteCallback =
@@ -42,7 +40,7 @@ class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
       const OmniboxEverywhereRegionSelectOverlay&) = delete;
   OmniboxEverywhereRegionSelectOverlay& operator=(
       const OmniboxEverywhereRegionSelectOverlay&) = delete;
-  ~OmniboxEverywhereRegionSelectOverlay() override;
+  ~OmniboxEverywhereRegionSelectOverlay();
 
   // Returns the active / primary widget containing the cursor, or the first
   // widget if the cursor is outside all overlay widgets. For testing only.
@@ -68,9 +66,12 @@ class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
 
   explicit OmniboxEverywhereRegionSelectOverlay(CompleteCallback callback);
 
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
-  void OnWidgetDestroying(views::Widget* widget) override;
+  // Set as close callback on every overlay widget via
+  // Widget::MakeCloseSynchronous(). Runs synchronously when a widget is closed
+  // by anything other than the overlay itself (Close()/CloseWithReason(),
+  // CloseNow(), or the platform destroying the native window) and cancels the
+  // whole selection in unison.
+  void OnWidgetCloseRequested(views::Widget::ClosedReason reason);
 
   // Drag coordination methods called by RegionSelectOverlayView:
   void OnDragStarted();
@@ -88,6 +89,7 @@ class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
       gfx::NativeWindow context);
 
   void Finish(const SkBitmap& result_bitmap);
+  void ResetWidgets();
   SkBitmap CropGlobalSelection(const gfx::Rect& global_selection_rect) const;
   size_t GetActiveWidgetIndex() const;
 
@@ -95,8 +97,6 @@ class OmniboxEverywhereRegionSelectOverlay : public views::WidgetObserver {
   SkBitmap screenshot_;
   std::vector<DisplaySliceInfo> display_slices_;
   std::vector<std::unique_ptr<views::Widget>> widgets_;
-  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
-      widget_observations_{this};
   base::WeakPtrFactory<OmniboxEverywhereRegionSelectOverlay> weak_factory_{
       this};
 };
