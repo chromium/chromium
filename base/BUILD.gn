@@ -2554,6 +2554,7 @@ component("base") {
     "trace_event/log_message.h",
     "trace_event/malloc_dump_provider.cc",
     "trace_event/malloc_dump_provider.h",
+    "trace_event/malloc_dump_provider_internal.h",
     "trace_event/measured_memory_dump_provider_info.cc",
     "trace_event/measured_memory_dump_provider_info.h",
     "trace_event/memory_allocator_dump.cc",
@@ -2644,6 +2645,20 @@ component("base") {
       "trace_event/java_heap_dump_provider_android.cc",
       "trace_event/java_heap_dump_provider_android.h",
     ]
+  }
+
+  if (is_win) {
+    sources += [ "trace_event/malloc_dump_provider_win.cc" ]
+  } else if (is_apple) {
+    sources += [ "trace_event/malloc_dump_provider_apple.cc" ]
+  } else if (is_fuchsia) {
+    sources += [ "trace_event/malloc_dump_provider_fuchsia.cc" ]
+  } else {
+    sources += [ "trace_event/malloc_dump_provider_mallinfo.cc" ]
+  }
+
+  if (use_partition_alloc) {
+    sources += [ "trace_event/malloc_dump_provider_partition_alloc.cc" ]
   }
 
   if (use_partition_alloc_as_malloc) {

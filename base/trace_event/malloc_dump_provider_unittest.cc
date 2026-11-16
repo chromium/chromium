@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/allocator/buildflags.h"
+#include "base/trace_event/malloc_dump_provider_internal.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
@@ -26,7 +27,7 @@
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // The configurations in which MallocDumpProvider reports mallinfo(3) stats; see
-// ReportMallinfoStats in malloc_dump_provider.cc.
+// malloc_dump_provider_mallinfo.cc.
 #if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)) || \
     (!PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !BUILDFLAG(IS_WIN) &&    \
      !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA))

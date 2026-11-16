@@ -5,8 +5,6 @@
 #ifndef BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 #define BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 
-#include <stddef.h>
-
 #include "base/allocator/buildflags.h"
 #include "base/base_export.h"
 #include "base/functional/callback.h"
@@ -34,6 +32,10 @@ namespace trace_event {
 
 class MemoryAllocatorDump;
 
+namespace internal {
+struct PartitionAllocReport;
+}  // namespace internal
+
 // Dump provider which collects process-wide memory stats.
 class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
  public:
@@ -52,9 +54,11 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   static const char kPartitionsAllocatedObjects[];
 #endif
 
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
   // Names of the system allocator dumps, reported from mallinfo(3).
   static const char kSysMalloc[];
   static const char kSysMallocAllocatedObjects[];
+#endif
 
 #if BUILDFLAG(IS_WIN)
   // Names of the WinHeap dumps. Only reported at kDetailed level of detail;
@@ -110,21 +114,17 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   MallocDumpProvider();
   ~MallocDumpProvider() override;
 
-  void ReportPerMinuteStats(uint64_t syscall_count,
-                            size_t cumulative_brp_quarantined_bytes,
-                            size_t cumulative_brp_quarantined_count,
-                            const ExtremeLUDStats& elud_stats_for_small_objects,
-                            const ExtremeLUDStats& elud_stats_for_large_objects,
-                            MemoryAllocatorDump* malloc_dump,
-                            MemoryAllocatorDump* partition_alloc_dump,
-                            MemoryAllocatorDump* elud_dump_for_small_objects,
-                            MemoryAllocatorDump* elud_dump_for_large_objects);
-
   bool emit_metrics_on_memory_dump_
       GUARDED_BY(emit_metrics_on_memory_dump_lock_) = true;
   base::Lock emit_metrics_on_memory_dump_lock_;
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Reports the Extreme LUD quarantines, and the per-minute rates since the
+  // previous dump. Defined in malloc_dump_provider_partition_alloc.cc.
+  void ReportPerMinuteStats(ProcessMemoryDump* pmd,
+                            MemoryAllocatorDump* malloc_dump,
+                            const internal::PartitionAllocReport& report);
+
   // Returns a reference to the injected stats-report function of the Extreme
   // LUD. The returned callback is_null() if the Extreme LUD is not enabled.
   static ExtremeLUDGetStatsCallback& GetExtremeLUDGetStatsCallback();
@@ -193,53 +193,6 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
 };
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
-
-#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)) || \
-    (!PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !BUILDFLAG(IS_WIN) &&    \
-     !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)) ||                       \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-namespace internal {
-
-// Totals derived from mallinfo(3).
-struct MallinfoTotals {
-  size_t held_size = 0;
-  size_t allocated_size = 0;
-};
-
-// For mallinfo2(), and bionic's mallinfo(), whose fields are size_t.
-BASE_EXPORT MallinfoTotals MallinfoTotalsFromSizeT(size_t arena,
-                                                   size_t hblkhd,
-                                                   size_t uordblks);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// For glibc's legacy mallinfo(), which truncates its size_t counters into int
-// fields. Reading them as unsigned recovers values up to 4 GiB; larger ones
-// still wrap, undetectably.
-BASE_EXPORT MallinfoTotals MallinfoTotalsFromInt(int arena,
-                                                 int hblkhd,
-                                                 int uordblks);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-}  // namespace internal
-#endif
-
-#if BUILDFLAG(IS_WIN)
-namespace internal {
-
-// Aggregated counts produced by walking a Windows heap with HeapWalk.
-struct WinHeapInfo {
-  size_t committed_size = 0;
-  size_t uncommitted_size = 0;
-  size_t allocated_size = 0;
-  size_t block_count = 0;
-
-  // Walks `heap` (a HANDLE) and accumulates the totals. Exposed for testing.
-  // Production uses a specific path for CRT-heap.
-  static BASE_EXPORT WinHeapInfo FromHandleForTesting(void* heap);
-};
-
-}  // namespace internal
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace trace_event
 }  // namespace base
