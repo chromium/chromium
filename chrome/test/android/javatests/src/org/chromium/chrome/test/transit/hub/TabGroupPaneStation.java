@@ -69,7 +69,7 @@ public class TabGroupPaneStation extends HubBaseStation {
 
     public NewTabGroupDialogFacility<TabGroupPaneStation> createNewTabGroup() {
         assertNotNull(newTabGroupButtonElement);
-        return Journeys.beginNewTabGroupUiFlow(newTabGroupButtonElement.clickTo());
+        return newTabGroupButtonElement.clickTo().reach(Journeys.newTabGroupUiFlow());
     }
 
     public TabSwitcherSearchStation openTabGroupsPaneSearch() {

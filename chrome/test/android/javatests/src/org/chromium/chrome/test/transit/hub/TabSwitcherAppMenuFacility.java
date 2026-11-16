@@ -129,7 +129,7 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
     /** Select "New tab group" from the app menu. */
     public NewTabGroupDialogFacility<HostStationT> openNewTabGroup() {
         assertNotNull(mNewTabGroup);
-        return Journeys.beginNewTabGroupUiFlow(mNewTabGroup.scrollToAndSelectTo());
+        return mNewTabGroup.scrollToAndSelectTo().reach(Journeys.newTabGroupUiFlow());
     }
 
     /** Select "Settings" from the app menu. */

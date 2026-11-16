@@ -271,30 +271,21 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
     public RegularTabSwitcherStation openRegularTabSwitcher() {
-        return openRegularTabSwitcherAnd().completeAndGet(RegularTabSwitcherStation.class);
-    }
-
-    /** Start a Trip to open the tab switcher by pressing the toolbar tab switcher button. */
-    public TripBuilder openRegularTabSwitcherAnd() {
         assert !mIsIncognito;
-        return toolbar.tabSwitcherButtonElement
-                .clickTo()
-                .arriveAtAnd(RegularTabSwitcherStation.from(getTabModelSelector()));
+        return clickTabSwitcherButtonTo()
+                .arriveAt(RegularTabSwitcherStation.from(getTabModelSelector()));
     }
 
     /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
     public IncognitoTabSwitcherStation openIncognitoTabSwitcher() {
-        return openIncognitoTabSwitcherAnd().completeAndGet(IncognitoTabSwitcherStation.class);
+        assert mIsIncognito;
+        return clickTabSwitcherButtonTo()
+                .arriveAt(IncognitoTabSwitcherStation.from(getTabModelSelector()));
     }
 
-    /**
-     * Start a Trip to open the incognito tab switcher by pressing the toolbar tab switcher button.
-     */
-    public TripBuilder openIncognitoTabSwitcherAnd() {
-        assert mIsIncognito;
-        return toolbar.tabSwitcherButtonElement
-                .clickTo()
-                .arriveAtAnd(IncognitoTabSwitcherStation.from(getTabModelSelector()));
+    /** Start a Trip pressing the toolbar tab switcher button. */
+    public TripBuilder clickTabSwitcherButtonTo() {
+        return toolbar.tabSwitcherButtonElement.clickTo();
     }
 
     /** Loads a |url| leading to a web page in the same tab and waits to transition. */

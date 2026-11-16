@@ -156,7 +156,7 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
     public NewTabGroupDialogFacility<HostPageStationT> selectAddToNewGroupWithoutBottomSheet() {
         assertNotNull(mAddToGroup);
         assert !TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mHostStation.getActivity());
-        return Journeys.beginNewTabGroupUiFlow(mAddToGroup.scrollToAndSelectTo());
+        return mAddToGroup.scrollToAndSelectTo().reach(Journeys.newTabGroupUiFlow());
     }
 
     /**

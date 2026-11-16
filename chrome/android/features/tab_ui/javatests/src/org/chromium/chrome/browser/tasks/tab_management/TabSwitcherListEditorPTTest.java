@@ -284,7 +284,8 @@ public class TabSwitcherListEditorPTTest {
         TabBinningUtil.assertBinsEqual(tabModel, group(secondTabId, firstTabId, thirdTabId));
 
         // Ungroup and revert to only first and second tabs grouped, and third tab by itself
-        UndoSnackbarFacility<RegularTabSwitcherStation> undoSnackbar = groupMergedResult.second;
+        UndoSnackbarFacility<RegularTabSwitcherStation> undoSnackbar =
+                groupMergedResult.undoSnackbar();
         undoSnackbar.pressUndo();
         tabSwitcher.expectGroupCard(
                 List.of(firstTabId, secondTabId),

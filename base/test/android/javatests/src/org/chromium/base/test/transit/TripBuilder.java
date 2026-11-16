@@ -30,7 +30,7 @@ public class TripBuilder {
     /**
      * The state changes of the Trip; the methods below that are not about the Trigger add to it.
      */
-    private final Outcome mOutcome = new Outcome();
+    private final Outcome<?> mOutcome = Outcome.nothing();
 
     private final List<Trigger> mTriggers = new ArrayList<>();
     private TransitionOptions mOptions = TransitionOptions.DEFAULT;
@@ -354,6 +354,20 @@ public class TripBuilder {
     public void reachLastStop() {
         assert mContextStation != null : "Context Station not set";
         reachLastStopAnd(mContextStation).complete();
+    }
+
+    /**
+     * Execute the transition synchronously, making the state changes in |outcome|.
+     *
+     * <p>Joins this TripBuilder's Trigger and options with the state changes of an {@link Outcome}
+     * built separately, e.g. by the destination.
+     *
+     * @return the result of |outcome|, e.g. the Station or Facility it enters.
+     */
+    public <R extends @Nullable Object> R reach(Outcome<R> outcome) {
+        mOutcome.mergeFrom(outcome);
+        complete();
+        return outcome.getResult();
     }
 
     /** Build and perform the Transition synchronously. */

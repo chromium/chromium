@@ -7,6 +7,7 @@ package org.chromium.base.test.transit;
 import android.app.Activity;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.test.transit.ConditionalState.Phase;
 import org.chromium.build.annotations.NullMarked;
@@ -15,27 +16,94 @@ import org.chromium.build.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * The state-changes half of a Trip: a Station to arrive at, Facilities and States to enter or exit,
  * and Conditions to wait for.
  *
- * <p>A {@link TripBuilder} is the other half: the Trigger and its options.
+ * <p>A {@link TripBuilder} is the other half: the Trigger and its options. The two are built
+ * independently, e.g. a Facility offers a Trigger with {@code xxxTo()} and a Station offers an end
+ * state as an Outcome, and joined with {@link TripBuilder#reach(Outcome)}:
+ *
+ * <pre>{@code
+ * Outcome<ResultsFacility> results = Outcome.enter(new ResultsFacility()).andExit(searchBox);
+ * ResultsFacility resultsFacility = searchBox.submitButtonElement.clickTo().reach(results);
+ * }</pre>
+ *
+ * <p>The join works both ways: {@code trip.reach(outcome)} and {@code outcome.after(trip)} do the
+ * same; pick the one that reads better at the call site.
+ *
+ * <p>The factory method sets the result type R: the Station or the first ConditionalState entered,
+ * or nothing. Chained calls add more state changes without changing it, except {@link
+ * #returning(Supplier)}.
+ *
+ * <p>An Outcome holds NEW ConditionalStates, so it can only be reached once. Methods that offer an
+ * Outcome should return a new one per call.
+ *
+ * @param <R> the type returned by {@link TripBuilder#reach(Outcome)} and {@link #after}.
  */
 @NullMarked
-class Outcome {
+@CheckReturnValue
+public class Outcome<R extends @Nullable Object> {
     private final List<Facility<?>> mFacilitiesToEnter = new ArrayList<>();
     private final List<Facility<?>> mFacilitiesToExit = new ArrayList<>();
     private final List<State> mStatesToEnter = new ArrayList<>();
     private final List<State> mStatesToExit = new ArrayList<>();
     private final List<Condition> mConditions = new ArrayList<>();
     private @Nullable Station<?> mDestination;
+    private Supplier<R> mResult;
     private @Nullable Activity mHopOnActivity;
     private boolean mInNewTask;
+    private boolean mReached;
+
+    private Outcome(@Nullable Station<?> destination, Supplier<R> result) {
+        mDestination = destination;
+        mResult = result;
+    }
+
+    /** Arrive at |station|. Returns |station|. */
+    public static <StationT extends Station<?>> Outcome<StationT> enter(StationT station) {
+        station.assertInPhase(Phase.NEW);
+        return new Outcome<>(station, () -> station);
+    }
+
+    /**
+     * Enter |facility|. Returns |facility|.
+     *
+     * <p>Takes a single Facility so the result is typed; enter more with {@link #and}.
+     */
+    public static <FacilityT extends Facility<?>> Outcome<FacilityT> enter(FacilityT facility) {
+        return new Outcome<>(/* destination= */ null, () -> facility).and(facility);
+    }
+
+    /** Enter |state|. Returns |state|. */
+    public static <StateT extends State> Outcome<StateT> enter(StateT state) {
+        return new Outcome<>(/* destination= */ null, () -> state).and(state);
+    }
+
+    /** Exit |facilities|. Returns nothing. */
+    public static Outcome<@Nullable Void> exit(Facility<?>... facilities) {
+        return nothing().andExit(facilities);
+    }
+
+    /** Exit |state|. Returns nothing. */
+    public static Outcome<@Nullable Void> exit(State state) {
+        return nothing().andExit(state);
+    }
+
+    /** Wait for |conditions|. Returns nothing. */
+    public static Outcome<@Nullable Void> waitFor(Condition... conditions) {
+        return nothing().andWaitFor(conditions);
+    }
+
+    /** No state changes yet. Used by TripBuilder to accumulate the state changes of a Trip. */
+    static Outcome<@Nullable Void> nothing() {
+        return new Outcome<@Nullable Void>(/* destination= */ null, () -> null);
+    }
 
     /** Also enter |facilities|. */
-    @CanIgnoreReturnValue
-    Outcome and(Facility<?>... facilities) {
+    public Outcome<R> and(Facility<?>... facilities) {
         for (Facility<?> facility : facilities) {
             facility.assertInPhase(Phase.NEW);
             mFacilitiesToEnter.add(facility);
@@ -44,32 +112,84 @@ class Outcome {
     }
 
     /** Also enter |state|. */
-    @CanIgnoreReturnValue
-    Outcome and(State state) {
+    public Outcome<R> and(State state) {
         state.assertInPhase(Phase.NEW);
         mStatesToEnter.add(state);
         return this;
     }
 
     /** Also exit |facilities|. */
-    @CanIgnoreReturnValue
-    Outcome andExit(Facility<?>... facilities) {
+    public Outcome<R> andExit(Facility<?>... facilities) {
         mFacilitiesToExit.addAll(Arrays.asList(facilities));
         return this;
     }
 
     /** Also exit |state|. */
-    @CanIgnoreReturnValue
-    Outcome andExit(State state) {
+    public Outcome<R> andExit(State state) {
         mStatesToExit.add(state);
         return this;
     }
 
     /** Also wait for |conditions|. */
-    @CanIgnoreReturnValue
-    Outcome andWaitFor(Condition... conditions) {
+    public Outcome<R> andWaitFor(Condition... conditions) {
         mConditions.addAll(Arrays.asList(conditions));
         return this;
+    }
+
+    /**
+     * Return |result| instead, evaluated after the Trip, e.g. a record holding two Facilities
+     * entered.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends @Nullable Object> Outcome<T> returning(Supplier<T> result) {
+        Outcome<T> self = (Outcome<T>) this;
+        self.mResult = result;
+        return self;
+    }
+
+    /**
+     * Run |trip|'s Trigger and reach this Outcome. Same as {@code trip.reach(this)}.
+     *
+     * <p>Reads better when the end state is the point and the Trigger is long, e.g. a multi-line
+     * lambda, or when the Trigger is passed in by a caller:
+     *
+     * <pre>{@code
+     * return swapFor(new SuggestionsFacility()).after(runTo(() -> {
+     *     ...
+     * }));
+     * }</pre>
+     *
+     * @return the result of this Outcome.
+     */
+    @CanIgnoreReturnValue
+    public R after(TripBuilder trip) {
+        return trip.reach(this);
+    }
+
+    /**
+     * Add |other|'s state changes to this Outcome. Called by TripBuilder#reach() on the Outcome
+     * TripBuilder accumulates.
+     */
+    void mergeFrom(Outcome<?> other) {
+        assert !other.mReached
+                : "Outcome already reached; methods that offer one should return a new one";
+        other.mReached = true;
+        if (other.mDestination != null) {
+            setDestination(other.mDestination, other.mHopOnActivity);
+        }
+        mFacilitiesToEnter.addAll(other.mFacilitiesToEnter);
+        mStatesToEnter.addAll(other.mStatesToEnter);
+        // Outcomes can be built before the states to exit are entered, so check them now.
+        for (Facility<?> facility : other.mFacilitiesToExit) {
+            facility.assertInPhase(Phase.ACTIVE);
+            mFacilitiesToExit.add(facility);
+        }
+        for (State state : other.mStatesToExit) {
+            state.assertInPhase(Phase.ACTIVE);
+            mStatesToExit.add(state);
+        }
+        mConditions.addAll(other.mConditions);
+        mInNewTask |= other.mInNewTask;
     }
 
     /** Set the Station to arrive at, or to hop on at if |hopOnActivity| is not null. */
@@ -117,5 +237,10 @@ class Outcome {
 
     boolean isInNewTask() {
         return mInNewTask;
+    }
+
+    /** The result, after the Trip. */
+    R getResult() {
+        return mResult.get();
     }
 }

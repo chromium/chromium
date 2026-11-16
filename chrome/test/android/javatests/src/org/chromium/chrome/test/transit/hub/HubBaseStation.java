@@ -16,7 +16,7 @@ import android.view.View;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.build.annotations.Nullable;
@@ -105,21 +105,25 @@ public abstract class HubBaseStation
             return expectedDestination.cast(this);
         }
 
-        return selectPaneTo(paneId, expectedDestination).complete().get(expectedDestination);
+        return clickPaneButtonTo(paneId).reach(paneSelected(paneId, expectedDestination));
     }
 
-    private <T extends HubBaseStation> TripBuilder selectPaneTo(
-            int paneId, Class<T> expectedDestination) {
-        T destinationStation =
+    /** Outcome: the Hub showing the pane |paneId|. */
+    private <T extends HubBaseStation> Outcome<T> paneSelected(
+            @PaneId int paneId, Class<T> expectedDestination) {
+        return Outcome.enter(
                 expectedDestination.cast(
                         HubStationUtils.createHubStation(
-                                paneId, mRegularTabsExist, mIncognitoTabsExist));
+                                paneId, mRegularTabsExist, mIncognitoTabsExist)));
+    }
 
+    /** Start a Trip that clicks the button to switch to the pane |paneId|. */
+    private TripBuilder clickPaneButtonTo(@PaneId int paneId) {
         String contentDescription =
                 HubStationUtils.getContentDescriptionSubstringForIdPaneSelection(paneId);
         SwitchPaneButtonFacility button =
                 noopTo().enterFacility(new SwitchPaneButtonFacility(contentDescription));
-        return button.buttonElement.clickTo().arriveAtAnd(destinationStation);
+        return button.buttonElement.clickTo();
     }
 
     /** Convenience method to select the Regular Tab Switcher pane. */
@@ -143,14 +147,16 @@ public abstract class HubBaseStation
             return HistoryPaneStation.class.cast(this);
         }
 
-        TripBuilder tripBuilder = selectPaneTo(PaneId.HISTORY, HistoryPaneStation.class);
+        Outcome<HistoryPaneStation> historyPane =
+                paneSelected(PaneId.HISTORY, HistoryPaneStation.class);
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getActivity())) {
-            Trip trip = tripBuilder.enterFacilityAnd(new SoftKeyboardFacility()).complete();
-            trip.get(SoftKeyboardFacility.class).close();
-            return trip.get(HistoryPaneStation.class);
-        } else {
-            return tripBuilder.complete().get(HistoryPaneStation.class);
+            SoftKeyboardFacility keyboard = new SoftKeyboardFacility();
+            HistoryPaneStation station =
+                    clickPaneButtonTo(PaneId.HISTORY).reach(historyPane.and(keyboard));
+            keyboard.close();
+            return station;
         }
+        return clickPaneButtonTo(PaneId.HISTORY).reach(historyPane);
     }
 
     public class SwitchPaneButtonFacility extends Facility<HubBaseStation> {

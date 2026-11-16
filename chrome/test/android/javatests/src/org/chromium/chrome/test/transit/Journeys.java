@@ -15,8 +15,8 @@ import android.util.Pair;
 
 import org.chromium.base.Log;
 import org.chromium.base.Token;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.TravelException;
-import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -566,19 +566,16 @@ public class Journeys {
     }
 
     /**
-     * Begins a new tab group creation UI flow. See {@link TabGroupCreationUiDelegate}
+     * Outcome: the new tab group creation UI flow begins, showing the new tab group dialog and the
+     * soft keyboard. See {@link TabGroupCreationUiDelegate}.
      *
      * @param <HostStationT> The type of station this is scoped to.
-     * @param tripBuilder TripBuilder with the Trigger to begin the flow from.
      */
     public static <HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
-            NewTabGroupDialogFacility<HostStationT> beginNewTabGroupUiFlow(
-                    TripBuilder tripBuilder) {
+            Outcome<NewTabGroupDialogFacility<HostStationT>> newTabGroupUiFlow() {
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        NewTabGroupDialogFacility<HostStationT> dialog =
-                new NewTabGroupDialogFacility<>(softKeyboard);
-        tripBuilder.enterFacilities(dialog, softKeyboard);
-        return dialog;
+        return Outcome.enter(new NewTabGroupDialogFacility<HostStationT>(softKeyboard))
+                .and(softKeyboard);
     }
 
     /**

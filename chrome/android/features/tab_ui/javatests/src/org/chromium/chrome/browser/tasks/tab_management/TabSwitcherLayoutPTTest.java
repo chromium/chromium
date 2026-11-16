@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -187,23 +188,21 @@ public class TabSwitcherLayoutPTTest {
     /** Enters the regular Tab Switcher, making sure all tabs have a thumbnail. */
     private RegularTabSwitcherStation enterRegularHtsWithThumbnailChecking(
             CtaPageStation currentStation) {
+        TabModelSelector selector = currentStation.getTabModelSelector();
         return currentStation
-                .openRegularTabSwitcherAnd()
-                .enterStateAnd(
-                        new TabThumbnailsCapturedCarryOn(
-                                currentStation.getTabModelSelector(), /* isIncognito= */ false))
-                .completeAndGet(RegularTabSwitcherStation.class);
+                .clickTabSwitcherButtonTo()
+                .enterStateAnd(new TabThumbnailsCapturedCarryOn(selector, /* isIncognito= */ false))
+                .arriveAt(RegularTabSwitcherStation.from(selector));
     }
 
     /** Enters the Incognito Tab Switcher, making sure all tabs have a thumbnail. */
     private IncognitoTabSwitcherStation enterIncognitoHtsWithThumbnailChecking(
             CtaPageStation currentStation) {
+        TabModelSelector selector = currentStation.getTabModelSelector();
         return currentStation
-                .openIncognitoTabSwitcherAnd()
-                .enterStateAnd(
-                        new TabThumbnailsCapturedCarryOn(
-                                currentStation.getTabModelSelector(), /* isIncognito= */ true))
-                .completeAndGet(IncognitoTabSwitcherStation.class);
+                .clickTabSwitcherButtonTo()
+                .enterStateAnd(new TabThumbnailsCapturedCarryOn(selector, /* isIncognito= */ true))
+                .arriveAt(IncognitoTabSwitcherStation.from(selector));
     }
 
     @Test

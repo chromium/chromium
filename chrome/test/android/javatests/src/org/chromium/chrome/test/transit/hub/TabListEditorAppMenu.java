@@ -8,11 +8,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
-import android.util.Pair;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.R;
@@ -35,6 +34,10 @@ import java.util.List;
  */
 public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         extends CtaAppMenuFacility<HostStationT> {
+
+    /** The results of {@link #groupTabsWithoutDialog()}. */
+    public record GroupedTabs<HostStationT extends TabSwitcherStation>(
+            TabSwitcherGroupCardFacility card, UndoSnackbarFacility<HostStationT> undoSnackbar) {}
 
     private final TabSwitcherListEditorFacility<HostStationT> mListEditor;
     private Item mCloseMenuItem;
@@ -139,8 +142,7 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
      *
      * @return the new group card and the undo snackbar expected to be shown.
      */
-    public Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility<HostStationT>>
-            groupTabsWithoutDialog() {
+    public GroupedTabs<HostStationT> groupTabsWithoutDialog() {
         assert mListEditor.isAnyGroupSelected();
         checkItemsAbsent(mAddTabsToGroupMenuItem);
 
@@ -152,11 +154,13 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         UndoSnackbarFacility<HostStationT> undoSnackbar =
                 new UndoSnackbarFacility<>(snackbarMessage);
 
-        mAddTabsToNewGroupMenuItem
+        return mAddTabsToNewGroupMenuItem
                 .scrollToAndSelectTo()
-                .exitFacilityAnd(mListEditor)
-                .enterFacilities(card, undoSnackbar);
-        return Pair.create(card, undoSnackbar);
+                .reach(
+                        Outcome.enter(card)
+                                .and(undoSnackbar)
+                                .andExit(mListEditor)
+                                .returning(() -> new GroupedTabs<>(card, undoSnackbar)));
     }
 
     /** Select "Pin tabs". */

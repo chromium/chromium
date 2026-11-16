@@ -89,8 +89,9 @@ public class TabGroupsSubmenuFacility<
 
     /** Selects "New tab group" from the submenu to create a group for the current tab via UI. */
     public NewTabGroupDialogFacility<HostStationT> clickNewTabGroup() {
-        return Journeys.beginNewTabGroupUiFlow(
-                mCreateNewTabGroupItem.scrollToAndSelectTo().exitFacilityAnd(mParentAppMenu));
+        return mCreateNewTabGroupItem
+                .scrollToAndSelectTo()
+                .reach(Journeys.<HostStationT>newTabGroupUiFlow().andExit(mParentAppMenu));
     }
 
     /**
