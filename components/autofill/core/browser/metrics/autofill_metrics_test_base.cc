@@ -288,6 +288,7 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
           ? payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard
           : payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
   full_card_request->OnDidGetRealPan(result, response.with_real_pan(real_pan));
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 }
 
 void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {

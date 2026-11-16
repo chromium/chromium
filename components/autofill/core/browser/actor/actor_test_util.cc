@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/actor/actor_test_util.h"
 
+#include <utility>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
@@ -159,6 +161,20 @@ TestCreditCardAccessManager& ActorTestBase::credit_card_access_manager() {
 
 PaymentsDataManager& ActorTestBase::payments_data_manager() {
   return client().GetPersonalDataManager().payments_data_manager();
+}
+
+void ActorTestBase::FillForm(int form_index,
+                             ActorFormFillingSelection selection) {
+  service().FillForm(client(), form_index, std::move(selection));
+  test_api(autofill_manager()).RunPendingPostFillTasks();
+}
+
+bool ActorTestBase::CompleteCreditCardFetch(const CreditCard& card) {
+  if (!credit_card_access_manager().RunCreditCardFetchedCallback(card)) {
+    return false;
+  }
+  test_api(autofill_manager()).RunPendingPostFillTasks();
+  return true;
 }
 
 }  // namespace autofill

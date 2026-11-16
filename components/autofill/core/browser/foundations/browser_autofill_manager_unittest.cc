@@ -1171,6 +1171,7 @@ class BrowserAutofillManagerTest : public testing::Test,
           FillingProduct::kCreditCard, card, trigger_source,
           /*require_user_confirmation=*/false, /*blocked_fields=*/{});
     }
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
   // Fakes an autofill of `input_form` and returns the `FormData` with the
@@ -1271,6 +1272,7 @@ class BrowserAutofillManagerTest : public testing::Test,
         form->fields()[0].global_id(), FillingProduct::kCreditCard, &card,
         AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
   void OnDidGetRealPan(
@@ -1295,6 +1297,7 @@ class BrowserAutofillManagerTest : public testing::Test,
                                          : payments::PaymentsAutofillClient::
                                                PaymentsRpcCardType::kServerCard;
     full_card_request.OnDidGetRealPan(result, response.with_real_pan(real_pan));
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
   // Convenience method to cast the FullCardRequest into a CardUnmaskDelegate.
@@ -2801,6 +2804,7 @@ TEST_F(BrowserAutofillManagerTest,
       form.fields().front().global_id(), FillingProduct::kCreditCard,
       &local_card, AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2818,6 +2822,7 @@ TEST_F(BrowserAutofillManagerTest,
       form.fields().front().global_id(), FillingProduct::kCreditCard,
       &server_card, AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2845,6 +2850,7 @@ TEST_F(BrowserAutofillManagerTest,
       form.fields().front().global_id(), FillingProduct::kCreditCard,
       &filled_card, AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -2887,6 +2893,7 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_CreditCard_Bnpl) {
       &bnpl_virtual_card, AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -2919,6 +2926,7 @@ TEST_F(BrowserAutofillManagerTest,
       form.fields().front().global_id(), FillingProduct::kCreditCard, &card,
       AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 }
 
 // BNPL suggestion is limited to Windows, macOS, Linux, and ChromeOS.
@@ -2951,6 +2959,7 @@ TEST_F(BrowserAutofillManagerTest,
       form.fields().front().global_id(), FillingProduct::kCreditCard,
       &credit_card, AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -6329,6 +6338,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
       form.fields()[0].global_id(), FillingProduct::kAutofillAi, &order,
       AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   base::HistogramTester histogram_tester;
   FormSubmitted(form);
@@ -6977,6 +6987,7 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
     autofill_manager().OnJavaScriptChangedAutofilledValue(
         fill_data_, fill_data_.fields()[field_index].global_id(), old_value,
         AutofillManagerTestApi::pass_key());
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
   // Content of the form.

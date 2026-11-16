@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
@@ -353,6 +354,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
       otp_form.fields().front().global_id(), FillingProduct::kOneTimePassword,
       &fill_data, AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
@@ -522,6 +524,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
       otp_form.fields().front().global_id(), FillingProduct::kOneTimePassword,
       &fill_data, AutofillTriggerSource::kPopup,
       /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   // Simulate the user correcting the value.
   SimulateUserChangedFieldTo(otp_form, otp_form.fields().front().global_id(),
                              u"654321");

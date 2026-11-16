@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -65,6 +66,7 @@ class PerFillMetricsTest : public AutofillMetricsBaseTest,
             form_structure, autofill_field, AutofillTriggerSource::kPopup,
             /*blocked_fields=*/{}, FillId::Create(),
             /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
   // Lets `BrowserAutofillManager` fill `form` with `filling_payload` and
@@ -138,6 +140,7 @@ TEST_F(PerFillMetricsTest, RefillTriggerReason_FormChanged) {
   form.set_fields(std::move(fields));
 
   SeeForm({form});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   histogram_tester.ExpectUniqueSample("Autofill.RefillTriggerReason",
                                       RefillTriggerReason::kFormChanged, 1);
@@ -161,6 +164,7 @@ TEST_F(PerFillMetricsTest, RefillTriggerReason_OnSelectFieldOptionsDidChange) {
   autofill_manager().OnSelectFieldOptionsDidChange(
       form, form.fields().back().global_id(),
       AutofillManagerTestApi::pass_key());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.RefillTriggerReason",
@@ -193,6 +197,7 @@ TEST_F(PerFillMetricsTest,
       form_after_js_modification,
       form_after_js_modification.fields()[2].global_id(), u"04/2099",
       AutofillManagerTestApi::pass_key());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.RefillTriggerReason",
@@ -230,6 +235,7 @@ TEST_F(PerFillMetricsTest, ModifiedFieldsCount) {
   autofill_manager().AddSeenForm(
       form,
       {CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER, CREDIT_CARD_NAME_LAST});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   // Since the previously filled two fields should remain unchanged, we expect
   // only the newly added field to be modified by the refill operation.

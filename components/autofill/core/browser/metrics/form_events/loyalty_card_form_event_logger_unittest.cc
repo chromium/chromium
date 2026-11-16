@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/loyalty_cards_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_util.h"
@@ -689,6 +690,7 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
 
   external_delegate().DidAcceptSuggestion(
       external_delegate().suggestions().front(), {.multi_index = {0}});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LoyaltyCard.EmailOrLoyaltyCardAcceptance",

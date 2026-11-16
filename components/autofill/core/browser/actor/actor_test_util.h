@@ -168,6 +168,16 @@ class ActorTestBase : public testing::Test,
   ActorFormFillingServiceImpl& service() { return *service_; }
   ::actor::AggregatedJournal& journal() { return journal_; }
 
+  // Calls `service().FillForm()` and runs the post-fill bookkeeping of the
+  // resulting fills.
+  void FillForm(int form_index, ActorFormFillingSelection selection);
+
+  // Completes the pending credit card fetch with `card` (see
+  // `TestCreditCardAccessManager::RunCreditCardFetchedCallback()`) and runs the
+  // post-fill bookkeeping of the resulting fill. Returns false if no fetch is
+  // pending.
+  [[nodiscard]] bool CompleteCreditCardFetch(const CreditCard& card);
+
   // This is intended to be initialized by derived classes. It needs to be
   // defined before the `task_environment_` to ensure a correct destruction
   // order.

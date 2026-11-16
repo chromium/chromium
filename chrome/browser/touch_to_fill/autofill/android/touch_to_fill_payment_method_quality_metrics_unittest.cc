@@ -9,6 +9,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_delegate_android_impl.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
@@ -82,6 +83,7 @@ TEST_P(TouchToFillForPaymentMethodsTest,
   touch_to_fill_delegate().CreditCardSuggestionSelected(
       /*unique_id=*/credit_card.guid(),
       /*is_virtual=*/false);
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   touch_to_fill_delegate().OnDismissed(/*dismissed_by_user=*/false,
                                        /*should_reshow=*/false);
 

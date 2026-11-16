@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -79,6 +80,7 @@ class ProfileTokenQualityTest : public testing::Test,
         form.fields()[triggering_field_index].global_id(),
         FillingProduct::kAddress, &profile, AutofillTriggerSource::kPopup,
         /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
   TestAddressDataManager& adm() { return adm_; }

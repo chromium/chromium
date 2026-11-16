@@ -1297,12 +1297,10 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
       FillTestProfile(form);
     } else if (GroupTypeOfHtmlFieldType(autocomplete) ==
                FieldTypeGroup::kCreditCard) {
-      autofill_manager().FillOrPreviewForm(
-          mojom::ActionPersistence::kFill, form.global_id(),
-          first_field.global_id(), FillingProduct::kCreditCard,
+      FillOrPreviewCreditCard(
+          form, first_field,
           paydm().GetCreditCardByGUID("10000000-0000-0000-0000-000000000001"),
-          AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-          /*blocked_fields=*/{});
+          mojom::ActionPersistence::kFill);
     } else {
       // Autofill should not be simulated on a field that is not autofillable.
       NOTREACHED();

@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -632,6 +633,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
                                        u"Test",
                                        Suggestion::Guid(kTestLocalCardId)),
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
 
     EXPECT_EQ(user_action_tester.GetActionCount("Autofill_SelectedSuggestion"),
               1);
@@ -690,6 +692,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
                                        u"Test",
                                        Suggestion::Guid(kTestLocalCardId)),
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
 
     EXPECT_EQ(user_action_tester.GetActionCount("Autofill_SelectedSuggestion"),
               1);
@@ -698,12 +701,9 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // Simulate filling a credit card suggestion.
   {
     base::UserActionTester user_action_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form.global_id(),
-        form.fields().front().global_id(), FillingProduct::kCreditCard,
-        paydm().GetCreditCardByGUID(kTestLocalCardId),
-        AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-        /*blocked_fields=*/{});
+    FillOrPreviewCreditCard(form, form.fields().front(),
+                            paydm().GetCreditCardByGUID(kTestLocalCardId),
+                            mojom::ActionPersistence::kFill);
     EXPECT_EQ(user_action_tester.GetActionCount(
                   "Autofill_FilledCreditCardSuggestion"),
               1);
@@ -826,6 +826,7 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
                                        u"Test",
                                        Suggestion::Guid(kTestProfileId)),
         AutofillSuggestionDelegate::SuggestionMetadata{.multi_index = {0}});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
 
     EXPECT_EQ(user_action_tester.GetActionCount("Autofill_SelectedSuggestion"),
               1);
@@ -1007,12 +1008,9 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
   {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form.global_id(),
-        form.fields().back().global_id(), FillingProduct::kCreditCard,
-        paydm().GetCreditCardByGUID(kTestMaskedCardId),
-        AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-        /*blocked_fields=*/{});
+    FillOrPreviewCreditCard(form, form.fields().back(),
+                            paydm().GetCreditCardByGUID(kTestMaskedCardId),
+                            mojom::ActionPersistence::kFill);
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
@@ -1031,12 +1029,9 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
   {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form.global_id(),
-        form.fields().back().global_id(), FillingProduct::kCreditCard,
-        paydm().GetCreditCardByGUID(kTestMaskedCardId),
-        AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-        /*blocked_fields=*/{});
+    FillOrPreviewCreditCard(form, form.fields().back(),
+                            paydm().GetCreditCardByGUID(kTestMaskedCardId),
+                            mojom::ActionPersistence::kFill);
     OnDidGetRealPan(PaymentsRpcResult::kPermanentFailure, std::string());
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
@@ -1055,12 +1050,9 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
   {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form.global_id(),
-        form.fields().back().global_id(), FillingProduct::kCreditCard,
-        paydm().GetCreditCardByGUID(kTestMaskedCardId),
-        AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-        /*blocked_fields=*/{});
+    FillOrPreviewCreditCard(form, form.fields().back(),
+                            paydm().GetCreditCardByGUID(kTestMaskedCardId),
+                            mojom::ActionPersistence::kFill);
     OnDidGetRealPan(PaymentsRpcResult::kClientSideTimeout, std::string());
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
@@ -1092,12 +1084,9 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_BadServerResponse) {
   {
     // Simulating filling a masked card server suggestion.
     base::HistogramTester histogram_tester;
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form.global_id(),
-        form.fields().back().global_id(), FillingProduct::kCreditCard,
-        paydm().GetCreditCardByGUID(kTestMaskedCardId),
-        AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
-        /*blocked_fields=*/{});
+    FillOrPreviewCreditCard(form, form.fields().back(),
+                            paydm().GetCreditCardByGUID(kTestMaskedCardId),
+                            mojom::ActionPersistence::kFill);
     OnDidGetRealPanWithNonHttpOkResponse();
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
@@ -2492,6 +2481,7 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   // Trigger a refill, the refill metric should be updated.
   autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
                                  AutofillManagerTestApi::pass_key());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
               BucketsInclude(Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1)));
 }
@@ -3039,11 +3029,8 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   void FillForm(const FormFieldData& triggering_field) {
     EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
         .WillOnce(base::test::RunOnceCallback<2>(credit_card()));
-    autofill_manager().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form_.global_id(),
-        triggering_field.global_id(), FillingProduct::kCreditCard,
-        &credit_card_, AutofillTriggerSource::kPopup,
-        /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+    FillOrPreviewCreditCard(form_, triggering_field, &credit_card_,
+                            mojom::ActionPersistence::kFill);
   }
 
   // Sets the field values of |form_| according to the parameters.

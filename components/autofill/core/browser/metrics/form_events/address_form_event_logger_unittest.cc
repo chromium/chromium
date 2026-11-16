@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_util.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
@@ -74,6 +75,7 @@ class CategoryResolvedKeyMetricsTest : public AutofillMetricsBaseTest,
         AutofillTriggerSource::kPopup,
         /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
  protected:

@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
@@ -151,6 +152,7 @@ class OmniboxAutofillDelegateTest
         AutofillTriggerSource::kOmniboxAutofill,
         /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
   void FormSubmitted(const FormData& form) {
@@ -1180,6 +1182,7 @@ TEST_F(OmniboxAutofillDelegateTest,
 
   delegate->DidAcceptSuggestion(suggestion, /*metadata=*/{}, form.global_id(),
                                 form.fields().front().global_id());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
                                      OmniboxAutofillEvents::kSuggestionAccepted,

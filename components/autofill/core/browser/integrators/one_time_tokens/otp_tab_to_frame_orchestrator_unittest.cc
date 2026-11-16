@@ -360,6 +360,7 @@ TEST_F(OtpTabToFrameOrchestratorTest,
       FillingProduct::kOneTimePassword, &fill_data,
       AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{field0->global_id(), field1->global_id()});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   EXPECT_THAT(QuerySuggestions(form, *field0), HasValue("42"));
   EXPECT_THAT(QuerySuggestions(form, *field1), HasValue("42"));
 
@@ -368,6 +369,7 @@ TEST_F(OtpTabToFrameOrchestratorTest,
       FillingProduct::kOneTimePassword, &fill_data,
       AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   EXPECT_THAT(QuerySuggestions(form, *field0), IsEmpty());
   EXPECT_THAT(QuerySuggestions(form, *field1), IsEmpty());

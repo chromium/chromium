@@ -282,8 +282,8 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
                   ActorFormFillingRequest::RequestedData::kAddress))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   EXPECT_THAT(last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
@@ -346,8 +346,8 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationForm) {
           ActorFormFillingRequest::RequestedData::kContactInformation))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
   EXPECT_THAT(
       last_filled_values(),
       IsSupersetOf({std::pair(form.fields()[0].global_id(),
@@ -378,8 +378,8 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationRequestOnMixedForm) {
           ActorFormFillingRequest::RequestedData::kContactInformation))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Expect that all fields, including address fields, are filled.
   EXPECT_THAT(
@@ -414,8 +414,8 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Disabled) {
   EXPECT_THAT(requests, ElementsAre(IsActorFormFillingRequest(
                             ActorFormFillingRequest::RequestedData::kAddress)));
 
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   // Everything should be filled.
   EXPECT_THAT(last_filled_values(),
@@ -457,10 +457,10 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Enabled) {
 
   // Mock out the user having selected profile #2 for the contact part, and
   // profile #1 for the address part.
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[1].id));
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[1].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[1].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[1].suggestions[0].id));
 
   // Verify that fields were filled accordingly; Name and Email with profile
   // #2, and the address fields with profile #1.
@@ -592,8 +592,8 @@ TEST_F(ActorFormFillingServiceTest, SplitAddressForm) {
                   ActorFormFillingRequest::RequestedData::kAddress))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
   EXPECT_THAT(last_filled_values(),
               IsSupersetOf({std::pair(form_1_trigger_id,
                                       GetFillValue(GetProfile1(), NAME_FIRST)),
@@ -622,9 +622,9 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
                   ActorFormFillingRequest::RequestedData::kCreditCard))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
-  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
+  ASSERT_TRUE(CompleteCreditCardFetch(card));
   EXPECT_THAT(last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
                                  GetFillValue(card, CREDIT_CARD_NAME_FULL))));
@@ -833,8 +833,8 @@ TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
                   ActorFormFillingRequest::RequestedData::kCreditCard))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
   // Now we notify observers that a credit card fetch was started.
   using Observer = CreditCardAccessManager::Observer;
   test_api(credit_card_access_manager())
@@ -851,7 +851,7 @@ TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
   EXPECT_FALSE(fill_future.IsReady());
 
   // Simulate successful fetching.
-  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  ASSERT_TRUE(CompleteCreditCardFetch(card));
   test_api(credit_card_access_manager())
       .NotifyObservers(&Observer::OnCreditCardFetchSucceeded, card);
 
@@ -884,8 +884,8 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
   // Now we notify observers that a credit card fetch was started.
   test_api(credit_card_access_manager())
       .NotifyObservers(
@@ -916,8 +916,7 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
 // for filling.
 TEST_F(ActorFormFillingServiceTest, FillWithInvalidSuggestionId) {
   FillSuggestionsFuture fill_future;
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(ActorSuggestionId(123)));
+  FillForm(/*form_index=*/0, ActorFormFillingSelection(ActorSuggestionId(123)));
   EXPECT_THAT(test_api(service()).FillingErrors(),
               ElementsAre(ActorFormFillingError::kOther));
 }
@@ -945,8 +944,8 @@ TEST_F(ActorFormFillingServiceTest, TriggerOnSelect) {
 
   std::vector<ActorFormFillingRequest> requests = request_future.Take().value();
   ASSERT_THAT(requests, Not(IsEmpty()));
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
   EXPECT_THAT(last_filled_values(),
               Contains(Pair(form.fields()[0].global_id(), u"US")));
 }
@@ -994,9 +993,8 @@ TEST_F(ActorFormFillingServiceTest, FillOrPreview) {
   // TODO(crbug.com/480936584): Expect actual trigger field IDs for split
   // sections.
   EXPECT_EQ(manager().last_trigger_field_id(), form.fields()[0].global_id());
-  service().FillForm(
-      client(), /*form_index=*/1,
-      ActorFormFillingSelection(requests.back().suggestions.front().id));
+  FillForm(/*form_index=*/1,
+           ActorFormFillingSelection(requests.back().suggestions.front().id));
   EXPECT_EQ(manager().last_trigger_field_id(), form.fields()[0].global_id());
 }
 
@@ -1108,8 +1106,8 @@ TEST_F(ActorFormFillingServiceTest, FillSuggestions_FilledData) {
   ASSERT_THAT(future.Get(), HasValue());
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
 
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
 
   base::test::TestFuture<base::expected<std::string, ActorFormFillingError>>
       fill_future;
@@ -1188,8 +1186,8 @@ TEST_F(ActorFormFillingServiceTest, LogsMultipleSkipReasonsToJournal) {
   EXPECT_CALL(observer, WillAddJournalEntry(JournalEntryWithSkipReason(
                             expected_key, "2, 5, 16")));
 
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+  FillForm(/*form_index=*/0,
+           ActorFormFillingSelection(requests[0].suggestions[0].id));
 }
 
 TEST_F(ActorFormFillingServiceTest,
@@ -1215,9 +1213,8 @@ TEST_F(ActorFormFillingServiceTest,
                               histogram_tester);
 
   // Verify that FillForm succeeds without error now that field_ids are stored.
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(suggestion_id));
-  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  FillForm(/*form_index=*/0, ActorFormFillingSelection(suggestion_id));
+  ASSERT_TRUE(CompleteCreditCardFetch(card));
   EXPECT_TRUE(test_api(service()).FillingErrors().empty());
   EXPECT_THAT(last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
@@ -1284,8 +1281,7 @@ TEST_F(ActorFormFillingServiceTest,
   ASSERT_THAT(future.Get(), HasValue());
   ActorSuggestionId suggestion_id = future.Take().value();
 
-  service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(suggestion_id));
+  FillForm(/*form_index=*/0, ActorFormFillingSelection(suggestion_id));
   EXPECT_TRUE(test_api(service()).FillingErrors().empty());
   EXPECT_TRUE(last_filled_values().empty());
 }

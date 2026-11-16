@@ -147,7 +147,8 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
   // card unmasking.
   void SetFidoEligibility(bool is_verifiable);
 
-  // Mocks a RPC response from Payments.
+  // Mocks a RPC response from Payments and runs the post-fill bookkeeping of
+  // the resulting fill.
   void OnDidGetRealPan(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::string& real_pan,
@@ -270,6 +271,22 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
         personal_data().address_data_manager().GetProfileByGUID(profile_guid),
         AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
+  }
+
+  // Fills or previews `form` with `credit_card`, triggered on `trigger_field`,
+  // and runs the post-fill bookkeeping. If `credit_card` needs to be fetched
+  // (e.g., a masked server card), the form is only filled once the fetch
+  // completes (see `OnDidGetRealPan()`).
+  void FillOrPreviewCreditCard(const FormData& form,
+                               const FormFieldData& trigger_field,
+                               const CreditCard* credit_card,
+                               mojom::ActionPersistence action_persistence) {
+    autofill_manager().FillOrPreviewForm(
+        action_persistence, form.global_id(), trigger_field.global_id(),
+        FillingProduct::kCreditCard, credit_card, AutofillTriggerSource::kPopup,
+        /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+    test_api(autofill_manager()).RunPendingPostFillTasks();
   }
 
   void FillLoyaltyCard(const FormData& form,

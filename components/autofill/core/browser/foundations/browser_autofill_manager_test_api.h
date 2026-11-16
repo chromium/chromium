@@ -92,6 +92,11 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
 
   FormFiller& form_filler() { return *manager_->form_filler_; }
 
+  // See `FormFillerTestApi::RunPendingPostFillTasks()`.
+  void RunPendingPostFillTasks() {
+    test_api(form_filler()).RunPendingPostFillTasks();
+  }
+
   void set_form_filler(std::unique_ptr<FormFiller> form_filler) {
     manager_->form_filler_ = std::move(form_filler);
   }

@@ -302,7 +302,8 @@ class FormFillerTest
 
   // Lets `BrowserAutofillManager` fill `form` using `trigger`` and
   // returns `form` as it would be extracted from the renderer afterwards, i.e.,
-  // with the autofilled `FormFieldData::value`s.
+  // with the autofilled `FormFieldData::value`s. Runs the post-fill bookkeeping
+  // before the renderer reports the filled values.
   FormData ApplyFormAction(
       FormData form,
       base::FunctionRef<void(const FormData& form)> trigger) {
@@ -322,6 +323,7 @@ class FormFillerTest
             })
         .WillRepeatedly({});
     trigger(form);
+    test_api(autofill_manager()).RunPendingPostFillTasks();
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(form).fields()) {
       if (auto it = std::ranges::find(filled_fields, field.global_id(),
@@ -556,6 +558,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
       form.fields().front().global_id(), FillingProduct::kAutofillAi, &passport,
       AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
                                   form.global_id(),
                                   form.fields().front().global_id());
@@ -698,6 +701,7 @@ TEST_F(FormFillerTest, FillOrPreviewForm_BlocksCreditCardOnInsecureContext) {
       AutofillTriggerSource::kDevtools,
       /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
       FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   form_filler().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
       *form_structure, *trigger_field, AutofillTriggerSource::kPopup,
@@ -729,6 +733,7 @@ TEST_F(FormFillerTest, Refill_BlocksCreditCardOnInsecureContext) {
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   // Simulate the context becoming insecure before the dynamic form refill.
   autofill_client().set_last_committed_primary_main_frame_url(
@@ -2221,6 +2226,7 @@ TEST_F(FormFillerTest, FillOrPreviewForm_WithBlockedFields) {
       *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
       blocked_fields, FillId::Create(), /*forced_fill_values=*/{},
       FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   // Verify that the skip reasons explicitly included being blocked.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
@@ -2258,6 +2264,7 @@ TEST_F(FormFillerTest, Refill_UsesBlockedFields) {
       *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
       blocked_fields, FillId::Create(), /*forced_fill_values=*/{},
       FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   // Append a new field to the form, which will trigger a refill when the form
   // is re-parsed.
@@ -2281,7 +2288,7 @@ TEST_F(FormFillerTest, Refill_UsesBlockedFields) {
           form.fields()[0].global_id(), form.fields()[2].global_id()}));
 
   // Trigger the refill. This happens synchronously due to the use of
-  // TestFromFiller.
+  // TestFormFiller.
   FormsSeen({form});
 }
 
@@ -2340,6 +2347,7 @@ TEST_F(FormFillerTest, InitialFillsHaveDistinctIds) {
       *GetAutofillField(form1.global_id(), form1.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   form_filler().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
       &credit_card, *GetFormStructure(form2),
@@ -2389,6 +2397,7 @@ TEST_F(FormFillerTest, FillAndRefillHaveSameFillId) {
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   check.Call("initial fill complete");
 
   test_api(form).fields().push_back(std::move(cvc_field));
@@ -2475,6 +2484,7 @@ TEST_F(FormFillerTest, ProgrammaticRefillBeforeTimeout) {
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   std::move(run_loop).Run();
   check.Call("initial fill complete");
 
@@ -2483,6 +2493,7 @@ TEST_F(FormFillerTest, ProgrammaticRefillBeforeTimeout) {
   // The first refill. `TestFormFiller::StartRefillTimer()` triggers the refill
   // synchronously instead of after `kWaitTimeForDynamicForms`.
   form_filler().MaybeScheduleProgrammaticRefill(fill_id);
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   check.Call("refill complete");
 
   // The second refill.
@@ -2526,6 +2537,7 @@ TEST_F(FormFillerTest, NoProgrammaticRefillAfterTimeout) {
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   std::move(run_loop).Run();
   check.Call("initial fill complete");
 
@@ -2653,6 +2665,7 @@ TEST_P(RefillTest_SuppressAutomaticRefills, SuppressAutomaticRefills) {
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   check.Call("initial fill complete");
 
   test_api(form).fields().push_back(std::move(cvc_field));
@@ -2721,6 +2734,7 @@ TEST_P(ExpirationDateRefillTest, RefillJavascriptModifiedExpirationDates) {
       form_after_js_modification,
       form_after_js_modification.fields()[2].global_id(), u"04/2999",
       AutofillManagerTestApi::pass_key());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
 
   testing::Mock::VerifyAndClearExpectations(&autofill_driver());
 
@@ -3819,6 +3833,7 @@ TEST_F(FormFillerTest, FillOrPreviewForm_LogsPreFillState) {
       *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
       /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
       FormFiller::RefillOptions::NotRefill());
+  test_api(autofill_manager()).RunPendingPostFillTasks();
   autofill_client().log_router().UnregisterReceiver(&log_receiver);
 
   // Neither field was autofilled before filling and `field(1)` was empty.
