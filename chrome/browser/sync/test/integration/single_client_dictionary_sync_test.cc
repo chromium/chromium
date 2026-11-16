@@ -5,11 +5,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
@@ -44,18 +45,27 @@ class SingleClientDictionarySyncTest
 };
 
 IN_PROC_BROWSER_TEST_P(SingleClientDictionarySyncTest, Sanity) {
+  if (!std::get<0>(GetParam()) &&
+      GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
+    GTEST_SKIP() << "DICTIONARY is not supported in transport mode when "
+                    "kSpellcheckSeparateLocalAndAccountDictionaries is "
+                    "disabled.";
+  }
   ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
   dictionary_helper::LoadDictionaries();
-  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), IsEmpty());
+  ASSERT_THAT(dictionary_helper::GetDictionaryWords(0), IsEmpty());
 
   const std::string word = "foo";
   EXPECT_TRUE(dictionary_helper::AddWord(0, word));
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
   EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), ElementsAre(word));
+  EXPECT_TRUE(dictionary_helper::HasWordInFakeServer(word, GetFakeServer()));
 
   EXPECT_TRUE(dictionary_helper::RemoveWord(0, word));
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
   EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), IsEmpty());
+  EXPECT_FALSE(dictionary_helper::HasWordInFakeServer(word, GetFakeServer()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
