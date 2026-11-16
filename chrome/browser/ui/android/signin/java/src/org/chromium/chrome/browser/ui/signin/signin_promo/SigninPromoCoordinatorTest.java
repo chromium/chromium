@@ -69,6 +69,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -209,11 +210,18 @@ public class SigninPromoCoordinatorTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(RenderTestParams.class)
     public void setUpRenderTest(@SigninAccessPoint int accessPoint, boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        setUpNightMode(nightModeEnabled);
     }
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setUpNightModeTest(boolean nightModeEnabled) {
+        setUpNightMode(nightModeEnabled);
+    }
+
+    private static void setUpNightMode(boolean nightModeEnabled) {
+        // Native initialization may create the global night mode state controller, which applies
+        // the default night mode from the theme setting. Keep both in sync.
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
     }
 
@@ -222,6 +230,8 @@ public class SigninPromoCoordinatorTest {
         if (mPromoCoordinator != null) {
             ThreadUtils.runOnUiThreadBlocking(() -> mPromoCoordinator.destroy());
         }
+        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED);
         ChromeSharedPreferences.getInstance()
