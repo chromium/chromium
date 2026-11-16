@@ -328,6 +328,9 @@ class MockAutofillClient : public TestAutofillClient {
   GetPersonalContextEntityMetadataManager() override {
     return entity_metadata_manager_.get();
   }
+  void ResetPersonalContextEntityMetadataManager() {
+    entity_metadata_manager_.reset();
+  }
   MOCK_METHOD(IdentityCredentialDelegate*,
               GetIdentityCredentialDelegate,
               (),
@@ -4722,6 +4725,13 @@ class AutofillExternalDelegateAttributionVerificationTest
     return fetched;
   }
 
+  // Returns whether `entity` is currently marked as suppressed.
+  bool IsEntitySuppressed(const EntityInstance& entity) {
+    return autofill_client()
+        .GetPersonalContextEntityMetadataManager()
+        ->IsSuppressed(entity);
+  }
+
   MockAutofillAiPersonalContextAccessManager& personal_context_manager() {
     return *personal_context_manager_;
   }
@@ -4846,6 +4856,7 @@ TEST_F(AutofillExternalDelegateAttributionVerificationTest,
   EXPECT_CALL(autofill_manager(), UndoAutofill).Times(0);
   std::move(decision_cb)
       .Run(AutofillClient::AutofillAiVerificationDecision::kConfirm);
+  EXPECT_FALSE(IsEntitySuppressed(passport));
 }
 
 // Tests that dismissing the verification keeps the fill.
@@ -4860,6 +4871,7 @@ TEST_F(AutofillExternalDelegateAttributionVerificationTest,
   EXPECT_CALL(autofill_manager(), UndoAutofill).Times(0);
   std::move(decision_cb)
       .Run(AutofillClient::AutofillAiVerificationDecision::kDismiss);
+  EXPECT_FALSE(IsEntitySuppressed(passport));
 }
 
 // Tests that choosing Undo undoes the fill without suppressing the entity.
@@ -4878,6 +4890,90 @@ TEST_F(AutofillExternalDelegateAttributionVerificationTest,
       .Times(0);
   std::move(decision_cb)
       .Run(AutofillClient::AutofillAiVerificationDecision::kUndo);
+  EXPECT_FALSE(IsEntitySuppressed(passport));
+}
+
+// Tests that choosing Hide undoes the fill and suppresses the entity.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       DecisionHideClearsFillAndSuppressesEntity) {
+  EntityInstance passport =
+      AddPassportWithSources({GURL("https://mail.google.com/")});
+  AutofillClient::AutofillAiVerificationDecisionCallback decision_cb =
+      AcceptAndCaptureDecisionCallback(passport);
+  ASSERT_FALSE(decision_cb.is_null());
+
+  EXPECT_CALL(autofill_manager(),
+              UndoAutofill(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                           IsQueriedFieldId()));
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillAiSuggestionRemovedNotification(Eq(passport), _));
+  std::move(decision_cb)
+      .Run(AutofillClient::AutofillAiVerificationDecision::kHide);
+  EXPECT_TRUE(IsEntitySuppressed(passport));
+}
+
+// Tests that choosing Hide when suppression is disabled only undoes the fill.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       DecisionHideWithSuppressionDisabledOnlyClearsFill) {
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(features::kAutofillAmbientAutofillSuppression);
+  EntityInstance passport =
+      AddPassportWithSources({GURL("https://mail.google.com/")});
+  AutofillClient::AutofillAiVerificationDecisionCallback decision_cb =
+      AcceptAndCaptureDecisionCallback(passport);
+  ASSERT_FALSE(decision_cb.is_null());
+
+  EXPECT_CALL(autofill_manager(),
+              UndoAutofill(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                           IsQueriedFieldId()));
+  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
+      .Times(0);
+  std::move(decision_cb)
+      .Run(AutofillClient::AutofillAiVerificationDecision::kHide);
+  EXPECT_FALSE(IsEntitySuppressed(passport));
+}
+
+// Tests that choosing Hide when suppression manager is null only undoes the
+// fill.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       DecisionHideWithoutSuppressionManagerOnlyClearsFill) {
+  autofill_client().ResetPersonalContextEntityMetadataManager();
+  EntityInstance passport =
+      AddPassportWithSources({GURL("https://mail.google.com/")});
+  AutofillClient::AutofillAiVerificationDecisionCallback decision_cb =
+      AcceptAndCaptureDecisionCallback(passport);
+  ASSERT_FALSE(decision_cb.is_null());
+
+  EXPECT_CALL(autofill_manager(),
+              UndoAutofill(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                           IsQueriedFieldId()));
+  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
+      .Times(0);
+  std::move(decision_cb)
+      .Run(AutofillClient::AutofillAiVerificationDecision::kHide);
+}
+
+// Tests that choosing Hide when the entity is no longer in the
+// `EntityDataManager` still undoes the fill, but does not suppress the
+// entity.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       DecisionHideWhenEntityMissingFromDataManagerUndoesWithoutSuppressing) {
+  EntityInstance passport =
+      AddPassportWithSources({GURL("https://mail.google.com/")});
+  AutofillClient::AutofillAiVerificationDecisionCallback decision_cb =
+      AcceptAndCaptureDecisionCallback(passport);
+  ASSERT_FALSE(decision_cb.is_null());
+
+  autofill_client().GetEntityDataManager()->OnMaskedEntityTypeEvicted(
+      personal_context_manager(), passport.type());
+  EXPECT_CALL(autofill_manager(),
+              UndoAutofill(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                           IsQueriedFieldId()));
+  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
+      .Times(0);
+  std::move(decision_cb)
+      .Run(AutofillClient::AutofillAiVerificationDecision::kHide);
+  EXPECT_FALSE(IsEntitySuppressed(passport));
 }
 
 // Tests that running the decision callback after the delegate was destroyed
@@ -4896,6 +4992,7 @@ TEST_F(AutofillExternalDelegateAttributionVerificationTest,
   EXPECT_CALL(autofill_manager(), UndoAutofill).Times(0);
   std::move(decision_cb)
       .Run(AutofillClient::AutofillAiVerificationDecision::kHide);
+  EXPECT_FALSE(IsEntitySuppressed(passport));
 }
 
 // Tests that for an entity fetched asynchronously, the entity is filled,
