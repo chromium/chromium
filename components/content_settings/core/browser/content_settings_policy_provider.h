@@ -17,6 +17,10 @@
 
 class PrefService;
 
+namespace base {
+class ListValue;
+}  // namespace base
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -33,6 +37,16 @@ class PolicyProvider : public ObservableProvider {
 
   ~PolicyProvider() override;
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Parses a list of JSON-encoded `{pattern, filter}` strings (from the
+  // `AutoSelectCertificateForUrls` or
+  // `DeviceLoginScreenAutoSelectCertificateForUrls` policies) and appends
+  // `ContentSettingsType::AUTO_SELECT_CERTIFICATE` entries to `value_map`.
+  // Callers should clear existing `AUTO_SELECT_CERTIFICATE` entries from
+  // `value_map` first (or pass a fresh map) if they want to replace them.
+  static void PopulateAutoSelectCertificateSettings(
+      const base::ListValue& pref_list,
+      OriginValueMap& value_map) EXCLUSIVE_LOCKS_REQUIRED(value_map.GetLock());
 
   // ProviderInterface implementations.
   std::unique_ptr<RuleIterator> GetRuleIterator(

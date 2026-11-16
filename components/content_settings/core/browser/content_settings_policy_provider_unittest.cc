@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/synchronization/lock.h"
 #include "base/values.h"
+#include "components/content_settings/core/browser/content_settings_origin_value_map.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -107,6 +109,33 @@ TEST_F(ContentSettingsPolicyProviderTest, ManagedLegacyCookieScopeForDomains) {
                                    GURL("https://other.com"),
                                    ContentSettingsType::LEGACY_COOKIE_SCOPE,
                                    /*include_incognito=*/false));
+}
+
+TEST_F(ContentSettingsPolicyProviderTest,
+       PopulateAutoSelectCertificateSettings) {
+  base::ListValue pref_list;
+  pref_list.Append(
+      R"({"pattern":"https://[*.]example.com","filter":{"ISSUER":{"CN":"Test CA"}}})");
+  pref_list.Append("invalid-json");
+
+  OriginValueMap value_map;
+  base::AutoLock auto_lock(value_map.GetLock());
+  PolicyProvider::PopulateAutoSelectCertificateSettings(pref_list, value_map);
+
+  const base::Value* setting = value_map.GetValue(
+      GURL("https://sub.example.com"), GURL("https://sub.example.com"),
+      ContentSettingsType::AUTO_SELECT_CERTIFICATE);
+  ASSERT_TRUE(setting);
+  ASSERT_TRUE(setting->is_dict());
+  const base::ListValue* filters = setting->GetDict().FindList("filters");
+  ASSERT_TRUE(filters);
+  ASSERT_EQ(1u, filters->size());
+  EXPECT_EQ("Test CA",
+            *(*filters)[0].GetDict().FindStringByDottedPath("ISSUER.CN"));
+
+  EXPECT_FALSE(
+      value_map.GetValue(GURL("https://other.com"), GURL("https://other.com"),
+                         ContentSettingsType::AUTO_SELECT_CERTIFICATE));
 }
 
 }  // namespace

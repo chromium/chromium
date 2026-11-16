@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -30,7 +31,6 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "base/values.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -414,4 +414,19 @@ TEST_F(AutoSelectCertificateTest, MatchingCertOnDifferentUrlDoesntSelectCerts) {
   EXPECT_TRUE(matching_certs_list.empty());
   EXPECT_THAT(nonmatching_certs_list,
               UnorderedElementsAre(CertEq(client_1()), CertEq(client_2())));
+}
+
+TEST_F(AutoSelectCertificateTest, DirectFilterListOverloadSelectsMatchingCert) {
+  net::ClientCertIdentityList client_certs_list = GetDefaultClientCertList();
+
+  base::ListValue filters;
+  filters.Append(CreateFilterValue("B CA", ""));
+
+  net::ClientCertIdentityList matching_certs_list, nonmatching_certs_list;
+  enterprise_util::AutoSelectCertificates(filters, std::move(client_certs_list),
+                                          &matching_certs_list,
+                                          &nonmatching_certs_list);
+
+  EXPECT_THAT(matching_certs_list, UnorderedElementsAre(CertEq(client_1())));
+  EXPECT_THAT(nonmatching_certs_list, UnorderedElementsAre(CertEq(client_2())));
 }

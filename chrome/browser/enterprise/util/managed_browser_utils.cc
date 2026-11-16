@@ -266,21 +266,33 @@ GURL GetRequestingUrl(const net::HostPortPair host_port_pair) {
 }
 
 void AutoSelectCertificates(
+    const base::ListValue& auto_selection_filters,
+    net::ClientCertIdentityList client_certs,
+    net::ClientCertIdentityList* matching_client_certs,
+    net::ClientCertIdentityList* nonmatching_client_certs) {
+  CHECK(matching_client_certs);
+  CHECK(nonmatching_client_certs);
+  matching_client_certs->clear();
+  nonmatching_client_certs->clear();
+  for (auto& client_cert : client_certs) {
+    if (CertMatchesSelectionFilters(*client_cert, auto_selection_filters)) {
+      matching_client_certs->push_back(std::move(client_cert));
+    } else {
+      nonmatching_client_certs->push_back(std::move(client_cert));
+    }
+  }
+}
+
+void AutoSelectCertificates(
     Profile* profile,
     const GURL& requesting_url,
     net::ClientCertIdentityList client_certs,
     net::ClientCertIdentityList* matching_client_certs,
     net::ClientCertIdentityList* nonmatching_client_certs) {
-  matching_client_certs->clear();
-  nonmatching_client_certs->clear();
   const base::ListValue auto_selection_filters =
       GetCertAutoSelectionFilters(profile, requesting_url);
-  for (auto& client_cert : client_certs) {
-    if (CertMatchesSelectionFilters(*client_cert, auto_selection_filters))
-      matching_client_certs->push_back(std::move(client_cert));
-    else
-      nonmatching_client_certs->push_back(std::move(client_cert));
-  }
+  AutoSelectCertificates(auto_selection_filters, std::move(client_certs),
+                         matching_client_certs, nonmatching_client_certs);
 }
 
 bool IsMachinePolicyPref(const std::string& pref_name) {

@@ -570,22 +570,10 @@ void PolicyProvider::GetContentSettingsFromPreferences() {
   }
 }
 
-void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
-  constexpr const char* pref_name = prefs::kManagedAutoSelectCertificateForUrls;
-  if (!prefs_->HasPrefPath(pref_name)) {
-    VLOG(2) << "Skipping unset preference: " << pref_name;
-    return;
-  }
-
-  const PrefService::Preference* pref = prefs_->FindPreference(pref_name);
-  DCHECK(pref);
-  DCHECK(!pref->HasUserSetting());
-  DCHECK(!pref->HasExtensionSetting());
-
-  if (!pref->GetValue()->is_list()) {
-    NOTREACHED();
-  }
-
+// static
+void PolicyProvider::PopulateAutoSelectCertificateSettings(
+    const base::ListValue& pref_list,
+    OriginValueMap& value_map) {
   // Parse the list of pattern filter strings. A pattern filter string has
   // the following JSON format:
   //
@@ -604,9 +592,9 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
   //   }
   // }
   std::unordered_map<std::string, base::DictValue> filters_map;
-  for (const auto& pattern_filter_str : pref->GetValue()->GetList()) {
+  for (const auto& pattern_filter_str : pref_list) {
     if (!pattern_filter_str.is_string()) {
-      NOTREACHED();
+      continue;
     }
 
     std::optional<base::DictValue> pattern_filter = base::JSONReader::ReadDict(
@@ -637,10 +625,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
     filter_list->Append(filter->Clone());
   }
 
-  for (const auto& it : filters_map) {
-    const std::string& pattern_str = it.first;
-    const base::DictValue& setting = it.second;
-
+  for (auto& [pattern_str, setting] : filters_map) {
     ContentSettingsPattern pattern =
         ContentSettingsPattern::FromString(pattern_str);
     // Ignore invalid patterns.
@@ -650,10 +635,30 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
       continue;
     }
 
-    value_map_.SetValue(pattern, ContentSettingsPattern::Wildcard(),
-                        ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-                        base::Value(setting.Clone()), {});
+    value_map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
+                       ContentSettingsType::AUTO_SELECT_CERTIFICATE,
+                       base::Value(std::move(setting)), {});
   }
+}
+
+void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
+  constexpr const char* pref_name = prefs::kManagedAutoSelectCertificateForUrls;
+  if (!prefs_->HasPrefPath(pref_name)) {
+    VLOG(2) << "Skipping unset preference: " << pref_name;
+    return;
+  }
+
+  const PrefService::Preference* pref = prefs_->FindPreference(pref_name);
+  DCHECK(pref);
+  DCHECK(!pref->HasUserSetting());
+  DCHECK(!pref->HasExtensionSetting());
+
+  if (!pref->GetValue()->is_list()) {
+    NOTREACHED();
+  }
+
+  PopulateAutoSelectCertificateSettings(pref->GetValue()->GetList(),
+                                        value_map_);
 }
 
 void PolicyProvider::ReadManagedDefaultSettings() {
