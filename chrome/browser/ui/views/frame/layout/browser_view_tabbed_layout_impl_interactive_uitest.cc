@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -51,7 +50,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/user_prefs/user_prefs.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -86,15 +84,7 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
       : render_mode_resetter_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             disable_animations
                 ? gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED
-                : gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kVerifyPixels)) {
-      // TODO(crbug.com/579025166): Update pixel test baselines for
-      // OrganizerPanel.
-      scoped_feature_list_.InitAndDisableFeature(
-          organizer_panel::kOrganizerPanel);
-    }
-  }
+                : gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
 
   ~BrowserViewTabbedLayoutImplUiTest() override = default;
 
@@ -406,7 +396,6 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   const gfx::AnimationTestApi::RenderModeResetter render_mode_resetter_;
 };
 

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -84,12 +83,8 @@ class BrowserViewLayoutDelegateImplBrowsertest
       public testing::WithParamInterface<WindowState> {
  public:
   BrowserViewLayoutDelegateImplBrowsertest() {
-    // TODO(crbug.com/579025166): Update pixel test baselines for
-    // OrganizerPanel.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{::features::kWebAppInstallDialog,
-                               organizer_panel::kOrganizerPanel});
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kWebAppInstallDialog);
   }
   ~BrowserViewLayoutDelegateImplBrowsertest() override = default;
 
