@@ -477,6 +477,10 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
+  // When metadata arrives, hydrates the context metadata (input, file/tab
+  // attachments, tool/model modes) handed off from the browser here. Upload
+  // statuses arrive separately via `onContextualInputStatusChanged()`; this is
+  // purely for updating metadata or logging errors.
   addSearchContext(context: SearchContext|null) {
     if (context) {
       if (context.input.length > 0) {
@@ -556,6 +560,9 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
+    // `fileAttachment` from `addSearchContext()` already carries the file's
+    // metadata, so create the `ComposeboxFile` chip unless an early async
+    // upload status already reported a terminal failure.
     const pendingStatus = this.takeEarlyUploadStatus_(fileAttachment.uuid);
     if (pendingStatus === null) {
       return;
@@ -581,6 +588,9 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     const earlyStatus = this.earlyTerminalUploads.get(uuid);
     this.earlyTerminalUploads.delete(uuid);
     if (earlyStatus === undefined) {
+      // Having no early status only means `onContextualInputStatusChanged()`
+      // updates have not arrived yet (not that upload/file data is missing),
+      // so return `kNotUploaded` to create `ComposeboxFile`.
       return ContextUploadStatus.kNotUploaded;
     }
     if (!isContextUploadStatusTerminal(earlyStatus)) {
