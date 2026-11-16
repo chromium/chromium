@@ -1346,6 +1346,69 @@ class UploadSimpleTestResultsTest(unittest.TestCase):
     finally:
       shutil.rmtree(tempdir)
 
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(run_performance_tests, 'write_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.crossbench_result_converter, 'convert'
+  )
+  def testCrossbenchTestFailureWithNonAsciiLogsOnLegacyEncoding(
+    self, mock_convert, mock_write_results, mock_upload
+  ):
+    del mock_convert, mock_write_results, mock_upload
+    tempdir = tempfile.mkdtemp()
+    try:
+
+      def write_utf8_log(unused_cmd, handle, env=None):
+        del env
+        # Write raw UTF-8 bytes directly to the file descriptor (matching
+        # subprocess stdout in production) containing bytes 0x90 (in U+1F310
+        # GLOBE WITH MERIDIANS) and 0x9d (in U+274C CROSS MARK) that are
+        # undefined in Windows cp1252. Note: on Linux bots (where the default
+        # locale is UTF-8), the read-side open(..., encoding='utf-8') fix is a
+        # no-op and primarily exercised on Windows bots, while cp1252_stdout
+        # below exercises the stdout reconfigure(..., errors='backslashreplace')
+        # path across all platforms.
+        os.write(
+          handle.fileno(),
+          (
+            '🌐 STARTING BROWSER Binary: chrome.exe\n'
+            '❌ BROWSER FAILED: cb.results\n'
+          ).encode('utf-8'),
+        )
+        return 3
+
+      output_path = os.path.join(tempdir, 'output.json')
+      fake_args = (
+        ['run_performance_tests.py']
+        + _create_crossbench_args()
+        + [
+          f'--isolated-script-test-output={output_path}',
+          '--ignore-benchmark-exit-code',
+        ]
+      )
+      raw_stdout = io.BytesIO()
+      cp1252_stdout = io.TextIOWrapper(
+        raw_stdout, encoding='cp1252', errors='strict'
+      )
+      with (
+        mock.patch.object(
+          run_performance_tests.test_env,
+          'run_command_output_to_handle',
+          side_effect=write_utf8_log,
+        ),
+        mock.patch.object(run_performance_tests.sys, 'stdout', cp1252_stdout),
+      ):
+        rc = run_performance_tests.main(fake_args)
+
+      cp1252_stdout.flush()
+      printed = raw_stdout.getvalue().decode('cp1252')
+      self.assertEqual(rc, 0)
+      self.assertIn(r'\U0001f310 STARTING BROWSER Binary: chrome.exe', printed)
+      self.assertIn(r'\u274c BROWSER FAILED: cb.results', printed)
+      self.assertNotIn('infrastructure error', printed)
+    finally:
+      shutil.rmtree(tempdir)
+
 
 if __name__ == '__main__':
   unittest.main()

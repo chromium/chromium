@@ -1329,7 +1329,9 @@ class CrossbenchTest(object):
       if return_code and os.path.exists(output_paths.logs):
         # To avoid printing too large log file, we print the last 100 lines.
         bottom_of_log = deque(maxlen=100)
-        with open(output_paths.logs, 'r') as handle:
+        with open(
+          output_paths.logs, 'r', encoding='utf-8', errors='replace'
+        ) as handle:
           for line in handle:
             if line.strip():
               bottom_of_log.append(line.replace('\n', ''))
@@ -1695,7 +1697,7 @@ def get_browser_versions(isolated_out_dir):
 
 
 def main(sys_args):
-  sys.stdout.reconfigure(line_buffering=True)
+  sys.stdout.reconfigure(line_buffering=True, errors='backslashreplace')
   _set_cwd()
   args = sys_args[1:]  # Skip program name.
   options = parse_arguments(args)
