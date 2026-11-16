@@ -8,6 +8,7 @@
 #import <optional>
 
 @class LocationBarBadgeConfiguration;
+@class LocationBarBadgeItem;
 enum class ContextualPanelItemType;
 
 // TODO(crbug.com/574559217): Refactor function names to not use "entrypoint".
@@ -17,6 +18,11 @@ enum class ContextualPanelItemType;
 
 // Update the consumer with a new badge configuration.
 - (void)setBadgeConfig:(LocationBarBadgeConfiguration*)config;
+
+// Updates the consumer with the active list of badge items to display. Only the
+// first item is rendered, and an empty array hides the badge. Mutually
+// exclusive with `-setBadgeConfig:`.
+- (void)setBadgeItems:(NSArray<LocationBarBadgeItem*>*)badgeItems;
 
 // Notify the consumer to show the badge.
 - (void)showBadge;
