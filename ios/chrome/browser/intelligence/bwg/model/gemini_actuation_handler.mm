@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_data_types.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_chat_message_data_types.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
@@ -417,6 +418,9 @@ void ForwardNavigationConfirmation(
 
   // Map from task IDs to WebState IDs.
   std::map<actor::ActorTaskId, web::WebStateID> _taskToWebStateIDMap;
+
+  // Identifier of the active `WebState` when the user last sent a chat message.
+  web::WebStateID _lastPromptedWebStateID;
 }
 
 #pragma mark - Public
@@ -447,6 +451,7 @@ void ForwardNavigationConfirmation(
   }
   _webStateList = nullptr;
   _taskToWebStateIDMap.clear();
+  _lastPromptedWebStateID = web::WebStateID();
 }
 
 - (void)dealloc {
@@ -460,6 +465,13 @@ void ForwardNavigationConfirmation(
 - (void)handleChatMessageRequest:(GeminiChatMessageRequest*)request
                       completion:(void (^)(GeminiChatMessageResponse* response))
                                      completion {
+  web::WebState* activeWebState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  // TODO(crbug.com/579485200): Reset `_lastPromptedWebStateID` on new chat or
+  // conversation switch.
+  _lastPromptedWebStateID = activeWebState
+                                ? activeWebState->GetUniqueIdentifier()
+                                : web::WebStateID();
   // TODO(crbug.com/567037227): Answer pending clarification requests.
   // TODO(crbug.com/567036739): Stop paused tasks before sending.
   completion([[GeminiChatMessageResponse alloc] initWithShouldConsume:NO]);
@@ -473,10 +485,18 @@ void ForwardNavigationConfirmation(
     return taskID;
   }
 
-  // TODO(crbug.com/510404682): Don't use the active WebState, instead get the
-  // tab ID from the Gemini SDK.
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  if (!activeWebState) {
+  // TODO(crbug.com/579485200): Resolve the tab across all Browser windows on
+  // iPad in case the user drags the tab to another window before the task
+  // starts.
+  web::WebState* targetWebState = GetWebState(
+      _webStateList,
+      WebStateSearchCriteria{.identifier = _lastPromptedWebStateID});
+  if (!targetWebState) {
+    // TODO(crbug.com/579485200): Update fallback behavior based on product
+    // decision.
+    targetWebState = _webStateList->GetActiveWebState();
+  }
+  if (!targetWebState) {
     return taskID;
   }
 
@@ -486,8 +506,8 @@ void ForwardNavigationConfirmation(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                             /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false);
-  _actorService->AddControlledWebState(taskID, activeWebState);
-  _taskToWebStateIDMap[taskID] = activeWebState->GetUniqueIdentifier();
+  _actorService->AddControlledWebState(taskID, targetWebState);
+  _taskToWebStateIDMap[taskID] = targetWebState->GetUniqueIdentifier();
   return taskID;
 }
 

@@ -38,6 +38,9 @@ namespace {
 // The serialized identifier of the fixture's fake WebState.
 constexpr int32_t kFakeWebStateID = 123;
 
+// The serialized identifier of a secondary fake WebState.
+constexpr int32_t kOtherFakeWebStateID = 456;
+
 // Message carried by the confirmation yield actions under test.
 NSString* const kConfirmationMessage = @"Please confirm this purchase.";
 
@@ -189,6 +192,50 @@ TEST_F(GeminiActuationHandlerTest, CreateTask) {
   GeminiActuationHandler* handler = CreateHandler();
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
   EXPECT_FALSE(task_id.is_null());
+}
+
+// Tests that `createTaskWithTitle:` attaches the task to the tab that was
+// active when `handleChatMessageRequest:completion:` was called, even if the
+// user switches tabs before the task is created.
+TEST_F(GeminiActuationHandlerTest,
+       CreateTask_AttachesToRememberedTabAfterTabSwitch) {
+  GeminiActuationHandler* handler = CreateHandler();
+
+  // Send a chat message while `fake_web_state_` (`kFakeWebStateID`) is active.
+  GeminiChatMessageRequest* chat_request =
+      [[GeminiChatMessageRequest alloc] initWithText:@"Start task"
+                                           sessionID:@"session_id"
+                                      conversationID:@"conversation_id"];
+  base::test::TestFuture<GeminiChatMessageResponse*> chat_future;
+  base::test::TestFuture<GeminiChatMessageResponse*>* chat_future_ptr =
+      &chat_future;
+  [handler handleChatMessageRequest:chat_request
+                         completion:^(GeminiChatMessageResponse* response) {
+                           chat_future_ptr->SetValue(response);
+                         }];
+  ASSERT_TRUE(chat_future.IsReady());
+
+  // Insert and activate a second tab before the server creates the task.
+  auto other_web_state = std::make_unique<web::FakeWebState>(
+      web::WebStateID::FromSerializedValue(kOtherFakeWebStateID));
+  web::FakeWebState* other_web_state_ptr = other_web_state.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(other_web_state),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
+  ASSERT_EQ(other_web_state_ptr,
+            browser_->GetWebStateList()->GetActiveWebState());
+
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  ASSERT_FALSE(task_id.is_null());
+
+  EXPECT_EQ(
+      fake_web_state_.get(),
+      actor_service_->GetWebStateForID(
+          web::WebStateID::FromSerializedValue(kFakeWebStateID), task_id));
+  EXPECT_EQ(
+      nullptr,
+      actor_service_->GetWebStateForID(
+          web::WebStateID::FromSerializedValue(kOtherFakeWebStateID), task_id));
 }
 
 // Test that chat messages are not consumed when there is no task.
