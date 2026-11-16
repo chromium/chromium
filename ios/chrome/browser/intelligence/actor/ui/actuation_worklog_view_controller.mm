@@ -44,7 +44,8 @@ using intelligence::actor::kSpacingLarge;
 
 @interface ActuationWorklogViewController () <
     ActuationInterventionViewDelegate,
-    ActuationWorklogCompactViewDelegate>
+    ActuationWorklogCompactViewDelegate,
+    ActuationWorklogViewDelegate>
 @end
 
 @implementation ActuationWorklogViewController {
@@ -200,12 +201,17 @@ using intelligence::actor::kSpacingLarge;
 #pragma mark - ActuationWorklogItemViewDelegate
 
 - (void)worklogItemViewDidTapItem:(ActuationWorklogItemView*)itemView {
-  if (self.displayMode == ActuationWorklogDisplayModeExpanded) {
-    [_fullView handleTapOnView:itemView];
-  }
+  // Compact worklog items are not collapsible.
 }
 
 - (void)worklogItemView:(ActuationWorklogItemView*)itemView
+    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
+  [self.suggestionsPresenter showSuggestionsPickerForAccessory:accessoryItem];
+}
+
+#pragma mark - ActuationWorklogViewDelegate
+
+- (void)worklogView:(ActuationWorklogView*)worklogView
     didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
   [self.suggestionsPresenter showSuggestionsPickerForAccessory:accessoryItem];
 }
@@ -256,7 +262,7 @@ using intelligence::actor::kSpacingLarge;
   [self.view addSubview:_scrollView];
 
   _fullView = [[ActuationWorklogView alloc] initWithFrame:CGRectZero];
-  _fullView.itemDelegate = self;
+  _fullView.delegate = self;
   _fullView.translatesAutoresizingMaskIntoConstraints = NO;
   [_scrollView addSubview:_fullView];
 

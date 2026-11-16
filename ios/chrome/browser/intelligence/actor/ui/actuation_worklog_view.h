@@ -10,14 +10,25 @@
 @class ActuationWorklogAccessoryItem;
 @class ActuationWorklogChip;
 @class ActuationWorklogItem;
-@class ActuationWorklogItemView;
-@protocol ActuationWorklogItemViewDelegate;
+@class ActuationWorklogView;
+
+// Delegate for user interaction events on `ActuationWorklogView`.
+@protocol ActuationWorklogViewDelegate <NSObject>
+
+// Called when an accessory card inside the worklog is tapped.
+- (void)worklogView:(ActuationWorklogView*)worklogView
+    didTapAccessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem;
+
+@end
 
 // View displaying the list of actuation steps using a timeline.
 @interface ActuationWorklogView : UIView
 
-// Delegate for receiving interaction events from item views.
-@property(nonatomic, weak) id<ActuationWorklogItemViewDelegate> itemDelegate;
+// Delegate receiving interaction events.
+@property(nonatomic, weak) id<ActuationWorklogViewDelegate> delegate;
+
+// Whether the worklog is collapsed to its first and active items.
+@property(nonatomic, assign, getter=isCollapsed) BOOL collapsed;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
@@ -36,10 +47,6 @@
 // Sets or clears the current actor tool chip at the end of the timeline.
 // Passing nil hides the chip.
 - (void)setChip:(ActuationWorklogChip*)chip;
-
-// Handles a tap event on `itemView`, toggling collapse if it is the header
-// item.
-- (void)handleTapOnView:(ActuationWorklogItemView*)itemView;
 
 // Resets all timeline items, chip, and collapse state.
 - (void)reset;

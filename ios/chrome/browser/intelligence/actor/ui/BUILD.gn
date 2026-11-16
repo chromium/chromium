@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "actuation_intervention_view_unittest.mm",
     "actuation_worklog_view_controller_unittest.mm",
     "actuation_worklog_view_data_builders_unittest.mm",
+    "actuation_worklog_view_unittest.mm",
   ]
   deps = [
     ":ui",
