@@ -20586,6 +20586,26 @@
             ]
         }
     ],
+    "V8ScavengerDirectOldPromotionsOnHighSurvival": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261116",
+                    "enable_features": [
+                        "V8Flag_scavenger_direct_old_allocation"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8SideStepTransitions": [
         {
             "platforms": [
