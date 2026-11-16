@@ -5,10 +5,15 @@
 #include "components/manta/anchovy/anchovy_proto_helper.h"
 
 #include <cmath>
+#include <optional>
+#include <set>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/manta/anchovy/anchovy_requests.h"
 #include "components/manta/manta_service_callbacks.h"
@@ -41,31 +46,90 @@ std::string_view AnchovyDescriptionTypeToString(
   }
   return "";
 }
-}  // namespace
 
 constexpr char kAnchovyDescriptionsContextTypeUrl[] =
     "type.googleapis.com/image_repository.api.ImageDescriptionContext";
 
-proto::Request AnchovyProtoHelper::ComposeRequest(
-    const ImageDescriptionRequest& request) {
+// Initializes the shared feature name and language context for an Anchovy
+// image description request.
+proto::Request CreateBaseAnchovyRequest(std::string_view lang_tag) {
   proto::Request request_proto;
   request_proto.set_feature_name(
       proto::FeatureName::ACCESSIBILITY_IMAGE_DESCRIPTION);
 
   proto::AnchovyContext context;
-  context.set_lang_id(request.lang_tag);
+  context.set_lang_id(lang_tag);
   context.mutable_optional_inputs()->set_input1(true);
 
-  // Add model specific options to the request.
-  request_proto.mutable_request_config()
-      ->mutable_specific_options()
-      ->set_type_url(kAnchovyDescriptionsContextTypeUrl);
-  request_proto.mutable_request_config()->mutable_specific_options()->set_value(
-      context.SerializeAsString());
+  // Add model-specific context options shared across all images in the request.
+  auto* specific_options =
+      request_proto.mutable_request_config()->mutable_specific_options();
+  specific_options->set_type_url(kAnchovyDescriptionsContextTypeUrl);
+  specific_options->set_value(context.SerializeAsString());
+  return request_proto;
+}
+
+// Validates and converts a single server `OutputData` entry into the parsed
+// annotation dictionary format (`{"text", "type", "score"}`), returning
+// `std::nullopt` when the entry is missing required fields or has an
+// unrecognized description type.
+std::optional<base::DictValue> ParseAnchovyOutputEntry(
+    const proto::OutputData& data) {
+  if (!data.has_custom() || !std::isfinite(data.score())) {
+    return std::nullopt;
+  }
+
+  // Parse `custom.value` directly without inspecting `custom.type_url`, since
+  // the server sets its internal protobuf type name rather than the client
+  // mirror name.
+  proto::AnchovyDescription description;
+  if (!description.ParseFromString(data.custom().value()) ||
+      description.text().empty()) {
+    return std::nullopt;
+  }
+
+  std::string_view type = AnchovyDescriptionTypeToString(description.type());
+  if (type.empty()) {
+    return std::nullopt;
+  }
+
+  return base::DictValue()
+      .Set("text", description.text())
+      .Set("type", type)
+      .Set("score", data.score());
+}
+
+}  // namespace
+
+proto::Request AnchovyProtoHelper::ComposeRequest(
+    const ImageDescriptionRequest& request) {
+  proto::Request request_proto = CreateBaseAnchovyRequest(request.lang_tag);
 
   auto* input_data = request_proto.add_input_data();
   input_data->mutable_image()->set_serialized_bytes(
       std::string(request.image_bytes->begin(), request.image_bytes->end()));
+
+  return request_proto;
+}
+
+proto::Request AnchovyProtoHelper::ComposeRequest(
+    const ImageDescriptionBatchRequest& request) {
+  proto::Request request_proto = CreateBaseAnchovyRequest(request.lang_tag);
+
+  std::set<std::string_view> seen_tags;
+  for (const auto& entry : request.images) {
+    // Callers guarantee non-empty image payloads and unique, non-empty UTF-8
+    // correlation tags.
+    CHECK(!entry.tag.empty());
+    CHECK(!entry.image_bytes->empty());
+    CHECK(base::IsStringUTF8AllowingNoncharacters(entry.tag));
+    CHECK(seen_tags.insert(entry.tag).second);
+
+    auto* input_data = request_proto.add_input_data();
+    input_data->set_tag(entry.tag);
+    input_data->mutable_image()->set_serialized_bytes(
+        entry.image_bytes->data(), entry.image_bytes->size());
+  }
 
   return request_proto;
 }
@@ -84,24 +148,9 @@ void AnchovyProtoHelper::HandleImageDescriptionResponse(
 
   base::ListValue results;
   for (const auto& data : manta_response->output_data()) {
-    // Skip output entries without a valid serialized AnchovyDescription proto,
-    // non-finite score, empty text, or an unrecognized description type.
-    if (!data.has_custom() || !std::isfinite(data.score())) {
-      continue;
+    if (std::optional<base::DictValue> entry = ParseAnchovyOutputEntry(data)) {
+      results.Append(std::move(*entry));
     }
-    proto::AnchovyDescription description;
-    if (!description.ParseFromString(data.custom().value()) ||
-        description.text().empty()) {
-      continue;
-    }
-    std::string_view type = AnchovyDescriptionTypeToString(description.type());
-    if (type.empty()) {
-      continue;
-    }
-    results.Append(base::DictValue()
-                       .Set("text", description.text())
-                       .Set("type", type)
-                       .Set("score", data.score()));
   }
 
   // An empty response (or one with no valid entries) is still an acceptable
@@ -113,6 +162,39 @@ void AnchovyProtoHelper::HandleImageDescriptionResponse(
 
   std::move(callback).Run(base::DictValue().Set("results", std::move(results)),
                           std::move(manta_status));
+}
+
+void AnchovyProtoHelper::HandleImageDescriptionsResponse(
+    MantaGenericCallback callback,
+    std::unique_ptr<proto::Response> manta_response,
+    MantaStatus manta_status) {
+  if (manta_status.status_code != MantaStatusCode::kOk) {
+    CHECK(manta_response == nullptr);
+    std::move(callback).Run(base::DictValue(), std::move(manta_status));
+    return;
+  }
+
+  CHECK(manta_response);
+
+  base::DictValue results_by_tag;
+  for (const auto& data : manta_response->output_data()) {
+    // Batched responses require a valid non-empty UTF-8 tag to attribute each
+    // annotation back to its requested image (`EnsureList` requires UTF-8).
+    if (data.tag().empty() ||
+        !base::IsStringUTF8AllowingNoncharacters(data.tag())) {
+      continue;
+    }
+    if (std::optional<base::DictValue> entry = ParseAnchovyOutputEntry(data)) {
+      results_by_tag.EnsureList(data.tag())->Append(std::move(*entry));
+    }
+  }
+
+  // Always include `kResultsByTagKey` on `kOk` (even if empty when all
+  // candidates were filtered out) so callers receive a uniform dictionary
+  // schema.
+  std::move(callback).Run(
+      base::DictValue().Set(kResultsByTagKey, std::move(results_by_tag)),
+      std::move(manta_status));
 }
 
 }  // namespace manta::anchovy

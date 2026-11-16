@@ -121,7 +121,7 @@ message Request {
 }
 
 message OutputData {
-  reserved 4;
+  reserved 4, 7;
   oneof output_data {
     string text = 1;
     Image image = 2;
@@ -133,6 +133,8 @@ message OutputData {
   optional uint32 generation_seed = 6;
 
   optional string generative_prompt = 8;
+
+  optional string tag = 9;
 }
 
 enum FilteredReason {
