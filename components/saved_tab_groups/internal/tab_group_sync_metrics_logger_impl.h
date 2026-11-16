@@ -15,7 +15,6 @@
 #include "base/time/default_clock.h"
 #include "components/saved_tab_groups/public/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
@@ -62,8 +61,8 @@ class TabGroupSyncMetricsLoggerImpl : public TabGroupSyncMetricsLogger {
       const std::vector<SavedTabGroup>& saved_tab_groups,
       const std::vector<bool>& is_remote) override;
   void RecordTabGroupDeletionsOnStartup(size_t group_count) override;
-  void RecordMetricsOnSignin(const std::vector<SavedTabGroup>& saved_tab_groups,
-                             signin::ConsentLevel consent_level) override;
+  void RecordMetricsOnSignin(
+      const std::vector<SavedTabGroup>& saved_tab_groups) override;
   void RecordSavedTabGroupNavigation(const LocalTabID& id,
                                      const GURL& url,
                                      SavedTabGroupType type,

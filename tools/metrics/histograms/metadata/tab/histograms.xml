@@ -1164,6 +1164,29 @@ chromium-metrics-reviews@google.com.
   <token key="TabGroupFocusAnimation" variants="TabGroupFocusAnimation"/>
 </histogram>
 
+<histogram name="TabGroups.OnSignin.{GroupsOrTabs}" units="count"
+    expires_after="2027-04-11">
+  <owner>treib@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the number of {GroupsOrTabs}, at the moment when the user is signing
+    in to Chrome. Android and iOS only.
+  </summary>
+  <token key="GroupsOrTabs">
+    <variant name="ClosedTabGroupCount" summary="closed tab groups"/>
+    <variant name="ClosedTabGroupTabsCount"
+        summary="tabs that are part of a closed tab group"/>
+    <variant name="OpenTabGroupCount" summary="open tab groups"/>
+    <variant name="OpenTabGroupTabsCount"
+        summary="tabs that are part of an open tab group"/>
+    <variant name="TotalTabGroupCount"
+        summary="all tab groups (open or closed)"/>
+    <variant name="TotalTabGroupTabsCount"
+        summary="all tabs that are part of a tab group (open or closed)"/>
+  </token>
+</histogram>
+
 <histogram
     name="TabGroups.ParseSavedTabGroupDataEntries.ParseFailurePercentage"
     units="%" expires_after="2026-12-15">
@@ -2110,33 +2133,6 @@ chromium-metrics-reviews@google.com.
     would not have affected the recorded value. It would only duplicate a
     previous recording.
   </summary>
-</histogram>
-
-<histogram name="TabGroups.{ConsentLevel}.{GroupsOrTabs}" units="count"
-    expires_after="2027-04-11">
-  <owner>treib@chromium.org</owner>
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <summary>
-    Records the number of {GroupsOrTabs}, at the moment when the user is
-    {ConsentLevel} Chrome. Android and iOS only.
-  </summary>
-  <token key="GroupsOrTabs">
-    <variant name="ClosedTabGroupCount" summary="closed tab groups"/>
-    <variant name="ClosedTabGroupTabsCount"
-        summary="tabs that are part of a closed tab group"/>
-    <variant name="OpenTabGroupCount" summary="open tab groups"/>
-    <variant name="OpenTabGroupTabsCount"
-        summary="tabs that are part of an open tab group"/>
-    <variant name="TotalTabGroupCount"
-        summary="all tab groups (open or closed)"/>
-    <variant name="TotalTabGroupTabsCount"
-        summary="all tabs that are part of a tab group (open or closed)"/>
-  </token>
-  <token key="ConsentLevel">
-    <variant name="OnSignin" summary="signing in to"/>
-    <variant name="OnSync" summary="enabling sync in"/>
-  </token>
 </histogram>
 
 <histogram name="TabManager.Discarding.DiscardCount" units="Discards"

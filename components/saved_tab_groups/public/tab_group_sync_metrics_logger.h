@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "components/saved_tab_groups/public/types.h"
-#include "components/signin/public/base/consent_level.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -41,10 +40,9 @@ class TabGroupSyncMetricsLogger {
   virtual void RecordTabGroupDeletionsOnStartup(size_t group_count) = 0;
 
   // Records metrics about the number of groups, and tabs within groups, at the
-  // moment of signing in / turning on sync.
+  // moment of signing in.
   virtual void RecordMetricsOnSignin(
-      const std::vector<SavedTabGroup>& saved_tab_groups,
-      signin::ConsentLevel consent_level) = 0;
+      const std::vector<SavedTabGroup>& saved_tab_groups) = 0;
 
   // Records UKM metrics about saved tab group navigations.
   virtual void RecordSavedTabGroupNavigation(const LocalTabID& id,

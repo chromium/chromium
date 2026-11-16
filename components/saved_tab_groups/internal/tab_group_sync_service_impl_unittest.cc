@@ -2820,10 +2820,6 @@ TEST_F(TabGroupSyncServiceImplTest, MetricsOnSignin) {
       {"TabGroups.OnSignin.ClosedTabGroupTabsCount", 1}};
   EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSignin."),
               ContainerEq(expected_counts));
-
-  // Sync wasn't enabled, so no "OnSync" metrics should be recorded.
-  EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSync."),
-              IsEmpty());
 }
 
 // Tests that after transitioning from a saved tab group to a shared tab group,
