@@ -8,29 +8,24 @@ import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.structured.templates_validator as validator_tmpl
-from chromium_src.tools.metrics.structured.codegen_util import FileInfo
-from chromium_src.tools.metrics.structured.code_generator import (
-  EventTemplateBase,
-  ProjectInfoBase,
-  EventInfoBase,
-  MetricInfoBase,
-)
+import chromium_src.tools.metrics.structured.codegen_util as codegen_util
+import chromium_src.tools.metrics.structured.code_generator as code_generator
 
 CHROMIUM_TARGET = 'chromium'
 
 
-class ProjectInfoCpp(ProjectInfoBase):
+class ProjectInfoCpp(code_generator.ProjectInfoBase):
   """Codegen-related info about a project in C++."""
 
   def __init__(self, project):
     super().__init__(project, CHROMIUM_TARGET)
 
 
-class EventInfoCpp(EventInfoBase):
+class EventInfoCpp(code_generator.EventInfoBase):
   """Codegen-related info about an event in C++."""
 
 
-class MetricInfoCpp(MetricInfoBase):
+class MetricInfoCpp(code_generator.MetricInfoBase):
   """Codegen-related info about a metric in C++."""
 
   def __init__(self, metric):
@@ -69,7 +64,7 @@ class MetricInfoCpp(MetricInfoBase):
         raise ValueError('Invalid metric type.')
 
 
-class TemplateCpp(EventTemplateBase):
+class TemplateCpp(code_generator.EventTemplateBase):
   """Template for producing C++ code from structured.xml."""
 
   def __init__(
@@ -97,7 +92,7 @@ class TemplateCpp(EventTemplateBase):
     self.header = header
 
   def write_file(self):
-    file_info = FileInfo(self.dirname, self.basename)
+    file_info = codegen_util.FileInfo(self.dirname, self.basename)
     with open(file_info.filepath, 'w') as f:
       f.write(self._stamp_file(file_info))
 
@@ -163,11 +158,11 @@ class ValidatorHeaderTemplate:
     self.basename = basename
 
   def write_file(self) -> None:
-    file_info = FileInfo(self.dirname, self.basename)
+    file_info = codegen_util.FileInfo(self.dirname, self.basename)
     with open(file_info.filepath, 'w') as f:
       f.write(self._stamp_file(file_info))
 
-  def _stamp_file(self, file_info: FileInfo) -> str:
+  def _stamp_file(self, file_info: codegen_util.FileInfo) -> str:
     return validator_tmpl.HEADER_FILE_TEMPLATE.format(file=file_info)
 
 
@@ -186,7 +181,7 @@ class ValidatorImplTemplate:
     self.projects = self.structured_model.projects
 
   def write_file(self) -> None:
-    file_info = FileInfo(self.dirname, self.basename)
+    file_info = codegen_util.FileInfo(self.dirname, self.basename)
     with open(file_info.filepath, 'w') as f:
       f.write(self._stamp_file(file_info))
 
@@ -197,7 +192,7 @@ class ValidatorImplTemplate:
     body = ',\n      '.join(entries)
     return '{{\n      ' + body + ',\n  }}'
 
-  def _stamp_file(self, file_info: FileInfo) -> str:
+  def _stamp_file(self, file_info: codegen_util.FileInfo) -> str:
     project_infos = sorted(
       (ProjectInfoCpp(project) for project in self.projects),
       key=lambda p: p.name.encode('utf-8'),

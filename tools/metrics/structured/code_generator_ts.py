@@ -4,23 +4,18 @@
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.structured.codegen_util import FileInfo, Util
-from chromium_src.tools.metrics.structured.code_generator import (
-  EventTemplateBase,
-  ProjectInfoBase,
-  EventInfoBase,
-  MetricInfoBase,
-)
+import chromium_src.tools.metrics.structured.codegen_util as codegen_util
+import chromium_src.tools.metrics.structured.code_generator as code_generator
 
 
-class ProjectInfoTs(ProjectInfoBase):
+class ProjectInfoTs(code_generator.ProjectInfoBase):
   """Codegen-related info about a project in Typescript."""
 
   def __init__(self, project):
     super().__init__(project, 'webui')
 
 
-class EventInfoTs(EventInfoBase):
+class EventInfoTs(code_generator.EventInfoBase):
   """Codegen-related info about an event in Typescript."""
 
   def __init__(self, event, project_info):
@@ -34,7 +29,7 @@ class EventInfoTs(EventInfoBase):
       self.systemUptime = 'null'
 
 
-class MetricInfoTs(MetricInfoBase):
+class MetricInfoTs(code_generator.MetricInfoBase):
   """Codegen-related info about a metric in Typescript."""
 
   def __init__(self, metric, project_info, event_info):
@@ -66,7 +61,7 @@ class MetricInfoTs(MetricInfoBase):
         raise ValueError('Invalid metric type.')
 
 
-class TemplateTypescript(EventTemplateBase):
+class TemplateTypescript(code_generator.EventTemplateBase):
   """Template for producing Typescript code from structured.xml, to
   be used in WebUI pages."""
 
@@ -97,7 +92,7 @@ class TemplateTypescript(EventTemplateBase):
     self.metric_build_code_template = metric_build_code_template
 
   def write_file(self):
-    file_info = FileInfo(self.dirname, self.basename)
+    file_info = codegen_util.FileInfo(self.dirname, self.basename)
     with open(file_info.filepath, 'w') as f:
       f.write(self._stamp_file())
 

@@ -4,17 +4,17 @@
 """Abstract class definition of Code Generation from structured.xml
 into definitions for different targets."""
 
-from abc import ABC, abstractmethod
+import abc
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.structured.codegen_util import Util
+import chromium_src.tools.metrics.structured.codegen_util as codegen_util
 
 # Default target if not explicitly specified in the XML.
 DEFAULT_TARGET = 'chromium'
 
 
-class EventTemplateBase(ABC):
+class EventTemplateBase(abc.ABC):
   """EventTemplate is a base abstract class, which contains the common
   abstract methods and common constructor to generate code for
   structured events."""
@@ -39,20 +39,20 @@ class EventTemplateBase(ABC):
     self.enum_template = enum_template
     self.metric_template = metric_template
 
-  @abstractmethod
+  @abc.abstractmethod
   def write_file(self):
     pass
 
 
-class ProjectInfoBase(ABC):
+class ProjectInfoBase(abc.ABC):
   """Codegen-related info about a Structured Metrics project.
   Constructor takes in a set of target_names in order to determine
   whether a project should have its code generated."""
 
   def __init__(self, project, target_names):
-    self.name = Util.sanitize_name(project.name)
-    self.namespace = Util.camel_to_snake(self.name)
-    self.name_hash = Util.hash_name(self.name)
+    self.name = codegen_util.Util.sanitize_name(project.name)
+    self.namespace = codegen_util.Util.camel_to_snake(self.name)
+    self.name_hash = codegen_util.Util.hash_name(self.name)
     self.events = project.events
     self.enums = project.enums
     self.targets = project.targets
@@ -107,14 +107,14 @@ class ProjectInfoBase(ABC):
         self.should_codegen = True
 
 
-class EventInfoBase(ABC):
+class EventInfoBase(abc.ABC):
   """Codegen-related info about a Structured Metrics event."""
 
   def __init__(self, event, project_info):
-    self.name = Util.sanitize_name(event.name)
+    self.name = codegen_util.Util.sanitize_name(event.name)
     self.project_name = project_info.name
     self.platform = project_info.platform
-    self.name_hash = Util.event_name_hash(
+    self.name_hash = codegen_util.Util.event_name_hash(
       project_info.name, self.name, project_info.platform
     )
     self.is_event_sequence = project_info.is_event_sequence
@@ -122,10 +122,10 @@ class EventInfoBase(ABC):
     self.metrics = event.metrics
 
 
-class MetricInfoBase(ABC):
+class MetricInfoBase(abc.ABC):
   """Codegen-related info about a Structured Metrics metric."""
 
   def __init__(self, metric):
-    self.name = Util.sanitize_name(metric.name)
-    self.hash = Util.hash_name(metric.name)
+    self.name = codegen_util.Util.sanitize_name(metric.name)
+    self.hash = codegen_util.Util.hash_name(metric.name)
     self.is_enum = metric.is_enum

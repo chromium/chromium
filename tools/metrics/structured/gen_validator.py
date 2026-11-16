@@ -15,7 +15,7 @@ import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.structured.code_generator_cpp as code_generator_cpp
-from chromium_src.tools.metrics.structured.codegen_util import Util
+import chromium_src.tools.metrics.structured.codegen_util as codegen_util
 from chromium_src.tools.metrics.structured.sync import model
 
 parser = argparse.ArgumentParser(
@@ -36,7 +36,9 @@ def main():
   structured = model.Model(open(args.input, encoding='utf-8').read(), 'chrome')
   if not args.cros_events:
     structured.projects = [
-      p for p in structured.projects if not Util.is_chromeos_only_project(p)
+      p
+      for p in structured.projects
+      if not codegen_util.Util.is_chromeos_only_project(p)
     ]
 
   if args.cros_input is not None:

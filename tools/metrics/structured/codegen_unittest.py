@@ -13,7 +13,7 @@ import setup_modules  # pylint: disable=unused-import
 
 
 from chromium_src.tools.metrics.structured import code_generator_cpp
-from chromium_src.tools.metrics.structured.codegen_util import FileInfo, Util
+import chromium_src.tools.metrics.structured.codegen_util as codegen_util
 from chromium_src.tools.metrics.structured.sync import model
 
 
@@ -22,14 +22,14 @@ class CodegenTest(unittest.TestCase):
 
   def test_sanitize_name(self):
     self.assertEqual(
-      Util.sanitize_name('My Metric.Or::Event/Or/Project_name'),
+      codegen_util.Util.sanitize_name('My Metric.Or::Event/Or/Project_name'),
       'My_Metric_Or__Event_Or_Project_name',
       'chrome',
     )
 
   def test_camel_to_snake(self):
     def check(camel, expected_snake):
-      self.assertEqual(Util.camel_to_snake(camel), expected_snake)
+      self.assertEqual(codegen_util.Util.camel_to_snake(camel), expected_snake)
 
     check('already_snake_case', 'already_snake_case')
     check('ConvertFromCamelCase', 'convert_from_camel_case')
@@ -41,7 +41,9 @@ class CodegenTest(unittest.TestCase):
     # This was generated using the function in Chromium's
     # //base/metrics/metrics_hashes.cc.
     known_good_hash = 11096769389970233700
-    self.assertEqual(Util.hash_name('known good hash'), known_good_hash)
+    self.assertEqual(
+      codegen_util.Util.hash_name('known good hash'), known_good_hash
+    )
 
   def test_event_name_hash(self):
     # This was generated using the function in Chromium's
@@ -51,7 +53,8 @@ class CodegenTest(unittest.TestCase):
     project_name = 'TestProjectOne'
     event_name = 'TestEventOne'
     self.assertEqual(
-      Util.event_name_hash(project_name, event_name, 'chrome'), event_name_hash
+      codegen_util.Util.event_name_hash(project_name, event_name, 'chrome'),
+      event_name_hash,
     )
 
   def test_validator_constexpr_tables_sorted_and_cros_handled(self):
@@ -112,28 +115,34 @@ class CodegenTest(unittest.TestCase):
       merged, 'out', 'structured_metrics_validator.cc'
     )
     rendered = tmpl._stamp_file(
-      FileInfo('out', 'structured_metrics_validator.cc')
+      codegen_util.FileInfo('out', 'structured_metrics_validator.cc')
     )
     # Projects sorted alphabetically: AlphaProject < CrosProject < ZetaProject.
-    alpha_idx = rendered.index(str(Util.hash_name('AlphaProject')))
-    cros_idx = rendered.index(str(Util.hash_name('CrosProject')))
-    zeta_idx = rendered.index(str(Util.hash_name('ZetaProject')))
+    alpha_idx = rendered.index(str(codegen_util.Util.hash_name('AlphaProject')))
+    cros_idx = rendered.index(str(codegen_util.Util.hash_name('CrosProject')))
+    zeta_idx = rendered.index(str(codegen_util.Util.hash_name('ZetaProject')))
     self.assertLess(alpha_idx, cros_idx)
     self.assertLess(cros_idx, zeta_idx)
     # Events in ZetaProject sorted: AlphaEvent < BetaEvent.
     alpha_ev = rendered.index(
-      str(Util.event_name_hash('ZetaProject', 'AlphaEvent', 'chrome'))
+      str(
+        codegen_util.Util.event_name_hash('ZetaProject', 'AlphaEvent', 'chrome')
+      )
     )
     beta_ev = rendered.index(
-      str(Util.event_name_hash('ZetaProject', 'BetaEvent', 'chrome'))
+      str(
+        codegen_util.Util.event_name_hash('ZetaProject', 'BetaEvent', 'chrome')
+      )
     )
     self.assertLess(alpha_ev, beta_ev)
     # Metrics in BetaEvent sorted: AMetric < ZMetric.
-    a_met = rendered.index(str(Util.hash_name('AMetric')))
-    z_met = rendered.index(str(Util.hash_name('ZMetric')))
+    a_met = rendered.index(str(codegen_util.Util.hash_name('AMetric')))
+    z_met = rendered.index(str(codegen_util.Util.hash_name('ZMetric')))
     self.assertLess(a_met, z_met)
     # CrosEvent disables metric validation (last bool arg = false).
-    cros_ev_hash = Util.event_name_hash('CrosProject', 'CrosEvent', 'cros')
+    cros_ev_hash = codegen_util.Util.event_name_hash(
+      'CrosProject', 'CrosEvent', 'cros'
+    )
     self.assertIn(f'EventValidator(UINT64_C({cros_ev_hash}),', rendered)
     self.assertIn(', false)', rendered)
 
@@ -171,7 +180,9 @@ class CodegenTest(unittest.TestCase):
     """
     parsed = model.Model(xml, 'chrome')
     kept = [
-      p.name for p in parsed.projects if not Util.is_chromeos_only_project(p)
+      p.name
+      for p in parsed.projects
+      if not codegen_util.Util.is_chromeos_only_project(p)
     ]
     self.assertEqual(kept, ['Glic'])
 

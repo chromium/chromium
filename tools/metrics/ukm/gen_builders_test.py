@@ -9,20 +9,9 @@ import os
 import setup_modules  # pylint: disable=unused-import
 
 
-from chromium_src.tools.metrics.ukm.codegen import EventInfo
-from chromium_src.tools.metrics.ukm.codegen import MetricInfo
-from chromium_src.tools.metrics.ukm.builders_template import (
-  HEADER as BUILDERS_HEADER_TEMPLATE,
-)
-from chromium_src.tools.metrics.ukm.builders_template import (
-  IMPL as BUILDERS_IMPL_TEMPLATE,
-)
-from chromium_src.tools.metrics.ukm.decode_template import (
-  HEADER as DECODE_HEADER_TEMPLATE,
-)
-from chromium_src.tools.metrics.ukm.decode_template import (
-  IMPL as DECODE_IMPL_TEMPLATE,
-)
+import chromium_src.tools.metrics.ukm.codegen as codegen
+import chromium_src.tools.metrics.ukm.builders_template as builders_template
+import chromium_src.tools.metrics.ukm.decode_template as decode_template
 import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 import chromium_src.tools.metrics.ukm.gen_builders as gen_builders
 
@@ -45,12 +34,12 @@ class GenBuildersTest(unittest.TestCase):
     metric = event[ukm_model._METRIC_TYPE.tag][0]
     self.assertIsNotNone(event)
     self.assertIsNotNone(metric)
-    event_info = EventInfo(event)
-    metric_info = MetricInfo(metric)
+    event_info = codegen.EventInfo(event)
+    metric_info = codegen.MetricInfo(metric)
 
     # Not using codegen.Template.WriteFile to avoid non-deterministic test
     # behaviour after writing to disk.
-    builders_header_output = BUILDERS_HEADER_TEMPLATE._stamp_file_code(
+    builders_header_output = builders_template.HEADER._stamp_file_code(
       relpath, data
     )
     self.assertIsNotNone(builders_header_output)
@@ -88,7 +77,7 @@ class {name} final : public ::ukm::internal::UkmEntryBuilderBase {{
       builders_header_output,
     )
 
-    builders_impl_output = BUILDERS_IMPL_TEMPLATE._stamp_file_code(
+    builders_impl_output = builders_template.IMPL._stamp_file_code(
       relpath, data
     )
     self.assertIsNotNone(builders_impl_output)
@@ -128,7 +117,7 @@ const uint64_t {eventName}::k{metricName}NameHash;
       builders_impl_output,
     )
 
-    decode_header_output = DECODE_HEADER_TEMPLATE._stamp_file_code(
+    decode_header_output = decode_template.HEADER._stamp_file_code(
       relpath, data
     )
     self.assertIsNotNone(decode_header_output)
@@ -147,7 +136,7 @@ const DecodeMap& GetDecodeMap();""",
       decode_header_output,
     )
 
-    decode_impl_output = DECODE_IMPL_TEMPLATE._stamp_file_code(relpath, data)
+    decode_impl_output = decode_template.IMPL._stamp_file_code(relpath, data)
     self.assertIsNotNone(decode_impl_output)
     self.assertIn(
       '// Generated from gen_builders.py.  DO NOT EDIT!', decode_impl_output

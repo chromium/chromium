@@ -11,7 +11,7 @@ import setup_modules  # pylint: disable=unused-import
 
 
 import chromium_src.tools.metrics.common.path_util as path_util
-from chromium_src.tools.metrics.ukm.xml_validations import UkmXmlValidation
+import chromium_src.tools.metrics.ukm.xml_validations as xml_validations
 
 UKM_XML = path_util.GetInputFile('tools/metrics/ukm/ukm.xml')
 
@@ -22,7 +22,7 @@ def main():
   with open(UKM_XML, 'r') as config_file:
     document = minidom.parse(config_file)
     [config] = document.getElementsByTagName('ukm-configuration')
-    validator = UkmXmlValidation(config)
+    validator = xml_validations.UkmXmlValidation(config)
 
     owner_check_success, owner_check_errors = (
       validator.check_events_have_owners()
