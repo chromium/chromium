@@ -1016,9 +1016,6 @@ class ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase
  protected:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SetUpChromeSigninPage() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kMagiChromePasskeySignIn, {{"flow_type", "autofill"}});
-
     DiceTabHelper::CreateForWebContents(web_contents());
     DiceTabHelper::FromWebContents(web_contents())
         ->InitializeSigninFlow(
@@ -1056,7 +1053,7 @@ class ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase
 enum class HybridOutcomeContext {
   // A regular website.
   kWebsite,
-  // The Chrome sign-in page, with the MagiChrome passkey feature enabled.
+  // The Chrome sign-in page.
   kChromeSignin,
 };
 
@@ -1541,6 +1538,35 @@ TEST_P(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
       kGeneralOutcome, Outcome::kFailedAfterBleAdvertReceived, 1);
   histogram_tester_.ExpectTotalCount(kSigninOutcome, 0);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyTestBase,
+       SigninOutcomeRecordedWhenMagiChromeFeatureDisabled) {
+  feature_list_.InitAndDisableFeature(switches::kMagiChromePasskeySignIn);
+  SetUpChromeSigninPage();
+
+  MockCableDiscoveryFactory discovery_factory;
+  auto delegate = CreateDelegate(&discovery_factory);
+
+  delegate->OnCableEventForTesting(device::cablev2::Event::kBLEAdvertReceived);
+  delegate->OnCableEventForTesting(device::cablev2::Event::kPhoneConnected);
+  delegate->OnCableEventForTesting(device::cablev2::Event::kReady);
+  delegate->OnTransactionSuccessful(
+      content::AuthenticatorRequestClientDelegate::RequestSource::
+          kWebAuthentication,
+      device::FidoRequestType::kGetAssertion,
+      device::AuthenticatorType::kPhone);
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(discovery_factory.force_hybrid_discovery());
+#endif  // BUILDFLAG(IS_WIN)
+  using Outcome = ChromeAuthenticatorRequestDelegate::HybridPasskeyOutcome;
+  histogram_tester_.ExpectUniqueSample("WebAuthentication.Hybrid.Outcome",
+                                       Outcome::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.HybridPasskey.Outcome",
+                                       Outcome::kSuccess, 1);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // The surface on which the hybrid QR code is shown.
 enum class HybridQrSurface {
