@@ -6,17 +6,19 @@
 #define COMPONENTS_METRICS_MOTHERBOARD_METRICS_PROVIDER_H_
 
 #include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/metrics/metrics_provider.h"
+#include "components/metrics/cached_metrics_provider.h"
 #include "components/metrics/motherboard.h"
-#include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics {
 
+class SystemProfileProto;
+
 // MotherboardMetricsProvider adds Motherboard Info in the system profile. These
 // include manufacturer and model.
-class MotherboardMetricsProvider : public MetricsProvider {
+class MotherboardMetricsProvider : public CachedMetricsProvider {
  public:
   MotherboardMetricsProvider();
   ~MotherboardMetricsProvider() override;
@@ -27,8 +29,14 @@ class MotherboardMetricsProvider : public MetricsProvider {
 
   // metrics::MetricsProvider:
   void AsyncInit(base::OnceClosure done_callback) override;
-  void ProvideSystemProfileMetrics(
-      SystemProfileProto* system_profile_proto) override;
+
+ protected:
+  // CachedMetricsProvider:
+  void ProvideSystemProfileMetricsFromCache(
+      const SystemProfileProto& cached_system_profile,
+      SystemProfileProto* system_profile) override;
+  void ProvideSystemProfileMetricsNormal(
+      SystemProfileProto* system_profile) override;
 
  private:
   // Initializes `motherboard_info_` on the UI thread.

@@ -24,8 +24,13 @@
 #include "components/metrics/install_date_provider.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/persistent_system_profile.h"
+#include "components/metrics/ui/screen_info_metrics_provider.h"
 #include "components/metrics/version_utils.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#include "components/metrics/motherboard_metrics_provider.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/files/file_util.h"
@@ -138,6 +143,16 @@ void StartupData::RecordCoreSystemProfile() {
 
     // Register GPUMetricsProvider.
     register_early_provider(std::make_unique<metrics::GPUMetricsProvider>());
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    // Register MotherboardMetricsProvider.
+    register_early_provider(
+        std::make_unique<metrics::MotherboardMetricsProvider>());
+#endif
+
+    // Register ScreenInfoMetricsProvider.
+    register_early_provider(
+        std::make_unique<metrics::ScreenInfoMetricsProvider>());
 
     delegating_provider.ProvideSystemProfileMetricsWithLogCreationTime(
         base::TimeTicks(), &system_profile);
