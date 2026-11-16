@@ -119,6 +119,7 @@ source_set("impl") {
     "//chrome/browser/ui:url_identity",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/usb",
     "//chrome/browser/vr",
     "//chrome/common",
