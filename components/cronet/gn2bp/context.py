@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from typing import Optional
+
 import gn_utils  # noqa: F401
 
 
@@ -93,8 +95,11 @@ class ArchOverride(Override):
 
 
 class TranslationContext:
-    def __init__(self, import_channel: str):
+    def __init__(
+        self, import_channel: str, default_cpp_std: Optional[str] = None
+    ):
         self.import_channel = import_channel
+        self.default_cpp_std = default_cpp_std
         self.module_prefix = f'{import_channel}_cronet_'
         self.include_dirs_denylist = [
             f'external/cronet/{import_channel}/third_party/zlib/',

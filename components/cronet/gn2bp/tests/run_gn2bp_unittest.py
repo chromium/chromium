@@ -876,6 +876,194 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             mods["tot_cronet_java_tests"].libs,
         )
 
+    def test_get_cpp_std_ignores_c_standards(self):
+        get_cpp_std = gen_android_bp.translators._get_cpp_std
+        self.assertIsNone(get_cpp_std(["-O2", "-std=c11", "-std=gnu11"]))
+        self.assertIsNone(get_cpp_std(["-std=iso9899:2011"]))
+        self.assertEqual(
+            get_cpp_std(["-std=c11", "-std=c++23", "-std=gnu11"]), "c++23"
+        )
+        self.assertEqual(
+            get_cpp_std(["-std=c++20", "-fno-rtti", "-std=c++23"]), "c++23"
+        )
+        self.assertEqual(get_cpp_std(["-std=c++23", "-std=gnu++26"]), "gnu++26")
+
+    def test_make_cc_defaults_from_boringssl_propagates_cpp_std(self):
+        ctx = gen_android_bp.translation_context.TranslationContext(
+            "tot", default_cpp_std="c++23"
+        )
+        boringssl_mod = gen_android_bp.soong_ast.create_module(
+            "cc_library_static",
+            "tot_cronet_third_party_boringssl_boringssl",
+            "//third_party/boringssl:boringssl",
+            ctx,
+        )
+        boringssl_mod.cpp_std = "c++23"
+        boringssl_mod.cflags = ["-ffunction-sections", "-DFOO"]
+        boringssl_mod.ldflags = ["-Wl,--gc-sections", "-Wl,-z,relro"]
+
+        flags_mod, libcrypto_flags_mod = (
+            gen_android_bp.make_cc_defaults_from_boringssl(boringssl_mod, ctx)
+        )
+
+        self.assertEqual(flags_mod.cpp_std, "c++23")
+        self.assertEqual(libcrypto_flags_mod.cpp_std, "c++23")
+        self.assertEqual(flags_mod.cflags, ["-ffunction-sections", "-DFOO"])
+        self.assertEqual(libcrypto_flags_mod.cflags, ["-DFOO"])
+        self.assertEqual(libcrypto_flags_mod.ldflags, ["-Wl,-z,relro"])
+
+    def test_derive_default_cpp_std_and_create_cc_defaults(self):
+        gn = gn_utils.GnParser({}, {})
+        self.assertRaises(
+            ValueError, gen_android_bp._derive_default_cpp_std, gn
+        )
+
+        cronet = gn_utils.GnParser.Target(
+            "//components/cronet/android:cronet", "shared_library"
+        )
+        cronet.arch["android_arm64"] = gn_utils.GnParser.Target.Arch()
+        cronet.arch["android_arm64"].cflags.extend(["-fno-exceptions"])
+        gn.all_targets[cronet.name] = cronet
+        self.assertRaises(
+            ValueError, gen_android_bp._derive_default_cpp_std, gn
+        )
+
+        cronet.arch["android_arm64"].cflags.append("-std=c++23")
+        cronet.arch["android_x64"] = gn_utils.GnParser.Target.Arch()
+        cronet.arch["android_x64"].cflags.extend(["-msse3", "-std=c++23"])
+        cronet.is_finalized = False
+
+        derived_cpp_std = gen_android_bp._derive_default_cpp_std(gn)
+        self.assertEqual(derived_cpp_std, "c++23")
+
+        ctx = gen_android_bp.translation_context.TranslationContext(
+            "tot", default_cpp_std=derived_cpp_std
+        )
+        defaults = gen_android_bp.create_cc_defaults_module(ctx)
+        self.assertEqual(defaults.cpp_std, "c++23")
+
+    def test_create_bindgen_module_derives_cpp_std_from_gn(self):
+        tc = "//build/toolchain/android:android_clang_arm64"
+        gn_desc = {
+            "//foo:cpp_bindgen": {
+                "type": "action",
+                "script": "//build/rust/gni_impl/run_bindgen.py",
+                "toolchain": tc,
+                "inputs": ["//foo/header.h"],
+                "outputs": ["//out/Release/gen/foo/bindings.rs"],
+                "args": ["--", "-x", "c++", "{{cflags_cc}}"],
+                "deps": ["//foo:header_group"],
+            },
+            "//foo:header_group": {
+                "type": "group",
+                "toolchain": tc,
+                "deps": ["//foo:header_lib"],
+            },
+            "//foo:header_lib": {
+                "type": "source_set",
+                "toolchain": tc,
+                "cflags_cc": ["-std=c++23"],
+                "deps": ["//buildtools/third_party/libc++:libc++"],
+            },
+            "//buildtools/third_party/libc++:libc++": {
+                "type": "static_library",
+                "toolchain": tc,
+                "cflags_cc": ["-std=c++26"],
+                "deps": [],
+            },
+            "//foo:fallback_cpp_bindgen": {
+                "type": "action",
+                "script": "//build/rust/gni_impl/run_bindgen.py",
+                "toolchain": tc,
+                "inputs": ["//foo/standalone.h"],
+                "outputs": ["//out/Release/gen/foo/standalone_bindings.rs"],
+                "args": ["--", "-x", "c++", "{{cflags_cc}}"],
+                "deps": [],
+            },
+            "//foo:c_bindgen": {
+                "type": "action",
+                "script": "//build/rust/gni_impl/run_bindgen.py",
+                "toolchain": tc,
+                "inputs": ["//foo/c_header.h"],
+                "outputs": ["//out/Release/gen/foo/c_bindings.rs"],
+                "args": ["--", "{{cflags}}"],
+                "deps": ["//foo:header_lib"],
+            },
+            "//foo:conflicting_cpp_bindgen": {
+                "type": "action",
+                "script": "//build/rust/gni_impl/run_bindgen.py",
+                "toolchain": tc,
+                "inputs": ["//foo/conflict.h"],
+                "outputs": ["//out/Release/gen/foo/conflict_bindings.rs"],
+                "args": ["--", "-x", "c++", "{{cflags_cc}}"],
+                "deps": ["//foo:header_lib", "//foo:cpp20_lib"],
+            },
+            "//foo:cpp20_lib": {
+                "type": "source_set",
+                "toolchain": tc,
+                "cflags_cc": ["-std=c++20"],
+                "deps": [],
+            },
+        }
+        gn = gn_utils.GnParser({}, {})
+        for name in (
+            "//foo:cpp_bindgen",
+            "//foo:fallback_cpp_bindgen",
+            "//foo:c_bindgen",
+            "//foo:conflicting_cpp_bindgen",
+        ):
+            gn.parse_gn_desc(gn_desc, name)
+        gn.propagate_properties()
+
+        # Deliberately set default_cpp_std to "c++20" to prove direct C++ deps
+        # take precedence over the fallback, while transitive libc++ (c++26)
+        # does not interfere.
+        ctx = gen_android_bp.translation_context.TranslationContext(
+            "tot", default_cpp_std="c++20"
+        )
+        bp = gen_android_bp.soong_ast.Blueprint()
+
+        cpp_mod = gen_android_bp.translators.create_bindgen_module(
+            bp,
+            gn,
+            gn.get_target("//foo:cpp_bindgen"),
+            "tot_cronet_foo_cpp_bindgen",
+            is_test_target=False,
+            context=ctx,
+        )
+        self.assertEqual(cpp_mod.cpp_std, "c++23")
+
+        fallback_mod = gen_android_bp.translators.create_bindgen_module(
+            bp,
+            gn,
+            gn.get_target("//foo:fallback_cpp_bindgen"),
+            "tot_cronet_foo_fallback_cpp_bindgen",
+            is_test_target=False,
+            context=ctx,
+        )
+        self.assertEqual(fallback_mod.cpp_std, "c++20")
+
+        c_mod = gen_android_bp.translators.create_bindgen_module(
+            bp,
+            gn,
+            gn.get_target("//foo:c_bindgen"),
+            "tot_cronet_foo_c_bindgen",
+            is_test_target=False,
+            context=ctx,
+        )
+        self.assertIsNone(c_mod.cpp_std)
+
+        self.assertRaises(
+            AssertionError,
+            gen_android_bp.translators.create_bindgen_module,
+            bp,
+            gn,
+            gn.get_target("//foo:conflicting_cpp_bindgen"),
+            "tot_cronet_foo_conflicting_cpp_bindgen",
+            False,
+            ctx,
+        )
+
 
 if __name__ == '__main__':
     # This allows you to run the file directly

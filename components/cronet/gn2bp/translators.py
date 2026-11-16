@@ -819,8 +819,66 @@ def _create_extract_rust_files_target(bindgen_module, blueprint, context):
     return module
 
 
+def _get_bindgen_cpp_std(
+    gn: gn_utils.GnParser,
+    target: gn_utils.GnParser.Target,
+    context: translation_context.TranslationContext,
+) -> str:
+    """Derives the C++ standard for a C++-mode `rust_bindgen` target from GN.
+
+    GN's `gn desc` only emits `cflags` and `cflags_cc` for binary targets, not
+    `action` targets (so `rust_bindgen_generator` actions keep unexpanded
+    `{{cflags_cc}}` placeholders in `args`). Inspect the target's direct C++
+    dependencies (unwrapping `group`s without pulling in transitive deps like
+    `libc++` which may build with a newer standard), and fall back to GN's
+    default C++ standard (`context.default_cpp_std`) if none specifies one.
+    """
+    direct_deps = set()
+    stack = [
+        dep for arch in target.get_archs().values() for dep in arch.direct_deps
+    ]
+    visited = set()
+    while stack:
+        dep_name = stack.pop()
+        if dep_name in visited or dep_name not in gn.all_targets:
+            continue
+        visited.add(dep_name)
+        dep = gn.get_target(dep_name)
+        if dep.type == 'group':
+            for arch in dep.get_archs().values():
+                stack.extend(arch.direct_deps)
+        else:
+            direct_deps.add(dep_name)
+
+    cpp_std = None
+    cpp_std_source = None
+    for dep_name in sorted(direct_deps):
+        dep = gn.get_target(dep_name)
+        if not dep.is_linker_unit_type():
+            continue
+        dep_cpp_std = get_target_cpp_std(dep)
+        if dep_cpp_std:
+            assert cpp_std is None or cpp_std == dep_cpp_std, (
+                "Found conflicting C++ standards across direct dependencies "
+                f"of rust_bindgen target {target.name}: "
+                f"{cpp_std_source} ({cpp_std}) vs {dep_name} ({dep_cpp_std})"
+            )
+            cpp_std = dep_cpp_std
+            cpp_std_source = dep_name
+
+    if cpp_std is None:
+        cpp_std = context.default_cpp_std
+    if cpp_std is None:
+        raise ValueError(
+            "Unable to determine C++ standard for rust_bindgen target "
+            f"{target.name} from GN."
+        )
+    return cpp_std
+
+
 def create_bindgen_module(
     blueprint: soong_ast.Blueprint,
+    gn: gn_utils.GnParser,
     target,
     module_name: str,
     is_test_target: bool,
@@ -852,10 +910,10 @@ def create_bindgen_module(
     module.crate_name = module_name
 
     if "c++" in target.common.args:
-        # This is defined in the rust_bindgen templates where "C++" will
-        # be added to the args if `cpp` field is defined. Soong depends
-        # on `cpp_std` field to identify that this is a C++ header.
-        module.cpp_std = common.CPP_VERSION
+        # Defined in the rust_bindgen templates where "-x c++" is added to args
+        # when `cpp = true`. Soong's `rust_bindgen` does not inherit
+        # `cc_defaults` and relies on `cpp_std` to switch `.h` parsing to C++.
+        module.cpp_std = _get_bindgen_cpp_std(gn, target, context)
 
     module.source_stem = get_bindgen_source_stem(target.common.outputs)
 
@@ -1111,11 +1169,12 @@ def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
     cpp_stds = [
         cflag.removeprefix('-std=')
         for cflag in cflags
-        if cflag.startswith('-std=')
+        if cflag.startswith(('-std=c++', '-std=gnu++'))
     ]
     if cpp_stds:
-        # There can be multiple cpp std in cflags list. Return the last one as this will
-        # override any previous version.
+        # There can be multiple C++ standards in cflags (e.g. a per-target
+        # override appended after the compiler default). Return the last one as
+        # it overrides any previous version.
         return cpp_stds[-1]
     return None
 
@@ -1655,7 +1714,7 @@ def _create_initial_modules(
     elif target.type == "rust_bindgen":
         modules = (
             create_bindgen_module(
-                blueprint, target, bp_module_name, is_test_target, context
+                blueprint, gn, target, bp_module_name, is_test_target, context
             ),
         )
     elif target.type == 'action':
@@ -1743,29 +1802,34 @@ def _create_initial_modules(
     return modules
 
 
-def _extract_cc_global_properties(target):
+def get_target_cpp_std(target) -> Union[str, None]:
     cpp_std = None
-    version_script = None
-
-    # Check common
     if target.common.cflags:
         cpp_std = _get_cpp_std(target.common.cflags)
-    if target.common.ldflags:
-        _, version_script = _extract_version_script(target.common.ldflags)
-
-    # Check archs
     for arch in target.get_archs().values():
         arch_cpp_std = _get_cpp_std(arch.cflags)
         if arch_cpp_std:
-            # The -std= compiler option has a dedicated property in Android.bp, called cpp_std. That property
-            # can only be set at module top level; it cannot be set per-target. However in GN
-            # cflags are arch-specific, so we will find -std= when running on the
-            # arch-specific module. Hence we need to go back to the main module and set it there.
+            # The -std= compiler option has a dedicated property in Android.bp,
+            # called cpp_std. That property can only be set at module top level;
+            # it cannot be set per-target. However in GN cflags are
+            # arch-specific, so we will find -std= when running on the
+            # arch-specific module. Hence we need to go back to the main module
+            # and set it there.
             assert cpp_std is None or cpp_std == arch_cpp_std, (
                 f"Found different CPP version across different architectures!, target name: {target.name}, first cpp version: {cpp_std}, current cpp version: {arch_cpp_std}"
             )
             cpp_std = arch_cpp_std
+    return cpp_std
 
+
+def _extract_cc_global_properties(target):
+    cpp_std = get_target_cpp_std(target)
+    version_script = None
+
+    if target.common.ldflags:
+        _, version_script = _extract_version_script(target.common.ldflags)
+
+    for arch in target.get_archs().values():
         if arch.ldflags:
             _, arch_version_script = _extract_version_script(arch.ldflags)
             if arch_version_script:

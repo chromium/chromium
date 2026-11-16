@@ -70,6 +70,37 @@ def turn_off_allocator_shim_for_musl(module):
         module.target['glibc'].srcs.add(allocation_shim)
 
 
+DEFAULT_CPP_STD_TARGET = "//components/cronet/android:cronet"
+
+
+def _derive_default_cpp_std(gn: gn_utils.GnParser) -> str:
+    """Derives Chromium's default C++ standard from GN.
+
+    GN's `//build/config/compiler` config sets the repository-wide `-std=c++*`
+    flag on standard C++ targets, but `gn desc //*` only emits targets, not
+    configs. We also cannot pick an arbitrary target from `gn.all_targets`
+    because some targets override `-std=` to a different version (e.g. `libc++`
+    and `libc++abi` build with a newer standard). Extract the default from
+    Cronet's primary C++ shared library (`//components/cronet/android:cronet`),
+    which is always in the graph and inherits `default_compiler_configs` without
+    overriding `-std=`.
+    """
+    if DEFAULT_CPP_STD_TARGET not in gn.all_targets:
+        raise ValueError(
+            f"Cannot derive default cpp_std: {DEFAULT_CPP_STD_TARGET} not "
+            "found in parsed GN targets."
+        )
+    cpp_std = translators.get_target_cpp_std(
+        gn.get_target(DEFAULT_CPP_STD_TARGET)
+    )
+    if not cpp_std:
+        raise ValueError(
+            "Cannot derive default cpp_std: no C++ -std= flag found on "
+            f"{DEFAULT_CPP_STD_TARGET}."
+        )
+    return cpp_std
+
+
 def create_cc_defaults_module(context: translation_context.TranslationContext):
     defaults = soong_ast.create_module(
         'cc_defaults', context.cc_defaults_module, '//gn:default_deps', context
@@ -121,7 +152,16 @@ def create_cc_defaults_module(context: translation_context.TranslationContext):
     # partition_alloc failing on a static assertion that pointers are 64-bit.
     defaults.target['host'].compile_multilib = '64'
     defaults.stl = 'none'
-    defaults.cpp_std = common.CPP_VERSION
+    # Set Chromium's derived default C++ standard on cc_defaults so modules
+    # inheriting these defaults without their own cpp_std (e.g. synthetic or
+    # manually maintained modules, including in AOSP's top-level
+    # external/cronet/Android.bp) use Chromium's standard instead of silently
+    # falling back to Soong's default.
+    assert context.default_cpp_std, (
+        "context.default_cpp_std must be derived from GN before creating "
+        "cc_defaults."
+    )
+    defaults.cpp_std = context.default_cpp_std
     defaults.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
     defaults.apex_available.add(common.tethering_apex)
     defaults.extra_include_dir_deps.add(
@@ -217,6 +257,12 @@ def make_cc_defaults_from_boringssl(
             )
         ]
 
+    # Propagate cpp_std explicitly because `_is_cflag_allowed()` strips `-std=`
+    # from `cflags` into `boringssl_module.cpp_std`. Without this, manually
+    # maintained BoringSSL modules would fall back to `cc_defaults.cpp_std`
+    # instead of honoring BoringSSL's own GN C++ standard.
+    cc_default_flags_module.cpp_std = boringssl_module.cpp_std
+    libcrypto_cc_defaults_flags_module.cpp_std = boringssl_module.cpp_std
     cc_default_flags_module.cflags = boringssl_module.cflags
     cc_default_flags_module.ldflags = boringssl_module.ldflags
     libcrypto_cc_defaults_flags_module.cflags = _get_libcrypto_cflags(
@@ -566,6 +612,10 @@ def create_extras_modules(
 def create_blueprint_for_targets(gn, targets, test_targets, context):
     """Generate a blueprint for a list of GN targets."""
     blueprint = soong_ast.Blueprint()
+
+    # Derive Chromium's default C++ standard from GN before creating defaults
+    # or translating targets (e.g. rust_bindgen fallback).
+    context.default_cpp_std = _derive_default_cpp_std(gn)
 
     # Default settings used by all modules.
     blueprint.add_module(create_cc_defaults_module(context))

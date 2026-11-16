@@ -30,7 +30,6 @@ def is_supported_source_file(name):
     ]
 
 
-CPP_VERSION = 'c++17'
 tethering_apex = "com.android.tethering"
 
 
