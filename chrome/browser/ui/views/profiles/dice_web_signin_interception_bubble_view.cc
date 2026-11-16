@@ -226,10 +226,12 @@ DiceWebSigninInterceptionBubbleView::CreateBubble(
     BrowserWindowInterface* browser,
     views::BubbleAnchor anchor,
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
-    base::OnceCallback<void(SigninInterceptionResult)> callback) {
+    base::OnceCallback<void(SigninInterceptionResult)> callback,
+    base::ScopedClosureRunner keep_visible) {
   auto interception_bubble =
       base::WrapUnique(new DiceWebSigninInterceptionBubbleView(
-          browser, anchor, bubble_parameters, std::move(callback)));
+          browser, anchor, bubble_parameters, std::move(callback),
+          std::move(keep_visible)));
   base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble_weak_ptr =
       interception_bubble->weak_factory_.GetWeakPtr();
   // The widget is owned by the views system and shown after the view is loaded
@@ -257,6 +259,16 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
     SigninInterceptionResult result) {
   DiceWebSigninInterceptorDelegate::RecordInterceptionResult(bubble_parameters,
                                                              profile, result);
+}
+
+// static
+void DiceWebSigninInterceptionBubbleView::RecordInterceptionDismissed(
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+    Profile* profile,
+    SigninInterceptionDismissReason reason) {
+  RecordDismissReason(bubble_parameters.interception_type, reason);
+  RecordInterceptionResult(bubble_parameters, profile,
+                           SigninInterceptionResult::kDismissed);
 }
 
 bool DiceWebSigninInterceptionBubbleView::GetAccepted() const {
@@ -302,15 +314,22 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
     BrowserWindowInterface* browser,
     views::BubbleAnchor anchor,
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
-    base::OnceCallback<void(SigninInterceptionResult)> callback)
-    : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
+    base::OnceCallback<void(SigninInterceptionResult)> callback,
+    base::ScopedClosureRunner keep_visible)
+    : views::BubbleDialogDelegateView(
+          anchor.IsNull() ? views::BubbleAnchor(
+                                BrowserView::GetBrowserViewForBrowser(browser))
+                          : anchor,
+          anchor.IsNull() ? views::BubbleBorder::FLOAT
+                          : views::BubbleBorder::TOP_RIGHT),
       profile_keep_alive_(
           browser->GetProfile(),
           ProfileKeepAliveOrigin::kDiceWebSigninInterceptionBubble),
       browser_(browser->GetWeakPtr()),
       profile_(browser->GetProfile()),
       bubble_parameters_(bubble_parameters),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      keep_visible_(std::move(keep_visible)) {
   CHECK(browser_, base::NotFatalUntil::M162);
   CHECK(callback_);
   set_close_on_deactivate(false);
@@ -460,8 +479,14 @@ bool DiceWebSigninInterceptionBubbleView::IsChromeSignin() const {
 }
 
 void DiceWebSigninInterceptionBubbleView::ApplyAvatarButtonEffects() {
+  if (!browser_) {
+    return;
+  }
   AvatarToolbarButtonInterface* adapter =
       GetAvatarToolbarButtonInterface(*browser_);
+  if (!adapter) {
+    return;
+  }
 
   std::optional<base::RepeatingCallback<void(bool)>>
       explicit_avatar_button_action = base::IgnoreArgs<

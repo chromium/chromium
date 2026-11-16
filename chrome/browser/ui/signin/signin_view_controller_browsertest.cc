@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -36,9 +37,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/test_signout_confirmation_handler_waiter.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -53,6 +57,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -63,6 +68,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/reload_type.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -71,8 +77,10 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
@@ -1687,6 +1695,524 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return !IsCrossDeviceSigninPromoBubbleOpen(profile); }));
+}
+
+class SigninViewControllerWebUIAvatarOverflowBrowserTest
+    : public SigninViewControllerBrowserTestBase {
+ public:
+  SigninViewControllerWebUIAvatarOverflowBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIToolbar,
+         features::kSkipIPCChannelPausingForNonGuests,
+         features::kWebUIInProcessResourceLoadingV2,
+         switches::kCrossDeviceSigninFromDesktop},
+        {});
+  }
+
+  bool WaitForAvatarElementVisible(
+      bool expected_visible,
+      BrowserWindowInterface* target_browser = nullptr) {
+    if (!target_browser) {
+      target_browser = browser();
+    }
+    return base::test::RunUntil([&]() {
+      return (BrowserElements::From(target_browser)
+                  ->GetElement(kToolbarAvatarButtonElementId) != nullptr) ==
+             expected_visible;
+    });
+  }
+
+  void OverflowWebUIToolbar(BrowserWindowInterface* target_browser = nullptr) {
+    if (!target_browser) {
+      target_browser = browser();
+    }
+    ASSERT_TRUE(WaitForAvatarElementVisible(true, target_browser));
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(target_browser);
+    WebUIToolbarWebView* webui_toolbar =
+        browser_view->toolbar()->GetWebUIToolbarViewForTesting();
+    ASSERT_TRUE(webui_toolbar);
+    const int spacer_width = browser_view->GetBounds().width();
+    ASSERT_EQ(true, content::EvalJs(
+                        webui_toolbar->GetWebViewForTesting()->GetWebContents(),
+                        content::JsReplace(
+                            R"((() => {
+            const app = document.querySelector('toolbar-app');
+            let spacer = app.shadowRoot.querySelector('#test-spacer');
+            if (!spacer) {
+              spacer = document.createElement('div');
+              spacer.id = 'test-spacer';
+              spacer.style.flexShrink = '0';
+              app.shadowRoot.appendChild(spacer);
+            }
+            spacer.style.width = $1 + 'px';
+            app.layoutResponsiveControls();
+            return true;
+          })();)",
+                            spacer_width)));
+    ASSERT_TRUE(WaitForAvatarElementVisible(false, target_browser));
+  }
+
+  // Waits for an already-queued `RunWhenVisible()` pop-out on `browser()` to
+  // fire `ElementShown`, drop its `keep_visible` runner, and re-overflow
+  // without initializing any widget named `bubble_widget_name`.
+  void DrainPendingAvatarPopOutAndExpectNoBubble(
+      const std::string& bubble_widget_name) {
+    bool bubble_created = false;
+    views::AnyWidgetObserver widget_observer(
+        views::test::AnyWidgetTestPasskey{});
+    widget_observer.set_initialized_callback(
+        base::BindLambdaForTesting([&](views::Widget* widget) {
+          if (widget->GetName() == bubble_widget_name) {
+            bubble_created = true;
+          }
+        }));
+    base::test::TestFuture<ui::TrackedElement*> shown_future;
+    base::CallbackListSubscription shown_sub =
+        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+            kToolbarAvatarButtonElementId,
+            BrowserElements::From(browser())->GetContext(),
+            shown_future.GetRepeatingCallback());
+    ASSERT_TRUE(shown_future.Wait());
+    ASSERT_TRUE(WaitForAvatarElementVisible(false));
+    EXPECT_FALSE(bubble_created);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
+                       ShowCrossDeviceSigninQrBubble_OverflowedWebUIAvatar) {
+  SetPrimaryAccount();
+  ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar());
+
+  // Closing the bubble while RunWhenVisible is still pending should invoke
+  // closing_callback immediately and prevent the bubble from showing when the
+  // WebUI avatar button finishes popping out.
+  base::MockCallback<base::OnceClosure> cancelled_closing_callback;
+  EXPECT_CALL(cancelled_closing_callback, Run()).Times(1);
+  SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+      GURL("https://www.google.com/chrome/go-mobile"),
+      cancelled_closing_callback.Get(),
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu);
+  SigninViewController::From(browser())->CloseBubbleSignin();
+  testing::Mock::VerifyAndClearExpectations(&cancelled_closing_callback);
+  ASSERT_NO_FATAL_FAILURE(DrainPendingAvatarPopOutAndExpectNoBubble(
+      "CrossDeviceSigninQrBubbleViews"));
+
+  // Showing the bubble pops out the overflowed WebUI avatar button, anchors to
+  // its screen bounds with TOP_RIGHT arrow, and keeps it visible until closed.
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "CrossDeviceSigninQrBubbleViews");
+  base::MockCallback<base::OnceClosure> closing_callback;
+  EXPECT_CALL(closing_callback, Run()).Times(1);
+  SigninViewController::From(browser())->ShowCrossDeviceSigninQrBubble(
+      GURL("https://www.google.com/chrome/go-mobile"), closing_callback.Get(),
+      CrossDeviceSigninPromoEntryPoint::kProfileMenu);
+
+  views::Widget* bubble_widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(bubble_widget);
+  ASSERT_TRUE(WaitForAvatarElementVisible(true));
+  ui::TrackedElement* avatar_el = BrowserElements::From(browser())->GetElement(
+      kToolbarAvatarButtonElementId);
+  ASSERT_TRUE(avatar_el);
+  auto* bubble_delegate =
+      bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(bubble_delegate);
+  EXPECT_EQ(bubble_delegate->arrow(), views::BubbleBorder::TOP_RIGHT);
+  EXPECT_EQ(bubble_delegate->GetAnchorRect(), avatar_el->GetScreenBounds());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  SigninViewController::From(browser())->CloseBubbleSignin();
+  destroyed_waiter.Wait();
+  testing::Mock::VerifyAndClearExpectations(&closing_callback);
+  EXPECT_TRUE(WaitForAvatarElementVisible(false));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
+                       ShowCrossDeviceSigninQrBubble_PopupWithoutAvatarButton) {
+  SetPrimaryAccount();
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserForPopup(browser()->GetProfile());
+  ASSERT_TRUE(popup_browser);
+  views::NamedWidgetShownWaiter popup_widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "CrossDeviceSigninQrBubbleViews");
+  base::MockCallback<base::OnceClosure> popup_closing_callback;
+  EXPECT_CALL(popup_closing_callback, Run()).Times(1);
+  SigninViewController::From(popup_browser)
+      ->ShowCrossDeviceSigninQrBubble(
+          GURL("https://www.google.com/chrome/go-mobile"),
+          popup_closing_callback.Get(),
+          CrossDeviceSigninPromoEntryPoint::kProfileMenu);
+  views::Widget* popup_bubble_widget = popup_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(popup_bubble_widget);
+  auto* popup_bubble_delegate =
+      popup_bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(popup_bubble_delegate);
+  EXPECT_EQ(popup_bubble_delegate->arrow(), views::BubbleBorder::FLOAT);
+  views::test::WidgetDestroyedWaiter popup_destroyed_waiter(
+      popup_bubble_widget);
+  SigninViewController::From(popup_browser)->CloseBubbleSignin();
+  popup_destroyed_waiter.Wait();
+  testing::Mock::VerifyAndClearExpectations(&popup_closing_callback);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerWebUIAvatarOverflowBrowserTest,
+    ShowCrossDeviceSigninQrBubble_AccountIneligibleWhilePending) {
+  Profile* profile = browser()->GetProfile();
+  ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar());
+
+  auto expect_aborted_when_mutated =
+      [&](base::OnceCallback<void(const AccountInfo&)> mutate_account) {
+        AccountInfo account = SetPrimaryAccount();
+        ASSERT_TRUE(WaitForAvatarElementVisible(false));
+        base::MockCallback<base::OnceClosure> closing_callback;
+        EXPECT_CALL(closing_callback, Run()).Times(1);
+        OpenSigninToPhoneQrCodeBubble(
+            browser(), CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+            closing_callback.Get());
+        ASSERT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+
+        std::move(mutate_account).Run(account);
+        ASSERT_NO_FATAL_FAILURE(DrainPendingAvatarPopOutAndExpectNoBubble(
+            "CrossDeviceSigninQrBubbleViews"));
+        testing::Mock::VerifyAndClearExpectations(&closing_callback);
+        EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+        identity_test_env()->ClearPrimaryAccount();
+      };
+
+  // Sign-out while RunWhenVisible is pending.
+  expect_aborted_when_mutated(base::BindLambdaForTesting(
+      [&](const AccountInfo&) { identity_test_env()->ClearPrimaryAccount(); }));
+
+  // Refresh token removed while RunWhenVisible is pending.
+  expect_aborted_when_mutated(
+      base::BindLambdaForTesting([&](const AccountInfo& account) {
+        identity_test_env()->RemoveRefreshTokenForAccount(
+            account.GetAccountId());
+      }));
+
+  // Persistent auth error while RunWhenVisible is pending.
+  expect_aborted_when_mutated(
+      base::BindLambdaForTesting([&](const AccountInfo& account) {
+        identity_test_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+            account.GetAccountId(),
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
+      }));
+
+  // Switching to a different primary account while RunWhenVisible is pending.
+  expect_aborted_when_mutated(
+      base::BindLambdaForTesting([&](const AccountInfo&) {
+        identity_test_env()->ClearPrimaryAccount();
+        identity_test_env()->MakePrimaryAccountAvailable(
+            "other@gmail.com", signin::ConsentLevel::kSignin);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
+                       ShowSigninInterceptionBubble_OverflowedWebUIAvatar) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account,
+      /*primary_account=*/AccountInfo());
+  ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar());
+
+  // Destroying the handle while RunWhenVisible is still pending cancels the
+  // bubble, records kIgnored, and invokes the callback with kIgnored without
+  // creating a widget when the WebUI avatar button finishes popping out.
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<SigninInterceptionResult> pending_future;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> pending_handle =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          bubble_parameters, pending_future.GetCallback());
+  ASSERT_TRUE(pending_handle);
+  EXPECT_FALSE(pending_future.IsReady());
+  pending_handle.reset();
+  EXPECT_TRUE(pending_future.IsReady());
+  EXPECT_EQ(pending_future.Get(), SigninInterceptionResult::kIgnored);
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
+                                      SigninInterceptionResult::kIgnored, 1);
+  ASSERT_NO_FATAL_FAILURE(DrainPendingAvatarPopOutAndExpectNoBubble(
+      "DiceWebSigninInterceptionBubbleView"));
+
+  // Preempting a pending bubble with a second ShowSigninInterceptionBubble
+  // cancels the first bubble and prevents the stale first handle from closing
+  // the second bubble.
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> preempted_future;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> preempted_handle =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          bubble_parameters, preempted_future.GetCallback());
+  ASSERT_TRUE(preempted_handle);
+  EXPECT_FALSE(preempted_future.IsReady());
+
+  base::test::TestFuture<SigninInterceptionResult> future;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+          bubble_parameters, future.GetCallback());
+  ASSERT_TRUE(handle);
+  EXPECT_TRUE(preempted_future.IsReady());
+  EXPECT_EQ(preempted_future.Get(), SigninInterceptionResult::kIgnored);
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(WaitForAvatarElementVisible(true));
+  ui::TrackedElement* avatar_el = BrowserElements::From(browser())->GetElement(
+      kToolbarAvatarButtonElementId);
+  ASSERT_TRUE(avatar_el);
+  auto* bubble_delegate = widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(bubble_delegate);
+  EXPECT_EQ(bubble_delegate->arrow(), views::BubbleBorder::TOP_RIGHT);
+  EXPECT_EQ(bubble_delegate->GetAnchorRect(), avatar_el->GetScreenBounds());
+  EXPECT_FALSE(future.IsReady());
+
+  // Destroying the stale preempted handle must not close the active bubble.
+  preempted_handle.reset();
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_FALSE(future.IsReady());
+
+  // Accepting the bubble keeps the widget and popped-out avatar button visible
+  // during the spinner until the handle is destroyed.
+  auto* web_view = views::AsViewClass<views::WebView>(
+      widget->widget_delegate()->GetInitiallyFocusedView());
+  ASSERT_TRUE(web_view);
+  ASSERT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      "document.querySelector('chrome-signin-app').shadowRoot."
+                      "querySelector('#accept-button').click();"));
+  EXPECT_EQ(future.Get(), SigninInterceptionResult::kAccepted);
+  EXPECT_FALSE(widget->IsClosed());
+  EXPECT_TRUE(WaitForAvatarElementVisible(true));
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  handle.reset();
+  destroyed_waiter.Wait();
+  EXPECT_TRUE(WaitForAvatarElementVisible(false));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
+                       ShowSigninInterceptionBubble_PopupWithoutAvatarButton) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account,
+      /*primary_account=*/AccountInfo());
+  BrowserWindowInterface* popup_browser =
+      CreateBrowserForPopup(browser()->GetProfile());
+  ASSERT_TRUE(popup_browser);
+
+  // Interception bubble floats centered on the popup window without crashing.
+  views::NamedWidgetShownWaiter intercept_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  base::test::TestFuture<SigninInterceptionResult> future;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      SigninViewController::From(popup_browser)
+          ->ShowSigninInterceptionBubble(bubble_parameters,
+                                         future.GetCallback());
+  views::Widget* intercept_widget = intercept_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(intercept_widget);
+  auto* intercept_delegate =
+      intercept_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(intercept_delegate);
+  EXPECT_EQ(intercept_delegate->arrow(), views::BubbleBorder::FLOAT);
+  views::test::WidgetDestroyedWaiter intercept_destroyed(intercept_widget);
+  handle.reset();
+  intercept_destroyed.Wait();
+  EXPECT_EQ(future.Get(), SigninInterceptionResult::kIgnored);
+
+  // Chrome Signin bubble also floats cleanly in a popup window.
+  views::NamedWidgetShownWaiter chrome_signin_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  SigninViewController::From(popup_browser)
+      ->ShowChromeSigninBubble(account, signin_metrics::AccessPoint::kMenu);
+  views::Widget* chrome_signin_widget =
+      chrome_signin_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(chrome_signin_widget);
+  auto* chrome_signin_delegate =
+      chrome_signin_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(chrome_signin_delegate);
+  EXPECT_EQ(chrome_signin_delegate->arrow(), views::BubbleBorder::FLOAT);
+  views::test::WidgetDestroyedWaiter chrome_signin_destroyed(
+      chrome_signin_widget);
+  auto* web_view = views::AsViewClass<views::WebView>(
+      chrome_signin_widget->widget_delegate()->GetInitiallyFocusedView());
+  ASSERT_TRUE(web_view);
+  ASSERT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      "document.querySelector('chrome-signin-app').shadowRoot."
+                      "querySelector('#accept-button').click();"));
+  chrome_signin_destroyed.Wait();
+  EXPECT_EQ(
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      account.GetAccountId());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerWebUIAvatarOverflowBrowserTest,
+    ShowSigninInterceptionBubble_AccountIneligibleWhilePending) {
+  ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar());
+
+  // Removing the intercepted account while RunWhenVisible is pending dismisses
+  // immediately with kUserNotEligible and never creates a widget.
+  {
+    base::HistogramTester histogram_tester;
+    AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+        /*intercepted_account=*/account,
+        /*primary_account=*/AccountInfo());
+    base::test::TestFuture<SigninInterceptionResult> future;
+    std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+        SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+            bubble_parameters, future.GetCallback());
+    ASSERT_TRUE(handle);
+    EXPECT_FALSE(future.IsReady());
+
+    identity_manager()->GetAccountsMutator()->RemoveAccount(
+        account.GetAccountId(),
+        signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+    EXPECT_TRUE(future.IsReady());
+    EXPECT_EQ(future.Get(), SigninInterceptionResult::kDismissed);
+    handle.reset();
+    histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
+                                        SigninInterceptionResult::kDismissed,
+                                        1);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.Intercept.BubbleDismissReason",
+        SigninInterceptionDismissReason::kUserNotEligible, 1);
+    ASSERT_NO_FATAL_FAILURE(DrainPendingAvatarPopOutAndExpectNoBubble(
+        "DiceWebSigninInterceptionBubbleView"));
+  }
+
+  // Signing in to Chrome while ShowChromeSigninBubble is pending dismisses with
+  // kUserNotEligible and never creates a widget.
+  {
+    base::HistogramTester histogram_tester;
+    AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+    ASSERT_TRUE(WaitForAvatarElementVisible(false));
+    SigninViewController::From(browser())->ShowChromeSigninBubble(
+        account, signin_metrics::AccessPoint::kMenu);
+    identity_test_env()->SetPrimaryAccount(kTestEmail,
+                                           signin::ConsentLevel::kSignin);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.InterceptResult.ChromeSigninNonIntercept",
+        SigninInterceptionResult::kDismissed, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.Intercept.BubbleDismissReason.ChromeSigninNonIntercept",
+        SigninInterceptionDismissReason::kUserNotEligible, 1);
+    ASSERT_NO_FATAL_FAILURE(DrainPendingAvatarPopOutAndExpectNoBubble(
+        "DiceWebSigninInterceptionBubbleView"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
+                       ShowChromeSigninBubble_OverflowedWebUIAvatar) {
+  AccountInfo account = identity_test_env()->MakeAccountAvailable(kTestEmail);
+  WebSigninInterceptor::Delegate::BubbleParameters intercept_params(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account,
+      /*primary_account=*/AccountInfo());
+  ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar());
+
+  // Preempting a pending Chrome Signin bubble with ShowSigninInterceptionBubble
+  // records kIgnored once without re-entrantly closing the replacement bubble.
+  {
+    base::HistogramTester histogram_tester;
+    views::NamedWidgetShownWaiter widget_waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "DiceWebSigninInterceptionBubbleView");
+    SigninViewController::From(browser())->ShowChromeSigninBubble(
+        account, signin_metrics::AccessPoint::kMenu);
+
+    base::test::TestFuture<SigninInterceptionResult> intercept_future;
+    std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> intercept_handle =
+        SigninViewController::From(browser())->ShowSigninInterceptionBubble(
+            intercept_params, intercept_future.GetCallback());
+    histogram_tester.ExpectUniqueSample(
+        "Signin.InterceptResult.ChromeSigninNonIntercept",
+        SigninInterceptionResult::kIgnored, 1);
+
+    views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(widget);
+    EXPECT_FALSE(widget->IsClosed());
+    views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+    intercept_handle.reset();
+    destroyed_waiter.Wait();
+    EXPECT_EQ(intercept_future.Get(), SigninInterceptionResult::kIgnored);
+    ASSERT_TRUE(WaitForAvatarElementVisible(false));
+  }
+
+  // Accepting ShowChromeSigninBubble on an overflowed WebUI avatar button pops
+  // out the avatar button, signs the user in, and re-overflows after close.
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "DiceWebSigninInterceptionBubbleView");
+  SigninViewController::From(browser())->ShowChromeSigninBubble(
+      account, signin_metrics::AccessPoint::kMenu);
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(WaitForAvatarElementVisible(true));
+
+  auto* web_view = views::AsViewClass<views::WebView>(
+      widget->widget_delegate()->GetInitiallyFocusedView());
+  ASSERT_TRUE(web_view);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  ASSERT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      "document.querySelector('chrome-signin-app').shadowRoot."
+                      "querySelector('#accept-button').click();"));
+  destroyed_waiter.Wait();
+  EXPECT_EQ(
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      account.GetAccountId());
+  EXPECT_TRUE(WaitForAvatarElementVisible(false));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
+                       ClosingBrowserWhileBubblesPending) {
+  AccountInfo primary_account = SetPrimaryAccount();
+  AccountInfo secondary_account =
+      identity_test_env()->MakeAccountAvailable("secondary@gmail.com");
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser,
+      /*intercepted_account=*/secondary_account,
+      /*primary_account=*/primary_account);
+
+  Profile* profile = browser()->GetProfile();
+  BrowserWindowInterface* other_browser = CreateBrowser(profile);
+  ASSERT_NO_FATAL_FAILURE(OverflowWebUIToolbar(other_browser));
+
+  base::MockCallback<base::OnceClosure> qr_closing_callback;
+  EXPECT_CALL(qr_closing_callback, Run()).Times(1);
+  OpenSigninToPhoneQrCodeBubble(other_browser,
+                                CrossDeviceSigninPromoEntryPoint::kProfileMenu,
+                                qr_closing_callback.Get());
+  ASSERT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+
+  base::test::TestFuture<SigninInterceptionResult> intercept_future;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> intercept_handle =
+      SigninViewController::From(other_browser)
+          ->ShowSigninInterceptionBubble(bubble_parameters,
+                                         intercept_future.GetCallback());
+  ASSERT_TRUE(intercept_handle);
+  EXPECT_FALSE(intercept_future.IsReady());
+
+  CloseBrowserSynchronously(other_browser);
+
+  testing::Mock::VerifyAndClearExpectations(&qr_closing_callback);
+  EXPECT_FALSE(IsCrossDeviceSigninPromoBubbleOpen(profile));
+  EXPECT_TRUE(intercept_future.IsReady());
+  EXPECT_EQ(intercept_future.Get(), SigninInterceptionResult::kIgnored);
+  // Destroying the handle after browser destruction is a safe no-op.
+  intercept_handle.reset();
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -394,26 +395,96 @@ ChromeSignoutConfirmationPromptVariant GetSignoutConfirmationPromptVariant(
   return ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks;
 }
 
-class ScopedInterceptBubbleHandle
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+}  // namespace
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+class SigninViewController::ScopedInterceptBubbleHandle
     : public ScopedWebSigninInterceptionBubbleHandle {
  public:
-  explicit ScopedInterceptBubbleHandle(
-      base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble)
-      : bubble_(std::move(bubble)) {}
+  explicit ScopedInterceptBubbleHandle(base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {}
 
   ~ScopedInterceptBubbleHandle() override {
-    if (bubble_) {
-      bubble_->Close();
+    if (on_destroy_) {
+      std::move(on_destroy_).Run();
     }
   }
 
  private:
-  base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble_;
+  base::OnceClosure on_destroy_;
+};
+
+class SigninViewController::PendingInterceptBubble
+    : public signin::IdentityManager::Observer {
+ public:
+  PendingInterceptBubble(
+      signin::IdentityManager* identity_manager,
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+      base::OnceCallback<void(SigninInterceptionResult)> callback,
+      base::OnceClosure on_user_not_eligible)
+      : bubble_parameters_(bubble_parameters),
+        callback_(std::move(callback)),
+        on_user_not_eligible_(std::move(on_user_not_eligible)) {
+    if (identity_manager) {
+      identity_manager_observation_.Observe(identity_manager);
+    }
+  }
+
+  ~PendingInterceptBubble() override = default;
+
+  const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters()
+      const {
+    return bubble_parameters_;
+  }
+
+  base::OnceCallback<void(SigninInterceptionResult)> TakeCallback() {
+    return std::move(callback_);
+  }
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override {
+    if (bubble_parameters_.IsChromeSignin() &&
+        event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+            signin::PrimaryAccountChangeEvent::Type::kSet &&
+        on_user_not_eligible_) {
+      NotifyUserNotEligible();
+    }
+  }
+
+  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override {
+    if (info.GetAccountId() ==
+            bubble_parameters_.intercepted_account.GetAccountId() &&
+        on_user_not_eligible_) {
+      NotifyUserNotEligible();
+    }
+  }
+
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override {
+    identity_manager_observation_.Reset();
+  }
+
+ private:
+  void NotifyUserNotEligible() {
+    identity_manager_observation_.Reset();
+    base::OnceClosure callback = std::move(on_user_not_eligible_);
+    // `callback` destroys `this`; do not access members afterward.
+    std::move(callback).Run();
+  }
+
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
+  base::OnceCallback<void(SigninInterceptionResult)> callback_;
+  base::OnceClosure on_user_not_eligible_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SigninViewController,
                                       kSignoutConfirmationDialogViewElementId);
@@ -443,6 +514,7 @@ SigninViewController::~SigninViewController() = default;
 
 void SigninViewController::TearDownPreBrowserWindowDestruction() {
   CloseModalSignin();
+  CloseBubbleSignin();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   CloseInterceptBubble();
 #endif
@@ -653,9 +725,64 @@ void SigninViewController::ShowCrossDeviceSigninQrBubble(
     base::OnceClosure closing_callback,
     CrossDeviceSigninPromoEntryPoint entry_point) {
   CloseBubbleSignin();
+  pending_qr_bubble_closing_callback_ = std::move(closing_callback);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  const CoreAccountId expected_account_id =
+      identity_manager
+          ? identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)
+          : CoreAccountId();
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(&browser_.get());
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view ? browser_view->toolbar_button_provider()
+                         ->GetAvatarToolbarButtonInterface()
+                   : nullptr;
+  if (avatar_button) {
+    qr_bubble_anchor_callback_.Reset(base::BindOnce(
+        &SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved,
+        weak_ptr_factory_.GetWeakPtr(), std::move(qr_code_url), entry_point,
+        expected_account_id));
+    avatar_button->RunWhenVisible(qr_bubble_anchor_callback_.callback());
+    return;
+  }
+  OnCrossDeviceSigninQrBubbleAnchorResolved(
+      std::move(qr_code_url), entry_point, expected_account_id,
+      views::BubbleAnchor(), base::ScopedClosureRunner());
+}
+
+void SigninViewController::OnCrossDeviceSigninQrBubbleAnchorResolved(
+    GURL qr_code_url,
+    CrossDeviceSigninPromoEntryPoint entry_point,
+    const CoreAccountId& expected_account_id,
+    views::BubbleAnchor anchor,
+    base::ScopedClosureRunner keep_visible) {
+  // `RunWhenVisible()` can resolve asynchronously while an overflowed avatar
+  // button pops out. Re-verify that the same primary account is still signed in
+  // with a valid refresh token (matching `CrossDeviceSigninQrWebView`'s
+  // `IdentityManager::Observer` checks) before creating the bubble.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  const CoreAccountId primary_account_id =
+      identity_manager
+          ? identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)
+          : CoreAccountId();
+  if (expected_account_id.empty() ||
+      primary_account_id != expected_account_id ||
+      !identity_manager->HasAccountWithRefreshToken(primary_account_id) ||
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_id)) {
+    keep_visible.RunAndReset();
+    base::OnceClosure closing_callback =
+        std::move(pending_qr_bubble_closing_callback_);
+    if (closing_callback) {
+      std::move(closing_callback).Run();
+    }
+    return;
+  }
   auto delegate = ::CreateCrossDeviceSigninQrBubble(
-      &*browser_, std::move(qr_code_url), std::move(closing_callback),
-      entry_point);
+      &*browser_, anchor, std::move(keep_visible), std::move(qr_code_url),
+      std::move(pending_qr_bubble_closing_callback_), entry_point);
   bubble_widget_ = views::BubbleDialogDelegate::CreateBubble(
       delegate.release(),
       base::BindOnce(&SigninViewController::OnBubbleClosed, AsWeakPtr()));
@@ -666,18 +793,16 @@ SigninViewController::ShowSigninInterceptionBubble(
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   CloseInterceptBubble();
-  CreateInterceptionBubble(bubble_parameters, std::move(callback));
-  return std::make_unique<ScopedInterceptBubbleHandle>(intercept_bubble_);
+  RequestInterceptionBubble(bubble_parameters, std::move(callback));
+  return std::make_unique<ScopedInterceptBubbleHandle>(
+      base::BindOnce(&SigninViewController::CloseInterceptBubble,
+                     intercept_bubble_weak_factory_.GetWeakPtr()));
 }
 
 void SigninViewController::ShowChromeSigninBubble(
     const AccountInfo& account,
     signin_metrics::AccessPoint access_point) {
   CloseInterceptBubble();
-  chrome_signin_bubble_callback_.Reset(
-      base::BindOnce(&SigninViewController::OnChromeSigninBubbleResult,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     account.GetCoreAccountInfo(), access_point));
 
   std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
       account_preview_preference;
@@ -699,21 +824,62 @@ void SigninViewController::ShowChromeSigninBubble(
       /*primary_account=*/AccountInfo());
   bubble_parameters.account_preview_preference =
       std::move(account_preview_preference);
-  CreateInterceptionBubble(bubble_parameters,
-                           chrome_signin_bubble_callback_.callback());
+  RequestInterceptionBubble(
+      bubble_parameters,
+      base::BindOnce(&SigninViewController::OnChromeSigninBubbleResult,
+                     intercept_bubble_weak_factory_.GetWeakPtr(),
+                     account.GetCoreAccountInfo(), access_point));
 }
 
-void SigninViewController::CreateInterceptionBubble(
+void SigninViewController::RequestInterceptionBubble(
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   CHECK(!intercept_bubble_);
-  views::BubbleAnchor anchor =
-      BrowserView::GetBrowserViewForBrowser(&browser_.get())
-          ->toolbar_button_provider()
-          ->GetAvatarToolbarButtonInterface()
-          ->GetBubbleAnchor(*browser_);
+  CHECK(!pending_intercept_bubble_);
+  pending_intercept_bubble_ = std::make_unique<PendingInterceptBubble>(
+      IdentityManagerFactory::GetForProfile(GetProfile()), bubble_parameters,
+      std::move(callback),
+      base::BindOnce(
+          &SigninViewController::DismissPendingInterceptBubbleForIneligibleUser,
+          intercept_bubble_weak_factory_.GetWeakPtr()));
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(&browser_.get());
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view ? browser_view->toolbar_button_provider()
+                         ->GetAvatarToolbarButtonInterface()
+                   : nullptr;
+  if (!avatar_button) {
+    OnInterceptionBubbleAnchorResolved(views::BubbleAnchor(),
+                                       base::ScopedClosureRunner());
+    return;
+  }
+  avatar_button->RunWhenVisible(
+      base::BindOnce(&SigninViewController::OnInterceptionBubbleAnchorResolved,
+                     intercept_bubble_weak_factory_.GetWeakPtr()));
+}
+
+void SigninViewController::OnInterceptionBubbleAnchorResolved(
+    views::BubbleAnchor anchor,
+    base::ScopedClosureRunner keep_visible) {
+  CHECK(!intercept_bubble_);
+  CHECK(pending_intercept_bubble_);
+  std::unique_ptr<PendingInterceptBubble> pending =
+      std::move(pending_intercept_bubble_);
   intercept_bubble_ = DiceWebSigninInterceptionBubbleView::CreateBubble(
-      &browser_.get(), anchor, bubble_parameters, std::move(callback));
+      &browser_.get(), anchor, pending->bubble_parameters(),
+      pending->TakeCallback(), std::move(keep_visible));
+}
+
+void SigninViewController::DismissPendingInterceptBubbleForIneligibleUser() {
+  CHECK(!intercept_bubble_);
+  CHECK(pending_intercept_bubble_);
+  intercept_bubble_weak_factory_.InvalidateWeakPtrs();
+  std::unique_ptr<PendingInterceptBubble> pending =
+      std::move(pending_intercept_bubble_);
+  DiceWebSigninInterceptionBubbleView::RecordInterceptionDismissed(
+      pending->bubble_parameters(), GetProfile(),
+      SigninInterceptionDismissReason::kUserNotEligible);
+  pending->TakeCallback().Run(SigninInterceptionResult::kDismissed);
 }
 
 void SigninViewController::OnChromeSigninBubbleResult(
@@ -728,18 +894,24 @@ void SigninViewController::OnChromeSigninBubbleResult(
 }
 
 void SigninViewController::CloseInterceptBubble() {
-  // Cancel any pending `OnChromeSigninBubbleResult()` callback. Closing the
-  // bubble widget is asynchronous: if a Chrome Signin bubble is preempted by a
-  // second bubble, `intercept_bubble_` is updated to point to the second bubble
-  // before the first widget is destroyed. When the first widget's teardown
-  // completes, `DiceWebSigninInterceptionBubbleView` invokes its callback with
-  // `kIgnored`; if not cancelled, `OnChromeSigninBubbleResult()` would run for
-  // the first bubble and call `CloseInterceptBubble()`, closing the second
-  // bubble.
-  chrome_signin_bubble_callback_.Cancel();
+  // Invalidate callbacks for the current interception bubble session (pending
+  // anchor resolution, `OnChromeSigninBubbleResult()`, and handle destruction).
+  // Closing a bubble widget is asynchronous: if a Chrome Signin bubble is
+  // preempted by a second bubble, `intercept_bubble_` points to the second
+  // bubble before the first widget is destroyed, so the first widget's late
+  // `kIgnored` callback must not close the second bubble.
+  intercept_bubble_weak_factory_.InvalidateWeakPtrs();
+  std::unique_ptr<PendingInterceptBubble> pending =
+      std::move(pending_intercept_bubble_);
   if (intercept_bubble_) {
     intercept_bubble_->Close();
     intercept_bubble_.reset();
+  }
+  if (pending) {
+    DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
+        pending->bubble_parameters(), GetProfile(),
+        SigninInterceptionResult::kIgnored);
+    pending->TakeCallback().Run(SigninInterceptionResult::kIgnored);
   }
 }
 
@@ -810,6 +982,11 @@ void SigninViewController::CloseModalSignin() {
 }
 
 void SigninViewController::CloseBubbleSignin() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  qr_bubble_anchor_callback_.Cancel();
+  base::OnceClosure closing_callback =
+      std::move(pending_qr_bubble_closing_callback_);
+#endif
   if (bubble_widget_) {
     // Extract the pointer so bubble_widget_ is nullified immediately.
     auto widget = std::move(bubble_widget_);
@@ -817,6 +994,11 @@ void SigninViewController::CloseBubbleSignin() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(widget));
   }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (closing_callback) {
+    std::move(closing_callback).Run();
+  }
+#endif
 }
 
 void SigninViewController::SetModalSigninHeight(int height) {

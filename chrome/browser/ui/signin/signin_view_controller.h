@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_SIGNIN_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SIGNIN_SIGNIN_VIEW_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -26,6 +28,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -305,11 +308,26 @@ class SigninViewController {
       ChromeSignoutConfirmationPromptVariant prompt_variant,
       size_t unsynced_data_count,
       SignoutConfirmationCallback callback);
-  // Creates and shows the Dice web sign-in interception bubble.
-  // `CloseInterceptBubble()` must be called before calling this method.
-  void CreateInterceptionBubble(
+
+  void OnCrossDeviceSigninQrBubbleAnchorResolved(
+      GURL qr_code_url,
+      CrossDeviceSigninPromoEntryPoint entry_point,
+      const CoreAccountId& expected_account_id,
+      views::BubbleAnchor anchor,
+      base::ScopedClosureRunner keep_visible);
+
+  // Resolves the avatar button anchor and shows the Dice web sign-in
+  // interception bubble once the button is visible. `CloseInterceptBubble()`
+  // must be called before calling this method.
+  void RequestInterceptionBubble(
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
+
+  void OnInterceptionBubbleAnchorResolved(
+      views::BubbleAnchor anchor,
+      base::ScopedClosureRunner keep_visible);
+
+  void DismissPendingInterceptBubbleForIneligibleUser();
 
   void OnChromeSigninBubbleResult(const CoreAccountInfo& account,
                                   signin_metrics::AccessPoint access_point,
@@ -340,16 +358,31 @@ class SigninViewController {
   std::unique_ptr<views::Widget> bubble_widget_;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  class PendingInterceptBubble;
+  class ScopedInterceptBubbleHandle;
+
   std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
+
+  // Pending state while waiting for the avatar anchor of the QR bubble.
+  base::OnceClosure pending_qr_bubble_closing_callback_;
+  base::CancelableOnceCallback<void(views::BubbleAnchor,
+                                    base::ScopedClosureRunner)>
+      qr_bubble_anchor_callback_;
+
+  // State for the active or pending Dice web sign-in interception bubble.
+  std::unique_ptr<PendingInterceptBubble> pending_intercept_bubble_;
   base::WeakPtr<DiceWebSigninInterceptionBubbleView> intercept_bubble_;
-  // Used to cancel the result callback of a `ShowChromeSigninBubble()` when it
-  // is closed early (see `CloseInterceptBubble()`).
-  base::CancelableOnceCallback<void(SigninInterceptionResult)>
-      chrome_signin_bubble_callback_;
 #endif
 
   base::ObserverList<Observer> observer_list_;
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Invalidated in `CloseInterceptBubble()` to cancel pending anchor,
+  // eligibility, result, and handle-close callbacks for a closed or preempted
+  // interception bubble.
+  base::WeakPtrFactory<SigninViewController> intercept_bubble_weak_factory_{
+      this};
+#endif
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
 };
 

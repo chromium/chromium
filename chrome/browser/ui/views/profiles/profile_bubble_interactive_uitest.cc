@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -99,15 +102,19 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
 // TODO(crbug.com/464411959): Reenable it.
 IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
                        DISABLED_InterceptionBubbleFocus) {
+  base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner>
+      anchor_future;
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->toolbar_button_provider()
+      ->GetAvatarToolbarButtonInterface()
+      ->RunWhenVisible(anchor_future.GetCallback());
+  auto [anchor, keep_visible] = anchor_future.Take();
+
   // Create the inteerception bubble, owned by the view hierarchy.
   DiceWebSigninInterceptionBubbleView* bubble =
       new DiceWebSigninInterceptionBubbleView(
-          browser(),
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->toolbar_button_provider()
-              ->GetAvatarToolbarButtonInterface()
-              ->GetBubbleAnchor(*browser()),
-          GetTestBubbleParameters(), base::DoNothing());
+          browser(), anchor, GetTestBubbleParameters(), base::DoNothing(),
+          std::move(keep_visible));
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   widget->Show();
   // The bubble takes focus when it is displayed.

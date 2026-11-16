@@ -4,9 +4,12 @@
 
 #include <array>
 #include <string>
+#include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/scoped_environment_variable_override.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -377,13 +380,17 @@ class DiceWebSigninInterceptionBubblePixelTest
         views::test::AnyWidgetTestPasskey{},
         "DiceWebSigninInterceptionBubbleView");
 
+    base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner>
+        anchor_future;
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar_button_provider()
+        ->GetAvatarToolbarButtonInterface()
+        ->RunWhenVisible(anchor_future.GetCallback());
+    auto [anchor, keep_visible] = anchor_future.Take();
+
     DiceWebSigninInterceptionBubbleView::CreateBubble(
-        browser(),
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetAvatarToolbarButtonInterface()
-            ->GetBubbleAnchor(*browser()),
-        GetTestBubbleParameters(), base::DoNothing());
+        browser(), anchor, GetTestBubbleParameters(), base::DoNothing(),
+        std::move(keep_visible));
 
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();

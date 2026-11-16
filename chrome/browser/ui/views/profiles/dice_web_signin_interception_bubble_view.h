@@ -44,13 +44,16 @@ class DiceWebSigninInterceptionBubbleView
       const DiceWebSigninInterceptionBubbleView& other) = delete;
   ~DiceWebSigninInterceptionBubbleView() override;
 
-  // Creates and shows the bubble. The returned weak pointer can be used to
-  // close the bubble via `Close()`.
+  // Creates and shows the bubble. If `anchor` is null, the bubble floats
+  // centered on `browser`'s window. `keep_visible` is held until the bubble is
+  // destroyed. The returned weak pointer can be used to close the bubble via
+  // `Close()`.
   static base::WeakPtr<DiceWebSigninInterceptionBubbleView> CreateBubble(
       BrowserWindowInterface* browser,
       views::BubbleAnchor anchor,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
-      base::OnceCallback<void(SigninInterceptionResult)> callback);
+      base::OnceCallback<void(SigninInterceptionResult)> callback,
+      base::ScopedClosureRunner keep_visible);
 
   // Closes the bubble.
   void Close();
@@ -60,6 +63,13 @@ class DiceWebSigninInterceptionBubbleView
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       Profile* profile,
       SigninInterceptionResult result);
+
+  // Records metrics for dismissing the signin interception before the bubble is
+  // shown.
+  static void RecordInterceptionDismissed(
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+      Profile* profile,
+      SigninInterceptionDismissReason reason);
 
   // Returns true if the user has accepted the interception.
   bool GetAccepted() const;
@@ -109,7 +119,8 @@ class DiceWebSigninInterceptionBubbleView
       BrowserWindowInterface* browser,
       views::BubbleAnchor anchor,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
-      base::OnceCallback<void(SigninInterceptionResult)> callback);
+      base::OnceCallback<void(SigninInterceptionResult)> callback,
+      base::ScopedClosureRunner keep_visible);
 
   // This bubble has no native buttons. The user accepts or cancels, which is
   // called by the inner web UI.
@@ -162,7 +173,12 @@ class DiceWebSigninInterceptionBubbleView
 
   base::TimeTicks chrome_signin_bubble_shown_time_;
 
-  // Callback to clear the avatar button affects applied by
+  // Keeps the avatar button visible in the toolbar while the bubble is open.
+  // Declared before `clear_avatar_button_effects_callback_` so reverse member
+  // destruction clears explicit button effects before releasing overflow lock.
+  base::ScopedClosureRunner keep_visible_;
+
+  // Callback to clear the avatar button effects applied by
   // `ApplyAvatarButtonEffects`.
   base::ScopedClosureRunner clear_avatar_button_effects_callback_;
 
