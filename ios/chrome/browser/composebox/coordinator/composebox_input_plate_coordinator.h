@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/tab_picker/public/tab_picker_logger.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 
 @protocol ComposeboxDebuggerLogger;
 @class ComposeboxInputPlateViewController;
@@ -61,6 +62,9 @@ class Browser;
 
 // Updates the theme of the input plate.
 - (void)updateTheme:(ComposeboxTheme*)theme;
+
+// Updates the active tool mode of the composebox.
+- (void)setToolMode:(omnibox::ToolMode)toolMode;
 
 @end
 

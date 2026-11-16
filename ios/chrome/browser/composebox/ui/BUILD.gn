@@ -31,7 +31,6 @@ source_set("ui") {
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/public:animation",
     "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/public:constants",
@@ -59,6 +58,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/glow_effect:glow_effect_api",
     "//ios/web/public",
+    "//third_party/omnibox_proto",
     "//ui/base",
   ]
   public_deps = [

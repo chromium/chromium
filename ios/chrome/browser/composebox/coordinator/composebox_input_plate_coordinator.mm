@@ -412,6 +412,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   [_viewController updateTheme:theme];
 }
 
+- (void)setToolMode:(omnibox::ToolMode)toolMode {
+  [_mediator setToolMode:toolMode];
+}
+
 #pragma mark - ComposeboxInputPlateViewControllerDelegate
 
 - (void)composeboxViewController:

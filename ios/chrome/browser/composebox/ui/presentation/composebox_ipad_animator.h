@@ -7,14 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "third_party/omnibox_proto/tool_mode.pb.h"
+
 @class LayoutGuideCenter;
-enum class ComposeboxMode;
 
 // Delegate for animation changes to the composebox.
 @protocol ComposeboxiPadAnimatorDelegate
 
-// Indicates to the delegate to update the Composebox `mode`.
-- (void)setComposeboxMode:(ComposeboxMode)mode;
+// Indicates to the delegate to update the Composebox active tool to `toolMode`.
+- (void)setComposeboxToolMode:(omnibox::ToolMode)toolMode;
 
 @end
 

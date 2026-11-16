@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/composebox/ui/presentation/composebox_ipad_animator.h"
 
 #import "base/time/time.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -50,8 +49,9 @@ base::TimeDelta kAnimationDuration = base::Seconds(0.3);
                                     relativeDuration:0.5
                                           animations:^{
                                             [weakSelf.delegate
-                                                setComposeboxMode:
-                                                    ComposeboxMode::kAIM];
+                                                setComposeboxToolMode:
+                                                    omnibox::ToolMode::
+                                                        TOOL_MODE_AIM];
                                           }];
           }
         }

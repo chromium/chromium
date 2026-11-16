@@ -104,6 +104,11 @@ class WebStateID;
 // Disconnects the manager and cleans up resources.
 - (void)disconnect;
 
+// Selects the given `toolMode` if eligible. `TOOL_MODE_AIM` enters plain AI
+// Mode, and `TOOL_MODE_UNSPECIFIED` returns to the default mode for the
+// entrypoint.
+- (void)setActiveToolMode:(omnibox::ToolMode)toolMode;
+
 // Sets the active model if eligible. `MODEL_MODE_UNSPECIFIED` clears the
 // explicit selection. If `explicitUserAction` is `YES`, records metrics.
 - (void)setActiveModel:(omnibox::ModelMode)model

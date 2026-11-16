@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
+#import "third_party/omnibox_proto/tool_mode.pb.h"
 
 // Defines the set of views and functional hooks required when presenting and
 // dismissing the composebox.
@@ -25,8 +25,8 @@
 // The incognito view to be animated. `nil` if not in incognito.
 @property(nonatomic, readonly) UIView* incognitoViewForAnimation;
 
-// Informs the composebox to update its visual mode to the given `mode`.
-- (void)setComposeboxMode:(ComposeboxMode)mode;
+// Informs the composebox to update its active tool mode to `toolMode`.
+- (void)setComposeboxToolMode:(omnibox::ToolMode)toolMode;
 
 // Requests the input plate to expand beyond to full width when dismissing.
 - (void)expandInputPlateForDismissalToFrame:(CGRect)targetFrame;

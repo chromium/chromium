@@ -150,8 +150,9 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                             relativeDuration:0.8
                                   animations:^{
                                     if (toggleOnAIM) {
-                                      [context setComposeboxMode:
-                                                   ComposeboxMode::kAIM];
+                                      [context
+                                          setComposeboxToolMode:
+                                              omnibox::ToolMode::TOOL_MODE_AIM];
                                     }
                                   }];
       }
@@ -203,8 +204,9 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
                             relativeDuration:0.8
                                   animations:^{
                                     if (toggleOnAIM) {
-                                      [context setComposeboxMode:
-                                                   ComposeboxMode::kAIM];
+                                      [context
+                                          setComposeboxToolMode:
+                                              omnibox::ToolMode::TOOL_MODE_AIM];
                                     }
                                   }];
       }
@@ -229,7 +231,7 @@ const NSTimeInterval kInitialScaleForAppear = 0.9;
       animations:^{
         toView.alpha = 1;
         if (toggleOnAIM) {
-          [context setComposeboxMode:ComposeboxMode::kAIM];
+          [context setComposeboxToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
         }
       }
       completion:^(BOOL finished) {

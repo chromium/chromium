@@ -538,8 +538,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     [self extractFaviconForCurrentTab];
   }
 
-  if (self.isCobrowse) {
-    _modeHolder.mode = ComposeboxMode::kAIM;
+  if (self.isCobrowse && _modeHolder.isRegularSearch) {
+    [self setToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
   }
 
   [self commitUIUpdates];
@@ -741,6 +741,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   if (params.attachedTabItems.count > 0) {
     [self restoreTransferredTabItems:params.attachedTabItems];
   }
+}
+
+- (void)setToolMode:(omnibox::ToolMode)toolMode {
+  [_stateManager setActiveToolMode:toolMode];
 }
 
 - (void)setModel:(omnibox::ModelMode)model

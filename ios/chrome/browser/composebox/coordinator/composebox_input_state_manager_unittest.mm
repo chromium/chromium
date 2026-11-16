@@ -1462,3 +1462,22 @@ TEST_F(ComposeboxInputStateManagerTest,
   EXPECT_FALSE(
       [manager_ canAttachActiveTabWithAttachedWebStateIDs:{eligible_id}]);
 }
+
+// Tests that `setActiveToolMode:` switches to AI Mode for `TOOL_MODE_AIM` and
+// returns to the entrypoint's default mode for `TOOL_MODE_UNSPECIFIED`.
+TEST_F(ComposeboxInputStateManagerTest,
+       SetActiveToolModeUpdatesComposeboxModeWhenEligible) {
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+  omnibox::SearchboxConfig config;
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
+  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED];
+  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kRegularSearch);
+}
