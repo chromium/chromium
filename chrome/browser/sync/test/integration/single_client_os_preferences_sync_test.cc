@@ -9,7 +9,6 @@
 #include "base/values.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
@@ -86,7 +85,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
   // Shelf alignment is a Chrome OS only preference.
   ChangeStringPref(/*index=*/0, ash::prefs::kShelfAlignment,
                    ash::kShelfAlignmentRight);
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::DataType::OS_PREFERENCES, ash::prefs::kShelfAlignment,
+          ConvertToSyncedPrefValue(base::Value(ash::kShelfAlignmentRight)))
+          .Wait());
   EXPECT_THAT(GetPrefs(/*index=*/0)->GetString(ash::prefs::kShelfAlignment),
               Eq(ash::kShelfAlignmentRight));
 }
