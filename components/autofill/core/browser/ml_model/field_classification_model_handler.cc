@@ -273,6 +273,14 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
     return;
   }
 
+  // Exclude synthetic select fields, as the on-device models were not trained
+  // on them and since synthetic selects might lack proper labels.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  std::erase_if(fields, [](const FormFieldData& field) {
+    return field.form_control_type() == FormControlType::kSyntheticSelectOne;
+  });
+  form.set_fields(std::move(fields));
+
   std::optional<autofill_ml_internals::mojom::MlPredictionLogPtr>
       prediction_log = std::nullopt;
   if (log_router_ && log_router_->HasReceivers()) {
