@@ -2,7 +2,7 @@ caption: Default search provider keyword
 desc: |-
   If <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME">DefaultSearchProviderEnabled</ph> is on, then setting <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME">DefaultSearchProviderKeyword</ph> specifies the keyword or shortcut used in the address bar to trigger the search for this provider.
 
-        Leaving <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME">DefaultSearchProviderKeyword</ph> unset means no keyword activates the search provider.
+        Leaving <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME">DefaultSearchProviderKeyword</ph> unset means the hostname specified by the search URL is used as the keyword.
 example_value: mis
 features:
   can_be_recommended: true
@@ -12,7 +12,7 @@ future_on:
 - fuchsia
 owners:
 - file://components/policy/OWNERS
-- rsorokin@chromium.org
+- file://components/search_engines/enterprise/OWNERS
 schema:
   type: string
 supported_on:
