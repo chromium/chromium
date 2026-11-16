@@ -60,7 +60,7 @@ void WebUIPermissionDashboard::UpdateState() {
   location_bar_->OnChanged();
 }
 
-void WebUIPermissionDashboard::ResetTabState() {
+void WebUIPermissionDashboard::InvalidateStateTokens() {
   request_chip_.InvalidateStateToken();
   indicator_chip_.InvalidateStateToken();
 }
