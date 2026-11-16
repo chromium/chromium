@@ -4,14 +4,23 @@
 
 #include "chrome/browser/glic/host/glic_guest_observer.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/host/glic_pwc_policy_delegate.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/fake_web_contents_manager.h"
+#include "chrome/browser/pwc/privileged_web_contents.h"
+#include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/base/net_errors.h"
@@ -216,6 +225,118 @@ TEST_F(GlicGuestObserverTest,
   same_doc->CommitSameDocument();
   EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::HIDDEN);
   EXPECT_FALSE(web_contents()->IsBeingCaptured());
+}
+
+TEST_F(GlicGuestObserverTest,
+       DoesNotTagUnnavigatedPrivilegedPlaceholderAndTagsSpeculativeMainFrame) {
+  base::test::ScopedFeatureList feature_list(features::kGlicNoWebview);
+  auto pwc = pwc::PrivilegedWebContents::Create(
+      pwc::PrivilegedComponent::kGlic, profile(),
+      std::make_unique<GlicPwcPolicyDelegate>(profile()));
+  content::WebContents* guest_contents = pwc->web_contents();
+  content::RenderProcessHost* placeholder_rph =
+      guest_contents->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_TRUE(
+      guest_contents->GetPrimaryMainFrame()->GetSiteInstance()->HasProcess());
+  ASSERT_FALSE(guest_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  FakeWebContentsManager contents_manager;
+  PrepareGlicGuestWebContents(*guest_contents, contents_manager);
+  EXPECT_FALSE(IsProcessHostForGlic(placeholder_rph));
+
+  class SpeculativeFrameCheckObserver : public content::WebContentsObserver {
+   public:
+    explicit SpeculativeFrameCheckObserver(content::WebContents* contents)
+        : content::WebContentsObserver(contents) {}
+
+    void RenderFrameCreated(content::RenderFrameHost* rfh) override {
+      if (!rfh->GetParentOrOuterDocument()) {
+        saw_main_frame_created_ = true;
+        was_active_primary_main_frame_ = rfh->IsInPrimaryMainFrame();
+        was_marked_in_render_frame_created_ =
+            IsProcessHostForGlic(rfh->GetProcess());
+      }
+    }
+
+    bool saw_main_frame_created() const { return saw_main_frame_created_; }
+    bool was_active_primary_main_frame() const {
+      return was_active_primary_main_frame_;
+    }
+    bool was_marked_in_render_frame_created() const {
+      return was_marked_in_render_frame_created_;
+    }
+
+   private:
+    bool saw_main_frame_created_ = false;
+    bool was_active_primary_main_frame_ = true;
+    bool was_marked_in_render_frame_created_ = false;
+  };
+
+  SpeculativeFrameCheckObserver frame_observer(guest_contents);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      guest_contents, GURL("https://gemini.google.com/app"));
+
+  EXPECT_TRUE(frame_observer.saw_main_frame_created());
+  EXPECT_FALSE(frame_observer.was_active_primary_main_frame());
+  EXPECT_TRUE(frame_observer.was_marked_in_render_frame_created());
+  EXPECT_TRUE(IsProcessHostForGlic(
+      guest_contents->GetPrimaryMainFrame()->GetProcess()));
+  EXPECT_FALSE(IsProcessHostForGlic(placeholder_rph));
+
+  // Cross-site subframes in a distinct RenderProcessHost must not be tagged.
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(guest_contents->GetPrimaryMainFrame())
+          ->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://other.example.com/subframe"), subframe);
+  ASSERT_NE(subframe->GetProcess(),
+            guest_contents->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_FALSE(IsProcessHostForGlic(subframe->GetProcess()));
+}
+
+TEST_F(GlicGuestObserverTest,
+       PrepareGlicGuestWebContentsTagsPrivilegedOrGuestProcessByMode) {
+  FakeWebContentsManager contents_manager;
+
+  // In NoWebview mode, an already-navigated privileged guest process is tagged
+  // immediately by PrepareGlicGuestWebContents().
+  {
+    base::test::ScopedFeatureList feature_list(features::kGlicNoWebview);
+    auto pwc = pwc::PrivilegedWebContents::Create(
+        pwc::PrivilegedComponent::kGlic, profile(),
+        std::make_unique<GlicPwcPolicyDelegate>(profile()));
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        pwc->web_contents(), GURL("https://gemini.google.com/app"));
+    ASSERT_TRUE(pwc->web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetProcess()
+                    ->IsPrivileged());
+
+    PrepareGlicGuestWebContents(*pwc->web_contents(), contents_manager);
+    EXPECT_TRUE(IsProcessHostForGlic(
+        pwc->web_contents()->GetPrimaryMainFrame()->GetProcess()));
+  }
+
+  // In <webview> mode, only IsForGuestsOnly() processes are tagged by
+  // PrepareGlicGuestWebContents().
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kGlicNoWebview);
+
+    PrepareGlicGuestWebContents(*web_contents(), contents_manager);
+    EXPECT_FALSE(IsProcessHostForGlic(main_rfh()->GetProcess()));
+
+    auto guest_site_instance = content::SiteInstance::CreateForGuest(
+        profile(), GetGlicStoragePartitionConfig(profile()));
+    auto guest_wc = content::WebContents::Create(
+        content::WebContents::CreateParams(profile(), guest_site_instance));
+    ASSERT_TRUE(
+        guest_wc->GetPrimaryMainFrame()->GetProcess()->IsForGuestsOnly());
+
+    PrepareGlicGuestWebContents(*guest_wc, contents_manager);
+    EXPECT_TRUE(
+        IsProcessHostForGlic(guest_wc->GetPrimaryMainFrame()->GetProcess()));
+  }
 }
 
 }  // namespace

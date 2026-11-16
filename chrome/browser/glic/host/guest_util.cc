@@ -305,9 +305,16 @@ void PrepareGlicGuestWebContents(content::WebContents& guest_contents,
                                  GlicWebContentsManager& contents_manager) {
   GlicGuestObserver::CreateForWebContents(guest_contents, contents_manager);
 
-  if (guest_contents.GetPrimaryMainFrame()) {
-    GlicProcessUserData::MarkProcess(
-        guest_contents.GetPrimaryMainFrame()->GetProcess());
+  content::RenderFrameHost* rfh = guest_contents.GetPrimaryMainFrame();
+  if (GlicKeyedService::IsNoWebviewEnabled(
+          guest_contents.GetBrowserContext())) {
+    if (rfh && rfh->GetProcess()->IsPrivileged()) {
+      GlicProcessUserData::MarkProcess(rfh->GetProcess());
+    }
+  } else {
+    if (rfh && rfh->GetProcess()->IsForGuestsOnly()) {
+      GlicProcessUserData::MarkProcess(rfh->GetProcess());
+    }
   }
 
   PrefsTabHelper::CreateForWebContents(&guest_contents);

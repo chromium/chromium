@@ -147,11 +147,19 @@ GlicGuestObserver::~GlicGuestObserver() = default;
 
 void GlicGuestObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->GetParentOrOuterDocument() &&
+      !render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    MarkProcessAsGlic(render_frame_host->GetProcess());
+  }
   MaybeSetBackgroundColor(render_frame_host);
 }
 
 void GlicGuestObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    MarkProcessAsGlic(navigation_handle->GetRenderFrameHost()->GetProcess());
+  }
   GrantAutoplayPermissions(navigation_handle);
   MaybeEnableMojoJsBindings(navigation_handle);
   if (navigation_handle->IsInPrimaryMainFrame() &&
