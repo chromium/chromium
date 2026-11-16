@@ -5,11 +5,18 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/run_until.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -25,8 +32,11 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/network_name_cache.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/features.h"
@@ -36,6 +46,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -110,6 +121,17 @@ std::string ExpectedOsPlatform() {
 bool ContainsClientId(const AnalysisSettings& settings) {
   return settings.client_metadata && settings.client_metadata->has_device() &&
          settings.client_metadata->device().has_client_id();
+}
+
+// Returns the network name cache owned by the browser's
+// `DeviceManagementService`, or nullptr if there is none.
+policy::NetworkNameCache* GetBrowserNetworkNameCache() {
+  policy::DeviceManagementService* device_management_service =
+      g_browser_process->browser_policy_connector()
+          ->device_management_service();
+  return device_management_service
+             ? device_management_service->network_name_cache()
+             : nullptr;
 }
 
 }  // namespace
@@ -330,8 +352,9 @@ class ConnectorsServiceAnalysisProfileBrowserTest
     if (include_device_info) {
       base::DictValue device;
       device.Set("device", policy::ReportingJobConfigurationBase::
-                               DeviceDictionaryBuilder ::BuildDeviceDictionary(
-                                   kFakeBrowserDMToken, kFakeBrowserClientId));
+                               DeviceDictionaryBuilder::BuildDeviceDictionary(
+                                   kFakeBrowserDMToken, kFakeBrowserClientId,
+                                   GetBrowserNetworkNameCache()));
       output.Merge(std::move(device));
     }
 
@@ -841,6 +864,92 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
   ASSERT_EQ(REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED, url_check_pref);
   ASSERT_EQ(kDomain1, management_domain);
 #endif
+}
+
+class ConnectorsServiceCachedNetworkNameBrowserTest
+    : public ConnectorsServiceProfileBrowserTest {
+ public:
+  ConnectorsServiceCachedNetworkNameBrowserTest()
+      : ConnectorsServiceProfileBrowserTest(ManagementStatus::kAffiliated) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps,
+                              policy::features::kEnhancedSecurityEventFields,
+                              policy::kUseCachedNetworkName},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ConnectorsServiceCachedNetworkNameBrowserTest,
+                       DoesNotBlockUIThreadAndPopulatesCachedNetworkName) {
+  SetPrefs(AnalysisConnectorPref(FILE_ATTACHED),
+           AnalysisConnectorScopePref(FILE_ATTACHED),
+           kNormalCloudAnalysisSettingsPref,
+           /*profile_scope=*/false);
+  SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref,
+           kNormalCloudAnalysisSettingsPref,
+           /*profile_scope=*/false);
+
+  // The browser's `DeviceManagementService` owns the cache.
+  policy::NetworkNameCache* cache = GetBrowserNetworkNameCache();
+  ASSERT_TRUE(cache);
+
+  base::RunLoop provider_started_loop;
+  auto unblock_provider =
+      base::MakeRefCounted<base::RefCountedData<base::WaitableEvent>>();
+  cache->SetProviderForTesting(base::BindRepeating(
+      [](base::RepeatingClosure signal_provider_started,
+         scoped_refptr<base::RefCountedData<base::WaitableEvent>>
+             unblock_provider) {
+        signal_provider_started.Run();
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+        unblock_provider->data.Wait();
+        return std::string("EnterpriseCorpWiFi");
+      },
+      provider_started_loop.QuitClosure(), unblock_provider));
+  // Unblocks a pending query and restores a provider that doesn't block, even
+  // if the test exits early.
+  absl::Cleanup cleanup = [cache, unblock_provider] {
+    unblock_provider->data.Signal();
+    cache->SetProviderForTesting(
+        base::BindRepeating([] { return std::string(); }));
+  };
+
+  // The UI thread gets an empty network name right away instead of blocking
+  // on `unblock_provider`.
+  auto* service =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->GetProfile());
+  auto initial_settings =
+      service->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
+  ASSERT_TRUE(initial_settings.has_value());
+  ASSERT_TRUE(initial_settings->client_metadata);
+  EXPECT_TRUE(initial_settings->client_metadata->device().has_network_name());
+  EXPECT_EQ("", initial_settings->client_metadata->device().network_name());
+
+  // Unblock the background query and wait for the cache to be populated.
+  provider_started_loop.Run();
+  unblock_provider->data.Signal();
+  ASSERT_TRUE(base::test::RunUntil(
+      [cache] { return cache->GetNetworkName() == "EnterpriseCorpWiFi"; }));
+
+  auto refreshed_settings =
+      service->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
+  ASSERT_TRUE(refreshed_settings.has_value());
+  ASSERT_TRUE(refreshed_settings->client_metadata);
+  EXPECT_EQ("EnterpriseCorpWiFi",
+            refreshed_settings->client_metadata->device().network_name());
+
+  // Reporting only includes the network name when enhanced security event
+  // fields are enabled, which isn't the case on every platform (e.g. Windows 11
+  // 24H2+).
+  if (policy::features::IsEnhancedSecurityEventFieldsEnabled()) {
+    base::DictValue device_dict = policy::ReportingJobConfigurationBase::
+        DeviceDictionaryBuilder::BuildDeviceDictionary(
+            kFakeBrowserDMToken, kFakeBrowserClientId, cache);
+    const std::string* dict_network_name =
+        device_dict.FindString("networkName");
+    ASSERT_TRUE(dict_network_name);
+    EXPECT_EQ("EnterpriseCorpWiFi", *dict_network_name);
+  }
 }
 
 }  // namespace enterprise_connectors

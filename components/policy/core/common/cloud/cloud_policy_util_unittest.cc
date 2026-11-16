@@ -7,14 +7,18 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/cloud/network_name_cache.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
 #include "base/android/device_info_test_support.h"
-#include "base/test/scoped_feature_list.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -82,12 +86,32 @@ TEST(CloudPolicyUtilTest, GetMachineNameAndroidFeatureDisabled) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+TEST(CloudPolicyUtilTest, GetNetworkName_EmptyWithoutNetworkNameCache) {
+  base::test::ScopedFeatureList scoped_feature_list(kUseCachedNetworkName);
+  EXPECT_EQ("", GetNetworkName(/*network_name_cache=*/nullptr));
+}
+
+TEST(CloudPolicyUtilTest, GetNetworkName_ReturnsValueFromNetworkNameCache) {
+  base::test::ScopedFeatureList scoped_feature_list(kUseCachedNetworkName);
+  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<NetworkNameCache> cache = NetworkNameCache::CreateForTesting(
+      base::BindRepeating([] { return std::string("CorpWiFi"); }));
+
+  // The first call starts the background query and returns immediately.
+  EXPECT_EQ("", GetNetworkName(cache.get()));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&cache] { return GetNetworkName(cache.get()) == "CorpWiFi"; }));
+}
+
 #if BUILDFLAG(IS_WIN)
-TEST(CloudPolicyUtilTest, GetNetworkNameEmptyOnWin11_24H2OrGreater) {
+TEST(CloudPolicyUtilTest,
+     GetNetworkName_FeatureDisabledDoesNotQueryOnWin11_24H2) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kUseCachedNetworkName);
   if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
-    GTEST_SKIP() << "Only applies to Windows 11 24H2+.";
+    GTEST_SKIP() << "Only relevant on Windows 11 24H2+.";
   }
-  EXPECT_TRUE(GetNetworkName().empty());
+  EXPECT_EQ("", GetNetworkName(/*network_name_cache=*/nullptr));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

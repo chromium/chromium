@@ -15,6 +15,7 @@
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_event_mappings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -91,9 +92,11 @@ void RealtimeReportingJobConfiguration::InitializeUploadRequest(
     bool include_device_info) {
   AddParameter("key", google_apis::GetAPIKey());
   if (include_device_info) {
+    DeviceManagementService* service = client->service();
     upload_request_.mutable_device()->MergeFrom(
-        DeviceDictionaryBuilder::BuildDeviceProto(client->dm_token(),
-                                                  client->client_id()));
+        DeviceDictionaryBuilder::BuildDeviceProto(
+            client->dm_token(), client->client_id(),
+            service ? service->network_name_cache() : nullptr));
   }
   upload_request_.mutable_browser()->MergeFrom(
       BrowserDictionaryBuilder::BuildBrowserProto(include_device_info));

@@ -11,6 +11,7 @@
 #import "components/enterprise/connectors/core/features.h"
 #import "components/policy/core/browser/policy_data_utils.h"
 #import "components/policy/core/common/cloud/affiliation.h"
+#import "components/policy/core/common/cloud/device_management_service.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_types.h"
@@ -114,6 +115,19 @@ const PrefService* ConnectorsService::GetPrefs() const {
 policy::CloudPolicyManager*
 ConnectorsService::GetManagedUserCloudPolicyManager() const {
   return user_cloud_policy_manager_;
+}
+
+policy::NetworkNameCache* ConnectorsService::GetNetworkNameCache() {
+  BrowserPolicyConnectorIOS* connector =
+      GetApplicationContext()->GetBrowserPolicyConnector();
+  if (!connector) {
+    return nullptr;
+  }
+  policy::DeviceManagementService* device_management_service =
+      connector->device_management_service();
+  return device_management_service
+             ? device_management_service->network_name_cache()
+             : nullptr;
 }
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(

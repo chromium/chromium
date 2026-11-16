@@ -665,6 +665,7 @@ void EncryptedReportingClient::CreateUploadJob(
           ->configuration()
           ->GetEncryptedReportingServerUrl(),
       std::move(payload_result.value()), dm_token_, client_id_,
+      delegate_->device_management_service()->network_name_cache(),
       std::move(response_cb),
       base::BindOnce(
           &EncryptedReportingClient::OnReportUploadCompleted,

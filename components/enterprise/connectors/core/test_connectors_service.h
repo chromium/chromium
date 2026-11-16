@@ -50,6 +50,9 @@ class TestConnectorsService : public ConnectorsServiceBase {
   // NOTREACHED.
   policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
 
+  // Returns nullptr.
+  policy::NetworkNameCache* GetNetworkNameCache() override;
+
  private:
   bool connectors_enabled_ = false;
   std::optional<ConnectorsServiceBase::DmToken> machine_dm_token_;

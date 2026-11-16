@@ -8,6 +8,7 @@
 #import "base/json/json_reader.h"
 #import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_file_util.h"
 #import "base/version_info/version_info.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -20,12 +21,14 @@
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/cloud/cloud_policy_service.h"
 #import "components/policy/core/common/cloud/cloud_policy_util.h"
+#import "components/policy/core/common/cloud/device_management_service.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #import "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/proto/device_management_backend.pb.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
@@ -407,6 +410,28 @@ TEST_F(ConnectorsServiceTest, BuildClientMetadata_IsCloud) {
   ASSERT_EQ(meta_data->device().os_platform(), policy::GetOSPlatform());
   ASSERT_EQ(meta_data->device().name(), policy::GetDeviceName());
   EXPECT_FALSE(meta_data->is_chrome_os_managed_guest_session());
+}
+
+// Without a `NetworkNameCache`, the network name is reported as empty instead
+// of being queried synchronously.
+TEST_F(ConnectorsServiceTest, BuildClientMetadata_NoNetworkNameCache) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{safe_browsing::kEnhancedFieldsForSecOps,
+                            policy::kUseCachedNetworkName},
+      /*disabled_features=*/{});
+  // The test `BrowserPolicyConnectorIOS` isn't initialized, so it has no
+  // `DeviceManagementService`, which owns the `NetworkNameCache`.
+  ASSERT_FALSE(GetApplicationContext()
+                   ->GetBrowserPolicyConnector()
+                   ->device_management_service());
+
+  auto service = CreateService();
+  test::SetOnSecurityEventReporting(profile()->GetPrefs(), /*enabled=*/true);
+  auto meta_data = service.BuildClientMetadata(/*is_cloud=*/true);
+  ASSERT_TRUE(meta_data);
+  EXPECT_TRUE(meta_data->device().has_network_name());
+  EXPECT_EQ(meta_data->device().network_name(), "");
 }
 
 TEST_F(ConnectorsServiceTest, ExemptURL_WebUI) {

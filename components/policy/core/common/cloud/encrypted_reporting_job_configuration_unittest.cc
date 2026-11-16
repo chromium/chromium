@@ -217,6 +217,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
             shared_url_loader_factory_, kServerUrl,
             RequestPayloadBuilder().AddRecord(record_value).Build(),
             client_.dm_token(), client_.client_id(),
+            /*network_name_cache=*/nullptr,
             base::BindOnce(
                 &MockUploadResponseCb::Call,
                 base::Unretained(test_upload.upload_response_cb.get())),
@@ -337,7 +338,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, ValidatePayload) {
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, RequestPayloadBuilder().Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
   auto* payload = GetPayload(&configuration);
@@ -379,7 +380,7 @@ TEST_F(EncryptedReportingJobConfigurationTest,
 
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, RequestPayloadBuilder().Build(),
-      /*dm_token=*/"", /*client_id=*/"",
+      /*dm_token=*/"", /*client_id=*/"", /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
   auto* payload = GetPayload(&configuration);
@@ -430,7 +431,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddEncryptedRecord) {
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl,
       RequestPayloadBuilder().AddRecord(record_value).Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -461,7 +462,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsMultipleRecords) {
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -480,7 +481,7 @@ TEST_F(EncryptedReportingJobConfigurationTest,
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -505,7 +506,7 @@ TEST_F(EncryptedReportingJobConfigurationTest,
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -523,7 +524,7 @@ TEST_F(EncryptedReportingJobConfigurationTest,
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -541,7 +542,7 @@ TEST_F(EncryptedReportingJobConfigurationTest,
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -569,7 +570,7 @@ TEST_F(
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -588,7 +589,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, AllowsSourceTastAlone) {
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -608,7 +609,7 @@ TEST_F(
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -638,7 +639,7 @@ TEST_F(
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, builder.Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -656,7 +657,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsAndUpdatesContext) {
   EXPECT_CALL(completion_cb, Call(_, _, _, _)).Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, RequestPayloadBuilder().Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       /*response_cb=*/base::DoNothing(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
 
@@ -734,7 +735,7 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_NetError) {
       .Times(1);
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, RequestPayloadBuilder().Build(),
-      client_.dm_token(), client_.client_id(),
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
       base::BindOnce(&MockUploadResponseCb::Call,
                      base::Unretained(&upload_response_cb)),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&completion_cb)));
@@ -745,8 +746,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, ManagedDeviceUmaName) {
   // Non-null cloud policy client indicates device is unmanaged.
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, RequestPayloadBuilder().Build(),
-      client_.dm_token(), client_.client_id(), base::DoNothing(),
-      base::DoNothing());
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
+      base::DoNothing(), base::DoNothing());
 
   EXPECT_EQ(configuration.GetUmaName(),
             "Browser.ERP.ManagedUploadEncryptedReport");
@@ -756,7 +757,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, UnmanagedDeviceUmaName) {
   // Null cloud policy client indicates device is unmanaged.
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, RequestPayloadBuilder().Build(),
-      /*dm_token=*/"", /*client_id=*/"", base::DoNothing(), base::DoNothing());
+      /*dm_token=*/"", /*client_id=*/"", /*network_name_cache=*/nullptr,
+      base::DoNothing(), base::DoNothing());
 
   EXPECT_EQ(configuration.GetUmaName(),
             "Browser.ERP.UnmanagedUploadEncryptedReport");
@@ -777,8 +779,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
 
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, kServerUrl, std::move(request),
-      client_.dm_token(), client_.client_id(), base::DoNothing(),
-      base::DoNothing());
+      client_.dm_token(), client_.client_id(), /*network_name_cache=*/nullptr,
+      base::DoNothing(), base::DoNothing());
 
   std::optional<base::Value> payload = base::JSONReader::Read(
       configuration.GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);

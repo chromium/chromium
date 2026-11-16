@@ -17,6 +17,7 @@ class PrefService;
 
 namespace policy {
 class CloudPolicyManager;
+class NetworkNameCache;
 }  // namespace policy
 
 namespace enterprise_connectors {
@@ -179,6 +180,10 @@ class ConnectorsServiceBase {
   // type.
   virtual bool IsURLExemptFromAnalysis(const GURL& url,
                                        AnalysisConnector connector);
+
+  // Returns the cache used to report the network name in client metadata, or
+  // nullptr if there is none.
+  virtual policy::NetworkNameCache* GetNetworkNameCache() = 0;
 
   void PopulateBrowserMetadata(bool include_device_info,
                                ClientMetadata::Browser* browser_proto);

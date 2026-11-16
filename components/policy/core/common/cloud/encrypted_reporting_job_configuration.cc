@@ -46,6 +46,7 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
     base::DictValue merging_payload,
     const std::string& dm_token,
     const std::string& client_id,
+    NetworkNameCache* network_name_cache,
     UploadResponseCallback response_cb,
     UploadCompleteCallbackDeprecated complete_cb)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_ENCRYPTED_REPORT,
@@ -57,7 +58,7 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
       response_cb_(std::move(response_cb)) {
   if (is_device_managed_) {
     // Payload for managed device
-    InitializePayloadWithDeviceInfo(dm_token, client_id);
+    InitializePayloadWithDeviceInfo(dm_token, client_id, network_name_cache);
   } else {
     // Payload for unmanaged device
     InitializePayloadWithoutDeviceInfo();

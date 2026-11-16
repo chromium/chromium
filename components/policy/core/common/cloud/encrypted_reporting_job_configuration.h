@@ -16,6 +16,8 @@
 
 namespace policy {
 
+class NetworkNameCache;
+
 // {{{Note}}} ERP Request Payload Overview
 //
 // EncryptedReportingJobConfiguration configures a payload for the Encrypted
@@ -85,12 +87,15 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   using UploadResponseCallback =
       base::OnceCallback<void(int /*net_error*/, int /*response_code*/)>;
 
+  // `network_name_cache` is used to report the network name in the device
+  // dictionary. It may be null.
   EncryptedReportingJobConfiguration(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       const std::string& server_url,
       base::DictValue merging_payload,
       const std::string& dm_token,
       const std::string& client_id,
+      NetworkNameCache* network_name_cache,
       UploadResponseCallback response_cb,
       UploadCompleteCallbackDeprecated complete_cb);
   ~EncryptedReportingJobConfiguration() override;

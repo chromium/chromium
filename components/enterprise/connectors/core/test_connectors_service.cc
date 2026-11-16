@@ -99,4 +99,8 @@ TestConnectorsService::GetManagedUserCloudPolicyManager() const {
   NOTREACHED();
 }
 
+policy::NetworkNameCache* TestConnectorsService::GetNetworkNameCache() {
+  return nullptr;
+}
+
 }  // namespace enterprise_connectors

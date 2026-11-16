@@ -71,6 +71,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
   bool IsURLExemptFromAnalysis(const GURL& url,
                                AnalysisConnector connector) override;
+  policy::NetworkNameCache* GetNetworkNameCache() override;
   bool IsProfileAffiliated() const override;
   std::string GetProfileEmail() const override;
   std::string GetDeviceClientId() const override;

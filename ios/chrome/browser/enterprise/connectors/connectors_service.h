@@ -53,6 +53,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
+  policy::NetworkNameCache* GetNetworkNameCache() override;
 
   bool IsProfileAffiliated() const override;
   std::string GetProfileEmail() const override;

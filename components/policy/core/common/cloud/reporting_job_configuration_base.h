@@ -25,6 +25,7 @@ class UploadEventsRequest;
 namespace policy {
 
 class DMAuth;
+class NetworkNameCache;
 
 // Base for common elements in JobConfigurations for the Reporting pipeline.
 // Ensures the following elements are added to each request.
@@ -68,11 +69,16 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     // Dictionary Key Name
     static const char kDeviceKey[];
 
-    static base::DictValue BuildDeviceDictionary(const std::string& dm_token,
-                                                 const std::string& client_id);
+    // `network_name_cache` is used to report the network name when enhanced
+    // security event fields are enabled. It may be null.
+    static base::DictValue BuildDeviceDictionary(
+        const std::string& dm_token,
+        const std::string& client_id,
+        NetworkNameCache* network_name_cache);
     static ::chrome::cros::reporting::proto::Device BuildDeviceProto(
         const std::string& dm_token,
-        const std::string& client_id);
+        const std::string& client_id,
+        NetworkNameCache* network_name_cache);
 
     static std::string GetDMTokenPath();
     static std::string GetClientIdPath();
@@ -169,8 +175,10 @@ class POLICY_EXPORT ReportingJobConfigurationBase
 
   // Initializes request payload including the "device" and
   // "browser.machineUser" fields (see comment at the top of the file).
+  // `network_name_cache` may be null.
   void InitializePayloadWithDeviceInfo(const std::string& dm_token,
-                                       const std::string& client_id);
+                                       const std::string& client_id,
+                                       NetworkNameCache* network_name_cache);
 
   // Initializes request payload without the "device" and "browser.machineUser"
   // fields.

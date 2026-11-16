@@ -248,7 +248,8 @@ void ConnectorsServiceBase::PopulateDeviceMetadata(
   device_proto->set_name(policy::GetDeviceName());
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
     device_proto->set_device_fqdn(policy::GetDeviceFqdn());
-    device_proto->set_network_name(policy::GetNetworkName());
+    device_proto->set_network_name(
+        policy::GetNetworkName(GetNetworkNameCache()));
   }
 }
 

@@ -29,6 +29,7 @@
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
@@ -358,6 +359,18 @@ const PrefService* ConnectorsService::GetPrefs() const {
 policy::CloudPolicyManager*
 ConnectorsService::GetManagedUserCloudPolicyManager() const {
   return Profile::FromBrowserContext(context_)->GetCloudPolicyManager();
+}
+
+policy::NetworkNameCache* ConnectorsService::GetNetworkNameCache() {
+  if (!g_browser_process || !g_browser_process->browser_policy_connector()) {
+    return nullptr;
+  }
+  policy::DeviceManagementService* device_management_service =
+      g_browser_process->browser_policy_connector()
+          ->device_management_service();
+  return device_management_service
+             ? device_management_service->network_name_cache()
+             : nullptr;
 }
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
