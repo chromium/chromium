@@ -18,9 +18,8 @@ source_set("interactive_ui_tests") {
   deps = [
     ":test_support",
     "//ash",
-    "//ash/strings:strings_grit",
+    "//ash/strings",
     "//base/test:test_support",
-    "//chrome/app:generated_resources_grit",
     "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",

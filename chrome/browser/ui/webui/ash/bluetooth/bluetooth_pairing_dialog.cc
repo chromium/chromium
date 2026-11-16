@@ -9,6 +9,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/check.h"
 #include "base/json/json_writer.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"

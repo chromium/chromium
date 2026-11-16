@@ -15,9 +15,9 @@ static_library("bluetooth") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/common:trusted_types_util",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/bluetooth_pairing_dialog:resources",
     "//chrome/browser/ui/webui:theme_source",

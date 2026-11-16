@@ -10763,6 +10763,167 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_MOBILE_VIEW_ACCOUNT_ERROR_MESSAGE" desc="Error message shown when user failed to view mobile account">
         Please contact your mobile provider
       </message>
+
+      <!-- MultiDevice setup dialog. -->
+      <message name="IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL" desc="Label for button to connect an Android phone to the Chromebook to enable cross-device features.">
+        Connect
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_TRY_AGAIN_LABEL" desc="Label for button to retry setup upon failure.">
+        Try again
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_HEADER" desc="Header for the first page in the multi-device setup flow; the page displays a field in which the user must enter their password to continue.">
+        Enter your password
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_ENTER_PASSWORD_LABEL" desc="Default text in the field for user to enter their password.">
+        Password
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_WRONG_PASSWORD_LABEL" desc="Message displayed in the multi-device setup flow when the user has entered an incorrect password.">
+        Wrong password
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_HEADER_FOR_PIN" desc="Header for the first page in the multi-device setup flow for PIN only users; the page displays a field in which the user must enter their PIN to continue.">
+        Enter your PIN
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_ENTER_PIN_LABEL" desc="Default text in the field for user to enter their PIN.">
+        PIN
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_WRONG_PIN_LABEL" desc="Message displayed in the multi-device setup flow for PIN only users; when the user has entered an incorrect PIN.">
+        Wrong PIN
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_BACK_LABEL" desc="Label for button to navigate back in MultiDevice setup workflow.">
+        Back
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_PAGE_HEADER" desc="Header for successful setup page.">
+        All set!
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_PAGE_MESSAGE" desc="Message for successful setup page.">
+        Go to <ph name="LINK_BEGIN">&lt;a id="settings-link"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph> to see your options for Better Together.
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_DIALOG_ACCESSIBILITY_TITLE" desc="Accessibility title for the multidevice setup dialog with a '- Dialog' appended to inform screen reader users they are in a dialog. This is a work around to deal with the fact that we cannot annotate the window's role as a dialog another way.">
+        Connect to your phone - Dialog
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER" desc="Header for multidevice setup page.">
+        Connect your Android phone for a seamless experience
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AFTER_QUICK_START_HEADER" desc="Header for multidevice setup page for users who have already connected their phone earlier with Quick Start.">
+        Stay connected with your phone
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE" desc="Summary to tell user that they can share their Android's capabilities with their ChromeOS device; includes details on specific features that can be used and a link to an information page">
+        You can text from your computer, share your internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE" desc="Footnote for multi-device feature setup page, which indicates that new features may be added, and the exact set of features available to users differs according to the device model used.">
+        New features will be included as they become available, and features may vary by device.
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SINGLE_DEVICE_HEADER" desc="Label appearing over the name of an Android phone which this Chromebook can connect to.">
+        Device detected
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MULTIPLE_DEVICE_HEADER" desc="Label appearing over a list of Android phones which this Chromebook can connect to.">
+        Select a device
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_OFFLINE_DEVICE_OPTION" desc="Device name appearing in the list of Android phones indicating
+        the device is offline.">
+        <ph name="DEVICE_NAME">$1<ex>Pixel 2</ex></ph> (offline)
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER" desc="Header to introduce a list of the features that the user is agreeing to in the multi-device setup.">
+        By connecting your phone, you can:
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AWM_DESCRIPTION" desc="Description of a feature that shows text messages received by the user's phone as notification on their Chromebook and a link to an information page.">
+        Send you notifications and default to remembering this computer for Messages. <ph name="LINK_BEGIN">&lt;a href="$1<ex>https://support.google.com/chromebook/?p=messages</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MIRROR_PHONE_NOTIFICATIONS" desc="Tell the user that Better Together can automatically mirror notifications from their phone to their Chromebook.">
+        Mirror notifications from your phone
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_CAMERA_ROLL" desc="Description of a feature that allows user to download most recent items in camera roll on the connected Android phone">
+        Access your phone's camera roll
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTALL_APPS_DESCRIPTION" desc="Tell the user that Better Together can automatically install apps on their Chromebook">
+        Automatically install apps
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_ADD_FEATURES" desc="Tell the user that Better Together can offer to add new features to that use their phone's connection to their Chromebook">
+        Offer new features as they become available
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_PHONE_HUB_TITLE" desc="Name of a feature. Phone Hub allows a user to view their phone's photos, notifications, and apps. It also allows them to reply to messages recieved on the phone.">
+        Phone Hub
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_PHONE_HUB_DESCRIPTION" desc="Description of a feature that allows a user to view their phone's photos, notifications, and apps. It also allows them to reply to messages recieved on the phone.">
+        View your phone's photos and apps. Quickly reply to messaging notifications.
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SMART_LOCK_TITLE" desc="Name of a feature. This feature allows users to unlock their Chromebook from their phone if they're logged in.">
+        Smart Lock
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SMART_LOCK_DESCRIPTION" desc="Description of a feature that allows a user to unlock their Chromebook using a connected Android phone.">
+        Use your phone to unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC_TITLE" desc="Name of a feature. Wi-Fi Sync allows user to sync network configurations between ChromeOS devices and a connected Android phone.">
+        Wi-Fi Sync
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC_DESCRIPTION" desc="Description of a feature that syncs Wi-Fi network configurations between ChromeOS devices and a connected Android phone.">
+        Share Wi-Fi settings between your devices.
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTANT_TETHERING_TITLE" desc="Name of a feature. This feature automatically offers the user to tether to their phone if their Chromebook is offline and their phone supports tethering.">
+        Instant Tethering
+      </message>
+      <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTANT_TETHERING_DESCRIPTION" desc="Description of a feature that allows a user to connect to their phone's hotspot from their Chromebook.">
+        Automatically connect to your phone's hotspot.
+      </message>
+
+      <!-- Strings for the Bluetooth pairing dialog -->
+      <message name="IDS_BLUETOOTH_PAIRING_PAIR" desc="Label for the settings button to pair a previously paired Bluetooth device.">
+        Pair
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_ENTER_KEY" desc="Bluetooth pairing dialog: Text for enter key when pairing keyboard devices." >
+        enter
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES" desc="Message displayed describing how to pair a new Bluetooth device.">
+        Pair new device
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_PAIRING_AVAILABLE_DEVICES" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices that are available for pairing.">
+        Available devices
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_PAIRING_NO_AVAILABLE_DEVICES" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices when no devices are available for pairing.">
+        Looking for nearby discoverable devices...
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_PAIRING_BLUETOOTH_DISABLED" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices when Bluetooth is disabled so no devices are found for pairing.">
+        Bluetooth is turned off. To see available devices, turn Bluetooth on.
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_LEARN_MORE" desc="Bluetooth pairing dialog: Message informing the user on what actions to take in order to see a device in the list of available devices.">
+        Make sure your Bluetooth device is in pairing mode and nearby. Only pair with devices you trust. Paired devices are visible to all accounts on this Chromebook. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_DESCRIPTION" desc="Bluetooth pairing dialog: Message informing the user on what actions to take in order to see a device in the list of available devices.">
+        Make sure your Bluetooth device is in pairing mode and nearby. Only pair with devices you trust. Paired devices are visible to all accounts on this Chromebook.
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_ENTER_PIN" desc="Bluetooth pairing dialog: Message displayed informing the user to enter a PIN in other to complete device pairing.">
+        Enter PIN to pair with <ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>
+      </message>
+      <message name="IDS_BLUETOOTH_DEVICE_ITEM_BATTERY_PERCENTAGE" desc="Label for a Bluetooth device in a list that indicates the battery level of the device.">
+        <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>%
+      </message>
+      <message name="IDS_BLUETOOTH_DEVICE_ITEM_LEFT_BUD_TRUE_WIRELESS_BATTERY_PERCENTAGE" desc="Label for a Bluetooth device's left true wireless bud that indicates the battery level of the device.">
+        <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>% (Left)
+      </message>
+      <message name="IDS_BLUETOOTH_DEVICE_ITEM_CASE_TRUE_WIRELESS_BATTERY_PERCENTAGE" desc="Label for a Bluetooth device's case true wireless component that indicates the battery level of the device.">
+        <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>% (Case)
+      </message>
+      <message name="IDS_BLUETOOTH_DEVICE_ITEM_RIGHT_BUD_TRUE_WIRELESS_BATTERY_PERCENTAGE" desc="Label for a Bluetooth device's right true wireless bud that indicates the battery level of the device.">
+        <ph name="BATTERY_PERCENTAGE">$1<ex>32</ex></ph>% (Right)
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_PAIRING" desc="Bluetooth pairing dialog: Message informing the user that the device is being paired to.">
+        Pairing...
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_PAIRING_FAILED" desc="Bluetooth pairing dialog: Message informing the user that the device pairing failed.">
+        Couldn't pair. Select device to try again.
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_CONFIRM_CODE_MESSAGE" desc="Bluetooth pairing dialog: Message informing the user to confirm the code displayed is the same as the code displayed on the device being paired to.">
+        Before pairing, make sure this code is the same on both devices
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRING_ENTER_KEYS" desc="Bluetooth pairing dialog: Message displayed informing the user to enter the keys below on the device being paired.">
+        Enter these keys on <ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_ERROR_A11Y_LABEL" desc="Bluetooth pairing dialog: Accessibility label for unpaired Bluetooth device list item, when pairing to a device fails.">
+        Couldn't pair to device <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>; select device to try again
+      </message>
+      <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_PAIRING_A11Y_LABEL" desc="Bluetooth pairing dialog: Accessibility label for unpaired Bluetooth device list item, when pairing to the a device is in progress.">
+        Pairing to <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>
