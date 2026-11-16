@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/web_contents.h"
@@ -149,6 +150,19 @@ class OmniboxPopupShareAcrossWindowsBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  // Opens another window of the profile and waits until the window manager
+  // has activated it. Window managers that activate a new window
+  // asynchronously, e.g. Mutter on Wayland, would otherwise deactivate the
+  // other windows later in the test, closing their popups, or override the
+  // test's own `ActivateBrowser()` calls, which makes the new window take idle
+  // popups.
+  BrowserWindowInterface* CreateActiveBrowser() {
+    BrowserWindowInterface* new_browser =
+        CreateBrowser(browser()->GetProfile());
+    ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
+    return new_browser;
+  }
+
   // Notifies the browser window's observers that it became active. Some
   // window managers (e.g. Mutter on Wayland) ignore programmatic activation.
   static void ActivateBrowser(BrowserWindowInterface* browser) {
@@ -171,8 +185,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        ShowTakesIdlePopupFromOtherWindow) {
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   StartAutocomplete(other_browser, u"bar");
 
@@ -187,8 +200,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
 // own.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        DoesNotTakeShownPopup) {
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   content::WebContents* contents = OpenLoadedPopup(browser());
   ASSERT_TRUE(GetPopupHost(browser())->IsShown());
 
@@ -210,8 +222,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
       GetPopupHost(browser())->CreateDeactivationBlocker();
   ASSERT_TRUE(blocker);
   EXPECT_FALSE(GetPresenter(browser())->CanReleaseWebUIContents());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   StartAutocomplete(other_browser, u"bar");
 
@@ -225,6 +236,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  ui_test_utils::WaitUntilBrowserBecomeActive(incognito_browser);
 
   StartAutocomplete(incognito_browser, u"bar");
 
@@ -240,8 +252,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        PopupMovesBack) {
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   StartAutocomplete(other_browser, u"bar");
   ClosePopup(other_browser);
 
@@ -259,8 +270,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        ClosingHolderWindowCreatesNewPopup) {
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   StartAutocomplete(other_browser, u"bar");
   ClosePopup(other_browser);
   ASSERT_EQ(GetPopupContents(other_browser), contents);
@@ -279,8 +289,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
 // that popup was busy, and keeps a copy that is still shown.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        HidingPopupDropsOtherIdleCopies) {
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   content::WebContents* contents = OpenLoadedPopup(browser());
   content::WebContents* other_contents = OpenLoadedPopup(other_browser);
   ASSERT_NE(other_contents, contents);
@@ -304,8 +313,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        ActivationTakesIdlePopup) {
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   ActivateBrowser(other_browser);
   EXPECT_TRUE(base::test::RunUntil(
@@ -326,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
       GetPopupHost(browser())->CreateDeactivationBlocker();
   ASSERT_TRUE(blocker);
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   ActivateBrowser(other_browser);
   // Runs after the task that the activation posted.
@@ -343,8 +350,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
 // A popup whose page is still loading stays in its window.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        DoesNotTakeLoadingPopup) {
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   StartAutocomplete(browser(), u"foo");
   content::WebContents* contents = GetPopupContents(browser());
   ASSERT_TRUE(contents);
@@ -365,8 +371,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   ClosePopup(browser());
   content::CrashTab(contents);
   ASSERT_TRUE(contents->IsCrashed());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   StartAutocomplete(other_browser, u"bar");
 
@@ -381,14 +386,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        IncognitoPoolGoesAwayWithItsWindows) {
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  ui_test_utils::WaitUntilBrowserBecomeActive(incognito_browser);
   OpenLoadedPopup(incognito_browser);
   ClosePopup(incognito_browser);
   CloseBrowserSynchronously(incognito_browser);
 
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   StartAutocomplete(other_browser, u"bar");
   EXPECT_EQ(GetPopupContents(other_browser), contents);
 }
@@ -411,8 +416,7 @@ IN_PROC_BROWSER_TEST_F(
     ShowTakesIdlePopupFromOtherWindow) {
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   StartAutocomplete(other_browser, u"bar");
 
@@ -441,8 +445,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsFullPopupBrowserTest,
             OmniboxPopupState::kNone);
   content::WebContents* contents = GetPopupContents(browser());
   ASSERT_TRUE(contents);
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   content::WebContents* other_contents = GetPopupContents(other_browser);
   ASSERT_TRUE(other_contents);
@@ -475,8 +478,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
   ASSERT_TRUE(contents);
   WaitForPopupPage(contents);
 
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   // The new window may already have taken the popup on activation, but it
   // never creates its own.
   content::WebContents* other_contents = GetPopupContents(other_browser);
@@ -493,10 +495,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
                        SeveralWindowsPrewarmOnePopup) {
   content::WebContents* contents = GetPopupContents(browser());
   ASSERT_TRUE(contents);
-  BrowserWindowInterface* second_browser =
-      CreateBrowser(browser()->GetProfile());
-  BrowserWindowInterface* third_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser = CreateActiveBrowser();
+  BrowserWindowInterface* third_browser = CreateActiveBrowser();
 
   // A window that becomes active may take the first window's popup, but no
   // window creates its own.
@@ -530,8 +530,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsDeferredBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetPopupContents(browser()) != nullptr; }));
   content::WebContents* contents = GetPopupContents(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   GetPresenter(other_browser)->OnBrowserWindowPresented();
   // Runs after the creation task that the call above posts.
@@ -561,8 +560,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsDisabledBrowserTest,
                        EachWindowCreatesItsOwnPopup) {
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   StartAutocomplete(other_browser, u"bar");
 
@@ -576,8 +574,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsDisabledBrowserTest,
 // in an inactive window and keeps a shown one.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        DropIdlePopupsKeepsShownPopup) {
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   content::WebContents* contents = OpenLoadedPopup(browser());
   OpenLoadedPopup(other_browser);
   ClosePopup(other_browser);
@@ -624,7 +621,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(OmniboxPopupShareAcrossWindowsIdleTimeoutBrowserTest,
                        DropIdlePopupsActiveWindowPopup) {
   // Created first, so that its activation can't take the popup below.
-  CreateBrowser(browser()->GetProfile());
+  CreateActiveBrowser();
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
   ActivateBrowser(browser());
@@ -646,8 +643,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   base::HistogramTester histograms;
   OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
 
   StartAutocomplete(other_browser, u"bar");
 
@@ -674,8 +670,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
       GetPresenter(browser())->CreateDeactivationBlocker();
   ASSERT_TRUE(blocker);
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   ASSERT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
   base::HistogramTester histograms;
 
@@ -698,8 +693,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        RecordsCreatedAfterHolderClosed) {
   OpenLoadedPopup(browser());
   ClosePopup(browser());
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   StartAutocomplete(other_browser, u"bar");
   ClosePopup(other_browser);
   ASSERT_FALSE(GetPresenter(browser())->GetWebUIContent());
@@ -724,8 +718,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
 // Hiding a popup records how many idle copies in other windows it destroyed.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
                        RecordsCopiesDroppedOnHide) {
-  BrowserWindowInterface* other_browser =
-      CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
   OpenLoadedPopup(browser());
   OpenLoadedPopup(other_browser);
   ClosePopup(other_browser);
