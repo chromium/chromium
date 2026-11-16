@@ -155,8 +155,8 @@ void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
   TRACE_EVENT("wayland", "BeginFrameSourceWayland::MaybeIssueBeginFrame",
               "effective_interval_us", GetEffectiveInterval().InMicroseconds(),
               "surface_id", frame_manager_->GetRootSurfaceId());
-  if (!needs_begin_frame_ || suspended_ || !ready_to_issue_begin_frame_ ||
-      frame_in_flight_ || !delegate_) {
+  if (!needs_begin_frame_ || production_suspended_ ||
+      !ready_to_issue_begin_frame_ || frame_in_flight_ || !delegate_) {
     return;
   }
 
@@ -268,7 +268,7 @@ void BeginFrameSourceWayland::UpdateFrameCallbackRecoveryTimer() {
       base::Milliseconds(100);
   const bool waiting_for_frame_callback =
       needs_begin_frame_ && !frame_in_flight_ && !ready_to_issue_begin_frame_;
-  if (waiting_for_frame_callback && !suspended_) {
+  if (waiting_for_frame_callback && !production_suspended_) {
     frame_callback_recovery_timer_.Start(
         FROM_HERE, kFrameCallbackRecoveryTimeout,
         base::BindOnce(
@@ -279,19 +279,19 @@ void BeginFrameSourceWayland::UpdateFrameCallbackRecoveryTimer() {
   }
 }
 
-void BeginFrameSourceWayland::OnWindowSuspensionChanged(bool suspended) {
-  TRACE_EVENT("wayland", "BeginFrameSourceWayland::OnWindowSuspensionChanged",
+void BeginFrameSourceWayland::SetProductionSuspended(bool suspended) {
+  TRACE_EVENT("wayland", "BeginFrameSourceWayland::SetProductionSuspended",
               "suspended", suspended, "surface_id",
               frame_manager_->GetRootSurfaceId());
-  if (suspended_ == suspended) {
+  if (production_suspended_ == suspended) {
     return;
   }
-  suspended_ = suspended;
+  production_suspended_ = suspended;
   UpdateBeginFrameProduction();
 }
 
 void BeginFrameSourceWayland::UpdateBeginFrameProduction() {
-  if (needs_begin_frame_ && !suspended_) {
+  if (needs_begin_frame_ && !production_suspended_) {
     if (!frame_in_flight_ && !frame_manager_->HasFrameWaitingToCommit()) {
       // Force the first frame after starting/resuming production since
       // we won't have any readiness signals yet.

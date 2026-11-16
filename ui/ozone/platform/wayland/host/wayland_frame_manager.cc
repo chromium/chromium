@@ -1183,9 +1183,6 @@ void WaylandFrameManager::OnWindowSuspensionChanged() {
   DVLOG(1) << __func__
            << " surface=" << window_->root_surface()->get_surface_id()
            << " is_suspended=" << window_->IsSuspended();
-  if (begin_frame_source_) {
-    begin_frame_source_->OnWindowSuspensionChanged(window_->IsSuspended());
-  }
   EvaluateShouldAckSwapWithoutCommit();
 }
 
@@ -1193,6 +1190,12 @@ void WaylandFrameManager::EvaluateShouldAckSwapWithoutCommit() {
   bool prev_should_ack_swap_without_commit = should_ack_swap_without_commit_;
   should_ack_swap_without_commit_ =
       video_capture_count_ > 0 && window_->IsSuspended();
+  if (begin_frame_source_) {
+    // Frames acked without commit still feed the video capturer, so keep
+    // producing them while suspended.
+    begin_frame_source_->SetProductionSuspended(
+        window_->IsSuspended() && !should_ack_swap_without_commit_);
+  }
   if (!prev_should_ack_swap_without_commit && should_ack_swap_without_commit_) {
     ResetFrameCallback();
     // Clear all submitted frames to be safe from blocked callbacks or buffers

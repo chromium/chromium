@@ -303,14 +303,39 @@ TEST_F(BeginFrameSourceWaylandTest, SuspensionStopsAndResumes) {
   delegate_.Ack(/*has_damage=*/true);
   ASSERT_TRUE(RecoveryTimerRunning());
 
-  source_->OnWindowSuspensionChanged(true);
+  source_->SetProductionSuspended(true);
   EXPECT_FALSE(RecoveryTimerRunning());
   // A callback while suspended must not issue.
   source_->OnFrameCallback(base::TimeTicks::Now());
   EXPECT_EQ(1, delegate_.begin_frame_count);
 
-  source_->OnWindowSuspensionChanged(false);
+  source_->SetProductionSuspended(false);
   EXPECT_TRUE(DeferredIssueTimerRunning());
+}
+
+// A suspended window keeps producing begin frames while it is video captured,
+// since the frame manager acks its frames without commit for the capturer.
+TEST_F(BeginFrameSourceWaylandTest, VideoCaptureKeepsSuspendedWindowProducing) {
+  WaylandWindow::WindowStates window_states;
+  window_states.is_suspended = true;
+  window_->HandleToplevelConfigure(0, 0, window_states);
+  frame_manager_->OnWindowSuspensionChanged();
+
+  source_->SetNeedsBeginFrame(true);
+  task_environment_.FastForwardBy(kDefaultInterval);
+  EXPECT_EQ(0, delegate_.begin_frame_count);
+
+  frame_manager_->SetVideoCapture();
+  task_environment_.FastForwardBy(kDefaultInterval);
+  ASSERT_EQ(1, delegate_.begin_frame_count);
+  delegate_.Ack(/*has_damage=*/false);
+  task_environment_.FastForwardBy(kDefaultInterval);
+  ASSERT_EQ(2, delegate_.begin_frame_count);
+
+  frame_manager_->ReleaseVideoCapture();
+  delegate_.Ack(/*has_damage=*/false);
+  task_environment_.FastForwardBy(kDefaultInterval);
+  EXPECT_EQ(2, delegate_.begin_frame_count);
 }
 
 // Presentation feedback updates the vsync interval and notifies the delegate,
