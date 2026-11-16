@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +17,8 @@ std::string GetPersonalizableDeviceNameInternal() {
   DWORD size = std::size(computer_name);
   if (::GetComputerNameW(computer_name, &size)) {
     std::string result;
-    bool conversion_successful = base::WideToUTF8(computer_name, size, &result);
+    bool conversion_successful =
+        base::WideToUTF8(std::wstring_view(computer_name, size), &result);
     DCHECK(conversion_successful);
     return result;
   }

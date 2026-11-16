@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 
+#include <string_view>
+
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version_info/version_info.h"
@@ -164,7 +166,8 @@ std::string GetMachineName() {
   DWORD size = std::size(computer_name);
   if (::GetComputerNameW(computer_name, &size)) {
     std::string result;
-    bool conversion_successful = base::WideToUTF8(computer_name, size, &result);
+    bool conversion_successful =
+        base::WideToUTF8(std::wstring_view(computer_name, size), &result);
     DCHECK(conversion_successful);
     return result;
   }
@@ -302,7 +305,8 @@ std::string GetDeviceFqdn() {
   if (::GetComputerNameExW(ComputerNameDnsFullyQualified, &result_wstr[0],
                            &size)) {
     std::string result;
-    if (base::WideToUTF8(result_wstr.data(), size, &result)) {
+    if (base::WideToUTF8(std::wstring_view(result_wstr).substr(0, size),
+                         &result)) {
       return result;
     }
   }

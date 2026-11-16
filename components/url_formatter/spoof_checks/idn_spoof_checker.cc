@@ -616,8 +616,7 @@ bool IDNSpoofChecker::IsDomainAndRegistryATopDomain(
 
   // Convert the hostname to std::u16string_view as GetSkeletons expects it.
   std::u16string domain16;
-  if (!base::UTF8ToUTF16(domain_and_registry.data(),
-                         domain_and_registry.length(), &domain16)) {
+  if (!base::UTF8ToUTF16(domain_and_registry, &domain16)) {
     // Failed to convert, which is unlikely for a valid GURL host.
     // Treat as not a top domain.
     return false;

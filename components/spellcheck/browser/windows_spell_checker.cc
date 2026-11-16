@@ -303,8 +303,7 @@ void BackgroundHelper::FillSuggestionList(
     hr = suggestions->Next(1, &suggestion, nullptr);
     if (hr == S_OK) {
       std::u16string utf16_suggestion;
-      if (base::WideToUTF16(suggestion.get(), UNSAFE_TODO(wcslen(suggestion)),
-                            &utf16_suggestion)) {
+      if (base::WideToUTF16(suggestion.get(), &utf16_suggestion)) {
         optional_suggestions->push_back(utf16_suggestion);
       }
     }

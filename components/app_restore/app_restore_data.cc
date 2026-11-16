@@ -110,8 +110,9 @@ std::optional<std::u16string> GetU16StringValueFromDict(
     std::string_view key_name) {
   std::u16string result;
   const std::string* value = dict.FindString(key_name);
-  if (!value || !base::UTF8ToUTF16(value->c_str(), value->length(), &result))
+  if (!value || !base::UTF8ToUTF16(*value, &result)) {
     return std::nullopt;
+  }
   return result;
 }
 

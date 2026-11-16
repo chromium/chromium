@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -210,8 +211,7 @@ TEST(SendTabToSelfEntry, IsExpired) {
 // Tests that the send tab to self entry rejects strings that are not utf8.
 TEST(SendTabToSelfEntry, InvalidStrings) {
   const std::array<char16_t, 1> term = {u'\uFDD1'};
-  std::string invalid_utf8;
-  base::UTF16ToUTF8(&term[0], 1, &invalid_utf8);
+  std::string invalid_utf8 = base::UTF16ToUTF8(base::as_string_view(term));
 
   const SendTabToSelfEntry invalid1(
       "1", GURL("http://example.com"), invalid_utf8, base::Time::FromTimeT(10),

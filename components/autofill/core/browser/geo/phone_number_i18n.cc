@@ -180,7 +180,7 @@ bool ParsePhoneNumber(std::u16string_view value,
     return false;
 
   std::string number_text;
-  if (!base::UTF16ToUTF8(value.data(), value.size(), &number_text) ||
+  if (!base::UTF16ToUTF8(value, &number_text) ||
       !base::IsStringUTF8(number_text) || !IsPrintable(number_text)) {
     return false;
   }

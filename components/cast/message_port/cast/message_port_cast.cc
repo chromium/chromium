@@ -45,8 +45,7 @@ MessagePortCast* MessagePortCast::FromMessagePort(MessagePort* port) {
 bool MessagePortCast::OnMessage(blink::WebMessagePort::Message message) {
   DCHECK(receiver_);
   std::string message_str;
-  if (!base::UTF16ToUTF8(message.data.data(), message.data.size(),
-                         &message_str)) {
+  if (!base::UTF16ToUTF8(message.data, &message_str)) {
     return false;
   }
 

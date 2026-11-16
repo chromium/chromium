@@ -133,9 +133,8 @@ std::vector<Prediction> LanguageDetectionModel::Predict(
 
   CHECK(IsAvailable());
 
-  size_t convert_length = std::min(kModelTruncationLength, contents.length());
-  std::string utf8_contents;
-  base::UTF16ToUTF8(contents.data(), convert_length, &utf8_contents);
+  std::string utf8_contents =
+      base::UTF16ToUTF8(contents.substr(0, kModelTruncationLength));
 
   // TFLite expects all strings to be aligned to 4 bytes.
   constexpr size_t kAlignTo = sizeof(int32_t);
