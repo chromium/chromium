@@ -23,6 +23,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -429,11 +430,28 @@ class LCPLazyLoadingImageTest : public MetricIntegrationTest {
                                    TimingField::kLargestContentfulPaint);
     waiter->Wait();
 
+    // Other renderers (e.g. WebUI browser chrome such as the WebUI toolbar)
+    // may also emit LCP candidate trace events while tracing is active, so
+    // only consider events from the test page's main frame.
+    const std::string main_frame_token = web_contents()
+                                             ->GetPrimaryMainFrame()
+                                             ->GetDevToolsFrameToken()
+                                             .ToString();
+
     std::unique_ptr<TraceAnalyzer> trace_analyzer = StopTracingAndAnalyze();
-    TraceEventVector candidate_events;
+    TraceEventVector all_candidate_events;
     trace_analyzer->FindEvents(
         Query::EventNameIs("largestContentfulPaint::Candidate"),
-        &candidate_events);
+        &all_candidate_events);
+
+    TraceEventVector candidate_events;
+    for (const TraceEvent* event : all_candidate_events) {
+      std::string frame_id;
+      if (event->GetArgAsString("frame", &frame_id) &&
+          frame_id == main_frame_token) {
+        candidate_events.push_back(event);
+      }
+    }
 
     return candidate_events[0]->GetKnownArgAsDict("data");
   }
