@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/resolved_frame_data.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
@@ -91,8 +92,18 @@ const CompositorRenderPass& ResolvedPassData::render_pass() const {
   return *fixed_.render_pass;
 }
 
-bool ResolvedPassData::HasCopyOutputRequests() const {
-  return !fixed_.original_render_pass->copy_requests.empty();
+bool ResolvedPassData::CheckCopyOutputRequests() {
+  CHECK(fixed_.original_render_pass);
+  if (!fixed_.original_render_pass->copy_requests.empty()) {
+    aggregation_.has_copy_request = true;
+  }
+  return aggregation_.has_copy_request;
+}
+
+std::vector<std::unique_ptr<CopyOutputRequest>>
+ResolvedPassData::TakeCopyOutputRequests() {
+  CHECK(fixed_.original_render_pass);
+  return std::exchange(fixed_.original_render_pass->copy_requests, {});
 }
 
 void ResolvedPassData::CopyAndResetPersistentPassData() {
@@ -419,9 +430,9 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
     CHECK(resolved_pass.fixed_.render_pass);
 
     // DeepCopy() can't copy CopyOutputRequests. Remove them from `source_pass`
-    // before copying and then add them back afterwards. The requests are
-    // copied to the AggregatedRenderPass by Surface::TakeCopyOutputRequests()
-    // which will look in the original render pass.
+    // before copying and then add them back afterwards. The requests will be
+    // moved from the original render pass by
+    // ResolvedPassData::TakeCopyOutputRequests().
     auto source_pass = resolved_pass.fixed_.render_pass;
     auto copy_requests = std::move(source_pass->copy_requests);
     auto modified_pass = source_pass->DeepCopy();
@@ -566,6 +577,13 @@ const CompositorFrameMetadata& ResolvedFrameData::GetMetadata() const {
 
 bool ResolvedFrameData::WillDraw() const {
   return GetRootRenderPassData().aggregation().will_draw;
+}
+
+bool ResolvedFrameData::HasCopyOutputRequests() const {
+  DCHECK(valid_);
+  return std::ranges::any_of(resolved_passes_, [](const auto& pass) {
+    return pass.aggregation().has_copy_request;
+  });
 }
 
 ResolvedPassData& ResolvedFrameData::GetRenderPassDataById(

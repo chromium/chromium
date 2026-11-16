@@ -1374,14 +1374,6 @@ TEST_P(CompositorFrameSinkSupportTest,
   GetSurfaceForId(id2)->TakeCopyOutputRequestsFromClient();
   EXPECT_TRUE(GetSurfaceForId(id1)->HasCopyOutputRequests());
   EXPECT_FALSE(GetSurfaceForId(id2)->HasCopyOutputRequests());
-
-  // Also try TakeCopyOutputRequests, to see if its output is consistent with
-  // HasCopyOutputRequests.
-  Surface::CopyRequestsMap requests_map;
-  GetSurfaceForId(id2)->TakeCopyOutputRequests(&requests_map);
-  EXPECT_TRUE(requests_map.empty());
-  GetSurfaceForId(id1)->TakeCopyOutputRequests(&requests_map);
-  EXPECT_FALSE(requests_map.empty());
 }
 
 TEST_P(CompositorFrameSinkSupportTest,
@@ -1417,14 +1409,6 @@ TEST_P(CompositorFrameSinkSupportTest,
   GetSurfaceForId(id2)->TakeCopyOutputRequestsFromClient();
   EXPECT_FALSE(GetSurfaceForId(id1)->HasCopyOutputRequests());
   EXPECT_TRUE(GetSurfaceForId(id2)->HasCopyOutputRequests());
-
-  // Do TakeCopyOutputRequests, to see if its output is consistent with
-  // HasCopyOutputRequests.
-  Surface::CopyRequestsMap requests_map;
-  GetSurfaceForId(id1)->TakeCopyOutputRequests(&requests_map);
-  EXPECT_TRUE(requests_map.empty());
-  GetSurfaceForId(id2)->TakeCopyOutputRequests(&requests_map);
-  EXPECT_FALSE(requests_map.empty());
 }
 
 // Verifies that CopyOutputRequests made at frame sink level are sent to the
@@ -1465,14 +1449,6 @@ TEST_P(CompositorFrameSinkSupportTest,
   GetSurfaceForId(id1)->TakeCopyOutputRequestsFromClient();
   EXPECT_FALSE(GetSurfaceForId(id1)->HasCopyOutputRequests());
   EXPECT_TRUE(GetSurfaceForId(id2)->HasCopyOutputRequests());
-
-  // Also try TakeCopyOutputRequests, to see if its output is consistent with
-  // HasCopyOutputRequests.
-  Surface::CopyRequestsMap requests_map;
-  GetSurfaceForId(id1)->TakeCopyOutputRequests(&requests_map);
-  EXPECT_TRUE(requests_map.empty());
-  GetSurfaceForId(id2)->TakeCopyOutputRequests(&requests_map);
-  EXPECT_FALSE(requests_map.empty());
 }
 
 // Verifies that CopyOutputRequests are released when the embedding

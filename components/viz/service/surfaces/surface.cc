@@ -952,21 +952,6 @@ void Surface::UpdateActivationDependencies(
   blocking_allocation_groups_ = std::move(new_blocking_allocation_groups);
 }
 
-void Surface::TakeCopyOutputRequests(Surface::CopyRequestsMap* copy_requests) {
-  DCHECK(copy_requests->empty());
-  if (!active_frame_data_)
-    return;
-
-  for (const auto& render_pass : GetActiveFrame().render_pass_list) {
-    for (auto& request : render_pass->copy_requests) {
-      copy_requests->insert(
-          std::make_pair(render_pass->id, std::move(request)));
-    }
-    render_pass->copy_requests.clear();
-  }
-  MarkAsDrawn();
-}
-
 void Surface::TakeCopyOutputRequestsFromClient() {
   if (!surface_client_)
     return;

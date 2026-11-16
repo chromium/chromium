@@ -147,20 +147,19 @@ TEST_F(SurfaceTest, CopyRequestLifetime) {
 
   CompositorRenderPassId last_pass_id{(max_frame - 1) * 3 + start_id + 2};
 
-  // The copy request should stay on the Surface until TakeCopyOutputRequests
-  // is called.
+  // The copy request should stay on the Surface as new frames are activated.
   EXPECT_FALSE(copy_called);
-  EXPECT_EQ(
-      1u,
-      surface->GetActiveFrame().render_pass_list.back()->copy_requests.size());
+  ASSERT_EQ(3u, surface->GetActiveFrame().render_pass_list.size());
+  EXPECT_TRUE(
+      surface->GetActiveFrame().render_pass_list[0]->copy_requests.empty());
+  EXPECT_TRUE(
+      surface->GetActiveFrame().render_pass_list[1]->copy_requests.empty());
+  auto& last_pass = surface->GetActiveFrame().render_pass_list.back();
+  EXPECT_EQ(last_pass_id, last_pass->id);
+  EXPECT_EQ(1u, last_pass->copy_requests.size());
 
-  Surface::CopyRequestsMap copy_requests;
-  surface->TakeCopyOutputRequests(&copy_requests);
-  EXPECT_EQ(1u, copy_requests.size());
-  // Last (root) pass should receive copy request.
-  ASSERT_EQ(1u, copy_requests.count(last_pass_id));
-  EXPECT_FALSE(copy_called);
-  copy_requests.clear();  // Deleted requests will auto-send an empty result.
+  // Deleted requests will auto-send an empty result.
+  last_pass->copy_requests.clear();
   copy_runloop.Run();
   EXPECT_TRUE(copy_called);
 }

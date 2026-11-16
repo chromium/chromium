@@ -1346,8 +1346,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UndrawnSurfaces) {
 }
 
 TEST_F(SurfaceAggregatorValidSurfaceTest, UndrawnSurfacesWithCopyRequests) {
+  TestVizClient grandchild(this, &manager_, kArbitraryFrameSinkId3,
+                           gfx::Rect(5, 5));
+  grandchild.SubmitCompositorFrame(SkColors::kRed);
+
   TestVizClient child(this, &manager_, kArbitraryFrameSinkId1,
                       gfx::Rect(10, 10));
+  child.SetEmbeddedClient(&grandchild, true);
   child.SubmitCompositorFrame(SkColors::kBlue);
   child.RequestCopyOfOutput();
 
@@ -1376,11 +1381,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UndrawnSurfacesWithCopyRequests) {
       Quad::SolidColorQuad(SkColors::kGreen, parent.bounds()),
       Quad::SolidColorQuad(SkColors::kBlack, gfx::Rect(5, 5))};
   std::vector<Quad> expected_copy_quads = {
-      Quad::SolidColorQuad(SkColors::kBlue, child.bounds())};
+      Quad::SolidColorQuad(SkColors::kBlue, child.bounds()),
+      Quad::SolidColorQuad(SkColors::kRed, grandchild.bounds())};
   std::vector<Pass> expected_passes = {Pass(expected_copy_quads, kSurfaceSize),
                                        Pass(expected_quads, kSurfaceSize)};
-  AggregateAndVerify(expected_passes, {root_surface_id_, parent.surface_id(),
-                                       child.surface_id()});
+  AggregateAndVerify(expected_passes,
+                     {root_surface_id_, parent.surface_id(), child.surface_id(),
+                      grandchild.surface_id()});
+  EXPECT_FALSE(grandchild.GetSurface()->HasUndrawnActiveFrame());
   EXPECT_FALSE(child.GetSurface()->HasUndrawnActiveFrame());
   EXPECT_FALSE(parent.GetSurface()->HasUndrawnActiveFrame());
 }
