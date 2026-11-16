@@ -12,10 +12,15 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
 import {SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {getTemplate} from './edit_exception_dialog.html.js';
+import {getHtml} from './edit_exception_dialog.html.js';
 import type {SiteException, SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
 
@@ -23,62 +28,73 @@ export interface SettingsEditExceptionDialogElement {
   $: {
     dialog: CrDialogElement,
     actionButton: CrButtonElement,
+    input: CrInputElement,
   };
 }
 
-export class SettingsEditExceptionDialogElement extends PolymerElement {
+export type EditExceptionDialogElement = SettingsEditExceptionDialogElement;
+
+export class SettingsEditExceptionDialogElement extends CrLitElement {
   static get is() {
     return 'settings-edit-exception-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getSettingsSharedCss();
   }
 
-  static get properties() {
-    return {
-      model: {
-        type: Object,
-        observer: 'modelChanged_',
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      origin_: String,
+  static override get properties() {
+    return {
+      model: {type: Object},
+      origin_: {type: String},
 
       /**
        * The localized error message to display when the pattern is invalid.
        */
-      errorMessage_: String,
+      errorMessage_: {type: String},
 
       /**
        * Whether the current input is invalid.
        */
-      invalid_: {
-        type: Boolean,
-        value: false,
-      },
+      invalid_: {type: Boolean},
     };
   }
 
-  declare model: SiteException;
-  declare private origin_: string;
-  declare private errorMessage_: string;
-  declare private invalid_: boolean;
+  accessor model: SiteException|null = null;
+  protected accessor origin_: string = '';
+  protected accessor errorMessage_: string = '';
+  protected accessor invalid_: boolean = false;
+
   private browserProxy_: SiteSettingsBrowserProxy =
       SiteSettingsBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
-    super.connectedCallback();
-
+    assert(this.model);
     this.origin_ = this.model.origin;
+
+    super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  private onCancelClick_() {
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('model') && !this.model) {
+      this.$.dialog.cancel();
+    }
+  }
+
+  protected onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onActionButtonClick_() {
+  protected onActionButtonClick_() {
+    assert(this.model);
     if (this.model.origin !== this.origin_) {
       // The way to "edit" an exception is to remove it and and a new one.
       this.browserProxy_.resetCategoryPermissionForPattern(
@@ -93,23 +109,19 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private validate_() {
-    if (this.shadowRoot!.querySelector('cr-input')!.value.trim() === '') {
+  protected onOriginInput_() {
+    this.origin_ = this.$.input.value;
+    if (this.origin_.trim() === '') {
       this.invalid_ = true;
       return;
     }
 
+    assert(this.model);
     this.browserProxy_.isPatternValidForType(this.origin_, this.model.category)
         .then(({isValid, reason}) => {
           this.invalid_ = !isValid;
           this.errorMessage_ = reason || '';
         });
-  }
-
-  private modelChanged_() {
-    if (!this.model) {
-      this.$.dialog.cancel();
-    }
   }
 }
 

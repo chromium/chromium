@@ -1702,8 +1702,7 @@ suite('EditExceptionDialog', function() {
   });
 
   test('invalid input', async function() {
-    const input = dialog.shadowRoot!.querySelector('cr-input');
-    assertTrue(!!input);
+    const input = dialog.$.input;
     assertFalse(input.invalid);
 
     const actionButton = dialog.$.actionButton;
@@ -1712,7 +1711,6 @@ suite('EditExceptionDialog', function() {
 
     // Simulate user input of whitespace only text.
     input.value = '  ';
-    await input.updateComplete;
     input.fire('input');
     await microtasksFinished();
     assertTrue(actionButton.disabled);
@@ -1722,23 +1720,24 @@ suite('EditExceptionDialog', function() {
     browserProxy.setIsPatternValidForType(false);
     const expectedPattern = '*';
     input.value = expectedPattern;
-    await input.updateComplete;
     input.fire('input');
 
     const [pattern, _category] =
         await browserProxy.whenCalled('isPatternValidForType');
+    await microtasksFinished();
     assertEquals(expectedPattern, pattern);
     assertTrue(actionButton.disabled);
     assertTrue(input.invalid);
   });
 
   test('action button calls proxy', async function() {
-    const input = dialog.shadowRoot!.querySelector('cr-input');
-    assertTrue(!!input);
+    const input = dialog.$.input;
     // Simulate user edit.
     const newValue = input.value + ':1234';
     input.value = newValue;
-    await input.updateComplete;
+    input.fire('input');
+    await browserProxy.whenCalled('isPatternValidForType');
+    await microtasksFinished();
 
     const actionButton = dialog.$.actionButton;
     assertTrue(!!actionButton);
