@@ -50,6 +50,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -205,6 +206,8 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private TranslateBridge.Natives mTranslateBridgeMock;
     @Mock private KeyboardShortcuts.Natives mKeyboardShortcutsJniMock;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Captor private ArgumentCaptor<Callback<Uri>> mImageSavedCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mPolicyCallbackCaptor;
 
     private Activity mActivity;
     private UserDataHost mUserDataHost;
@@ -1273,6 +1276,80 @@ public class ChromeContextMenuPopulatorTest {
                 "Clicking on copy video frame should be handled.",
                 mPopulator.onItemSelected(R.id.contextmenu_copy_video_frame));
         verify(mNativeDelegate, never()).copyVideoFrame();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testCopyImage() {
+        setAllMandatoryFlowsComplete();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, getImageParams());
+        // Mock this method because it goes into native code to record a histogram.
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+
+        assertTrue(
+                "Clicking on copy image should be handled.",
+                mPopulator.onItemSelected(R.id.contextmenu_copy_image));
+        verify(mNativeDelegate)
+                .retrieveImageForShare(
+                        eq(ContextMenuImageFormat.ORIGINAL), mImageSavedCallbackCaptor.capture());
+        mImageSavedCallbackCaptor.getValue().onResult(RETRIEVED_IMAGE_URI);
+
+        verify(mDataProtectionBridgeMock)
+                .verifyCopyImageIsAllowedByPolicy(
+                        eq(RETRIEVED_IMAGE_URI.getPath()),
+                        eq(mRenderFrameHost),
+                        mPolicyCallbackCaptor.capture());
+        mPolicyCallbackCaptor.getValue().onResult(true);
+        verify(mItemDelegate).onSaveImageToClipboard(RETRIEVED_IMAGE_URI);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testCopyImage_tabClosedWhileImageSaves() {
+        setAllMandatoryFlowsComplete();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, getImageParams());
+        // Mock this method because it goes into native code to record a histogram.
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+
+        assertTrue(
+                "Clicking on copy image should be handled.",
+                mPopulator.onItemSelected(R.id.contextmenu_copy_image));
+        verify(mNativeDelegate)
+                .retrieveImageForShare(
+                        eq(ContextMenuImageFormat.ORIGINAL), mImageSavedCallbackCaptor.capture());
+        // Closing the tab destroys its WebContents before the image finishes saving.
+        when(mItemDelegate.getWebContents()).thenReturn(null);
+        mImageSavedCallbackCaptor.getValue().onResult(RETRIEVED_IMAGE_URI);
+
+        verify(mDataProtectionBridgeMock, never())
+                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+        verify(mItemDelegate, never()).onSaveImageToClipboard(any());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testCopyImage_webContentsDestroyedWhileImageSaves() {
+        setAllMandatoryFlowsComplete();
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, getImageParams());
+        // Mock this method because it goes into native code to record a histogram.
+        doNothing().when(mPopulator).recordContextMenuSelection(anyInt());
+
+        assertTrue(
+                "Clicking on copy image should be handled.",
+                mPopulator.onItemSelected(R.id.contextmenu_copy_image));
+        verify(mNativeDelegate)
+                .retrieveImageForShare(
+                        eq(ContextMenuImageFormat.ORIGINAL), mImageSavedCallbackCaptor.capture());
+        // Closing a Preview Tab destroys its WebContents, but its item delegate still returns it.
+        when(mWebContents.isDestroyed()).thenReturn(true);
+        mImageSavedCallbackCaptor.getValue().onResult(RETRIEVED_IMAGE_URI);
+
+        verify(mDataProtectionBridgeMock, never())
+                .verifyCopyImageIsAllowedByPolicy(anyString(), any(), any());
+        verify(mItemDelegate, never()).onSaveImageToClipboard(any());
     }
 
     @Test
