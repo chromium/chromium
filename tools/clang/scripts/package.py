@@ -592,37 +592,6 @@ def main():
     )
     want.update(runtime_packages)
 
-  # reclient is a tool for executing programs remotely. When uploading the
-  # binary to be executed, it needs to know which other files the binary depends
-  # on. This can include shared libraries, as well as other dependencies not
-  # explicitly mentioned in the source code (those would be found by reclient's
-  # include scanner) such as sanitizer ignore lists.
-  #
-  # These paths are written relative to the package root, and will be rebased
-  # to wherever the reclient config file is written when added to the file.
-  reclient_inputs = {
-    'clang': set(
-      [
-        # Note: These have to match the `want` list exactly.
-        'lib/clang/$V/share/asan_ignorelist.txt',
-        'lib/clang/$V/share/cfi_ignorelist.txt',
-      ]
-    ),
-  }
-  if sys.platform == 'win32':
-    # TODO(crbug.com/335997052): Remove this again once we have a compiler
-    # flag that tells clang-cl to not auto-add it (and then explicitly pass
-    # it via GN).
-    reclient_inputs['clang'].update(
-      [
-        'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',
-        'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone_cxx-x86_64.lib',
-        'lib/clang/$V/lib/windows/clang_rt.profile-i386.lib',
-        'lib/clang/$V/lib/windows/clang_rt.profile-x86_64.lib',
-        'lib/clang/$V/lib/windows/clang_rt.profile-aarch64.lib',
-      ]
-    )
-
   # Check that all non-glob wanted files exist on disk.
   want = replace_version(want, RELEASE_VERSION)
   found_all_wanted_files = True
@@ -636,18 +605,6 @@ def main():
 
   if not found_all_wanted_files:
     return 1
-
-  # Check that all reclient inputs are in the package.
-  for tool in reclient_inputs:
-    reclient_inputs[tool] = set(
-      [i.replace('$V', RELEASE_VERSION) for i in reclient_inputs[tool]]
-    )
-    missing = reclient_inputs[tool] - want
-    if missing:
-      print('reclient inputs not part of package: ', missing, file=sys.stderr)
-      return 1
-
-  reclient_input_strings = {t: '' for t in reclient_inputs}
 
   # TODO(thakis): Try walking over want and copying the files in there instead
   # of walking the directory and doing fnmatch() against want.
@@ -682,23 +639,6 @@ def main():
         '.a',
       ]:
         subprocess.call([llvm_strip, '--keep-file-symbols', '-g', dest])
-      # If this is an reclient input, add it to the inputs file(s).
-      for tool, inputs in reclient_inputs.items():
-        if any(fnmatch.fnmatch(f, i) for i in inputs):
-          rel_input = os.path.relpath(dest, os.path.join(pdir, 'bin'))
-          reclient_input_strings[tool] += '%s\n' % rel_input
-
-  # Write the reclient inputs files.
-  if sys.platform != 'win32':
-    reclient_input_strings['clang++'] = reclient_input_strings['clang']
-    reclient_input_strings['clang-cl'] = reclient_input_strings['clang']
-  else:
-    reclient_input_strings['clang-cl.exe'] = reclient_input_strings.pop('clang')
-  for tool, string in reclient_input_strings.items():
-    filename = os.path.join(pdir, 'bin', '%s_remote_toolchain_inputs' % tool)
-    print('%s:\n%s' % (filename, string))
-    with open(filename, 'w') as f:
-      f.write(string)
 
   # Set up symlinks.
   if sys.platform != 'win32':
