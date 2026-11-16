@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,13 +28,17 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -81,14 +90,21 @@ std::vector<ManagedUserProfileNoticePixelTestParam> BuildTestParams(
   return params;
 }
 
+// Creates the params of the enterprise profile creation dialog. When
+// `user_already_signed_in` is false the dialog starts at the value prop screen
+// and otherwise at the disclosure screen.
+// Proceeding from the disclosure screen shows the user data handling screen
+// when `show_link_data_option` is true.
 std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
-CreateEnterpriseProfileCreationDialogParams(AccountInfo account_info) {
+CreateEnterpriseProfileCreationDialogParams(const AccountInfo& account_info,
+                                            bool user_already_signed_in,
+                                            bool show_link_data_option) {
   return std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
       account_info,
       /*is_oidc_account=*/false,
-      /*user_already_signed_in=*/false,
+      /*user_already_signed_in=*/user_already_signed_in,
       /*profile_creation_required_by_policy=*/false,
-      /*show_link_data_option=*/false,
+      /*show_link_data_option=*/show_link_data_option,
       /*process_user_choice_callback=*/
       signin::SigninChoiceCallback(base::DoNothing()),
       /*done_callback=*/base::DoNothing());
@@ -130,6 +146,18 @@ GetModalTestParams() {
   return *params;
 }
 
+// Parameters to set up the enterprise profile creation dialog on a given
+// screen in `ManagedUserProfileNoticeUIModalPixelTest`.
+struct ModalScreenParams {
+  // Params of the dialog, see `CreateEnterpriseProfileCreationDialogParams()`.
+  bool user_already_signed_in = false;
+  bool show_link_data_option = false;
+  // Whether to proceed from the initial screen to reach this screen.
+  bool proceed_from_initial_screen = false;
+  // Selector of the screen element in the app's shadow root.
+  std::string_view selector;
+};
+
 // Creates a step to represent the managed-user-profile-notice.
 class ManagedUserProfileNoticeStepControllerForTest
     : public ProfileManagementStepController {
@@ -153,7 +181,10 @@ class ManagedUserProfileNoticeStepControllerForTest
         host().GetPickerContents(),
         /*browser=*/nullptr,
         ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
-        CreateEnterpriseProfileCreationDialogParams(account_info_));
+        CreateEnterpriseProfileCreationDialogParams(
+            account_info_,
+            /*user_already_signed_in=*/false,
+            /*show_link_data_option=*/false));
 
     // Reload the WebUI in the picker contents.
     host().ShowScreenInPickerContents(
@@ -298,6 +329,12 @@ class ManagedUserProfileNoticeUIModalPixelTest
          {switches::kEnterpriseSigninDialogsRefresh, UseRefreshedUi()}});
   }
 
+  // Verifies the UI of the screen described by `params`.
+  void ShowAndVerifyUi(const ModalScreenParams& params) {
+    screen_params_ = params;
+    DialogBrowserTest::ShowAndVerifyUi();
+  }
+
   void ShowUi(const std::string& name) override {
     gfx::ScopedAnimationDurationScaleMode disable_animation(
         gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -308,19 +345,10 @@ class ManagedUserProfileNoticeUIModalPixelTest
     views::NamedWidgetShownWaiter widget_waiter(
         views::test::AnyWidgetTestPasskey{},
         "SigninViewControllerDelegateViews");
-    // `user_already_signed_in` makes the dialog start on the disclosure screen,
-    // and `show_link_data_option` makes proceeding from it show the browsing
-    // data handling screen.
     SigninViewController::From(browser())->ShowModalManagedUserNoticeDialog(
-        std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
-            account_info,
-            /*is_oidc_account=*/false,
-            /*user_already_signed_in=*/true,
-            /*profile_creation_required_by_policy=*/false,
-            /*show_link_data_option=*/true,
-            /*process_user_choice_callback=*/
-            signin::SigninChoiceCallback(base::DoNothing()),
-            /*done_callback=*/base::DoNothing()));
+        CreateEnterpriseProfileCreationDialogParams(
+            account_info, screen_params_.user_already_signed_in,
+            screen_params_.show_link_data_option));
     widget_waiter.WaitIfNeededAndGet();
 
     content::WebContents* web_contents =
@@ -328,9 +356,11 @@ class ManagedUserProfileNoticeUIModalPixelTest
             ->GetModalDialogWebContentsForTesting();
     const ManagedUserProfileNoticeSelectors& selectors =
         GetSelectors(UseRefreshedUi());
-    ASSERT_TRUE(WaitForAndClickProceedButton(web_contents, selectors));
+    if (screen_params_.proceed_from_initial_screen) {
+      ASSERT_TRUE(WaitForAndClickProceedButton(web_contents, selectors));
+    }
     ASSERT_TRUE(WaitForWebContentsLoaded(web_contents, selectors.app,
-                                         "#user-data-handling"));
+                                         screen_params_.selector));
   }
 
  private:
@@ -339,11 +369,22 @@ class ManagedUserProfileNoticeUIModalPixelTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  ModalScreenParams screen_params_;
 };
 
 IN_PROC_BROWSER_TEST_P(ManagedUserProfileNoticeUIModalPixelTest,
                        InvokeUi_UserDataHandling) {
-  ShowAndVerifyUi();
+  ShowAndVerifyUi({.user_already_signed_in = true,
+                   .show_link_data_option = true,
+                   .proceed_from_initial_screen = true,
+                   .selector = "#user-data-handling"});
+}
+
+IN_PROC_BROWSER_TEST_P(ManagedUserProfileNoticeUIModalPixelTest,
+                       InvokeUi_ValueProp) {
+  // The value proposition screen is the initial screen for a user that is not
+  // signed in yet, hence most properties are set to false.
+  ShowAndVerifyUi({.selector = "#value-prop"});
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -7,7 +7,7 @@ import '/icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import './managed_user_profile_notice_disclosure_refresh.js';
-import './managed_user_profile_notice_value_prop.js';
+import './managed_user_profile_notice_value_prop_refresh.js';
 import './managed_user_profile_notice_state_refresh.js';
 import './managed_user_profile_notice_data_handling_refresh.js';
 import './signals_disclaimer_refresh.js';
