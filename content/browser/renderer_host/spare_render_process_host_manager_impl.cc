@@ -665,12 +665,9 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       site_instance->HasProcess() ||
       !site_instance->CanAssociateWithSpareProcess() ||
       site_instance->GetSecurityPrincipal().IsGuest() ||
-      site_instance->GetSiteInfo().embedder_isolation_info().is_privileged()
-#if !BUILDFLAG(IS_ANDROID)
-      || GetContentClient()->browser()->IsTopChromeWebUIURL(
-             site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL())
-#endif
-  ) {
+      site_instance->GetSiteInfo().embedder_isolation_info().is_privileged() ||
+      GetContentClient()->browser()->IsTopChromeWebUIURL(
+          site_instance->GetSiteInfo().site_url())) {
     action = SpareProcessMaybeTakeAction::kRefusedBySiteInstance;
   } else if (site_instance->GetSiteInfo().is_pdf()) {
     action = SpareProcessMaybeTakeAction::kRefusedForPdfContent;

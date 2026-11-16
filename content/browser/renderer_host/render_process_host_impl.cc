@@ -1695,15 +1695,10 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     flags |= RenderProcessFlags::kDisallowV8FeatureFlagOverrides;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (site_instance) {
-    const GURL& site_url =
-        site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL();
-    if (GetContentClient()->browser()->IsTopChromeWebUIURL(site_url)) {
-      flags |= RenderProcessFlags::kForTopChromeWebUI;
-    }
+  if (site_instance && GetContentClient()->browser()->IsTopChromeWebUIURL(
+                           site_instance->GetSiteInfo().site_url())) {
+    flags |= RenderProcessFlags::kForTopChromeWebUI;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
                                    flags, is_spare_renderer,
@@ -3791,13 +3786,8 @@ bool RenderProcessHostImpl::ShouldPauseChannelUntilProcessLaunched() {
   if (base::FeatureList::IsEnabled(
           features::kSkipIPCChannelPausingForNonGuests)) {
     if (features::kSkipIPCChannelPausingForNonGuestsInternalWebUiOnly.Get()) {
-#if !BUILDFLAG(IS_ANDROID)
       // Skip pausing if we're on initial WebUI, so return false in that case.
       return !IsForTopChromeWebUI();
-#else
-      // We're definitely not on initial WebUI, so return true to pause.
-      return true;
-#endif
     }
     // Skip pausing in all cases.
     return false;
@@ -3856,8 +3846,9 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   GetContentClient()->browser()->AppendExtraCommandLineSwitches(
       command_line, GetDeprecatedID());
 
-  if (IsPdf())
+  if (IsPdf()) {
     command_line->AppendSwitch(switches::kPdfRenderer);
+  }
 
 #if BUILDFLAG(IS_WIN)
   if (command_line->HasSwitch(kExtensionProcess)) {

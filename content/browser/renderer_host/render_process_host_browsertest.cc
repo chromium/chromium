@@ -3116,7 +3116,6 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   process_b->Cleanup();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Asserts RenderProcessHosts are configured to reflect the embedder's policy
 // defined by `ContentBrowserClient::IsTopChromeWebUIURL()`.
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForTopChromeWebUIAppliedToHosts) {
@@ -3169,7 +3168,6 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForTopChromeWebUIAppliedToHosts) {
                      base::Unretained(&done)));
   ASSERT_TRUE(done.TimedWait(TestTimeouts::action_timeout()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, RendererCheckIsTest) {
   ASSERT_TRUE(embedded_test_server()->Start());

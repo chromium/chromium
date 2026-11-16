@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_task_environment.h"
@@ -649,6 +650,63 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
   EXPECT_EQ(spare_manager.GetSpares()[0], spare);
   EXPECT_EQ(spare->GetBrowserContext(), browser_context());
+
+  spare_manager.CleanupSparesForTesting();
+}
+
+// A ContentBrowserClient that treats a single URL as a Top Chrome WebUI.
+class TopChromeWebUIContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit TopChromeWebUIContentBrowserClient(const GURL& top_chrome_url)
+      : top_chrome_url_(top_chrome_url) {}
+
+  bool IsTopChromeWebUIURL(const GURL& url) override {
+    return url == top_chrome_url_;
+  }
+
+ private:
+  const GURL top_chrome_url_;
+};
+
+// Tests that a Top Chrome WebUI never takes a spare, so that its process is
+// created with its SiteInstance and gets the kForTopChromeWebUI flag.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
+                       SpareNotTakenForTopChromeWebUI) {
+  const GURL top_chrome_url("chrome://initial-webui-test-scheme");
+  const GURL other_webui_url("chrome://other-webui-test-scheme");
+  TopChromeWebUIContentBrowserClient browser_client(top_chrome_url);
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  RenderProcessHost* spare = spare_manager.WarmupSpare(browser_context());
+  ASSERT_TRUE(spare);
+  // The launcher thread keeps using the ContentBrowserClient while the
+  // process launches, so let the launch finish before `browser_client` goes
+  // away.
+  RenderProcessHostWatcher(spare,
+                           RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY)
+      .Wait();
+
+  base::HistogramTester histogram_tester;
+  scoped_refptr<SiteInstanceImpl> top_chrome_site_instance =
+      SiteInstanceImpl::CreateForTesting(browser_context(), top_chrome_url);
+  EXPECT_FALSE(spare_manager.MaybeTakeSpare(
+      browser_context(), top_chrome_site_instance.get(),
+      ProcessAllocationContext{ProcessAllocationSource::kTest}));
+  histogram_tester.ExpectUniqueSample(
+      "BrowserRenderProcessHost.SpareProcessMaybeTakeAction",
+      RenderProcessHostImpl::SpareProcessMaybeTakeAction::
+          kRefusedBySiteInstance,
+      1);
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  EXPECT_EQ(spare_manager.GetSpares()[0], spare);
+
+  // Other WebUIs can still take the spare.
+  scoped_refptr<SiteInstanceImpl> other_webui_site_instance =
+      SiteInstanceImpl::CreateForTesting(browser_context(), other_webui_url);
+  EXPECT_EQ(spare_manager.MaybeTakeSpare(
+                browser_context(), other_webui_site_instance.get(),
+                ProcessAllocationContext{ProcessAllocationSource::kTest}),
+            spare);
 
   spare_manager.CleanupSparesForTesting();
 }
