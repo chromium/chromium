@@ -11,7 +11,6 @@
 #include "chrome/browser/sync/test/integration/search_engines_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
@@ -127,9 +126,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSearchEnginesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
   search_engines_helper::AddSearchEngine(/*profile_index=*/0,
                                          /*keyword=*/"test0");
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
-      "test0", GetFakeServer()));
+  EXPECT_TRUE(
+      search_engines_helper::FakeServerHasSearchEngineChecker("test0").Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSearchEnginesSyncTest,
@@ -155,7 +153,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSearchEnginesSyncTest,
       /*guid=*/"guid3", base::Time::FromTimeT(5))));
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   EXPECT_TRUE(HasSearchEngine(/*profile_index=*/0, "key1"));
   TemplateURL* guid1 = service->GetTemplateURLForGUID("guid1");
@@ -331,7 +328,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSearchEnginesSyncTest,
   search_engines_helper::AddSearchEngine(/*profile_index=*/0, "key1");
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
       "key1", GetFakeServer()));
