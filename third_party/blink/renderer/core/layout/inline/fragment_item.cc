@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 
+#include <optional>
+
 #include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -1090,7 +1093,8 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
   }
 
   if (Type() == kLine) {
-    if (!LineBoxFragment()) {
+    const PhysicalLineBoxFragment* line_box = LineBoxFragment();
+    if (!line_box) {
       // InlinePaintContext::ScopedLineBox doesn't support nested scopes.
       // Nested kLine items are placed at the end of the base line. So it's ok
       // to clear the current line before handling nested lines.
@@ -1104,7 +1108,27 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     if (text_combine) [[unlikely]] {
       contents_rect = text_combine->AdjustRectForBoundingBox(contents_rect);
     }
-    // Line boxes don't have self overflow. Compute content overflow only.
+    if (line_box && !IsHiddenDueToLayout() &&
+        RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled()) {
+      // `LineBoxFragmentPainter` paints `::first-line` backgrounds and
+      // box-shadows at the `::first-line` font height, which may extend outside
+      // the line box.
+      if (const ComputedStyle* first_line_style =
+              line_box->FirstLineBoxDecorationStyle()) {
+        if (std::optional<PhysicalRect> first_line_overflow =
+                line_box->FirstLineBoxInkOverflow(*first_line_style)) {
+          DCHECK_EQ(Size(), line_box->Size());
+          const PhysicalRect self_rect =
+              UnionRect(LocalRect(), *first_line_overflow);
+          *self_and_contents_rect_out = UnionRect(self_rect, contents_rect);
+          ink_overflow_type_ = static_cast<unsigned>(ink_overflow_.Set(
+              InkOverflowType(), self_rect, contents_rect, Size()));
+          return;
+        }
+      }
+    }
+    // Line boxes without painted `::first-line` decorations don't have self
+    // overflow. Compute content overflow only.
     *self_and_contents_rect_out = UnionRect(LocalRect(), contents_rect);
     ink_overflow_type_ = static_cast<unsigned>(
         ink_overflow_.SetContents(InkOverflowType(), contents_rect, Size()));

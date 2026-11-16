@@ -8,10 +8,12 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -70,6 +72,55 @@ FontHeight PhysicalLineBoxFragment::BaselineMetrics() const {
   // implemented yet.
   // TODO(kojii): We might need locale/script to look up OpenType BASE table.
   return metrics_;
+}
+
+PhysicalRect PhysicalLineBoxFragment::ComputeFirstLineBoxRect(
+    const ComputedStyle& first_line_style) const {
+  if ((IsEmptyLineBox() || metrics_.IsEmpty()) &&
+      RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled()) {
+    return PhysicalRect();
+  }
+  const FontHeight text_metrics = first_line_style.GetFontHeight();
+  if (IsHorizontalWritingMode(first_line_style.GetWritingMode())) {
+    return PhysicalRect(LayoutUnit(), metrics_.ascent - text_metrics.ascent,
+                        Size().width, text_metrics.LineHeight());
+  }
+  return PhysicalRect(Size().width - metrics_.ascent - text_metrics.descent,
+                      LayoutUnit(), text_metrics.LineHeight(), Size().height);
+}
+
+const ComputedStyle* PhysicalLineBoxFragment::FirstLineBoxDecorationStyle()
+    const {
+  if (!RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled() ||
+      !UsesFirstLineStyle() || IsEmptyLineBox() || metrics_.IsEmpty() ||
+      IsHiddenDueToLayout()) {
+    return nullptr;
+  }
+  const LayoutObject* container = ContainerLayoutObject();
+  if (!container || container->IsSVGText()) {
+    return nullptr;
+  }
+  const ComputedStyle& style = container->Style();
+  const ComputedStyle& first_line_style = container->FirstLineStyle();
+  if (&first_line_style == &style ||
+      first_line_style.Visibility() != EVisibility::kVisible ||
+      (!first_line_style.HasBackground() && !first_line_style.BoxShadow()) ||
+      style == first_line_style) {
+    return nullptr;
+  }
+  return &first_line_style;
+}
+
+std::optional<PhysicalRect> PhysicalLineBoxFragment::FirstLineBoxInkOverflow(
+    const ComputedStyle& first_line_style) const {
+  PhysicalRect rect = ComputeFirstLineBoxRect(first_line_style);
+  if (first_line_style.HasVisualOverflowingEffect()) {
+    rect.Expand(first_line_style.BoxDecorationOutsets());
+  }
+  if (rect.IsEmpty()) {
+    return std::nullopt;
+  }
+  return rect;
 }
 
 void PhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {

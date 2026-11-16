@@ -976,4 +976,166 @@ TEST_F(FragmentItemTest, IsRubyAnnotationLine) {
   EXPECT_TRUE(found_ruby_annotation_line);
 }
 
+TEST_F(FragmentItemTest, FirstLineBoxDecorationInkOverflow) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; font-family: Ahem; }
+      #box {
+        width: 300px;
+        line-height: 2px;
+      }
+      #box::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background: black;
+        box-shadow: 0 -20px 0 10px black;
+      }
+      #no_bg {
+        width: 300px;
+        line-height: 2px;
+      }
+      #no_bg::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        color: green;
+      }
+      #clipped {
+        width: 300px;
+        line-height: 2px;
+        overflow: hidden;
+      }
+      #clipped::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background: black;
+      }
+      #vertical {
+        writing-mode: vertical-rl;
+        height: 300px;
+        line-height: 2px;
+      }
+      #vertical::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background: black;
+      }
+      #zero_width_shadow {
+        width: 0;
+        line-height: 2px;
+      }
+      #zero_width_shadow::first-line {
+        font-size: 20px;
+        line-height: 2px;
+        box-shadow: 50px -40px 0 30px black;
+      }
+    </style>
+    <div id="box"><span style="display:inline-block;width:300px;height:2px;vertical-align:top"></span></div>
+    <div id="no_bg"><span style="display:inline-block;width:300px;height:2px;vertical-align:top"></span></div>
+    <div id="clipped"><span style="display:inline-block;width:300px;height:2px;vertical-align:top"></span></div>
+    <div id="vertical"><span style="display:inline-block;width:2px;height:300px;vertical-align:top"></span></div>
+    <div id="zero_width_shadow"><span style="display:inline-block;width:0;height:2px;vertical-align:top"></span></div>
+  )HTML");
+
+  // With Ahem 200px (ascent=160, descent=40) and line-height: 2px, half-leading
+  // is (2 - 200) / 2 = -99, so line_metrics.ascent = 61 and paint rect is
+  // (0, 61 - 160, 300, 200) = (0, -99, 300, 200). Adding box-shadow
+  // (0 -20px 0 10px) expands top by 30 and left/right by 10 ->
+  // (-10, -129, 320, 230).
+  LayoutBlockFlow* box = GetLayoutBlockFlowByElementId("box");
+  ASSERT_NE(box, nullptr);
+  InlineCursor box_cursor(*box);
+  box_cursor.MoveToFirstLine();
+  ASSERT_TRUE(box_cursor);
+  const FragmentItem* line_item = box_cursor.Current().Item();
+  ASSERT_NE(line_item, nullptr);
+  EXPECT_EQ(line_item->SelfInkOverflowRect(),
+            PhysicalRect(-10, -129, 320, 230));
+  EXPECT_EQ(line_item->InkOverflowRect(), PhysicalRect(-10, -129, 320, 230));
+  EXPECT_EQ(box->VisualOverflowRect(), PhysicalRect(-10, -129, 320, 230));
+  EXPECT_EQ(box->ScrollHeight(), LayoutUnit(2));
+
+  // A ::first-line rule without background or box-shadow does not add line-box
+  // self ink overflow.
+  LayoutBlockFlow* no_bg = GetLayoutBlockFlowByElementId("no_bg");
+  ASSERT_NE(no_bg, nullptr);
+  InlineCursor no_bg_cursor(*no_bg);
+  no_bg_cursor.MoveToFirstLine();
+  ASSERT_TRUE(no_bg_cursor);
+  EXPECT_EQ(no_bg_cursor.Current().Item()->SelfInkOverflowRect(),
+            PhysicalRect(0, 0, 300, 2));
+  EXPECT_EQ(no_bg->VisualOverflowRect(), PhysicalRect(0, 0, 300, 2));
+
+  // When the containing block clips overflow, its VisualOverflowRect stays
+  // clipped to the border box even though the line box records self overflow.
+  LayoutBlockFlow* clipped = GetLayoutBlockFlowByElementId("clipped");
+  ASSERT_NE(clipped, nullptr);
+  EXPECT_EQ(clipped->VisualOverflowRect(), PhysicalRect(0, 0, 300, 2));
+
+  // Vertical writing mode expands along the horizontal axis.
+  LayoutBlockFlow* vertical = GetLayoutBlockFlowByElementId("vertical");
+  ASSERT_NE(vertical, nullptr);
+  InlineCursor vertical_cursor(*vertical);
+  vertical_cursor.MoveToFirstLine();
+  ASSERT_TRUE(vertical_cursor);
+  EXPECT_LT(vertical_cursor.Current().Item()->SelfInkOverflowRect().X(),
+            LayoutUnit());
+  EXPECT_EQ(vertical_cursor.Current().Item()->SelfInkOverflowRect().Width(),
+            LayoutUnit(200));
+
+  // A zero-width line box with a spread box-shadow still records self overflow.
+  LayoutBlockFlow* zero_width =
+      GetLayoutBlockFlowByElementId("zero_width_shadow");
+  ASSERT_NE(zero_width, nullptr);
+  EXPECT_GT(zero_width->VisualOverflowRect().Width(), LayoutUnit(50));
+  EXPECT_LT(zero_width->VisualOverflowRect().Y(), LayoutUnit(-40));
+}
+
+TEST_F(FragmentItemTest, FirstLineBoxDecorationInkOverflowSvgAndEmptyLine) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; font-family: Ahem; }
+      svg text::first-line { background: black; }
+      .empty-bii {
+        width: 150px;
+        height: 10px;
+      }
+      .empty-bii::first-line {
+        font-size: 200px;
+        background: black;
+      }
+      #empty_bii_v {
+        writing-mode: vertical-rl;
+      }
+    </style>
+    <svg viewBox="0 0 10 10" width="100" height="100">
+      <text id="svg_text" font-size="2" y="5">A</text>
+    </svg>
+    <div id="empty_bii_h" class="empty-bii"><span><div></div></span></div>
+    <div id="empty_bii_v" class="empty-bii"><span><div></div></span></div>
+  )HTML");
+
+  // Scaled SVG <text> kLine items preserve their unscaled SetSvgLineLocalRect
+  // bounds rather than using the scaled PhysicalLineBoxFragment size.
+  LayoutBlockFlow* svg_text = GetLayoutBlockFlowByElementId("svg_text");
+  ASSERT_NE(svg_text, nullptr);
+  InlineCursor svg_cursor(*svg_text);
+  svg_cursor.MoveToFirstLine();
+  ASSERT_TRUE(svg_cursor);
+  const FragmentItem* svg_line = svg_cursor.Current().Item();
+  ASSERT_NE(svg_line, nullptr);
+  EXPECT_EQ(svg_line->SelfInkOverflowRect(), svg_line->LocalRect());
+
+  // Empty self-collapsing block-in-inline lines (`IsEmptyLineBox()` with
+  // `FontHeight::Empty()`) must not underflow/overflow `VisualOverflowRect()`
+  // in either horizontal or vertical writing modes.
+  LayoutBlockFlow* empty_bii_h = GetLayoutBlockFlowByElementId("empty_bii_h");
+  LayoutBlockFlow* empty_bii_v = GetLayoutBlockFlowByElementId("empty_bii_v");
+  ASSERT_NE(empty_bii_h, nullptr);
+  ASSERT_NE(empty_bii_v, nullptr);
+  EXPECT_EQ(empty_bii_h->VisualOverflowRect(), PhysicalRect(0, 0, 150, 10));
+  EXPECT_EQ(empty_bii_v->VisualOverflowRect(), PhysicalRect(0, 0, 150, 10));
+}
+
 }  // namespace blink

@@ -1173,4 +1173,61 @@ TEST_P(BoxFragmentPainterTest, StickyBadgeAddedWhenAdBecomesSticky) {
   }
 }
 
+TEST_P(BoxFragmentPainterTest, SvgTextIgnoresFirstLineBoxDecoration) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      svg text::first-line {
+        font-size: 100px;
+        background: #ff0000;
+        box-shadow: 0 -80px 0 50px #ff0000;
+      }
+    </style>
+    <svg width="200" height="200">
+      <text id="svg-text" x="20" y="150">Text</text>
+    </svg>
+  )HTML");
+
+  for (const DisplayItem& item : ContentDisplayItems()) {
+    EXPECT_NE(item.GetType(), DisplayItem::kBoxDecorationBackground);
+  }
+}
+
+TEST_P(BoxFragmentPainterTest,
+       CompositedBgColorAnimationDoesNotPaintIntoFirstLine) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      @keyframes bg-anim {
+        from { background-color: #000000; }
+        to { background-color: #111111; }
+      }
+      #occluder {
+        width: 200px;
+        line-height: 2px;
+        animation: bg-anim 10s linear infinite;
+      }
+      #occluder::first-line {
+        font-size: 200px;
+        line-height: 2px;
+      }
+    </style>
+    <div id="occluder"><span style="display:inline-block;width:200px;height:2px;vertical-align:top"></span></div>
+  )HTML");
+
+  LayoutBlockFlow* occluder =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("occluder"));
+  ASSERT_NE(occluder, nullptr);
+  InlineCursor cursor(*occluder);
+  cursor.MoveToFirstLine();
+  ASSERT_TRUE(cursor);
+  const DisplayItemClient* line_client =
+      cursor.Current().Item()->GetDisplayItemClient();
+  for (const DisplayItem& item : ContentDisplayItems()) {
+    if (item.ClientId() == line_client->Id() && item.GetId().fragment != 0u) {
+      EXPECT_NE(item.GetType(), DisplayItem::kBoxDecorationBackground);
+    }
+  }
+}
+
 }  // namespace blink

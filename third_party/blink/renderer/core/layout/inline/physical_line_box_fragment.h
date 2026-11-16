@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_PHYSICAL_LINE_BOX_FRAGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_PHYSICAL_LINE_BOX_FRAGMENT_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
@@ -71,6 +73,23 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
   const LayoutObject* ContainerLayoutObject() const {
     return layout_object_.Get();
   }
+
+  // Computes the local box rect painted for `::first-line` backgrounds and
+  // box-shadows, matching an inline-level box using `first_line_style` font
+  // metrics (https://drafts.csswg.org/css-pseudo-4/#first-line-styling).
+  PhysicalRect ComputeFirstLineBoxRect(
+      const ComputedStyle& first_line_style) const;
+
+  // Returns the container's `::first-line` style if this line box paints
+  // visible `::first-line` box decorations (background or box-shadow), or
+  // nullptr otherwise (including for SVG `<text>` and layout-hidden lines).
+  const ComputedStyle* FirstLineBoxDecorationStyle() const;
+
+  // Computes the ink overflow rect of painted `::first-line` decorations
+  // (background and box-shadow outsets) in local coordinates given a style from
+  // `FirstLineBoxDecorationStyle()`, or `std::nullopt` if empty.
+  std::optional<PhysicalRect> FirstLineBoxInkOverflow(
+      const ComputedStyle& first_line_style) const;
 
  private:
   FontHeight metrics_;

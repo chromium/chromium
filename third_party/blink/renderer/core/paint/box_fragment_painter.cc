@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/utils/SkParsePath.h"
@@ -2735,7 +2736,9 @@ bool BoxFragmentPainter::HitTestLineBoxFragment(
     return false;
 
   const PhysicalOffset overflow_location =
-      cursor.Current().SelfInkOverflowRect().offset + physical_offset;
+      RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled()
+          ? physical_offset
+          : cursor.Current().SelfInkOverflowRect().offset + physical_offset;
   if (HitTestClippedOutByBorder(hit_test.location, overflow_location))
     return false;
 

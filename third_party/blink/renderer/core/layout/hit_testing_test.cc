@@ -606,4 +606,88 @@ TEST_F(SVGChild3DTransformHitTest, ContainerUnderSVGRootPerspective) {
   EXPECT_NE(rect, HitNode(144, 144));
 }
 
+TEST_F(HitTestingTest, FirstLineBoxDecorationOcclusion) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        position: absolute;
+        left: 20px;
+        top: 40px;
+        width: 100px;
+        height: 40px;
+      }
+      #occluder {
+        position: absolute;
+        left: 0;
+        top: 120px;
+        width: 300px;
+        line-height: 2px;
+        z-index: 10;
+      }
+      #occluder::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background-color: #000000;
+      }
+    </style>
+    <div id="target"></div>
+    <div id="occluder"><span style="display:inline-block;width:300px;height:2px;vertical-align:top"></span></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  Element* occluder = GetElementById("occluder");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(occluder);
+
+  // Overflowing ::first-line background covers #target in occlusion
+  // hit-testing, while ordinary pointer hit-testing keeps testing the line box
+  // bounds (`fragment.Size()`).
+  EXPECT_EQ(HitTestForOcclusion(*target).InnerNode(), occluder);
+  EXPECT_EQ(GetDocument().ElementFromPoint(60, 60), target);
+
+  // Clipping overflow on #occluder clips the ::first-line background to the
+  // 2px box so #target is not occluded.
+  occluder->SetInlineStyleProperty(CSSPropertyID::kOverflow, "hidden");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(HitTestForOcclusion(*target).InnerNode(), target);
+
+  occluder->RemoveInlineStyleProperty(CSSPropertyID::kOverflow);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(HitTestForOcclusion(*target).InnerNode(), occluder);
+
+  // Disabling the killswitch on a fresh layout restores pre-patch behavior.
+  ScopedFirstLineBoxDecorationInkOverflowForTest disabled_feature(false);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        position: absolute;
+        left: 20px;
+        top: 40px;
+        width: 100px;
+        height: 40px;
+      }
+      #occluder {
+        position: absolute;
+        left: 0;
+        top: 120px;
+        width: 300px;
+        line-height: 2px;
+        z-index: 10;
+      }
+      #occluder::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background-color: #000000;
+      }
+    </style>
+    <div id="target"></div>
+    <div id="occluder"><span style="display:inline-block;width:300px;height:2px;vertical-align:top"></span></div>
+  )HTML");
+  target = GetElementById("target");
+  ASSERT_TRUE(target);
+  EXPECT_EQ(HitTestForOcclusion(*target).InnerNode(), target);
+}
+
 }  // namespace blink
