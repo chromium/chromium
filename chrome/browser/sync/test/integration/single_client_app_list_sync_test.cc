@@ -17,12 +17,12 @@
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_app_list_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/app_constants/constants.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   // content is filled from local prefs and it matches latest state.
   EXPECT_TRUE(SyncItemsMatch(service, &compare_service));
 
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
 
   // Disable app sync by disabling all user-selectable types.
   sync_service->GetUserSettings()->SetSelectedOsTypes(
