@@ -4995,7 +4995,7 @@
       "yasamans@google.com",
       "bling-alchemy-eng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "export-platform-policies-json",
@@ -5526,12 +5526,12 @@
   {
     "name": "gemini-fre-experiment",
     "owners": [ "hamzamoh@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "gemini-fre-refactor",
     "owners": [ "hamzamoh@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "gemini-host-experiment-ids",
