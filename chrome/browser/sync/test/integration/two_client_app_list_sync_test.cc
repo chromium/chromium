@@ -12,11 +12,11 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_app_list_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, DisableApps) {
     types.Remove(UserSelectableOsType::kOsApps);
     settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
     InstallHostedApp(GetProfile(0), 0);
-    ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+    ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
     ASSERT_FALSE(AllProfilesHaveSameAppList());
   }
 
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, DisableSync) {
 
   ASSERT_TRUE(GetClient(1)->DisableAllSelectableTypes());
   InstallHostedApp(GetProfile(0), 0);
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
   ASSERT_FALSE(AllProfilesHaveSameAppList());
 
   ASSERT_TRUE(GetClient(1)->EnableAllSelectableTypes());
