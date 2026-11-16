@@ -243,6 +243,7 @@ function wasmLoadMetadata() {
 async function wasmBuildTree(buildOptions) {
   const {
     methodCountMode,
+    relocationsMode,
     groupBy,
     includeRegex,
     excludeRegex,
@@ -253,13 +254,15 @@ async function wasmBuildTree(buildOptions) {
     disassemblyMode,
   } = buildOptions;
 
-  const cwrapBuildTree = Module.cwrap(
-      'BuildTree', 'bool',
-      ['bool', 'string', 'string', 'string', 'string', 'number', 'number']);
+  const cwrapBuildTree = Module.cwrap('BuildTree', 'bool', [
+    'bool', 'string', 'string', 'string', 'string', 'number', 'number', 'bool',
+    'bool', 'bool'
+  ]);
   const start_time = Date.now();
   const diffMode = cwrapBuildTree(
       methodCountMode, groupBy, includeRegex, excludeRegex, includeSections,
-      minSymbolSize, flagToFilter, nonOverhead, disassemblyMode);
+      minSymbolSize, flagToFilter, nonOverhead, disassemblyMode,
+      Boolean(relocationsMode));
   console.log(
       'Constructed tree in ' + (Date.now() - start_time) / 1000.0 + ' seconds');
   return diffMode;

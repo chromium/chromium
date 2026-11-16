@@ -43,6 +43,7 @@ blobs that can be compressed and decompressed concurrently across threads:
     * `flags`: `BYTE_STREAM_SPLIT(4)` of `uint32`.
     * `aliases` (optional): `uint32_le num_groups` + `BYTE_STREAM_SPLIT(4)` delta `first_sym_idx` + `BYTE_STREAM_SPLIT(4)` `alias_count`.
     * `names_0`..`names_{K-1}` (`K = min(8, (total_symbols + 262143) // 262144)`): `uint32_le start_sym_idx` + `uint32_le sym_count` + `BYTE_STREAM_SPLIT(4)` of ZigZag-encoded `int32` shard-local permutation deltas `perm_k` (`0..sym_count-1`) + `sym_count` `uint8` LCP prefix lengths + `sym_count` `\0`-terminated UTF-8 `full_name` suffixes in shard name-sorted order.
+  * `relocations` (optional): `uint32_le num_containers` + per container `(uint32_le container_idx, uint32_le num_words)` + `BYTE_STREAM_SPLIT(4)` of `uint32` words in a modified RELR format. Unlike standard ELF RELR (which reserves a flag bit in every word to distinguish addresses from bitmaps), all 32 bits of each non-zero `uint32` word are used for the bitmask (at stride 4 covering `[cur, cur + 128)` and advancing `cur += 128`), and a `0` word flags that the next `uint32` word is a modular byte offset to the next relocation address (emitting `cur += offset` and setting `cur = addr + 4`), making it a bit smaller and simpler than standard RELR.
   * `disassembly` (optional): `uint32_le count` + `(uint32_le sym_idx, uint32_le byte_len, <UTF-8 bytes>)` records.
 * `.sizediff` files saved with `--format-v2` use the existing `.sizediff` container format wrapping two sparse `.size` v2 streams (`before` and `after`).
 

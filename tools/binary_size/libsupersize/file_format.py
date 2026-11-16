@@ -584,6 +584,7 @@ def _LoadSizeInfoFromFile(file_obj, size_path, is_sparse):
       new_sym.component = component
       new_sym.flags = flags
       new_sym.disassembly = ''
+      new_sym.relocation_count = 0
       # Derived.
       if cur_paddings:
         new_sym.padding = cur_paddings[i]

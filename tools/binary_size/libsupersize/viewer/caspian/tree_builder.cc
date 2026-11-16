@@ -61,9 +61,11 @@ TreeBuilder::~TreeBuilder() = default;
 void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
                         char separator,
                         bool method_count_mode,
-                        std::vector<FilterFunc> filters) {
+                        std::vector<FilterFunc> filters,
+                        bool relocations_mode) {
   lens_ = std::move(lens);
   method_count_mode_ = method_count_mode;
+  relocations_mode_ = relocations_mode;
   filters_ = filters;
   sep_ = separator;
 
@@ -82,7 +84,7 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
   absl::flat_hash_map<GroupedPath, uint32_t> key_to_entry;
   absl::flat_hash_map<std::tuple<const char*, size_t, const char*>, uint32_t>
       fast_key_to_entry;
-  const bool has_filters = !filters_.empty();
+  const bool has_filters = !filters_.empty() || relocations_mode_;
   for (const BaseSymbol* sym : symbols_) {
     const char* path = sym->GroupingPath();
     std::string_view group = lens_->ParentName(*sym);
@@ -209,24 +211,29 @@ void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
   // Create symbol nodes.
   NodeStats node_stats;
   for (const BaseSymbol* sym : symbols) {
-    if (sym->Pss() == 0.0f) {
+    float sym_size = relocations_mode_ ? sym->RelocationPss() : sym->Pss();
+    if (sym_size == 0.0f) {
       // Even though unchanged symbols aren't displayed in the viewer, we need
       // to aggregate counts of all symbol types in |node_stats.count| to know
       // if all child symbols of a node have been added or removed, which is
       // true if |count| == |added| or |count| == |removed|.
-      node_stats.AddSymbol(*sym);
+      node_stats.AddSymbol(*sym, relocations_mode_);
       continue;
     }
     TreeNode* symbol_node = tree_node_factory_.Make(ArtifactType::kSymbol);
     symbol_node->id_path =
         GroupedPath{"", sym->IsDex() ? sym->TemplateName() : sym->FullName()};
-    symbol_node->size = sym->Pss();
-    symbol_node->padding = sym->PaddingPss();
+    symbol_node->size = sym_size;
+    symbol_node->padding = relocations_mode_ ? 0.0f : sym->PaddingPss();
     symbol_node->address = sym->Address();
-    symbol_node->node_stats.AddSymbol(*sym);
+    symbol_node->node_stats.AddSymbol(*sym, relocations_mode_);
     symbol_node->symbol = sym;
     if (diff_mode_) {
-      symbol_node->before_size = sym->BeforePss();
+      const Symbol* before = static_cast<const DeltaSymbol*>(sym)->Before();
+      symbol_node->before_size =
+          !before
+              ? 0.0f
+              : (relocations_mode_ ? before->RelocationPss() : before->Pss());
     }
     symbol_nodes.push_back(symbol_node);
   }
@@ -347,6 +354,19 @@ ArtifactType TreeBuilder::ArtifactTypeFromChild(
 
 bool TreeBuilder::ShouldIncludeSymbol(const GroupedPath& id_path,
                                       const BaseSymbol& symbol) const {
+  if (relocations_mode_) {
+    if (!diff_mode_) {
+      if (symbol.RelocationCount() == 0) {
+        return false;
+      }
+    } else {
+      const auto& delta = static_cast<const DeltaSymbol&>(symbol);
+      if ((!delta.Before() || delta.Before()->RelocationCount() == 0) &&
+          (!delta.After() || delta.After()->RelocationCount() == 0)) {
+        return false;
+      }
+    }
+  }
   for (const auto& filter : filters_) {
     if (!filter(id_path, symbol)) {
       return false;

@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 namespace caspian {
@@ -88,7 +89,8 @@ TEST(TreeBuilderTest, TestIdPathLens) {
 
   TreeBuilder builder(size_info.get());
   FilterList filters;
-  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters);
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/false);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
   EXPECT_EQ("Dt", builder.Open("")["type"].asString());
 }
@@ -98,7 +100,8 @@ TEST(TreeBuilderTest, TestComponentLens) {
 
   TreeBuilder builder(size_info.get());
   FilterList filters;
-  builder.Build(std::make_unique<ComponentLens>(), '>', false, filters);
+  builder.Build(std::make_unique<ComponentLens>(), '>', false, filters,
+                /*relocations_mode=*/false);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
   EXPECT_EQ("Gt", builder.Open("A")["type"].asString());
   EXPECT_EQ(20, builder.Open("A")["size"].asInt());
@@ -121,7 +124,8 @@ TEST(TreeBuilderTest, TestTemplateLens) {
 
   TreeBuilder builder(size_info.get());
   FilterList filters;
-  builder.Build(std::make_unique<TemplateLens>(), '/', false, filters);
+  builder.Build(std::make_unique<TemplateLens>(), '/', false, filters,
+                /*relocations_mode=*/false);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
   EXPECT_EQ(
       "Gt",
@@ -136,7 +140,8 @@ TEST(TreeBuilderTest, TestNoNameUnderGroup) {
 
   TreeBuilder builder(size_info.get());
   FilterList filters;
-  builder.Build(std::make_unique<ComponentLens>(), '>', false, filters);
+  builder.Build(std::make_unique<ComponentLens>(), '>', false, filters,
+                /*relocations_mode=*/false);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
   EXPECT_EQ("A>B>C/(No path)",
             builder.Open("A>B>C")["children"][0]["idPath"].asString());
@@ -149,7 +154,8 @@ TEST(TreeBuilderTest, TestJoinDexMethodClasses) {
 
   TreeBuilder builder(size_info.get());
   FilterList filters;
-  builder.Build(std::make_unique<IdPathLens>(), '>', false, filters);
+  builder.Build(std::make_unique<IdPathLens>(), '>', false, filters,
+                /*relocations_mode=*/false);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
 
   Json::Value class_symbol = builder.Open("a/b/c/zL2");
@@ -168,7 +174,8 @@ TEST(TreeBuilderTest, TestJoinDexMethodClassesStringLiteral) {
 
   TreeBuilder builder(size_info.get());
   FilterList filters;
-  builder.Build(std::make_unique<IdPathLens>(), '>', false, filters);
+  builder.Build(std::make_unique<IdPathLens>(), '>', false, filters,
+                /*relocations_mode=*/false);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
 
   Json::Value class_symbol = builder.Open("a/b/c");
@@ -192,9 +199,60 @@ TEST(TreeBuilderTest, TestManyPathsRehash) {
 
   TreeBuilder builder(size_info.get());
   FilterList filters;
-  builder.Build(std::make_unique<ComponentLens>(), '>', false, filters);
+  builder.Build(std::make_unique<ComponentLens>(), '>', false, filters,
+                /*relocations_mode=*/false);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
   EXPECT_EQ(200u, builder.Open("Comp>Sub")["children"].size());
+}
+
+TEST(TreeBuilderTest, TestRelocationsMode) {
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
+  MakeSymbol(size_info.get(), SectionId::kText, 100, "a/b/c", "A", "sym1");
+  MakeSymbol(size_info.get(), SectionId::kText, 200, "a/b/c", "A", "sym2");
+  size_info->raw_symbols[0].relocation_count_ = 5;
+  size_info->raw_symbols[1].relocation_count_ = 0;
+
+  TreeBuilder builder(size_info.get());
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/true);
+  Json::Value root = builder.Open("");
+  EXPECT_FLOAT_EQ(5.0f, root["size"].asFloat());
+  Json::Value file_node = builder.Open("a/b/c");
+  ASSERT_EQ(1u, file_node["children"].size());
+  EXPECT_EQ("sym1", file_node["children"][0]["fullName"].asString());
+  EXPECT_FLOAT_EQ(5.0f, file_node["children"][0]["size"].asFloat());
+}
+
+TEST(TreeBuilderTest, TestRelocationsDiffModePreservesFileDiffStatus) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  MakeSymbol(before.get(), SectionId::kDataRelRo, 100, "a/b/c", "A", "sym1");
+  MakeSymbol(before.get(), SectionId::kDataRelRo, 100, "a/b/c", "A", "sym_sz");
+  before->raw_symbols[0].relocation_count_ = 5;
+  before->raw_symbols[1].relocation_count_ = 0;
+
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  MakeSymbol(after.get(), SectionId::kDataRelRo, 100, "a/b/c", "A", "sym1");
+  MakeSymbol(after.get(), SectionId::kDataRelRo, 120, "a/b/c", "A", "sym_sz");
+  MakeSymbol(after.get(), SectionId::kDataRelRo, 80, "a/b/c", "A", "sym_new");
+  after->raw_symbols[0].relocation_count_ = 5;
+  after->raw_symbols[1].relocation_count_ = 0;
+  after->raw_symbols[2].relocation_count_ = 3;
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  TreeBuilder builder(&diff);
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/true);
+
+  Json::Value file_node = builder.Open("a/b/c");
+  EXPECT_FALSE(file_node.isMember("diffStatus"));
+  ASSERT_EQ(1u, file_node["children"].size());
+  EXPECT_EQ("sym_new", file_node["children"][0]["fullName"].asString());
+  EXPECT_FLOAT_EQ(3.0f, file_node["children"][0]["size"].asFloat());
+  EXPECT_FLOAT_EQ(0.0f, file_node["children"][0]["beforeSize"].asFloat());
+  EXPECT_EQ(1, file_node["childStats"]["R"]["added"].asInt());
+  EXPECT_EQ(0, file_node["childStats"]["R"]["changed"].asInt());
 }
 
 }  // namespace caspian

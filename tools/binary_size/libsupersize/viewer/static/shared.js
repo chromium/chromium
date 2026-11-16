@@ -107,6 +107,7 @@
  * @property {string} loadUrl
  * @property {string} beforeUrl
  * @property {boolean} methodCountMode
+ * @property {boolean} relocationsMode
  * @property {string} groupBy
  * @property {string} includeRegex
  * @property {string} excludeRegex

@@ -97,6 +97,7 @@ class BaseSymbol {
   virtual int32_t Padding() const = 0;
   virtual int32_t Address() const = 0;
   virtual int32_t Flags() const = 0;
+  virtual int32_t RelocationCount() const = 0;
 
   virtual std::string_view FullName() const = 0;
   // Derived from |full_name|. Generated lazily and cached.
@@ -116,7 +117,7 @@ class BaseSymbol {
   virtual float Pss() const = 0;
   virtual float PssWithoutPadding() const = 0;
   virtual float PaddingPss() const = 0;
-  virtual float BeforePss() const = 0;
+  virtual float RelocationPss() const = 0;
 
   virtual DiffStatus GetDiffStatus() const = 0;
 
@@ -190,6 +191,7 @@ class Symbol : public BaseSymbol {
   int32_t Padding() const override;
   int32_t Address() const override;
   int32_t Flags() const override;
+  int32_t RelocationCount() const override;
 
   std::string_view FullName() const override;
   // Derived from |full_name|. Generated lazily and cached.
@@ -209,7 +211,7 @@ class Symbol : public BaseSymbol {
   float Pss() const override;
   float PssWithoutPadding() const override;
   float PaddingPss() const override;
-  float BeforePss() const override;
+  float RelocationPss() const override;
 
   DiffStatus GetDiffStatus() const override;
 
@@ -217,6 +219,7 @@ class Symbol : public BaseSymbol {
   int32_t size_ = 0;
   int32_t flags_ = 0;
   int32_t padding_ = 0;
+  int32_t relocation_count_ = 0;
   SectionId section_id_ = SectionId::kNone;
   std::string_view full_name_;
   // Derived lazily
@@ -250,6 +253,7 @@ class DeltaSymbol : public BaseSymbol {
   int32_t Padding() const override;
   int32_t Address() const override;
   int32_t Flags() const override;
+  int32_t RelocationCount() const override;
 
   std::string_view FullName() const override;
   // Derived from |full_name|. Generated lazily and cached.
@@ -269,7 +273,7 @@ class DeltaSymbol : public BaseSymbol {
   float Pss() const override;
   float PssWithoutPadding() const override;
   float PaddingPss() const override;
-  float BeforePss() const override;
+  float RelocationPss() const override;
 
   DiffStatus GetDiffStatus() const override;
 
@@ -393,7 +397,7 @@ struct NodeStats {
   NodeStats(NodeStats&&);
   NodeStats& operator=(NodeStats&&);
   ~NodeStats();
-  void AddSymbol(const BaseSymbol& symbol);
+  void AddSymbol(const BaseSymbol& symbol, bool relocations_mode);
   bool HasSection(SectionId section) const;
   void WriteIntoJson(const JsonWriteOptions& opts, Json::Value* out) const;
   NodeStats& operator+=(const NodeStats& other);

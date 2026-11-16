@@ -255,6 +255,9 @@ class MainState {
     this.stMethodCount = newUiState(STATE_KEY.METHOD_COUNT, g_el.cbMethodCount);
 
     /** @public @const {!ElementUiState} */
+    this.stRelocations = newUiState(STATE_KEY.RELOCATIONS, g_el.cbRelocations);
+
+    /** @public @const {!ElementUiState} */
     this.stByteUnit = newUiState(STATE_KEY.BYTE_UNIT, g_el.selByteUnit);
 
     /** @public @const {!ElementUiState} */
@@ -354,6 +357,7 @@ class MainState {
     ret.loadUrl = /** @type {string} */ (this.stLoadUrl.get());
     ret.beforeUrl = /** @type {string} */ (this.stBeforeUrl.get());
     ret.methodCountMode = /** @type {boolean} */ (this.stMethodCount.get());
+    ret.relocationsMode = /** @type {boolean} */ (this.stRelocations.get());
     // Skipping |this.stByteUnit|.
     ret.minSymbolSize = /** @type {number} */ (this.stMinSize.value);
     ret.groupBy = /** @type {string} */ (this.stGroupBy.get());
@@ -377,6 +381,9 @@ class MainState {
     const hashParams = new URLSearchParams(location.hash.slice(1));
     for (const st of this.uiStates) {
       st.readFromSearchParams(st.isHash ? hashParams : queryParams);
+    }
+    if (this.stMethodCount.get() && this.stRelocations.get()) {
+      this.stRelocations.set(false);
     }
     // At this point it's possible to update the URL to fix mistakes and
     // canonicalize (e.g., param ordering). However, we choose to NOT do this
@@ -435,12 +442,16 @@ function _startListeners() {
     document.body.classList.add('show-options');
   }
 
-  /** Disables some fields when method_count is set. */
+  /** Disables some fields when method_count or relocations is set. */
   function setMethodCountModeUI() {
     if (state.stMethodCount.get()) {
       g_el.selByteUnit.setAttribute('disabled', '');
       g_el.fsTypesFilter.setAttribute('disabled', '');
       g_el.spanSizeHeader.textContent = 'Methods';
+    } else if (state.stRelocations.get()) {
+      g_el.selByteUnit.setAttribute('disabled', '');
+      g_el.fsTypesFilter.removeAttribute('disabled');
+      g_el.spanSizeHeader.textContent = 'Relocations';
     } else {
       g_el.selByteUnit.removeAttribute('disabled');
       g_el.fsTypesFilter.removeAttribute('disabled');
@@ -449,6 +460,18 @@ function _startListeners() {
   }
   setMethodCountModeUI();
   state.stMethodCount.addObserver(setMethodCountModeUI);
+  state.stRelocations.addObserver(setMethodCountModeUI);
+
+  g_el.cbMethodCount.addEventListener('change', () => {
+    if (g_el.cbMethodCount.checked) {
+      g_el.cbRelocations.checked = false;
+    }
+  });
+  g_el.cbRelocations.addEventListener('change', () => {
+    if (g_el.cbRelocations.checked) {
+      g_el.cbMethodCount.checked = false;
+    }
+  });
 
   /**
    * Displays error text on blur for regex inputs, if the input is invalid.
@@ -685,35 +708,48 @@ function _makeSizeTextGetter() {
         element: document.createTextNode(methodStr),
         value: methodCount,
       };
-
-    } else {
-      const isLeaf = node.children && node.children.length === 0;
-      const bytes = node.size;
-      const descriptionToks = [];
-      // Show "before → after" only for leaf nodes, since group nodes'
-      // |beforeSize| would miss contributions from unchanged symbols.
-      if (isLeaf && ('beforeSize' in node)) {
-        const before = formatNumber(node.beforeSize);
-        const after = formatNumber(node.beforeSize + bytes);
-        descriptionToks.push(`(${before} → ${after})`);  // '→' is '\u2192'.
-      }
-      descriptionToks.push(`${formatNumber(bytes)} bytes`);
-      const beforeNumAliases = node.beforeNumAliases || node.numAliases || 1;
-      const afterNumAliases = node.afterNumAliases || node.numAliases || 1;
-      if (beforeNumAliases > 1 || afterNumAliases > 1) {
-        if (beforeNumAliases === afterNumAliases) {
-          descriptionToks.push(`for 1 of ${afterNumAliases} aliases`);
-        } else {
-          descriptionToks.push(`for 1 of ${beforeNumAliases} → ${afterNumAliases} aliases`);
-        }
-      }
-
-      return {
-        description: descriptionToks.join(' '),
-        element: makeBytesElement(bytes),
-        value: bytes,
-      };
     }
+
+    const isRelocs = Boolean(state.stRelocations.get());
+    const maxDecimals = isRelocs ? 1 : 0;
+    const isLeaf = node.children && node.children.length === 0;
+    const size = node.size;
+    const descriptionToks = [];
+    // Show "before → after" only for leaf nodes, since group nodes'
+    // |beforeSize| would miss contributions from unchanged symbols.
+    if (isLeaf && ('beforeSize' in node)) {
+      const before = formatNumber(node.beforeSize, 0, maxDecimals);
+      const after = formatNumber(node.beforeSize + size, 0, maxDecimals);
+      descriptionToks.push(`(${before} → ${after})`);  // '→' is '\u2192'.
+    }
+    let element;
+    if (isRelocs) {
+      const formatted = formatNumber(size, 0, 1);
+      const relocStr =
+          (state.getDiffMode() && size > 0) ? `+${formatted}` : formatted;
+      descriptionToks.push(
+          `${relocStr} relocation${Math.abs(size) === 1 ? '' : 's'}`);
+      element = document.createTextNode(relocStr);
+    } else {
+      descriptionToks.push(`${formatNumber(size)} bytes`);
+      element = makeBytesElement(size);
+    }
+    const beforeNumAliases = node.beforeNumAliases || node.numAliases || 1;
+    const afterNumAliases = node.afterNumAliases || node.numAliases || 1;
+    if (beforeNumAliases > 1 || afterNumAliases > 1) {
+      if (beforeNumAliases === afterNumAliases) {
+        descriptionToks.push(`for 1 of ${afterNumAliases} aliases`);
+      } else {
+        descriptionToks.push(
+            `for 1 of ${beforeNumAliases} → ${afterNumAliases} aliases`);
+      }
+    }
+
+    return {
+      description: descriptionToks.join(' '),
+      element,
+      value: size,
+    };
   }
 
   /**

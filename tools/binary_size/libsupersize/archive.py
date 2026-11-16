@@ -418,15 +418,20 @@ def _CreateContainerSymbols(
     raw_symbols.extend(new_raw_symbols)
 
   elf_info = None
+  relocation_addresses = []
   if native_spec:
-    section_ranges, native_symbols, elf_info, native_metrics_by_file = (
-      native.CreateSymbols(
-        apk_spec=apk_spec,
-        native_spec=native_spec,
-        output_directory=output_directory,
-        ninja_source_mapper=ninja_source_mapper,
-        pak_id_map=pak_id_map,
-      )
+    (
+      section_ranges,
+      native_symbols,
+      elf_info,
+      native_metrics_by_file,
+      relocation_addresses,
+    ) = native.CreateSymbols(
+      apk_spec=apk_spec,
+      native_spec=native_spec,
+      output_directory=output_directory,
+      ninja_source_mapper=ninja_source_mapper,
+      pak_id_map=pak_id_map,
     )
     add_syms(
       section_ranges,
@@ -487,6 +492,7 @@ def _CreateContainerSymbols(
     metadata=metadata,
     section_sizes=section_sizes,
     metrics_by_file=metrics_by_file,
+    relocation_addresses=relocation_addresses,
   )
   for symbol in raw_symbols:
     symbol.container = container
@@ -1374,6 +1380,7 @@ def CreateSizeInfo(
     all_raw_symbols += raw_symbols
 
   file_format.CalculatePadding(all_raw_symbols)
+  models.AttributeRelocations(container_list, all_raw_symbols)
 
   return models.SizeInfo(build_config, container_list, all_raw_symbols)
 

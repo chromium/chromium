@@ -771,15 +771,6 @@ def _ElfInfoFromApk(apk_path, apk_so_path):
     return _CreateElfInfo(temp)
 
 
-def _CountRelocationsFromElf(elf_path):
-  args = [path_util.GetReadElfPath(), '-r', elf_path]
-  stdout = subprocess.check_output(args).decode('ascii')
-  relocations = re.findall(
-    r'Relocation section .* at offset .* contains (\d+) entries', stdout
-  )
-  return sum([int(i) for i in relocations])
-
-
 def _FindToolchainSubdirs(output_directory):
   return [
     n
@@ -944,6 +935,7 @@ def CreateSymbols(
       logging.debug('Extracting pak IDs from symbol names')
       pak_id_map.Update(object_paths_by_name, ninja_source_mapper)
 
+  relocation_addresses = []
   if elf_info:
     # Prefer the readelf output, since the size of .shstrtab changes after
     # removing debug sections.
@@ -955,7 +947,9 @@ def CreateSymbols(
         f'{models.METRICS_SIZE}/{k}': size
         for (k, (offset, size)) in section_ranges.items()
       }
-      relocations_count = _CountRelocationsFromElf(native_spec.elf_path)
+      relocation_addresses, relocations_count = (
+        readelf.CollectRelocationsFromElf(native_spec.elf_path)
+      )
       metrics_by_file[key][
         f'{models.METRICS_COUNT}/{models.METRICS_COUNT_RELOCATIONS}'
       ] = relocations_count
@@ -1030,4 +1024,10 @@ def CreateSymbols(
     logging.debug('Connecting nm aliases')
     _ConnectNmAliases(raw_symbols)
 
-  return section_ranges, raw_symbols, elf_info, metrics_by_file
+  return (
+    section_ranges,
+    raw_symbols,
+    elf_info,
+    metrics_by_file,
+    relocation_addresses,
+  )

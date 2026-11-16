@@ -13,6 +13,17 @@ import archive_util
 import models
 import path_util
 
+_RELATIVE_RELOC_NAMES = frozenset(
+  (
+    'R_386_RELATIVE',
+    'R_X86_64_RELATIVE',
+    'R_ARM_RELATIVE',
+    'R_AARCH64_RELATIVE',
+    'R_RISCV_RELATIVE',
+  )
+)
+_RELOC_SECTION_RE = re.compile(r'^Relocation section .* contains (\d+) entries')
+
 
 def BuildIdFromElf(elf_path):
   """Returns the Build ID for the given binary."""
@@ -91,12 +102,47 @@ def SectionInfoFromElf(elf_path):
   return section_ranges
 
 
-def CollectRelocationAddresses(elf_path):
-  """Returns the list of addresses that are targets for relative relocations."""
-  cmd = [path_util.GetReadElfPath(), '--relocs', elf_path]
-  ret = subprocess.check_output(cmd, encoding='ascii').splitlines()
-  # Grab first column from (sample output) '02de6d5c  00000017 R_ARM_RELATIVE'
-  return [int(l.split(maxsplit=1)[0], 16) for l in ret if 'R_ARM_RELATIVE' in l]
+def CollectRelocationsFromElf(elf_path):
+  """Returns (sorted_relative_addrs, total_reloc_count) for |elf_path|."""
+  args = [path_util.GetReadElfPath(), '-r', elf_path]
+  stdout = subprocess.check_output(args, encoding='utf-8', errors='replace')
+  addresses = []
+  total_count = 0
+  section_kind = None
+  for line in stdout.splitlines():
+    stripped = line.strip()
+    if not stripped:
+      section_kind = None
+      continue
+    if stripped.startswith('Relocation section '):
+      section_kind = None
+      match = _RELOC_SECTION_RE.match(stripped)
+      if match:
+        total_count += int(match.group(1))
+      continue
+    if stripped.startswith('Index:'):
+      section_kind = 'relr'
+      continue
+    if stripped.startswith('Offset'):
+      section_kind = 'rel'
+      continue
+    if section_kind == 'relr':
+      # Indexed rows look like "0000: <entry> <addr> [sym...]". Empty bitmap
+      # entries ("0001: 00000001") emit no address and may precede the next
+      # "0002:" index on the same line. Continuation rows start with "<addr>".
+      parts = stripped.split()
+      pos = 0
+      while pos + 1 < len(parts) and parts[pos].endswith(':'):
+        pos += 2
+      if pos < len(parts):
+        addresses.append(int(parts[pos], 16))
+    elif section_kind == 'rel' and '_RELATIVE' in line:
+      parts = stripped.split(None, 3)
+      if len(parts) >= 3 and parts[2] in _RELATIVE_RELOC_NAMES:
+        addresses.append(int(parts[0], 16))
+  # Merge per-section sorted runs (e.g. .rela.dyn before .relr.dyn).
+  addresses.sort()
+  return addresses, total_count
 
 
 def main():

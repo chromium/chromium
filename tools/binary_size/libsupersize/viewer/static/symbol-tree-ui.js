@@ -75,7 +75,9 @@ class SymbolTreeUi extends TreeUi {
     // Replace the contents of '.size' and change its title
     dom.replace(sizeElt, element);
     sizeElt.title = description;
-    setSizeClasses(sizeElt, value, state.stMethodCount.get());
+    setSizeClasses(
+        sizeElt, value,
+        Boolean(state.stMethodCount.get() || state.stRelocations.get()));
   }
 
   /** @override @protected */

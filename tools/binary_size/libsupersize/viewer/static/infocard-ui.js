@@ -115,7 +115,8 @@ const displayInfocard = (() => {
 
       // Update DOM
       setSizeClasses(
-          this._sizeInfo, sizeContents.value, state.stMethodCount.get());
+          this._sizeInfo, sizeContents.value,
+          Boolean(state.stMethodCount.get() || state.stRelocations.get()));
       dom.replace(this._sizeInfo, sizeFragment);
       dom.replace(this._addressInfo, addressFragment);
       dom.replace(this._paddingInfo, paddingFragment);

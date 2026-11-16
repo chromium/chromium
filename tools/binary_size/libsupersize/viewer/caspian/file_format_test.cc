@@ -265,5 +265,205 @@ TEST(FileFormatTest, ParseSizeInfoV2AndDiff) {
   EXPECT_EQ(4u, diff_after.raw_symbols.size());
 }
 
+TEST(FileFormatTest, ParseSizeInfoV2Relocations) {
+  std::string meta = R"({
+    "build_config": {"arch": "arm64"},
+    "containers": [
+      {"name": "base.apk", "metadata": {"elf_arch": "arm64"}},
+      {"name": "feat.apk", "metadata": {"elf_arch": "arm"}}
+    ],
+    "segments": [
+      [0, ".data.rel.ro", 2],
+      [0, ".bss", 1],
+      [1, ".data.rel.ro", 1]
+    ],
+    "total_symbols": 4
+  })";
+
+  std::string paths;
+  AppendU32(&paths, 1);  // 1 component
+  AppendU32(&paths, 1);  // 1 path
+  paths += SplitU32({0});
+  constexpr char kPathStrs[] = "Blink\0obj/foo.o\0src/foo.cc";
+  paths.append(kPathStrs, sizeof(kPathStrs));
+
+  std::string aliases;
+  AppendU32(&aliases, 1);
+  aliases += SplitU32({0}) + SplitU32({2});
+
+  // Sorted names: ["kAlias1", "kAlias2", "kArmTbl", "kBss"] -> perm=[0,1,3,2],
+  // ZigZag deltas of [0, 1, 3, 2]: [0, 2, 4, 1].
+  std::string names0;
+  AppendU32(&names0, 0);
+  AppendU32(&names0, 4);
+  names0 += SplitU32({0, 2, 4, 1});
+  constexpr char kNamesStrs[] =
+      "\x00\x06\x01\x01"
+      "kAlias1\0"
+      "2\0"
+      "ArmTbl\0"
+      "Bss";
+  names0.append(kNamesStrs, sizeof(kNamesStrs));
+
+  std::string relocations;
+  AppendU32(&relocations, 2);  // 2 containers
+  // Container 0 ({0x1000, 0x1008, 0x1018, 0x1021}):
+  //   (0, 0x1000) -> 0x1000, cur=0x1004
+  //   bitmap 0x22 -> 0x1008 (bit 1), 0x1018 (bit 5), cur=0x1084
+  //   (0, 0xFFFFFF9D) -> cur wraps back to 0x1021
+  AppendU32(&relocations, 0);
+  AppendU32(&relocations, 5);
+  relocations += SplitU32({0u, 0x1000u, 0x22u, 0u, 0xFFFFFF9Du});
+  // Container 1 ({0x80003000, 0x8000300C, 0x80003011}):
+  //   (0, 0x80003000) -> 0x80003000, cur=0x80003004
+  //   bitmap 0x4 -> 0x8000300C (bit 2), cur=0x80003084
+  //   (0, 0xFFFFFF8D) -> cur wraps back to 0x80003011
+  AppendU32(&relocations, 1);
+  AppendU32(&relocations, 5);
+  relocations += SplitU32({0u, 0x80003000u, 0x4u, 0u, 0xFFFFFF8Du});
+
+  // Addresses: sym0=0x1000, sym1=0x1000 (alias), sym2=0x1000 (.bss),
+  // sym3=0x80003000.
+  std::string v2 = PackV2Blobs(
+      0u, {
+              {"meta", meta},
+              {"paths", paths},
+              {"addresses", SplitU32({0x1000u, 0u, 0u, 0x80002000u})},
+              {"sizes", SplitU32({0x40, 0x40, 0x40, 0x20})},
+              {"path_indices", SplitU32({0, 0, 0, 0})},
+              {"flags", SplitU32({0, 0, 0, 0})},
+              {"aliases", aliases},
+              {"names_0", names0},
+              {"relocations", relocations},
+          });
+
+  SizeInfo loaded;
+  ParseSizeInfo(v2.data(), v2.size(), &loaded);
+  ASSERT_EQ(2u, loaded.containers.size());
+
+  ASSERT_EQ(4u, loaded.raw_symbols.size());
+  EXPECT_EQ("kAlias1", loaded.raw_symbols[0].FullName());
+  EXPECT_EQ("kAlias2", loaded.raw_symbols[1].FullName());
+  EXPECT_EQ("kBss", loaded.raw_symbols[2].FullName());
+  EXPECT_EQ("kArmTbl", loaded.raw_symbols[3].FullName());
+  EXPECT_EQ(0x80003000u,
+            static_cast<uint32_t>(loaded.raw_symbols[3].Address()));
+
+  EXPECT_EQ(4, loaded.raw_symbols[0].RelocationCount());
+  EXPECT_EQ(4, loaded.raw_symbols[1].RelocationCount());
+  EXPECT_FLOAT_EQ(2.0f, loaded.raw_symbols[0].RelocationPss());
+  EXPECT_EQ(0, loaded.raw_symbols[2].RelocationCount());
+  EXPECT_EQ(3, loaded.raw_symbols[3].RelocationCount());
+  EXPECT_FLOAT_EQ(3.0f, loaded.raw_symbols[3].RelocationPss());
+
+  // Sparse v2 files (has_padding / header flag bit 0 set) may have symbols in
+  // non-address order; attribution must still match relocations accurately.
+  std::string sparse_meta = R"({
+    "build_config": {"arch": "arm64"},
+    "containers": [{"name": "base.apk"}],
+    "segments": [[0, ".data.rel.ro", 2]],
+    "total_symbols": 2
+  })";
+  std::string sparse_names;
+  AppendU32(&sparse_names, 0);
+  AppendU32(&sparse_names, 2);
+  sparse_names += SplitU32({2, 1});
+  constexpr char kSparseNamesStrs[] =
+      "\x00\x01"
+      "kFirst\0"
+      "Second";
+  sparse_names.append(kSparseNamesStrs, sizeof(kSparseNamesStrs));
+
+  std::string sparse_relocs;
+  AppendU32(&sparse_relocs, 1);  // 1 container
+  AppendU32(&sparse_relocs, 0);  // container 0
+  AppendU32(&sparse_relocs, 5);  // num_words
+  // {0x1000, 0x2001, 0x2009}: odd 0x2001 followed by resumed bitmap 0x2.
+  sparse_relocs += SplitU32({0u, 0x1000u, 0u, 0x0FFDu, 0x2u});
+
+  std::string sparse_v2 =
+      PackV2Blobs(1u,  // has_padding = true -> is_sparse = true
+                  {
+                      {"meta", sparse_meta},
+                      {"paths", paths},
+                      {"addresses", SplitU32({0x2000u, 0xFFFFF000u})},
+                      {"sizes", SplitU32({0x1C, 0x20})},
+                      {"paddings", SplitU32({4, 0})},
+                      {"path_indices", SplitU32({0, 0})},
+                      {"flags", SplitU32({0, 0})},
+                      {"names_0", sparse_names},
+                      {"relocations", sparse_relocs},
+                  });
+  SizeInfo sparse_loaded;
+  ParseSizeInfo(sparse_v2.data(), sparse_v2.size(), &sparse_loaded);
+  ASSERT_TRUE(sparse_loaded.IsSparse());
+  ASSERT_EQ(2u, sparse_loaded.raw_symbols.size());
+  EXPECT_EQ("kSecond", sparse_loaded.raw_symbols[0].FullName());
+  EXPECT_EQ(0x2000, sparse_loaded.raw_symbols[0].Address());
+  EXPECT_EQ(2, sparse_loaded.raw_symbols[0].RelocationCount());
+  EXPECT_EQ("kFirst", sparse_loaded.raw_symbols[1].FullName());
+  EXPECT_EQ(0x1000, sparse_loaded.raw_symbols[1].Address());
+  EXPECT_EQ(1, sparse_loaded.raw_symbols[1].RelocationCount());
+}
+
+TEST(FileFormatTest, ParseSizeInfoV2RelocationEdgeCases) {
+  std::string meta = R"({
+    "containers": [{"name": "empty.so"}, {"name": "main.so"}],
+    "segments": [[0, ".rodata", 1], [1, ".data.rel.ro", 3]],
+    "total_symbols": 4
+  })";
+
+  std::string paths;
+  AppendU32(&paths, 1);
+  AppendU32(&paths, 1);
+  paths += SplitU32({0});
+  constexpr char kPathStrs[] = "Blink\0obj/e.o\0src/e.cc";
+  paths.append(kPathStrs, sizeof(kPathStrs));
+
+  std::string names0;
+  AppendU32(&names0, 0);
+  AppendU32(&names0, 4);
+  names0 += SplitU32({0, 2, 2, 2});
+  constexpr char kNamesStrs[] =
+      "\x00\x01\x01\x01"
+      "kA\0B\0C\0D";
+  names0.append(kNamesStrs, sizeof(kNamesStrs));
+
+  std::string relocs;
+  AppendU32(&relocs, 2);  // 2 container records
+  AppendU32(&relocs, 0);  // container 0: 0 words (empty)
+  AppendU32(&relocs, 0);
+  // Container 1:
+  //   0u -> (0, 0), cur=4 (addr == 0)
+  //   0x1000u -> (0, 0x0FFCu), cur=0x1004; 0xFFFFFFFFu -> 32 addrs, cur=0x1084
+  //   0x2000u -> (0, 0x0F7Cu), cur=0x2004; 0xAAAAAAAAu -> 16 addrs, cur=0x2084
+  //   0xFFFFFFFCu -> (0, 0xFFFFDF78u), cur=0
+  //   0xFFFFFFFFu -> (0, 0xFFFFFFFFu), cur=3
+  AppendU32(&relocs, 1);
+  AppendU32(&relocs, 12);
+  relocs += SplitU32({0u, 0u, 0u, 0x0FFCu, 0xFFFFFFFFu, 0u, 0x0F7Cu,
+                      0xAAAAAAAAu, 0u, 0xFFFFDF78u, 0u, 0xFFFFFFFFu});
+
+  std::string v2 = PackV2Blobs(
+      0u, {
+              {"meta", meta},
+              {"paths", paths},
+              {"addresses", SplitU32({0x500u, 0x0B00u, 0x1000u, 0xFFFFDFFCu})},
+              {"sizes", SplitU32({0x10, 0x100, 0x100, 4})},
+              {"path_indices", SplitU32({0, 0, 0, 0})},
+              {"flags", SplitU32({0, 0, 0, 0})},
+              {"names_0", names0},
+              {"relocations", relocs},
+          });
+
+  SizeInfo loaded;
+  ParseSizeInfo(v2.data(), v2.size(), &loaded);
+  ASSERT_EQ(4u, loaded.raw_symbols.size());
+  EXPECT_EQ(0, loaded.raw_symbols[0].RelocationCount());
+  EXPECT_EQ(33, loaded.raw_symbols[1].RelocationCount());
+  EXPECT_EQ(17, loaded.raw_symbols[2].RelocationCount());
+  EXPECT_EQ(2, loaded.raw_symbols[3].RelocationCount());
+}
+
 }  // namespace
 }  // namespace caspian

@@ -55,6 +55,93 @@ def _ByteStreamUnsplit(data, typecode, count):
   return arr
 
 
+_RELOC_STRIDE = 4
+
+
+def _EncodeRelocations(addrs):
+  """Encodes sorted |addrs| into uint32 words using a modified RELR format.
+
+  This is a bit smaller and simpler than standard ELF RELR: instead of
+  reserving bit 0 of every word to distinguish addresses from bitmaps (which
+  requires arch-dependent stride and separate handling for odd addresses), all
+  32 bits of each non-zero uint32 word form a 4-byte-stride bitmask covering
+  [cur, cur + 128), and a 0 word flags that the next uint32 word is a modular
+  byte offset to the next relocation address (advancing cur to addr + 4).
+  """
+  deduped = []
+  prev = -1
+  for val in addrs:
+    addr = val & 0xFFFFFFFF
+    assert addr >= prev, 'Relocation addresses must be sorted'
+    if addr != prev:
+      deduped.append(addr)
+      prev = addr
+
+  words = array.array('I')
+  cur = 0
+  i = 0
+  n = len(deduped)
+  window = 32 * _RELOC_STRIDE
+  while i < n:
+    addr = deduped[i]
+    words.append(0)
+    words.append((addr - cur) & 0xFFFFFFFF)
+    cur = addr + _RELOC_STRIDE
+    i += 1
+    while i < n:
+      bitmap = 0
+      while i < n:
+        diff = deduped[i] - cur
+        if diff < 0 or diff >= window or diff % _RELOC_STRIDE != 0:
+          break
+        bitmap |= 1 << (diff // _RELOC_STRIDE)
+        i += 1
+      if bitmap == 0:
+        break
+      words.append(bitmap)
+      cur += window
+  return words
+
+
+def _DecodeRelocations(words):
+  """Decodes modified-RELR uint32 |words| back into sorted uint32 addresses.
+
+  Each 0 word consumes the following uint32 word as a modular byte offset; each
+  non-zero word uses all 32 bits as a 4-byte-stride relocation bitmask.
+  """
+  addrs = []
+  append_addr = addrs.append
+  cur = 0
+  prev = -1
+  step32 = 32 * _RELOC_STRIDE
+  it = iter(words)
+  for word in it:
+    if word == 0:
+      try:
+        offset = next(it)
+      except StopIteration as exc:
+        raise ValueError('Truncated relocation offset') from exc
+      cur = (cur + offset) & 0xFFFFFFFF
+      if cur <= prev:
+        raise ValueError('Unsorted relocation addresses')
+      prev = cur
+      append_addr(cur)
+      cur = (cur + _RELOC_STRIDE) & 0xFFFFFFFF
+    else:
+      addr = cur
+      while word:
+        if word & 1:
+          masked = addr & 0xFFFFFFFF
+          if masked <= prev:
+            raise ValueError('Unsorted relocation addresses')
+          prev = masked
+          append_addr(masked)
+        word >>= 1
+        addr += _RELOC_STRIDE
+      cur = (cur + step32) & 0xFFFFFFFF
+  return addrs
+
+
 def _SplitZigZagDeltas(values):
   """Encodes 32-bit signed deltas of |values| with ZigZag + byte-splitting."""
   first = values[0]
@@ -131,7 +218,7 @@ def _EncodeNameShard(syms, shard_idx, start_idx, end_idx):
 
 
 def _BuildMetaAndExtras(size_info, syms):
-  """Builds 'meta', optional 'aliases', and optional 'disassembly' blobs."""
+  """Builds 'meta' and optional 'aliases'/'disassembly'/'relocations' blobs."""
   num_containers = len(size_info.containers)
   total_symbols = len(syms)
   c_to_idx = {c.name: i for i, c in enumerate(size_info.containers)}
@@ -192,6 +279,24 @@ def _BuildMetaAndExtras(size_info, syms):
       out.append(
         ('disassembly', struct.pack('<I', len(disasm)) + b''.join(disasm))
       )
+
+  reloc_parts = []
+  reloc_containers = 0
+  for container_idx, container in enumerate(size_info.containers):
+    if not container.relocation_addresses:
+      continue
+    reloc_words = _EncodeRelocations(container.relocation_addresses)
+    reloc_containers += 1
+    reloc_parts.append(struct.pack('<II', container_idx, len(reloc_words)))
+    reloc_parts.append(_ByteStreamSplit(reloc_words))
+  if reloc_containers:
+    out.append(
+      (
+        'relocations',
+        struct.pack('<I', reloc_containers) + b''.join(reloc_parts),
+      )
+    )
+
   return _CompressNamedBlobs(out)
 
 
@@ -331,6 +436,7 @@ def LoadSizeInfo(file_obj, size_path, is_sparse=False):
   """Loads a .size v2 SizeInfo from |file_obj| (after V2_HEADER_PREFIX)."""
   header_flags, num_blobs = struct.unpack('<II', file_obj.read(8))
   has_padding = bool(header_flags & _FLAG_HAS_PADDING)
+  is_sparse = is_sparse or has_padding
   toc_bytes = file_obj.read(_TOC_ENTRY_STRUCT.size * num_blobs)
   cur_pos = 64 + _TOC_ENTRY_STRUCT.size * num_blobs
   names = []
@@ -360,6 +466,19 @@ def LoadSizeInfo(file_obj, size_path, is_sparse=False):
     for c in meta['containers']
   ]
   models.BaseContainer.AssignShortNames(containers)
+
+  rel_data = blobs.get('relocations')
+  if rel_data is not None:
+    num_rel_containers = struct.unpack_from('<I', rel_data, 0)[0]
+    rel_pos = 4
+    for _ in range(num_rel_containers):
+      container_idx, num_words = struct.unpack_from('<II', rel_data, rel_pos)
+      rel_pos += 8
+      rel_end = rel_pos + num_words * 4
+      words = _ByteStreamUnsplit(rel_data[rel_pos:rel_end], 'I', num_words)
+      containers[container_idx].relocation_addresses = _DecodeRelocations(words)
+      rel_pos = rel_end
+
   total_symbols = meta['total_symbols']
   if total_symbols == 0:
     return models.SizeInfo(
@@ -413,6 +532,7 @@ def LoadSizeInfo(file_obj, size_path, is_sparse=False):
       ]
       new_sym.flags = flg
       new_sym.disassembly = ''
+      new_sym.relocation_count = 0
       new_sym.aliases = None
       new_sym.template_name = ''
       new_sym.name = ''
@@ -459,6 +579,9 @@ def LoadSizeInfo(file_obj, size_path, is_sparse=False):
 
   if not has_padding:
     file_format.CalculatePadding(raw_symbols)
+
+  if rel_data is not None:
+    models.AttributeRelocations(containers, raw_symbols, is_sparse=is_sparse)
 
   ddata = blobs.get('disassembly')
   if ddata is not None:

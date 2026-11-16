@@ -16,6 +16,25 @@ import time
 import models
 
 
+def _EffectiveSizeDiffStatus(sym):
+  """Returns byte-size diff status, ignoring 0-byte relocation-only diffs."""
+  if sym.IsGroup():
+    if not sym:
+      return models.DIFF_STATUS_UNCHANGED
+    statuses = {_EffectiveSizeDiffStatus(child) for child in sym}
+    if len(statuses) == 1:
+      return next(iter(statuses))
+    return models.DIFF_STATUS_CHANGED
+  status = sym.diff_status
+  if status == models.DIFF_STATUS_CHANGED and sym.size == 0 and sym.pss == 0:
+    return models.DIFF_STATUS_UNCHANGED
+  return status
+
+
+def _HasSizeDiff(sym):
+  return _EffectiveSizeDiffStatus(sym) != models.DIFF_STATUS_UNCHANGED
+
+
 def _PrettySize(size):
   # Arbitrarily chosen cut-off.
   if abs(size) < 2000:
@@ -357,7 +376,9 @@ class DescriberText(Describer):
           yield '{} {}'.format(' ' * indent_size, l)
         else:
           if is_delta:
-            diff_prefix = models.DIFF_PREFIX_BY_STATUS[s.diff_status]
+            diff_prefix = models.DIFF_PREFIX_BY_STATUS[
+              _EffectiveSizeDiffStatus(s)
+            ]
           yield '{}{}{:<4} {:>8} {:7} {}'.format(
             indent_prefix,
             diff_prefix,
@@ -387,13 +408,13 @@ class DescriberText(Describer):
       counts_by_section = collections.defaultdict(int)
       for s in group.IterLeafSymbols():
         pss_by_section[s.section_name] += s.pss
-        if not s.IsDelta() or s.diff_status is not models.DIFF_STATUS_UNCHANGED:
+        if not s.IsDelta() or _HasSizeDiff(s):
           counts_by_section[s.section_name] += 1
 
     # Apply this filter after calcualating size since an alias being removed
     # causes some symbols to be UNCHANGED, yet have pss != 0.
     if group.IsDelta():
-      group = group.WhereDiffStatusIs(models.DIFF_STATUS_UNCHANGED).Inverted()
+      group = group.Filter(_HasSizeDiff)
 
     if self.summarize:
       histogram = Histogram()
@@ -471,7 +492,7 @@ class DescriberText(Describer):
       path = s.source_path or s.object_path
       # Ignore paths like foo/{shared}/2
       if '{' not in path:
-        paths_by_status[s.diff_status].add(path)
+        paths_by_status[_EffectiveSizeDiffStatus(s)].add(path)
     # Initial paths sets are those where *any* symbol is
     # unchanged/changed/added/removed.
     unchanged, changed, added, removed = paths_by_status
@@ -512,14 +533,16 @@ class DescriberText(Describer):
         elif sym.pss < 0:
           num_dec += 1
 
-        status = sym.diff_status
+        status = _EffectiveSizeDiffStatus(sym)
         if status == models.DIFF_STATUS_ADDED:
           counts_by_section[sym.section_name] += 1
         elif status == models.DIFF_STATUS_REMOVED:
           counts_by_section[sym.section_name] -= 1
 
+      counts = [0, 0, 0, 0]
+      for sym in delta_group:
+        counts[_EffectiveSizeDiffStatus(sym)] += 1
       relevant_sections = self._RelevantSections(counts_by_section)
-      counts = delta_group.CountsByDiffStatus()
       diff_status_msg = (
         '{} symbols added (+), {} changed (~), '
         '{} removed (-), {} unchanged (not shown)'
@@ -717,9 +740,7 @@ class DescriberCsv(Describer):
   def _DescribeDeltaSymbolGroup(self, delta_group):
     yield self._RenderSymbolHeader(True)
     # Apply filter to remove UNCHANGED groups.
-    delta_group = delta_group.WhereDiffStatusIs(
-      models.DIFF_STATUS_UNCHANGED
-    ).Inverted()
+    delta_group = delta_group.Filter(_HasSizeDiff)
     for sym in delta_group:
       yield self._RenderSymbolData(sym)
 

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// C++ parser for SuperSize .size v2 binary files.
+// See tools/binary_size/libsupersize/docs/file_format.md for the format spec.
+
 #include "tools/binary_size/libsupersize/viewer/caspian/file_format_v2.h"
 
 #include <stdint.h>
@@ -32,10 +35,13 @@ static_assert(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__,
 namespace caspian {
 namespace {
 
+// 64-byte file header: 56-byte magic prefix (ending in 3 reserved NUL bytes),
+// uint32 header_flags (bit 0 = has_padding), and uint32 num_blobs.
 const char kSizeV2Magic[] =
     "# Created by //tools/binary_size\nSize File Format v2\n\0\0\0";
 constexpr size_t kSizeV2MagicLen = 56;
 constexpr size_t kSizeV2HeaderLen = 64;
+// Each TOC entry is <16sQQQ: 16B NUL-padded name, offset, comp_size, raw_size.
 constexpr size_t kSizeV2TocEntryLen = 40;
 
 void Check(bool cond, const char* msg) {
@@ -45,6 +51,9 @@ void Check(bool cond, const char* msg) {
   }
 }
 
+// Reconstructs |count| little-endian values of type |T| from sizeof(T)
+// contiguous byte planes (all byte-0s, then all byte-1s, ...). Byte-plane
+// transposition groups high-order zero/sign/prefix bytes together for Zstd.
 template <typename T>
 void ByteStreamSplitDecode(const uint8_t* src, size_t count, T* dst_typed) {
   constexpr size_t kWidth = sizeof(T);
@@ -56,6 +65,13 @@ void ByteStreamSplitDecode(const uint8_t* src, size_t count, T* dst_typed) {
   }
 }
 
+// Reverses ZigZag encoding ((n << 1) ^ (n >> 31)), mapping unsigned integers
+// (0, 1, 2, 3, ...) back to signed 32-bit deltas (0, -1, 1, -2, ...).
+int32_t ZigZagDecode(uint32_t v) {
+  return static_cast<int32_t>((v >> 1) ^ (0u - (v & 1u)));
+}
+
+// Bounds-checked sequential cursor over an uncompressed v2 blob or file header.
 struct Reader {
   const uint8_t* cur = nullptr;
   const uint8_t* end = nullptr;
@@ -84,6 +100,8 @@ struct Reader {
     return v;
   }
 
+  // Returns an in-place pointer to a NUL-terminated string within the backing
+  // buffer (no copy); the buffer must outlive any retained pointers.
   const char* ReadStr(size_t* len_out = nullptr) {
     const void* nul = std::memchr(cur, '\0', static_cast<size_t>(end - cur));
     Check(nul != nullptr, "Truncated null-terminated string in v2 blob");
@@ -96,13 +114,154 @@ struct Reader {
     return s;
   }
 
+  // Unpacks |count| byte-stream-split values of type |T| into |out|.
   template <typename T>
   void ReadSplit(size_t count, std::vector<T>* out) {
+    Check(count <= static_cast<size_t>(end - cur) / sizeof(T),
+          "Truncated v2 blob");
     out->resize(count);
     ByteStreamSplitDecode(ReadBytes(count * sizeof(T)), count, out->data());
   }
 };
 
+constexpr uint32_t kRelocStride = 4;
+
+// Decodes per-container relative relocation addresses from a modified RELR
+// uint32 word stream.
+//
+// Modified RELR is a bit smaller and simpler than standard ELF RELR: instead of
+// stealing bit 0 of every word as an address/bitmap flag (which requires an
+// arch-dependent stride and a separate odd_addrs fallback), all 32 bits of
+// every non-zero uint32 word are used for the bitmask at a fixed 4-byte stride
+// covering [cur, cur + 128) (advancing cur += 128). A 0 word flags that the
+// next uint32 word is a wrapping modular byte offset to the next relocation
+// address (cur += offset), emitting cur and advancing cur += 4 so subsequent
+// 4-byte-aligned relocations can immediately resume bitmap encoding.
+void DecodeRelocations(const std::vector<uint32_t>& words,
+                       std::vector<uint32_t>* out) {
+  uint32_t cur = 0;
+  int64_t prev = -1;
+  for (size_t i = 0; i < words.size(); ++i) {
+    uint32_t word = words[i];
+    if (word == 0) {
+      Check(i + 1 < words.size(), "Truncated relocation offset");
+      cur += words[++i];
+      Check(static_cast<int64_t>(cur) > prev, "Unsorted relocation addresses");
+      prev = cur;
+      out->push_back(cur);
+      cur += kRelocStride;
+    } else {
+      uint32_t addr = cur;
+      while (word != 0) {
+        if (word & 1u) {
+          Check(static_cast<int64_t>(addr) > prev,
+                "Unsorted relocation addresses");
+          prev = addr;
+          out->push_back(addr);
+        }
+        word >>= 1;
+        addr += kRelocStride;
+      }
+      cur += 32u * kRelocStride;
+    }
+  }
+}
+
+// Attributes sorted per-container relocation addresses to symbols whose
+// [Address, Address + SizeWithoutPadding) range contains them.
+//
+// Non-sparse .size files can stream |raw_symbols| in a single linear
+// O(symbols + relocs) two-pointer pass per container because all non-BSS native
+// sections share sort order 0 in file_format.SortSymbols, guaranteeing
+// non-decreasing symbol addresses per container. Sparse inputs (.sizediff or
+// filtered .size files, where |info->is_sparse| is true) may not preserve
+// address order, so eligible symbol pointers are sorted by unsigned address
+// first.
+//
+// All symbols in an alias group share the attributed |relocation_count_|
+// because they occupy the same underlying bytes in the binary;
+// Symbol::RelocationPss() divides |relocation_count_| across NumAliases().
+void AttributeRelocations(
+    SizeInfo* info,
+    const std::vector<std::vector<uint32_t>>& relocs_by_container) {
+  const size_t num_containers = info->containers.size();
+  std::vector<size_t> rel_indices(num_containers, 0);
+  std::vector<uint32_t> prev_addrs(num_containers, 0);
+
+  // For alias groups, only the canonical first symbol is matched so the shared
+  // address range is scanned once. Note that Address() is stored as int32_t, so
+  // high 32-bit addresses (>= 0x80000000) appear negative; check != 0 rather
+  // than > 0.
+  auto is_eligible = [&](const Symbol& sym) {
+    if (!sym.IsNative() || sym.IsBss() || sym.Address() == 0 ||
+        sym.SizeWithoutPadding() <= 0) {
+      return false;
+    }
+    if (sym.aliases_ && &sym != (*sym.aliases_)[0]) {
+      return false;
+    }
+    size_t c_idx =
+        static_cast<size_t>(sym.container_ - info->containers.data());
+    return !relocs_by_container[c_idx].empty();
+  };
+
+  auto attribute_sym = [&](Symbol* sym) {
+    size_t c_idx =
+        static_cast<size_t>(sym->container_ - info->containers.data());
+    const auto& relocs = relocs_by_container[c_idx];
+    uint32_t start = static_cast<uint32_t>(sym->Address());
+    Check(start >= prev_addrs[c_idx], "Unsorted symbol addresses");
+    prev_addrs[c_idx] = start;
+
+    uint64_t end =
+        uint64_t{start} + static_cast<uint32_t>(sym->SizeWithoutPadding());
+    size_t& rel_idx = rel_indices[c_idx];
+    const size_t num_relocs = relocs.size();
+    while (rel_idx < num_relocs && relocs[rel_idx] < start) {
+      ++rel_idx;
+    }
+    const size_t match_start = rel_idx;
+    while (rel_idx < num_relocs && relocs[rel_idx] < end) {
+      ++rel_idx;
+    }
+    int32_t count = static_cast<int32_t>(rel_idx - match_start);
+    if (count > 0) {
+      if (sym->aliases_) {
+        for (Symbol* alias : *sym->aliases_) {
+          alias->relocation_count_ = count;
+        }
+      } else {
+        sym->relocation_count_ = count;
+      }
+    }
+  };
+
+  if (!info->is_sparse) {
+    for (Symbol& sym : info->raw_symbols) {
+      if (is_eligible(sym)) {
+        attribute_sym(&sym);
+      }
+    }
+  } else {
+    std::vector<Symbol*> sparse_syms;
+    for (Symbol& sym : info->raw_symbols) {
+      if (is_eligible(sym)) {
+        sparse_syms.push_back(&sym);
+      }
+    }
+    std::sort(sparse_syms.begin(), sparse_syms.end(),
+              [](const Symbol* a, const Symbol* b) {
+                return static_cast<uint32_t>(a->Address()) <
+                       static_cast<uint32_t>(b->Address());
+              });
+    for (Symbol* sym : sparse_syms) {
+      attribute_sym(sym);
+    }
+  }
+}
+
+// Runs |fn(0..num_tasks-1)| across a bounded pool of worker threads, falling
+// back to serial execution when single-threaded (e.g. non-threaded WASM).
 template <typename Func>
 void ParallelFor(size_t num_tasks, Func&& fn) {
   if (num_tasks == 0) {
@@ -155,6 +314,7 @@ bool IsSizeV2(const char* data, unsigned long len) {
 }
 
 void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
+  // Parse the 64-byte file header and table of contents.
   Reader hdr(data, len);
   hdr.ReadBytes(kSizeV2MagicLen);
   uint32_t header_flags = hdr.ReadU32();
@@ -182,6 +342,8 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
           "Invalid v2 blob bounds");
   }
 
+  // Each TOC entry is an independent Zstd frame with known uncompressed size,
+  // allowing all blobs to be decompressed concurrently.
   std::vector<std::vector<char>> raw_blobs(num_blobs);
   ParallelFor(num_blobs, [&](size_t i) {
     size_t raw_sz = static_cast<size_t>(toc[i].raw_size);
@@ -207,6 +369,8 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
     return *b;
   };
 
+  // Parse JSON metadata: build_config, containers, total_symbols, and the
+  // (container_idx, section_name, symbol_count) segment table.
   Json::Value meta_json;
   {
     const auto& meta_buf = require_blob("meta");
@@ -237,6 +401,9 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
   }
   uint32_t total_symbols = meta_json["total_symbols"].asUInt();
 
+  // Parse deduplicated component names and (object_path, source_path) tuples.
+  // Move the decompressed buffer into |info->raw_decompressed| so raw C-string
+  // pointers stored on Symbol remain valid for the lifetime of |info|.
   std::vector<uint32_t> path_components;
   if (auto* paths_blob = find_blob("paths")) {
     info->raw_decompressed = std::move(*paths_blob);
@@ -258,6 +425,11 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
   }
 
   if (total_symbols > 0) {
+    // Unpack byte-stream-split per-symbol columns (freeing each blob buffer
+    // once decoded) and populate |raw_symbols| grouped by |segments|.
+    // |addresses| stores wrapping uint32 modular deltas across the entire
+    // symbol stream; |sizes| stores unpadded sizes (except overhead symbols);
+    // |path_indices| stores ZigZag-encoded signed deltas into |paths|.
     {
       auto read_col = [&](const char* name, auto* vec) {
         auto& b = require_blob(name);
@@ -302,8 +474,7 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
           sym.size_info_ = info;
           sym.container_ = cur_container;
 
-          uint32_t zp = path_indices[sym_idx];
-          prev_path += static_cast<int32_t>((zp >> 1) ^ (0u - (zp & 1u)));
+          prev_path += ZigZagDecode(path_indices[sym_idx]);
           Check(prev_path >= 0 &&
                     static_cast<size_t>(prev_path) < info->object_paths.size(),
                 "Invalid path index in v2 symbols");
@@ -315,6 +486,8 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
       Check(sym_idx == total_symbols, "Segment symbol count mismatch");
     }
 
+    // Link contiguous runs of aliased symbols via delta-encoded
+    // (first_sym_idx, alias_count) group descriptors.
     if (auto* alias_buf = find_blob("aliases")) {
       Reader ar(*alias_buf);
       uint32_t num_groups = ar.ReadU32();
@@ -336,6 +509,12 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
       }
     }
 
+    // Reconstruct symbol full_names in parallel across "names_*" shards.
+    // Within each shard, names are front-coded in lexicographical order
+    // (uint8 LCP prefix length + NUL-terminated suffix), and ZigZag-encoded
+    // permutation deltas map each decoded string back to its symbol slot in
+    // [start_idx, start_idx + sym_count). Each shard packs all reconstructed
+    // strings into one contiguous arena in |info->owned_strings|.
     std::vector<std::vector<char>*> name_shards;
     for (size_t i = 0; i < num_blobs; ++i) {
       if (toc[i].name.starts_with("names_")) {
@@ -367,8 +546,7 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
         size_t prev_len = 0;
         int32_t prev_perm = 0;
         for (uint32_t i = 0; i < sym_count; ++i) {
-          uint32_t zp = perm_deltas[i];
-          prev_perm += static_cast<int32_t>((zp >> 1) ^ (0u - (zp & 1u)));
+          prev_perm += ZigZagDecode(perm_deltas[i]);
           Check(prev_perm >= 0 && static_cast<uint32_t>(prev_perm) < sym_count,
                 "Invalid perm_k index");
           size_t suf_len = 0;
@@ -389,6 +567,9 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
       std::vector<char>().swap(*name_shards[k]);
     });
 
+    // Finalize padded symbol sizes (Symbol::size_ includes padding). Sparse v2
+    // files store explicit |paddings|; full v2 files omit |paddings| and derive
+    // padding from address gaps between consecutive symbols.
     if (has_padding) {
       for (Symbol& sym : info->raw_symbols) {
         if (!sym.IsOverhead()) {
@@ -402,6 +583,27 @@ void ParseSizeInfoV2(const uint8_t* data, unsigned long len, SizeInfo* info) {
 
   info->is_sparse = has_padding;
 
+  // Decode per-container modified-RELR relocation streams and attribute counts
+  // to native symbols. Runs after aliases and padding are populated so aliases
+  // and SizeWithoutPadding() are valid.
+  if (auto* rel_buf = find_blob("relocations")) {
+    std::vector<std::vector<uint32_t>> relocs_by_container(
+        info->containers.size());
+    Reader rr(*rel_buf);
+    uint32_t num_containers = rr.ReadU32();
+    std::vector<uint32_t> words;
+    for (uint32_t i = 0; i < num_containers; ++i) {
+      uint32_t c_idx = rr.ReadU32();
+      uint32_t num_words = rr.ReadU32();
+      Check(c_idx < info->containers.size(), "Invalid relocation container");
+      rr.ReadSplit(num_words, &words);
+      DecodeRelocations(words, &relocs_by_container[c_idx]);
+    }
+    std::vector<char>().swap(*rel_buf);
+    AttributeRelocations(info, relocs_by_container);
+  }
+
+  // Attach optional UTF-8 disassembly strings to individual symbols.
   if (auto* dis_buf = find_blob("disassembly")) {
     info->fields["has_disassembly"] = true;
     Reader dr(*dis_buf);

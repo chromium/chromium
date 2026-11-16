@@ -27,7 +27,8 @@ class TreeBuilder {
   void Build(std::unique_ptr<BaseLens> lens,
              char separator,
              bool method_count_mode,
-             std::vector<FilterFunc> filters);
+             std::vector<FilterFunc> filters,
+             bool relocations_mode);
   TreeNode* Find(std::string_view path);
   Json::Value Open(const char* path);
   Json::Value GetAncestryById(uint32_t id);
@@ -65,6 +66,7 @@ class TreeBuilder {
   std::deque<std::string> owned_strings_;
   std::unique_ptr<BaseLens> lens_;
   bool method_count_mode_;
+  bool relocations_mode_ = false;
   // The current path separator: '>' if grouping by component, '/' otherwise.
   // Note that we split paths on '/' no matter the value of separator, since
   // when grouping by component, paths look like Component>path/to/file.

@@ -511,5 +511,24 @@ TEST_F(DiffTest, TestManySymbolsDeriveNamesOnThreads) {
   EXPECT_EQ("ns::Func1", after->raw_symbols[1].Name());
 }
 
+TEST_F(DiffTest, TestDiffRelocations) {
+  // Symbol 2 has identical size, but relocation_count_ changed -> kChanged.
+  size_info1_->raw_symbols[2].relocation_count_ = 1;
+  size_info2_->raw_symbols[2].relocation_count_ = 3;
+
+  DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
+                            &removed_sources_, &added_sources_);
+  bool found_reloc = false;
+  for (const DeltaSymbol& sym : diff.delta_symbols) {
+    if (sym.Before() == &size_info1_->raw_symbols[2]) {
+      found_reloc = true;
+      EXPECT_EQ(DiffStatus::kChanged, sym.GetDiffStatus());
+      EXPECT_EQ(2, sym.RelocationCount());
+      EXPECT_FLOAT_EQ(2.0f, sym.RelocationPss());
+    }
+  }
+  EXPECT_TRUE(found_reloc);
+}
+
 }  // namespace
 }  // namespace caspian

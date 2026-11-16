@@ -5,7 +5,6 @@
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 #include <algorithm>
-#include <cassert>
 #include <iostream>
 #include <list>
 #include <sstream>
@@ -97,6 +96,9 @@ int32_t Symbol::Address() const {
 int32_t Symbol::Flags() const {
   return flags_;
 }
+int32_t Symbol::RelocationCount() const {
+  return relocation_count_;
+}
 
 std::string_view Symbol::FullName() const {
   return full_name_;
@@ -157,10 +159,8 @@ float Symbol::PaddingPss() const {
   return static_cast<float>(Padding()) / NumAliases();
 }
 
-float Symbol::BeforePss() const {
-  // This function should only used for diff mode.
-  assert(false);
-  return 0.0f;
+float Symbol::RelocationPss() const {
+  return static_cast<float>(relocation_count_) / NumAliases();
 }
 
 DiffStatus Symbol::GetDiffStatus() const {
@@ -219,6 +219,12 @@ int32_t DeltaSymbol::Flags() const {
   int32_t before_flags = before_ ? before_->Flags() : 0;
   int32_t after_flags = after_ ? after_->Flags() : 0;
   return before_flags | after_flags;
+}
+
+int32_t DeltaSymbol::RelocationCount() const {
+  int32_t before_relocs = before_ ? before_->RelocationCount() : 0;
+  int32_t after_relocs = after_ ? after_->RelocationCount() : 0;
+  return after_relocs - before_relocs;
 }
 
 std::string_view DeltaSymbol::FullName() const {
@@ -302,8 +308,10 @@ float DeltaSymbol::PaddingPss() const {
   return 0;
 }
 
-float DeltaSymbol::BeforePss() const {
-  return before_ ? before_->Pss() : 0.0f;
+float DeltaSymbol::RelocationPss() const {
+  float before_relocs = before_ ? before_->RelocationPss() : 0.0f;
+  float after_relocs = after_ ? after_->RelocationPss() : 0.0f;
+  return after_relocs - before_relocs;
 }
 
 DiffStatus DeltaSymbol::GetDiffStatus() const {
@@ -313,7 +321,7 @@ DiffStatus DeltaSymbol::GetDiffStatus() const {
   if (!after_) {
     return DiffStatus::kRemoved;
   }
-  if (Size() || Pss() != 0) {
+  if (Size() || Pss() != 0 || RelocationCount() != 0 || RelocationPss() != 0) {
     return DiffStatus::kChanged;
   }
   return DiffStatus::kUnchanged;
@@ -535,10 +543,11 @@ NodeStats::NodeStats(NodeStats&&) = default;
 NodeStats& NodeStats::operator=(NodeStats&&) = default;
 NodeStats::~NodeStats() = default;
 
-void NodeStats::AddSymbol(const BaseSymbol& symbol) {
+void NodeStats::AddSymbol(const BaseSymbol& symbol, bool relocations_mode) {
   Stat& section_stats = GetOrCreateStat(&child_stats, symbol.Section());
   section_stats.count += 1;
-  section_stats.size += symbol.Pss();
+  section_stats.size +=
+      relocations_mode ? symbol.RelocationPss() : symbol.Pss();
   switch (symbol.GetDiffStatus()) {
     case DiffStatus::kUnchanged:
       break;
@@ -549,7 +558,10 @@ void NodeStats::AddSymbol(const BaseSymbol& symbol) {
       section_stats.removed += 1;
       break;
     case DiffStatus::kChanged:
-      section_stats.changed += 1;
+      if (relocations_mode ? (symbol.RelocationPss() != 0)
+                           : (symbol.Size() != 0 || symbol.Pss() != 0.0f)) {
+        section_stats.changed += 1;
+      }
       break;
   }
 }

@@ -15,6 +15,7 @@ const STATE_KEY = {
   BEFORE_URL: 'before_url',
   BYTE_UNIT: 'byteunit',
   METHOD_COUNT: 'method_count',
+  RELOCATIONS: 'relocations',
   MIN_SIZE: 'min_size',
   GROUP_BY: 'group_by',
   INCLUDE: 'include',
@@ -131,6 +132,10 @@ class MainElements {
     /** @public {!HTMLInputElement} */
     this.cbMethodCount =
         /** @type {!HTMLInputElement} */ (this.query('#cb-method-count'));
+
+    /** @public {!HTMLInputElement} */
+    this.cbRelocations =
+        /** @type {!HTMLInputElement} */ (this.query('#cb-relocations'));
 
     /** @public {!HTMLSelectElement} */
     this.selByteUnit =

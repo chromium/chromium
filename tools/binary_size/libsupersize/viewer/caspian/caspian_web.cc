@@ -179,7 +179,8 @@ bool BuildTree(bool method_count_mode,
                int minimum_size_bytes,
                int match_flag,
                bool non_overhead,
-               bool disassembly_mode) {
+               bool disassembly_mode,
+               bool relocations_mode) {
   EnsureAfterLoaded();
   std::vector<TreeBuilder::FilterFunc> filters;
 
@@ -302,7 +303,8 @@ bool BuildTree(bool method_count_mode,
     std::cerr << "Unsupported group_by=" << group_by << std::endl;
     exit(1);
   }
-  builder->Build(std::move(lens), sep, method_count_mode, filters);
+  builder->Build(std::move(lens), sep, method_count_mode, filters,
+                 relocations_mode);
 
   return bool(diff_info);
 }

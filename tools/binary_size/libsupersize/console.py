@@ -5,7 +5,6 @@
 """An interactive console for looking analyzing .size files."""
 
 import argparse
-import bisect
 import code
 import collections
 import contextlib
@@ -101,7 +100,6 @@ class _Session:
       'SaveSizeInfo': self._SaveSizeInfo,
       'SaveDeltaSizeInfo': self._SaveDeltaSizeInfo,
       'ReadStringLiterals': self._ReadStringLiterals,
-      'ReplaceWithRelocations': self._ReplaceWithRelocations,
       'Disassemble': self._DisassembleFunc,
       'ExpandRegex': match_util.ExpandRegexIdentifierPlaceholder,
       'SizeStats': self._SizeStats,
@@ -420,69 +418,6 @@ class _Session:
       )
     else:
       raise Exception('Symbol type is not supported: ' + symbol.section_name)
-
-  def _ReplaceWithRelocations(self, size_info=None):
-    """Replace all symbol sizes with counts of native relocations.
-
-    Removes all symbols that do not contain relocations.
-
-    Args:
-      size_info: The size_info to filter. Defaults to size_infos[0].
-
-    Returns:
-      A new SizeInfo.
-    """
-    size_info = size_info or self._size_infos[0]
-
-    new_syms = []
-    new_containers = []
-
-    for container, group in itertools.groupby(
-      size_info.raw_symbols, lambda s: s.container
-    ):
-      if models.METADATA_ELF_FILENAME not in container.metadata:
-        continue
-
-      raw_symbols = [s for s in group if s.IsNative()]
-      if not raw_symbols:
-        continue
-
-      new_containers.append(container)
-
-      elf_path = self._ElfPathForSymbol(size_info, container)
-      relro_addresses = readelf.CollectRelocationAddresses(elf_path)
-
-      # More likely for there to be a bug in supersize than an ELF to have any
-      # relative relocations.
-      assert relro_addresses
-
-      # Last symbol address is the end of the last symbol, so we don't
-      # misattribute all relros after the last symbol to that symbol.
-      symbol_addresses = [s.address for s in raw_symbols]
-      symbol_addresses.append(raw_symbols[-1].end_address)
-
-      for symbol in raw_symbols:
-        symbol.address = 0
-        symbol.size = 0
-        symbol.padding = 0
-
-      logging.info('Adding %d relocations', len(relro_addresses))
-      for addr in relro_addresses:
-        # Attribute relros to largest symbol start address that precede them.
-        idx = bisect.bisect_right(symbol_addresses, addr) - 1
-        if 0 <= idx < len(raw_symbols):
-          symbol = raw_symbols[idx]
-          for alias in symbol.aliases or [symbol]:
-            alias.size += 1
-
-      new_syms.extend(s for s in raw_symbols if s.size)
-
-    return models.SizeInfo(
-      size_info.build_config,
-      new_containers,
-      models.SymbolGroup(new_syms),
-      size_path=size_info.size_path,
-    )
 
   def _ShowExamplesFunc(self):
     print(self._CreateBanner())
