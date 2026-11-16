@@ -51,7 +51,9 @@ TEST_F(AutomationManifestTest, AsBooleanFalse) {
   ASSERT_FALSE(info);
 }
 
-TEST_F(AutomationManifestTest, AsBooleanTrue) {
+// TODO(crbug.com/585643619): Fails in batched runs on Android Desktop and
+// Linux ASan (AutomationInfo is null), passes when run alone.
+TEST_F(AutomationManifestTest, DISABLED_AsBooleanTrue) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("automation_boolean_true.json");
   ASSERT_TRUE(extension.get());
