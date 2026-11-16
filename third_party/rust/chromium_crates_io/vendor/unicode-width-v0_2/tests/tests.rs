@@ -13,7 +13,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};
+use unicode_width::{char_iter_width, UnicodeWidthChar, UnicodeWidthStr};
 
 macro_rules! assert_width {
     ($s:expr, $nocjk:expr, $cjk:expr $(,)?) => {{
@@ -36,6 +36,11 @@ fn test_emoji() {
     assert_width!("👩", 2, 2); // Woman
     assert_width!("🔬", 2, 2); // Microscope
     assert_width!("👩‍🔬", 2, 2); // Woman scientist
+}
+
+#[test]
+fn test_halfwidth_katakana() {
+    assert_width!("ﾊﾟｸﾞ", 4, 4); // Halfwidth Katakana letters Pa, Gu (pug dog)
 }
 
 // From README
@@ -63,6 +68,8 @@ fn test_char2() {
     assert_width!('\u{1160}', Some(0), Some(0));
     assert_width!('\u{a1}', Some(1), Some(2));
     assert_width!('\u{300}', Some(0), Some(0));
+    assert_width!('\u{FF9E}', Some(1), Some(1));
+    assert_width!('\u{FF9F}', Some(1), Some(1));
 }
 
 #[test]
@@ -647,6 +654,11 @@ fn test_vs1_vs2_vs3() {
             );
         }
     }
+}
+
+#[test]
+fn test_char_iter() {
+    assert_eq!(char_iter_width(['a', 'b', '🔬'].into_iter()), 4)
 }
 
 // Test traits are unsealed

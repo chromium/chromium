@@ -13,13 +13,22 @@
 edition = "2021"
 rust-version = "1.66"
 name = "unicode-width"
-version = "0.2.2"
+version = "0.2.3"
 authors = [
     "kwantam <kwantam@gmail.com>",
     "Manish Goregaokar <manishsmail@gmail.com>",
 ]
 build = false
-exclude = ["/.github/*"]
+include = [
+    "COPYRIGHT",
+    "LICENSE-MIT",
+    "LICENSE-APACHE",
+    "README.md",
+    "CARGO.toml",
+    "src/**/*.rs",
+    "benches/**/*.rs",
+    "tests/**/*.rs",
+]
 autolib = false
 autobins = false
 autoexamples = false

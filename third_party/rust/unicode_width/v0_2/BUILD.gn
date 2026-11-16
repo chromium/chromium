@@ -14,8 +14,16 @@ cargo_crate("lib") {
   crate_type = "rlib"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/gen/lookup.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/gen/props.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/gen/tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/gen/tables_test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/gen/width_info.rs",
     "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/lookup.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/props.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/src/width_info.rs",
   ]
   inputs = []
 
@@ -26,7 +34,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "unicode-width"
   cargo_pkg_description = "Determine displayed width of `char` and `str` types according to Unicode Standard Annex #11 rules."
   cargo_pkg_repository = "https://github.com/unicode-rs/unicode-width"
-  cargo_pkg_version = "0.2.2"
+  cargo_pkg_version = "0.2.3"
 
   allow_unsafe = false
 

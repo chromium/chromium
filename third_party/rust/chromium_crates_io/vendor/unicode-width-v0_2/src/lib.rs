@@ -63,21 +63,21 @@
 //!        - Has the [`Emoji_Presentation`] property, and
 //!        - Is not in the [Enclosed Ideographic Supplement] block.
 //!    - [`'\u{2018}'`, `'\u{2019}'`, `'\u{201C}'`, and `'\u{201D}'`][General Punctuation] always have width 1
-//!      when followed by '\u{FE00}' or '\u{FE02}', and width 2 when followed by '\u{FE01}'.
+//!      when followed by `'\u{FE00}'` or `'\u{FE02}'`, and width 2 when followed by `'\u{FE01}'`.
+//!    - [Kirat Rai] canonical equivalences: Any sequence canonically equivalent to `'\u{16D68}'`, `'\u{16D69}'`, or `'\u{16D6A}'` has total width 1.
 //!    - Script-specific ligatures:
 //!      - For all the following ligatures, the insertion of any number of [default-ignorable][`Default_Ignorable_Code_Point`]
 //!        [combining marks] anywhere in the sequence will not change the total width. In addition, for all non-Arabic
 //!        ligatures, the insertion of any number of [`'\u{200D}'` ZERO WIDTH JOINER](https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-23/#G23126)s
 //!        will not affect the width.
 //!      - **[Arabic]**: A character sequence consisting of one character with [`Joining_Group`]`=Lam`,
-//!        followed by any number of characters with [`Joining_Type`]`=Transparent`, followed by one character
+//!        followed by any number of zero-width characters with [`Joining_Type`]`=Transparent`, followed by one character
 //!        with [`Joining_Group`]`=Alef`, has total width 1. For example: `لا`‎, `لآ`‎, `ڸا`‎, `لٟٞأ`
 //!      - **[Buginese]**: `"\u{1A15}\u{1A17}\u{200D}\u{1A10}"` (<a, -i> ya, `ᨕᨗ‍ᨐ`) has total width 1.
 //!      - **[Hebrew]**: `"א\u{200D}ל"` (Alef-Lamed, `א‍ל`) has total width 1.
 //!      - **[Khmer]**: Coeng signs consisting of `'\u{17D2}'` followed by a character in
 //!        `'\u{1780}'..='\u{1782}' | '\u{1784}'..='\u{1787}' | '\u{1789}'..='\u{178C}' | '\u{178E}'..='\u{1793}' | '\u{1795}'..='\u{1798}' | '\u{179B}'..='\u{179D}' | '\u{17A0}' | '\u{17A2}'  | '\u{17A7}' | '\u{17AB}'..='\u{17AC}' | '\u{17AF}'`
 //!        have width 0.
-//!      - **[Kirat Rai]**: Any sequence canonically equivalent to `'\u{16D68}'`, `'\u{16D69}'`, or `'\u{16D6A}'` has total width 1.
 //!      - **[Lisu]**: Tone letter combinations consisting of a character in the range `'\u{A4F8}'..='\u{A4FB}'`
 //!        followed by a character in the range `'\u{A4FC}'..='\u{A4FD}'` have width 1. For example: `ꓹꓼ`
 //!      - **[Old Turkic]**: `"\u{10C32}\u{200D}\u{10C03}"` (`𐰲‍𐰃`) has total width 1.
@@ -90,7 +90,9 @@
 //!      - Has [`Canonical_Combining_Class`] greater than 1, or
 //!      - Is a [default-ignorable][`Default_Ignorable_Code_Point`] [combining mark][combining marks].
 //! 2. In all other cases, the width of the string equals the sum of its character widths:
-//!    1. [`'\u{2D7F}'` TIFINAGH CONSONANT JOINER] has width 1 (outside of the ligatures described previously).
+//!    1. [`'\u{2D7F}'` TIFINAGH CONSONANT JOINER] (outside of the ligatures described previously),
+//!       [`'\u{FF9E}'` HALFWIDTH KATAKANA VOICED SOUND MARK](https://util.unicode.org/UnicodeJsps/character.jsp?a=FF9E),
+//!       and [`'\u{FF9F}'` HALFWIDTH KATAKANA SEMI-VOICED SOUND MARK](https://util.unicode.org/UnicodeJsps/character.jsp?a=FF9F) have width 1.
 //!    2. [`'\u{115F}'` HANGUL CHOSEONG FILLER](https://util.unicode.org/UnicodeJsps/character.jsp?a=115F) and
 //!       [`'\u{17A4}'` KHMER INDEPENDENT VOWEL QAA](https://util.unicode.org/UnicodeJsps/character.jsp?a=17A4) have width 2.
 //!    3. [`'\u{17D8}'` KHMER SIGN BEYYAL](https://util.unicode.org/UnicodeJsps/character.jsp?a=17D8) has width 3.
@@ -108,7 +110,7 @@
 //!         - [`'\u{0891}'` PIASTRE MARK ABOVE](https://util.unicode.org/UnicodeJsps/character.jsp?a=0891), and
 //!         - [`'\u{08E2}'` DISPUTED END OF AYAH](https://util.unicode.org/UnicodeJsps/character.jsp?a=08E2).
 //!       - [Characters](https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=%5Cp%7BGrapheme_Cluster_Break%3DPrepend%7D-%5Cp%7BPrepended_Concatenation_Mark%7D)
-//!         with the [`Grapheme_Extend=Prepend`] property, that are not also [`Prepended_Concatenation_Mark`]s.
+//!         with the [`Grapheme_Cluster_Break=Prepend`] property, that are not also [`Prepended_Concatenation_Mark`]s.
 //!       - [`'\u{A8FA}'` DEVANAGARI CARET](https://util.unicode.org/UnicodeJsps/character.jsp?a=A8FA).
 //!    5. [Characters](https://util.unicode.org/UnicodeJsps/list-unicodeset.jsp?a=%5Cp%7BEast_Asian_Width%3DF%7D%5Cp%7BEast_Asian_Width%3DW%7D)
 //!       with an [`East_Asian_Width`] of [`Fullwidth`] or [`Wide`] have width 2.
@@ -129,7 +131,7 @@
 //! [`East_Asian_Width`]: https://www.unicode.org/reports/tr11/#ED1
 //! [`Emoji_Presentation`]: https://unicode.org/reports/tr51/#def_emoji_presentation
 //! [`General_Category`]: https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-4/#G124142
-//! [`Grapheme_Extend=Prepend`]: https://www.unicode.org/reports/tr29/#Prepend
+//! [`Grapheme_Cluster_Break=Prepend`]: https://www.unicode.org/reports/tr29/#Prepend
 //! [`Grapheme_Extend`]: https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-3/#G52443
 //! [`Hangul_Syllable_Type`]: https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-3/#G45593
 //! [`Joining_Group`]: https://www.unicode.org/versions/Unicode14.0.0/ch09.pdf#G36862
@@ -178,7 +180,14 @@
 
 pub use tables::UNICODE_VERSION;
 
+mod lookup;
+mod props;
+#[path = "gen/tables.rs"]
 mod tables;
+mod width_info;
+
+#[cfg(test)]
+mod test;
 
 mod private {
     pub trait Sealed {}
@@ -215,13 +224,13 @@ pub trait UnicodeWidthChar: private::Sealed {
 impl UnicodeWidthChar for char {
     #[inline]
     fn width(self) -> Option<usize> {
-        tables::single_char_width(self)
+        lookup::single_char_width(self)
     }
 
     #[cfg(feature = "cjk")]
     #[inline]
     fn width_cjk(self) -> Option<usize> {
-        tables::single_char_width_cjk(self)
+        lookup::single_char_width_cjk(self)
     }
 }
 
@@ -248,12 +257,23 @@ pub trait UnicodeWidthStr: private::Sealed {
 impl UnicodeWidthStr for str {
     #[inline]
     fn width(&self) -> usize {
-        tables::str_width(self)
+        lookup::str_width(self.chars())
     }
 
     #[cfg(feature = "cjk")]
     #[inline]
     fn width_cjk(&self) -> usize {
-        tables::str_width_cjk(self)
+        lookup::str_width_cjk(self.chars())
     }
+}
+
+/// Like [`UnicodeWidthStr::width`] but for iterators over [`char`].
+pub fn char_iter_width<S: DoubleEndedIterator<Item = char>>(s: S) -> usize {
+    lookup::str_width(s)
+}
+
+/// Like [`UnicodeWidthStr::width_cjk`] but for iterators over [`char`].
+#[cfg(feature = "cjk")]
+pub fn char_iter_width_cjk<S: DoubleEndedIterator<Item = char>>(s: S) -> usize {
+    lookup::str_width_cjk(s)
 }

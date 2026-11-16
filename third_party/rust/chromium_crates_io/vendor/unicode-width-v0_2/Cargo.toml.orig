@@ -1,7 +1,7 @@
 [package]
 
 name = "unicode-width"
-version = "0.2.2"
+version = "0.2.3"
 authors = [
     "kwantam <kwantam@gmail.com>",
     "Manish Goregaokar <manishsmail@gmail.com>",
@@ -25,7 +25,16 @@ according to Unicode Standard Annex #11 rules.
 edition = "2021"
 rust-version = "1.66"
 
-exclude = ["/.github/*"]
+include = [
+    "COPYRIGHT", 
+    "LICENSE-MIT", 
+    "LICENSE-APACHE", 
+    "README.md", 
+    "CARGO.toml", 
+    "src/**/*.rs", 
+    "benches/**/*.rs", 
+    "tests/**/*.rs",
+]
 
 [dependencies]
 std = { version = "1.0", package = "rustc-std-workspace-std", optional = true }
