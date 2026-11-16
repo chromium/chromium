@@ -744,6 +744,19 @@ constexpr FeatureEntry::FeatureVariation
         {" - Switcher Info Signal (Hybrid)",
          kAndroidSwitcherDBPInFRESwitcherInfoHybrid, nullptr}};
 
+constexpr FeatureEntry::FeatureParam kFREAblationSkipHistorySync[] = {
+    {first_run::kFREAblationParam,
+     first_run::kFREAblationParamSkipHistorySync}};
+constexpr FeatureEntry::FeatureParam
+    kFREAblationSkipAllExceptSignInAndChoice[] = {
+        {first_run::kFREAblationParam,
+         first_run::kFREAblationParamSkipAllExceptSignInAndChoice}};
+
+constexpr FeatureEntry::FeatureVariation kFREAblationVariations[] = {
+    {" - Skip History Sync", kFREAblationSkipHistorySync, nullptr},
+    {" - Skip All Except Sign-in and Choice",
+     kFREAblationSkipAllExceptSignInAndChoice, nullptr}};
+
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm2[] = {
     {first_run::kBestFeaturesScreenInFirstRunParam, "2"}};
 constexpr FeatureEntry::FeatureParam kBestFeaturesScreenInFirstRunArm3[] = {
@@ -2064,6 +2077,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          first_run::kAnimatedDefaultBrowserPromoInFRE,
          kAnimatedDefaultBrowserPromoInFREVariations,
          "AnimatedDBPInFRE-Layout")},
+    {"fre-ablation", flag_descriptions::kFREAblationName,
+     flag_descriptions::kFREAblationDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kFREAblation,
+                                    kFREAblationVariations,
+                                    "FREAblation")},
     {"fullscreen-transition-speed",
      flag_descriptions::kFullscreenTransitionSpeedName,
      flag_descriptions::kFullscreenTransitionSpeedDescription, flags_ui::kOsIos,

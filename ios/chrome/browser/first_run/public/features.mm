@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/first_run/public/features.h"
 
+#import "base/check.h"
 #import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -25,6 +26,8 @@ BASE_FEATURE(kAndroidSwitcherDefaultBrowserPromoInFRE,
 
 BASE_FEATURE(kRecordSwitcherInfoDefaultBrowserMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFREAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
     "AnimatedDefaultBrowserPromoInFREExperimentType";
@@ -52,6 +55,13 @@ const char kAndroidSwitcherDefaultBrowserPromoInFREArmGoogleEcosystem[] =
     "google-ecosystem";
 
 const char kAndroidSwitcherDefaultBrowserPromoInFREArmHybrid[] = "hybrid";
+
+const char kFREAblationParam[] = "fre-ablation-param";
+
+const char kFREAblationParamSkipHistorySync[] = "skip-history-sync";
+
+const char kFREAblationParamSkipAllExceptSignInAndChoice[] =
+    "skip-all-except-sign-in-and-choice";
 
 BASE_FEATURE_PARAM(int,
                    kBestFeaturesScreenInFirstRunParamFeature,
@@ -110,6 +120,21 @@ BASE_FEATURE_ENUM_PARAM(
     AndroidSwitcherDefaultBrowserPromoInFREArm::kGoogleEcosystem,
     &kAndroidSwitcherDefaultBrowserPromoInFREArmOptions);
 
+constexpr base::FeatureParam<FREAblationVariationType>::Option
+    kFREAblationOptions[] = {
+        {FREAblationVariationType::kSkipHistorySync,
+         kFREAblationParamSkipHistorySync},
+        {FREAblationVariationType::kSkipAllExceptSignInAndChoice,
+         kFREAblationParamSkipAllExceptSignInAndChoice},
+};
+
+BASE_FEATURE_ENUM_PARAM(FREAblationVariationType,
+                        kFREAblationParamFeature,
+                        &kFREAblation,
+                        kFREAblationParam,
+                        FREAblationVariationType::kSkipHistorySync,
+                        &kFREAblationOptions);
+
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {
   if (IsBestOfAppBestFeaturesEnabled()) {
     return BestFeaturesScreenVariationType::kBestOfApp;
@@ -155,6 +180,15 @@ GetAndroidSwitcherDefaultBrowserPromoInFREVariationType() {
 AndroidSwitcherDefaultBrowserPromoInFREArm
 GetAndroidSwitcherDefaultBrowserPromoInFREArm() {
   return kAndroidSwitcherDefaultBrowserPromoInFREArmFeature.Get();
+}
+
+bool IsFREAblationEnabled() {
+  return base::FeatureList::IsEnabled(kFREAblation);
+}
+
+FREAblationVariationType GetFREAblationVariationType() {
+  CHECK(IsFREAblationEnabled());
+  return static_cast<FREAblationVariationType>(kFREAblationParamFeature.Get());
 }
 
 }  // namespace first_run

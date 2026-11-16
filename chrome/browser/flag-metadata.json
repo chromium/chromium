@@ -5377,6 +5377,11 @@
     "expiry_milestone": 81
   },
   {
+    "name": "fre-ablation",
+    "owners": [ "cheickcisse@google.com", "zijingl@google.com", "bling-mony-pod@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "fre-string-changes",
     "owners": ["mschillaci@google.com", "jhimawan@google.com", "nehasapre@google.com", "clank-app-team@google.com"],
     "expiry_milestone": 165

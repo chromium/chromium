@@ -862,6 +862,11 @@ inline constexpr char kExplainGeminiEditMenuDescription[] =
     "When enabled, the explain Gemini edit menu will be available to eligible "
     "users when highlighting any text on a web page.";
 
+inline constexpr char kFREAblationName[] = "FRE ablation experiment";
+inline constexpr char kFREAblationDescription[] =
+    "When enabled, some of the First Run Experience screens are skipped, "
+    "depending on the selected arm.";
+
 inline constexpr char kFeedBackgroundRefreshName[] =
     "Enable feed background refresh";
 inline constexpr char kFeedBackgroundRefreshDescription[] =
