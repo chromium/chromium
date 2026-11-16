@@ -1544,10 +1544,6 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
       base::UmaHistogramCounts10000(
           "Blink.LCPP.PrefetchSubresource.Count.CrossSite",
           base::checked_cast<int>(subresource_urls_cross_site));
-      base::UmaHistogramPercentage(
-          "Blink.LCPP.PrefetchSubresource.Count.SameSiteRatio",
-          base::checked_cast<int>(100 * subresource_urls_same_site /
-                                  subresource_urls.size()));
     }
   }
 }
