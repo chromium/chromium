@@ -43,6 +43,7 @@ static_library("public") {
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/drivefs/mojom:pinning_manager_types",
     "//chromeos/ash/components/trash_service/public/cpp",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//components/exo",
     "//components/exo/server",
     "//components/keyed_service/core",

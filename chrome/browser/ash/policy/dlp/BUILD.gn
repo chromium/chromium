@@ -84,6 +84,7 @@ static_library("dlp") {
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/trash_service/public/cpp",
     "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//components/paint_preview/buildflags",
 
     # TODO(b/354095042): Use targets having headers directly included from

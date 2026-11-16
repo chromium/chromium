@@ -64,6 +64,7 @@ static_library("smb_client") {
     "//chromeos/ash/components/dbus/smbprovider",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/smbfs",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/components/firewall_hole",
     "//components/keyed_service/core",
     "//components/pref_registry",
