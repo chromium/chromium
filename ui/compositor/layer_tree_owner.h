@@ -22,6 +22,7 @@ class COMPOSITOR_EXPORT LayerTreeOwner {
   LayerTreeOwner(const LayerTreeOwner&) = delete;
   LayerTreeOwner& operator=(const LayerTreeOwner&) = delete;
 
+  // Completes the animations in the tree before deleting the layers.
   ~LayerTreeOwner();
 
   [[nodiscard]] Layer* release() {

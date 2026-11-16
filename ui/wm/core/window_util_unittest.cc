@@ -7,14 +7,39 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_properties.h"
 
 namespace wm {
+namespace {
+
+class TestImplicitAnimationObserver : public ui::ImplicitAnimationObserver {
+ public:
+  TestImplicitAnimationObserver() = default;
+  TestImplicitAnimationObserver(const TestImplicitAnimationObserver&) = delete;
+  TestImplicitAnimationObserver& operator=(
+      const TestImplicitAnimationObserver&) = delete;
+  ~TestImplicitAnimationObserver() override = default;
+
+  bool completed() const { return completed_; }
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override { completed_ = true; }
+
+ private:
+  bool completed_ = false;
+};
+
+}  // namespace
 
 using WindowUtilTest = aura::test::AuraTestBase;
 
@@ -50,6 +75,35 @@ TEST_F(WindowUtilTest, RecreateLayers) {
 
   // Delete the window before the acquired layer is deleted.
   window11.reset();
+}
+
+// Tests that an implicit animation observer is notified if the layers are
+// recreated while a window is animating and the old layers are destroyed
+// before the animation completes.
+TEST_F(WindowUtilTest, RecreateLayersDuringAnimation) {
+  std::unique_ptr<aura::Window> window1 =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 0});
+  std::unique_ptr<aura::Window> window11 = aura::test::CreateTestWindow(
+      {.parent = window1.get(), .bounds = {100, 100}, .window_id = 1});
+
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  TestImplicitAnimationObserver observer;
+  {
+    ui::ScopedLayerAnimationSettings settings(window11->layer()->GetAnimator());
+    settings.SetTransitionDuration(base::Seconds(1));
+    settings.AddObserver(&observer);
+    window11->layer()->SetOpacity(0.f);
+  }
+  ASSERT_TRUE(window11->layer()->GetAnimator()->is_animating());
+
+  // The animation stays on the old layer.
+  std::unique_ptr<ui::LayerTreeOwner> tree = wm::RecreateLayers(window1.get());
+  EXPECT_FALSE(window11->layer()->GetAnimator()->is_animating());
+  EXPECT_FALSE(observer.completed());
+
+  tree.reset();
+  EXPECT_TRUE(observer.completed());
 }
 
 // Test if map_func is correctly executed in RecreateLayerWithClosure.

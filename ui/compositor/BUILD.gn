@@ -268,6 +268,7 @@ test("compositor_unittests") {
     "layer_animation_sequence_unittest.cc",
     "layer_animator_unittest.cc",
     "layer_owner_unittest.cc",
+    "layer_tree_owner_unittest.cc",
     "layer_unittest.cc",
     "presentation_time_recorder_unittest.cc",
     "run_all_unittests.cc",

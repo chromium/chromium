@@ -4039,6 +4039,7 @@ test("ash_unittests") {
     "shelf/swipe_home_to_overview_controller_unittest.cc",
     "shelf/test/hotseat_state_watcher.cc",
     "shelf/test/hotseat_state_watcher.h",
+    "shell_test_api_unittest.cc",
     "shell_unittest.cc",
     "style/ash_color_mixer_unittest.cc",
     "style/color_palette_controller_unittest.cc",

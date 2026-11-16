@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -25,6 +24,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/compositor/compositor.h"
@@ -63,7 +63,9 @@ class WindowAnimationWaiter : public ui::LayerAnimationObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  const raw_ptr<ui::LayerAnimator> animator_;
+  // Keeps the animator alive, as the window's layer, which owns the animator,
+  // may be recreated and destroyed while waiting.
+  const scoped_refptr<ui::LayerAnimator> animator_;
   base::RunLoop run_loop_;
 };
 

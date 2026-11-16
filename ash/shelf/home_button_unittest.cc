@@ -994,6 +994,30 @@ TEST_F(HomeButtonAnimationTest, ShelfDestroyedWhileAnimatingToHide) {
   old_layer_tree.reset();
 }
 
+// Verifies that the home button is hidden if the layers are recreated while
+// the hide animation is in progress, as screen rotation does, and the old
+// layers are destroyed before the animation completes.
+TEST_F(HomeButtonAnimationTest, LayersRecreatedWhileAnimatingToHide) {
+  views::View* const home_button_view = home_button();
+  ASSERT_TRUE(home_button_view);
+
+  // Switch to tablet mode to initiate the home button hide animation.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  EXPECT_TRUE(home_button_view->GetVisible());
+  EXPECT_EQ(0.0f, home_button_view->layer()->GetTargetOpacity());
+  ASSERT_TRUE(home_button_view->layer()->GetAnimator()->is_animating());
+
+  // Recreate the layers mid-animation. The animation stays on the old layer.
+  std::unique_ptr<ui::LayerTreeOwner> old_layer_tree =
+      ::wm::RecreateLayers(Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(home_button_view->GetVisible());
+  EXPECT_FALSE(home_button_view->layer()->GetAnimator()->is_animating());
+
+  // Destroying the old layers completes the animation, which hides the button.
+  old_layer_tree.reset();
+  EXPECT_FALSE(home_button_view->GetVisible());
+}
+
 // Verifies that unanimated navigation widget layout update interrupts in
 // progress button animation.
 TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {

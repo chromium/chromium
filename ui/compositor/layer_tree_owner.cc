@@ -26,8 +26,13 @@ LayerTreeOwner::LayerTreeOwner(std::unique_ptr<Layer> root)
     : root_(root.release()) {}
 
 LayerTreeOwner::~LayerTreeOwner() {
-  if (root_)
+  if (root_) {
+    // Destroying an animating layer does not notify its implicit animation
+    // observers by default, which leaks observers that delete themselves on
+    // completion. Complete the animations first so they are notified.
+    root_->CompleteAllAnimations();
     DeepDeleteLayers(root_);
+  }
 }
 
 }  // namespace ui
