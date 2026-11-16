@@ -652,11 +652,14 @@ Position CompositeEditCommand::ReplaceSelectedTextInNode(
     return Position();
   }
 
+  const String replacement_text = text;
   ReplaceTextInNode(text_node, start.OffsetInContainerNode(),
                     end.OffsetInContainerNode() - start.OffsetInContainerNode(),
-                    text, password_echo_behavior);
+                    replacement_text, password_echo_behavior);
 
-  return Position(text_node, start.OffsetInContainerNode() + text.length());
+  return Position(text_node, std::min(start.OffsetInContainerNode() +
+                                          replacement_text.length(),
+                                      text_node->length()));
 }
 
 Position CompositeEditCommand::PositionOutsideTabSpan(const Position& pos) {
