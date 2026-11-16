@@ -35,6 +35,7 @@
 #include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/stream_transport/transport_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -97,6 +98,9 @@ class MockGlicExperimentalTriggeringCoordinator
                GlicExperimentalTriggeringUpdateCallback update_callback,
                tabs::TabInterface* prepared_tab),
               (override));
+  MOCK_METHOD(BrowserWindowInterface*, GetBrowserWindow, (), (const, override));
+  MOCK_METHOD(tabs::TabInterface*, GetActiveTab, (), (const, override));
+  MOCK_METHOD(bool, IsChromeInBackground, (), (const, override));
 };
 
 class GlicExperimentalTriggeringTransportHandlerTest : public testing::Test {
@@ -1033,6 +1037,221 @@ TEST(GlicExperimentalTriggeringTypeUrlTest, MatchesProtoTypeName) {
       base::StrCat({stream_transport::kTypeUrlPrefix,
                     components_sharing_message::GlicExperimentalTriggering()
                         .GetTypeName()}));
+}
+
+TEST_F(
+    GlicExperimentalTriggeringTransportHandlerTest,
+    FirstResponseIncludesDeviceCapabilitiesWhenNotOptedInAndNoBrowserWindow) {
+  GlicKeyedService* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/true);
+  ASSERT_TRUE(glic_service);
+  profile_->GetPrefs()->SetInteger(
+      glic::prefs::kGlicSparkPolicySettings,
+      static_cast<int>(glic::prefs::GlicSparkPolicyState::kEnabled));
+  ASSERT_EQ(glic_service->enabling().GetExperimentalTriggeringState(),
+            syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn);
+
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> coordinator(
+      profile_);
+  ON_CALL(coordinator, GetBrowserWindow())
+      .WillByDefault(testing::Return(nullptr));
+  ON_CALL(coordinator, GetActiveTab()).WillByDefault(testing::Return(nullptr));
+  ON_CALL(coordinator, IsChromeInBackground())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(coordinator, OnRequest)
+      .WillByDefault(
+          [&coordinator](const std::string& context_id,
+                         const ExperimentalTriggeringRequest& request,
+                         ScopedIncomingMessageResultLogger result_logger,
+                         GlicExperimentalTriggeringUpdateCallback update_cb,
+                         tabs::TabInterface* prepared_tab) {
+            return coordinator.GlicExperimentalTriggeringCoordinator::OnRequest(
+                context_id, request, std::move(result_logger),
+                std::move(update_cb), prepared_tab);
+          });
+
+  GlicExperimentalTriggeringTransportHandler handler(profile_, session_.get(),
+                                                     coordinator.GetWeakPtr());
+
+  components_sharing_message::GlicExperimentalTriggering req_msg;
+  req_msg.set_context_id("caps_ctx_1");
+  req_msg.mutable_task_metadata()->set_task_id("task_1");
+  req_msg.mutable_request()
+      ->mutable_trigger_actuation_request()
+      ->set_initial_prompt("Book a flight");
+
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ("caps_ctx_1", response.context_id());
+        EXPECT_EQ(GlicEnabling::kExperimentalTriggeringProtocolVersion,
+                  response.glic_experimental_triggering_version());
+        EXPECT_TRUE(response.response().has_task_update());
+        EXPECT_TRUE(response.has_device_capabilities());
+        const auto& caps = response.device_capabilities();
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      DeviceCapabilities::NEEDS_OPT_IN,
+                  caps.state());
+        EXPECT_THAT(caps.capabilities(),
+                    testing::IsSupersetOf(
+                        {std::string(kGlicCapabilityStructuredYields),
+                         std::string(kGlicCapabilityPaymentMetadata)}));
+        EXPECT_FALSE(caps.browser_window_available());
+        EXPECT_FALSE(caps.can_show_opt_in_ui());
+        return {};
+      });
+  EXPECT_CALL(*session_, Close()).Times(1);
+
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    req_msg.SerializeAsString());
+}
+
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       FirstResponseIncludesDeviceCapabilitiesOncePerSession) {
+  OptIn();
+
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> coordinator(
+      profile_);
+  MockBrowserWindowInterface fake_window;
+  ON_CALL(coordinator, GetBrowserWindow())
+      .WillByDefault(testing::Return(&fake_window));
+  ON_CALL(coordinator, GetActiveTab()).WillByDefault(testing::Return(nullptr));
+
+  GlicExperimentalTriggeringUpdateCallback captured_update_cb;
+  EXPECT_CALL(coordinator, OnRequest)
+      .WillOnce([&captured_update_cb](
+                    const std::string& context_id,
+                    const ExperimentalTriggeringRequest& request,
+                    ScopedIncomingMessageResultLogger result_logger,
+                    GlicExperimentalTriggeringUpdateCallback update_cb,
+                    tabs::TabInterface* prepared_tab) {
+        result_logger.set_result(
+            GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
+        captured_update_cb = std::move(update_cb);
+        ExperimentalTriggeringResponse resp;
+        resp.context_id = context_id;
+        resp.task_update = TaskUpdate{.state = TaskUpdate::State::kStarting};
+        return resp;
+      });
+
+  GlicExperimentalTriggeringTransportHandler handler(profile_, session_.get(),
+                                                     coordinator.GetWeakPtr());
+
+  components_sharing_message::GlicExperimentalTriggering req_msg;
+  req_msg.set_context_id("caps_ctx_2");
+  req_msg.mutable_task_metadata()->set_task_id("task_2");
+  req_msg.mutable_request()
+      ->mutable_trigger_actuation_request()
+      ->set_initial_prompt("Book a hotel");
+
+  testing::InSequence seq;
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ("caps_ctx_2", response.context_id());
+        EXPECT_EQ(GlicEnabling::kExperimentalTriggeringProtocolVersion,
+                  response.glic_experimental_triggering_version());
+        EXPECT_TRUE(response.has_device_capabilities());
+        const auto& caps = response.device_capabilities();
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      DeviceCapabilities::READY,
+                  caps.state());
+        EXPECT_TRUE(caps.browser_window_available());
+        return {};
+      });
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_FALSE(response.has_device_capabilities());
+        return {};
+      });
+
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    req_msg.SerializeAsString());
+  ASSERT_TRUE(captured_update_cb);
+  ExperimentalTriggeringResponse second_resp;
+  second_resp.context_id = "caps_ctx_2";
+  second_resp.task_update = TaskUpdate{.state = TaskUpdate::State::kRunning};
+  captured_update_cb.Run(second_resp);
+}
+
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       EmptyWakeupPayloadSendsDeviceCapabilitiesWithoutClosingSession) {
+  OptIn();
+
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> coordinator(
+      profile_);
+  MockBrowserWindowInterface fake_window;
+  ON_CALL(coordinator, GetBrowserWindow())
+      .WillByDefault(testing::Return(&fake_window));
+  ON_CALL(coordinator, GetActiveTab()).WillByDefault(testing::Return(nullptr));
+  EXPECT_CALL(coordinator, OnRequest).Times(0);
+
+  GlicExperimentalTriggeringTransportHandler handler(profile_, session_.get(),
+                                                     coordinator.GetWeakPtr());
+
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_TRUE(response.context_id().empty());
+        EXPECT_FALSE(response.has_response());
+        EXPECT_EQ(GlicEnabling::kExperimentalTriggeringProtocolVersion,
+                  response.glic_experimental_triggering_version());
+        EXPECT_TRUE(response.has_device_capabilities());
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      DeviceCapabilities::READY,
+                  response.device_capabilities().state());
+        EXPECT_TRUE(response.device_capabilities().browser_window_available());
+        EXPECT_TRUE(response.device_capabilities().can_show_opt_in_ui());
+        return {};
+      });
+  EXPECT_CALL(*session_, Close()).Times(0);
+
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    /*serialized_payload=*/"");
+  // A duplicate empty wake-up payload should be a no-op.
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    /*serialized_payload=*/"");
+}
+
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       EmptyWakeupPayloadWithoutCoordinatorSendsNotEligibleCapabilities) {
+  GlicExperimentalTriggeringTransportHandler handler(profile_, session_.get(),
+                                                     /*coordinator=*/nullptr);
+
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_TRUE(response.context_id().empty());
+        EXPECT_FALSE(response.has_response());
+        EXPECT_FALSE(response.has_glic_experimental_triggering_version());
+        EXPECT_TRUE(response.has_device_capabilities());
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      DeviceCapabilities::NOT_ELIGIBLE,
+                  response.device_capabilities().state());
+        EXPECT_FALSE(response.device_capabilities().browser_window_available());
+        EXPECT_FALSE(response.device_capabilities().can_show_opt_in_ui());
+        return {};
+      });
+  EXPECT_CALL(*session_, Close()).Times(0);
+
+  handler.OnMessage(PayloadType::kExperimentalTriggering,
+                    /*serialized_payload=*/"");
 }
 
 }  // namespace

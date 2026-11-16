@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
+#include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -733,6 +735,33 @@ TEST(GlicExperimentalTriggeringConvertersTest, ResponseToTriggeringProto) {
             components_sharing_message::GlicExperimentalTriggering::
                 ExperimentalTriggeringResponse::TaskUpdate::COMPLETE);
   EXPECT_EQ(triggering.response().task_update().data(), "done");
+}
+
+TEST(GlicExperimentalTriggeringConvertersTest,
+     ResponseToTriggeringProto_VersionAndDeviceCapabilities) {
+  ExperimentalTriggeringResponse response;
+  response.version = 1;
+  response.context_id = "test_context";
+  response.device_capabilities = DeviceCapabilities{
+      .state = DeviceCapabilities::State::kReady,
+      .capabilities = {"cap_a", "cap_b"},
+      .browser_window_available = true,
+      .can_show_opt_in_ui = false,
+  };
+
+  components_sharing_message::GlicExperimentalTriggering triggering =
+      ResponseToTriggeringProto(response);
+  EXPECT_EQ(triggering.glic_experimental_triggering_version(), 1);
+  ASSERT_TRUE(triggering.has_device_capabilities());
+  const auto& caps = triggering.device_capabilities();
+  EXPECT_EQ(caps.state(),
+            components_sharing_message::GlicExperimentalTriggering::
+                DeviceCapabilities::READY);
+  EXPECT_THAT(caps.capabilities(), testing::ElementsAre("cap_a", "cap_b"));
+  EXPECT_TRUE(caps.has_browser_window_available());
+  EXPECT_TRUE(caps.browser_window_available());
+  EXPECT_TRUE(caps.has_can_show_opt_in_ui());
+  EXPECT_FALSE(caps.can_show_opt_in_ui());
 }
 
 TEST(GlicExperimentalTriggeringConvertersTest,

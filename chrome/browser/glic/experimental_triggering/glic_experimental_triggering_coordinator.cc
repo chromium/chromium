@@ -2547,6 +2547,40 @@ bool GlicExperimentalTriggeringCoordinator::IsChromeInBackground() const {
 #endif
 }
 
+bool GlicExperimentalTriggeringCoordinator::HasOrCanOpenBrowserWindow() const {
+  if (GetBrowserWindow() != nullptr) {
+    return true;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(features::kGlicBackgroundTriggering) &&
+         actor::ActorKeyedService::Get(profile_) != nullptr;
+#else
+  return base::FeatureList::IsEnabled(
+      features::kGlicExperimentalTriggeringOpenWindowIfNone);
+#endif
+}
+
+bool GlicExperimentalTriggeringCoordinator::CanShowOptInUi() const {
+#if BUILDFLAG(IS_ANDROID)
+  if (IsChromeInBackground()) {
+    return false;
+  }
+#endif
+  if (tabs::TabInterface* active_tab = GetActiveTab();
+      active_tab && active_tab->GetContents() != nullptr) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kGlicExperimentalTriggeringOptInTabFocus)) {
+#if BUILDFLAG(IS_ANDROID)
+    return GetBrowserWindow() != nullptr;
+#else
+    return HasOrCanOpenBrowserWindow();
+#endif
+  }
+  return false;
+}
+
 void GlicExperimentalTriggeringCoordinator::OnProtoMessage(
     const std::string& context_id,
     const components_sharing_message::GlicExperimentalTriggering& proto,
@@ -2798,6 +2832,47 @@ GlicExperimentalTriggeringCoordinator::OnRequest(
     OnUpdatesHandlerCleanup(context_id);
   }
   return response;
+}
+
+std::optional<int>
+GlicExperimentalTriggeringCoordinator::GetExperimentalTriggeringVersion()
+    const {
+  GlicKeyedService* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false);
+  return glic_service
+             ? glic_service->enabling().GetExperimentalTriggeringVersion()
+             : std::nullopt;
+}
+
+DeviceCapabilities
+GlicExperimentalTriggeringCoordinator::GetDeviceCapabilities() const {
+  DeviceCapabilities capabilities;
+  GlicKeyedService* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false);
+  if (!glic_service) {
+    capabilities.state = DeviceCapabilities::State::kNotEligible;
+    capabilities.browser_window_available = false;
+    capabilities.can_show_opt_in_ui = false;
+    return capabilities;
+  }
+
+  switch (glic_service->enabling().GetExperimentalTriggeringState()) {
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable:
+      capabilities.state = DeviceCapabilities::State::kNotEligible;
+      break;
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn:
+      capabilities.state = DeviceCapabilities::State::kNeedsOptIn;
+      break;
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady:
+      capabilities.state = DeviceCapabilities::State::kReady;
+      break;
+  }
+  capabilities.capabilities = glic_service->enabling()
+                                  .GetExperimentalTriggeringCapabilities()
+                                  .extract();
+  capabilities.browser_window_available = HasOrCanOpenBrowserWindow();
+  capabilities.can_show_opt_in_ui = CanShowOptInUi();
+  return capabilities;
 }
 
 void GlicExperimentalTriggeringCoordinator::RejectBeforeHandler(

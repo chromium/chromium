@@ -134,8 +134,14 @@ TEST_F(BrowserActuatorMessageHandlerTest,
                             stream_transport::InitIngressSource::kFcmPush))
       .WillOnce(testing::Return(
           static_cast<stream_transport::TransportSession*>(&mock_session)));
-  EXPECT_CALL(mock_session, OnMessage(stream_transport::PayloadType::kControl,
-                                      serialized_command));
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_session, OnMessage(stream_transport::PayloadType::kControl,
+                                        serialized_command));
+    EXPECT_CALL(
+        mock_session,
+        OnMessage(stream_transport::PayloadType::kExperimentalTriggering, ""));
+  }
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -273,13 +279,21 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       .WillOnce(testing::Return(nullptr));
   EXPECT_CALL(*mock_service_, GetSession("bundled_session_123"))
       .WillOnce(testing::Return(session));
-  EXPECT_CALL(mock_session, OnMessage(stream_transport::PayloadType::kControl,
-                                      serialized_start))
-      .Times(1);
-  EXPECT_CALL(mock_session,
-              OnMessage(stream_transport::PayloadType::kExperimentalTriggering,
-                        serialized_opt_in))
-      .Times(1);
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_session, OnMessage(stream_transport::PayloadType::kControl,
+                                        serialized_start))
+        .Times(1);
+    EXPECT_CALL(
+        mock_session,
+        OnMessage(stream_transport::PayloadType::kExperimentalTriggering, ""))
+        .Times(1);
+    EXPECT_CALL(
+        mock_session,
+        OnMessage(stream_transport::PayloadType::kExperimentalTriggering,
+                  serialized_opt_in))
+        .Times(1);
+  }
   EXPECT_CALL(mock_session,
               OnMessage(stream_transport::PayloadType::kActuation, testing::_))
       .Times(0);
@@ -303,6 +317,11 @@ TEST_F(BrowserActuatorMessageHandlerTest,
       message.mutable_actuator_downstream_message();
   bundled->set_session_id("bundled_session_123");
 
+  browser_actuator::ControlCommand start_command;
+  start_command.mutable_start_session();
+  const std::string serialized_start = start_command.SerializeAsString();
+  AddControlPayload(bundled, start_command);
+
   components_sharing_message::GlicExperimentalTriggering opt_in_triggering;
   opt_in_triggering.mutable_request()->mutable_device_opt_in_request();
   auto* triggering_payload = bundled->add_typed_payloads();
@@ -312,8 +331,20 @@ TEST_F(BrowserActuatorMessageHandlerTest,
   triggering_payload->mutable_proto_payload()->set_value(
       opt_in_triggering.SerializeAsString());
 
-  EXPECT_CALL(*mock_service_, CreateSession(testing::_, testing::_)).Times(0);
+  MockTransportSession mock_session;
+  EXPECT_CALL(*mock_service_,
+              CreateSession("bundled_session_123",
+                            stream_transport::InitIngressSource::kFcmPush))
+      .WillOnce(testing::Return(
+          static_cast<stream_transport::TransportSession*>(&mock_session)));
   EXPECT_CALL(*mock_service_, GetSession(testing::_)).Times(0);
+  EXPECT_CALL(mock_session, OnMessage(stream_transport::PayloadType::kControl,
+                                      serialized_start))
+      .Times(1);
+  EXPECT_CALL(mock_session,
+              OnMessage(stream_transport::PayloadType::kExperimentalTriggering,
+                        testing::_))
+      .Times(0);
 
   base::test::TestFuture<
       std::unique_ptr<components_sharing_message::ResponseMessage>>
@@ -482,15 +513,18 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
   std::optional<stream_transport::SessionSnapshot> recorded =
       GetRecordedSession("fcm-session-1");
   ASSERT_TRUE(recorded.has_value());
-  EXPECT_EQ(recorded->total_downstream_messages, 1u);
+  EXPECT_EQ(recorded->total_downstream_messages, 2u);
   EXPECT_EQ(recorded->total_upstream_messages, 1u);
-  ASSERT_EQ(recorded->events.size(), 2u);
+  ASSERT_EQ(recorded->events.size(), 3u);
   EXPECT_TRUE(recorded->events[0].is_downstream);
   EXPECT_THAT(recorded->events[0].payload_types,
               testing::ElementsAre("Control"));
   EXPECT_FALSE(recorded->events[1].is_downstream);
   EXPECT_THAT(recorded->events[1].payload_types,
               testing::ElementsAre("Control"));
+  EXPECT_TRUE(recorded->events[2].is_downstream);
+  EXPECT_THAT(recorded->events[2].payload_types,
+              testing::ElementsAre("ExperimentalTriggering"));
 
   // 3. Verify the started stream delivers subsequent downstream CloseSession.
   browser_actuator::ActuatorDownstreamMessage close_msg;
@@ -610,7 +644,22 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
   EXPECT_EQ(ack_req.actuator_upstream_message().session_id(),
             "glic-fcm-optin-1");
 
-  // 2. Wait for the `DeviceOptInRequest` reply triggered from the FCM message.
+  // 2. Wait for the wake-up `ExperimentalTriggering` reply triggered by
+  // `StartSession`.
+  browser_actuator::SendSessionMessageRequest wake_reply_req =
+      WaitForUpstreamRequest();
+  const auto& wake_msg = wake_reply_req.actuator_upstream_message();
+  EXPECT_EQ(wake_msg.session_id(), "glic-fcm-optin-1");
+  ASSERT_EQ(wake_msg.typed_payloads_size(), 1);
+  EXPECT_EQ(
+      wake_msg.typed_payloads(0).payload_type(),
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  components_sharing_message::GlicExperimentalTriggering wake_reply;
+  ASSERT_TRUE(wake_reply.ParseFromString(
+      wake_msg.typed_payloads(0).proto_payload().value()));
+  EXPECT_EQ(wake_reply.context_id(), "ack:");
+
+  // 3. Wait for the `DeviceOptInRequest` reply triggered from the FCM message.
   browser_actuator::SendSessionMessageRequest upstream_req =
       WaitForUpstreamRequest();
   const auto& upstream_msg = upstream_req.actuator_upstream_message();
@@ -684,19 +733,23 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
   EXPECT_EQ(stream_server.last_watch_request().sessions(0).session_id(),
             "glic-fcm-session-1");
 
-  // 1. Wait for `StartSessionAck` from the `StartSession` control payload, and
-  // verify that the bundled `TriggerActuationRequest` payload in the FCM
-  // message was ignored.
+  // 1. Wait for `StartSessionAck` and the wake-up `ExperimentalTriggering`
+  // reply from the `StartSession` control payload, and verify that the bundled
+  // `TriggerActuationRequest` payload in the FCM message was ignored.
   browser_actuator::SendSessionMessageRequest ack_req =
       WaitForUpstreamRequest();
   EXPECT_EQ(ack_req.actuator_upstream_message().session_id(),
+            "glic-fcm-session-1");
+  browser_actuator::SendSessionMessageRequest wake_reply_req =
+      WaitForUpstreamRequest();
+  EXPECT_EQ(wake_reply_req.actuator_upstream_message().session_id(),
             "glic-fcm-session-1");
 
   std::optional<stream_transport::SessionSnapshot> recorded_wake =
       GetRecordedSession("glic-fcm-session-1");
   ASSERT_TRUE(recorded_wake.has_value());
-  EXPECT_EQ(recorded_wake->total_downstream_messages, 1u);
-  EXPECT_EQ(recorded_wake->total_upstream_messages, 1u);
+  EXPECT_EQ(recorded_wake->total_downstream_messages, 2u);
+  EXPECT_EQ(recorded_wake->total_upstream_messages, 2u);
 
   // 2. Deliver the `TriggerActuationRequest` payload over the One Platform
   // `WatchSessions` stream (`sequence_number = 1`) and verify the upstream
@@ -726,9 +779,9 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
   std::optional<stream_transport::SessionSnapshot> recorded =
       GetRecordedSession("glic-fcm-session-1");
   ASSERT_TRUE(recorded.has_value());
-  EXPECT_EQ(recorded->total_downstream_messages, 2u);
-  EXPECT_EQ(recorded->total_upstream_messages, 2u);
-  ASSERT_EQ(recorded->events.size(), 4u);
+  EXPECT_EQ(recorded->total_downstream_messages, 3u);
+  EXPECT_EQ(recorded->total_upstream_messages, 3u);
+  ASSERT_EQ(recorded->events.size(), 6u);
   EXPECT_TRUE(recorded->events[0].is_downstream);
   EXPECT_THAT(recorded->events[0].payload_types,
               testing::ElementsAre("Control"));
@@ -740,6 +793,12 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
               testing::ElementsAre("ExperimentalTriggering"));
   EXPECT_FALSE(recorded->events[3].is_downstream);
   EXPECT_THAT(recorded->events[3].payload_types,
+              testing::ElementsAre("ExperimentalTriggering"));
+  EXPECT_TRUE(recorded->events[4].is_downstream);
+  EXPECT_THAT(recorded->events[4].payload_types,
+              testing::ElementsAre("ExperimentalTriggering"));
+  EXPECT_FALSE(recorded->events[5].is_downstream);
+  EXPECT_THAT(recorded->events[5].payload_types,
               testing::ElementsAre("ExperimentalTriggering"));
 }
 

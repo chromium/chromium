@@ -218,10 +218,27 @@ struct ConfirmationResult {
   std::string error_message;
 };
 
+// Result payload reporting live device readiness and capabilities for
+// experimental triggering.
+struct DeviceCapabilities {
+  enum class State {
+    kUnspecified,
+    kNotEligible,
+    kNeedsOptIn,
+    kReady,
+  };
+  State state = State::kUnspecified;
+  std::vector<std::string> capabilities;
+  std::optional<bool> browser_window_available;
+  std::optional<bool> can_show_opt_in_ui;
+};
+
 // Outgoing response container for experimental triggering.
 struct ExperimentalTriggeringResponse {
+  std::optional<int32_t> version;
   std::string context_id;
   std::optional<TaskMetadata> task_metadata;
+  std::optional<DeviceCapabilities> device_capabilities;
 
   // At most one of the following payload fields should be populated;
   // they map to a protobuf `oneof response` payload on the wire.

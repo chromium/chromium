@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_converters.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
@@ -65,6 +66,15 @@ GlicExperimentalTriggeringTransportHandler::
 void GlicExperimentalTriggeringTransportHandler::OnMessage(
     stream_transport::PayloadType payload_type,
     std::string_view serialized_payload) {
+  // An empty payload is dispatched by `BrowserActuatorMessageHandler` on
+  // `StartSession` to report live `DeviceCapabilities` upstream on wake-up.
+  if (serialized_payload.empty()) {
+    if (!sent_device_capabilities_) {
+      SendResponse(ExperimentalTriggeringResponse());
+    }
+    return;
+  }
+
   GlicExperimentalTriggering triggering;
   if (!triggering.ParseFromString(serialized_payload)) {
     DLOG(WARNING) << "Failed to parse GlicExperimentalTriggering payload";
@@ -128,15 +138,35 @@ void GlicExperimentalTriggeringTransportHandler::OnMessage(
 
 void GlicExperimentalTriggeringTransportHandler::SendResponse(
     ExperimentalTriggeringResponse response) {
+  if (!sent_device_capabilities_) {
+    sent_device_capabilities_ = true;
+    if (!response.device_capabilities.has_value()) {
+      if (coordinator_) {
+        response.device_capabilities = coordinator_->GetDeviceCapabilities();
+      } else {
+        response.device_capabilities = DeviceCapabilities{
+            .state = DeviceCapabilities::State::kNotEligible,
+            .browser_window_available = false,
+            .can_show_opt_in_ui = false,
+        };
+      }
+    }
+    if (coordinator_ && !response.version.has_value()) {
+      response.version = coordinator_->GetExperimentalTriggeringVersion();
+    }
+  }
   const bool is_terminal = IsTerminalResponse(response);
   components_sharing_message::GlicExperimentalTriggering triggering =
       ResponseToTriggeringProto(response);
 
+  std::string_view log_context_id = response.context_id;
+  if (log_context_id.empty() && session()) {
+    log_context_id = session()->GetSessionId();
+  }
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
-  LogGlicExperimentalTriggeringProto(actor_service,
-                                     "GlicExperimentalTriggering",
-                                     response.context_id, triggering);
+  LogGlicExperimentalTriggeringProto(
+      actor_service, "GlicExperimentalTriggering", log_context_id, triggering);
 
   // `SendUpstreamMessage` synchronously serializes the protobuf `triggering`
   // reference, so passing the const reference is safe during this synchronous

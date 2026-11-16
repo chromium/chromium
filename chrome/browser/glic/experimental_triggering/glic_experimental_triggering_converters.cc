@@ -16,7 +16,9 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 
 namespace glic {
 
@@ -216,6 +218,9 @@ ExperimentalTriggeringRequest ProtoToRequest(
 components_sharing_message::GlicExperimentalTriggering
 ResponseToTriggeringProto(const ExperimentalTriggeringResponse& response) {
   components_sharing_message::GlicExperimentalTriggering triggering;
+  if (response.version.has_value()) {
+    triggering.set_glic_experimental_triggering_version(*response.version);
+  }
   if (!response.context_id.empty()) {
     triggering.set_context_id(response.context_id);
   }
@@ -361,6 +366,38 @@ ResponseToTriggeringProto(const ExperimentalTriggeringResponse& response) {
     if (!response.confirmation_result->error_message.empty()) {
       proto_confirmation->set_error_message(
           response.confirmation_result->error_message);
+    }
+  }
+
+  if (response.device_capabilities.has_value()) {
+    using ProtoDeviceCapabilities = components_sharing_message::
+        GlicExperimentalTriggering::DeviceCapabilities;
+    ProtoDeviceCapabilities* proto_caps =
+        triggering.mutable_device_capabilities();
+    switch (response.device_capabilities->state) {
+      case DeviceCapabilities::State::kUnspecified:
+        proto_caps->set_state(ProtoDeviceCapabilities::STATE_UNSPECIFIED);
+        break;
+      case DeviceCapabilities::State::kNotEligible:
+        proto_caps->set_state(ProtoDeviceCapabilities::NOT_ELIGIBLE);
+        break;
+      case DeviceCapabilities::State::kNeedsOptIn:
+        proto_caps->set_state(ProtoDeviceCapabilities::NEEDS_OPT_IN);
+        break;
+      case DeviceCapabilities::State::kReady:
+        proto_caps->set_state(ProtoDeviceCapabilities::READY);
+        break;
+    }
+    for (const std::string& cap : response.device_capabilities->capabilities) {
+      proto_caps->add_capabilities(cap);
+    }
+    if (response.device_capabilities->browser_window_available.has_value()) {
+      proto_caps->set_browser_window_available(
+          *response.device_capabilities->browser_window_available);
+    }
+    if (response.device_capabilities->can_show_opt_in_ui.has_value()) {
+      proto_caps->set_can_show_opt_in_ui(
+          *response.device_capabilities->can_show_opt_in_ui);
     }
   }
 

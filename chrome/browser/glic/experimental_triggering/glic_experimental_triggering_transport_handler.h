@@ -51,6 +51,7 @@ class GlicExperimentalTriggeringTransportHandler
 
   const raw_ptr<Profile> profile_;
   base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator_;
+  bool sent_device_capabilities_ = false;
   base::WeakPtrFactory<GlicExperimentalTriggeringTransportHandler>
       weak_ptr_factory_{this};
 };

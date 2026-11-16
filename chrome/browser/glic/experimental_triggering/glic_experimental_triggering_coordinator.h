@@ -75,6 +75,14 @@ class GlicExperimentalTriggeringCoordinator
                                const std::string& context_id) override;
   void OnBackgroundSetupFailed(const std::string& context_id) override;
 
+  // Returns the current live device readiness and capabilities for Glic
+  // experimental triggering.
+  DeviceCapabilities GetDeviceCapabilities() const;
+
+  // Returns the local Glic experimental triggering protocol version, if
+  // available.
+  std::optional<int> GetExperimentalTriggeringVersion() const;
+
   size_t GetUpdatesHandlerMapSizeForTesting() const {
     return context_id_to_updates_handler_map_.size();
   }
@@ -94,6 +102,15 @@ class GlicExperimentalTriggeringCoordinator
   friend class ExperimentalTriggeringUpdatesHandler;
 
   struct PendingMessageData;
+
+  // Returns true if an eligible browser window exists for `profile_` or if one
+  // can be automatically opened/prepared when an actuation request arrives.
+  bool HasOrCanOpenBrowserWindow() const;
+
+  // Returns true if the device opt-in UI can currently be displayed if
+  // requested (e.g. Chrome is in the foreground on Android and a suitable web
+  // contents exists or can be created).
+  bool CanShowOptInUi() const;
 
   std::optional<ExperimentalTriggeringResponse> ProcessValidatedProtoMessage(
       const std::string& context_id,

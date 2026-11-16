@@ -246,6 +246,39 @@ message GlicExperimentalTriggering {
   // (e.g. new parent conversation information).
   message TaskMetadataUpdated {}
 
+  // Reports the live readiness and capabilities of Glic experimental
+  // triggering on the device.
+  message DeviceCapabilities {
+    // Represents the readiness state of Glic experimental triggering on the
+    // device, mirroring GlicExperimentalTriggeringInfo.State in Sync
+    // DeviceInfo.
+    enum State {
+      STATE_UNSPECIFIED = 0;
+      // User is not eligible for Glic experimental triggering on this device.
+      NOT_ELIGIBLE = 1;
+      // User is eligible, but needs to opt-in to one or more settings.
+      NEEDS_OPT_IN = 2;
+      // User is eligible and opted-in to all required settings.
+      READY = 3;
+    }
+
+    // Current Glic experimental triggering state on the device.
+    optional State state = 1;
+
+    // Capabilities supported for experimental triggering on the device.
+    repeated string capabilities = 2;
+
+    // Whether the client currently has an eligible browser window available
+    // (or can automatically open/prepare one in the background) to carry out
+    // actuation.
+    optional bool browser_window_available = 3;
+
+    // Whether the client can currently display the device opt-in UI if
+    // `state` is `NEEDS_OPT_IN` (e.g. Chrome has a visible activity on
+    // Android and an active tab or can open a window).
+    optional bool can_show_opt_in_ui = 4;
+  }
+
   oneof payload {
     ExperimentalTriggeringRequest request = 2;
     ExperimentalTriggeringResponse response = 3;
@@ -257,4 +290,8 @@ message GlicExperimentalTriggering {
 
   // Monotonically increasing version number of the triggering protocol.
   optional int32 glic_experimental_triggering_version = 6;
+
+  // Live readiness and capabilities of Glic experimental triggering on the
+  // device, populated by the client on the first turn.
+  optional DeviceCapabilities device_capabilities = 7;
 }
