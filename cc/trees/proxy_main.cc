@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
@@ -51,9 +50,6 @@
 namespace cc {
 
 namespace {
-BASE_FEATURE(kFixProxyMainNeedsBeginMainFrame,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 perfetto::NamedTrack GetTracingTrack(const ProxyMain* proxy_main) {
   return perfetto::NamedTrack::FromPointer("cc::ProxyMain", proxy_main);
 }
@@ -581,11 +577,7 @@ void ProxyMain::BeginMainFrame(
   // WillBeginImplCommit.
   layer_tree_host_->DidBeginMainFrame();
   if (blocking) {
-    if (base::FeatureList::IsEnabled(kFixProxyMainNeedsBeginMainFrame)) {
-      DidCompleteCommit(source_frame_number, commit_timestamps);
-    } else {
-      layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);
-    }
+    layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);
   }
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
@@ -742,16 +734,13 @@ void ProxyMain::SetNeedsAnimate(BeginMainFrameReason reason, bool urgent) {
 
 void ProxyMain::SetNeedsUpdateLayers() {
   DCHECK(IsMainThread());
+  needs_begin_main_frame_ = true;
   // If we are currently animating, make sure we also update the layers.
   if (current_pipeline_stage_ == ANIMATE_PIPELINE_STAGE) {
-    if (!base::FeatureList::IsEnabled(kFixProxyMainNeedsBeginMainFrame)) {
-      needs_begin_main_frame_ = true;
-    }
     final_pipeline_stage_ =
         std::max(final_pipeline_stage_, UPDATE_LAYERS_PIPELINE_STAGE);
     return;
   }
-  needs_begin_main_frame_ = true;
   if (SendCommitRequestToImplThreadIfNeeded(BeginMainFrameReason::kOther,
                                             UPDATE_LAYERS_PIPELINE_STAGE,
                                             /* urgent = */ false)) {
