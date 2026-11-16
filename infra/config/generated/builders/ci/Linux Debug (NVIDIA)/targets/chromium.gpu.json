@@ -5,7 +5,6 @@
         "args": [
           "--no-xvfb"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -35,7 +34,6 @@
           "--use-gpu-in-tests",
           "--no-xvfb"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -64,7 +62,6 @@
           "--no-xvfb",
           "--git-revision=${got_revision}"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -105,7 +102,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -148,7 +144,6 @@
           "${buildername}",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -192,7 +187,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -231,7 +225,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -274,7 +267,6 @@
           "2184",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -317,7 +309,6 @@
           "${buildername}",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -362,7 +353,6 @@
           "--dont-restore-color-profile-after-test",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -401,7 +391,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -441,7 +430,6 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
           "--jobs=4"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

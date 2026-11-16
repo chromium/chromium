@@ -1122,7 +1122,6 @@
           "--use-gpu-in-tests",
           "--no-xvfb"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1150,7 +1149,6 @@
           "--no-xvfb",
           "--git-revision=${got_revision}"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1179,7 +1177,6 @@
     ],
     "isolated_scripts": [
       {
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1211,7 +1208,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "ci_only": true,
         "merge": {
           "args": [
             "--verbose"
@@ -1247,7 +1243,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "ci_only": true,
         "merge": {
           "args": [
             "--verbose"
@@ -1288,7 +1283,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1328,7 +1322,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1369,7 +1362,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1409,7 +1401,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1449,7 +1440,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1529,7 +1519,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1563,7 +1552,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "ci_only": true,
         "merge": {
           "args": [
             "--verbose"
@@ -1599,7 +1587,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "ci_only": true,
         "merge": {
           "args": [
             "--verbose"
@@ -1642,7 +1629,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -1685,7 +1671,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
