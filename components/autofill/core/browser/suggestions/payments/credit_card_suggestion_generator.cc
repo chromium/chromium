@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -549,7 +550,9 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
     const AutofillField* trigger_autofill_field,
     AutofillClient& client,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
-  if (client.IsAutofillTypeBlockedByPolicy(
+  if (!client.GetPaymentsAutofillClient() ||
+      !client.GetPaymentsAutofillClient()->IsAutofillPaymentMethodsEnabled() ||
+      client.IsAutofillTypeBlockedByPolicy(
           client.GetLastCommittedPrimaryMainFrameURL(),
           AutofillClient::AutofillPolicyDataCategory::kPayments)) {
     callback({SuggestionDataSource::kCreditCard, {}});

@@ -3326,22 +3326,20 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
     const std::map<FillingProduct, std::vector<Suggestion>>& suggestions,
     AutofillField& field) {
   if (const std::vector<Suggestion>* address_suggestions =
-          base::FindOrNull(suggestions, FillingProduct::kAddress);
-      address_suggestions &&
-      EvaluateAblationStudy(field, FillingProduct::kAddress,
-                            /*has_suggestions=*/true)) {
+          base::FindOrNull(suggestions, FillingProduct::kAddress)) {
     CHECK(!address_suggestions->empty());
-    return true;
+    return EvaluateAblationStudy(field, FillingProduct::kAddress,
+                                 /*has_suggestions=*/true);
   }
   if (const std::vector<Suggestion>* credit_card_suggestions =
-          base::FindOrNull(suggestions, FillingProduct::kCreditCard);
-      credit_card_suggestions &&
-      EvaluateAblationStudy(field, FillingProduct::kCreditCard,
-                            /*has_suggestions=*/true)) {
+          base::FindOrNull(suggestions, FillingProduct::kCreditCard)) {
     CHECK(!credit_card_suggestions->empty());
-    return true;
+    return EvaluateAblationStudy(field, FillingProduct::kCreditCard,
+                                 /*has_suggestions=*/true);
   }
-  return false;
+  return EvaluateAblationStudy(
+      field, GetPreferredSuggestionFillingProduct(field.Type()),
+      /*has_suggestions=*/false);
 }
 
 bool BrowserAutofillManager::EvaluateAblationStudy(

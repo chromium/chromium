@@ -137,6 +137,7 @@
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
@@ -1047,10 +1048,49 @@ class BrowserAutofillManagerTest : public testing::Test,
     ON_CALL(autofill_driver(), CanShowAutofillUi).WillByDefault(Return(true));
   }
 
-  void TearDown() override { DestroyAutofillClient(); }
+  void TearDown() override {
+    DestroyAutofillClient();
+    mock_autocomplete_history_manager_.reset();
+    mock_web_data_service_.reset();
+  }
 
   void FastForwardBy(base::TimeDelta time_delta) {
     task_environment_.FastForwardBy(time_delta);
+  }
+
+  void MockAutocompleteSuggestions(const std::u16string& field_name,
+                                   const std::vector<std::u16string>& values) {
+    if (!mock_web_data_service_) {
+      mock_web_data_service_ =
+          base::MakeRefCounted<NiceMock<MockAutofillWebDataService>>();
+      mock_autocomplete_history_manager_ =
+          std::make_unique<NiceMock<MockAutocompleteHistoryManager>>(
+              mock_web_data_service_);
+      ON_CALL(autofill_client(), GetAutocompleteHistoryManager)
+          .WillByDefault(Return(mock_autocomplete_history_manager_.get()));
+    }
+    ON_CALL(*mock_web_data_service_,
+            GetFormValuesForElementName(field_name, _, _, _))
+        .WillByDefault(
+            [this, field_name, values](
+                const std::u16string&, const std::u16string&, int,
+                base::OnceCallback<void(WebDataServiceBase::Handle,
+                                        std::unique_ptr<WDTypedResult>)>
+                    callback) {
+              constexpr WebDataServiceBase::Handle kDbQueryId = 100;
+              std::vector<AutocompleteEntry> entries;
+              for (const std::u16string& value : values) {
+                entries.emplace_back(AutocompleteKey(field_name, value),
+                                     base::Time::Now(), base::Time::Now());
+              }
+              auto result =
+                  std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
+                      AUTOFILL_VALUE_RESULT, std::move(entries));
+              task_environment_.GetMainThreadTaskRunner()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(callback), kDbQueryId,
+                                            std::move(result)));
+              return kDbQueryId;
+            });
   }
 
   std::pair<FormStructure*, AutofillField*> GetCachedFormAndField(
@@ -1416,6 +1456,9 @@ class BrowserAutofillManagerTest : public testing::Test,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   syncer::TestSyncService sync_service_;
+  scoped_refptr<NiceMock<MockAutofillWebDataService>> mock_web_data_service_;
+  std::unique_ptr<NiceMock<MockAutocompleteHistoryManager>>
+      mock_autocomplete_history_manager_;
 };
 
 class BrowserAutofillManagerAtMemoryTest : public BrowserAutofillManagerTest {
@@ -1807,27 +1850,17 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        WebauthnSignInWithAnotherDeviceSuggestionInAutocomplete) {
-  FormData form = test::GetFormData(
-      {.fields = {{.role = USERNAME, .autocomplete_attribute = "webauthn"}}});
+  FormData form =
+      test::GetFormData({.fields = {{.role = USERNAME,
+                                     .name = u"username",
+                                     .autocomplete_attribute = "webauthn"}}});
   FormsSeen({form});
 
   ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillByDefault(
           Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
-  std::vector<Suggestion> suggestions = {
-      Suggestion(u"one", SuggestionType::kAutocompleteEntry),
-      Suggestion(u"two", SuggestionType::kAutocompleteEntry)};
+  MockAutocompleteSuggestions(form.fields()[0].name(), {u"one", u"two"});
 
-  // Mock returning some single field fill `suggestions`.
-  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure& form, const FormFieldData& field,
-                          const AutofillField& autofill_field,
-                          const AutofillClient& client,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback&
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), suggestions);
-        return true;
-      });
   OnAskForValuesToFill(
       form, form.fields()[0],
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -1836,7 +1869,9 @@ TEST_F(BrowserAutofillManagerTest,
             AutofillSuggestionTriggerSource::kFormControlElementClicked);
   external_delegate()->CheckSuggestions(
       form.fields()[0].global_id(),
-      {suggestions[0], suggestions[1], Suggestion(SuggestionType::kSeparator),
+      {Suggestion(u"one", SuggestionType::kAutocompleteEntry),
+       Suggestion(u"two", SuggestionType::kAutocompleteEntry),
+       Suggestion(SuggestionType::kSeparator),
        Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)});
 }
 
@@ -1853,18 +1888,7 @@ TEST_F(
   ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillByDefault(
           Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
-  std::vector<Suggestion> empty_suggestions = {};
 
-  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure& form, const FormFieldData& field,
-                          const AutofillField& autofill_field,
-                          const AutofillClient& client,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback&
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned)
-            .Run(field.global_id(), empty_suggestions);
-        return true;
-      });
   OnAskForValuesToFill(
       form, form.fields()[0],
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
@@ -1952,7 +1976,7 @@ TEST_F(BrowserAutofillManagerTest,
   payments_autofill_client().SetAutofillPaymentMethodsEnabled(false);
 
   OnAskForValuesToFill(form, form.fields()[0]);
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
 // Tests that `GetProfileSuggestions()` does not return AddressOnTyping
@@ -2047,35 +2071,24 @@ TEST_F(BrowserAutofillManagerTest, TestParseFormUntilInteractionMetric) {
       /*expected_bucket_count=*/1);
 }
 
-// Tests that `SingleFieldFillRouter` returns to the
-// `AutofillExternalDelegate`, if it has any.
+// Tests that single-field Autocomplete suggestions are returned to the
+// `AutofillExternalDelegate`.
 TEST_F(BrowserAutofillManagerTest,
        OnSuggestionsReturned_CallsExternalDelegate) {
   FormData form = test::GetFormData({NAME_FIRST});
   FormsSeen({form});
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(u"one", SuggestionType::kAutocompleteEntry),
-      Suggestion(u"two", SuggestionType::kAutocompleteEntry)};
-
-  // Mock returning some single field fill `suggestions`.
-  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure& form, const FormFieldData& field,
-                          const AutofillField& autofill_field,
-                          const AutofillClient& client,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback&
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), suggestions);
-        return true;
-      });
+  MockAutocompleteSuggestions(form.fields()[0].name(), {u"one", u"two"});
   OnAskForValuesToFill(
       form, form.fields()[0],
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   EXPECT_EQ(external_delegate()->trigger_source(),
             AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  external_delegate()->CheckSuggestions(form.fields()[0].global_id(),
-                                        {suggestions[0], suggestions[1]});
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion(u"one", SuggestionType::kAutocompleteEntry),
+       Suggestion(u"two", SuggestionType::kAutocompleteEntry)});
 }
 
 // Test that we return profile and credit card suggestions for combined forms.
@@ -2440,7 +2453,7 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[0]);
 
   // Verify that no suggestion is returned.
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
 // Tests that `AmountExtractionManager` should not trigger amount extraction if
@@ -2479,7 +2492,7 @@ TEST_F(BrowserAutofillManagerTest,
   OnAskForValuesToFill(form, form.fields()[0]);
 
   // Verify at suggestions are not generated.
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
 // Tests that `AmountExtractionManager` should notify the BNPL manager of
@@ -3836,14 +3849,12 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  // Expect the single field suggestion generator to be called for suggestions.
-  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions);
-
+  MockAutocompleteSuggestions(form.fields()[0].name(), {u"one"});
   OnAskForValuesToFill(form, form.fields()[0]);
 
-  // Single field form fill suggestions were returned, so we should not go
-  // through the normal autofill flow.
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion(u"one", SuggestionType::kAutocompleteEntry)});
 }
 
 // Test that we do not query for single field form fill suggestions when there
@@ -3879,11 +3890,12 @@ TEST_F(BrowserAutofillManagerTest,
   email_field.set_value(u"donkey");
   FormsSeen({form});
 
-  // Single field managers are called for suggestions because Autofill
-  // is empty.
-  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions);
-
+  MockAutocompleteSuggestions(email_field.name(), {u"donkey@example.com"});
   OnAskForValuesToFill(form, email_field);
+
+  external_delegate()->CheckSuggestions(
+      email_field.global_id(),
+      {Suggestion(u"donkey@example.com", SuggestionType::kAutocompleteEntry)});
 }
 
 // Test fixture with Autofill for addresses and payment methods disabled.
@@ -3914,11 +3926,12 @@ TEST_F(BrowserAutofillManagerTest_AutofillDisabled,
   FormFieldData& field = test_api(form).field(0);
   field.set_should_autocomplete(true);
 
-  // Single field managers are called for suggestions because Autofill
-  // is empty.
-  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions);
-
+  MockAutocompleteSuggestions(field.name(), {u"Elvis"});
   OnAskForValuesToFill(form, field);
+
+  external_delegate()->CheckSuggestions(
+      field.global_id(),
+      {Suggestion(u"Elvis", SuggestionType::kAutocompleteEntry)});
 }
 
 // Test that the situation where there are no Autofill suggestions available,
@@ -4517,7 +4530,7 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
   OnAskForValuesToFill(form, form.fields().back());
   // Expect no suggestions as autofill and autocomplete are disabled for
   // addresses.
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckNoSuggestions(form.fields().back().global_id());
 }
 
 TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
@@ -4531,7 +4544,7 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
   OnAskForValuesToFill(form, form.fields()[0]);
   // Expect no suggestions as autofill and autocomplete are disabled for credit
   // cards.
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
 TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
@@ -5776,7 +5789,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_JavascriptUrlTarget) {
   OnAskForValuesToFill(form, form.fields()[0]);
 
   // Check there is no warning.
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
 // Test that we don't treat about:blank target URLs as mixed forms.
@@ -5788,7 +5801,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
   OnAskForValuesToFill(form, form.fields()[0]);
 
   // Check there is no warning.
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
 // Tests that both Autofill popup and TTF are hidden on renderer event.
@@ -6404,6 +6417,7 @@ class BrowserAutofillManagerTest_MockAutofillAi
   }
 
   MockAutofillAiManager& mock_ai_manager() { return *mock_ai_manager_.get(); }
+  AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
 
  private:
   base::test::ScopedFeatureList feature_list_{
@@ -6418,15 +6432,16 @@ class BrowserAutofillManagerTest_MockAutofillAi
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi, ShowAutofillAiSuggestions) {
   SeeForm(/*may_run_model=*/false);
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kFillAutofillAi)};
-  EXPECT_CALL(mock_ai_manager(), GetSuggestions).WillOnce(Return(suggestions));
-
   OnAskForValuesToFill(
       passport_form(), passport_form().fields().front(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(EqualsSuggestion(SuggestionType::kFillAutofillAi)));
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(
+          EqualsSuggestion(SuggestionType::kFillAutofillAi, u"Pippi"),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          AnyOf(EqualsSuggestion(SuggestionType::kManageAutofillAiIdentityDocs),
+                EqualsSuggestion(SuggestionType::kManageAutofillAi))));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -6437,30 +6452,29 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   GenerateNewPassportForm(/*autocomplete_unrecognized=*/true);
   SeeForm(/*may_run_model=*/false);
 
-  EXPECT_CALL(mock_ai_manager(), GetSuggestions).Times(0);
   OnAskForValuesToFill(
       passport_form(), passport_form().fields().front(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  external_delegate()->CheckNoSuggestions(
+      passport_form().fields().front().global_id());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that if a name field is dynamically assigned to an Autofill AI entity
-// but the EntityDataManager cannot fill that specific field, there are no
-// suggestions shown on that specific field.
-//
-// In particular, even if there are matching address suggestions, these are
-// ignored. See crbug.com/402397312 for a concrete example.
+// that cannot fill that specific field, Autofill falls back to showing matching
+// address suggestions on that field.
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        ShowNoSuggestionsIfCollision) {
+  autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(
+      test::GetPassportEntityInstance({.name = nullptr}));
+  webdata_helper().WaitUntilIdle();
   SeeForm(/*may_run_model=*/false);
-
-  EXPECT_CALL(mock_ai_manager(), GetSuggestions)
-      .WillOnce(Return(std::vector<Suggestion>{}));
 
   OnAskForValuesToFill(
       passport_form(), passport_form().fields().front(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  EXPECT_THAT(external_delegate()->suggestions(), IsEmpty());
+  EXPECT_THAT(external_delegate()->suggestions(),
+              Contains(EqualsSuggestion(SuggestionType::kAddressEntry)));
 }
 
 // Tests that an Autofill profile is not imported into the address data manager
@@ -6516,9 +6530,11 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
 // eligible. The private inference notice should not be shown
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        TouchToFillAutofillSuggestion_ShowsIfEligible) {
+  base::test::ScopedFeatureList feature_list{features::kAutofillAiUsePrivateAi};
+  autofill_client().GetPrefs()->ClearPref(
+      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp);
   SeeForm(/*may_run_model=*/false);
 
-  EXPECT_CALL(mock_ai_manager(), GetSuggestions).Times(0);
   // The private inference notice should not be shown when touch to fill bottom
   // sheet is shown.
   EXPECT_CALL(autofill_client(), ShowAutofillAiPrivateInferenceNotice).Times(0);
@@ -6535,30 +6551,32 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
 // eligible.
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        PrivateInferenceNotice_DoesNotShowIfAutofillUiCantBeShown) {
+  base::test::ScopedFeatureList feature_list;
 #if BUILDFLAG(IS_ANDROID)
   // Disable the bottom sheet, so that the message is suppressed by
   // `CanShowAutofillUi()` and not by the bottom sheet feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillAiPrivateInferenceNoticeBottomSheet);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAiUsePrivateAi},
+      /*disabled_features=*/{
+          features::kAutofillAiPrivateInferenceNoticeBottomSheet});
+#else
+  feature_list.InitAndEnableFeature(features::kAutofillAiUsePrivateAi);
 #endif  // BUILDFLAG(IS_ANDROID)
+  autofill_client().GetPrefs()->ClearPref(
+      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp);
   EXPECT_CALL(autofill_driver(), CanShowAutofillUi)
       .WillRepeatedly(Return(false));
   SeeForm(/*may_run_model=*/false);
 
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)};
-  EXPECT_CALL(mock_ai_manager(), GetSuggestions).WillOnce(Return(suggestions));
-
   EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
       .WillOnce(testing::Return(false));
-  // The private inference notice should be shown when touch to fill bottom
-  // sheet is shown.
+  // The private inference notice should not be shown when Autofill UI cannot be
+  // shown.
   EXPECT_CALL(autofill_client(), ShowAutofillAiPrivateInferenceNotice).Times(0);
   TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
                        /*form_element_was_clicked=*/true);
   EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(EqualsSuggestion(
+              Contains(EqualsSuggestion(
                   SuggestionType::kAutofillAiPrivateInferenceNotice)));
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
@@ -6567,27 +6585,29 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
 // eligible.
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        TouchToFillAutofillSuggestion_DoesNotShowIfNotEligible) {
+  base::test::ScopedFeatureList feature_list;
 #if BUILDFLAG(IS_ANDROID)
   // The Android message is only shown if the bottom sheet is disabled.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillAiPrivateInferenceNoticeBottomSheet);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillAiUsePrivateAi},
+      /*disabled_features=*/{
+          features::kAutofillAiPrivateInferenceNoticeBottomSheet});
+#else
+  feature_list.InitAndEnableFeature(features::kAutofillAiUsePrivateAi);
 #endif  // BUILDFLAG(IS_ANDROID)
+  autofill_client().GetPrefs()->ClearPref(
+      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp);
   SeeForm(/*may_run_model=*/false);
-
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)};
-  EXPECT_CALL(mock_ai_manager(), GetSuggestions).WillOnce(Return(suggestions));
 
   EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
       .WillOnce(testing::Return(false));
   // The private inference notice should be shown when touch to fill bottom
-  // sheet is shown.
+  // sheet is not shown.
   EXPECT_CALL(autofill_client(), ShowAutofillAiPrivateInferenceNotice);
   TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
                        /*form_element_was_clicked=*/true);
   EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(EqualsSuggestion(
+              Contains(EqualsSuggestion(
                   SuggestionType::kAutofillAiPrivateInferenceNotice)));
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
@@ -6597,13 +6617,15 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
 // if the bottom sheet feature is enabled, even if Touch To Fill isn't shown.
 TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
        PrivateInferenceNotice_DoesNotShowMessageIfBottomSheetFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAiPrivateInferenceNoticeBottomSheet);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillAiUsePrivateAi,
+       features::kAutofillAiPrivateInferenceNoticeBottomSheet},
+      /*disabled_features=*/{});
+  autofill_client().GetPrefs()->ClearPref(
+      prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp);
   SeeForm(/*may_run_model=*/false);
-
-  std::vector<Suggestion> suggestions = {
-      Suggestion(SuggestionType::kAutofillAiPrivateInferenceNotice)};
-  EXPECT_CALL(mock_ai_manager(), GetSuggestions).WillOnce(Return(suggestions));
 
   EXPECT_CALL(touch_to_fill_autofill_delegate(), TryToShowTouchToFill)
       .WillOnce(testing::Return(false));
@@ -6611,7 +6633,7 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   TryToShowTouchToFill(passport_form(), passport_form().fields().front(),
                        /*form_element_was_clicked=*/true);
   EXPECT_THAT(external_delegate()->suggestions(),
-              ElementsAre(EqualsSuggestion(
+              Contains(EqualsSuggestion(
                   SuggestionType::kAutofillAiPrivateInferenceNotice)));
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
@@ -7474,7 +7496,7 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpSuggestions) {
 
   // Also check that there are no suggestions for the second field.
   OnAskForValuesToFill(form, form.fields()[1]);
-  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  external_delegate()->CheckNoSuggestions(form.fields()[1].global_id());
 }
 
 TEST_F(BrowserAutofillManagerOtpSuggestionsTest, GmailOtpSuggestions) {

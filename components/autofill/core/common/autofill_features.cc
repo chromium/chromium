@@ -934,7 +934,7 @@ BASE_FEATURE(kAutofillMoveSmallFormLogicToClient,
 // If enabled, the new suggestion generation logic is used.
 // TODO(crbug.com/409962888): Remove once launched.
 BASE_FEATURE(kAutofillNewSuggestionGeneration,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, `SuggestionType::kAddressEntryOnTyping` suggestions are offered
 // even if `FormFieldData::should_autocomplete()` is false
