@@ -50,11 +50,6 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.additional_args.push_back("true");
-  // Enable the updated FRE sequence variation 2 (kRemoveSignInSync) to verify
-  // that the standard sequence is displayed when a choice screen is required.
-  config.features_enabled_and_params.push_back(
-      {first_run::kUpdatedFirstRunSequence,
-       {{first_run::kUpdatedFirstRunSequenceParam, "2"}}});
   // Disable the animated default browser promo to prevent post-FRE promotions
   // from interfering with the settings verification steps.
   config.features_disabled.push_back(

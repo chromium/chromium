@@ -1036,10 +1036,10 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  // Note: Can't use the actual feature definition, because its build target
-  // depends on a bunch of stuff that mustn't make it into the EG test target.
-  config.additional_args.push_back(
-      "--disable-features=UpdatedFirstRunSequence");
+  // Add a fake identity at startup so the Sign-In screen is included in the FRE
+  // sequence.
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kAddFakeIdentitiesAtStartup);
 
   // Disable AnimatedDefaultBrowserPromoInFRE because it introduces a new
   // Default Browser screen with a different ID.

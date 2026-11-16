@@ -19,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -148,13 +149,15 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
 
 // Tests that the age mismatch prompt is shown during the First Run Experience.
 - (void)testAgeMismatchPromptInFRE {
-  // Relaunch the app to force First Run Experience.
+  // Relaunch the app to force First Run Experience with a startup identity so
+  // the FRE Sign-In screen is shown.
   AppLaunchConfiguration config;
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kAddFakeIdentitiesAtStartup);
 
   // Disable features that change the FRE sequence to keep the test simple.
-  config.features_disabled.push_back(first_run::kUpdatedFirstRunSequence);
   config.features_disabled.push_back(
       first_run::kAnimatedDefaultBrowserPromoInFRE);
   config.features_disabled.push_back(kBestOfAppFRE);
@@ -164,15 +167,19 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
       {switches::kBuildExternalPrivacyContext,
        {{"AgeMismatchLearnMoreUrl", "about:blank"}}});
 
+  // Keep app state after relaunch so the startup identity added via
+  // `kAddFakeIdentitiesAtStartup` is not cleared by `ChromeTestCase`.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // We should see the FRE Signin screen.
-  // Add the identity dynamically with `can_sign_in_to_chrome` = NO capability.
+  // Update the startup identity with `can_sign_in_to_chrome` = NO capability.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity
-                 withCapabilities:@{
-                   @(kCanSignInToChromeCapabilityName) : @NO,
-                 }];
+  [SigninEarlGrey setCapabilities:@{
+    @(kCanSignInToChromeCapabilityName) : @NO,
+  }
+                      forIdentity:fakeIdentity];
 
   // Tap "Continue as..." (Primary button) to sign in.
   [[EarlGrey selectElementWithMatcher:

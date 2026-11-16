@@ -129,9 +129,6 @@ id<GREYMatcher> ImportButton() {
     /// Show the First Run UI at startup.
     firstRunConfig.additional_args.push_back("-FirstRunForceEnabled");
     firstRunConfig.additional_args.push_back("true");
-    firstRunConfig.additional_args.push_back(
-        "--enable-features=UpdatedFirstRunSequence:updated-first-run-sequence-"
-        "param/2");
     firstRunConfig.features_disabled.push_back(kBestOfAppFRE);
     firstRunConfig.relaunch_policy = ForceRelaunchByCleanShutdown;
     [[AppLaunchManager sharedManager]

@@ -16,6 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -79,10 +80,10 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   config.additional_args.push_back(
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
 
-  // The UpdatedFirstRunSequence experiment makes changes to the Default Browser
-  // screen's view that cause the test to fail.
-  config.additional_args.push_back(
-      "--disable-features=UpdatedFirstRunSequence");
+  // Add a fake identity at startup so the Sign-In screen is included in the FRE
+  // sequence.
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kAddFakeIdentitiesAtStartup);
 
   if ([self isRunningAndroidSwitcherTest]) {
     const char* armParam =
@@ -127,8 +128,12 @@ id<GREYMatcher> DefaultPromoSubtitle() {
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(
               first_run::kFirstRunSignInScreenAccessibilityIdentifier)];
+  // The startup identity may not have been cleared (e.g. for the first test of
+  // the suite), so only add it if needed.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  if (![SigninEarlGrey isIdentityAdded:fakeIdentity]) {
+    [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  }
   // Sign in.
   [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   // Enable history/tab sync.
