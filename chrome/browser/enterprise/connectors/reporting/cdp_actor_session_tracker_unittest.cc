@@ -31,6 +31,8 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/process_extractor.h"
@@ -41,6 +43,7 @@
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,9 +73,11 @@ ProcessTree MakeTestProcessTree(base::ProcessId leaf_pid,
 class FakeDevToolsAgentHost : public content::DevToolsAgentHost {
  public:
   FakeDevToolsAgentHost(content::WebContents* web_contents,
-                        content::BrowserContext* browser_context)
+                        content::BrowserContext* browser_context,
+                        std::string type_override = "")
       : web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
-        browser_context_(browser_context) {}
+        browser_context_(browser_context),
+        type_override_(std::move(type_override)) {}
 
   // content::DevToolsAgentHost:
   std::string CreateIOStreamFromData(
@@ -109,6 +114,9 @@ class FakeDevToolsAgentHost : public content::DevToolsAgentHost {
     web_contents_ = wc ? wc->GetWeakPtr() : nullptr;
   }
   std::string GetType() override {
+    if (!type_override_.empty()) {
+      return type_override_;
+    }
     return web_contents_ ? content::DevToolsAgentHost::kTypePage
                          : content::DevToolsAgentHost::kTypeBrowser;
   }
@@ -129,6 +137,7 @@ class FakeDevToolsAgentHost : public content::DevToolsAgentHost {
 
   base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<content::BrowserContext> browser_context_;
+  std::string type_override_;
 };
 
 class FakeDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
@@ -518,19 +527,20 @@ TEST_F(CdpActorSessionTrackerTest,
   EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
                    .has_value());
 
-  // 3. Root browser session without an associated WebContents is ignored.
-  auto browser_host =
-      base::MakeRefCounted<FakeDevToolsAgentHost>(nullptr, profile());
-  FakeDevToolsChannel browser_channel(browser_host.get(), &pipe_client);
-  tracker_->OnClientAttached(&browser_channel);
-  tracker_->OnCommandHandled(&browser_channel);
+  // 3. Non-tab, non-browser session without an associated `WebContents` (e.g.
+  // ServiceWorker) is ignored.
+  auto worker_host = base::MakeRefCounted<FakeDevToolsAgentHost>(
+      nullptr, profile(), content::DevToolsAgentHost::kTypeServiceWorker);
+  FakeDevToolsChannel worker_channel(worker_host.get(), &pipe_client);
+  tracker_->OnClientAttached(&worker_channel);
+  tracker_->OnCommandHandled(&worker_channel);
   EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
   EXPECT_EQ(pipe_extractor_calls_, 0);
   EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
                    .has_value());
   EXPECT_FALSE(
       CdpActorSessionTracker::GetEventInitiatorInfo(nullptr).has_value());
-  tracker_->OnClientDetached(&browser_channel);
+  tracker_->OnClientDetached(&worker_channel);
 }
 
 TEST_F(CdpActorSessionTrackerTest,
@@ -1241,6 +1251,197 @@ TEST_F(CdpActorSessionTrackerTest,
   EXPECT_TRUE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
                   .has_value());
   tracker_->OnClientDetached(&ws_channel_2);
+}
+
+TEST_F(CdpActorSessionTrackerTest,
+       BrowserTargetPreWarmsCacheAndCreateTargetSeedsOnlyNewTab) {
+  const net::IPEndPoint endpoint = MakeLoopbackEndpoint(54321);
+  const PeerMetadata ws_meta = {
+      .transport_type = PeerMetadata::TransportType::kWebSocket,
+      .peer_address = endpoint};
+  FakeDevToolsAgentHostClient ws_client("RemoteDebugger", ws_meta);
+  auto browser_host =
+      base::MakeRefCounted<FakeDevToolsAgentHost>(nullptr, nullptr);
+  FakeDevToolsChannel browser_channel(browser_host.get(), &ws_client);
+
+  // 1. If all loaded profiles disallow device info (e.g. an unaffiliated
+  // managed user profile with no machine-scoped connector), attaching a
+  // `kTypeBrowser` client is ignored and does not start a process walk.
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+  TestingProfile* loaded_profile =
+      profile_manager.CreateTestingProfile("managed-user");
+  loaded_profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
+      true);
+  tracker_->OnClientAttached(&browser_channel);
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+  EXPECT_EQ(websocket_extractor_calls_, 0);
+
+  // 2. Once a loaded profile is eligible (machine-scoped reporting enabled),
+  // attaching the `kTypeBrowser` client pre-warms the WebSocket process tree
+  // cache without attributing existing `web_contents()`.
+  test::SetOnSecurityEventReporting(loaded_profile->GetPrefs(),
+                                    /*enabled=*/true,
+                                    /*enabled_event_names=*/{},
+                                    /*enabled_opt_in_events=*/{},
+                                    /*machine_scope=*/true);
+  tracker_->OnClientAttached(&browser_channel);
+  ASSERT_TRUE(base::test::RunUntil([this, &endpoint]() {
+    return tracker_->HasCachedWebSocketProcessTreeForTesting(endpoint);
+  }));
+  EXPECT_EQ(websocket_extractor_calls_, 1);
+  EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                   .has_value());
+
+  // 3. Non-`createTarget` browser commands do not attribute existing tabs.
+  tracker_->OnCommandHandled(&browser_channel);
+  EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                   .has_value());
+
+  // 4. Passing `new_tab` to `OnCommandHandled(&browser_channel, new_tab.get())`
+  // attributes only `new_tab` for the 30s command TTL; `web_contents()`,
+  // `unrelated_tab`, and an OffTheRecord `otr_tab` remain unattributed.
+  std::unique_ptr<content::WebContents> new_tab = CreateTestWebContents();
+  std::unique_ptr<content::WebContents> unrelated_tab = CreateTestWebContents();
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  std::unique_ptr<content::WebContents> otr_tab =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  tracker_->OnCommandHandled(&browser_channel, otr_tab.get());
+  EXPECT_EQ(TabCdpActorTracker::FromWebContents(otr_tab.get()), nullptr);
+
+  tracker_->OnCommandHandled(&browser_channel, new_tab.get());
+
+  std::optional<EventInitiatorInfo> info =
+      CdpActorSessionTracker::GetEventInitiatorInfo(new_tab.get());
+  ASSERT_TRUE(info.has_value());
+  ASSERT_EQ(info->external_process_info().external_processes_size(), 1);
+  EXPECT_EQ(
+      info->external_process_info().external_processes(0).transport_type(),
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET);
+  EXPECT_EQ(
+      info->external_process_info().external_processes(0).process_nodes_size(),
+      1);
+  EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                   .has_value());
+  EXPECT_FALSE(
+      CdpActorSessionTracker::GetEventInitiatorInfo(unrelated_tab.get())
+          .has_value());
+
+  task_environment()->FastForwardBy(base::Seconds(30));
+  EXPECT_FALSE(
+      CdpActorSessionTracker::GetEventInitiatorInfo(new_tab.get()).has_value());
+
+  tracker_->OnClientDetached(&browser_channel);
+  EXPECT_FALSE(tracker_->HasCachedWebSocketProcessTreeForTesting(endpoint));
+}
+
+TEST_F(CdpActorSessionTrackerTest,
+       BrowserTargetPipeCreateTargetUpdatesTabWhenInFlightExtractionCompletes) {
+  auto manual_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  tracker_->SetExtractorsForTesting(
+      base::BindLambdaForTesting([&]() {
+        ++pipe_extractor_calls_;
+        ProcessTree tree;
+        tree.process_nodes.emplace_back(
+            /*process_id=*/9100, /*parent_process_id=*/100, "/usr/bin/node",
+            "/Users/<USER>/pipe_runner.js");
+        return tree;
+      }),
+      CdpActorSessionTracker::WebSocketExtractorCallback(), manual_runner);
+
+  const PeerMetadata pipe_meta = {.transport_type =
+                                      PeerMetadata::TransportType::kPipe};
+  FakeDevToolsAgentHostClient pipe_client("Pipe", pipe_meta);
+  auto browser_host =
+      base::MakeRefCounted<FakeDevToolsAgentHost>(nullptr, nullptr);
+  FakeDevToolsChannel browser_channel(browser_host.get(), &pipe_client);
+
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+  profile_manager.CreateTestingProfile("default");
+
+  // 1. Attaching a `kTypeBrowser` Pipe client queues background extraction.
+  tracker_->OnClientAttached(&browser_channel);
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 1u);
+  EXPECT_FALSE(tracker_->HasCachedPipeProcessTreeForTesting());
+
+  // 2. Before extraction completes, `Target.createTarget` creates `new_tab`.
+  // It immediately receives a placeholder entry, and when the background walk
+  // finishes, `new_tab` is updated with the resolved `ProcessTree`.
+  std::unique_ptr<content::WebContents> new_tab = CreateTestWebContents();
+  tracker_->OnCommandHandled(&browser_channel, new_tab.get());
+
+  std::optional<EventInitiatorInfo> placeholder_info =
+      CdpActorSessionTracker::GetEventInitiatorInfo(new_tab.get());
+  ASSERT_TRUE(placeholder_info.has_value());
+  ASSERT_EQ(placeholder_info->external_process_info().external_processes_size(),
+            1);
+  EXPECT_EQ(placeholder_info->external_process_info()
+                .external_processes(0)
+                .process_nodes_size(),
+            0);
+
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_TRUE(tracker_->HasCachedPipeProcessTreeForTesting());
+
+  std::optional<EventInitiatorInfo> resolved_info =
+      CdpActorSessionTracker::GetEventInitiatorInfo(new_tab.get());
+  ASSERT_TRUE(resolved_info.has_value());
+  ASSERT_EQ(resolved_info->external_process_info().external_processes_size(),
+            1);
+  EXPECT_EQ(resolved_info->external_process_info()
+                .external_processes(0)
+                .process_nodes_size(),
+            1);
+  EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                   .has_value());
+
+  tracker_->OnClientDetached(&browser_channel);
+}
+
+TEST_F(CdpActorSessionTrackerTest,
+       HttpNewTargetCreationSeedsOnlyNewTabAndEvictsOneShotEndpointCache) {
+  const net::IPEndPoint http_endpoint = MakeLoopbackEndpoint(55123);
+  std::unique_ptr<content::WebContents> new_tab = CreateTestWebContents();
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  std::unique_ptr<content::WebContents> otr_tab =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+
+  // Null target, empty endpoint, or ineligible (OffTheRecord) `BrowserContext`
+  // are ignored without starting a process walk or tagging the tab.
+  tracker_->OnHttpTargetCreated(http_endpoint, nullptr);
+  tracker_->OnHttpTargetCreated(net::IPEndPoint(), new_tab.get());
+  tracker_->OnHttpTargetCreated(http_endpoint, otr_tab.get());
+  EXPECT_EQ(websocket_extractor_calls_, 0);
+  EXPECT_EQ(TabCdpActorTracker::FromWebContents(new_tab.get()), nullptr);
+  EXPECT_EQ(TabCdpActorTracker::FromWebContents(otr_tab.get()), nullptr);
+
+  tracker_->OnHttpTargetCreated(http_endpoint, new_tab.get());
+  ASSERT_TRUE(
+      CdpActorSessionTracker::GetEventInitiatorInfo(new_tab.get()).has_value());
+  EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                   .has_value());
+
+  ASSERT_TRUE(base::test::RunUntil([&new_tab]() {
+    std::optional<EventInitiatorInfo> info =
+        CdpActorSessionTracker::GetEventInitiatorInfo(new_tab.get());
+    return info.has_value() &&
+           info->external_process_info().external_processes_size() == 1 &&
+           info->external_process_info()
+                   .external_processes(0)
+                   .process_nodes_size() == 1;
+  }));
+  EXPECT_EQ(websocket_extractor_calls_, 1);
+  // Because no persistent WebSocket channel is attached for `http_endpoint`,
+  // `OnExtractionCompleted` evicts the one-shot cache entry after updating
+  // `new_tab`'s `TabCdpActorTracker`.
+  EXPECT_FALSE(
+      tracker_->HasCachedWebSocketProcessTreeForTesting(http_endpoint));
+  EXPECT_FALSE(CdpActorSessionTracker::GetEventInitiatorInfo(web_contents())
+                   .has_value());
 }
 
 }  // namespace

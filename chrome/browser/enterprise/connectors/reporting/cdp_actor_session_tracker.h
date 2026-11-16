@@ -99,21 +99,25 @@ class CdpActorSessionTracker {
   static std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
   GetEventInitiatorInfo(content::WebContents* web_contents);
 
-  // Tracks a newly attached DevTools client `channel` when it targets an
-  // eligible tab-bound `WebContents`, immediately recording built-in DevTools
-  // UI sessions and pre-warming the OS process tree cache for external Pipe or
-  // WebSocket sessions (without recording a tab actor until `OnCommandHandled`
-  // fires). Does nothing if `channel` is null. A non-null `channel` stored in
-  // `active_channels_` is retained solely as an opaque lookup key (never
-  // dereferenced after `OnClientAttached()` returns) until removed by
-  // `OnClientDetached(channel)`.
+  // Tracks a newly attached DevTools client `channel` targeting an eligible
+  // tab or the root browser target. Records built-in DevTools UI sessions on
+  // tabs immediately and pre-warms the OS process tree cache for external Pipe
+  // or WebSocket sessions.
   void OnClientAttached(content::DevToolsAgentHostClientChannel* channel);
 
   // Records or refreshes an attached external Pipe or WebSocket session on its
-  // target tab upon handling a CDP command. Does nothing if `channel` is null
-  // or not tracked in `active_channels_`. `channel` is used only as an opaque
-  // map key and is not dereferenced.
-  void OnCommandHandled(content::DevToolsAgentHostClientChannel* channel);
+  // target tab upon handling a CDP command. When a command creates a new tab,
+  // `target_web_contents` specifies the newly created tab to attribute.
+  // TODO(b/584723576): Attribute newly created tabs before their initial
+  // navigation starts so the first `RTLookupRequest` also includes the
+  // initiator when no user is signed in on a CBCM-managed browser.
+  void OnCommandHandled(content::DevToolsAgentHostClientChannel* channel,
+                        content::WebContents* target_web_contents = nullptr);
+
+  // Attributes `target_web_contents` to an external client that created it via
+  // the DevTools HTTP `/json/new` endpoint from `remote_endpoint`.
+  void OnHttpTargetCreated(const net::IPEndPoint& remote_endpoint,
+                           content::WebContents* target_web_contents);
 
   // Removes `channel` from `active_channels_`, detaching built-in DevTools UI
   // state from its target tab or cleaning up unused WebSocket endpoint cache
@@ -149,7 +153,6 @@ class CdpActorSessionTracker {
     SessionCategory category = SessionCategory::kIgnored;
     std::optional<net::IPEndPoint> remote_endpoint;
     base::WeakPtr<content::WebContents> web_contents;
-    bool has_handled_command = false;
   };
 
   struct ProcessTreeCacheEntry {
@@ -165,8 +168,13 @@ class CdpActorSessionTracker {
     std::vector<base::WeakPtr<content::WebContents>> waiting_tabs;
   };
 
-  void RecordExternalSessionCommand(TrackedChannel& tracked,
-                                    content::WebContents* web_contents);
+  // Records an external Pipe or WebSocket command for `category` and
+  // `remote_endpoint` on `web_contents`, starting background OS process tree
+  // extraction if not yet cached.
+  void RecordExternalSessionCommand(
+      SessionCategory category,
+      std::optional<net::IPEndPoint> remote_endpoint,
+      content::WebContents* web_contents);
 
   void StartExtraction(std::optional<net::IPEndPoint> remote_endpoint);
   void OnExtractionCompleted(std::optional<net::IPEndPoint> remote_endpoint,

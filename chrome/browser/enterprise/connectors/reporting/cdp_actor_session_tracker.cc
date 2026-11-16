@@ -27,12 +27,14 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/tab_cdp_actor_tracker.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -65,6 +67,16 @@ size_t GetMaxPendingExtractions() {
   return param > 0 ? static_cast<size_t>(param)
                    : static_cast<size_t>(
                          kCdpAttributionMaxPendingExtractions.default_value);
+}
+
+bool HasEligibleBrowserSessionContext() {
+  if (!policy::GetDMToken().is_valid() || !g_browser_process ||
+      !g_browser_process->profile_manager()) {
+    return false;
+  }
+  return std::ranges::any_of(
+      g_browser_process->profile_manager()->GetLoadedProfiles(),
+      &CdpActorSessionTracker::IsEligibleBrowserContext);
 }
 
 }  // namespace
@@ -298,6 +310,27 @@ void CdpActorSessionTracker::OnClientAttached(
 
   content::WebContents* web_contents = agent_host->GetWebContents();
   if (!web_contents) {
+    if (agent_host->GetType() != content::DevToolsAgentHost::kTypeBrowser ||
+        !HasEligibleBrowserSessionContext()) {
+      return;
+    }
+    const ClassifiedClient classified = ClassifyChannel(channel);
+    if (classified.category != SessionCategory::kExternalPipe &&
+        classified.category != SessionCategory::kExternalWebSocket) {
+      return;
+    }
+    auto [it, inserted] = active_channels_.emplace(
+        channel, TrackedChannel(classified.category, classified.remote_endpoint,
+                                /*web_contents=*/nullptr));
+    if (!inserted) {
+      return;
+    }
+    if (classified.category == SessionCategory::kExternalPipe) {
+      StartExtraction(/*remote_endpoint=*/std::nullopt);
+    } else if (classified.remote_endpoint.has_value()) {
+      websocket_cache_.try_emplace(*classified.remote_endpoint);
+      StartExtraction(classified.remote_endpoint);
+    }
     return;
   }
   web_contents = web_contents->GetOutermostWebContents();
@@ -350,7 +383,8 @@ void CdpActorSessionTracker::OnClientAttached(
 }
 
 void CdpActorSessionTracker::OnCommandHandled(
-    content::DevToolsAgentHostClientChannel* channel) {
+    content::DevToolsAgentHostClientChannel* channel,
+    content::WebContents* target_web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!channel) {
     return;
@@ -361,8 +395,11 @@ void CdpActorSessionTracker::OnCommandHandled(
     return;
   }
 
-  content::WebContents* web_contents = it->second.web_contents.get();
-  if (!web_contents) {
+  content::WebContents* web_contents =
+      target_web_contents ? target_web_contents->GetOutermostWebContents()
+                          : it->second.web_contents.get();
+  if (!web_contents ||
+      !IsEligibleBrowserContext(web_contents->GetBrowserContext())) {
     return;
   }
 
@@ -374,9 +411,29 @@ void CdpActorSessionTracker::OnCommandHandled(
       break;
     case SessionCategory::kExternalPipe:
     case SessionCategory::kExternalWebSocket:
-      RecordExternalSessionCommand(it->second, web_contents);
+      RecordExternalSessionCommand(it->second.category,
+                                   it->second.remote_endpoint, web_contents);
       break;
   }
+}
+
+void CdpActorSessionTracker::OnHttpTargetCreated(
+    const net::IPEndPoint& remote_endpoint,
+    content::WebContents* target_web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!target_web_contents || remote_endpoint.address().empty() ||
+      remote_endpoint.port() == 0) {
+    return;
+  }
+  content::WebContents* web_contents =
+      target_web_contents->GetOutermostWebContents();
+  if (!IsEligibleBrowserContext(web_contents->GetBrowserContext())) {
+    return;
+  }
+  // Reported as `TRANSPORT_TYPE_WEBSOCKET` because `/json/new` is served on
+  // the same remote debugging port as WebSocket CDP connections.
+  RecordExternalSessionCommand(SessionCategory::kExternalWebSocket,
+                               remote_endpoint, web_contents);
 }
 
 void CdpActorSessionTracker::OnClientDetached(
@@ -453,17 +510,15 @@ bool CdpActorSessionTracker::HasCachedWebSocketProcessTreeForTesting(
 }
 
 void CdpActorSessionTracker::RecordExternalSessionCommand(
-    TrackedChannel& tracked,
+    SessionCategory category,
+    std::optional<net::IPEndPoint> remote_endpoint,
     content::WebContents* web_contents) {
-  const bool is_first_command =
-      !std::exchange(tracked.has_handled_command, true);
-  const bool is_websocket =
-      tracked.category == SessionCategory::kExternalWebSocket;
+  const bool is_websocket = category == SessionCategory::kExternalWebSocket;
   const ExternalProcessInfo::TransportType transport_type =
       is_websocket ? ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET
                    : ExternalProcessInfo::TRANSPORT_TYPE_PIPE;
 
-  if (is_websocket && !tracked.remote_endpoint.has_value()) {
+  if (is_websocket && !remote_endpoint.has_value()) {
     TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
         ->buffer()
         .OnExternalActorCommandHandled(transport_type);
@@ -471,11 +526,11 @@ void CdpActorSessionTracker::RecordExternalSessionCommand(
   }
 
   ProcessTreeCacheEntry& entry =
-      is_websocket ? websocket_cache_[*tracked.remote_endpoint] : pipe_cache_;
+      is_websocket ? websocket_cache_[*remote_endpoint] : pipe_cache_;
   if (entry.cached_tree.has_value()) {
     TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
         ->buffer()
-        .OnExternalActorCommandHandled(transport_type, tracked.remote_endpoint,
+        .OnExternalActorCommandHandled(transport_type, remote_endpoint,
                                        *entry.cached_tree);
     return;
   }
@@ -483,11 +538,12 @@ void CdpActorSessionTracker::RecordExternalSessionCommand(
   // Register or refresh placeholder while background extraction runs.
   TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
       ->buffer()
-      .OnExternalActorCommandHandled(transport_type, tracked.remote_endpoint);
-  if (is_first_command) {
+      .OnExternalActorCommandHandled(transport_type, remote_endpoint);
+  if (!std::ranges::contains(entry.waiting_tabs, web_contents,
+                             &base::WeakPtr<content::WebContents>::get)) {
     entry.waiting_tabs.push_back(web_contents->GetWeakPtr());
   }
-  StartExtraction(tracked.remote_endpoint);
+  StartExtraction(remote_endpoint);
 }
 
 void CdpActorSessionTracker::StartExtraction(
@@ -510,6 +566,10 @@ void CdpActorSessionTracker::StartExtraction(
   if (pending_extractions_count_ >= GetMaxPendingExtractions()) {
     // Bounded queue shedding: drop background walk when queue is saturated.
     entry->waiting_tabs.clear();
+    if (remote_endpoint.has_value() &&
+        !HasActiveWebSocketChannel(*remote_endpoint)) {
+      websocket_cache_.erase(*remote_endpoint);
+    }
     return;
   }
 
@@ -575,7 +635,7 @@ void CdpActorSessionTracker::OnExtractionCompleted(
 
   base::flat_set<content::WebContents*> updated_tabs;
   for (auto& [channel, tracked] : active_channels_) {
-    if (tracked.category == expected_category && tracked.has_handled_command &&
+    if (tracked.category == expected_category &&
         tracked.remote_endpoint == remote_endpoint) {
       if (content::WebContents* tracked_wc = tracked.web_contents.get()) {
         if (updated_tabs.insert(tracked_wc).second) {
