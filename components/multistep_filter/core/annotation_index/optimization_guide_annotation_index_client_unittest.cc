@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -37,6 +36,7 @@ using ::optimization_guide::OptimizationGuideDecision;
 using ::optimization_guide::OptimizationGuideDecisionCallback;
 using ::optimization_guide::OptimizationGuideDecisionWithMetadata;
 using ::optimization_guide::OptimizationMetadata;
+using ::optimization_guide::OptimizationTypeSet;
 using ::optimization_guide::proto::Any;
 using ::optimization_guide::proto::OptimizationType;
 using ::optimization_guide::proto::RequestContext;
@@ -99,8 +99,7 @@ class OptimizationGuideAnnotationIndexClientTest : public testing::Test {
     EXPECT_CALL(mock_decider_,
                 CanApplyOptimizationOnDemand(
                     std::vector<GURL>{GURL(kTestUrl)},
-                    base::flat_set<OptimizationType>{optimization_type},
-                    request_context,
+                    OptimizationTypeSet{optimization_type}, request_context,
                     A<OnDemandOptimizationGuideDecisionRepeatingCallback>(),
                     A<std::optional<RequestContextMetadata>>()))
         .WillOnce(WithArgs<3>(

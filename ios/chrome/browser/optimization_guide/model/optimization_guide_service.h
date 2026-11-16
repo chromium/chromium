@@ -189,8 +189,7 @@ class OptimizationGuideService
   // optimization_guide::OptimizationGuideDecider implementation:
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
-      const base::flat_set<optimization_guide::proto::OptimizationType>&
-          optimization_types,
+      optimization_guide::OptimizationTypeSet optimization_types,
       optimization_guide::proto::RequestContext request_context,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
           callback,

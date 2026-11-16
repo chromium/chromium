@@ -45,7 +45,7 @@ class ImageServiceTestOptGuide : public TestOptimizationGuideDecider {
  public:
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
-      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OptimizationTypeSet optimization_types,
       proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
       std::optional<proto::RequestContextMetadata> request_context_metadata =
@@ -63,7 +63,7 @@ class ImageServiceTestOptGuide : public TestOptimizationGuideDecider {
   size_t requests_received_ = 0;
 
   std::vector<GURL> on_demand_call_urls_;
-  base::flat_set<proto::OptimizationType> on_demand_call_optimization_types_;
+  OptimizationTypeSet on_demand_call_optimization_types_;
   proto::RequestContext on_demand_call_request_context_;
   OnDemandOptimizationGuideDecisionRepeatingCallback on_demand_call_callback_;
 };

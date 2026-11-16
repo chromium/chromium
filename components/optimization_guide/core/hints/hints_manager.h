@@ -173,7 +173,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // contacted to fetch information for those URLs using |request_context|.
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
-      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OptimizationTypeSet optimization_types,
       proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
       std::optional<proto::RequestContextMetadata> request_context_metadata);

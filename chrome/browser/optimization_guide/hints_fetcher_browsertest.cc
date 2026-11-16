@@ -565,8 +565,7 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
 
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
-      const std::vector<optimization_guide::proto::OptimizationType>&
-          optimization_types,
+      optimization_guide::OptimizationTypeSet optimization_types,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
           callback) {
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())

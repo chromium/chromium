@@ -13,7 +13,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_view_util.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
@@ -244,11 +243,8 @@ void OptimizationGuideBridge::CanApplyOptimizationOnDemand(
     }
   }
 
-  OptimizationTypeSet opt_types_set = ToOptTypesSet(optimization_types);
   optimization_guide_keyed_service_->CanApplyOptimizationOnDemand(
-      urls,
-      base::flat_set<proto::OptimizationType>(opt_types_set.begin(),
-                                              opt_types_set.end()),
+      urls, ToOptTypesSet(optimization_types),
       static_cast<proto::RequestContext>(request_context),
       base::BindRepeating(&OnOnDemandOptimizationGuideDecision,
                           ScopedJavaGlobalRef<jobject>(env, java_callback)),

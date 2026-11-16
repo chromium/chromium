@@ -290,7 +290,7 @@ class OptimizationGuideKeyedServiceBrowserTest
 
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
-      const std::vector<proto::OptimizationType>& optimization_types,
+      OptimizationTypeSet optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->CanApplyOptimizationOnDemand(urls, optimization_types,

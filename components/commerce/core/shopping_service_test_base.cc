@@ -45,6 +45,7 @@ using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
 using optimization_guide::OptimizationGuideDecisionWithMetadata;
 using optimization_guide::OptimizationMetadata;
+using optimization_guide::OptimizationTypeSet;
 using optimization_guide::proto::Any;
 using optimization_guide::proto::OptimizationType;
 using optimization_guide::proto::RequestContext;
@@ -58,11 +59,11 @@ MockOptGuideDecider::MockOptGuideDecider() {
   ON_CALL(*this, CanApplyOptimizationOnDemand)
       .WillByDefault(
           [&](const std::vector<GURL>& urls,
-              const base::flat_set<OptimizationType>& optimization_types,
+              OptimizationTypeSet optimization_types,
               RequestContext request_context,
               OnDemandOptimizationGuideDecisionRepeatingCallback callback,
               std::optional<RequestContextMetadata> request_context_metadata) {
-            if (optimization_types.contains(OptimizationType::PRICE_TRACKING)) {
+            if (optimization_types.Has(OptimizationType::PRICE_TRACKING)) {
               for (const GURL& url : urls) {
                 if (on_demand_shopping_responses_.find(url.spec()) ==
                     on_demand_shopping_responses_.end()) {

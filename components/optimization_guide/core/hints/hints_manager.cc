@@ -1255,7 +1255,7 @@ HintsManager::GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
 
 void HintsManager::CanApplyOptimizationOnDemand(
     const std::vector<GURL>& urls,
-    const base::flat_set<proto::OptimizationType>& optimization_types,
+    OptimizationTypeSet optimization_types,
     proto::RequestContext request_context,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback,
     std::optional<proto::RequestContextMetadata> request_context_metadata) {
@@ -1284,11 +1284,7 @@ void HintsManager::CanApplyOptimizationOnDemand(
     hosts_to_fetch.insert(url.GetHost());
   }
 
-  OptimizationTypeSet optimization_type_set;
-  for (proto::OptimizationType type : optimization_types) {
-    optimization_type_set.Put(type);
-  }
-  MaybeLogGetHintRequestInfo(request_context, optimization_type_set,
+  MaybeLogGetHintRequestInfo(request_context, optimization_types,
                              urls_to_fetch.vector(), hosts_to_fetch.vector(),
                              optimization_guide_logger_);
 
@@ -1308,7 +1304,7 @@ void HintsManager::CanApplyOptimizationOnDemand(
       identity_manager_, signin::OAuthConsumerId::kOptimizationGuideGetHints,
       base::BindOnce(&HintsManager::FetchOptimizationGuideServiceBatchHints,
                      weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch,
-                     urls_to_fetch, optimization_type_set, request_context,
+                     urls_to_fetch, optimization_types, request_context,
                      callback, request_context_metadata));
 }
 
