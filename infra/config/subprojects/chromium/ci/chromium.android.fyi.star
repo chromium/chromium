@@ -416,7 +416,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
-            "release_builder",
+            "release_builder_with_dchecks",
             "remoteexec",
             "minimal_symbols",
             "x64",
