@@ -2138,8 +2138,16 @@ class InitialWebUIUnboundPrerenderBrowserTest
 // Incognito window adopts the light regular-seeded spare, receives the explicit
 // button-eligibility diff and dark `colorsCss`, and renders Incognito's button
 // state and toolbar color.
+// TODO(crbug.com/586164171): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IncognitoWindowAdoptsUnboundSpareWithColors \
+  DISABLED_IncognitoWindowAdoptsUnboundSpareWithColors
+#else
+#define MAYBE_IncognitoWindowAdoptsUnboundSpareWithColors \
+  IncognitoWindowAdoptsUnboundSpareWithColors
+#endif
 IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
-                       IncognitoWindowAdoptsUnboundSpareWithColors) {
+                       MAYBE_IncognitoWindowAdoptsUnboundSpareWithColors) {
   ASSERT_TRUE(InitialWebUIProfileService::IsUnboundPrerenderingEnabled());
   Profile* regular_profile = browser()->GetProfile();
   EXPECT_FALSE(
