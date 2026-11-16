@@ -731,10 +731,11 @@ to monitor/debug fetching OAuth2 Token issues. -->
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records whether GetPreferredAccountForSigninAsync returned immediately from
-    cache (Cached), after waiting for an async fetch (Fetched), after an async
-    fetch was cancelled (Cancelled) or timed out returning nullopt (Timeout).
-    Recorded when GetPreferredAccountForSigninAsync resolves and returns its
-    result. Not recorded for early no-op returns (when
+    cache (Cached), after waiting for an async fetch that produced a preferred
+    account (FetchedWithResult) or no preferred account (FetchedWithoutResult),
+    after an async fetch was cancelled (Cancelled), or after timing out
+    (Timeout). Recorded when GetPreferredAccountForSigninAsync resolves and
+    returns its result. Not recorded for early no-op returns (when
     kEnableAccountPreviewPreferredAccountFRE is disabled, kSigninAllowed is
     false, or IdentityManager is already shut down at call time). (Android and
     iOS only)

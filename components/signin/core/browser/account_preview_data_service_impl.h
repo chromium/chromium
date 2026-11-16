@@ -68,9 +68,10 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   // LINT.IfChange(AsyncPreferredAccountResult)
   enum class AsyncPreferredAccountResult {
     kCached = 0,
-    kFetched = 1,
-    kTimeout = 2,
-    kCancelled = 3,
+    kFetchedWithResult = 1,
+    kFetchedWithoutResult = 2,
+    kTimeout = 3,
+    kCancelled = 4,
     kMaxValue = kCancelled,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewAsyncPreferredAccountResult)
@@ -161,7 +162,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void RecordAccountsUsedForLastFetch();
   void OnAllFetchesCompleted(bool should_reset_periodic_timer);
   void OnAllAccountsFetchCanceled();
-  void FinalizeAllAccountsFetch(AsyncPreferredAccountResult result);
+  void FinalizeAllAccountsFetch(bool fetch_completed);
   void OnSigninAllowedPrefChanged();
   void CreateAndStartRepeatingTimer();
   void ResetTimer();

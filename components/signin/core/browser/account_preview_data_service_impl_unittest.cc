@@ -1210,7 +1210,9 @@ TEST_F(AccountPreviewDataServiceTest,
       1);
   histograms.ExpectUniqueSample(
       "Signin.AccountPreview.AsyncPreferredAccountResult",
-      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kFetched, 1);
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::
+          kFetchedWithResult,
+      1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1250,7 +1252,40 @@ TEST_F(AccountPreviewDataServiceTest,
       1);
   histograms.ExpectUniqueSample(
       "Signin.AccountPreview.AsyncPreferredAccountResult",
-      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kFetched, 1);
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::
+          kFetchedWithResult,
+      1);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       GetPreferredAccountForSigninAsyncFetchedWithoutResult) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnableAccountPreviewPreferredAccountFRE};
+
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  base::RunLoop run_loop_fail;
+  service_->SetAllDataAvailableCallbackForTesting(run_loop_fail.QuitClosure());
+  identity_test_env_.MakeAccountAvailable("user@gmail.com");
+  run_loop_fail.Run();
+  ASSERT_EQ(std::nullopt, service_->GetPreferredAccountForSignin());
+
+  base::HistogramTester histograms;
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+  service_->GetPreferredAccountForSigninAsync(future.GetCallback(),
+                                              kDefaultAsyncFetchTimeout);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(std::nullopt, future.Get());
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::
+          kPreferredAccountMissingForAsyncFetch,
+      1);
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AsyncPreferredAccountResult",
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::
+          kFetchedWithoutResult,
+      1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,
@@ -1376,7 +1411,9 @@ TEST_F(AccountPreviewDataServiceTest,
       1);
   histograms.ExpectUniqueSample(
       "Signin.AccountPreview.AsyncPreferredAccountResult",
-      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kFetched, 1);
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::
+          kFetchedWithResult,
+      1);
 }
 
 TEST_F(
@@ -1567,7 +1604,9 @@ TEST_F(AccountPreviewDataServiceTest,
       AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kTimeout, 1);
   histograms.ExpectBucketCount(
       "Signin.AccountPreview.AsyncPreferredAccountResult",
-      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::kFetched, 1);
+      AccountPreviewDataServiceImpl::AsyncPreferredAccountResult::
+          kFetchedWithResult,
+      1);
   histograms.ExpectTotalCount(
       "Signin.AccountPreview.AsyncPreferredAccountResult", 2);
 }

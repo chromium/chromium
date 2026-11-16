@@ -241,9 +241,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AccountPreviewAsyncPreferredAccountResult">
   <int value="0" label="Cached"/>
-  <int value="1" label="Fetched"/>
-  <int value="2" label="Timeout"/>
-  <int value="3" label="Cancelled"/>
+  <int value="1" label="FetchedWithResult"/>
+  <int value="2" label="FetchedWithoutResult"/>
+  <int value="3" label="Timeout"/>
+  <int value="4" label="Cancelled"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/core/browser/account_preview_data_service_impl.h:AsyncPreferredAccountResult) -->
