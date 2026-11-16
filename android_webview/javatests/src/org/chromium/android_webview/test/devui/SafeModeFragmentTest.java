@@ -12,11 +12,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -54,7 +54,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -170,10 +169,9 @@ public class SafeModeFragmentTest {
 
         launchSafeModeFragment();
 
-        ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.safe_mode_state), not(withText("")), not(withText("Enabled"))));
-        onView(withId(R.id.safe_mode_state))
-                .check(matches(withText("Enabled on " + new Date(initialStartTimeMs).toString())));
+        waitForView(
+                withId(R.id.safe_mode_state),
+                withText("Enabled on " + new Date(initialStartTimeMs).toString()));
         onView(withId(R.id.safe_mode_actions_list)).check(matches(withCount(1)));
         onData(anything()).atPosition(0).check(matches(withText(actionId)));
     }
@@ -189,10 +187,9 @@ public class SafeModeFragmentTest {
 
         launchSafeModeFragment();
 
-        ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.safe_mode_state), not(withText("")), not(withText("Enabled"))));
-        onView(withId(R.id.safe_mode_state))
-                .check(matches(withText("Enabled on " + new Date(initialStartTimeMs).toString())));
+        waitForView(
+                withId(R.id.safe_mode_state),
+                withText("Enabled on " + new Date(initialStartTimeMs).toString()));
         checkActionsDisplayed(actionIds);
     }
 
@@ -208,10 +205,9 @@ public class SafeModeFragmentTest {
         SafeModeService.setClockForTesting(() -> initialStartTimeMs);
         setSafeMode(Arrays.asList(actionId));
         mRule.recreateActivity();
-        ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.safe_mode_state), not(withText("")), not(withText("Enabled"))));
-        onView(withId(R.id.safe_mode_state))
-                .check(matches(withText("Enabled on " + new Date(initialStartTimeMs).toString())));
+        waitForView(
+                withId(R.id.safe_mode_state),
+                withText("Enabled on " + new Date(initialStartTimeMs).toString()));
     }
 
     @Test
@@ -223,10 +219,9 @@ public class SafeModeFragmentTest {
         SafeModeService.setClockForTesting(() -> initialStartTimeMs);
         setSafeMode(Arrays.asList(actionId));
         launchSafeModeFragment();
-        ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.safe_mode_state), not(withText("")), not(withText("Enabled"))));
-        onView(withId(R.id.safe_mode_state))
-                .check(matches(withText("Enabled on " + new Date(initialStartTimeMs).toString())));
+        waitForView(
+                withId(R.id.safe_mode_state),
+                withText("Enabled on " + new Date(initialStartTimeMs).toString()));
 
         SafeModeService.setSafeMode(Arrays.asList());
         mRule.recreateActivity();

@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -79,7 +80,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -149,11 +149,11 @@ public class FlagsFragmentTest {
         // Espresso is normally configured to automatically wait for the main thread to go idle, but
         // BaseActivityTestRule turns that behavior off so we must explicitly wait for the View
         // hierarchy to inflate.
-        ViewUtils.waitForVisibleView(withId(R.id.navigation_flags_ui));
-        ViewUtils.waitForVisibleView(withId(R.id.navigation_home));
-        ViewUtils.waitForVisibleView(withId(R.id.flag_search_bar));
-        ViewUtils.waitForVisibleView(withId(R.id.flags_list));
-        ViewUtils.waitForVisibleView(withId(R.id.reset_flags_button));
+        waitForView(withId(R.id.navigation_flags_ui));
+        waitForView(withId(R.id.navigation_home));
+        waitForView(withId(R.id.flag_search_bar));
+        waitForView(withId(R.id.flags_list));
+        waitForView(withId(R.id.reset_flags_button));
 
         // For some reasons, the blinking Text Cursor can make the UI thread very busy.
         // This leads to AppNotIdleException and flaky tests, because Espresso could not find a 15ms

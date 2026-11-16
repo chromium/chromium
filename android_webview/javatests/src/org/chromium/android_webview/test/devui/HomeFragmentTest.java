@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.not;
 
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.getClipBoardTextOnUiThread;
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
@@ -56,7 +57,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Locale;
 
@@ -95,7 +95,7 @@ public class HomeFragmentTest {
 
     private void launchHomeFragment() {
         mRule.launchActivity(null);
-        ViewUtils.waitForVisibleView(withId(R.id.fragment_home));
+        waitForView(withId(R.id.fragment_home));
         // Only start recording intents after launching the MainActivity.
         Intents.init();
 
@@ -279,8 +279,7 @@ public class HomeFragmentTest {
                         Locale.US,
                         WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
                         WebViewPackageHelper.loadLabel(context));
-        ViewUtils.waitForVisibleView(withId(R.id.main_error_view));
-        onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.main_error_view));
         onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
         // Since the current provider is set to a fake package not an actual installed WebView
         // provider, the UI should only offer to change the system WebView provider and should not

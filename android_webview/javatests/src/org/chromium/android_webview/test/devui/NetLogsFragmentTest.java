@@ -19,6 +19,8 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.greaterThan;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
@@ -49,7 +51,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -129,10 +130,10 @@ public class NetLogsFragmentTest {
         // Espresso is normally configured to automatically wait for the main thread to go idle, but
         // BaseActivityTestRule turns that behavior off so we must explicitly wait for the View
         // hierarchy to inflate.
-        ViewUtils.waitForVisibleView(withId(R.id.navigation_home));
-        ViewUtils.waitForVisibleView(withId(R.id.net_log_list));
-        ViewUtils.waitForVisibleView(withId(R.id.net_logs_total_capacity));
-        ViewUtils.waitForVisibleView(withId(R.id.delete_all_net_logs_button));
+        waitForView(withId(R.id.navigation_home));
+        waitForView(withId(R.id.net_log_list));
+        waitForView(withId(R.id.net_logs_total_capacity));
+        waitForView(withId(R.id.delete_all_net_logs_button));
     }
 
     @Test

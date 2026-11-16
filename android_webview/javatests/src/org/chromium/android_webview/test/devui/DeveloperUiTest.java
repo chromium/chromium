@@ -67,7 +67,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * UI tests for general developer UI functionality. Significant subcomponents (ex. Fragments) may
@@ -97,7 +96,7 @@ public class DeveloperUiTest {
 
     private void launchHomeFragment() {
         mRule.launchActivity(null);
-        ViewUtils.waitForVisibleView(withId(R.id.fragment_home));
+        waitForView(withId(R.id.fragment_home));
 
         // Only start recording intents after launching the MainActivity.
         Intents.init();
