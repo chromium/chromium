@@ -14,6 +14,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/default_search_manager.h"
 #import "components/search_engines/template_url.h"
@@ -28,11 +29,13 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
+#import "ios/chrome/browser/app_switcher/test/test_app_switcher_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -51,7 +54,10 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/test/providers/app_switcher/test_app_switcher.h"
+#import "ios/chrome/test/providers/application_mode_fetcher/test_application_mode_fetcher.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -1449,4 +1455,215 @@ TEST_F(TaskRequestForURLContextTest, TestGoogleOneDeepLinkGaiaID) {
                                               isColdStart:YES];
   ASSERT_NE(disabled_request, nil);
   EXPECT_NSEQ(nil, disabled_request.gaiaID);
+}
+
+namespace {
+
+NSString* const kYouTubeSourceAppID = @"com.google.ios.youtube";
+NSString* const kGmailSourceAppID = @"com.google.Gmail";
+
+// `IOS.AppModeFetching.Outcome` bucket for an incognito response.
+constexpr int kAppModeFetchingOutcomeIncognito = 0;
+
+}  // namespace
+
+// Application mode fetcher helper that defers the response until
+// `-completeWithIncognito:` is called.
+@interface TaskRequestDeferredModeFetcherTestHelper
+    : NSObject <ApplicationModeFetcherProviderTestHelper>
+
+// Invokes the pending completion with the given incognito response.
+- (void)completeWithIncognito:(BOOL)incognito;
+
+@end
+
+@implementation TaskRequestDeferredModeFetcherTestHelper {
+  FetchingResponseCompletion _completion;
+}
+
+- (void)sendFetchingResponseForUrl:(const GURL&)url
+                        completion:(FetchingResponseCompletion)completion {
+  _completion = [completion copy];
+}
+
+- (void)completeWithIncognito:(BOOL)incognito {
+  FetchingResponseCompletion completion = _completion;
+  _completion = nil;
+  completion(incognito, nil);
+}
+
+@end
+
+// Tests App Switcher parameter fetching in `TaskRequestForStandardURLContext`.
+class TaskRequestAppSwitcherParamsTest : public TaskRequestForURLContextTest {
+ protected:
+  void SetUp() override {
+    TaskRequestForURLContextTest::SetUp();
+    app_switcher_feature_list_.InitWithFeatures(
+        {kAppSwitcherAISummarization, kPageActionMenu}, {});
+    app_switcher_helper_ = [[TestAppSwitcherProviderTestHelper alloc] init];
+    ios::provider::test::SetAppSwitcherProviderTestHelper(app_switcher_helper_);
+  }
+
+  void TearDown() override {
+    ios::provider::test::SetAppSwitcherProviderTestHelper(nil);
+    ios::provider::test::SetApplicationModeFetcherProviderTestHelper(nil);
+    TaskRequestForURLContextTest::TearDown();
+  }
+
+  // Disables AI summarization and installs a deferred application mode
+  // fetcher, which is then used instead of the App Switcher.
+  TaskRequestDeferredModeFetcherTestHelper* UseDeferredModeFetcher() {
+    disable_ai_feature_list_.InitAndDisableFeature(kAppSwitcherAISummarization);
+    TaskRequestDeferredModeFetcherTestHelper* helper =
+        [[TaskRequestDeferredModeFetcherTestHelper alloc] init];
+    ios::provider::test::SetApplicationModeFetcherProviderTestHelper(helper);
+    return helper;
+  }
+
+  // Sets the incognito availability policy to `availability`.
+  void SetIncognitoPolicy(IncognitoModePrefs availability) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        std::make_unique<base::Value>(static_cast<int>(availability)));
+  }
+
+  // Executes a standard URL request for `url` from `source_app_id` and returns
+  // the tab opener capturing the resulting tab opening.
+  TaskRequestURLContextTestTabOpener* ExecuteStandardURLRequest(
+      const GURL& url,
+      NSString* source_app_id) {
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        [[TaskRequestURLContextTestTabOpener alloc]
+            initWithSceneState:scene_state_];
+    scene_state_.controller = tab_opener;
+    // The autorelease pool ensures that the request is not retained by the
+    // test, as `TaskOrchestrator` releases it once `-execute` returns.
+    @autoreleasepool {
+      UIOpenURLContext* context =
+          CreateMockURLContext(net::NSURLWithGURL(url), source_app_id);
+      [[TaskRequestForURLContext taskRequestWithURLContext:context
+                                                sceneState:scene_state_
+                                               isColdStart:YES] execute];
+    }
+    return tab_opener;
+  }
+
+  base::test::ScopedFeatureList app_switcher_feature_list_;
+  base::test::ScopedFeatureList disable_ai_feature_list_;
+  TestAppSwitcherProviderTestHelper* app_switcher_helper_;
+};
+
+// Tests that an incognito response for an allowlisted caller app opens the tab
+// in `APP_SWITCHER_INCOGNITO` and records the fetch metrics.
+TEST_F(TaskRequestAppSwitcherParamsTest, TestIncognitoResponse) {
+  base::HistogramTester histogram_tester;
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteStandardURLRequest(GURL(kIncognitoModeUrl), kYouTubeSourceAppID);
+
+  EXPECT_EQ(tab_opener.targetMode,
+            ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO);
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, GURL(kIncognitoModeUrl));
+  histogram_tester.ExpectBucketCount("IOS.AppSwitcher.FetchOutcome", true, 1);
+  histogram_tester.ExpectTotalCount("IOS.AppSwitcher.FetchDuration", 1);
+}
+
+// Tests that a failed fetch opens the tab in `APP_SWITCHER_UNDETERMINED`.
+TEST_F(TaskRequestAppSwitcherParamsTest, TestErrorResponse) {
+  base::HistogramTester histogram_tester;
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteStandardURLRequest(GURL(kTimeOutErrorUrl), kYouTubeSourceAppID);
+
+  EXPECT_EQ(tab_opener.targetMode,
+            ApplicationModeForTabOpening::APP_SWITCHER_UNDETERMINED);
+  histogram_tester.ExpectBucketCount("IOS.AppSwitcher.FetchOutcome", false, 1);
+}
+
+// Tests that no fetch occurs for a caller app that is not allowlisted.
+TEST_F(TaskRequestAppSwitcherParamsTest, TestNotAllowlistedSourceApp) {
+  base::HistogramTester histogram_tester;
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteStandardURLRequest(GURL(kIncognitoModeUrl), nil);
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  histogram_tester.ExpectTotalCount("IOS.AppSwitcher.FetchOutcome", 0);
+}
+
+// Tests that no fetch occurs when incognito is forced by policy.
+TEST_F(TaskRequestAppSwitcherParamsTest, TestForcedIncognitoPolicy) {
+  base::HistogramTester histogram_tester;
+  SetIncognitoPolicy(IncognitoModePrefs::kForced);
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteStandardURLRequest(GURL(kErrorUrl), kYouTubeSourceAppID);
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::INCOGNITO);
+  histogram_tester.ExpectTotalCount("IOS.AppSwitcher.FetchOutcome", 0);
+}
+
+// Tests that the fetched incognito mode is neither applied nor recorded when
+// incognito is disabled by policy.
+TEST_F(TaskRequestAppSwitcherParamsTest, TestDisabledIncognitoPolicy) {
+  TaskRequestDeferredModeFetcherTestHelper* mode_fetcher_helper =
+      UseDeferredModeFetcher();
+  SetIncognitoPolicy(IncognitoModePrefs::kDisabled);
+  base::HistogramTester histogram_tester;
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteStandardURLRequest(GURL(kIncognitoModeUrl), kYouTubeSourceAppID);
+
+  [mode_fetcher_helper completeWithIncognito:YES];
+
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::NORMAL);
+  histogram_tester.ExpectTotalCount("IOS.AppModeFetching.Outcome", 0);
+}
+
+// Tests that no fetch occurs for a caller app only allowlisted for AI
+// summarization, as it is not supported yet in the new startup flow.
+TEST_F(TaskRequestAppSwitcherParamsTest, TestAISummarizationOnlySourceApp) {
+  base::HistogramTester histogram_tester;
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteStandardURLRequest(GURL(kAISummarizationUrl), kGmailSourceAppID);
+
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, GURL(kAISummarizationUrl));
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  histogram_tester.ExpectTotalCount("IOS.AppSwitcher.FetchOutcome", 0);
+}
+
+// Tests that, with AI summarization disabled, the application mode fetcher is
+// used and the tab opens once its asynchronous response arrives, even though
+// the request was released in the meantime.
+TEST_F(TaskRequestAppSwitcherParamsTest,
+       TestDeferredApplicationModeResponseAfterRequestReleased) {
+  TaskRequestDeferredModeFetcherTestHelper* mode_fetcher_helper =
+      UseDeferredModeFetcher();
+  base::HistogramTester histogram_tester;
+
+  const GURL url(kIncognitoModeUrl);
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteStandardURLRequest(url, kYouTubeSourceAppID);
+  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+
+  [mode_fetcher_helper completeWithIncognito:YES];
+
+  EXPECT_EQ(tab_opener.targetMode,
+            ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO);
+  EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, url);
+  histogram_tester.ExpectUniqueSample("IOS.AppModeFetching.Outcome",
+                                      kAppModeFetchingOutcomeIncognito, 1);
+}
+
+// Tests that no tab is opened, and the fetched application mode isn't
+// recorded, if the profile is unloaded while the App Switcher parameters are
+// fetched.
+TEST_F(TaskRequestAppSwitcherParamsTest, TestProfileUnloadedDuringFetch) {
+  TaskRequestDeferredModeFetcherTestHelper* mode_fetcher_helper =
+      UseDeferredModeFetcher();
+  base::HistogramTester histogram_tester;
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteStandardURLRequest(GURL(kIncognitoModeUrl), kYouTubeSourceAppID);
+
+  profile_state_.profile = nullptr;
+  [mode_fetcher_helper completeWithIncognito:YES];
+
+  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+  histogram_tester.ExpectTotalCount("IOS.AppModeFetching.Outcome", 0);
 }

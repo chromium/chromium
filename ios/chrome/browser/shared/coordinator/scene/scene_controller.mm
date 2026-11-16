@@ -2508,6 +2508,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
   BOOL dismissGemini = YES;
   if (targetMode != ApplicationModeForTabOpening::INCOGNITO) {
+    // TODO(crbug.com/493816082): Avoid reading `self.startupParameters` when
+    // `kEnableNewStartupFlow` is enabled.
     TabOpeningPostOpeningAction postOpeningAction =
         self.startupParameters.postOpeningAction;
     if (postOpeningAction == START_GEMINI_AI_SUMMARIZATION ||
@@ -2722,6 +2724,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   id<SystemIdentity> identity =
       authService ? authService->GetPrimaryIdentity() : nil;
   NSString* activeHashedGaiaID = identity ? identity.hashedGaiaID : nil;
+  // TODO(crbug.com/493816082): Pass `appSwitcherHashedUserID` without relying
+  // on `self.startupParameters` when `kEnableNewStartupFlow` is enabled.
   NSString* targetHashedGaiaID = self.startupParameters.appSwitcherHashedUserID;
   GeminiAppSwitcherAccountStatus accountStatus =
       GetAppSwitcherAccountStatus(targetHashedGaiaID, activeHashedGaiaID);

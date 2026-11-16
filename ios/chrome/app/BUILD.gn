@@ -121,6 +121,7 @@ source_set("tasks_handling") {
   public_deps = [ ":tasks_handling_header" ]
 
   deps = [
+    ":app",
     ":change_profile_commands",
     ":change_profile_continuation",
     ":custom_scheme_buildflags",

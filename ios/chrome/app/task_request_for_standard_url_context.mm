@@ -6,8 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
 #import "base/check_deref.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
@@ -15,6 +17,7 @@
 #import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/app/app_switcher_params.h"
 #import "ios/chrome/app/custom_scheme_buildflags.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
@@ -25,6 +28,7 @@
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -133,6 +137,17 @@ void ShowGoogleOneForURL(SceneState* scene_state, const GURL& url) {
         HandlerForProtocol(browser->GetCommandDispatcher(), GoogleOneCommands);
     [google_one_handler showGoogleOneForURL:url];
   }
+}
+
+// Returns whether the App Switcher parameters must be fetched for
+// `source_app_id` before opening the requested URL.
+// TODO(crbug.com/493816082): Also fetch for caller apps only allowlisted for
+// AI summarization once it is supported. Until then, they would wait for a
+// fetch whose result is ignored.
+BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
+  return IsCallerAppAllowListedForApplicationMode(source_app_id) &&
+         ShouldFetchAppSwitcherParams(source_app_id,
+                                      IsIncognitoModeForced(prefs));
 }
 
 }  // namespace
@@ -284,9 +299,28 @@ void ShowGoogleOneForURL(SceneState* scene_state, const GURL& url) {
       __weak SceneState* weakSceneState = sceneState;
       postOpeningCompletion = base::CallbackToBlock(
           base::BindOnce(&ShowGoogleOneForURL, weakSceneState, googleOneURL));
+    } else {
+      ProfileIOS* profile = sceneState.profileState.profile;
+      CHECK(profile);
+      NSString* sourceAppID = self.URLContext.options.sourceApplication;
+      if (ShouldFetchAppSwitcherParam(sourceAppID, profile->GetPrefs())) {
+        // The block retains `self` because `TaskOrchestrator` releases the
+        // request as soon as `-execute` returns, while `sceneState` is captured
+        // weakly to avoid retaining a scene that disconnects before the fetch
+        // completes.
+        __weak SceneState* weakSceneState = sceneState;
+        GURL URL = externalGURL;
+        RequestAppSwitcherParams(
+            URL, sourceAppID,
+            base::BindOnce(^(const AppSwitcherParams& params) {
+              [self openURL:URL
+                  withAppSwitcherParams:params
+                             sceneState:weakSceneState];
+            }));
+        return;
+      }
     }
-    // TODO(crbug.com/493816082): Handle Default Browser promo notifications and
-    // App Switcher parameters.
+    // TODO(crbug.com/493816082): Handle Default Browser promo notifications.
   }
 
   [self openTabWithSceneState:sceneState
@@ -311,6 +345,39 @@ void ShowGoogleOneForURL(SceneState* scene_state, const GURL& url) {
     }
   }
   return [super gaiaID];
+}
+
+#pragma mark - Private
+
+// Opens `URL` in `sceneState`, in the application mode requested by the App
+// Switcher `params`. Does nothing if the scene or its profile went away.
+- (void)openURL:(const GURL&)URL
+    withAppSwitcherParams:(const AppSwitcherParams&)params
+               sceneState:(SceneState*)sceneState {
+  ProfileIOS* profile = sceneState.profileState.profile;
+  if (!profile) {
+    // The scene was disconnected or its profile unloaded during the fetch.
+    return;
+  }
+  // When incognito is forced or disabled by policy, the policy mode applied by
+  // `-openTabWithSceneState:...` wins, so the fetched mode is neither applied
+  // nor recorded. The policy is read again as it may have changed during the
+  // fetch.
+  PrefService* prefs = profile->GetPrefs();
+  ApplicationModeForTabOpening targetMode =
+      ApplicationModeForTabOpening::UNDETERMINED;
+  if (!IsIncognitoModeForced(prefs) && !IsIncognitoModeDisabled(prefs)) {
+    targetMode = ApplicationModeForAppSwitcherParams(params, targetMode);
+    RecordAppModeFetchingMetrics(params);
+  }
+  // TODO(crbug.com/493816082): Start the AI summarization requested by the App
+  // Switcher (`params.is_ai_summarization`) and pass `params.hashed_user_id`
+  // to `SceneController`.
+  [self openTabWithSceneState:sceneState
+                urlLoadParams:UrlLoadParams::InNewTab(URL)
+                   targetMode:targetMode
+            postOpeningAction:TabOpeningPostOpeningAction::NO_ACTION
+        postOpeningCompletion:nil];
 }
 
 @end
