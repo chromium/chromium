@@ -136,6 +136,16 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   }
 }
 
+// Appends `identifier` at the next consecutive section index in `model` and
+// records the index in `appendedSections`.
+void AppendSectionToModel(TableViewModel* model,
+                          NSMutableIndexSet* appendedSections,
+                          PasswordSectionIdentifier identifier) {
+  NSInteger sectionIndex = appendedSections.count;
+  [model insertSectionWithIdentifier:identifier atIndex:sectionIndex];
+  [appendedSections addIndex:sectionIndex];
+}
+
 }  // namespace
 
 @interface PasswordManagerViewController () <
@@ -467,48 +477,7 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 
   // Don't show sections hidden when search controller is displayed.
   if (!_tableIsInSearchMode) {
-    // Manage account header.
-    [model addSectionWithIdentifier:SectionIdentifierManageAccountHeader];
-    [model setHeader:self.manageAccountLinkItem
-        forSectionWithIdentifier:SectionIdentifierManageAccountHeader];
-
-    // Trusted Vault widget promo.
-    if (_shouldShowTrustedVaultWidgetPromo) {
-      [model addSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
-      [model addItem:self.trustedVaultWidgetPromoItem
-          toSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
-      [self recordTrustedVaultWidgetPromoImpression];
-    }
-
-    // Widget promo.
-    if (_shouldShowPasswordManagerWidgetPromo) {
-      [model addSectionWithIdentifier:SectionIdentifierWidgetPromo];
-      [model addItem:self.widgetPromoItem
-          toSectionWithIdentifier:SectionIdentifierWidgetPromo];
-    }
-
-    // Password check.
-    [model addSectionWithIdentifier:SectionIdentifierPasswordCheck];
-
-    [self updatePasswordCheckStatusLabelWithState:_passwordCheckState];
-    [model addItem:self.passwordProblemsItem
-        toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-
-    [self updatePasswordCheckButtonWithState:_passwordCheckState];
-
-    // Only add check button if the current PasswordCheckUIState requires the
-    // button to be shown.
-    if (self.shouldShowCheckButton) {
-      [model addItem:self.checkForProblemsItem
-          toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-    }
-
-    // Add Password button.
-    if (_allowsAddPassword) {
-      [model addSectionWithIdentifier:SectionIdentifierAddPasswordButton];
-      [model addItem:self.addPasswordItem
-          toSectionWithIdentifier:SectionIdentifierAddPasswordButton];
-    }
+    [self insertUpperSectionsInModel];
   }
 
   // Saved passwords.
@@ -1069,98 +1038,12 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 
   [self hideScrim];
   [self searchForTerm:@""];
-  // Recover save passwords switch section.
-  TableViewModel* model = self.tableViewModel;
+  // Recover sections hidden during search mode.
   [self.tableView
       performBatchUpdates:^{
-        int sectionIndex = 0;
-        NSMutableArray<NSIndexPath*>* rowsIndexPaths =
-            [[NSMutableArray alloc] init];
-
-        // Add manage account header.
-        [model insertSectionWithIdentifier:SectionIdentifierManageAccountHeader
-                                   atIndex:sectionIndex];
-        [model setHeader:self.manageAccountLinkItem
-            forSectionWithIdentifier:SectionIdentifierManageAccountHeader];
-        [self.tableView
-              insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-            withRowAnimation:UITableViewRowAnimationFade];
-
-        sectionIndex++;
-        // Add the trusted vault promo section.
-        if (_shouldShowTrustedVaultWidgetPromo) {
-          [model insertSectionWithIdentifier:
-                     SectionIdentifierTrustedVaultWidgetPromo
-                                     atIndex:sectionIndex];
-          [self.tableView
-                insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-              withRowAnimation:UITableViewRowAnimationFade];
-          [model addItem:self.trustedVaultWidgetPromoItem
-              toSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
-
-          sectionIndex++;
-        }
-
-        // Add widget promo section.
-        if (_shouldShowPasswordManagerWidgetPromo) {
-          [model insertSectionWithIdentifier:SectionIdentifierWidgetPromo
-                                     atIndex:sectionIndex];
-          [self.tableView
-                insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-              withRowAnimation:UITableViewRowAnimationFade];
-          [model addItem:self.widgetPromoItem
-              toSectionWithIdentifier:SectionIdentifierWidgetPromo];
-
-          sectionIndex++;
-        }
-
-        // Add "Password check" section.
-        [model insertSectionWithIdentifier:SectionIdentifierPasswordCheck
-                                   atIndex:sectionIndex];
-        NSInteger checkSection =
-            [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
-
-        [self.tableView
-              insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-            withRowAnimation:UITableViewRowAnimationFade];
-        [model addItem:self.passwordProblemsItem
-            toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-        [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:0
-                                                     inSection:checkSection]];
-        // Only add check button if the current PasswordCheckUIState requires
-        // the button to be shown.
-        if (self.shouldShowCheckButton) {
-          [model addItem:self.checkForProblemsItem
-              toSectionWithIdentifier:SectionIdentifierPasswordCheck];
-
-          [rowsIndexPaths addObject:[NSIndexPath indexPathForRow:1
-                                                       inSection:checkSection]];
-        }
-        sectionIndex++;
-
-        // Add "Add Password" button.
-        if (_allowsAddPassword) {
-          [model insertSectionWithIdentifier:SectionIdentifierAddPasswordButton
-                                     atIndex:sectionIndex];
-          [self.tableView
-                insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-              withRowAnimation:UITableViewRowAnimationFade];
-          [model addItem:self.addPasswordItem
-              toSectionWithIdentifier:SectionIdentifierAddPasswordButton];
-          [rowsIndexPaths
-              addObject:
-                  [NSIndexPath
-                      indexPathForRow:0
-                            inSection:
-                                [model
-                                    sectionForSectionIdentifier:
-                                        SectionIdentifierAddPasswordButton]]];
-          sectionIndex++;
-        }
-
-        [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
-                              withRowAnimation:UITableViewRowAnimationFade];
-
+        NSIndexSet* insertedSections = [self insertUpperSectionsInModel];
+        [self.tableView insertSections:insertedSections
+                      withRowAnimation:UITableViewRowAnimationFade];
         _tableIsInSearchMode = NO;
       }
                completion:nil];
@@ -1186,6 +1069,62 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 }
 
 #pragma mark - Private methods
+
+// Inserts the upper sections (above saved passwords) into `self.tableViewModel`
+// starting at index 0 and returns the inserted section indices.
+- (NSIndexSet*)insertUpperSectionsInModel {
+  TableViewModel* model = self.tableViewModel;
+  NSMutableIndexSet* insertedSections = [NSMutableIndexSet indexSet];
+
+  // Manage account header.
+  AppendSectionToModel(model, insertedSections,
+                       SectionIdentifierManageAccountHeader);
+  [model setHeader:self.manageAccountLinkItem
+      forSectionWithIdentifier:SectionIdentifierManageAccountHeader];
+
+  // Trusted Vault widget promo.
+  if (_shouldShowTrustedVaultWidgetPromo) {
+    AppendSectionToModel(model, insertedSections,
+                         SectionIdentifierTrustedVaultWidgetPromo);
+    [model addItem:self.trustedVaultWidgetPromoItem
+        toSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
+    [self recordTrustedVaultWidgetPromoImpression];
+  }
+
+  // Widget promo.
+  if (_shouldShowPasswordManagerWidgetPromo) {
+    AppendSectionToModel(model, insertedSections, SectionIdentifierWidgetPromo);
+    [model addItem:self.widgetPromoItem
+        toSectionWithIdentifier:SectionIdentifierWidgetPromo];
+  }
+
+  // Password check.
+  AppendSectionToModel(model, insertedSections, SectionIdentifierPasswordCheck);
+  // Must run before adding `self.passwordProblemsItem` to `model` so
+  // `-reconfigureCellsForItems:` remains a no-op during `performBatchUpdates:`
+  // before `self.tableView` inserts the section.
+  [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
+  [model addItem:self.passwordProblemsItem
+      toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+
+  [self updatePasswordCheckButtonWithState:self.passwordCheckState];
+  // Only add check button if the current `PasswordCheckUIState` requires the
+  // button to be shown.
+  if (self.shouldShowCheckButton) {
+    [model addItem:self.checkForProblemsItem
+        toSectionWithIdentifier:SectionIdentifierPasswordCheck];
+  }
+
+  // Add Password button.
+  if (_allowsAddPassword) {
+    AppendSectionToModel(model, insertedSections,
+                         SectionIdentifierAddPasswordButton);
+    [model addItem:self.addPasswordItem
+        toSectionWithIdentifier:SectionIdentifierAddPasswordButton];
+  }
+
+  return insertedSections;
+}
 
 // Attempts to show the Level Up Password Checkup IPH bubble.
 - (void)maybeShowLevelUpWalkthroughIPH {

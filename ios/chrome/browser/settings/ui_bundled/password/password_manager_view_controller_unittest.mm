@@ -668,8 +668,19 @@ TEST_F(PasswordManagerViewControllerTest, TestOpenInSearchMode) {
   EXPECT_EQ(5, [[passwords_controller tableViewModel] numberOfSections]);
   EXPECT_TRUE([passwords_controller.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierAddPasswordButton]);
+  EXPECT_EQ(
+      1,
+      [passwords_controller.tableViewModel
+          numberOfItemsInSection:[passwords_controller.tableViewModel
+                                     sectionForSectionIdentifier:
+                                         SectionIdentifierAddPasswordButton]]);
   EXPECT_TRUE([passwords_controller.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierPasswordCheck]);
+  EXPECT_EQ(
+      2, [passwords_controller.tableViewModel
+             numberOfItemsInSection:[passwords_controller.tableViewModel
+                                        sectionForSectionIdentifier:
+                                            SectionIdentifierPasswordCheck]]);
   EXPECT_TRUE([passwords_controller.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierSavedPasswords]);
   EXPECT_TRUE([passwords_controller.tableViewModel
