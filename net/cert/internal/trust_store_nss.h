@@ -8,10 +8,8 @@
 #include <cert.h>
 #include <certt.h>
 
-#include <variant>
 #include <vector>
 
-#include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
 #include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/scoped_nss_types.h"

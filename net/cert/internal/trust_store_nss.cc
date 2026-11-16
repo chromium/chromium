@@ -14,18 +14,13 @@
 #include <secmod.h>
 #include <secmodt.h>
 
-#include <variant>
-
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
-#include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/no_destructor.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
-#include "crypto/obsolete/sha1.h"
 #include "crypto/scoped_nss_types.h"
-#include "net/base/features.h"
 #include "net/cert/internal/platform_trust_store.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
@@ -36,54 +31,7 @@
 
 namespace net {
 
-std::array<uint8_t, crypto::obsolete::Sha1::kSize> Sha1ForNSSTrust(
-    base::span<const uint8_t> data) {
-  return crypto::obsolete::Sha1::Hash(data);
-}
-
 namespace {
-
-struct FreePK11GenericObjects {
-  void operator()(PK11GenericObject* x) const {
-    if (x) {
-      PK11_DestroyGenericObjects(x);
-    }
-  }
-};
-using ScopedPK11GenericObjects =
-    std::unique_ptr<PK11GenericObject, FreePK11GenericObjects>;
-
-// Get the list of all slots `nss_cert` is present in, along with the object
-// handle of the cert in each of those slots.
-//
-// (Note that there is a PK11_GetAllSlotsForCert function that *seems* like it
-// would be useful here, however it does not actually return all relevant
-// slots.)
-std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert) {
-  std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>> r;
-  crypto::AutoSECMODListReadLock lock_id;
-  for (const SECMODModuleList* item = SECMOD_GetDefaultModuleList();
-       item != nullptr; item = item->next) {
-
-    // SAFETY: item->module->slots is an array with item->module->slotCount
-    // elements. slotCount is a signed int so use checked_cast when creating
-    // the span.
-    base::span<PK11SlotInfo*> module_slots = UNSAFE_BUFFERS(
-        base::span(item->module->slots,
-                   base::checked_cast<size_t>(item->module->slotCount)));
-
-    for (PK11SlotInfo* slot : module_slots) {
-      if (PK11_IsPresent(slot)) {
-        CK_OBJECT_HANDLE handle = PK11_FindCertInSlot(slot, nss_cert, nullptr);
-        if (handle != CK_INVALID_HANDLE) {
-          r.emplace_back(PK11_ReferenceSlot(slot), handle);
-        }
-      }
-    }
-  }
-  return r;
-}
 
 bool IsMozillaCaPolicyProvided(PK11SlotInfo* slot,
                                CK_OBJECT_HANDLE cert_handle) {
@@ -92,21 +40,48 @@ bool IsMozillaCaPolicyProvided(PK11SlotInfo* slot,
                               /*haslock=*/PR_FALSE) == CK_TRUE;
 }
 
-bool IsCertOnlyInNSSRoots(CERTCertificate* cert) {
-  std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-      slots_and_handles_for_cert = GetAllSlotsAndHandlesForCert(cert);
-  for (const auto& [slot, handle] : slots_and_handles_for_cert) {
-    if (IsMozillaCaPolicyProvided(slot.get(), handle)) {
-      // Cert is an NSS root. Continue looking to see if it also is present in
-      // another slot.
-      continue;
+std::vector<crypto::ScopedPK11Slot> InitializeRootCertSlots() {
+  crypto::EnsureNSSInit();
+
+  std::vector<crypto::ScopedPK11Slot> result;
+  crypto::AutoSECMODListReadLock lock_id;
+  for (const SECMODModuleList* item = SECMOD_GetDefaultModuleList();
+       item != nullptr; item = item->next) {
+    // SAFETY: item->module->slots is an array with item->module->slotCount
+    // elements. slotCount is a signed int so use checked_cast when creating
+    // the span.
+    base::span<PK11SlotInfo*> module_slots = UNSAFE_BUFFERS(
+        base::span(item->module->slots,
+                   base::checked_cast<size_t>(item->module->slotCount)));
+
+    for (PK11SlotInfo* slot : module_slots) {
+      if (PK11_IsPresent(slot) && PK11_HasRootCerts(slot)) {
+        result.emplace_back(PK11_ReferenceSlot(slot));
+      }
     }
-    // Found cert in a non-NSS roots slot.
-    return false;
   }
-  // Cert was only found in NSS roots (or was not in any slots, but that
-  // shouldn't happen.)
-  return true;
+  return result;
+}
+
+const std::vector<crypto::ScopedPK11Slot>& GetRootCertSlots() {
+  static base::NoDestructor<std::vector<crypto::ScopedPK11Slot>>
+      root_cert_slots(InitializeRootCertSlots());
+  return *root_cert_slots.get();
+}
+
+bool IsCertInNSSRoots(CERTCertificate* nss_cert) {
+  for (const auto& slot : GetRootCertSlots()) {
+    if (PK11_IsPresent(slot.get())) {
+      CK_OBJECT_HANDLE handle =
+          PK11_FindCertInSlot(slot.get(), nss_cert, nullptr);
+      if (handle != CK_INVALID_HANDLE) {
+        if (IsMozillaCaPolicyProvided(slot.get(), handle)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -183,23 +158,19 @@ TrustStoreNSS::ListCertsIgnoringNSSRootsImpl() {
   CERTCertListNode* node;
   for (node = CERT_LIST_HEAD(cert_list); !CERT_LIST_END(node, cert_list);
        node = CERT_LIST_NEXT(node)) {
-    if (IsCertOnlyInNSSRoots(node->cert)) {
+    if (IsCertInNSSRoots(node->cert)) {
       continue;
     }
-    results.emplace_back(x509_util::DupCERTCertificate(node->cert),
-                         GetTrustIgnoringSystemTrust(node->cert));
+    CERTCertTrust nss_cert_trust;
+    bssl::CertificateTrust trust =
+        CERT_GetCertTrust(node->cert, &nss_cert_trust) == SECSuccess
+            ? GetTrustForNSSTrust(nss_cert_trust)
+            : bssl::CertificateTrust::ForUnspecified();
+    results.emplace_back(x509_util::DupCERTCertificate(node->cert), trust);
   }
 
   return results;
 }
-
-// TODO(crbug.com/40850344): add histograms? (how often hits fast vs
-// medium vs slow path, timing of fast/medium/slow path/all, etc?)
-
-// TODO(crbug.com/40850344): NSS also seemingly has some magical
-// trusting of any self-signed cert with CKA_ID=0, if it doesn't have a
-// matching trust object. Do we need to do that too? (this pk11_isID0 thing:
-// https://searchfox.org/nss/source/lib/pk11wrap/pk11cert.c#357)
 
 bssl::CertificateTrust TrustStoreNSS::GetTrust(
     const bssl::ParsedCertificate* cert) {
@@ -251,161 +222,13 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
     return bssl::CertificateTrust::ForUnspecified();
   }
 
-  // If there were trust settings, we may not be able to use the NSS calculated
-  // trust settings directly, since we don't know which slot those settings
-  // came from. Do a more careful check to only honor trust settings from slots
-  // we care about.
-  std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
-      slots_and_handles_for_cert = GetAllSlotsAndHandlesForCert(nss_cert);
-
-  // Generally this shouldn't happen, though it is possible (ex, a builtin
-  // distrust record with no matching cert in the builtin trust store could
-  // match a NSS temporary cert that doesn't exist in any slot. Ignoring that
-  // is okay. Theoretically there maybe could be trust records with no matching
-  // cert in user slots? I don't know how that can actually happen though.)
-  if (slots_and_handles_for_cert.empty()) {
-    DVLOG(1) << "skipped cert that has no slots";
+  if (IsCertInNSSRoots(nss_cert)) {
+    DVLOG(1) << "skipped cert that is in NSS roots";
     return bssl::CertificateTrust::ForUnspecified();
   }
 
-  // List of trustOrder, slot pairs.
-  std::vector<std::pair<int, PK11SlotInfo*>> slots_to_check;
-
-  for (const auto& [slotref, handle] : slots_and_handles_for_cert) {
-    PK11SlotInfo* slot = slotref.get();
-    DVLOG(1) << "found cert in slot:" << PK11_GetSlotName(slot)
-             << " token:" << PK11_GetTokenName(slot)
-             << " module trustOrder: " << PK11_GetModule(slot)->trustOrder;
-    if (IsMozillaCaPolicyProvided(slot, handle)) {
-      DVLOG(1) << "skipping slot " << PK11_GetSlotName(slot)
-               << ", this is mozilla ca policy provided";
-      continue;
-    }
-    int trust_order = PK11_GetModule(slot)->trustOrder;
-    slots_to_check.emplace_back(trust_order, slot);
-  }
-  if (slots_to_check.size() == slots_and_handles_for_cert.size()) {
-    DVLOG(1) << "cert is only in allowed slots, using NSS calculated trust";
-    return GetTrustForNSSTrust(nss_cert_trust);
-  }
-  if (slots_to_check.empty()) {
-    DVLOG(1) << "cert is only in disallowed slots, skipping";
-    return bssl::CertificateTrust::ForUnspecified();
-  }
-
-  DVLOG(1) << "cert is in both allowed and disallowed slots, doing manual "
-              "trust calculation";
-
-  // Use PK11_FindGenericObjects + PK11_ReadRawAttribute to calculate the trust
-  // using only the slots we care about. (Some example code:
-  // https://searchfox.org/nss/source/gtests/pk11_gtest/pk11_import_unittest.cc#131)
-  //
-  // TODO(crbug.com/40850344): consider adding caching here if metrics
-  // show a need. If caching is added, note that NSS has no change notification
-  // APIs so we'd at least want to listen for CertDatabase notifications to
-  // clear the cache. (There are multiple approaches possible, could cache the
-  // hash->trust mappings on a per-slot basis, or just cache the end result for
-  // each cert, etc.)
-  std::array<uint8_t, crypto::obsolete::Sha1::kSize> cert_sha1 =
-      Sha1ForNSSTrust(x509_util::CERTCertificateAsSpan(nss_cert));
-
-  // Check the slots in trustOrder ordering. Lower trustOrder values are higher
-  // priority, so we can return as soon as we find a matching trust object.
-  std::sort(slots_to_check.begin(), slots_to_check.end());
-
-  for (const auto& [_, slot] : slots_to_check) {
-    DVLOG(1) << "looking for trust in slot " << PK11_GetSlotName(slot)
-             << " token " << PK11_GetTokenName(slot);
-
-    ScopedPK11GenericObjects objs(PK11_FindGenericObjects(slot, CKO_NSS_TRUST));
-    if (!objs) {
-      DVLOG(1) << "no trust objects in slot";
-      continue;
-    }
-    for (PK11GenericObject* obj = objs.get(); obj != nullptr;
-         obj = PK11_GetNextGenericObject(obj)) {
-      crypto::ScopedSECItem sha1_hash_attr(SECITEM_AllocItem(/*arena=*/nullptr,
-                                                             /*item=*/nullptr,
-                                                             /*len=*/0));
-      SECStatus rv = PK11_ReadRawAttribute(
-          PK11_TypeGeneric, obj, CKA_CERT_SHA1_HASH, sha1_hash_attr.get());
-      if (rv != SECSuccess) {
-        DVLOG(1) << "trust object has no CKA_CERT_SHA1_HASH attr";
-        continue;
-      }
-      base::span<const uint8_t> trust_obj_sha1 =
-          x509_util::SECItemAsSpan(*sha1_hash_attr);
-      DVLOG(1) << "found trust object for sha1 "
-               << base::HexEncode(trust_obj_sha1);
-
-      if (trust_obj_sha1 != cert_sha1) {
-        DVLOG(1) << "trust object does not match target cert hash, skipping";
-        continue;
-      }
-      DVLOG(1) << "trust object matches target cert hash";
-
-      crypto::ScopedSECItem trust_attr(SECITEM_AllocItem(/*arena=*/nullptr,
-                                                         /*item=*/nullptr,
-                                                         /*len=*/0));
-      rv = PK11_ReadRawAttribute(PK11_TypeGeneric, obj, CKA_TRUST_SERVER_AUTH,
-                                 trust_attr.get());
-      if (rv != SECSuccess) {
-        DVLOG(1) << "trust object for " << base::HexEncode(trust_obj_sha1)
-                 << "has no CKA_TRUST_x attr";
-        continue;
-      }
-      DVLOG(1) << "trust "
-               << base::HexEncode(x509_util::SECItemAsSpan(*trust_attr))
-               << " for sha1 " << base::HexEncode(trust_obj_sha1);
-
-      CK_TRUST trust;
-      if (trust_attr->len != sizeof(trust)) {
-        DVLOG(1) << "trust is wrong size? skipping";
-        continue;
-      }
-
-      // This matches how pk11_GetTrustField in NSS converts the raw trust
-      // object to a CK_TRUST (actually an unsigned long).
-      // https://searchfox.org/nss/source/lib/pk11wrap/pk11nobj.c#37
-      base::byte_span_from_ref(trust).copy_from(
-          x509_util::SECItemAsSpan(*trust_attr));
-
-      // This doesn't handle the "TrustAnchorOrLeaf" combination, it's unclear
-      // how that is represented. But it doesn't really matter since the only
-      // case that would come up is if someone took one of the NSS builtin
-      // roots and then also locally marked it as trusted as both a CA and a
-      // leaf, which is non-sensical. Testing shows that will end up marked as
-      // CKT_NSS_TRUSTED_DELEGATOR, which is fine.
-      switch (trust) {
-        case CKT_NSS_TRUSTED:
-          DVLOG(1) << "CKT_NSS_TRUSTED -> trusted leaf";
-          return bssl::CertificateTrust::ForTrustedLeaf();
-        case CKT_NSS_TRUSTED_DELEGATOR: {
-          DVLOG(1) << "CKT_NSS_TRUSTED_DELEGATOR -> trust anchor";
-          return bssl::CertificateTrust::ForTrustAnchor()
-              .WithEnforceAnchorConstraints()
-              .WithEnforceAnchorExpiry();
-        }
-        case CKT_NSS_MUST_VERIFY_TRUST:
-        case CKT_NSS_VALID_DELEGATOR:
-          DVLOG(1) << "CKT_NSS_MUST_VERIFY_TRUST or CKT_NSS_VALID_DELEGATOR -> "
-                      "unspecified";
-          return bssl::CertificateTrust::ForUnspecified();
-        case CKT_NSS_NOT_TRUSTED:
-          DVLOG(1) << "CKT_NSS_NOT_TRUSTED -> distrusted";
-          return bssl::CertificateTrust::ForDistrusted();
-        case CKT_NSS_TRUST_UNKNOWN:
-          DVLOG(1) << "CKT_NSS_TRUST_UNKNOWN trust value - skip";
-          break;
-        default:
-          DVLOG(1) << "unhandled trust value - skip";
-          break;
-      }
-    }
-  }
-
-  DVLOG(1) << "no suitable NSS trust record found";
-  return bssl::CertificateTrust::ForUnspecified();
+  DVLOG(1) << "cert is not in NSS roots, using NSS calculated trust";
+  return GetTrustForNSSTrust(nss_cert_trust);
 }
 
 bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
