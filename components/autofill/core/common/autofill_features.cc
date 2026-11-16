@@ -834,7 +834,7 @@ BASE_FEATURE(kAutofillFixStateCountryMisclassification,
 
 // Enables pre-launch metrics for one-time passwords (OTPs) received in Gmail.
 BASE_FEATURE(kAutofillGmailOtpPreLaunchMetrics,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Greek regexes are used for parsing in branded builds.
 BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);

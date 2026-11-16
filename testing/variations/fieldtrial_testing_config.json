@@ -2308,25 +2308,6 @@
             ]
         }
     ],
-    "AutofillGmailOtpPreLaunchMetrics": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithFieldDetection",
-                    "enable_features": [
-                        "AutofillGmailOtpPreLaunchMetrics",
-                        "PasswordFormClientsideClassifier"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillHideSuggestionsOnFocusChange": [
         {
             "platforms": [
