@@ -73,6 +73,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OnMicrophoneStatusChange"/>
   <variant name="OnModeChange"/>
   <variant name="OnOptinImpression"/>
+  <variant name="OnOptinRejected"/>
   <variant name="OnReaction"/>
   <variant name="OnResponseRated"/>
   <variant name="OnResponseStarted"/>

@@ -8,15 +8,12 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/values.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -32,6 +29,7 @@
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/structured_metrics_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -56,9 +54,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
-#include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_events.h"
-#include "components/metrics/structured/structured_metrics_client.h"
 #endif
 
 namespace glic {
@@ -3661,56 +3657,6 @@ TEST_F(GlicInstanceMetricsTest,
 }
 
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
-namespace {
-
-class ScopedStructuredEventCapture
-    : public metrics::structured::StructuredMetricsClient::RecordingDelegate {
- public:
-  ScopedStructuredEventCapture() {
-    metrics::structured::StructuredMetricsClient::Get()->SetDelegate(this);
-  }
-  ~ScopedStructuredEventCapture() override {
-    metrics::structured::StructuredMetricsClient::Get()->UnsetDelegate();
-  }
-
-  bool IsReadyToRecord() const override { return true; }
-  void RecordEvent(metrics::structured::Event&& event) override {
-    events_.push_back(std::move(event));
-  }
-
-  std::vector<const metrics::structured::Event*> GetEvents(
-      std::string_view event_name) const {
-    std::vector<const metrics::structured::Event*> result;
-    for (const metrics::structured::Event& event : events_) {
-      if (event.project_name() == "Glic" && event.event_name() == event_name) {
-        result.push_back(&event);
-      }
-    }
-    return result;
-  }
-
- private:
-  std::vector<metrics::structured::Event> events_;
-};
-
-std::optional<int64_t> GetIntMetric(const metrics::structured::Event& event,
-                                    std::string_view metric_name) {
-  auto it = event.metric_values().find(std::string(metric_name));
-  if (it == event.metric_values().end()) {
-    return std::nullopt;
-  }
-  const base::Value& value = it->second.value;
-  if (value.is_int()) {
-    return value.GetInt();
-  }
-  int64_t result;
-  if (value.is_string() && base::StringToInt64(value.GetString(), &result)) {
-    return result;
-  }
-  return std::nullopt;
-}
-
-}  // namespace
 
 TEST_F(GlicInstanceMetricsTest,
        OnClientLoadErrorRecordsStructuredReasonsAndInvocationId) {
@@ -3743,6 +3689,355 @@ TEST_F(GlicInstanceMetricsTest,
     EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
               static_cast<int64_t>(kInvocationId));
   }
+}
+
+// FreImpression / FreDecision structured events. structured.xml
+// GlicFreDecision wire values; these must not change.
+constexpr int kFreAcceptedWireValue = 0;
+constexpr int kFreNoThanksWireValue = 1;
+constexpr int kFrePanelClosedWireValue = 2;
+constexpr int kFreInstanceDestroyedWireValue = 3;
+constexpr int kFreAcceptedElsewhereWireValue = 4;
+constexpr uint64_t kInvocationId = 0x1234567890abcdefULL;
+
+class GlicInstanceMetricsFreAttemptTest : public GlicInstanceMetricsTest {
+ public:
+  GlicInstanceMetricsFreAttemptTest() {
+    feature_list_.InitAndEnableFeature(features::kGlicOptInImpressionMetrics);
+    SetConsented(false);
+  }
+
+ protected:
+  void SetConsented(bool consented) {
+    profile_.GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(consented ? prefs::FreStatus::kCompleted
+                                   : prefs::FreStatus::kNotStarted));
+  }
+
+  // Opens the panel the way an invocation does: the handler sets the active
+  // invocation id before any task runs, then the show task opens the panel.
+  void OpenUnconsented() {
+    metrics_.SetActiveInvocationId(kInvocationId);
+    metrics_.OnVisibilityChanged(true);
+    metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton,
+                    ShowOptions{FloatingShowOptions{}});
+    // A toggle invocation completes as soon as the panel is open.
+    metrics_.SetActiveInvocationId(std::nullopt);
+  }
+
+  void ShowFre() {
+    metrics_.OnOptinImpression();
+    metrics_.OnClientReady();
+  }
+
+  ScopedStructuredEventCapture capture_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(GlicInstanceMetricsFreAttemptTest, ImpressionKeyedByOpeningInvocation) {
+  OpenUnconsented();
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  ShowFre();
+
+  auto events = capture_.GetEvents("FreImpression");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationSource"),
+            static_cast<int>(mojom::InvocationSource::kTopChromeButton));
+  EXPECT_EQ(GetIntMetric(*events[0], "ElapsedMs"), 300);
+}
+
+TEST_F(GlicInstanceMetricsFreAttemptTest, ImpressionRecordedOnceWhileVisible) {
+  OpenUnconsented();
+  ShowFre();
+  metrics_.OnOptinImpression();
+
+  EXPECT_EQ(capture_.GetEvents("FreImpression").size(), 1u);
+}
+
+// A warmed instance reports the impression before it is shown; the attempt
+// starts when the panel opens and records the impression then, not while
+// the instance sits in the warming pool.
+TEST_F(GlicInstanceMetricsFreAttemptTest, WarmedImpressionWaitsForOpen) {
+  metrics_.OnOptinImpression();
+  metrics_.OnClientReady();
+  EXPECT_TRUE(capture_.GetEvents("FreImpression").empty());
+
+  OpenUnconsented();
+
+  auto events = capture_.GetEvents("FreImpression");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+  EXPECT_EQ(GetIntMetric(*events[0], "ElapsedMs"), 0);
+}
+
+TEST_F(GlicInstanceMetricsFreAttemptTest, NoAttemptWhenConsented) {
+  SetConsented(true);
+  OpenUnconsented();
+  ShowFre();
+  metrics_.OnClose();
+
+  EXPECT_TRUE(capture_.GetEvents("FreImpression").empty());
+  EXPECT_TRUE(capture_.GetEvents("FreDecision").empty());
+}
+
+TEST_F(GlicInstanceMetricsFreAttemptTest, AcceptedEndsAttempt) {
+  OpenUnconsented();
+  ShowFre();
+  task_environment_.FastForwardBy(base::Milliseconds(1500));
+  metrics_.OnOnboardingCompleted();
+  SetConsented(true);
+  metrics_.OnClose();
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"), kFreAcceptedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationSource"),
+            static_cast<int>(mojom::InvocationSource::kTopChromeButton));
+  EXPECT_EQ(GetIntMetric(*events[0], "ImpressionRecorded"), 1);
+  EXPECT_EQ(GetIntMetric(*events[0], "ElapsedMs"), 1500);
+}
+
+// "No thanks" closes the panel; the explicit decision must win over the
+// close that follows it.
+TEST_F(GlicInstanceMetricsFreAttemptTest, NoThanksIsNotPanelClosed) {
+  OpenUnconsented();
+  ShowFre();
+  metrics_.OnOptinRejected();
+  metrics_.OnClose();
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"), kFreNoThanksWireValue);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+}
+
+TEST_F(GlicInstanceMetricsFreAttemptTest, PanelClosedWithoutImpression) {
+  OpenUnconsented();
+  metrics_.OnClose();
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"), kFrePanelClosedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[0], "ImpressionRecorded"), 0);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+}
+
+// Each open while unconsented is its own attempt with its own invocation.
+// The web client reports the opt-in impression once per load, so a reopen of
+// the same guest gets its impression from that earlier report.
+TEST_F(GlicInstanceMetricsFreAttemptTest, ReopenStartsNewAttempt) {
+  OpenUnconsented();
+  ShowFre();
+  metrics_.OnClose();
+  metrics_.OnVisibilityChanged(false);
+
+  metrics_.SetActiveInvocationId(kInvocationId + 1);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kOsHotkey,
+                  ShowOptions{FloatingShowOptions{}});
+  metrics_.SetActiveInvocationId(std::nullopt);
+  metrics_.OnOnboardingCompleted();
+
+  auto impressions = capture_.GetEvents("FreImpression");
+  ASSERT_EQ(impressions.size(), 2u);
+  EXPECT_EQ(GetIntMetric(*impressions[1], "InvocationId"),
+            static_cast<int64_t>(kInvocationId + 1));
+  EXPECT_EQ(GetIntMetric(*impressions[1], "ElapsedMs"), 0);
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 2u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"), kFrePanelClosedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[1], "Decision"), kFreAcceptedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[1], "ImpressionRecorded"), 1);
+  EXPECT_EQ(GetIntMetric(*events[1], "InvocationId"),
+            static_cast<int64_t>(kInvocationId + 1));
+  EXPECT_EQ(GetIntMetric(*events[1], "InvocationSource"),
+            static_cast<int>(mojom::InvocationSource::kOsHotkey));
+}
+
+// A reopen that shows the panel before it is visible records the impression
+// once the panel becomes visible, not at open.
+TEST_F(GlicInstanceMetricsFreAttemptTest, ReopenImpressionWaitsForVisible) {
+  OpenUnconsented();
+  ShowFre();
+  metrics_.OnClose();
+  metrics_.OnVisibilityChanged(false);
+
+  metrics_.SetActiveInvocationId(kInvocationId + 1);
+  metrics_.OnOpen(mojom::InvocationSource::kOsHotkey,
+                  ShowOptions{FloatingShowOptions{}});
+  EXPECT_EQ(capture_.GetEvents("FreImpression").size(), 1u);
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnVisibilityChanged(true);
+
+  auto impressions = capture_.GetEvents("FreImpression");
+  ASSERT_EQ(impressions.size(), 2u);
+  EXPECT_EQ(GetIntMetric(*impressions[1], "ElapsedMs"), 250);
+}
+
+// A new guest document (reload or crash) has to report the impression again
+// before a reopened attempt counts one.
+TEST_F(GlicInstanceMetricsFreAttemptTest, GuestResetClearsReportedImpression) {
+  OpenUnconsented();
+  ShowFre();
+  metrics_.OnClose();
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnGuestReset();
+
+  metrics_.SetActiveInvocationId(kInvocationId + 1);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kOsHotkey,
+                  ShowOptions{FloatingShowOptions{}});
+  EXPECT_EQ(capture_.GetEvents("FreImpression").size(), 1u);
+
+  metrics_.OnOptinImpression();
+  EXPECT_EQ(capture_.GetEvents("FreImpression").size(), 2u);
+}
+
+// The native FRE card is the consent screen: the impression is recorded on
+// open, before any web client is ready, and accepting it ends the attempt.
+TEST_F(GlicInstanceMetricsFreAttemptTest, NativeFreImpressionAndAccept) {
+  ShowOptions show_options = MakeNativeFreShowOptions();
+  show_options.invocation_source = mojom::InvocationSource::kFre;
+  metrics_.SetActiveInvocationId(kInvocationId);
+  metrics_.OnWillShow(show_options, /*has_conversation_id=*/false);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kFre, show_options);
+
+  auto impressions = capture_.GetEvents("FreImpression");
+  ASSERT_EQ(impressions.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*impressions[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+
+  // GlicInstanceImpl::AcceptNativeFre() reports both.
+  metrics_.OnNativeFreAccepted();
+  metrics_.OnOnboardingCompleted();
+  SetConsented(true);
+  metrics_.OnClose();
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"), kFreAcceptedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[0], "ImpressionRecorded"), 1);
+}
+
+TEST_F(GlicInstanceMetricsFreAttemptTest, AcceptedElsewhere) {
+  OpenUnconsented();
+  ShowFre();
+  SetConsented(true);
+  metrics_.OnClose();
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"),
+            kFreAcceptedElsewhereWireValue);
+}
+
+TEST_F(GlicInstanceMetricsFreAttemptTest,
+       WebImpressionRecordedWhenOptInUmaDisabled) {
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(features::kGlicOptInImpressionMetrics);
+
+  OpenUnconsented();
+  ShowFre();
+  metrics_.OnOnboardingCompleted();
+
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Onboarding.OptInImpression.FlowSource", 0);
+  ASSERT_EQ(capture_.GetEvents("FreImpression").size(), 1u);
+  auto decisions = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(decisions.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*decisions[0], "Decision"), kFreAcceptedWireValue);
+  EXPECT_EQ(GetIntMetric(*decisions[0], "ImpressionRecorded"), 1);
+}
+
+// Detach(), Attach(), and inactive-embedder closes call OnClose(false) while
+// the FRE remains open on another surface; they must not end the attempt.
+TEST_F(GlicInstanceMetricsFreAttemptTest,
+       InactiveEmbedderCloseKeepsAttemptOpen) {
+  OpenUnconsented();
+  ShowFre();
+  // Detach opens the floaty and closes the old side panel embedder.
+  metrics_.OnOpen(mojom::InvocationSource::kDetachAttachButton,
+                  ShowOptions{FloatingShowOptions{}});
+  metrics_.OnClose(/*is_active_embedder=*/false);
+  EXPECT_TRUE(capture_.GetEvents("FreDecision").empty());
+  EXPECT_EQ(capture_.GetEvents("FreImpression").size(), 1u);
+
+  // Attach deactivates the floaty before opening the side panel.
+  metrics_.OnClose(/*is_active_embedder=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kDetachAttachButton,
+                  ShowOptions::ForSidePanel(mock_tab_));
+  EXPECT_TRUE(capture_.GetEvents("FreDecision").empty());
+  EXPECT_EQ(capture_.GetEvents("FreImpression").size(), 1u);
+
+  metrics_.OnOnboardingCompleted();
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"), kFreAcceptedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[0], "ImpressionRecorded"), 1);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+}
+
+TEST_F(GlicInstanceMetricsFreAttemptTest, InstanceDestroyedWhilePending) {
+  {
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
+    metrics.SetActiveInvocationId(kInvocationId);
+    metrics.OnVisibilityChanged(true);
+    metrics.OnOpen(mojom::InvocationSource::kTopChromeButton,
+                   ShowOptions{FloatingShowOptions{}});
+  }
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"),
+            kFreInstanceDestroyedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+}
+
+// Like OnClose(), destruction after the profile consented through another
+// surface is not a pending FRE being lost.
+TEST_F(GlicInstanceMetricsFreAttemptTest,
+       InstanceDestroyedAfterConsentElsewhere) {
+  {
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
+    metrics.SetActiveInvocationId(kInvocationId);
+    metrics.OnVisibilityChanged(true);
+    metrics.OnOpen(mojom::InvocationSource::kTopChromeButton,
+                   ShowOptions{FloatingShowOptions{}});
+    SetConsented(true);
+  }
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"),
+            kFreAcceptedElsewhereWireValue);
+}
+
+// A decision reported without an attempt in flight is still recorded, just
+// without an invocation to join it to.
+TEST_F(GlicInstanceMetricsFreAttemptTest, DecisionWithoutAttempt) {
+  metrics_.OnOnboardingCompleted();
+
+  auto events = capture_.GetEvents("FreDecision");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "Decision"), kFreAcceptedWireValue);
+  EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"), std::nullopt);
+  EXPECT_EQ(GetIntMetric(*events[0], "ElapsedMs"), std::nullopt);
 }
 
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)

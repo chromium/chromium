@@ -1157,6 +1157,7 @@ enum TooltipImpressionType {
   // Step 3: Tooltip shown inside the tab picker guiding multi-tab selection.
   kTooltip3 = 4,
 };
+
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicTooltipMultiTabImpression)
 
 // Access to the browser from the web client by proxy through the WebUI.
@@ -1419,6 +1420,11 @@ interface WebClientHandler {
 
   // Called when the opt-in CTA is shown.
   OnOptinImpression();
+
+  // Called when the user explicitly declines the opt-in CTA ("No thanks").
+  // The web client closes the panel afterwards; this tells the browser the
+  // close was a decision rather than a dismissal.
+  OnOptinRejected();
 
   // Called when the web client's main prompt input field receives focus
   // after opening or warm-reopening the panel.

@@ -1224,6 +1224,10 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     this.handler.onOptinImpression();
   }
 
+  onOptinRejected(): void {
+    this.handler.onOptinRejected();
+  }
+
   onInputFocused(): void {
     this.handler.onInputFocused();
   }

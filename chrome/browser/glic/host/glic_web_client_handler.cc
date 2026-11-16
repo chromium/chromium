@@ -1536,6 +1536,11 @@ class GlicWebClientHandler
     host().instance_metrics().OnOptinImpression();
   }
 
+  void OnOptinRejected() override {
+    LogApiRequest(GlicHostApiRequestId::kOnOptinRejected);
+    host().instance_metrics().OnOptinRejected();
+  }
+
   void OnInputFocused() override {
     LogApiRequest(GlicHostApiRequestId::kOnInputFocused);
     host().instance_metrics().OnInputFocused();
@@ -1663,6 +1668,8 @@ class GlicWebClientHandler
   void SetOnboardingCompleted() override {
     LogApiRequest(GlicHostApiRequestId::kSetOnboardingCompleted);
     host().instance_metrics().OnWebFreAccepted();
+    // Before CompleteOnboarding(), so the attempt is still unconsented.
+    host().instance_metrics().OnOnboardingCompleted();
     glic_service_->provider_spec().GetFreStore().CompleteOnboarding(profile_);
   }
 

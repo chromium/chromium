@@ -689,6 +689,9 @@ void GlicInstanceImpl::Attach(tabs::TabHandle tab) {
 
 void GlicInstanceImpl::AcceptNativeFre() {
   instance_metrics_.OnNativeFreAccepted();
+  // Before CompleteOnboarding(), so the FRE attempt is still unconsented and
+  // ends as kAccepted rather than kAcceptedElsewhere on the next close.
+  instance_metrics_.OnOnboardingCompleted();
   service_->provider_spec().GetFreStore().CompleteOnboarding(profile_);
 }
 
@@ -717,7 +720,7 @@ void GlicInstanceImpl::CloseInternal(EmbedderKey key,
 void GlicInstanceImpl::OnEmbedderClosed(EmbedderKey key) {
   if (instance_metrics_.ResetShownState(key)) {
     service_->metrics()->OnInstanceClosed();
-    instance_metrics_.OnClose();
+    instance_metrics_.OnClose(IsActiveEmbedder(key));
   }
 }
 

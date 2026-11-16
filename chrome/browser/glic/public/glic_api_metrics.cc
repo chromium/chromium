@@ -218,6 +218,8 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "OnTooltipImpression";
     case GlicHostApiRequestId::kOnTooltipHidden:
       return "OnTooltipHidden";
+    case GlicHostApiRequestId::kOnOptinRejected:
+      return "OnOptinRejected";
   }
   return "";
 }

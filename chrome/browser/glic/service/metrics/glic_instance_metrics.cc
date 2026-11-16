@@ -199,6 +199,27 @@ ToStructuredReason(ClientLoadErrorReason reason) {
   }
 }
 // LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)
+
+// Translates GlicInstanceMetrics::FreDecision into the structured metrics
+// enum; exhaustive so a new decision without a structured.xml variant fails
+// to compile.
+metrics::structured::events::v2::glic::GlicFreDecision ToStructuredFreDecision(
+    GlicInstanceMetrics::FreDecision decision) {
+  using Decision = metrics::structured::events::v2::glic::GlicFreDecision;
+  using FreDecision = GlicInstanceMetrics::FreDecision;
+  switch (decision) {
+    case FreDecision::kAccepted:
+      return Decision::ACCEPTED;
+    case FreDecision::kNoThanks:
+      return Decision::NO_THANKS;
+    case FreDecision::kPanelClosed:
+      return Decision::PANEL_CLOSED;
+    case FreDecision::kInstanceDestroyed:
+      return Decision::INSTANCE_DESTROYED;
+    case FreDecision::kAcceptedElsewhere:
+      return Decision::ACCEPTED_ELSEWHERE;
+  }
+}
 #endif
 
 std::string_view GetTurnModeSuffix(bool is_actor) {
@@ -275,7 +296,11 @@ bool GlicInstanceMetrics::CanRecordOptInImpression() const {
 }
 
 void GlicInstanceMetrics::OnOptinImpression() {
+  // Remembered for the FRE attempt even when the UMA impression is
+  // suppressed or disabled.
+  guest_reported_opt_in_impression_ = true;
   if (!CanRecordOptInImpression()) {
+    MaybeRecordFreImpression();
     return;
   }
   is_opt_in_pending_ = true;
@@ -305,6 +330,84 @@ void GlicInstanceMetrics::RecordOptInImpression() {
   is_opt_in_pending_ = false;
   opt_in_impression_recorded_for_current_open_ = true;
   LogEvent(GlicInstanceEvent::kOptInImpression);
+  MaybeRecordFreImpression();
+}
+
+void GlicInstanceMetrics::OnOnboardingCompleted() {
+  RecordFreDecision(FreDecision::kAccepted);
+}
+
+void GlicInstanceMetrics::OnOptinRejected() {
+  RecordFreDecision(FreDecision::kNoThanks);
+}
+
+void GlicInstanceMetrics::MaybeStartFreAttempt() {
+  if (fre_attempt_.has_value()) {
+    return;
+  }
+  fre_attempt_ = FreAttempt{
+      .invocation_id = active_invocation_id_,
+      .source = last_invocation_source_,
+      .start_time = base::TimeTicks::Now(),
+  };
+  // A warmed instance, or a guest kept across a close and reopen, has
+  // already reported the impression; record it for this attempt now.
+  MaybeRecordFreImpression();
+}
+
+void GlicInstanceMetrics::MaybeRecordFreImpression() {
+  if (!guest_reported_opt_in_impression_ || !is_client_ready_ ||
+      !visibility_tracker_->state()) {
+    return;
+  }
+  RecordFreImpression();
+}
+
+void GlicInstanceMetrics::RecordFreImpression() {
+  if (!fre_attempt_.has_value() || fre_attempt_->impression_recorded) {
+    return;
+  }
+  fre_attempt_->impression_recorded = true;
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  metrics::structured::events::v2::glic::FreImpression event;
+  event.SetInvocationSource(static_cast<int>(fre_attempt_->source))
+      .SetElapsedMs(
+          (base::TimeTicks::Now() - fre_attempt_->start_time).InMilliseconds());
+  if (fre_attempt_->invocation_id.has_value()) {
+    event.SetInvocationId(*fre_attempt_->invocation_id);
+  }
+  metrics::structured::StructuredMetricsClient::Record(std::move(event));
+#endif
+}
+
+void GlicInstanceMetrics::RecordFreDecision(FreDecision decision) {
+  std::optional<FreAttempt> attempt = std::exchange(fre_attempt_, std::nullopt);
+  const bool user_decided =
+      decision == FreDecision::kAccepted || decision == FreDecision::kNoThanks;
+  if (!attempt.has_value() && !user_decided) {
+    return;
+  }
+  // A panel closed or an instance destroyed after the profile consented
+  // through another instance or surface is not a pending FRE being lost.
+  // Consent through this instance ended the attempt before getting here.
+  if (!user_decided && GlicEnabling::HasConsentedForProfile(profile_)) {
+    decision = FreDecision::kAcceptedElsewhere;
+  }
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  metrics::structured::events::v2::glic::FreDecision event;
+  event.SetDecision(ToStructuredFreDecision(decision))
+      .SetInvocationSource(
+          static_cast<int>(attempt ? attempt->source : last_invocation_source_))
+      .SetImpressionRecorded(attempt && attempt->impression_recorded ? 1 : 0);
+  if (attempt.has_value()) {
+    event.SetElapsedMs(
+        (base::TimeTicks::Now() - attempt->start_time).InMilliseconds());
+    if (attempt->invocation_id.has_value()) {
+      event.SetInvocationId(*attempt->invocation_id);
+    }
+  }
+  metrics::structured::StructuredMetricsClient::Record(std::move(event));
+#endif
 }
 
 void GlicInstanceMetrics::OnTooltipImpression(
@@ -396,6 +499,7 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
   FinalizePendingResponse(base::TimeTicks::Now());
 
   session_manager_.OnOwnerDestroyed();
+  RecordFreDecision(FreDecision::kInstanceDestroyed);
 
   if (visibility_tracker_ && visibility_tracker_->state()) {
     RecordTooltipClosedMetrics();
@@ -501,6 +605,7 @@ void GlicInstanceMetrics::OnVisibilityChanged(bool is_visible) {
     }
   }
   MaybeRecordOptInImpression();
+  MaybeRecordFreImpression();
 }
 
 void GlicInstanceMetrics::OnBind() {
@@ -890,7 +995,7 @@ void GlicInstanceMetrics::OnInstanceHidden() {
   open_start_time_ = base::TimeTicks();
 }
 
-void GlicInstanceMetrics::OnClose() {
+void GlicInstanceMetrics::OnClose(bool is_active_embedder) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Close"));
   LogEvent(GlicInstanceEvent::kClose);
   metric_reporter_.RecordEnumeration("PanelWebUiState.FinishState3",
@@ -899,6 +1004,9 @@ void GlicInstanceMetrics::OnClose() {
     // Not split: consumer FRE/opt-in only; GEiC FRE tracked in b/571507463.
     base::UmaHistogramEnumeration("Glic.Fre.PanelWebUiState.FinishState",
                                   last_web_ui_state_);
+  }
+  if (is_active_embedder) {
+    RecordFreDecision(FreDecision::kPanelClosed);
   }
   MaybeRecordTimeToDismissWhileLoading();
   CancelNativeFreWait();
@@ -1082,6 +1190,7 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
   // 2. Log Events
   LogEvent(GlicInstanceEvent::kOpen);
   if (!GlicEnabling::HasConsentedForProfile(profile_)) {
+    MaybeStartFreAttempt();
     auto fre_tracker = std::make_unique<GlicFreImpressionCuiTracker>();
     if (opt_in_impression_recorded_for_current_open_) {
       fre_tracker->OnEvent(GlicInstanceEvent::kOptInImpression);
@@ -1093,6 +1202,9 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
           !opt_in_impression_recorded_for_current_open_) {
         RecordOptInImpression();
       }
+      // The native FRE card is the consent screen for this attempt; it is on
+      // screen as soon as the panel opens, before the web client is ready.
+      RecordFreImpression();
       RecordPanelPresentationTime(now);
       RecordTimeToActionable(now);
     }
@@ -1353,6 +1465,7 @@ void GlicInstanceMetrics::OnClientReady() {
   client_ready_time_ = base::TimeTicks::Now();
   input_focused_after_client_ready_ = false;
   MaybeRecordOptInImpression();
+  MaybeRecordFreImpression();
   LogEvent(GlicInstanceEvent::kClientReady);
   RecordPanelPresentationTime(client_ready_time_);
 }
@@ -1455,6 +1568,7 @@ void GlicInstanceMetrics::OnGuestReset() {
       native_fre_state_ == NativeFreState::kWaitingForAccept;
   guest_actionable_ = {};
   guest_actionable_.recorded = keep_recorded;
+  guest_reported_opt_in_impression_ = false;
 }
 
 bool GlicInstanceMetrics::IsWaitingForActionable() const {

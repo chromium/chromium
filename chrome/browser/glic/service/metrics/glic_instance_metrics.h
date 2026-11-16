@@ -88,6 +88,38 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the opt-in CTA is shown.
   void OnOptinImpression();
 
+  // Called when the user accepted the FRE from this instance, either from its
+  // web client (SetOnboardingCompleted) or from the native FRE
+  // (GlicInstanceImpl::AcceptNativeFre).
+  void OnOnboardingCompleted();
+
+  // Called when the user explicitly declined the FRE ("No thanks") in this
+  // instance's web client. The client closes the panel afterwards, which
+  // without this call would be indistinguishable from closing it undecided.
+  void OnOptinRejected();
+
+  // How an FRE attempt ended. Mirrored by GlicFreDecision in
+  // //tools/metrics/structured/sync/structured.xml and translated by an
+  // exhaustive switch in glic_instance_metrics.cc.
+  // LINT.IfChange(FreDecision)
+  enum class FreDecision {
+    // OnOnboardingCompleted() from this instance's web client or native FRE.
+    kAccepted = 0,
+    // OnOptinRejected() from this instance's web client ("No thanks").
+    kNoThanks = 1,
+    // The active panel was closed with the FRE still pending.
+    kPanelClosed = 2,
+    // The instance was destroyed with the FRE still pending and without an
+    // active embedder close being reported first (e.g. tearing down an
+    // instance with a backgrounded side-panel FRE, or as a backstop if
+    // destroyed without closing its embedders).
+    kInstanceDestroyed = 3,
+    // The panel was closed, or the instance destroyed, after the profile
+    // consented through some other instance or surface.
+    kAcceptedElsewhere = 4,
+  };
+  // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml:GlicFreDecision)
+
   // Multi-tab tooltip metrics.
   void OnTooltipImpression(mojom::TooltipImpressionType impression);
   void OnTooltipHidden();
@@ -162,8 +194,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the visibility state of the instance changes.
   void OnVisibilityChanged(bool is_visible);
 
-  // Called when Close is called on the instance.
-  void OnClose();
+  // Called when an embedder for the instance is closed. `is_active_embedder`
+  // is false when closing an inactive embedder or the old embedder while
+  // moving to another surface (detach/attach), where the UI remains open.
+  void OnClose(bool is_active_embedder = true);
 
   // Called when Toggle is called on the instance.
   void OnToggle(glic::mojom::InvocationSource source,
@@ -351,6 +385,37 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void RecordOptInImpression();
   void MaybeRecordOptInImpression();
 
+  // An FRE attempt: one open of this instance while the profile has not
+  // consented, keyed by the invocation that opened it. It is the unit the
+  // FreImpression and FreDecision structured events describe, and it is
+  // instance scoped so that several unconsented instances (or a warm-pool
+  // instance that is never shown) cannot be mistaken for one another.
+  struct FreAttempt {
+    // The invocation in flight when the attempt started, if any. Kept after
+    // the invocation terminates, since a toggle invocation completes as soon
+    // as the panel opens while the user is still looking at the FRE.
+    std::optional<uint64_t> invocation_id;
+    mojom::InvocationSource source = mojom::InvocationSource::kUnsupported;
+    base::TimeTicks start_time;
+    bool impression_recorded = false;
+  };
+
+  // Starts an FRE attempt on open while unconsented.
+  void MaybeStartFreAttempt();
+  // Records the FreImpression event for the attempt in flight once the guest
+  // has reported the opt-in impression and the panel is visible with the
+  // client ready. The guest reports the impression once per load, so this
+  // also covers an attempt that reopens the same guest.
+  void MaybeRecordFreImpression();
+  // Records the FreImpression event for the attempt in flight, once. Called
+  // directly when the native FRE card is shown, which needs no web client.
+  void RecordFreImpression();
+  // Records a FreDecision event and ends the attempt. Decisions the user
+  // made (kAccepted, kNoThanks) are recorded even without an attempt in
+  // flight; the others only end one, and become kAcceptedElsewhere if the
+  // profile has consented through another instance or surface by then.
+  void RecordFreDecision(FreDecision decision);
+
   // Records the duration and prompt count for the first time the side panel is
   // closed or the tab is switched.
   void MaybeRecordFirstSidePanelOpenMetrics(base::TimeDelta duration);
@@ -482,6 +547,11 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   bool opt_in_impression_recorded_for_current_open_ = false;
   NativeFreState native_fre_state_ = NativeFreState::kNone;
   base::TimeTicks fre_accept_to_actionable_start_time_;
+  // Whether the current guest document has reported the opt-in impression.
+  // The web client reports it once per load, so it outlives a close and
+  // reopen of the same guest; reset in OnGuestReset().
+  bool guest_reported_opt_in_impression_ = false;
+  std::optional<FreAttempt> fre_attempt_;
   bool has_consented_ = false;
   OptInShownCallback opt_in_shown_callback_;
 

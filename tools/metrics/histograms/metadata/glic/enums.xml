@@ -634,6 +634,7 @@ chromium-metrics-reviews@google.com.
   <int value="109" label="OnInputFocused"/>
   <int value="110" label="OnTooltipImpression"/>
   <int value="111" label="OnTooltipHidden"/>
+  <int value="112" label="OnOptinRejected"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->

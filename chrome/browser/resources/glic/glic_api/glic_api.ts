@@ -1656,6 +1656,12 @@ export declare interface GlicBrowserHostMetrics {
   onOptinImpression?(): void;
 
   /**
+   * Called when the user explicitly declines the opt-in CTA ("No thanks"),
+   * before the web client closes the panel.
+   */
+  onOptinRejected?(): void;
+
+  /**
    * Called when the web client's main prompt input field receives focus
    * after opening or warm-reopening the panel.
    */

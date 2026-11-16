@@ -18,12 +18,12 @@
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
 #include "chrome/browser/glic/service/glic_invoke_task.h"
+#include "chrome/browser/glic/test_support/structured_metrics_test_util.h"
 #include "components/metrics/structured/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/structured_metrics_client.h"
 #endif
 
 namespace glic {
@@ -133,55 +133,6 @@ TEST(GlicInvokeMetricsTest, RecordInvokeInProgressErrorRecordsHistograms) {
 #if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 using metrics::structured::Event;
-using metrics::structured::StructuredMetricsClient;
-
-// Captures structured metrics events recorded while in scope.
-class ScopedStructuredEventCapture
-    : public StructuredMetricsClient::RecordingDelegate {
- public:
-  ScopedStructuredEventCapture() {
-    StructuredMetricsClient::Get()->SetDelegate(this);
-  }
-  ~ScopedStructuredEventCapture() override {
-    StructuredMetricsClient::Get()->UnsetDelegate();
-  }
-
-  bool IsReadyToRecord() const override { return true; }
-  void RecordEvent(Event&& event) override {
-    events_.push_back(std::move(event));
-  }
-
-  std::vector<const Event*> GetEvents(std::string_view event_name) const {
-    std::vector<const Event*> result;
-    for (const Event& event : events_) {
-      if (event.project_name() == "Glic" && event.event_name() == event_name) {
-        result.push_back(&event);
-      }
-    }
-    return result;
-  }
-
- private:
-  std::vector<Event> events_;
-};
-
-// structured.xml "int" metrics are encoded as kLong, i.e. a stringified int64.
-std::optional<int64_t> GetIntMetric(const Event& event,
-                                    std::string_view metric_name) {
-  auto it = event.metric_values().find(std::string(metric_name));
-  if (it == event.metric_values().end()) {
-    return std::nullopt;
-  }
-  const base::Value& value = it->second.value;
-  if (value.is_int()) {
-    return value.GetInt();
-  }
-  int64_t result;
-  if (value.is_string() && base::StringToInt64(value.GetString(), &result)) {
-    return result;
-  }
-  return std::nullopt;
-}
 
 TEST(GlicInvokeMetricsTest, InvokeTerminatedOnSuccessHasInvocationSource) {
   ScopedStructuredEventCapture capture;
