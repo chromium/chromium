@@ -29,6 +29,10 @@ namespace content {
 class WebContents;
 }
 
+namespace password_manager {
+class PasswordFormManager;
+}  // namespace password_manager
+
 namespace glic {
 class GlicInstance;
 class GlicKeyedService;
@@ -66,7 +70,8 @@ class GlicPasswordChangeActuator
   void Cancel() override;
   content::WebContents* GetExecutorWebContents() const override;
   void OpenPasswordChangeTab(content::WebContents* originator) override;
-  password_manager::PasswordString GetGeneratedPassword() const override;
+  NewPasswordResult GetOrGenerateNewPassword(
+      password_manager::PasswordFormManager* form_manager) override;
   void AddObserver(PasswordChangeActuator::Observer* observer) override;
   void RemoveObserver(PasswordChangeActuator::Observer* observer) override;
 
@@ -97,7 +102,10 @@ class GlicPasswordChangeActuator
 
   const GURL change_password_url_;
   const password_manager::StoredCredential credential_;
-  password_manager::PasswordString generated_password_;
+  std::optional<password_manager::PasswordString> generated_password_;
+  // Copy of the form manager of the change password form, used to save the
+  // generated password as a backup and to promote it later.
+  std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
 
   base::WeakPtr<content::WebContents> originator_;
   const raw_ptr<Profile> profile_ = nullptr;
