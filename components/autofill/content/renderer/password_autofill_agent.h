@@ -369,10 +369,14 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     bool is_password = false;
   };
 
-  // This class keeps track of autofilled username and password input elements
-  // and ensures that the autofilled values are not accessible to JavaScript
-  // code until the user interacts with the page. This restriction improves
-  // privacy (crbug.com/798492) and reduces attack surface (crbug.com/777272).
+  // On page load, PWM preliminarily autofills usernames and passwords in a way
+  // that keeps them inaccessible to JavaScript using SetSuggestedValue() and
+  // WebAutofillState::kAutofilled.
+  //
+  // This class keeps track of these autofilled input elements and ensures that
+  // the autofilled values are not accessible to JavaScript code until the user
+  // interacts with the page. This restriction improves privacy
+  // (crbug.com/798492) and reduces attack surface (crbug.com/777272).
   class PasswordValueGatekeeper {
    public:
     PasswordValueGatekeeper();

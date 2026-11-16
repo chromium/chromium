@@ -1704,6 +1704,21 @@ TEST_F(PasswordAutofillAgentTest, GestureRequiredTest) {
   CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
 }
 
+// Tests that a previewed suggestion is not committed into the DOM value on a
+// user gesture if the field was previously registered with the gatekeeper.
+TEST_F(PasswordAutofillAgentTest, GatekeeperDoesNotCommitPreviewedValue) {
+  SimulateOnFillPasswordForm(fill_data_);
+  CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
+
+  password_autofill_agent_->PreviewField(
+      form_util::GetFieldRendererId(username_element_), u"previewed_value");
+  ASSERT_TRUE(username_element_.IsPreviewed());
+
+  password_autofill_agent_->UserGestureObserved();
+  EXPECT_TRUE(username_element_.Value().IsEmpty());
+  EXPECT_EQ(password_element_.Value().Utf16(), kAlicePassword16);
+}
+
 // Verifies that a DOM-activated UI event will not cause an autofill.
 TEST_F(PasswordAutofillAgentTest, NoDOMActivationTest) {
   // Trigger the initial autocomplete.
