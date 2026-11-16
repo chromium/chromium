@@ -98,8 +98,6 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       mojo::ScopedInterfaceEndpointHandle* handle) override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
-  void DidSetPageLifecycleState(
-      blink::BFCacheStateChange bfcache_change) override;
   void DidFinishLoad() override;
   void DidCreateNewDocument() override;
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
@@ -112,6 +110,8 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 
   // blink::WebLocalFrameObserver:
   void OnFrameDetached() override;
+  void DidSetPageLifecycleState(
+      blink::BFCacheStateChange bfcache_change) override;
 
   // chrome::mojom::ChromeRenderFrame:
   void SetWindowFeatures(

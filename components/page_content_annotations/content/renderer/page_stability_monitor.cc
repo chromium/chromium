@@ -22,7 +22,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_stability_monitor_delegate.h"
 #include "content/public/renderer/render_frame.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace page_content_annotations {
 
@@ -36,6 +36,7 @@ PageStabilityMonitor::PageStabilityMonitor(
     bool supports_paint_stability,
     std::unique_ptr<PageStabilityMonitorDelegate> delegate)
     : RenderFrameObserver(&frame),
+      blink::WebLocalFrameObserver(frame.GetWebFrame()),
       delegate_(std::move(delegate)),
       paint_stability_monitor_(
           supports_paint_stability

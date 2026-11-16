@@ -13,11 +13,11 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 
 namespace blink {
 class AssociatedInterfaceRegistry;
-struct SoftNavigationMetricsForReporting;
 }  // namespace blink
 
 namespace content {
@@ -30,6 +30,7 @@ namespace payments::facilitated {
 // events (layout shifts, scrolling, page load) and reports page signals that
 // the browser uses to decide whether the page may show a payment QR code.
 class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
+                                 public blink::WebLocalFrameObserver,
                                  public mojom::FacilitatedPaymentsAgent {
  public:
   static constexpr base::TimeDelta kRescanDebounceDelay = base::Seconds(1);
@@ -50,9 +51,12 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
   void DidChangeScrollOffset(blink::mojom::ScrollType) override;
   void DidFinishLoad() override;
   void DidFinishSameDocumentNavigation() override;
+  void OnDestruct() override;
+
+  // blink::WebLocalFrameObserver:
+  void OnFrameDetached() override {}
   void DidObserveSoftNavigation(
       blink::SoftNavigationMetricsForReporting metrics) override;
-  void OnDestruct() override;
 
   // Resets the debounce timer to schedule a rescan after page activity settles.
   void OnTriggeredRescan();

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_frame_content_dumper.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace optimization_guide {
 
@@ -34,7 +35,8 @@ std::optional<mojom::TextDumpEvent> LayoutEventAsMojoEvent(
 
 PageTextAgent::PageTextAgent(content::RenderFrame* frame)
     : content::RenderFrameObserver(frame),
-      content::RenderFrameObserverTracker<PageTextAgent>(frame) {
+      content::RenderFrameObserverTracker<PageTextAgent>(frame),
+      blink::WebLocalFrameObserver(frame ? frame->GetWebFrame() : nullptr) {
   if (!frame) {
     // For unittesting.
     return;

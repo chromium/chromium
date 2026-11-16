@@ -4420,13 +4420,6 @@ void RenderFrameImpl::DidOpenDocumentInputStream(const blink::WebURL& url) {
   GetFrameHost()->DidOpenDocumentInputStream(filtered_url);
 }
 
-void RenderFrameImpl::DidSetPageLifecycleState(
-    blink::BFCacheStateChange bfcache_change) {
-  for (auto& observer : observers_) {
-    observer.DidSetPageLifecycleState(bfcache_change);
-  }
-}
-
 void RenderFrameImpl::NotifyCurrentHistoryItemChanged() {
   SendUpdateState();
 }
@@ -4598,13 +4591,6 @@ void RenderFrameImpl::OnMainFrameViewportRectangleChanged(
     for (auto& observer : observers_) {
       observer.OnMainFrameViewportRectangleChanged(main_frame_viewport_rect);
     }
-  }
-}
-
-void RenderFrameImpl::OnMainFrameAdRectangleChanged(int element_id,
-                                                    const gfx::Rect& ad_rect) {
-  for (auto& observer : observers_) {
-    observer.OnMainFrameAdRectangleChanged(element_id, ad_rect);
   }
 }
 
@@ -4789,49 +4775,6 @@ void RenderFrameImpl::DidReceiveTransferSizeUpdate(
   }
 }
 
-void RenderFrameImpl::DidChangePerformanceTiming() {
-  for (auto& observer : observers_) {
-    observer.DidChangePerformanceTiming();
-  }
-}
-
-void RenderFrameImpl::DidObserveUserInteraction(
-    base::TimeTicks max_event_start,
-    base::TimeTicks max_event_queued_main_thread,
-    base::TimeTicks max_event_processing_start,
-    base::TimeTicks max_event_commit_finish,
-    base::TimeTicks max_event_end,
-    uint64_t interaction_offset,
-    uint64_t performance_timeline_navigation_id) {
-  for (auto& observer : observers_) {
-    observer.DidObserveUserInteraction(
-        max_event_start, max_event_queued_main_thread,
-        max_event_processing_start, max_event_commit_finish, max_event_end,
-        interaction_offset, performance_timeline_navigation_id);
-  }
-}
-
-void RenderFrameImpl::DidChangeCpuTiming(base::TimeDelta time,
-                                         base::TimeDelta ad_time) {
-  for (auto& observer : observers_) {
-    observer.DidChangeCpuTiming(time, ad_time);
-  }
-}
-
-void RenderFrameImpl::DidObserveLoadingBehavior(
-    blink::LoadingBehaviorFlag behavior) {
-  for (auto& observer : observers_) {
-    observer.DidObserveLoadingBehavior(behavior);
-  }
-}
-
-void RenderFrameImpl::DidObserveJavaScriptFrameworks(
-    const blink::JavaScriptFrameworkDetectionResult& result) {
-  for (auto& observer : observers_) {
-    observer.DidObserveJavaScriptFrameworks(result);
-  }
-}
-
 void RenderFrameImpl::DidObserveSubresourceLoad(
     const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   if (subresource_load_callback_) {
@@ -4883,39 +4826,6 @@ void RenderFrameImpl::DidObserveNewFeatureUsage(
     for (auto& observer : observers_) {
       observer.DidObserveNewFeatureUsage(feature);
     }
-  }
-}
-
-void RenderFrameImpl::DidObserveSoftNavigation(
-    blink::SoftNavigationMetricsForReporting metrics) {
-  for (auto& observer : observers_) {
-    observer.DidObserveSoftNavigation(metrics);
-  }
-}
-
-void RenderFrameImpl::DidObserveSoftNavigationFirstContentfulPaint(
-    uint64_t performance_timeline_navigation_id,
-    base::TimeDelta first_contentful_paint) {
-  for (auto& observer : observers_) {
-    observer.DidObserveSoftNavigationFirstContentfulPaint(
-        performance_timeline_navigation_id, first_contentful_paint);
-  }
-}
-
-void RenderFrameImpl::DidObserveSoftLargestContentfulPaint(
-    const blink::LargestContentfulPaintDetailsForReporting& lcp) {
-  for (auto& observer : observers_) {
-    observer.DidObserveSoftLargestContentfulPaint(lcp);
-  }
-}
-
-void RenderFrameImpl::DidObserveLayoutShift(
-    double score,
-    bool after_input_or_scroll,
-    uint64_t performance_timeline_navigation_id) {
-  for (auto& observer : observers_) {
-    observer.DidObserveLayoutShift(score, after_input_or_scroll,
-                                   performance_timeline_navigation_id);
   }
 }
 

@@ -618,18 +618,6 @@ class TestWebFrameClient : public WebLocalFrameClient {
 
   void SetFrameDetachedCallback(base::OnceClosure callback);
 
-  void DidChangeCpuTiming(base::TimeDelta time,
-                          base::TimeDelta ad_time) override {
-    total_cpu_time_ += time;
-    total_ad_cpu_time_ += ad_time;
-  }
-  base::TimeDelta total_cpu_time() const { return total_cpu_time_; }
-  base::TimeDelta total_ad_cpu_time() const { return total_ad_cpu_time_; }
-  void reset_cpu_timing() {
-    total_cpu_time_ = base::TimeDelta();
-    total_ad_cpu_time_ = base::TimeDelta();
-  }
-
  private:
   void CommitNavigation(std::unique_ptr<WebNavigationInfo>);
 
@@ -658,8 +646,6 @@ class TestWebFrameClient : public WebLocalFrameClient {
   base::OnceClosure frame_detached_callback_ = base::DoNothing();
 
   Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
-  base::TimeDelta total_cpu_time_;
-  base::TimeDelta total_ad_cpu_time_;
   base::WeakPtrFactory<TestWebFrameClient> weak_factory_{this};
 };
 

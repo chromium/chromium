@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -31,7 +30,6 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "v8/include/v8-forward.h"
@@ -45,9 +43,7 @@ class WebFormElement;
 class WebString;
 class WebURLRequest;
 class WebWorkerFetchContext;
-enum class BFCacheStateChange;
 enum class DetachReason;
-struct JavaScriptFrameworkDetectionResult;
 }  // namespace blink
 
 namespace gfx {
@@ -112,10 +108,6 @@ class CONTENT_EXPORT RenderFrameObserver {
   // DidFinishNavigation.
   virtual void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) {}
-
-  // Called when a RenderFrame's page lifecycle state gets updated.
-  virtual void DidSetPageLifecycleState(
-      blink::BFCacheStateChange bfcache_change) {}
 
   // These match the Blink API notifications. These will not be called for the
   // initial empty document, since that already exists before an observer for a
@@ -186,50 +178,8 @@ class CONTENT_EXPORT RenderFrameObserver {
   // The interestingness of layouts is explained in WebMeaningfulLayout.h.
   virtual void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) {}
 
-  // Notifications when |PerformanceTiming| data becomes available
-  virtual void DidChangePerformanceTiming() {}
-
-  // Notifications when a user interaction latency data becomes available. A
-  // user interaction can be built up from multiple input events (e.g. keydown
-  // then keyup). Each of these events has an input to next frame latency. This
-  // reports the timings of the max input-to-frame latency for each interaction.
-  // `max_event_start`: when input was received.
-  // `max_event_queued_main_thread`: when the input was queued.
-  // `max_event_processing_start`: when input event processing started.
-  // `max_event_commit_finish`: when the next commit finished after the event
-  // was processed.
-  // `max_event_end`: when the next frame was presented.
-  // `interaction_offset`: unique interaction index within the frame.
-  // `performance_timeline_navigation_id`: the Performance Timeline navigation
-  // ID (1 for the initial document navigation, 2+ for subsequent soft
-  // navigations in the document; distinct from browser-side navigation IDs).
-  // See https://web.dev/inp/#whats-in-an-interaction for more detailed
-  // motivation and explanation.
-  virtual void DidObserveUserInteraction(
-      base::TimeTicks max_event_start,
-      base::TimeTicks max_event_queued_main_thread,
-      base::TimeTicks max_event_processing_start,
-      base::TimeTicks max_event_commit_finish,
-      base::TimeTicks max_event_end,
-      uint64_t interaction_offset,
-      uint64_t performance_timeline_navigation_id) {}
-
   // Notification when the First Scroll Delay becomes available.
   virtual void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay) {}
-
-  // Notifications when a cpu timing update becomes available, when a frame
-  // has performed at least 100ms of tasks.
-  virtual void DidChangeCpuTiming(base::TimeDelta time,
-                                  base::TimeDelta ad_time) {}
-
-  // Notification when the renderer uses a particular code path during a page
-  // load. This is used for metrics collection.
-  virtual void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) {}
-
-  // Notification when the renderer performed framework detection during a page
-  // load. This is used for metrics collection.
-  virtual void DidObserveJavaScriptFrameworks(
-      const blink::JavaScriptFrameworkDetectionResult&) {}
 
   // Notification when the renderer uses subresources.
   // It is called when there is a subresouce load. The reported values via
@@ -247,41 +197,6 @@ class CONTENT_EXPORT RenderFrameObserver {
   // deprecated. Use `SetNewFeatureUsageCallback()` in `RenderFrame` instead.
   virtual void DidObserveNewFeatureUsage(
       const blink::UseCounterFeature& feature) {}
-
-  // A new soft navigation was observed.
-  // A soft navigation is:
-  // - A same-document navigation in the top-level document.
-  // - Triggered with a user gesture.
-  // - Initiated with the window.history or window.navigation APIs.
-  // - Accompanied with a DOM modification of the <main> element during the same
-  // or a descendant task.
-  virtual void DidObserveSoftNavigation(
-      blink::SoftNavigationMetricsForReporting metrics) {}
-
-  // A new First Contentful Paint was observed for a soft navigation.
-  virtual void DidObserveSoftNavigationFirstContentfulPaint(
-      uint64_t performance_timeline_navigation_id,
-      base::TimeDelta first_contentful_paint) {}
-
-  // A new largest contentful paint candidate relating to the most recent
-  // soft navigation was observed. Also see DidObserveSoftNavigation().
-  virtual void DidObserveSoftLargestContentfulPaint(
-      const blink::LargestContentfulPaintDetailsForReporting& lcp) {}
-
-  // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
-  // This is called once for each animation frame containing any layout shift,
-  // and receives the layout shift (LS) score for that frame.  The cumulative
-  // layout shift (CLS) score can be inferred by summing the LS scores.
-  // `score`: the layout shift score for the animation frame.
-  // `after_input_or_scroll`: whether the given `score` was observed after an
-  // input or scroll occurred in the associated document.
-  // `performance_timeline_navigation_id`: the Performance Timeline navigation
-  // ID (1 for the initial document navigation, 2+ for subsequent soft
-  // navigations in the document; distinct from browser-side navigation IDs).
-  virtual void DidObserveLayoutShift(
-      double score,
-      bool after_input_or_scroll,
-      uint64_t performance_timeline_navigation_id) {}
 
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
@@ -347,12 +262,6 @@ class CONTENT_EXPORT RenderFrameObserver {
   // main frame.
   virtual void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) {}
-
-  // Called when an ad element's geometry changed. An empty `ad_rect` is used to
-  // signal the removal of the element. Only invoked on the outermost main
-  // frame.
-  virtual void OnMainFrameAdRectangleChanged(int element_id,
-                                             const gfx::Rect& ad_rect) {}
 
   // Overlay-popup-ad violates The Better Ads Standards
   // (https://www.betterads.org/standards/). This method will be called when an

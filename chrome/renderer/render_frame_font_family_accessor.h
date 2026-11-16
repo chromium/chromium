@@ -11,6 +11,7 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/win/web_font_family_names.h"
 
 namespace content {
@@ -22,7 +23,8 @@ class RenderFrame;
 // chrome::mojom::RenderFrameFontFamilyAccessor .
 class RenderFrameFontFamilyAccessor
     : public chrome::mojom::RenderFrameFontFamilyAccessor,
-      public content::RenderFrameObserver {
+      public content::RenderFrameObserver,
+      public blink::WebLocalFrameObserver {
  public:
   RenderFrameFontFamilyAccessor(const RenderFrameFontFamilyAccessor&) = delete;
   RenderFrameFontFamilyAccessor& operator=(
@@ -38,9 +40,12 @@ class RenderFrameFontFamilyAccessor
 
   // content::RenderFrameObserver:
   void OnDestruct() override;
-  void DidChangePerformanceTiming() override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
+
+  // blink::WebLocalFrameObserver:
+  void OnFrameDetached() override {}
+  void DidChangePerformanceTiming() override;
 
  private:
   RenderFrameFontFamilyAccessor(

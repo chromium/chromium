@@ -2765,8 +2765,7 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   }
   for (WebFrame* frame = MainFrame(); frame; frame = frame->TraverseNext()) {
     if (frame->IsWebLocalFrame()) {
-      frame->ToWebLocalFrame()->Client()->DidSetPageLifecycleState(
-          bfcache_change);
+      To<WebLocalFrameImpl>(frame)->DidSetPageLifecycleState(bfcache_change);
     }
   }
 

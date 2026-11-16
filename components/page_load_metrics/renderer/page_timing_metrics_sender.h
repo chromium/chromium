@@ -5,13 +5,17 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_TIMING_METRICS_SENDER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_TIMING_METRICS_SENDER_H_
 
+#include <map>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/byte_size.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/small_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
@@ -20,7 +24,7 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 
 class GURL;
 
@@ -32,13 +36,17 @@ namespace blink {
 struct JavaScriptFrameworkDetectionResult;
 }  // namespace blink
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace network {
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
-namespace blink {
-struct SoftNavigationMetricsForReporting;
-}  // namespace blink
+namespace url {
+class SchemeHostPort;
+}  // namespace url
 
 namespace page_load_metrics {
 

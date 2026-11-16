@@ -22,6 +22,7 @@
 #include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace page_load_metrics {

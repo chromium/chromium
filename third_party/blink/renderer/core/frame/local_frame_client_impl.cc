@@ -850,9 +850,7 @@ void LocalFrameClientImpl::DidDispatchPingLoader(const KURL& url) {
 }
 
 void LocalFrameClientImpl::DidChangePerformanceTiming() {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidChangePerformanceTiming();
-  }
+  web_frame_->DidChangePerformanceTiming();
 }
 
 void LocalFrameClientImpl::DidObserveUserInteraction(
@@ -863,31 +861,25 @@ void LocalFrameClientImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_end,
     PerformanceTimelineEntryIdInfo interaction_id,
     PerformanceTimelineEntryIdInfo navigation_id) {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidObserveUserInteraction(
-        max_event_start, max_event_queued_main_thread,
-        max_event_processing_start, max_event_commit_finish, max_event_end,
-        interaction_id.non_web_exposed_id, navigation_id.non_web_exposed_id);
-  }
+  web_frame_->DidObserveUserInteraction(
+      max_event_start, max_event_queued_main_thread, max_event_processing_start,
+      max_event_commit_finish, max_event_end, interaction_id.non_web_exposed_id,
+      navigation_id.non_web_exposed_id);
 }
 
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time,
                                               base::TimeDelta ad_time) {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidChangeCpuTiming(time, ad_time);
-  }
+  web_frame_->DidChangeCpuTiming(time, ad_time);
 }
 
 void LocalFrameClientImpl::DidObserveLoadingBehavior(
     LoadingBehaviorFlag behavior) {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidObserveLoadingBehavior(behavior);
-  }
+  web_frame_->DidObserveLoadingBehavior(behavior);
 }
 
 void LocalFrameClientImpl::DidObserveJavaScriptFrameworks(
     const JavaScriptFrameworkDetectionResult& result) {
-  web_frame_->Client()->DidObserveJavaScriptFrameworks(result);
+  web_frame_->DidObserveJavaScriptFrameworks(result);
 }
 
 void LocalFrameClientImpl::DidObserveSubresourceLoad(
@@ -907,33 +899,27 @@ void LocalFrameClientImpl::DidObserveNewFeatureUsage(
 // A new soft navigation was observed.
 void LocalFrameClientImpl::DidObserveSoftNavigation(
     SoftNavigationMetricsForReporting metrics) {
-  if (WebLocalFrameClient* client = web_frame_->Client()) {
-    client->DidObserveSoftNavigation(metrics);
-  }
+  web_frame_->DidObserveSoftNavigation(metrics);
 }
 
 void LocalFrameClientImpl::DidObserveSoftNavigationFirstContentfulPaint(
     uint64_t performance_timeline_navigation_id,
     base::TimeDelta first_contentful_paint) {
-  if (WebLocalFrameClient* client = web_frame_->Client()) {
-    client->DidObserveSoftNavigationFirstContentfulPaint(
-        performance_timeline_navigation_id, first_contentful_paint);
-  }
+  web_frame_->DidObserveSoftNavigationFirstContentfulPaint(
+      performance_timeline_navigation_id, first_contentful_paint);
 }
 
 void LocalFrameClientImpl::DidObserveSoftLargestContentfulPaint(
     const LargestContentfulPaintDetailsForReporting& lcp) {
-  web_frame_->Client()->DidObserveSoftLargestContentfulPaint(lcp);
+  web_frame_->DidObserveSoftLargestContentfulPaint(lcp);
 }
 
 void LocalFrameClientImpl::DidObserveLayoutShift(
     double score,
     bool after_input_or_scroll,
     PerformanceTimelineEntryIdInfo navigation_id) {
-  if (WebLocalFrameClient* client = web_frame_->Client()) {
-    client->DidObserveLayoutShift(score, after_input_or_scroll,
-                                  navigation_id.non_web_exposed_id);
-  }
+  web_frame_->DidObserveLayoutShift(score, after_input_or_scroll,
+                                    navigation_id.non_web_exposed_id);
 }
 
 void LocalFrameClientImpl::SelectorMatchChanged(
@@ -1204,9 +1190,8 @@ void LocalFrameClientImpl::OnMainFrameViewportRectangleChanged(
 void LocalFrameClientImpl::OnMainFrameAdRectangleChanged(
     DOMNodeId element_id,
     const gfx::Rect& ad_rect) {
-  DCHECK(web_frame_->Client());
   DCHECK(web_frame_->GetFrame()->IsOutermostMainFrame());
-  web_frame_->Client()->OnMainFrameAdRectangleChanged(element_id, ad_rect);
+  web_frame_->OnMainFrameAdRectangleChanged(element_id, ad_rect);
 }
 
 void LocalFrameClientImpl::OnOverlayPopupAdDetected() {

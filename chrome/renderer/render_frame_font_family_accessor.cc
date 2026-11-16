@@ -33,6 +33,7 @@ RenderFrameFontFamilyAccessor::RenderFrameFontFamilyAccessor(
     mojo::PendingAssociatedReceiver<
         chrome::mojom::RenderFrameFontFamilyAccessor> pending_receiver)
     : RenderFrameObserver(render_frame),
+      blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
       receiver_(this, std::move(pending_receiver)) {
   // While unlikely, it is possible the fonts were requested after fcp. If this
   // happens copy the fonts now.

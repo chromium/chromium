@@ -15,6 +15,7 @@
 #include "components/page_content_annotations/core/page_stability_state.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 
 namespace content {
 class RenderFrame;
@@ -30,6 +31,7 @@ class PaintStabilityMonitor;
 // RenderFrame it observes. This object is single-use: NotifyWhenStable() can
 // only be called once.
 class PageStabilityMonitor : public content::RenderFrameObserver,
+                             public blink::WebLocalFrameObserver,
                              public mojom::PageStabilityMonitor {
  public:
   // Constructs the monitor and takes a baseline observation of the document in
@@ -45,9 +47,12 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // RenderFrameObserver:
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidFailProvisionalLoad() override;
+  void OnDestruct() override;
+
+  // blink::WebLocalFrameObserver:
+  void OnFrameDetached() override {}
   void DidSetPageLifecycleState(
       blink::BFCacheStateChange bfcache_change) override;
-  void OnDestruct() override;
 
   // mojom::PageStabilityMonitor:
   // Invokes the given callback when the page is deemed stable enough for an

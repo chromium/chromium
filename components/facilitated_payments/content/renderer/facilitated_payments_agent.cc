@@ -110,7 +110,9 @@ bool TextMatchesKeyword(const blink::WebDocument& document,
 FacilitatedPaymentsAgent::FacilitatedPaymentsAgent(
     content::RenderFrame* render_frame,
     blink::AssociatedInterfaceRegistry* registry)
-    : content::RenderFrameObserver(render_frame) {
+    : content::RenderFrameObserver(render_frame),
+      blink::WebLocalFrameObserver(render_frame ? render_frame->GetWebFrame()
+                                                : nullptr) {
   if (registry) {
     registry->AddInterface<mojom::FacilitatedPaymentsAgent>(
         base::BindRepeating(&FacilitatedPaymentsAgent::BindPendingReceiver,

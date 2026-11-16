@@ -21,6 +21,7 @@
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 
 namespace content {
@@ -33,10 +34,10 @@ namespace optimization_guide {
 // mojom::PageTextService. It currently supports requesting and getting text
 // dumps during |content::RenderFrameObserver::DidMeaningfulLayout|, and
 // |DidFinishLoad| for subframes.
-class PageTextAgent
-    : public mojom::PageTextService,
-      public content::RenderFrameObserver,
-      public content::RenderFrameObserverTracker<PageTextAgent> {
+class PageTextAgent : public mojom::PageTextService,
+                      public content::RenderFrameObserver,
+                      public content::RenderFrameObserverTracker<PageTextAgent>,
+                      public blink::WebLocalFrameObserver {
  public:
   explicit PageTextAgent(content::RenderFrame* frame);
   ~PageTextAgent() override;
@@ -59,11 +60,14 @@ class PageTextAgent
 
   // content::RenderFrameObserver:
   void OnDestruct() override {}
-  void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
   void DidStartNavigation(
       const GURL& url,
       std::optional<blink::WebNavigationType> navigation_type) override;
   void DidFinishLoad() override;
+
+  // blink::WebLocalFrameObserver:
+  void OnFrameDetached() override {}
+  void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
 
   PageTextAgent(const PageTextAgent&) = delete;
   PageTextAgent& operator=(const PageTextAgent&) = delete;

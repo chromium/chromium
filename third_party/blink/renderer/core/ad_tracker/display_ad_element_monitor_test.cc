@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -29,10 +30,6 @@ class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
       const gfx::Rect& main_frame_viewport_rect) override {
     last_main_frame_viewport_rect_ = main_frame_viewport_rect;
   }
-  MOCK_METHOD(void,
-              OnMainFrameAdRectangleChanged,
-              (int element_dom_node_id, const gfx::Rect& content_rect),
-              (override));
   MOCK_METHOD(void, OnLargeStickyAdDetected, (), (override));
 
   const gfx::Rect& last_main_frame_rect() const {
@@ -45,6 +42,18 @@ class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
  private:
   gfx::Rect last_main_frame_rect_;
   gfx::Rect last_main_frame_viewport_rect_;
+};
+
+class MockFrameObserver : public WebLocalFrameObserver {
+ public:
+  explicit MockFrameObserver(WebLocalFrame* frame)
+      : WebLocalFrameObserver(frame) {}
+
+  void OnFrameDetached() override {}
+  MOCK_METHOD(void,
+              OnMainFrameAdRectangleChanged,
+              (int element_dom_node_id, const gfx::Rect& content_rect),
+              (override));
 };
 
 // A video player displayed inline near the top of the page, with the ad
@@ -80,6 +89,8 @@ class DisplayAdElementMonitorTest : public testing::Test {
   void SetUp() final {
     mock_frame_client_ = std::make_unique<MockFrameClient>();
     helper_.Initialize(mock_frame_client_.get());
+    mock_frame_observer_ =
+        std::make_unique<MockFrameObserver>(helper_.LocalMainFrame());
     helper_.GetWebView()->Resize(gfx::Size(800, 600));
   }
 
@@ -115,7 +126,7 @@ class DisplayAdElementMonitorTest : public testing::Test {
     MarkFirstContentfulPaint();
     UpdateLifecycle();
 
-    EXPECT_CALL(MockClient(),
+    EXPECT_CALL(MockObserver(),
                 OnMainFrameAdRectangleChanged(testing::_, testing::_))
         .Times(testing::AnyNumber());
     EXPECT_CALL(MockClient(), OnLargeStickyAdDetected())
@@ -132,11 +143,13 @@ class DisplayAdElementMonitorTest : public testing::Test {
   }
 
   MockFrameClient& MockClient() { return *mock_frame_client_; }
+  MockFrameObserver& MockObserver() { return *mock_frame_observer_; }
 
  protected:
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<MockFrameClient> mock_frame_client_;
+  std::unique_ptr<MockFrameObserver> mock_frame_observer_;
   frame_test_helpers::WebViewHelper helper_;
 };
 
@@ -152,16 +165,16 @@ TEST_F(DisplayAdElementMonitorTest, BasicReporting_InsertUpdateRemove) {
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
   // Expect the initial position report.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 50, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Change the element's position and expect a new report with the updated
   // position.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(200, 150, 300, 250)));
   ad_element->setAttribute(
@@ -169,14 +182,14 @@ TEST_F(DisplayAdElementMonitorTest, BasicReporting_InsertUpdateRemove) {
       AtomicString("position:absolute; left:200px; top:150px; width:300px; "
                    "height:250px;"));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Remove the element and expect an empty rect report.
   const int dom_node_id = ad_element->GetDomNodeId();
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(dom_node_id, gfx::Rect()));
   ad_element->remove();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, ScrollingDoesNotSendNewReport) {
@@ -194,24 +207,24 @@ TEST_F(DisplayAdElementMonitorTest, ScrollingDoesNotSendNewReport) {
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
   // The first report should contain the ad's position in document coordinates.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 2050, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Scroll the page down. This changes the ad's position relative to the
   // viewport but not relative to the document. Expect that no new message is
   // sent because the reported rect is unchanged.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, NestedAdElement) {
@@ -250,25 +263,25 @@ TEST_F(DisplayAdElementMonitorTest, NestedAdElement) {
   // The initial reported position should be relative to the main document.
   // Ad's absolute X = iframe's left (100) + ad's left (10) = 110.
   // Ad's absolute Y = iframe's top (50) + ad's top (1500) = 1550.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(110, 1550, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Scroll the iframe content down by 200px. This moves the ad "up" by 200px
   // relative to the main document's coordinates. Expect a new report with the
   // updated position.
   // New absolute Y = initial Y (1550) - iframe scroll (200) = 1350.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(110, 1350, 300, 250)));
   iframe_doc->View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, AdInitiallyOverlaidAndThenExposed) {
@@ -287,30 +300,30 @@ TEST_F(DisplayAdElementMonitorTest, AdInitiallyOverlaidAndThenExposed) {
 
   // The ad is covered by the overlay div. Expect that no geometry report is
   // sent.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Expose the ad by removing the overlay. A report is not sent immediately
   // because the visibility check is throttled.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   overlay_element->remove();
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Fast-forward time past the throttle delay. The monitor should now detect
   // the exposed ad and send a report with its correct geometry.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 50, 300, 250)));
   task_environment_.FastForwardBy(base::Seconds(1));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest,
@@ -332,25 +345,25 @@ TEST_F(DisplayAdElementMonitorTest,
   // Since the ad is outside the viewport, the overlay check is skipped, and
   // it's assumed to be visible by default. A report with its geometry is
   // expected.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 700, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Scroll the page down so the ad and its overlay are now inside the viewport.
   // The overlay check will now perform a hit-test. The ad is now detected as
   // invisible, so an empty rect should be reported to signal its removal from
   // visibility.
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                ad_element->GetDomNodeId(), gfx::Rect()));
+  EXPECT_CALL(MockObserver(), OnMainFrameAdRectangleChanged(
+                                  ad_element->GetDomNodeId(), gfx::Rect()));
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
   task_environment_.FastForwardBy(base::Seconds(1));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest,
@@ -391,12 +404,12 @@ TEST_F(DisplayAdElementMonitorTest,
 
   // Initially, the iframe (and the ad within it) is covered by the overlay.
   // The hit-test should detect this, and no geometry report should be sent.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Now, remove the overlay from the main document, and fast-forward time past
   // the throttle delay. The hit-test should now pass and find the ad element
@@ -404,13 +417,13 @@ TEST_F(DisplayAdElementMonitorTest,
   // frame, should be sent.
   // Ad's absolute X = iframe's left (100) + ad's left (10) = 110.
   // Ad's absolute Y = iframe's top (50) + ad's top (20) = 70.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(110, 70, 300, 250)));
   overlay_element->remove();
   task_environment_.FastForwardBy(base::Seconds(1));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, RemoveAdInSubframe) {
@@ -438,20 +451,20 @@ TEST_F(DisplayAdElementMonitorTest, RemoveAdInSubframe) {
       To<HTMLImageElement>(iframe_doc->getElementById(AtomicString("ad")));
 
   // Expect the initial position report relative to the main document.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(110, 70, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Remove the element from the subframe and expect an empty rect report on the
-  // main frame's client.
+  // main frame's observer.
   const int dom_node_id = ad_element->GetDomNodeId();
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(dom_node_id, gfx::Rect()));
   ad_element->remove();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, RemoveSubframeContainingAd) {
@@ -479,21 +492,21 @@ TEST_F(DisplayAdElementMonitorTest, RemoveSubframeContainingAd) {
       To<HTMLImageElement>(iframe_doc->getElementById(AtomicString("ad")));
 
   // Expect the initial position report relative to the main document.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(110, 70, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Remove the hosting subframe from the main document (without explicitly
   // removing `ad_element` from `iframe_doc`) and expect an empty rect report on
-  // the main frame's client.
+  // the main frame's observer.
   const int dom_node_id = ad_element->GetDomNodeId();
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(dom_node_id, gfx::Rect()));
   iframe_element->remove();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, NavigateSubframeContainingAd) {
@@ -521,23 +534,23 @@ TEST_F(DisplayAdElementMonitorTest, NavigateSubframeContainingAd) {
       To<HTMLImageElement>(iframe_doc->getElementById(AtomicString("ad")));
 
   // Expect the initial position report relative to the main document.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(110, 70, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Navigate the subframe to a new document (detaching the old document without
   // calling `ad_element->remove()`) and expect an empty rect report on the main
-  // frame's client.
+  // frame's observer.
   const int dom_node_id = ad_element->GetDomNodeId();
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(dom_node_id, gfx::Rect()));
   iframe_element->setAttribute(html_names::kSrcdocAttr,
                                AtomicString("<body></body>"));
   test::RunPendingTasks();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
@@ -553,7 +566,7 @@ TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
   ASSERT_NE(ad_element->ContentFrame(), nullptr);
 
   // Expect the initial position report when the iframe is marked as an ad.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 50, 300, 250)));
   FrameAdEvidence ad_evidence;
@@ -562,11 +575,11 @@ TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
   ad_evidence.set_is_complete();
   To<LocalFrame>(*ad_element->ContentFrame()).SetAdEvidence(ad_evidence);
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Change the element's position and expect a new report with the updated
   // position.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(200, 150, 300, 250)));
   ad_element->setAttribute(
@@ -574,17 +587,17 @@ TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
       AtomicString("position:absolute; left:200px; top:150px; width:300px; "
                    "height:250px; border:none;"));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Hide the element by setting "display: none" and expect an empty rect
   // report.
   const int dom_node_id = ad_element->GetDomNodeId();
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(dom_node_id, gfx::Rect()));
   ad_element->setAttribute(html_names::kStyleAttr,
                            AtomicString("display:none;"));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, ContainerAdObscuredByNonAdContent) {
@@ -609,29 +622,30 @@ TEST_F(DisplayAdElementMonitorTest, ContainerAdObscuredByNonAdContent) {
 
   // The <body> must not claim its sample point just because it is an ancestor
   // of the non-ad content hit there. The inner ad is reported on its own.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(inner_ad_element->GetDomNodeId(),
                                             gfx::Rect(0, 0, 300, 250)));
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                body_element->GetDomNodeId(), testing::_))
+  EXPECT_CALL(MockObserver(), OnMainFrameAdRectangleChanged(
+                                  body_element->GetDomNodeId(), testing::_))
       .Times(0);
   body_element->SetIsAdRelated(NoProvenance{});
   inner_ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Once the content (and the ad it hosts) is gone, the <body>'s own box, i.e.,
   // its ad background, is front-most, and it is reported.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(body_element->GetDomNodeId(),
                                             gfx::Rect(0, 0, 800, 600)));
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                inner_ad_element->GetDomNodeId(), gfx::Rect()));
+  EXPECT_CALL(MockObserver(),
+              OnMainFrameAdRectangleChanged(inner_ad_element->GetDomNodeId(),
+                                            gfx::Rect()));
   content_element->setAttribute(html_names::kStyleAttr,
                                 AtomicString("display:none;"));
   task_environment_.FastForwardBy(base::Seconds(1));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, VideoAdMediaControlsAttributedToVideo) {
@@ -646,12 +660,12 @@ TEST_F(DisplayAdElementMonitorTest, VideoAdMediaControlsAttributedToVideo) {
 
   // The sample point (the video's center) lands on the media controls panel,
   // which lives in the video's user-agent shadow tree.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 50, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest,
@@ -676,23 +690,23 @@ TEST_F(DisplayAdElementMonitorTest,
   auto* overlay_element = GetDocument().getElementById(AtomicString("overlay"));
 
   // The video ad shows through the overlay, so it is reported.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 50, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Once the overlay paints a background, it does hide the video ad.
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                ad_element->GetDomNodeId(), gfx::Rect()));
+  EXPECT_CALL(MockObserver(), OnMainFrameAdRectangleChanged(
+                                  ad_element->GetDomNodeId(), gfx::Rect()));
   overlay_element->setAttribute(
       html_names::kStyleAttr,
       AtomicString("position:absolute; left:0px; top:0px; width:300px; "
                    "height:250px; background-color:white;"));
   task_environment_.FastForwardBy(base::Seconds(1));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, VideoAdIgnoringPointerEventsNotObscured) {
@@ -710,13 +724,13 @@ TEST_F(DisplayAdElementMonitorTest, VideoAdIgnoringPointerEventsNotObscured) {
 
   // Ignoring pointer events doesn't affect rendering, so the video ad is still
   // reported, rather than deemed hidden behind the player's background.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 50, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   ad_element->UpdateToVideoAd();
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kVideoAdDetected));
 }
 
@@ -738,12 +752,12 @@ TEST_F(DisplayAdElementMonitorTest,
 
   auto* ad_element = GetDocument().getElementById(AtomicString("ad"));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 50, 300, 250)));
   ad_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 TEST_F(DisplayAdElementMonitorTest, LargeStickyAdDetected) {
@@ -762,7 +776,7 @@ TEST_F(DisplayAdElementMonitorTest, LargeStickyAdDetected) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -795,7 +809,7 @@ TEST_F(DisplayAdElementMonitorTest, StickyAdNotLargeDoesNotTriggerUseCounter) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -830,7 +844,7 @@ TEST_F(DisplayAdElementMonitorTest,
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -861,7 +875,7 @@ TEST_F(DisplayAdElementMonitorTest,
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -898,7 +912,7 @@ TEST_F(DisplayAdElementMonitorTest,
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -944,7 +958,7 @@ TEST_F(DisplayAdElementMonitorTest, CssStickyLargeStickyAdDetected) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -986,7 +1000,7 @@ TEST_F(DisplayAdElementMonitorTest,
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -1049,7 +1063,7 @@ TEST_F(DisplayAdElementMonitorTest, FixedIframeLargeStickyAdDetected) {
       To<HTMLImageElement>(iframe_doc->getElementById(AtomicString("ad")));
   ASSERT_NE(ad_element, nullptr);
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -1109,7 +1123,7 @@ TEST_F(DisplayAdElementMonitorTest,
       To<HTMLImageElement>(iframe_doc->getElementById(AtomicString("ad")));
   ASSERT_NE(ad_element, nullptr);
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -1146,7 +1160,7 @@ TEST_F(DisplayAdElementMonitorTest, ParallaxAdDoesNotTriggerUseCounter) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -1164,6 +1178,7 @@ TEST_F(DisplayAdElementMonitorTest, ParallaxAdDoesNotTriggerUseCounter) {
   EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
 
   testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Scroll further down to the position where the parallax-ad is covered by
   // the second overlay and becomes invisible again. Note we must scroll past
@@ -1174,11 +1189,11 @@ TEST_F(DisplayAdElementMonitorTest, ParallaxAdDoesNotTriggerUseCounter) {
 
   // When CalculateStickyAdState determines that the ad is invisible, an empty
   // rect should be reported rather than an updated rect_to_report.
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                ad_element->GetDomNodeId(), gfx::Rect()))
+  EXPECT_CALL(MockObserver(), OnMainFrameAdRectangleChanged(
+                                  ad_element->GetDomNodeId(), gfx::Rect()))
       .Times(1);
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // The ad is now covered again. Even though it is large and fixed, it
   // shouldn't trigger the use counter.
@@ -1200,7 +1215,7 @@ TEST_F(DisplayAdElementMonitorTest, LargeStickyAdDetectedWithJitter) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -1252,7 +1267,7 @@ TEST_F(DisplayAdElementMonitorTest, LargeStickyAdNotDetectedWithLargeJitter) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   ad_element->SetIsAdRelated(NoProvenance{});
@@ -1302,7 +1317,7 @@ TEST_F(DisplayAdElementMonitorTest, StickyVideoAdDetected) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   EXPECT_CALL(MockClient(), OnLargeStickyAdDetected())
@@ -1341,7 +1356,7 @@ TEST_F(DisplayAdElementMonitorTest, StickyNonVideoAd) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
@@ -1376,7 +1391,7 @@ TEST_F(DisplayAdElementMonitorTest, NonStickyVideoAd) {
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
@@ -1412,7 +1427,7 @@ TEST_F(DisplayAdElementMonitorTest,
   auto* ad_element =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
   EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
@@ -1706,7 +1721,7 @@ TEST_F(DisplayAdElementMonitorTest, HighlightAdsRequiresFirstContentfulPaint) {
   auto* ad =
       To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
 
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(testing::AnyNumber());
 
@@ -1752,14 +1767,14 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
   // and `in_flow_ad` at physical (200, 22, 120, 120) unscales to (100, 11, 60,
   // 60). Meanwhile, `pixel` has a physical bounding box of (400, 200, 2, 2),
   // which unscales to 1x1 CSS pixels and must be excluded as a tracking pixel.
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(10, 10, 60, 60)));
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(in_flow_ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 11, 60, 60)));
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                pixel_element->GetDomNodeId(), testing::_))
+  EXPECT_CALL(MockObserver(), OnMainFrameAdRectangleChanged(
+                                  pixel_element->GetDomNodeId(), testing::_))
       .Times(0);
   ad_element->SetIsAdRelated(NoProvenance{});
   in_flow_ad_element->SetIsAdRelated(NoProvenance{});
@@ -1768,7 +1783,7 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
   EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 400, 1000));
   EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
             gfx::Rect(0, 0, 400, 300));
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Scroll down by 100 physical pixels (50 CSS pixels at 2x zoom). Both the
   // viewport scroll offset and the fixed-position ad's document-relative Y
@@ -1777,20 +1792,21 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(10, 60, 60, 60)));
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                in_flow_ad_element->GetDomNodeId(), testing::_))
+  EXPECT_CALL(MockObserver(),
+              OnMainFrameAdRectangleChanged(in_flow_ad_element->GetDomNodeId(),
+                                            testing::_))
       .Times(0);
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                pixel_element->GetDomNodeId(), testing::_))
+  EXPECT_CALL(MockObserver(), OnMainFrameAdRectangleChanged(
+                                  pixel_element->GetDomNodeId(), testing::_))
       .Times(0);
   UpdateLifecycle();
   EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 400, 1000));
   EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
             gfx::Rect(0, 50, 400, 300));
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // At 1.5x fractional zoom with a 2px physical scroll offset, `pixel`'s
   // document-relative physical Y range is [152, 153.5]. Unscaling size
@@ -1803,20 +1819,21 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 2), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(10, 11, 60, 60)));
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                in_flow_ad_element->GetDomNodeId(), testing::_))
+  EXPECT_CALL(MockObserver(),
+              OnMainFrameAdRectangleChanged(in_flow_ad_element->GetDomNodeId(),
+                                            testing::_))
       .Times(0);
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                pixel_element->GetDomNodeId(), testing::_))
+  EXPECT_CALL(MockObserver(), OnMainFrameAdRectangleChanged(
+                                  pixel_element->GetDomNodeId(), testing::_))
       .Times(0);
   UpdateLifecycle();
   EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 533, 1000));
   EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
             gfx::Rect(0, 1, 533, 400));
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // Scroll to a fractional physical offset (1.5 physical pixels = 1 CSS pixel
   // at 1.5x zoom). Neither `ad` (still at CSS Y=11) nor `in_flow_ad` (still at
@@ -1824,14 +1841,14 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 1.5f), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   UpdateLifecycle();
   EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 533, 1000));
   EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
             gfx::Rect(0, 1, 533, 400));
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   // At 1.1x zoom with a half-pixel CSS offset (`top: 10.5px`), `in_flow_ad`'s
   // physical Y in `LayoutView` is `LayoutUnit(10.5 * 1.1) = 739 / 64 =
@@ -1847,26 +1864,27 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(10, 10, 60, 60)));
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(in_flow_ad_element->GetDomNodeId(),
                                             gfx::Rect(100, 10, 60, 60)));
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 1.1f), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
-  EXPECT_CALL(MockClient(),
+  EXPECT_CALL(MockObserver(),
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(10, 11, 60, 60)));
-  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
-                                in_flow_ad_element->GetDomNodeId(), testing::_))
+  EXPECT_CALL(MockObserver(),
+              OnMainFrameAdRectangleChanged(in_flow_ad_element->GetDomNodeId(),
+                                            testing::_))
       .Times(0);
   UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  testing::Mock::VerifyAndClearExpectations(&MockObserver());
 }
 
 }  // namespace blink

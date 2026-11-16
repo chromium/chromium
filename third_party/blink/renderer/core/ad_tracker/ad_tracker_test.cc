@@ -15,6 +15,7 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -5200,10 +5201,34 @@ TEST_F(AdTrackerSimTest, FormSubmissionTriggeredByVanillaScript_IsNotAd) {
   dest_resource.Complete("<body></body>");
 }
 
+class TestCpuTimingObserver : public WebLocalFrameObserver {
+ public:
+  explicit TestCpuTimingObserver(WebLocalFrame* frame)
+      : WebLocalFrameObserver(frame) {}
+
+  void OnFrameDetached() override {}
+  void DidChangeCpuTiming(base::TimeDelta time,
+                          base::TimeDelta ad_time) override {
+    total_cpu_time_ += time;
+    total_ad_cpu_time_ += ad_time;
+  }
+
+  base::TimeDelta total_cpu_time() const { return total_cpu_time_; }
+  base::TimeDelta total_ad_cpu_time() const { return total_ad_cpu_time_; }
+  void reset_cpu_timing() {
+    total_cpu_time_ = base::TimeDelta();
+    total_ad_cpu_time_ = base::TimeDelta();
+  }
+
+ private:
+  base::TimeDelta total_cpu_time_;
+  base::TimeDelta total_ad_cpu_time_;
+};
+
 TEST_F(AdTrackerSimTest, AdScriptExecutionAccumulatesAdTaskTime) {
   LocalFrame* frame = GetDocument().GetFrame();
-  WebFrameClient().reset_cpu_timing();
-  EXPECT_EQ(WebFrameClient().total_ad_cpu_time(), base::TimeDelta());
+  TestCpuTimingObserver cpu_observer(WebLocalFrameImpl::FromFrame(frame));
+  EXPECT_EQ(cpu_observer.total_ad_cpu_time(), base::TimeDelta());
 
   const char kAdUrl[] = "https://example.com/ad_script.js";
   SimSubresourceRequest ad_script(kAdUrl, "text/javascript");
@@ -5218,19 +5243,19 @@ TEST_F(AdTrackerSimTest, AdScriptExecutionAccumulatesAdTaskTime) {
 
   // Trigger UpdateTaskTime by adding task time to the frame scheduler.
   frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
-  base::TimeDelta ad_time = WebFrameClient().total_ad_cpu_time();
+  base::TimeDelta ad_time = cpu_observer.total_ad_cpu_time();
   EXPECT_GT(ad_time, base::TimeDelta());
 
   // Verify that UpdateTaskTime cleared `unreported_ad_task_time_` so a
   // subsequent flush with no new ad script execution reports zero ad time.
-  WebFrameClient().reset_cpu_timing();
+  cpu_observer.reset_cpu_timing();
   frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
-  EXPECT_EQ(WebFrameClient().total_ad_cpu_time(), base::TimeDelta());
+  EXPECT_EQ(cpu_observer.total_ad_cpu_time(), base::TimeDelta());
 }
 
 TEST_F(AdTrackerSimTest, VanillaScriptDoesNotAccumulateAdTaskTime) {
   LocalFrame* frame = GetDocument().GetFrame();
-  WebFrameClient().reset_cpu_timing();
+  TestCpuTimingObserver cpu_observer(WebLocalFrameImpl::FromFrame(frame));
 
   const char kVanillaUrl[] = "https://example.com/vanilla_script.js";
   SimSubresourceRequest vanilla_script(kVanillaUrl, "text/javascript");
@@ -5245,7 +5270,7 @@ TEST_F(AdTrackerSimTest, VanillaScriptDoesNotAccumulateAdTaskTime) {
       IsKnownAdScript(GetDocument().GetExecutionContext(), kVanillaUrl));
 
   frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
-  EXPECT_EQ(WebFrameClient().total_ad_cpu_time(), base::TimeDelta());
+  EXPECT_EQ(cpu_observer.total_ad_cpu_time(), base::TimeDelta());
 }
 
 TEST_F(AdTrackerSimTest, AdFrameReportsFullTaskTimeAsAdTaskTime) {
@@ -5259,14 +5284,13 @@ TEST_F(AdTrackerSimTest, AdFrameReportsFullTaskTimeAsAdTaskTime) {
   SetIsAdFrame(child_frame);
   ASSERT_TRUE(child_frame->IsAdFrame());
 
-  frame_test_helpers::TestWebFrameClient* child_client =
-      static_cast<frame_test_helpers::TestWebFrameClient*>(
-          WebLocalFrameImpl::FromFrame(child_frame)->Client());
-  child_client->reset_cpu_timing();
+  TestCpuTimingObserver child_observer(
+      WebLocalFrameImpl::FromFrame(child_frame));
 
   child_frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
-  EXPECT_EQ(child_client->total_ad_cpu_time(), child_client->total_cpu_time());
-  EXPECT_GE(child_client->total_ad_cpu_time(), base::Milliseconds(100));
+  EXPECT_EQ(child_observer.total_ad_cpu_time(),
+            child_observer.total_cpu_time());
+  EXPECT_GE(child_observer.total_ad_cpu_time(), base::Milliseconds(100));
 }
 
 TEST_F(AdTrackerSimTest, GetAncestryEmptyScriptId) {
