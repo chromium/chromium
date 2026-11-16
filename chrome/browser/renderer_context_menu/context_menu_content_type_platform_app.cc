@@ -36,7 +36,9 @@ bool ContextMenuContentTypePlatformApp::SupportsGroup(int group) {
   if (!platform_app)
     return false;
 
-  CHECK(platform_app->is_platform_app(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585705239): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(platform_app->is_platform_app());
 
   switch (group) {
     // Add undo/redo, cut/copy/paste etc for text fields.
