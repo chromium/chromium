@@ -10,7 +10,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
-import static org.chromium.net.Http2TestServer.SERVER_CERT_PEM;
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -26,6 +25,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.test.Protocol;
+import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 import org.chromium.net.test.util.CertTestUtil;
 
 import java.io.ByteArrayInputStream;
@@ -50,17 +52,27 @@ public class PkpTest {
     private static final boolean ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS = true;
     private static final boolean DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS = false;
 
+    // The host and certificate that ServerCertificate.CERT_COMMON_NAME_IS_DOMAIN makes the
+    // server use.
+    private static final String SERVER_HOST = "localhost";
+    private static final String SERVER_CERT_PEM = "localhost_cert.pem";
+
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+
+    private NativeTestServer mTestServer;
 
     @Before
     public void setUp() throws Exception {
-        assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mTestServer =
+                new NativeTestServer(
+                        mTestRule.getTestFramework().getContext(), Type.HTTPS, Protocol.HTTP2);
+        mTestServer.setSSLConfig(ServerCertificate.CERT_COMMON_NAME_IS_DOMAIN);
+        mTestServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
-        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
+        mTestServer.close();
     }
 
     /**
@@ -75,7 +87,7 @@ public class PkpTest {
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
-                Http2TestServer.getServerHost(),
+                SERVER_HOST,
                 nonMatchingHash,
                 EXCLUDE_SUBDOMAINS,
                 DISTANT_FUTURE);
@@ -83,7 +95,7 @@ public class PkpTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 
@@ -105,7 +117,7 @@ public class PkpTest {
 
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
-                Http2TestServer.getServerHost(),
+                SERVER_HOST,
                 matchingHash,
                 EXCLUDE_SUBDOMAINS,
                 DISTANT_FUTURE);
@@ -113,7 +125,7 @@ public class PkpTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 
@@ -135,7 +147,7 @@ public class PkpTest {
                             + " TODO(crbug.com/40941277): Enable for HttpEngine once we have"
                             + " hostname resolution")
     public void testIncludeSubdomainsFlagEqualTrue() throws Exception {
-        String fakeUrl = "https://test.example.com:8443";
+        String fakeUrl = "https://test.example.com:" + mTestServer.getPort() + "/success.txt";
         String fakeDomain = "example.com";
 
         applyCronetEngineBuilderConfigurationPatchWithMockCertVerifier(
@@ -174,7 +186,7 @@ public class PkpTest {
                             + " TODO(crbug.com/40941277): Enable for HttpEngine once we have"
                             + " hostname resolution")
     public void testIncludeSubdomainsFlagEqualFalse() throws Exception {
-        String fakeUrl = "https://test.example.com:8443";
+        String fakeUrl = "https://test.example.com:" + mTestServer.getPort() + "/success.txt";
         String fakeDomain = "example.com";
 
         applyCronetEngineBuilderConfigurationPatchWithMockCertVerifier(
@@ -219,7 +231,7 @@ public class PkpTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 
@@ -239,7 +251,7 @@ public class PkpTest {
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
-                Http2TestServer.getServerHost(),
+                SERVER_HOST,
                 nonMatchingHash,
                 EXCLUDE_SUBDOMAINS,
                 tenSecondsAhead);
@@ -247,7 +259,7 @@ public class PkpTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 
@@ -267,7 +279,7 @@ public class PkpTest {
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
-                Http2TestServer.getServerHost(),
+                SERVER_HOST,
                 nonMatchingHash,
                 EXCLUDE_SUBDOMAINS,
                 oneSecondAgo);
@@ -275,7 +287,7 @@ public class PkpTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 
@@ -294,7 +306,7 @@ public class PkpTest {
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
-                Http2TestServer.getServerHost(),
+                SERVER_HOST,
                 nonMatchingHash,
                 EXCLUDE_SUBDOMAINS,
                 DISTANT_FUTURE);
@@ -302,7 +314,7 @@ public class PkpTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 
@@ -321,7 +333,7 @@ public class PkpTest {
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
-                Http2TestServer.getServerHost(),
+                SERVER_HOST,
                 nonMatchingHash,
                 EXCLUDE_SUBDOMAINS,
                 DISTANT_FUTURE);
@@ -329,7 +341,7 @@ public class PkpTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
 
@@ -345,7 +357,7 @@ public class PkpTest {
         byte[] nonMatchingHash = generateSomeSha256();
         applyPkpSha256Patch(
                 mTestRule.getTestFramework(),
-                Http2TestServer.getServerHost(),
+                SERVER_HOST,
                 nonMatchingHash,
                 EXCLUDE_SUBDOMAINS,
                 DISTANT_FUTURE);
@@ -353,7 +365,7 @@ public class PkpTest {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
         assertErrorResponse(callback);
@@ -371,7 +383,7 @@ public class PkpTest {
         callback = new TestUrlRequestCallback();
         requestBuilder =
                 engine.newUrlRequestBuilder(
-                        Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+                        mTestServer.getSuccessURL(), callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
         assertSuccessfulResponse(callback);
@@ -471,7 +483,7 @@ public class PkpTest {
                 () ->
                         applyPkpSha256Patch(
                                 mTestRule.getTestFramework(),
-                                Http2TestServer.getServerHost(),
+                                SERVER_HOST,
                                 sha1,
                                 EXCLUDE_SUBDOMAINS,
                                 DISTANT_FUTURE));
@@ -510,7 +522,7 @@ public class PkpTest {
         testFramework
                 .startEngine()
                 .newUrlRequestBuilder(
-                        "https://" + idnUnicode + ":" + Http2TestServer.getServerPort() + "/",
+                        "https://" + idnUnicode + ":" + mTestServer.getPort() + "/success.txt",
                         callback,
                         callback.getExecutor())
                 .build()
