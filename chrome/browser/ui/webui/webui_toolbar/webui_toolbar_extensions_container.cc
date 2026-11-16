@@ -447,6 +447,8 @@ void WebUIToolbarExtensionsContainer::ClearPinnedByDefaultIphAnchor() {
   //
   // The callback is run rather than destroyed because the wrapper treats IPH
   // and PopOutAction() callbacks the same, and the latter must always be run.
+  // (When the wrapper is destroyed, it runs a pending `PopOutAction()`
+  // callback, but drops a pending IPH callback.)
   //
   // If there's no pending IPH callback, this is a no-op, since there can't be a
   // pending PopOutAction() callback while `pinned_by_default_iph_extension_id_`

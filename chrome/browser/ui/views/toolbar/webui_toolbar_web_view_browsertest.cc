@@ -81,6 +81,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -4964,6 +4965,114 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   EXPECT_TRUE(second_future.Wait());
 
   container->UndoPopOut();
+}
+
+// Tests that closing the browser while a `PopOutAction()` callback is pending
+// runs the callback, even if destroying it undoes the pop out. This is what
+// happens when the callback owns an `ExtensionViewHost`, whose destruction
+// results in `UndoPopOut()` being called.
+// Regression test for https://crbug.com/586203809.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       PopOutActionPendingWhenBrowserClosed) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  scoped_refptr<const extensions::Extension> extension =
+      LoadExtension(temp_dir);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+  ASSERT_FALSE(container->GetExtensionAnchor(extension_id));
+
+  bool ran = false;
+  container->PopOutAction(
+      extension_id,
+      base::BindOnce(
+          [](bool* ran, std::unique_ptr<base::ScopedClosureRunner>) {
+            *ran = true;
+          },
+          &ran,
+          std::make_unique<base::ScopedClosureRunner>(base::BindOnce(
+              [](WebUIToolbarExtensionsContainer* container) {
+                if (container->GetPoppedOutActionId()) {
+                  container->UndoPopOut();
+                }
+              },
+              container))));
+  EXPECT_FALSE(ran);
+
+  CloseBrowserSynchronously(browser());
+  EXPECT_TRUE(ran);
+}
+
+// Tests that closing a window while an extension's popup, opened by an API
+// call, is waiting for its button to be shown tells the caller that no popup
+// was shown. This is what `chrome.action.openPopup()` relies on to respond.
+// Regression test for https://crbug.com/586203809.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       PopupForAPIPendingWhenWindowClosed) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  // Don't pin the extension, so its button isn't shown and the popup has to
+  // wait for it.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      temp_dir, /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+
+  // Use a second window, so closing it doesn't shut down the browser.
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(second_browser);
+  WaitForInitialWebUIToolbar(second_browser);
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*second_browser));
+  ASSERT_TRUE(container);
+  ASSERT_FALSE(container->GetExtensionAnchor(extension_id));
+  ToolbarActionViewModel* action = container->GetActionForId(extension_id);
+  ASSERT_TRUE(action);
+
+  base::test::TestFuture<extensions::ExtensionHost*> popup_future;
+  action->TriggerPopupForAPI(popup_future.GetCallback());
+  ASSERT_EQ(container->GetPoppedOutActionId(), extension_id);
+  ASSERT_FALSE(popup_future.IsReady());
+
+  CloseBrowserSynchronously(second_browser);
+  ASSERT_TRUE(popup_future.IsReady());
+  EXPECT_EQ(popup_future.Get(), nullptr);
+}
+
+// Tests that closing the browser while an extension's popup is waiting for its
+// button to be shown doesn't crash. Destroying the pending popup's
+// `ExtensionViewHost` undoes the pop out.
+// Regression test for https://crbug.com/586203809.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       PopupPendingWhenBrowserClosed) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  // Don't pin the extension, so its button isn't shown and the popup has to
+  // wait for it.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      temp_dir, /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+  ASSERT_FALSE(container->GetExtensionAnchor(extension_id));
+
+  container->ExecuteUserAction(
+      extensions_bar::mojom::ExtensionActionId::NewExtensionId(extension_id));
+  EXPECT_EQ(container->GetPoppedOutActionId(), extension_id);
+
+  CloseBrowserSynchronously(browser());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,

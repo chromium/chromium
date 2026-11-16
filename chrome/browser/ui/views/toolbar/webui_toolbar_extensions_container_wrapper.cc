@@ -36,7 +36,36 @@ WebUIToolbarExtensionsContainerWrapper::WebUIToolbarExtensionsContainerWrapper(
     : delegate_(delegate) {}
 
 WebUIToolbarExtensionsContainerWrapper::
-    ~WebUIToolbarExtensionsContainerWrapper() = default;
+    ~WebUIToolbarExtensionsContainerWrapper() {
+  // Stop observing the container first. Cleaning up a pending pop out below
+  // calls back into the container (e.g. `UndoPopOut()`), which must not reach
+  // this partially destroyed object, or `delegate_`, whose members declared
+  // after this one have already been destroyed.
+  if (extensions_container_) {
+    extensions_container_->SetObserver(nullptr);
+  }
+  pending_pop_out_subscription_ = {};
+  pending_pop_out_action_id_.reset();
+  base::OnceClosure pending_pop_out_callback =
+      std::exchange(pending_pop_out_callback_, base::OnceClosure());
+
+  // A pending `PopOutAction()` callback must always be run, so run it as if the
+  // pop out was cancelled. Only `PopOutAction()` sets the popped out action.
+  // Any other pending callback is for the pinned-by-default IPH, which owns
+  // nothing and is just dropped, since the IPH shouldn't be shown in a closing
+  // window.
+  if (!pending_pop_out_callback || !extensions_container_ ||
+      !extensions_container_->GetPoppedOutActionId()) {
+    return;
+  }
+  // The callback comes from `ExtensionActionDelegateDesktop` and owns the
+  // popup's `ExtensionViewHost`. Hide the popup first. That clears the
+  // delegate's popup state, so the callback tells its caller (e.g.
+  // `chrome.action.openPopup()`) that no popup was shown instead of showing
+  // one, and destroying the host doesn't call back into the container.
+  extensions_container_->HideActivePopup();
+  std::move(pending_pop_out_callback).Run();
+}
 
 void WebUIToolbarExtensionsContainerWrapper::Init(
     content::WebContents* web_contents) {

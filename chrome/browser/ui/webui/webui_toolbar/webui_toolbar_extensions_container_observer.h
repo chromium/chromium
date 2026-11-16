@@ -38,6 +38,11 @@ class WebUIToolbarExtensionsContainerObserver {
   // the previous one's `callback` has been run, or it has been cancelled via
   // OnPopOutCancelled().
   //
+  // If the observer is destroyed (e.g. when the window closes) while
+  // `callback` is pending, it runs `callback` for `PopOutAction()` as if the
+  // pop out was cancelled, and may destroy `callback` for the IPH without
+  // running it.
+  //
   // There will also be an ActionsAddedOrUpdated before this message.
   virtual void OnActionPoppedOut(const std::string& action_id,
                                  base::OnceClosure callback) = 0;
