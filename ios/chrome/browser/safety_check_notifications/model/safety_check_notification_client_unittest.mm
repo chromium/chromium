@@ -82,7 +82,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStore<
-                       ProfileIOS, password_manager::TestPasswordStore>));
+                       password_manager::TestPasswordStore>));
 
     personal_profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(builder));

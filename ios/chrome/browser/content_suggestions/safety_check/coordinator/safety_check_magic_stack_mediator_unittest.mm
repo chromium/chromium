@@ -44,7 +44,7 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStore<
-                       ProfileIOS, password_manager::TestPasswordStore>));
+                       password_manager::TestPasswordStore>));
 
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));

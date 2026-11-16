@@ -149,9 +149,8 @@ class ChromePasswordProtectionServiceTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindOnce(
-            &password_manager::BuildPasswordStoreInterface<
-                ProfileIOS, password_manager::MockPasswordStoreInterface>));
+        base::BindOnce(&password_manager::BuildPasswordStoreInterface<
+                       password_manager::MockPasswordStoreInterface>));
     builder.AddTestingFactory(IOSUserEventServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateFakeUserEventService));
     profile_ = std::move(builder).Build();

@@ -93,8 +93,7 @@ class PasswordManagerViewControllerTest
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(
-            &password_manager::BuildPasswordStore<ProfileIOS,
-                                                  TestPasswordStore>));
+            &password_manager::BuildPasswordStore<TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeBulkLeakCheckServiceFactory::GetInstance(),
         base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {

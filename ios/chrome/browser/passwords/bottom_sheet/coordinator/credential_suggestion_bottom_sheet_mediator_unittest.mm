@@ -302,7 +302,7 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStore<
-                       ProfileIOS, password_manager::TestPasswordStore>));
+                       password_manager::TestPasswordStore>));
     builder.SetPrefService(std::move(prefs));
     profile_ = std::move(builder).Build();
 

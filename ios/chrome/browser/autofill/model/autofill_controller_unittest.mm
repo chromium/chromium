@@ -277,9 +277,8 @@ class AutofillControllerTest : public PlatformTest {
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindOnce(
-            &password_manager::BuildPasswordStoreInterface<
-                ProfileIOS, password_manager::MockPasswordStoreInterface>));
+        base::BindOnce(&password_manager::BuildPasswordStoreInterface<
+                       password_manager::MockPasswordStoreInterface>));
     // Profile import requires a PersonalDataManager which itself needs the
     // WebDataService; this is not initialized on a TestProfileIOS by
     // default.

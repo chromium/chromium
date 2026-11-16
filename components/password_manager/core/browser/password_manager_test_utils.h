@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_TEST_UTILS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_TEST_UTILS_H_
 
+#include <concepts>
 #include <iosfwd>
 #include <vector>
 
@@ -33,47 +34,66 @@ struct AutofillServerPrediction;
 
 namespace password_manager {
 
-// This template allows creating methods with signature conforming to
-// TestingFactory of the appropriate platform instance of KeyedServiceFactory.
-// Context is the browser context prescribed by TestingFactory. Store is the
-// PasswordStore version needed in the tests which use this method.
-template <class Context, class Store>
-scoped_refptr<RefcountedKeyedService> BuildPasswordStore(Context* context) {
-  scoped_refptr<password_manager::PasswordStore> store(new Store);
+// Those templates allow creating methods with signatures conforming to
+// `TestingFactory` of the appropriate sub-class of `KeyedServiceFactory`.
+// There are two variants, one taking a `Context*` which is the platform
+// specific type (and that is ignored), and another taking no parameters
+// for platforms where the `KeyedServiceFactory` infrastructure accepts them.
+template <class Store>
+  requires std::convertible_to<Store*, PasswordStore*>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStore() {
+  auto store = base::MakeRefCounted<Store>();
   store->Init();
   return store;
 }
 
 template <class Context, class Store>
-scoped_refptr<RefcountedKeyedService> BuildPasswordStoreInterface(
-    Context* context) {
-  scoped_refptr<password_manager::PasswordStoreInterface> store(new Store);
-  return store;
+  requires std::convertible_to<Store*, PasswordStore*>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStore(Context*) {
+  return BuildPasswordStore<Store>();
+}
+
+template <class Store>
+  requires std::convertible_to<Store*, PasswordStoreInterface*>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreInterface() {
+  return base::MakeRefCounted<Store>();
+}
+
+template <class Context, class Store>
+  requires std::convertible_to<Store*, PasswordStoreInterface*>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreInterface(Context*) {
+  return BuildPasswordStoreInterface<Store>();
 }
 
 // As above, but allows passing parameters to the to-be-created store. The
 // parameters are specified *before* context so that they can be bound (as in
 // base::BindRepeating(&BuildPasswordStoreWithArgs<...>, my_arg)), leaving
 // |context| as a free parameter for TestingFactory.
-template <class Context, class Store, typename... Args>
-scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithArgs(
-    Args... args,
-    Context* context) {
-  scoped_refptr<password_manager::PasswordStore> store(
-      new Store(std::forward<Args>(args)...));
+template <class Store, typename... Args>
+  requires std::convertible_to<Store*, PasswordStore*>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithArgs(Args... args) {
+  auto store = base::MakeRefCounted<Store>(std::forward<Args>(args)...);
   store->Init();
   return store;
+}
+
+template <class Context, class Store, typename... Args>
+  requires std::convertible_to<Store*, PasswordStore*>
+scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithArgs(Args... args,
+                                                                 Context*) {
+  return BuildPasswordStoreWithArgs<Store, Args...>(
+      std::forward<Args>(args)...);
 }
 
 // Helper function that builds a real password store with a fake backend.
 // Context is the browser context prescribed by TestingFactory.
 template <class Context>
 scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithFakeBackend(
-    Context* context) {
+    Context*) {
   return password_manager::BuildPasswordStoreWithArgs<
-      Context, password_manager::PasswordStore,
+      password_manager::PasswordStore,
       std::unique_ptr<password_manager::FakePasswordStoreBackend>>(
-      std::make_unique<password_manager::FakePasswordStoreBackend>(), context);
+      std::make_unique<password_manager::FakePasswordStoreBackend>());
 }
 
 // Struct used for creation of PasswordForms from static arrays of data.

@@ -206,9 +206,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindOnce(
-            &password_manager::BuildPasswordStoreInterface<
-                ProfileIOS, password_manager::MockPasswordStoreInterface>));
+        base::BindOnce(&password_manager::BuildPasswordStoreInterface<
+                       password_manager::MockPasswordStoreInterface>));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());

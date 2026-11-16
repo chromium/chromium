@@ -110,7 +110,7 @@ class SettingsTableViewControllerTest
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStore<
-                       ProfileIOS, password_manager::TestPasswordStore>));
+                       password_manager::TestPasswordStore>));
     builder.AddTestingFactory(
         ExtensionServiceFactory::GetInstance(),
         base::BindRepeating(

@@ -67,7 +67,7 @@ class PasswordCheckupCoordinatorTest
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStore<
-                       ProfileIOS, password_manager::TestPasswordStore>));
+                       password_manager::TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {

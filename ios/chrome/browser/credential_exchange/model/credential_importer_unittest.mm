@@ -139,14 +139,14 @@ class CredentialImporterTest : public PlatformTest {
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStoreWithArgs<
-                           ProfileIOS, password_manager::TestPasswordStore,
+                           password_manager::TestPasswordStore,
                            password_manager::IsAccountStore>,
                        password_manager::IsAccountStore(false)));
 
     builder.AddTestingFactory(
         IOSChromeAccountPasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStoreWithArgs<
-                           ProfileIOS, password_manager::TestPasswordStore,
+                           password_manager::TestPasswordStore,
                            password_manager::IsAccountStore>,
                        password_manager::IsAccountStore(true)));
     builder.AddTestingFactory(
