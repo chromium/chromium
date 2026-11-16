@@ -551,27 +551,6 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
     return;
   }
 
-  service_worker_context_->GetRegistrationUserData(
-      service_worker_registration_id, {kPushSenderIdServiceWorkerKey},
-      base::BindOnce(&PushMessagingManager::UnsubscribeHavingGottenSenderId,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     service_worker_registration_id, origin));
-}
-
-void PushMessagingManager::UnsubscribeHavingGottenSenderId(
-    UnsubscribeCallback callback,
-    int64_t service_worker_registration_id,
-    const url::Origin& requesting_origin,
-    const std::vector<std::string>& sender_ids,
-    blink::ServiceWorkerStatusCode service_worker_status) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-
-  std::string sender_id;
-  if (service_worker_status == blink::ServiceWorkerStatusCode::kOk) {
-    CHECK_EQ(1u, sender_ids.size(), base::NotFatalUntil::M159);
-    sender_id = sender_ids[0];
-  }
-
   PushMessagingService* push_service = GetService();
   if (!push_service) {
     // This shouldn't be possible in incognito mode, since we've already checked
@@ -584,8 +563,8 @@ void PushMessagingManager::UnsubscribeHavingGottenSenderId(
   }
 
   push_service->Unsubscribe(
-      blink::mojom::PushUnregistrationReason::JAVASCRIPT_API,
-      requesting_origin.GetURL(), service_worker_registration_id, sender_id,
+      blink::mojom::PushUnregistrationReason::JAVASCRIPT_API, origin.GetURL(),
+      service_worker_registration_id,
       base::BindOnce(&PushMessagingManager::DidUnregister, AsWeakPtr(),
                      std::move(callback)));
 }
@@ -806,7 +785,7 @@ void PushMessagingManager::GetSubscriptionDidGetInfo(
     push_service->Unsubscribe(
         blink::mojom::PushUnregistrationReason::
             GET_SUBSCRIPTION_STORAGE_CORRUPT,
-        origin.GetURL(), service_worker_registration_id, application_server_key,
+        origin.GetURL(), service_worker_registration_id,
         base::BindOnce(&PushMessagingManager::GetSubscriptionDidUnsubscribe,
                        AsWeakPtr(), std::move(callback), status));
 

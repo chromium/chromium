@@ -100,13 +100,14 @@ class CONTENT_EXPORT PushMessagingService {
                                    const std::string& subscription_id,
                                    SubscriptionInfoCallback callback) = 0;
 
-  // Unsubscribe the given |sender_id| from the push messaging service. Locally
-  // deactivates the subscription, then runs |callback|, then asynchronously
-  // attempts to unsubscribe with the push service.
+  // Unsubscribes the push subscription of the Service Worker registration with
+  // `service_worker_registration_id` for `requesting_origin` from the push
+  // messaging service. Locally deactivates the subscription, then runs
+  // `callback`, then asynchronously attempts to unsubscribe with the push
+  // service.
   virtual void Unsubscribe(blink::mojom::PushUnregistrationReason reason,
                            const GURL& requesting_origin,
                            int64_t service_worker_registration_id,
-                           const std::string& sender_id,
                            UnregisterCallback callback) = 0;
 
   // Returns whether subscriptions that do not mandate user visible UI upon

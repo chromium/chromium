@@ -26,7 +26,6 @@ void ExpectAppIdentifiersEqual(const push_messaging::AppIdentifier& a,
 }
 
 constexpr char kTestOrigin[] = "https://example.com";
-constexpr char kTestSenderId[] = "1234567890";
 const int64_t kTestServiceWorkerId = 42;
 
 class PushMessagingRefresherTest : public testing::Test {
@@ -53,7 +52,7 @@ class PushMessagingRefresherTest : public testing::Test {
 
 TEST_F(PushMessagingRefresherTest, GotMessageThroughNewSubscription) {
   refresher()->Refresh(old_app_identifier_.value(),
-                       new_app_identifier_.value().app_id(), kTestSenderId);
+                       new_app_identifier_.value().app_id());
   refresher()->GotMessageFrom(new_app_identifier_.value().app_id());
   auto app_identifier = refresher()->FindActiveAppIdentifier(
       old_app_identifier_.value().app_id());
@@ -62,7 +61,7 @@ TEST_F(PushMessagingRefresherTest, GotMessageThroughNewSubscription) {
 
 TEST_F(PushMessagingRefresherTest, LookupOldSubscription) {
   refresher()->Refresh(old_app_identifier_.value(),
-                       new_app_identifier_.value().app_id(), kTestSenderId);
+                       new_app_identifier_.value().app_id());
   {
     std::optional<push_messaging::AppIdentifier> found_old_app_identifier =
         refresher()->FindActiveAppIdentifier(

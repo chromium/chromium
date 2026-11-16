@@ -155,13 +155,6 @@ class CONTENT_EXPORT PushMessagingManager : public blink::mojom::PushMessaging {
       const std::string& push_subscription_id,
       PushMessagingService::SubscriptionInfoCallback callback);
 
-  void UnsubscribeHavingGottenSenderId(
-      UnsubscribeCallback callback,
-      int64_t service_worker_registration_id,
-      const url::Origin& requesting_origin,
-      const std::vector<std::string>& sender_id,
-      blink::ServiceWorkerStatusCode service_worker_status);
-
   void DidUnregister(
       UnsubscribeCallback callback,
       blink::mojom::PushUnregistrationStatus unregistration_status);

@@ -149,7 +149,6 @@ void PushMessagingServiceImpl::Unsubscribe(
     blink::mojom::PushUnregistrationReason reason,
     const GURL& origin,
     int64_t service_worker_registration_id,
-    const std::string& sender_id,
     UnregisterCallback callback) {
   // Same as DoSubscribe, PushMessagingManager shouldn't send this pair of
   // parameters to PushMessagingService, but let's make it safer.
@@ -178,8 +177,7 @@ void PushMessagingServiceImpl::DidDeleteServiceWorkerRegistration(
     int64_t service_worker_registration_id) {
   Unsubscribe(
       blink::mojom::PushUnregistrationReason::SERVICE_WORKER_UNREGISTERED,
-      origin, service_worker_registration_id, /*sender_id=*/std::string{},
-      base::DoNothing());
+      origin, service_worker_registration_id, base::DoNothing());
 }
 
 void PushMessagingServiceImpl::DidDeleteServiceWorkerDatabase() {

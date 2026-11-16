@@ -30,10 +30,8 @@ size_t PushMessagingRefresher::GetCount() const {
 
 void PushMessagingRefresher::Refresh(
     push_messaging::AppIdentifier old_app_identifier,
-    const std::string& new_app_id,
-    const std::string& sender_id) {
-  RefreshObject refresh_object = {old_app_identifier, sender_id,
-                                  false /* is_valid */};
+    const std::string& new_app_id) {
+  RefreshObject refresh_object = {old_app_identifier, false /* is_valid */};
   // Insert is as current started refresh
   old_subscriptions_.emplace(new_app_id, refresh_object);
   refresh_map_.emplace(old_app_identifier.app_id(), new_app_id);
@@ -54,16 +52,14 @@ void PushMessagingRefresher::OnSubscriptionUpdated(
       FROM_HERE,
       base::BindOnce(&PushMessagingRefresher::NotifyOnOldSubscriptionExpired,
                      weak_factory_.GetWeakPtr(),
-                     result->second.old_identifier.app_id(),
-                     result->second.sender_id),
+                     result->second.old_identifier.app_id()),
       kPushSubscriptionRefreshTimeDelta);
 }
 
 void PushMessagingRefresher::NotifyOnOldSubscriptionExpired(
-    const std::string& old_app_id,
-    const std::string& sender_id) {
+    const std::string& old_app_id) {
   for (Observer& obs : observers_)
-    obs.OnOldSubscriptionExpired(old_app_id, sender_id);
+    obs.OnOldSubscriptionExpired(old_app_id);
 }
 
 void PushMessagingRefresher::OnUnsubscribed(const std::string& old_app_id) {
@@ -90,8 +86,7 @@ void PushMessagingRefresher::GotMessageFrom(const std::string& app_id) {
   // If a message arrives that is part of the refresh, expire the old
   // subscription immediately
   if (result != old_subscriptions_.end() && !result->second.is_valid) {
-    NotifyOnOldSubscriptionExpired(result->second.old_identifier.app_id(),
-                                   result->second.sender_id);
+    NotifyOnOldSubscriptionExpired(result->second.old_identifier.app_id());
     result->second.is_valid = true;
   }
 }

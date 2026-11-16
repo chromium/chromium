@@ -1280,7 +1280,6 @@ void PushMessagingServiceImpl::Unsubscribe(
     blink::mojom::PushUnregistrationReason reason,
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
-    const std::string& sender_id,
     UnregisterCallback callback) {
   push_messaging::AppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
@@ -1733,8 +1732,7 @@ void PushMessagingServiceImpl::StartRefresh(
           old_app_identifier.service_worker_registration_id(),
           std::nullopt /* expiration_time */);
 
-  refresher_.Refresh(old_app_identifier, new_app_identifier.app_id(),
-                     sender_id);
+  refresher_.Refresh(old_app_identifier, new_app_identifier.app_id());
 
   UpdateSubscription(
       new_app_identifier,
@@ -1840,8 +1838,7 @@ void PushMessagingServiceImpl::DidUpdateSubscription(
 // PushMessagingRefresher::Observer methods ------------------------------------
 
 void PushMessagingServiceImpl::OnOldSubscriptionExpired(
-    const std::string& app_id,
-    const std::string& sender_id) {
+    const std::string& app_id) {
   // Unsubscribe without clearing SW database, since values of the new
   // subscription are already saved there.
   // After unsubscribing, the refresher will get notified.

@@ -159,7 +159,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void Unsubscribe(blink::mojom::PushUnregistrationReason reason,
                    const GURL& requesting_origin,
                    int64_t service_worker_registration_id,
-                   const std::string& sender_id,
                    UnregisterCallback) override;
   bool SupportNonVisibleMessages() override;
   void DidDeleteServiceWorkerRegistration(
@@ -203,8 +202,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   // PushMessagingRefresher::Observer implementation
   // Initiate unsubscribe task when old subscription becomes invalid
-  void OnOldSubscriptionExpired(const std::string& app_id,
-                                const std::string& sender_id) override;
+  void OnOldSubscriptionExpired(const std::string& app_id) override;
   void OnRefreshFinished(
       const push_messaging::AppIdentifier& app_identifier) override;
 

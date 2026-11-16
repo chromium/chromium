@@ -33,8 +33,7 @@ class PushMessagingRefresher {
 
   // Register a new refresh pair with relevant information.
   void Refresh(push_messaging::AppIdentifier old_app_identifier,
-               const std::string& new_app_id,
-               const std::string& sender_id);
+               const std::string& new_app_id);
 
   // The subscription with the new app id was updated, new messages arriving
   // through the new subscription should be accepted now.
@@ -59,8 +58,7 @@ class PushMessagingRefresher {
   // Observer for Refresh status updates
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnOldSubscriptionExpired(const std::string& app_id,
-                                          const std::string& sender_id) = 0;
+    virtual void OnOldSubscriptionExpired(const std::string& app_id) = 0;
     virtual void OnRefreshFinished(
         const push_messaging::AppIdentifier& app_identifier) = 0;
   };
@@ -73,12 +71,10 @@ class PushMessagingRefresher {
   // messages and to unsubscribe from the old subscription
   struct RefreshObject {
     push_messaging::AppIdentifier old_identifier;
-    std::string sender_id;
     bool is_valid;
   };
 
-  void NotifyOnOldSubscriptionExpired(const std::string& app_id,
-                                      const std::string& sender_id);
+  void NotifyOnOldSubscriptionExpired(const std::string& app_id);
 
   base::ObserverList<Observer> observers_;
 

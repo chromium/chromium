@@ -768,7 +768,7 @@ TEST_F(PushMessagingServiceTest, UnsubscribeLegacySubscription) {
   push_service->SetUnsubscribeCallbackForTesting(run_loop.QuitClosure());
   push_service->Unsubscribe(
       blink::mojom::PushUnregistrationReason::JAVASCRIPT_API, origin,
-      kTestServiceWorkerId, std::string(kTestSenderId),
+      kTestServiceWorkerId,
       base::BindLambdaForTesting(
           [&](blink::mojom::PushUnregistrationStatus result) {
             status = result;
