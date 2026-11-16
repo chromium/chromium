@@ -6543,11 +6543,6 @@
     "expiry_milestone": 151
   },
   {
-    "name": "ios-tips-notifications-string-alternatives",
-    "owners": ["zijingl@google.com", "bling-mony-pod@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "ios-trusted-vault-notification",
     "owners": [ "ylahodiuk@google.com", "rgod@google.com" ],
     "expiry_milestone": 160

@@ -1219,11 +1219,6 @@ inline constexpr char kIOSTabRemindersName[] = "Tab Reminders";
 inline constexpr char kIOSTabRemindersDescription[] =
     "Enables the Tab Reminder notifications feature on iOS.";
 
-inline constexpr char kIOSTipsNotificationsStringAlternativesName[] =
-    "Tips notifications alternative string experiment";
-inline constexpr char kIOSTipsNotificationsStringAlternativesDescription[] =
-    "Enables different alternative strings for tips notifications";
-
 inline constexpr char kIOSTrustedVaultNotificationName[] =
     "Enable the trusted vault notification on iOS";
 inline constexpr char kIOSTrustedVaultNotificationDescription[] =
