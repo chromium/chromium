@@ -11,6 +11,7 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//components/autofill/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
@@ -35,6 +36,7 @@ source_set("edit_ui") {
     "//build:branding_buildflags",
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
+    "//components/autofill/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model/message",

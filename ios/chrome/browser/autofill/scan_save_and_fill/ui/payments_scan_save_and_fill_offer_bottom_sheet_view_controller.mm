@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_view_controller.h"
 
+#import "base/feature_list.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -115,8 +117,11 @@ CGFloat const kCustomFaviconSideLength = 58;
 - (UIImage*)titleImage {
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  image = MakeSymbolMulticolor(
-      SymbolWithPointSize(SymbolGoogleWalletIcon, kTitleLogoHeight));
+  Symbol symbol = base::FeatureList::IsEnabled(
+                      autofill::features::kAutofillEnableGradientGoogleLogos)
+                      ? SymbolGoogleWalletIconV2
+                      : SymbolGoogleWalletIcon;
+  image = MakeSymbolMulticolor(SymbolWithPointSize(symbol, kTitleLogoHeight));
 #else
   image = SymbolTemplateWithPointSize(SymbolDefaultBrowser, kTitleLogoHeight);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)

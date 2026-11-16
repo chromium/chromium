@@ -13,6 +13,7 @@
 #import "build/branding_buildflags.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
@@ -706,8 +707,12 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
 - (UIImage*)aboveTitleImage {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Use the optimized high-resolution iOS symbol for branded builds.
+  Symbol symbol = base::FeatureList::IsEnabled(
+                      autofill::features::kAutofillEnableGradientGoogleLogos)
+                      ? SymbolGoogleWalletV2
+                      : SymbolGoogleWallet;
   return MakeSymbolMulticolor(
-      SymbolWithPointSize(SymbolGoogleWallet, kGoogleWalletLogoHeight));
+      SymbolWithPointSize(symbol, kGoogleWalletLogoHeight));
 #else
   // Fallback to the generic asset for unbranded builds.
   return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
