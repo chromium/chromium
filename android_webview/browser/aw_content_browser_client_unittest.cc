@@ -208,6 +208,20 @@ TEST_F(AwContentBrowserClientTest, GetInitialInsecureDnsModeEnabledNoSystem) {
   }
 }
 
+TEST_F(AwContentBrowserClientTest,
+       AllowNonActivatedCrossOriginPaintHoldingDefault) {
+  EXPECT_FALSE(client_.AllowNonActivatedCrossOriginPaintHolding());
+}
+
+TEST_F(AwContentBrowserClientTest,
+       AllowNonActivatedCrossOriginPaintHoldingKillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kWebViewLimitCrossOriginNonActivatedPaintHolding);
+
+  EXPECT_TRUE(client_.AllowNonActivatedCrossOriginPaintHolding());
+}
+
 }  // namespace
 
 }  // namespace android_webview

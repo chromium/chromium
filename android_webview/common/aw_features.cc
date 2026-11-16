@@ -262,6 +262,12 @@ BASE_FEATURE(kWebViewInvokeZoomPickerOnGSU, base::FEATURE_DISABLED_BY_DEFAULT);
 // cookie versioning to reduce IPC overhead.
 BASE_FEATURE(kWebViewLatchedCookiePolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for limiting cross-origin paint holding without user activation
+// in WebView. When enabled, WebView disallows non-activated cross-origin paint
+// holding like other embedders.
+BASE_FEATURE(kWebViewLimitCrossOriginNonActivatedPaintHolding,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Install the profiling client with memory_system::Initializer. If this is
 // enabled the profiler MAY be started by
 // HeapProfilerController::StartIfEnabled, which is controlled by the

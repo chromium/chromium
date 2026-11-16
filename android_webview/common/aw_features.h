@@ -71,6 +71,7 @@ BASE_DECLARE_FEATURE(kWebViewInitInConstructor);
 BASE_DECLARE_FEATURE(kWebViewInitRendererDuringWebContentsCreation);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);
 BASE_DECLARE_FEATURE(kWebViewLatchedCookiePolicy);
+BASE_DECLARE_FEATURE(kWebViewLimitCrossOriginNonActivatedPaintHolding);
 BASE_DECLARE_FEATURE(kWebViewMemoryProfilingClient);
 BASE_DECLARE_FEATURE(kWebViewMigrateVisitedLinks);
 BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);

@@ -1595,6 +1595,10 @@ public final class ProductionSupportedFlagList {
                 "Allows the built-in DNS resolver (HostResolverDnsTask) to succeed when one"
                         + " address transaction (A or AAAA) succeeds and the sibling address"
                         + " transaction fails."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_LIMIT_CROSS_ORIGIN_NON_ACTIVATED_PAINT_HOLDING,
+                "When enabled, WebView disallows cross-origin paint holding without user"
+                        + " activation."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
