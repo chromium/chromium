@@ -322,15 +322,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '7a06b6cf9fc9fe32f8906c63da21a4e35f7e9f15',
+  'skia_revision': '8a65fa27c104d1bb5a58df5ec3e0c1655053fcf6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '3ebed6ee1bb690800a64b29570da5063e7e70086',
+  'v8_revision': 'e9c2bd61897c70d47c108376fd1a6e1a3e6482f7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'a18497974ed536e6372824b0bebe45e73e9bd606',
+  'angle_revision': 'cee4e7c43f69f2515e52393bf3d4df4ae82466b2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
