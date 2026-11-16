@@ -28,17 +28,20 @@ PasskeyUnlockPromo::GetNotificationCardType() const {
 
 bool PasskeyUnlockPromo::ShouldShowCard(
     const password_manager::NotificationCardPrefState& pref_state) const {
-  if (pref_state.was_dismissed) {
-    return false;
-  }
-
   if (!passkey_unlock_manager_ ||
       !passkey_unlock_manager_->ShouldDisplayErrorUi()) {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kPasskeyUnlockPromo);
+  // Check the feature before the dismissal state. Only users with the feature
+  // enabled can dismiss the card, so checking the dismissal state first would
+  // stop activating the field trial for them but not for the control group.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasskeyUnlockPromo)) {
+    return false;
+  }
+
+  return !pref_state.was_dismissed;
 }
 
 std::u16string PasskeyUnlockPromo::GetTitle() const {
