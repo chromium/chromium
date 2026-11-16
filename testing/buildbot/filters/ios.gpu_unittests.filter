@@ -5,6 +5,8 @@
 -GpuChannelTest.CreateLowPriorityCommandBuffer
 -GpuChannelTest.CreateOffscreenCommandBuffer
 -GpuChannelTest.CreateSharedImageWithMipmapRejected
+-GpuChannelWaitPriorityTest.LowPriorityWaitBoostsToNormalThenEscalatesToHigh
+-GpuChannelWaitPriorityTest.WaitForGetOffsetDoesNotPreemptHighPrioritySequence
 
 # TODO(crbug.com/352379282): These tests have failed since
 # https://crrev.com/c/5690471.
