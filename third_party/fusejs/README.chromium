@@ -11,3 +11,10 @@ Description:
 Fuzzy search js library used by WebUI
 Local Modifications:
 Added the file README.chromium (this file)
+
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./
+copy.bara.sky lists every file it imports. If the new upstream version adds a
+file Chromium needs, add it there and to
+chrome/browser/resources/chromeos/emoji_picker/BUILD.gn.

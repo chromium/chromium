@@ -1,0 +1,15 @@
+upstream {
+  commit: "e5c990744321d2b673944af65d98609198e37402"
+  artifacts {
+    git {
+      repository: "https://github.com/krisk/Fuse"
+      commit: "e5c990744321d2b673944af65d98609198e37402"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}

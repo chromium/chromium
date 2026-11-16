@@ -1,0 +1,9 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = [
+        "LICENSE",
+        "dist/fuse.basic.esm.min.js",
+        "dist/fuse.d.ts",
+    ],
+)
