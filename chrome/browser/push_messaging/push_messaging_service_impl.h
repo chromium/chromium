@@ -28,7 +28,6 @@
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/gcm_driver/common/gcm_message.h"
-#include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -338,20 +337,16 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                            const GURL& origin,
                            int64_t service_worker_registration_id,
                            const std::string& app_id,
-                           const std::string& sender_id,
                            UnregisterCallback callback);
 
   void DidClearPushSubscriptionId(blink::mojom::PushUnregistrationReason reason,
                                   const std::string& app_id,
-                                  const std::string& sender_id,
                                   UnregisterCallback callback);
 
-  void DidUnregister(bool was_subscribed, gcm::GCMClient::Result result);
   void DidDeleteID(const std::string& app_id,
                    bool was_subscribed,
                    instance_id::InstanceID::Result result);
-  void DidUnsubscribe(const std::string& app_id_when_instance_id,
-                      bool was_subscribed);
+  void DidUnsubscribe(const std::string& app_id, bool was_subscribed);
 
   // OnContentSettingChanged methods -------------------------------------------
 
@@ -433,12 +428,6 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       blink::mojom::PushUnregistrationReason reason,
       UnregisterCallback unregister_callback);
 
-  void DidGetSenderIdUnexpectedUnsubscribe(
-      const push_messaging::AppIdentifier& app_identifier,
-      blink::mojom::PushUnregistrationReason reason,
-      UnregisterCallback callback,
-      const std::string& sender_id);
-
   // Checks if a given origin is allowed to use Push.
   //
   // `user_visible` is the userVisibleOnly value provided to the push
@@ -454,7 +443,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void GetEncryptionInfoForAppId(
       const std::string& app_id,
       const std::string& sender_id,
-      gcm::GCMEncryptionProvider::EncryptionInfoCallback callback);
+      instance_id::InstanceID::GetEncryptionInfoCallback callback);
 
   gcm::GCMDriver* GetGCMDriver() const;
 

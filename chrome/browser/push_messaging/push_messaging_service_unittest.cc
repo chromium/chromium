@@ -782,10 +782,10 @@ TEST_F(PushMessagingServiceTest, UnsubscribeLegacySubscription) {
                                   legacy_p256dh);
 }
 
-// Revoking the permission unsubscribes a legacy (non-InstanceID) subscription.
-// On this path the sender ID is empty (no sender ID is stored for the Service
-// Worker here). Unsubscribe still deletes the InstanceID and the legacy keys,
-// also on Android, where the browser tests do not run.
+// Revoking the permission unsubscribes a legacy (non-InstanceID) subscription
+// through UnexpectedUnsubscribe(). This path does not use the sender ID.
+// Unsubscribe deletes the InstanceID and the legacy keys, also on Android,
+// where the browser tests do not run.
 TEST_F(PushMessagingServiceTest,
        UnsubscribeLegacySubscriptionOnPermissionRevocation) {
   base::HistogramTester histograms;
