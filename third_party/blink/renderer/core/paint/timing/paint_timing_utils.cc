@@ -8,9 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -29,21 +27,13 @@ bool ShouldIgnoreImageContentForPaintTiming(const LayoutObject& object,
   if (!base::FeatureList::IsEnabled(kIgnoreDefaultVideoPosterForPaintTiming)) {
     return false;
   }
-  if (!media_timing || media_timing->IsVideo() ||
-      !IsA<HTMLVideoElement>(object.GetNode())) {
+  const auto* video = DynamicTo<HTMLVideoElement>(object.GetNode());
+  if (!media_timing || media_timing->IsVideo() || !video) {
     return false;
   }
-  const Settings* settings = object.GetDocument().GetSettings();
-  if (!settings) {
-    return false;
-  }
-  StringView default_poster =
-      StripLeadingAndTrailingHtmlSpaces(settings->GetDefaultVideoPosterURL());
-  if (default_poster.empty()) {
-    return false;
-  }
-  return object.GetDocument().CompleteURL(default_poster) ==
-         media_timing->Url();
+  KURL default_poster_url = video->DefaultPosterImageURL();
+  return !default_poster_url.IsEmpty() &&
+         default_poster_url == media_timing->Url();
 }
 
 void NotifyLoaderPerformanceTimingChanged(LocalDOMWindow* window) {

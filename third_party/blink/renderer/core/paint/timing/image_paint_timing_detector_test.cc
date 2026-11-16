@@ -813,6 +813,55 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_FALSE(HasPersistentImageState());
 }
 
+TEST_P(ImagePaintTimingDetectorTest,
+       VideoImage_DefaultPosterIgnoredAfterCrossPageAdoption) {
+  auto other_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  other_page->GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(LARGE_IMAGE));
+  other_page->GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <video id="target" width="300" height="200"></video>
+  )HTML");
+  other_page->GetFrameView().UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  other_page->GetFrameView().UpdateAllLifecyclePhasesForTest();
+
+  // Configure a different default video poster on the destination Page and
+  // adopt the video element across pages.
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(SIMPLE_IMAGE));
+  Element* video_element =
+      other_page->GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(video_element);
+  GetDocument().body()->appendChild(video_element);
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_EQ(LcpCandidateCount(), 0u);
+  EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 0u);
+  EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
+  EXPECT_FALSE(HasPersistentImageState());
+}
+
+TEST_P(ImagePaintTimingDetectorTest,
+       VideoImage_DefaultPosterIgnoredWhenSettingsChangedAfterCreation) {
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(LARGE_IMAGE));
+  SetMainFrameBodyContent(R"HTML(
+    <video id="target" width="300" height="200"></video>
+  )HTML");
+  // Mutate the live Page setting after the <video> element captured its
+  // constructor default poster URL.
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(SIMPLE_IMAGE));
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_EQ(LcpCandidateCount(), 0u);
+  EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 0u);
+  EXPECT_EQ(main_frame_client_->PaintedImageRecordCount(), 0u);
+  EXPECT_FALSE(HasPersistentImageState());
+}
+
 TEST_P(ImagePaintTimingDetectorTest, SVGImage) {
   SetMainFrameBodyContent(R"HTML(
     <svg>

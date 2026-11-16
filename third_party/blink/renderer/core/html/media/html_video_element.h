@@ -111,9 +111,16 @@ class CORE_EXPORT HTMLVideoElement final
 
   KURL PosterImageURL() const override;
 
+  // Returns the default poster image URL for the document, or an empty KURL if
+  // none is set.
+  // TODO(crbug.com/40174114): Remove this once default poster image URL is
+  // removed.
+  KURL DefaultPosterImageURL() const;
+
   // Returns whether the current poster image URL is the default for the
   // document.
-  // TODO(1190335): Remove this once default poster image URL is removed.
+  // TODO(crbug.com/40174114): Remove this once default poster image URL is
+  // removed.
   bool IsDefaultPosterImageURL() const;
 
   // Helper for GetSourceImageForCanvas() and other external callers who want a

@@ -26,6 +26,7 @@ promise_test(async t => {
   // 1. Video with default poster (no poster attribute) and elementtiming.
   // Sized larger (300x300) than videoExplicit so it would win LCP if not filtered.
   const videoDefault = document.createElement('video');
+  t.add_cleanup(() => videoDefault.remove());
   videoDefault.id = 'video-default';
   videoDefault.setAttribute('elementtiming', 'default-et');
   videoDefault.width = 300;
@@ -37,6 +38,7 @@ promise_test(async t => {
 
   // 2. Video with explicit poster and elementtiming.
   const videoExplicit = document.createElement('video');
+  t.add_cleanup(() => videoExplicit.remove());
   videoExplicit.id = 'video-explicit';
   videoExplicit.poster = 'content/greenbox.png';
   videoExplicit.setAttribute('elementtiming', 'explicit-et');
@@ -73,5 +75,91 @@ promise_test(async t => {
   assert_not_equals(explicitLcp, undefined,
       'Explicit video poster should be reported to LargestContentfulPaint');
 }, 'Default video poster image is ignored by LargestContentfulPaint and ElementTiming');
+
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  internals.settings.setDefaultVideoPosterURL('content/abe.png');
+
+  const popup = window.open('about:blank');
+  t.add_cleanup(() => popup.close());
+  popup.internals.settings.setDefaultVideoPosterURL(
+      'resources/munsell-bt601-smpte-c.png');
+
+  await Promise.all([
+    'content/abe.png',
+    'resources/munsell-bt601-smpte-c.png',
+    'resources/munsell-bt709-hdtv-itu.png',
+  ].map(src => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = src;
+    });
+  }));
+
+  // Create and attach a video with the popup's default poster in the popup
+  // first, then adopt it into this window (which has a different default
+  // poster setting).
+  const adoptedVideo = popup.document.createElement('video');
+  t.add_cleanup(() => adoptedVideo.remove());
+  adoptedVideo.id = 'video-adopted';
+  adoptedVideo.setAttribute('elementtiming', 'adopted-et');
+  adoptedVideo.width = 400;
+  adoptedVideo.height = 400;
+  popup.document.body.appendChild(adoptedVideo);
+
+  await new Promise(resolve => popup.requestAnimationFrame(
+      () => popup.requestAnimationFrame(resolve)));
+
+  const entries = [];
+  const observer = new PerformanceObserver(list => {
+    entries.push(...list.getEntries());
+  });
+  observer.observe({entryTypes: ['largest-contentful-paint', 'element']});
+
+  document.body.appendChild(adoptedVideo);
+
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  // Use a 50x50 box with a 320x240 image so its LCP size (2500) is larger than
+  // the first test's greenbox.png (intrinsic 25x25 = 625), but smaller than the
+  // default posters (abe.png = 76x103 = 7828, munsell-bt601 = 320x240 = 76800).
+  const videoExplicit = document.createElement('video');
+  t.add_cleanup(() => videoExplicit.remove());
+  videoExplicit.id = 'video-explicit-after-adopt';
+  videoExplicit.poster = 'resources/munsell-bt709-hdtv-itu.png';
+  videoExplicit.setAttribute('elementtiming', 'explicit-after-adopt-et');
+  videoExplicit.width = 50;
+  videoExplicit.height = 50;
+  document.body.appendChild(videoExplicit);
+
+  await t.step_wait(() => {
+    const hasLcp = entries.some(e => e.entryType === 'largest-contentful-paint');
+    const hasEt = entries.some(
+        e => e.entryType === 'element' &&
+             e.identifier === 'explicit-after-adopt-et');
+    return hasLcp && hasEt;
+  }, 'Wait for LCP and explicit ElementTiming entries after adoption');
+
+  const adoptedLcp = entries.find(
+      e => e.entryType === 'largest-contentful-paint' &&
+           (e.id === 'video-adopted' || e.url.includes('abe.png') ||
+            e.url.includes('munsell-bt601-smpte-c.png')));
+  const adoptedEt = entries.find(
+      e => e.entryType === 'element' &&
+           (e.identifier === 'adopted-et' || e.url.includes('abe.png') ||
+            e.url.includes('munsell-bt601-smpte-c.png')));
+  const explicitLcp = entries.find(
+      e => e.entryType === 'largest-contentful-paint' &&
+           e.id === 'video-explicit-after-adopt');
+
+  assert_equals(adoptedLcp, undefined,
+      'Adopted video default poster should not be reported to LargestContentfulPaint');
+  assert_equals(adoptedEt, undefined,
+      'Adopted video default poster should not be reported to ElementTiming');
+  assert_not_equals(explicitLcp, undefined,
+      'Explicit video poster after adoption should be reported to LargestContentfulPaint');
+}, 'Default video poster image remains ignored after cross-page adoption');
 </script>
 </body>

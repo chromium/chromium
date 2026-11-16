@@ -127,19 +127,30 @@ enum class PictureInPictureSizeConstraintResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:PictureInPictureSizeConstraintResult)
 
+AtomicString GetDefaultPosterURLFromSettings(const Document& document) {
+  return document.GetSettings()
+             ? AtomicString(document.GetSettings()->GetDefaultVideoPosterURL())
+             : g_null_atom;
+}
+
+KURL CompletePosterURL(const Document& document,
+                       const AtomicString& poster_url) {
+  StringView url = StripLeadingAndTrailingHtmlSpaces(poster_url);
+  if (url.empty()) {
+    return KURL();
+  }
+  return document.CompleteURL(url);
+}
+
 }  // namespace
 
 HTMLVideoElement::HTMLVideoElement(Document& document)
     : HTMLMediaElement(html_names::kVideoTag, document),
+      default_poster_url_(GetDefaultPosterURLFromSettings(document)),
       cache_deleting_timer_(
           GetDocument().GetTaskRunner(TaskType::kInternalMedia),
           this,
           &HTMLVideoElement::ResetCache) {
-  if (document.GetSettings()) {
-    default_poster_url_ =
-        AtomicString(document.GetSettings()->GetDefaultVideoPosterURL());
-  }
-
   custom_controls_fullscreen_detector_ =
       MakeGarbageCollected<MediaCustomControlsFullscreenDetector>(*this);
 
@@ -868,6 +879,8 @@ void HTMLVideoElement::DidExitFullscreen() {
 }
 
 void HTMLVideoElement::DidMoveToNewDocument(Document& old_document) {
+  default_poster_url_ = GetDefaultPosterURLFromSettings(GetDocument());
+
   if (image_loader_) {
     image_loader_->ElementDidMoveToNewDocument();
   }
@@ -916,11 +929,11 @@ unsigned HTMLVideoElement::webkitDroppedFrameCount() const {
 }
 
 KURL HTMLVideoElement::PosterImageURL() const {
-  StringView url = StripLeadingAndTrailingHtmlSpaces(ImageSourceURL());
-  if (url.empty()) {
-    return KURL();
-  }
-  return GetDocument().CompleteURL(url);
+  return CompletePosterURL(GetDocument(), ImageSourceURL());
+}
+
+KURL HTMLVideoElement::DefaultPosterImageURL() const {
+  return CompletePosterURL(GetDocument(), default_poster_url_);
 }
 
 bool HTMLVideoElement::IsDefaultPosterImageURL() const {

@@ -375,6 +375,47 @@ TEST_P(ElementTimingTest, VideoImage_ExplicitPosterRecordedWhenDefaultSet) {
   EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
+TEST_P(ElementTimingTest,
+       VideoImage_DefaultPosterIgnoredAfterCrossPageAdoption) {
+  auto other_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  other_page->GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(LARGE_IMAGE));
+  other_page->GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <video id="target" elementtiming="video-et" width="100" height="100"></video>
+  )HTML");
+  other_page->GetFrameView().UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  other_page->GetFrameView().UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(SIMPLE_IMAGE));
+  Element* video_element =
+      other_page->GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(video_element);
+  GetDocument().body()->appendChild(video_element);
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_EQ(RecordedImagesSize(), 0u);
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+}
+
+TEST_P(ElementTimingTest,
+       VideoImage_DefaultPosterIgnoredWhenSettingsChangedAfterCreation) {
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(LARGE_IMAGE));
+  SetBodyInnerHTML(R"HTML(
+    <video id="target" elementtiming="video-et" width="100" height="100"></video>
+  )HTML");
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(SIMPLE_IMAGE));
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_EQ(RecordedImagesSize(), 0u);
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+}
+
 TEST_P(ElementTimingTest, TextElementTimingBasic) {
   SetMainFrameBodyContent(R"HTML(
     <p id="target" elementtiming="paragraph">Sample paragraph text</p>

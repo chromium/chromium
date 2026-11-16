@@ -548,12 +548,46 @@ TEST_P(HTMLVideoElementTest, DefaultPosterImage) {
   // the same poster image URL as what we just set.
   EXPECT_TRUE(video->IsDefaultPosterImageURL());
   EXPECT_EQ(kDefaultPosterImage, video->PosterImageURL());
+  EXPECT_EQ(KURL(kDefaultPosterImage), video->DefaultPosterImageURL());
 
   // Set the poster image of the video to something
   video->setAttribute(html_names::kPosterAttr,
                       AtomicString("http://www.example.com/bar.jpg"));
   EXPECT_FALSE(video->IsDefaultPosterImageURL());
   EXPECT_NE(kDefaultPosterImage, video->PosterImageURL());
+  EXPECT_EQ(KURL(kDefaultPosterImage), video->DefaultPosterImageURL());
+}
+
+TEST_P(HTMLVideoElementTest, DefaultPosterImageUpdatedOnMoveToNewDocument) {
+  const String kDefaultPosterImageA = "http://www.example.com/foo.jpg";
+  const String kDefaultPosterImageB = "http://www.example.com/bar.jpg";
+
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(kDefaultPosterImageA);
+
+  auto* video = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
+  GetDocument().body()->appendChild(video);
+  EXPECT_TRUE(video->IsDefaultPosterImageURL());
+  EXPECT_EQ(KURL(kDefaultPosterImageA), video->PosterImageURL());
+  EXPECT_EQ(KURL(kDefaultPosterImageA), video->DefaultPosterImageURL());
+
+  // Move the video element to a second Page with a different default poster.
+  auto other_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  other_page->GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      kDefaultPosterImageB);
+  other_page->GetDocument().body()->appendChild(video);
+
+  EXPECT_TRUE(video->IsDefaultPosterImageURL());
+  EXPECT_EQ(KURL(kDefaultPosterImageB), video->PosterImageURL());
+  EXPECT_EQ(KURL(kDefaultPosterImageB), video->DefaultPosterImageURL());
+
+  // Move the video element to a third Page with no default poster configured.
+  auto empty_poster_page =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  empty_poster_page->GetDocument().body()->appendChild(video);
+
+  EXPECT_TRUE(video->IsDefaultPosterImageURL());
+  EXPECT_TRUE(video->PosterImageURL().IsEmpty());
+  EXPECT_TRUE(video->DefaultPosterImageURL().IsEmpty());
 }
 
 TEST_P(HTMLVideoElementTest,
