@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 
 #include <algorithm>
+#include <atomic>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -16,6 +18,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -2262,4 +2265,181 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(manager->overlay_contents(), nullptr);
   EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
 }
+
+// Loading flags used in dogfood, and whether the profile is latched to GEiC.
+struct ReloadFromErrorParams {
+  std::string_view name;
+  bool geic = false;
+  // Enables `features::kGlicSsr`, with its
+  // `show_loader_until_main_page_onload` param.
+  bool glic_ssr_show_loader_until_onload = false;
+  // Enables `features::kGeicSsr` (only applies to GEiC). Its loader param is
+  // the `features::kGlicSsr` param above.
+  bool geic_ssr = false;
+  bool native_loading_placeholder = false;
+};
+
+// Reloads the panel from its error state while the guest's response is slow.
+class GlicNoWebviewReloadFromErrorBrowserTest
+    : public GlicNoWebviewContentsManagerBrowserTest,
+      public testing::WithParamInterface<ReloadFromErrorParams> {
+ public:
+  GlicNoWebviewReloadFromErrorBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    if (GetParam().geic) {
+      enabled_features.push_back({features::kGeic, {}});
+    }
+    if (GetParam().glic_ssr_show_loader_until_onload) {
+      enabled_features.push_back(
+          {features::kGlicSsr,
+           {{features::kGlicShowLoaderUntilMainPageOnload.name, "true"}}});
+    }
+    if (GetParam().geic_ssr) {
+      enabled_features.push_back({features::kGeicSsr, {}});
+    }
+    if (GetParam().native_loading_placeholder) {
+      enabled_features.push_back({features::kGlicNativeLoadingPlaceholder, {}});
+    }
+    loading_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    // Registered before the default handlers, so it can hang guest loads.
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &GlicNoWebviewReloadFromErrorBrowserTest::MaybeHangGuestRequest,
+        base::Unretained(this)));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicNoWebviewContentsManagerBrowserTest::SetUpCommandLine(command_line);
+    if (GetParam().geic) {
+      command_line->AppendSwitchASCII(geic::kGeicGuestURLSwitch,
+                                      GetGuestURL().spec());
+      // Allows the non-allowlisted test server guest URL.
+      command_line->AppendSwitch(geic::kGeicAllowAnyGuestURLSwitch);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    guest_path_ = GetGuestURL().path();
+    GlicNoWebviewContentsManagerBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  // Checks that `instance` shows a loading indicator, and not a blank guest,
+  // while its web client isn't connected.
+  void ExpectLoadingIndicator(GlicInstanceImpl* instance) {
+    auto* manager = GetNoWebviewContentsManager(instance);
+    ASSERT_TRUE(manager);
+    ASSERT_FALSE(instance->host().IsWebClientConnected());
+    EXPECT_EQ(manager->guest_state().get(),
+              GlicNoWebviewContentsManager::GuestState::kLoading);
+    switch (manager->state()) {
+      case GlicNoWebviewContentsManager::DisplayState::kShowingOverlay: {
+        EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
+        mojom::OverlayStatePtr overlay_state =
+            manager->GetOverlayStateForTesting();
+        ASSERT_TRUE(overlay_state);
+        EXPECT_TRUE(overlay_state->is_loading());
+        break;
+      }
+      case GlicNoWebviewContentsManager::DisplayState::kShowingNativeLoading:
+        EXPECT_TRUE(instance->host().IsShowingNativeLoading());
+        break;
+      case GlicNoWebviewContentsManager::DisplayState::kShowingGuest:
+        ADD_FAILURE() << "The guest is shown before its client connected, so "
+                         "the panel is blank until the response arrives.";
+        break;
+      case GlicNoWebviewContentsManager::DisplayState::kWarming:
+      case GlicNoWebviewContentsManager::DisplayState::kAttachedHidden:
+        ADD_FAILURE() << "The panel is not visible.";
+        break;
+    }
+  }
+
+  std::atomic<bool> hang_guest_requests_{false};
+  std::atomic<int> hung_guest_request_count_{0};
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> MaybeHangGuestRequest(
+      const net::test_server::HttpRequest& request) {
+    if (!hang_guest_requests_ || request.GetURL().path() != guest_path_) {
+      return nullptr;
+    }
+    ++hung_guest_request_count_;
+    return std::make_unique<net::test_server::HungResponse>();
+  }
+
+  // Written before `hang_guest_requests_` is first set, and only read once it
+  // is.
+  std::string guest_path_;
+  base::test::ScopedFeatureList loading_feature_list_;
+};
+
+// After right-click > Reload from the error panel, GEiC dogfooders saw a blank
+// panel for many seconds. While the reloaded guest's response is pending, the
+// panel must show a loading indicator instead of the blank guest.
+IN_PROC_BROWSER_TEST_P(GlicNoWebviewReloadFromErrorBrowserTest,
+                       ReloadFromErrorStateShowsLoadingIndicator) {
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*GetProfile()),
+            GetParam().geic ? GlicProvider::kGeminiEnterprise
+                            : GlicProvider::kGemini);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  {
+    auto* manager = GetNoWebviewContentsManager(instance);
+    ASSERT_TRUE(manager);
+
+    // Enter the error state.
+    manager->OnWebClientStateChanged(mojom::WebClientState::kError);
+    ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
+    content::WebContents* error_contents = manager->active_web_contents();
+    ASSERT_TRUE(error_contents);
+    ASSERT_EQ(error_contents, manager->overlay_contents());
+
+    // Right-click > Reload on the error panel, with a guest that doesn't
+    // respond. This replaces the contents manager, destroying `manager` and
+    // `error_contents`.
+    hang_guest_requests_ = true;
+    service()->Reload(error_contents->GetPrimaryMainFrame());
+  }
+  {
+    SCOPED_TRACE("Immediately after reload");
+    ExpectLoadingIndicator(instance);
+  }
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return hung_guest_request_count_ > 0; }));
+  {
+    SCOPED_TRACE("While the guest response is pending");
+    ExpectLoadingIndicator(instance);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GlicNoWebviewReloadFromErrorBrowserTest,
+    testing::Values(
+        ReloadFromErrorParams{.name = "Gemini"},
+        ReloadFromErrorParams{.name = "GeminiSsrShowLoaderUntilOnload",
+                              .glic_ssr_show_loader_until_onload = true},
+        ReloadFromErrorParams{.name = "GeminiNativeLoadingPlaceholder",
+                              .native_loading_placeholder = true},
+        ReloadFromErrorParams{
+            .name = "GeminiSsrShowLoaderUntilOnloadNativeLoadingPlaceholder",
+            .glic_ssr_show_loader_until_onload = true,
+            .native_loading_placeholder = true},
+        ReloadFromErrorParams{.name = "Geic", .geic = true},
+        // Checks that kGlicSsr alone doesn't affect GEiC, which only inspects
+        // kGeicSsr.
+        ReloadFromErrorParams{.name = "GeicGlicSsrShowLoaderUntilOnload",
+                              .geic = true,
+                              .glic_ssr_show_loader_until_onload = true},
+        ReloadFromErrorParams{.name = "GeicSsrShowLoaderUntilOnload",
+                              .geic = true,
+                              .glic_ssr_show_loader_until_onload = true,
+                              .geic_ssr = true},
+        ReloadFromErrorParams{.name = "GeicNativeLoadingPlaceholder",
+                              .geic = true,
+                              .native_loading_placeholder = true}),
+    [](const testing::TestParamInfo<ReloadFromErrorParams>& info) {
+      return std::string(info.param.name);
+    });
 }  // namespace glic
