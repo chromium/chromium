@@ -114,6 +114,11 @@ AIModeSignInPromoViewBase::~AIModeSignInPromoViewBase() {
   }
 }
 
+void AIModeSignInPromoViewBase::SetKeepVisible(
+    base::ScopedClosureRunner keep_visible) {
+  keep_visible_ = std::move(keep_visible);
+}
+
 void AIModeSignInPromoViewBase::WindowClosing() {
   if (controller_) {
     controller_->HandlePromoClosing(GetWidget()->closed_reason());

@@ -44,17 +44,38 @@ source_set("impl") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "signin_promo_view_pixeltest.cc" ]
+  sources = [
+    "signin_promo_controller_browsertest.cc",
+    "signin_promo_view_pixeltest.cc",
+  ]
   deps = [
     ":search_ai_mode",
     "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui:toolbar_controller_util",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/interaction",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/tabs:tab_model",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
     "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/common",
     "//chrome/test:test_support",
     "//components/omnibox/common",
+    "//components/prefs",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//ui/base/interaction",
+    "//ui/views:test_support",
+    "//ui/views/controls/webview",
   ]
 }

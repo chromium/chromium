@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_dialog_view.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -39,6 +40,10 @@ class AIModeSignInPromoViewBase : public BubbleSignInPromoDialogView {
 
   ~AIModeSignInPromoViewBase() override;
 
+  // Retains `keep_visible` so the anchor button stays popped out until this
+  // bubble view is destroyed.
+  void SetKeepVisible(base::ScopedClosureRunner keep_visible);
+
  protected:
   // views::WidgetDelegate:
   void WindowClosing() override;
@@ -47,6 +52,7 @@ class AIModeSignInPromoViewBase : public BubbleSignInPromoDialogView {
 
  private:
   base::WeakPtr<AIModeSignInPromoControllerBase> controller_;
+  base::ScopedClosureRunner keep_visible_;
 };
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSearchAIModeSignInPromoFrameViewId);

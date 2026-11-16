@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/contextual_tasks/search_ai_mode_signin_promo_controller_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -36,9 +37,12 @@ class AIModeSignInPromoControllerBase {
   AIModeSignInPromoControllerBase& operator=(
       const AIModeSignInPromoControllerBase&) = delete;
 
-  // Triggers the promo, subject to eligibility conditions (rate limits).
-  // Returns false if the flow is aborted and the promo cannot be shown,
-  // otherwise returns true and triggers the promo.
+  // Requests showing the promo, subject to eligibility (`CanShowPromo`) and
+  // tab visibility checks. Returns false if the flow is immediately aborted;
+  // otherwise returns true and displays the promo once the avatar button is
+  // visible (or aborts asynchronously if the window/tab closes, hides,
+  // navigates, or becomes ineligible before the anchor resolves). Must not be
+  // called while a promo is already pending or showing.
   virtual bool MaybeShowPromo(BrowserView* browser_view);
 
   // Called once when the view is being destroyed.
@@ -54,19 +58,26 @@ class AIModeSignInPromoControllerBase {
  protected:
   content::WebContents* web_contents() { return web_contents_.get(); }
 
+  virtual base::WeakPtr<AIModeSignInPromoControllerBase> GetBaseWeakPtr() = 0;
   virtual bool CanShowPromo(Profile& profile) = 0;
-  virtual void UpdateAvatarButtonState(
-      AvatarToolbarButtonInterface& avatar_button) {}
-  virtual void OnViewDeleted() {}
+  virtual base::ScopedClosureRunner UpdateAvatarButtonState(
+      AvatarToolbarButtonInterface& avatar_button);
   virtual void OnPromoIneligible() {}
   virtual void OnPromoDismissedOrAborted() {}
   virtual std::unique_ptr<AIModeSignInPromoViewBase> CreatePromoView(
       views::BubbleAnchor anchor) = 0;
 
  private:
+  void ShowPromoWithAnchor(base::WeakPtr<BrowserView> browser_view,
+                           content::WeakDocumentPtr weak_document,
+                           views::BubbleAnchor anchor,
+                           base::ScopedClosureRunner keep_visible);
+
   base::WeakPtr<content::WebContents> web_contents_;
   signin_metrics::AccessPoint access_point_;
   raw_ptr<AIModeSignInPromoViewBase> promo_view_ = nullptr;
+  bool is_pending_promo_ = false;
+  base::ScopedClosureRunner avatar_button_state_runner_;
 };
 
 // Controller for the Search AI Mode sign-in promo bubble.
@@ -88,10 +99,10 @@ class SearchAIModeSignInPromoController
   }
 
  protected:
+  base::WeakPtr<AIModeSignInPromoControllerBase> GetBaseWeakPtr() override;
   bool CanShowPromo(Profile& profile) override;
-  void UpdateAvatarButtonState(
+  base::ScopedClosureRunner UpdateAvatarButtonState(
       AvatarToolbarButtonInterface& avatar_button) override;
-  void OnViewDeleted() override;
   void OnPromoIneligible() override;
   void OnPromoDismissedOrAborted() override;
   std::unique_ptr<AIModeSignInPromoViewBase> CreatePromoView(
@@ -99,7 +110,6 @@ class SearchAIModeSignInPromoController
 
  private:
   base::ObserverList<Observer> observers_;
-  base::ScopedClosureRunner avatar_pill_closure_runner_;
   base::WeakPtrFactory<SearchAIModeSignInPromoController> weak_ptr_factory_{
       this};
 };
@@ -114,10 +124,11 @@ class ComposeboxDriveSignInPromoController
 
   using AIModeSignInPromoControllerBase::MaybeShowPromo;
 
-  // Triggers the sign-in promo bubble anchored to the browser window.
-  // Returns false if `browser_window_interface` is null, its `BrowserView`
-  // cannot be resolved, or promo eligibility checks (`CanShowPromo`) fail.
-  // Otherwise, shows the promo and returns true.
+  // Requests showing the sign-in promo bubble anchored to
+  // `browser_window_interface`'s avatar button. Returns false if
+  // `browser_window_interface` is null, its `BrowserView` cannot be resolved,
+  // or initial eligibility/visibility checks fail; otherwise returns true and
+  // displays the promo once the avatar button is visible.
   bool MaybeShowPromo(BrowserWindowInterface* browser_window_interface);
 
   base::WeakPtr<ComposeboxDriveSignInPromoController> GetWeakPtr() {
@@ -125,6 +136,7 @@ class ComposeboxDriveSignInPromoController
   }
 
  protected:
+  base::WeakPtr<AIModeSignInPromoControllerBase> GetBaseWeakPtr() override;
   bool CanShowPromo(Profile& profile) override;
   std::unique_ptr<AIModeSignInPromoViewBase> CreatePromoView(
       views::BubbleAnchor anchor) override;

@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
+#include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
-#include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "components/contextual_tasks/public/features.h"
@@ -56,6 +59,7 @@ class AIModeSignInPromoViewPixelTestBase
       promo_view_tracker_.view()->GetWidget()->CloseWithReason(
           views::Widget::ClosedReason::kUnspecified);
     }
+    keep_visible_.RunAndReset();
   }
 
   bool VerifyUi() override {
@@ -81,9 +85,14 @@ class AIModeSignInPromoViewPixelTestBase
   views::BubbleAnchor GetAvatarBubbleAnchor() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar_button_provider()
+    base::test::TestFuture<views::BubbleAnchor, base::ScopedClosureRunner>
+        anchor_future;
+    browser_view->toolbar_button_provider()
         ->GetAvatarToolbarButtonInterface()
-        ->GetBubbleAnchor(*browser());
+        ->RunWhenVisible(anchor_future.GetCallback());
+    auto [anchor, keep_visible] = anchor_future.Take();
+    keep_visible_ = std::move(keep_visible);
+    return anchor;
   }
 
   void ShowPromoView(std::unique_ptr<AIModeSignInPromoViewBase> promo_view) {
@@ -94,6 +103,7 @@ class AIModeSignInPromoViewPixelTestBase
 
  private:
   views::ViewTracker promo_view_tracker_;
+  base::ScopedClosureRunner keep_visible_;
 };
 
 // Pixel tests for SearchAIModeSignInPromoView.
