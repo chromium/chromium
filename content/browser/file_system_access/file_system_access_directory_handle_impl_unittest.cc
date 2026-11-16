@@ -1170,6 +1170,74 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, MoveNoReadAccess) {
   EXPECT_FALSE(base::DirectoryExists(moved_dir));
 }
 
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       RenameSourceReplacedByFileFails) {
+  base::FilePath source_dir = dir_.GetPath().AppendASCII("source");
+  ASSERT_TRUE(base::CreateDirectory(source_dir));
+  base::FilePath renamed_dir = dir_.GetPath().AppendASCII("renamed");
+
+  auto handle =
+      GetHandleWithPermissions(source_dir, /*read=*/true, /*write=*/true);
+
+  // Replace the source directory with a regular file at the same path.
+  ASSERT_TRUE(base::DeletePathRecursively(source_dir));
+  ASSERT_TRUE(base::WriteFile(source_dir, "sample_data"));
+
+  EXPECT_CALL(permission_context_, GetReadPermissionGrant)
+      .WillOnce(testing::Return(allow_grant_));
+  EXPECT_CALL(permission_context_, GetWritePermissionGrant)
+      .WillOnce(testing::Return(allow_grant_));
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(_, _, HandleType::kDirectory,
+                                           AccessTrigger::kSave, _, _))
+      .WillOnce(base::test::RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Rename(renamed_dir.BaseName().AsUTF8Unsafe(), future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(future.Get()->file_error, base::File::FILE_ERROR_NOT_A_DIRECTORY);
+  EXPECT_TRUE(base::PathExists(source_dir));
+  EXPECT_FALSE(base::DirectoryExists(source_dir));
+  EXPECT_FALSE(base::PathExists(renamed_dir));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest, MoveSourceReplacedByFileFails) {
+  base::FilePath source_dir = dir_.GetPath().AppendASCII("source");
+  ASSERT_TRUE(base::CreateDirectory(source_dir));
+  base::FilePath dest_dir = dir_.GetPath().AppendASCII("dest");
+  ASSERT_TRUE(base::CreateDirectory(dest_dir));
+  base::FilePath moved_dir = dest_dir.AppendASCII("moved");
+
+  auto dest_dir_handle =
+      GetHandleWithPermissions(dest_dir, /*read=*/true, /*write=*/true);
+  auto handle =
+      GetHandleWithPermissions(source_dir, /*read=*/true, /*write=*/true);
+
+  // Replace the source directory with a regular file at the same path.
+  ASSERT_TRUE(base::DeletePathRecursively(source_dir));
+  ASSERT_TRUE(base::WriteFile(source_dir, "sample_data"));
+
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(_, _, HandleType::kDirectory,
+                                           AccessTrigger::kSave, _, _))
+      .WillOnce(base::test::RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dest_token;
+  manager_->CreateTransferToken(*dest_dir_handle,
+                                dest_token.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dest_token), moved_dir.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(future.Get()->file_error, base::File::FILE_ERROR_NOT_A_DIRECTORY);
+  EXPECT_TRUE(base::PathExists(source_dir));
+  EXPECT_FALSE(base::DirectoryExists(source_dir));
+  EXPECT_FALSE(base::PathExists(moved_dir));
+}
+
 // Tests for `FileSystemAccessDirectoryHandleImpl::Remove()`.
 class FileSystemAccessDirectoryHandleImplRemoveTest
     : public FileSystemAccessDirectoryHandleImplPermissionTestBase,

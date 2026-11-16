@@ -1261,6 +1261,29 @@ TEST_F(FileSystemAccessFileHandleImplRenameTest, HasWriteAccess) {
   EXPECT_TRUE(base::PathExists(renamed_file));
 }
 
+TEST_F(FileSystemAccessFileHandleImplRenameTest,
+       SourceReplacedByDirectoryFails) {
+  base::FilePath source_path = dir_.GetPath().AppendASCII("source.ext");
+  ASSERT_TRUE(base::WriteFile(source_path, "sample_data"));
+  base::FilePath renamed_path = dir_.GetPath().AppendASCII("renamed.ext");
+
+  auto handle = GetHandleWithPermissions(
+      source_path, /*read_grant=*/allow_grant_, /*write_grant=*/allow_grant_);
+
+  // Replace the source file with a directory at the same path.
+  ASSERT_TRUE(base::DeleteFile(source_path));
+  ASSERT_TRUE(base::CreateDirectory(source_path));
+  ASSERT_TRUE(
+      base::WriteFile(source_path.AppendASCII("nested.txt"), "sample_data"));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Rename(renamed_path.BaseName().AsUTF8Unsafe(), future.GetCallback());
+  EXPECT_EQ(future.Get()->status, FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(future.Get()->file_error, base::File::FILE_ERROR_NOT_A_FILE);
+  EXPECT_TRUE(base::DirectoryExists(source_path));
+  EXPECT_FALSE(base::PathExists(renamed_path));
+}
+
 class FileSystemAccessFileHandleImplMoveTest
     : public FileSystemAccessFileHandleImplTestBase {};
 
@@ -1340,6 +1363,39 @@ TEST_F(FileSystemAccessFileHandleImplMoveTest, HasDestWriteAccess) {
   EXPECT_EQ(future.Get()->status, FileSystemAccessStatus::kOk);
   EXPECT_FALSE(base::PathExists(file));
   EXPECT_TRUE(base::PathExists(renamed_file));
+}
+
+TEST_F(FileSystemAccessFileHandleImplMoveTest, SourceReplacedByDirectoryFails) {
+  base::FilePath dest_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      dir_.GetPath(), FILE_PATH_LITERAL("dest"), &dest_dir));
+  base::FilePath source_path = dir_.GetPath().AppendASCII("source.ext");
+  ASSERT_TRUE(base::WriteFile(source_path, "sample_data"));
+  base::FilePath moved_path = dest_dir.AppendASCII("moved.ext");
+
+  auto dest_dir_handle =
+      GetDirectoryHandleWithPermissions(dest_dir, /*read_grant=*/allow_grant_,
+                                        /*write_grant=*/allow_grant_);
+  auto handle = GetHandleWithPermissions(
+      source_path, /*read_grant=*/allow_grant_, /*write_grant=*/allow_grant_);
+
+  // Replace the source file with a directory at the same path.
+  ASSERT_TRUE(base::DeleteFile(source_path));
+  ASSERT_TRUE(base::CreateDirectory(source_path));
+  ASSERT_TRUE(
+      base::WriteFile(source_path.AppendASCII("nested.txt"), "sample_data"));
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
+  manager_->CreateTransferToken(*dest_dir_handle,
+                                dir_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Move(std::move(dir_remote), moved_path.BaseName().AsUTF8Unsafe(),
+               future.GetCallback());
+  EXPECT_EQ(future.Get()->status, FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(future.Get()->file_error, base::File::FILE_ERROR_NOT_A_FILE);
+  EXPECT_TRUE(base::DirectoryExists(source_path));
+  EXPECT_FALSE(base::PathExists(moved_path));
 }
 
 // A write-only source handle (e.g. one whose read grant was revoked by

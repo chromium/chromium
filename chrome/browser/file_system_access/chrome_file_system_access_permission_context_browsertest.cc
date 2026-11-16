@@ -419,6 +419,53 @@ IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
   ui::SelectFileDialog::SetFactory(nullptr);
 }
 
+// Verifies that if a `FileSystemFileHandle`'s underlying file is removed and
+// replaced with a directory at the same path, both in-place rename and
+// cross-directory `move()` reject with `TypeMismatchError` instead of moving
+// the directory.
+IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
+                       MoveSourceFileReplacedByDirectoryRejected) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  const base::FilePath test_dir = temp_dir().GetPath().AppendASCII("test");
+  ASSERT_TRUE(base::CreateDirectory(test_dir));
+
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::ScopedClosureRunner reset_dialog_factory(
+      base::BindOnce([]() { ui::SelectFileDialog::SetFactory(nullptr); }));
+  ASSERT_NO_FATAL_FAILURE(PickDirectoryAsDirHandle(test_dir));
+
+  EXPECT_EQ(content::EvalJs(GetWebContents(), R"((async () => {
+        const fileHandle = await self.dirHandle.getFileHandle(
+            'staging.ext', {create: true});
+        await self.dirHandle.removeEntry('staging.ext');
+        const stagingDir = await self.dirHandle.getDirectoryHandle(
+            'staging.ext', {create: true});
+        await stagingDir.getFileHandle('nested.txt', {create: true});
+        const destDir = await self.dirHandle.getDirectoryHandle(
+            'dest', {create: true});
+
+        const renameResult = await fileHandle.move('renamed.ext')
+            .then(() => 'ALLOWED')
+            .catch(e => 'BLOCKED: ' + e.name);
+        const moveResult = await fileHandle.move(destDir, 'moved.ext')
+            .then(() => 'ALLOWED')
+            .catch(e => 'BLOCKED: ' + e.name);
+
+        return renameResult + ' / ' + moveResult;
+      })())")
+                .ExtractString(),
+            "BLOCKED: TypeMismatchError / BLOCKED: TypeMismatchError");
+
+  EXPECT_TRUE(base::PathExists(
+      test_dir.AppendASCII("staging.ext").AppendASCII("nested.txt")));
+  EXPECT_FALSE(base::PathExists(test_dir.AppendASCII("renamed.ext")));
+  EXPECT_FALSE(
+      base::PathExists(test_dir.AppendASCII("dest").AppendASCII("moved.ext")));
+}
+
 // Verifies that creating `.git` or writing into non-allowlisted paths under
 // `.git` (such as `hooks` and `commondir`, including case variations) is
 // rejected, while reads and writes elsewhere are unaffected. See

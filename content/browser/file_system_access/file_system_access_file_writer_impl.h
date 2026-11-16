@@ -152,6 +152,8 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   bool did_start_close_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
+  // Returns `HandleType::kFile` for file writers.
+  HandleType GetHandleType() const override;
 
   base::WeakPtrFactory<FileSystemAccessFileWriterImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

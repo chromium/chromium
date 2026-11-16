@@ -113,6 +113,8 @@ class TestFileSystemAccessHandle final : public FileSystemAccessHandleBase {
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
+  // Returns `HandleType::kFile` for test handle instances.
+  HandleType GetHandleType() const override { return HandleType::kFile; }
   base::WeakPtrFactory<TestFileSystemAccessHandle> weak_factory_{this};
 };
 

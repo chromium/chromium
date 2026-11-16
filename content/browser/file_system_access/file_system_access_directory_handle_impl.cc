@@ -1072,4 +1072,9 @@ FileSystemAccessDirectoryHandleImpl::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+FileSystemAccessHandleBase::HandleType
+FileSystemAccessDirectoryHandleImpl::GetHandleType() const {
+  return HandleType::kDirectory;
+}
+
 }  // namespace content

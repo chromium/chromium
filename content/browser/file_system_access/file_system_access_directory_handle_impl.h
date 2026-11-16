@@ -192,6 +192,8 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       FileSystemAccessPermissionContext::HandleType handle_type);
 
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
+  // Returns `HandleType::kDirectory` for directory handles.
+  HandleType GetHandleType() const override;
 
   base::WeakPtrFactory<FileSystemAccessDirectoryHandleImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

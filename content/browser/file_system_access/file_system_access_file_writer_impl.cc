@@ -334,4 +334,9 @@ FileSystemAccessFileWriterImpl::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+FileSystemAccessHandleBase::HandleType
+FileSystemAccessFileWriterImpl::GetHandleType() const {
+  return HandleType::kFile;
+}
+
 }  // namespace content
