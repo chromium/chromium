@@ -21,7 +21,13 @@ SharingTargetDeviceInfo::SharingTargetDeviceInfo(
 SharingTargetDeviceInfo::SharingTargetDeviceInfo(SharingTargetDeviceInfo&&) =
     default;
 
+SharingTargetDeviceInfo::SharingTargetDeviceInfo(
+    const SharingTargetDeviceInfo&) = default;
+
 SharingTargetDeviceInfo::~SharingTargetDeviceInfo() = default;
 
 SharingTargetDeviceInfo& SharingTargetDeviceInfo::operator=(
     SharingTargetDeviceInfo&&) = default;
+
+SharingTargetDeviceInfo& SharingTargetDeviceInfo::operator=(
+    const SharingTargetDeviceInfo&) = default;

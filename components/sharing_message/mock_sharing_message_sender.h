@@ -46,6 +46,8 @@ class MockSharingMessageSender : public SharingMessageSender {
                base::OnceClosure(const SharingTargetDeviceInfo&,
                                  sync_pb::UnencryptedSharingMessage,
                                  ResponseCallback));
+
+  MOCK_METHOD0(ClearPendingMessages, void());
 };
 
 #endif  // COMPONENTS_SHARING_MESSAGE_MOCK_SHARING_MESSAGE_SENDER_H_

@@ -9,20 +9,18 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_target_device_info.h"
-
-namespace components_sharing_message {
-class ResponseMessage;
-class SharingMessage;
-class ServerChannelConfiguration;
-}  // namespace components_sharing_message
 
 namespace sharing_message {
 enum MessageType : int;
@@ -78,7 +76,7 @@ class SharingMessageSender {
       std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
   // Clears all pending messages.
-  void ClearPendingMessages();
+  virtual void ClearPendingMessages();
 
   // Returns SharingChannelSender for testing.
   SharingChannelSender* GetChannelSenderForTesting() const;
@@ -104,6 +102,29 @@ class SharingMessageSender {
     base::TimeDelta receiver_pulse_interval;
   };
 
+  using SendTarget =
+      std::variant<SharingTargetDeviceInfo,
+                   components_sharing_message::ServerChannelConfiguration>;
+
+  // Represents an outgoing message postponed until
+  // `local_device_info_provider_` is initialized.
+  struct PendingOutgoingMessage {
+    PendingOutgoingMessage(std::string message_guid,
+                           base::TimeDelta response_timeout,
+                           components_sharing_message::SharingMessage message,
+                           SendTarget target);
+    PendingOutgoingMessage(const PendingOutgoingMessage&) = delete;
+    PendingOutgoingMessage& operator=(const PendingOutgoingMessage&) = delete;
+    PendingOutgoingMessage(PendingOutgoingMessage&& other) noexcept;
+    PendingOutgoingMessage& operator=(PendingOutgoingMessage&& other) noexcept;
+    ~PendingOutgoingMessage();
+
+    std::string message_guid;
+    base::TimeDelta response_timeout;
+    components_sharing_message::SharingMessage message;
+    SendTarget target;
+  };
+
   void OnMessageSent(const std::string& message_guid,
                      sharing_message::MessageType message_type,
                      SharingSendMessageResult result,
@@ -118,25 +139,39 @@ class SharingMessageSender {
   base::OnceClosure SendMessageToTarget(
       base::TimeDelta response_timeout,
       components_sharing_message::SharingMessage message,
-      std::variant<
-          const SharingTargetDeviceInfo*,
-          const components_sharing_message::ServerChannelConfiguration*> target,
+      SendTarget target,
       ResponseCallback callback);
+
+  // Populates sender device metadata and delegates sending `message` to
+  // `channel_sender_`. Must only be called once `local_device_info_provider_`
+  // is initialized.
+  void DoSendMessageToTarget(const std::string& message_guid,
+                             base::TimeDelta response_timeout,
+                             components_sharing_message::SharingMessage message,
+                             SendTarget target);
+
+  // Invoked when `local_device_info_provider_` finishes initializing; sends all
+  // queued `pending_outgoing_messages_`.
+  void OnLocalDeviceInfoInitialized();
 
   static SentMessageMetadata CreateSentMessageMetadata(
       ResponseCallback callback,
       sharing_message::MessageType message_type,
       int trace_id,
-      std::variant<
-          const SharingTargetDeviceInfo*,
-          const components_sharing_message::ServerChannelConfiguration*>
-          target);
+      const SendTarget& target);
 
   std::unique_ptr<SharingChannelSender> channel_sender_;
 
   raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // Subscription for `local_device_info_provider_` initialization when
+  // outgoing messages are waiting to be sent.
+  base::CallbackListSubscription local_device_info_ready_subscription_;
+  // Outgoing messages queued while waiting for `local_device_info_provider_`
+  // to initialize.
+  std::vector<PendingOutgoingMessage> pending_outgoing_messages_;
 
   // Map of random GUID to SentMessageMetadata.
   std::map<std::string, SentMessageMetadata> message_metadata_;

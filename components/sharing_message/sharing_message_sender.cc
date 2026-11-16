@@ -4,10 +4,16 @@
 
 #include "components/sharing_message/sharing_message_sender.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "components/sharing_message/features.h"
 #include "components/sharing_message/proto/sharing_message_type.pb.h"
 #include "components/sharing_message/sharing_channel_sender.h"
 #include "components/sharing_message/sharing_constants.h"
@@ -45,7 +51,7 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
     base::TimeDelta response_timeout,
     components_sharing_message::SharingMessage message,
     ResponseCallback callback) {
-  return SendMessageToTarget(response_timeout, std::move(message), &device,
+  return SendMessageToTarget(response_timeout, std::move(message), device,
                              std::move(callback));
 }
 
@@ -104,7 +110,7 @@ base::OnceClosure SharingMessageSender::SendMessageToServerTarget(
     components_sharing_message::SharingMessage message,
     ResponseCallback callback) {
   return SendMessageToTarget(response_timeout, std::move(message),
-                             &server_channel, std::move(callback));
+                             server_channel, std::move(callback));
 }
 
 void SharingMessageSender::OnMessageSent(
@@ -163,6 +169,14 @@ void SharingMessageSender::OnAckReceived(
 }
 
 void SharingMessageSender::ClearPendingMessages() {
+  local_device_info_ready_subscription_ = {};
+  std::vector<PendingOutgoingMessage> pending_messages =
+      std::exchange(pending_outgoing_messages_, {});
+  for (const PendingOutgoingMessage& pending_message : pending_messages) {
+    InvokeSendMessageCallback(pending_message.message_guid,
+                              SharingSendMessageResult::kInternalError,
+                              /*response=*/nullptr);
+  }
   // `channel_sender_` may be null in tests using MockSharingMessageSender.
   if (channel_sender_) {
     channel_sender_->ClearPendingMessages();
@@ -198,9 +212,7 @@ void SharingMessageSender::InvokeSendMessageCallback(
 base::OnceClosure SharingMessageSender::SendMessageToTarget(
     base::TimeDelta response_timeout,
     components_sharing_message::SharingMessage message,
-    std::variant<const SharingTargetDeviceInfo*,
-                 const components_sharing_message::ServerChannelConfiguration*>
-        target,
+    SendTarget target,
     ResponseCallback callback) {
   DCHECK(message.payload_case() !=
          components_sharing_message::SharingMessage::kAckMessage);
@@ -219,22 +231,21 @@ base::OnceClosure SharingMessageSender::SendMessageToTarget(
                                               trace_id, target));
   DCHECK(inserted);
 
-  // TODO(crbug.com/40103693): Here we assume the caller gets the |device| from
-  // GetDeviceCandidates, so LocalDeviceInfoProvider is ready. It's better to
-  // queue up the message and wait until LocalDeviceInfoProvider is ready.
-  const syncer::DeviceInfo* local_device_info =
-      local_device_info_provider_->GetLocalDeviceInfo();
-  if (!local_device_info) {
+  if (!local_device_info_provider_->GetLocalDeviceInfo() &&
+      !base::FeatureList::IsEnabled(
+          kSharingPostponeSendingUntilLocalDeviceInfoReady)) {
     InvokeSendMessageCallback(message_guid,
                               SharingSendMessageResult::kInternalError,
                               /*response=*/nullptr);
     return base::NullCallback();
   }
 
-  message.set_sender_guid(local_device_info->guid());
-  message.set_sender_device_name(
-      syncer::GetDeviceDisplayName(local_device_info));
-
+  // Start the timeout timer immediately so `response_timeout` bounds the
+  // caller's total wait time, including any time spent waiting for
+  // `local_device_info_provider_` to initialize.
+  //
+  // TODO(crbug.com/585389233): Consider reporting a different error (e.g.
+  // `kCommitTimeout`) if the timeout expires before the message is sent.
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SharingMessageSender::InvokeSendMessageCallback,
@@ -243,30 +254,78 @@ base::OnceClosure SharingMessageSender::SendMessageToTarget(
                      /*response=*/nullptr),
       response_timeout);
 
-  TRACE_EVENT_BEGIN("sharing", "Sharing.DoSendMessage",
-                    perfetto::Track(trace_id));
-
-  auto on_sent = base::BindOnce(&SharingMessageSender::OnMessageSent,
-                                weak_ptr_factory_.GetWeakPtr(), message_guid,
-                                message_type);
-
-  std::visit(
-      absl::Overload{
-          [&](const SharingTargetDeviceInfo* device) {
-            channel_sender_->SendFcmMessageToDevice(*device, response_timeout,
-                                                    std::move(message),
-                                                    std::move(on_sent));
-          },
-          [&](const components_sharing_message::ServerChannelConfiguration*
-                  server_target) {
-            channel_sender_->SendMessageToServerTarget(
-                *server_target, std::move(message), std::move(on_sent));
-          }},
-      target);
+  if (!local_device_info_provider_->GetLocalDeviceInfo()) {
+    pending_outgoing_messages_.emplace_back(
+        message_guid, response_timeout, std::move(message), std::move(target));
+    if (!local_device_info_ready_subscription_) {
+      local_device_info_ready_subscription_ =
+          local_device_info_provider_->RegisterOnInitializedCallback(
+              base::BindRepeating(
+                  &SharingMessageSender::OnLocalDeviceInfoInitialized,
+                  weak_ptr_factory_.GetWeakPtr()));
+    }
+  } else {
+    DoSendMessageToTarget(message_guid, response_timeout, std::move(message),
+                          std::move(target));
+  }
 
   return base::BindOnce(&SharingMessageSender::InvokeSendMessageCallback,
                         weak_ptr_factory_.GetWeakPtr(), message_guid,
                         SharingSendMessageResult::kCancelled, nullptr);
+}
+
+void SharingMessageSender::DoSendMessageToTarget(
+    const std::string& message_guid,
+    base::TimeDelta response_timeout,
+    components_sharing_message::SharingMessage message,
+    SendTarget target) {
+  auto metadata_iter = message_metadata_.find(message_guid);
+  if (metadata_iter == message_metadata_.end() ||
+      !metadata_iter->second.callback) {
+    return;
+  }
+
+  const syncer::DeviceInfo* local_device_info =
+      local_device_info_provider_->GetLocalDeviceInfo();
+  CHECK(local_device_info);
+
+  message.set_sender_guid(local_device_info->guid());
+  message.set_sender_device_name(
+      syncer::GetDeviceDisplayName(local_device_info));
+
+  TRACE_EVENT_BEGIN("sharing", "Sharing.DoSendMessage",
+                    perfetto::Track(metadata_iter->second.trace_id));
+
+  auto on_sent = base::BindOnce(&SharingMessageSender::OnMessageSent,
+                                weak_ptr_factory_.GetWeakPtr(), message_guid,
+                                metadata_iter->second.type);
+
+  std::visit(
+      absl::Overload{
+          [&](const SharingTargetDeviceInfo& device) {
+            channel_sender_->SendFcmMessageToDevice(device, response_timeout,
+                                                    std::move(message),
+                                                    std::move(on_sent));
+          },
+          [&](const components_sharing_message::ServerChannelConfiguration&
+                  server_target) {
+            channel_sender_->SendMessageToServerTarget(
+                server_target, std::move(message), std::move(on_sent));
+          }},
+      target);
+}
+
+void SharingMessageSender::OnLocalDeviceInfoInitialized() {
+  CHECK(local_device_info_provider_->GetLocalDeviceInfo());
+  local_device_info_ready_subscription_ = {};
+
+  std::vector<PendingOutgoingMessage> pending_messages =
+      std::exchange(pending_outgoing_messages_, {});
+  for (PendingOutgoingMessage& pending_message : pending_messages) {
+    DoSendMessageToTarget(
+        pending_message.message_guid, pending_message.response_timeout,
+        std::move(pending_message.message), std::move(pending_message.target));
+  }
 }
 
 SharingMessageSender::SentMessageMetadata
@@ -274,9 +333,7 @@ SharingMessageSender::CreateSentMessageMetadata(
     ResponseCallback callback,
     sharing_message::MessageType message_type,
     int trace_id,
-    std::variant<const SharingTargetDeviceInfo*,
-                 const components_sharing_message::ServerChannelConfiguration*>
-        target) {
+    const SendTarget& target) {
   struct TargetData {
     SharingDevicePlatform receiver_device_platform;
     base::TimeDelta receiver_pulse_interval;
@@ -284,10 +341,10 @@ SharingMessageSender::CreateSentMessageMetadata(
 
   TargetData target_data = std::visit(
       absl::Overload{
-          [](const SharingTargetDeviceInfo* device) -> TargetData {
-            return {device->platform(), device->pulse_interval()};
+          [](const SharingTargetDeviceInfo& device) -> TargetData {
+            return {device.platform(), device.pulse_interval()};
           },
-          [](const components_sharing_message::ServerChannelConfiguration*
+          [](const components_sharing_message::ServerChannelConfiguration&
                  server_channel) -> TargetData {
             return {SharingDevicePlatform::kServer, base::TimeDelta()};
           }},
@@ -297,6 +354,26 @@ SharingMessageSender::CreateSentMessageMetadata(
                              message_type, target_data.receiver_device_platform,
                              trace_id, target_data.receiver_pulse_interval);
 }
+
+SharingMessageSender::PendingOutgoingMessage::PendingOutgoingMessage(
+    std::string message_guid,
+    base::TimeDelta response_timeout,
+    components_sharing_message::SharingMessage message,
+    SendTarget target)
+    : message_guid(std::move(message_guid)),
+      response_timeout(response_timeout),
+      message(std::move(message)),
+      target(std::move(target)) {}
+
+SharingMessageSender::PendingOutgoingMessage::PendingOutgoingMessage(
+    PendingOutgoingMessage&& other) noexcept = default;
+
+SharingMessageSender::PendingOutgoingMessage&
+SharingMessageSender::PendingOutgoingMessage::operator=(
+    PendingOutgoingMessage&& other) noexcept = default;
+
+SharingMessageSender::PendingOutgoingMessage::~PendingOutgoingMessage() =
+    default;
 
 SharingMessageSender::SentMessageMetadata::SentMessageMetadata(
     ResponseCallback callback,

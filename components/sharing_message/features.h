@@ -9,4 +9,8 @@
 
 BASE_DECLARE_FEATURE(kOneTimeTokenBackendNotification);
 
+// Kill switch for postponing outgoing Sharing messages in
+// `SharingMessageSender` until `LocalDeviceInfoProvider` is initialized.
+BASE_DECLARE_FEATURE(kSharingPostponeSendingUntilLocalDeviceInfoReady);
+
 #endif  // COMPONENTS_SHARING_MESSAGE_FEATURES_H_

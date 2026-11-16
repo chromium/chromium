@@ -7,8 +7,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/sharing_message/features.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_channel_sender.h"
 #include "components/sharing_message/sharing_metrics.h"
@@ -407,4 +411,149 @@ TEST_F(SharingMessageSenderTest, SendMessageToServerTarget_Success) {
   sharing_message_sender_->SendMessageToServerTarget(
       server_channel, kTimeToLive, std::move(sent_message),
       mock_callback.Get());
+}
+
+TEST_F(SharingMessageSenderTest,
+       SendMessageToServerTarget_PostponedUntilLocalDeviceInfoReady) {
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+
+  components_sharing_message::ServerChannelConfiguration server_channel;
+  server_channel.set_configuration("test_configuration");
+  server_channel.set_p256dh("test_p256dh");
+  server_channel.set_auth_secret("test_auth_secret");
+
+  components_sharing_message::SharingMessage sent_message;
+  sent_message.mutable_remote_copy_message()->set_text("999999");
+
+  // Sending before `LocalDeviceInfoProvider` is ready should postpone the
+  // message without invoking the channel sender or response callback.
+  components_sharing_message::ResponseMessage expected_response_message;
+  base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run).Times(0);
+  EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToServerTarget)
+      .Times(0);
+
+  sharing_message_sender_->SendMessageToServerTarget(
+      server_channel, kTimeToLive, std::move(sent_message),
+      mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+  testing::Mock::VerifyAndClearExpectations(mock_sharing_channel_sender_);
+
+  // Once `LocalDeviceInfoProvider` becomes ready, the postponed message should
+  // be sent and the response callback invoked upon receiving the ACK.
+  components_sharing_message::SharingMessage actual_sent_message;
+  EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToServerTarget)
+      .WillOnce(testing::DoAll(
+          MoveArg<1>(&actual_sent_message),
+          base::test::RunOnceCallback<2>(SharingSendMessageResult::kSuccessful,
+                                         kSenderMessageID,
+                                         SharingChannelType::kServer)));
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(true);
+
+  EXPECT_CALL(mock_callback, Run(SharingSendMessageResult::kSuccessful,
+                                 ProtoEquals(expected_response_message)));
+  sharing_message_sender_->OnAckReceived(
+      kSenderMessageID,
+      std::make_unique<components_sharing_message::ResponseMessage>(
+          expected_response_message));
+
+  // Verify that the sent message was populated with the local device's sender
+  // metadata.
+  const syncer::DeviceInfo* local_device =
+      fake_device_info_sync_service_.GetLocalDeviceInfoProvider()
+          ->GetLocalDeviceInfo();
+  ASSERT_TRUE(local_device);
+  EXPECT_EQ(local_device->guid(), actual_sent_message.sender_guid());
+  EXPECT_EQ(syncer::GetDeviceDisplayName(local_device),
+            actual_sent_message.sender_device_name());
+  EXPECT_EQ("999999", actual_sent_message.remote_copy_message().text());
+}
+
+TEST_F(SharingMessageSenderTest,
+       SendMessageToDevice_PostponedUntilLocalDeviceInfoReady) {
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+  SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+
+  // Sending before `LocalDeviceInfoProvider` is ready should postpone the
+  // message without invoking the channel sender or response callback.
+  components_sharing_message::ResponseMessage expected_response_message;
+  base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run).Times(0);
+  EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToFcmTarget).Times(0);
+
+  sharing_message_sender_->SendMessageToDevice(
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
+      mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+  testing::Mock::VerifyAndClearExpectations(mock_sharing_channel_sender_);
+
+  // Once `LocalDeviceInfoProvider` becomes ready, the postponed message should
+  // be sent and the response callback invoked upon receiving the ACK.
+  components_sharing_message::SharingMessage actual_sent_message;
+  EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToFcmTarget)
+      .WillOnce(testing::DoAll(
+          MoveArg<2>(&actual_sent_message),
+          base::test::RunOnceCallback<3>(SharingSendMessageResult::kSuccessful,
+                                         kSenderMessageID,
+                                         SharingChannelType::kFcmSenderId)));
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(true);
+
+  EXPECT_CALL(mock_callback, Run(SharingSendMessageResult::kSuccessful,
+                                 ProtoEquals(expected_response_message)));
+  sharing_message_sender_->OnAckReceived(
+      kSenderMessageID,
+      std::make_unique<components_sharing_message::ResponseMessage>(
+          expected_response_message));
+
+  // Verify that the sent message was populated with the local device's sender
+  // metadata.
+  const syncer::DeviceInfo* local_device =
+      fake_device_info_sync_service_.GetLocalDeviceInfoProvider()
+          ->GetLocalDeviceInfo();
+  ASSERT_TRUE(local_device);
+  EXPECT_EQ(local_device->guid(), actual_sent_message.sender_guid());
+  EXPECT_EQ(syncer::GetDeviceDisplayName(local_device),
+            actual_sent_message.sender_device_name());
+}
+
+TEST_F(SharingMessageSenderTest,
+       SendMessageToDevice_LocalDeviceInfoNotReady_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kSharingPostponeSendingUntilLocalDeviceInfoReady);
+
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+  SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+
+  base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(SharingSendMessageResult::kInternalError, IsNull()));
+  EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToFcmTarget).Times(0);
+
+  sharing_message_sender_->SendMessageToDevice(
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
+      mock_callback.Get());
+}
+
+TEST_F(SharingMessageSenderTest,
+       ClearPendingMessages_FailsMessagesWaitingForLocalDeviceInfo) {
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
+  SharingTargetDeviceInfo device_info = SetupReceiverDevice();
+
+  base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run).Times(0);
+  EXPECT_CALL(*mock_sharing_channel_sender_, SendMessageToFcmTarget).Times(0);
+
+  sharing_message_sender_->SendMessageToDevice(
+      device_info, kTimeToLive, components_sharing_message::SharingMessage(),
+      mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback,
+              Run(SharingSendMessageResult::kInternalError, IsNull()));
+  sharing_message_sender_->ClearPendingMessages();
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback, Run).Times(0);
+  fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(true);
 }

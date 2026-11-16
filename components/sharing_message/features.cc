@@ -4,6 +4,7 @@
 
 #include "components/sharing_message/features.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "components/sync_preferences/features.h"
@@ -15,3 +16,6 @@ BASE_FEATURE(kOneTimeTokenBackendNotification,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE(kSharingPostponeSendingUntilLocalDeviceInfoReady,
+             base::FEATURE_ENABLED_BY_DEFAULT);

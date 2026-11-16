@@ -20,11 +20,11 @@ class SharingTargetDeviceInfo {
                           syncer::DeviceInfo::FormFactor form_factor,
                           base::Time last_updated_timestamp);
   SharingTargetDeviceInfo(SharingTargetDeviceInfo&&);
-  SharingTargetDeviceInfo(const SharingTargetDeviceInfo&) = delete;
+  SharingTargetDeviceInfo(const SharingTargetDeviceInfo&);
   ~SharingTargetDeviceInfo();
 
   SharingTargetDeviceInfo& operator=(SharingTargetDeviceInfo&&);
-  SharingTargetDeviceInfo& operator=(const SharingTargetDeviceInfo&) = delete;
+  SharingTargetDeviceInfo& operator=(const SharingTargetDeviceInfo&);
 
   // Sync specific unique identifier for the device. Note if a device
   // is wiped and sync is set up again this id WILL be different.
