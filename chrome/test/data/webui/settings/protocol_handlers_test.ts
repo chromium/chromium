@@ -4,9 +4,10 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {AppProtocolEntry, HandlerEntry, ProtocolEntry, ProtocolHandlersElement} from 'chrome://settings/lazy_load.js';
+import type {AppProtocolEntry, HandlerEntry, ProtocolEntry, ProtocolHandlersElement, SettingsCollapseRadioButtonElement} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 // clang-format on
@@ -172,9 +173,33 @@ suite('ProtocolHandlers', function() {
 
   test('set protocol handlers default called', async () => {
     await initPage();
-    testElement.shadowRoot!
-        .querySelector<HTMLElement>('#protcolHandlersRadioBlock')!.click();
-    await browserProxy.whenCalled('setProtocolHandlerDefault');
+    await microtasksFinished();
+
+    const allowRadio = testElement.shadowRoot!
+                           .querySelector<SettingsCollapseRadioButtonElement>(
+                               '#protcolHandlersRadioAllow')!;
+    const blockRadio = testElement.shadowRoot!
+                           .querySelector<SettingsCollapseRadioButtonElement>(
+                               '#protcolHandlersRadioBlock')!;
+
+    assertTrue(allowRadio.checked);
+    assertFalse(blockRadio.checked);
+    assertEquals(0, browserProxy.getCallCount('setProtocolHandlerDefault'));
+
+    blockRadio.click();
+    let enabled = await browserProxy.whenCalled('setProtocolHandlerDefault');
+    await microtasksFinished();
+    assertFalse(enabled);
+    assertFalse(allowRadio.checked);
+    assertTrue(blockRadio.checked);
+
+    browserProxy.resetResolver('setProtocolHandlerDefault');
+    allowRadio.click();
+    enabled = await browserProxy.whenCalled('setProtocolHandlerDefault');
+    await microtasksFinished();
+    assertTrue(enabled);
+    assertTrue(allowRadio.checked);
+    assertFalse(blockRadio.checked);
   });
 
   test('empty list', async function() {
