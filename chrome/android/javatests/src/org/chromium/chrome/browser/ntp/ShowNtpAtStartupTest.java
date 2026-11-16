@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -283,6 +285,7 @@ public class ShowNtpAtStartupTest {
         NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
 
+        onView(withId(R.id.single_tab_view)).perform(scrollTo());
         waitForView(
                 View.class,
                 cta,
@@ -306,6 +309,7 @@ public class ShowNtpAtStartupTest {
                 cta, 3, getOriginalNativeNtpUrl(), /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
+        onView(withId(R.id.single_tab_view)).perform(scrollTo());
         waitForView(cta, withId(R.id.home_modules_recycler_view));
         waitForView(
                 View.class,

@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.signin.services.AccountPreviewPreference;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -84,6 +86,7 @@ public class SigninPromoMediatorTest {
     private @Mock AccountPreviewDataService mAccountPreviewDataService;
     private @Mock SigninAndHistorySyncActivityLauncher mLauncher;
     private @Mock HistorySyncHelper mHistorySyncHelper;
+    private @Mock Runnable mOnPromoStateChange;
     private ProfileDataCache mProfileDataCache;
     private final boolean mIsIdentityManagerSourceOfAccounts;
     private Context mContext;
@@ -277,6 +280,45 @@ public class SigninPromoMediatorTest {
                 mContext.getString(
                         R.string.sync_promo_continue_as, TestAccounts.ACCOUNT1.getGivenName()),
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
+    }
+
+    @Test
+    public void testBookmarkModelValues_accountsAvailableAfterInitialization() {
+        when(mSigninManager.isSigninAllowed()).thenReturn(true);
+        when(mSigninManager.didAccountsFetchSucceed()).thenReturn(true);
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        BookmarkSigninPromoDelegate delegate =
+                new BookmarkSigninPromoDelegate(
+                        mContext, mProfile, mLauncher, mOnPromoStateChange, () -> {});
+
+        try (var _ = mAccountManagerTestRule.blockGetAccountsUpdate()) {
+            createSigninPromoMediator(delegate);
+            assertFalse(mMediator.canShowPromo());
+            verify(mOnPromoStateChange, never()).run();
+        }
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(mMediator.canShowPromo());
+        verify(mOnPromoStateChange).run();
+        assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER));
+        assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON));
+        assertEquals(
+                mContext.getString(R.string.signin_account_picker_bottom_sheet_title),
+                mMediator.getModel().get(SigninPromoProperties.TITLE_TEXT));
+        assertEquals(
+                mContext.getString(R.string.signin_promo_description_bookmarks),
+                mMediator.getModel().get(SigninPromoProperties.DESCRIPTION_TEXT));
+        assertEquals(
+                mContext.getString(R.string.sync_promo_continue),
+                mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
+
+        mMediator
+                .getModel()
+                .get(SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED)
+                .onClick(/* v= */ null);
+        assertFalse(mMediator.canShowPromo());
+        verify(mOnPromoStateChange, times(2)).run();
     }
 
     @Test

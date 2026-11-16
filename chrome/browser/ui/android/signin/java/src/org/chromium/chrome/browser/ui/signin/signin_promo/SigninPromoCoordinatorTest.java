@@ -253,7 +253,7 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testPromoNotShownWhenAccountsNotAvailable(@SigninAccessPoint int accessPoint) {
+    public void testPromoShownAfterAccountsBecomeAvailable(@SigninAccessPoint int accessPoint) {
         try (var _ = mSigninTestRule.blockGetAccountsUpdate()) {
             setUpSignInPromo(accessPoint);
             ThreadUtils.runOnUiThreadBlocking(
@@ -261,6 +261,15 @@ public class SigninPromoCoordinatorTest {
                         assertFalse(mPromoCoordinator.canShowPromo());
                     });
         }
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            // Promo is only shown for signed-in users on the history page.
+            return;
+        }
+        CriteriaHelper.pollUiThread(() -> mPromoCoordinator.canShowPromo());
+        waitForView(
+                withId(R.id.signin_promo_primary_button), withText(R.string.sync_promo_continue));
+        verify(mOnPromoStateChange).run();
+        onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
     }
 
     @Test

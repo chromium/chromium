@@ -243,12 +243,18 @@ final class SigninPromoMediator
     }
 
     private void refreshPromoContent(boolean wasVisibleAccountUpdated) {
-        boolean wasPromoContentChanged = mPromoDelegate.refreshPromoState(getVisibleAccount());
-        if (wasPromoContentChanged) {
-            updateVisibility();
+        @Nullable DisplayableProfileData visibleAccount = getVisibleAccount();
+        boolean wasPromoContentChanged = mPromoDelegate.refreshPromoState(visibleAccount);
+        boolean shouldShowPromo = canShowPromo();
+        boolean wasVisibilityChanged = mShouldShowPromo != shouldShowPromo;
+        mShouldShowPromo = shouldShowPromo;
+        // Populate the model before notifying so observers bind fresh data.
+        if (mShouldShowPromo
+                && (wasVisibleAccountUpdated || wasPromoContentChanged || wasVisibilityChanged)) {
+            updateModel(visibleAccount);
         }
-        if (mShouldShowPromo && (wasVisibleAccountUpdated || wasPromoContentChanged)) {
-            updateModel(getVisibleAccount());
+        if (wasVisibilityChanged) {
+            mPromoDelegate.onPromoVisibilityChange();
         }
     }
 
@@ -285,7 +291,7 @@ final class SigninPromoMediator
     }
 
     private void updateLoadingState() {
-        if (!mPromoDelegate.canShowPromo()) {
+        if (!mShouldShowPromo) {
             return;
         }
         DisplayableProfileData profileData = getVisibleAccount();
@@ -299,15 +305,6 @@ final class SigninPromoMediator
                 SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON,
                 !mPromoDelegate.canBeDismissedPermanently()
                         || mPromoDelegate.shouldDisplayLoadingState());
-    }
-
-    private void updateVisibility() {
-        boolean shouldShowPromo = canShowPromo();
-        if (mShouldShowPromo == shouldShowPromo) {
-            return;
-        }
-        mShouldShowPromo = shouldShowPromo;
-        mPromoDelegate.onPromoVisibilityChange();
     }
 
     /**
