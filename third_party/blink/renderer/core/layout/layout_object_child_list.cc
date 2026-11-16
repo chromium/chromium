@@ -98,12 +98,10 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(LayoutObject* owner,
   // child got yanked or that a positioned child got yanked). We also issue
   // paint invalidations, so that the area exposed when the child disappears
   // gets paint invalidated properly.
-  if (old_child->EverHadLayout()) {
-    old_child->SetNeedsLayoutAndIntrinsicWidthsRecalc(
-        layout_invalidation_reason::kRemovedFromLayout);
-    if (old_child->IsOutOfFlowPositioned() || old_child->IsColumnSpanAll()) {
-      old_child->MarkParentForSpannerOrOutOfFlowPositionedChange();
-    }
+  old_child->SetNeedsLayoutAndIntrinsicWidthsRecalc(
+      layout_invalidation_reason::kRemovedFromLayout);
+  if (old_child->IsOutOfFlowPositioned() || old_child->IsColumnSpanAll()) {
+    old_child->MarkParentForSpannerOrOutOfFlowPositionedChange();
   }
   InvalidatePaintOnRemoval(*old_child);
 
