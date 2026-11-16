@@ -77,12 +77,17 @@ public class DownloadButtonView extends FrameLayout {
     }
 
     /**
-     * Updates the button background ripple for incognito state.
+     * Updates the button background ripple for incognito state. As {@link
+     * ToolbarUtils#getToolbarIconRippleId}, plus a pressed circle while the button is selected,
+     * i.e. while its download tray is open.
      *
      * @param isIncognito True if incognito; false otherwise.
      */
     public void setIsIncognito(boolean isIncognito) {
-        mButton.setBackgroundResource(ToolbarUtils.getToolbarIconRippleId(isIncognito));
+        mButton.setBackgroundResource(
+                isIncognito
+                        ? R.drawable.download_button_background_baseline
+                        : R.drawable.download_button_background);
     }
 
     /**

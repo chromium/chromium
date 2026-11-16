@@ -2993,7 +2993,9 @@ public class ToolbarManager
     }
 
     private void onDownloadButtonClicked() {
-        // TODO(crbug.com/564646561): Open the downloads UI.
+        if (mDownloadTrayCoordinator != null) {
+            mDownloadTrayCoordinator.toggleFullTray();
+        }
         if (mDownloadToolbarButtonController != null) {
             mDownloadToolbarButtonController.markActioned();
         }

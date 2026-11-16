@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The toolbar button background, plus the pressed circle while the button is selected, i.e.
+     while its download tray is open, as the extensions button keeps it while its menu is open. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="@dimen/large_icon_background_size"
+        android:height="@dimen/large_icon_background_size"
+        android:gravity="center">
+        <selector>
+            <item android:state_selected="true">
+                <shape android:shape="oval">
+                    <solid android:color="@color/color_on_surface_with_alpha_12" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:drawable="@drawable/default_icon_background" />
+</layer-list>

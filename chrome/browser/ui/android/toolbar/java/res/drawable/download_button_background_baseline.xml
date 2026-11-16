@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The incognito variant of download_button_background. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="@dimen/large_icon_background_size"
+        android:height="@dimen/large_icon_background_size"
+        android:gravity="center">
+        <selector>
+            <item android:state_selected="true">
+                <shape android:shape="oval">
+                    <solid android:color="@color/baseline_neutral_90_alpha_12" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+    <item android:drawable="@drawable/default_icon_background_baseline" />
+</layer-list>

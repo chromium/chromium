@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.tray;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -126,6 +127,7 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
      * @param focusable Whether the popup takes focus, for keyboard access and Escape to close it.
      *     Only for popups the user opened, so one opening on its own leaves keystrokes to the page.
      */
+    @SuppressLint("ClickableViewAccessibility")
     private boolean showPopup(
             View anchor, AnchoredPopupWindow.ViewBuilder content, boolean focusable) {
         dismiss();
@@ -143,10 +145,23 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
                         .setPreferredVerticalOrientation(
                                 AnchoredPopupWindow.VerticalOrientation.BELOW)
                         .setFocusable(focusable)
-                        // Only taps outside close it, as for a menu; taps inside are the content's.
+                        // As desktop's download bubble, taps outside close it and still reach what
+                        // they're on; taps inside are the content's.
                         .setOutsideTouchable(true)
+                        // A tap on the toolbar button is left to the button, which toggles the
+                        // tray, so the popup doesn't close here only for that tap to reopen it.
+                        // It clicks nothing itself, so ClickableViewAccessibility is suppressed.
+                        .setTouchInterceptor(
+                                (v, event) ->
+                                        event.getAction() == MotionEvent.ACTION_OUTSIDE
+                                                && isOnView(
+                                                        anchor, event.getRawX(), event.getRawY()))
                         .setDismissOnScreenSizeChange(true)
-                        .addOnDismissListener(this::onPopupDismissed)
+                        .addOnDismissListener(
+                                () -> {
+                                    anchor.setSelected(false);
+                                    onPopupDismissed();
+                                })
                         .build();
         mPopup.show();
         if (!mPopup.isShowing()) {
@@ -158,6 +173,8 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
             onPopupDismissed();
             return false;
         }
+        // As desktop highlights its download button while the bubble it opened shows.
+        anchor.setSelected(focusable);
         return true;
     }
 
@@ -216,5 +233,15 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
 
     @Nullable AnchoredPopupWindow getPopupForTesting() {
         return mPopup;
+    }
+
+    /** Whether the screen position ({@code x}, {@code y}) is on {@code view}. */
+    private static boolean isOnView(View view, float x, float y) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        return x >= location[0]
+                && x < location[0] + view.getWidth()
+                && y >= location[1]
+                && y < location[1] + view.getHeight();
     }
 }

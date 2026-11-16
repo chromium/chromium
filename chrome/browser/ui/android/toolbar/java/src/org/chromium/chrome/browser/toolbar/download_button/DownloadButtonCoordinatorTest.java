@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.download_button.DownloadProgressRingDrawable.RingStatus;
-import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -263,19 +262,19 @@ public class DownloadButtonCoordinatorTest {
 
         // Initially in standard mode, verify the default icon ripple background.
         assertEquals(
-                ToolbarUtils.getToolbarIconRippleId(/* isIncognito= */ false),
+                R.drawable.download_button_background,
                 shadowOf(view.getButton().getBackground()).getCreatedFromResId());
 
         // Switch to incognito mode and verify incognito ripple background.
         mCoordinator.onIncognitoStateChanged(true);
         assertEquals(
-                ToolbarUtils.getToolbarIconRippleId(/* isIncognito= */ true),
+                R.drawable.download_button_background_baseline,
                 shadowOf(view.getButton().getBackground()).getCreatedFromResId());
 
         // Switch back to standard mode and verify default ripple background is restored.
         mCoordinator.onIncognitoStateChanged(false);
         assertEquals(
-                ToolbarUtils.getToolbarIconRippleId(/* isIncognito= */ false),
+                R.drawable.download_button_background,
                 shadowOf(view.getButton().getBackground()).getCreatedFromResId());
     }
 

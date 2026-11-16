@@ -62,14 +62,15 @@ public class DownloadTrayCoordinatorTest {
 
     private DownloadStateModel mModel;
     private DownloadTrayCoordinator mCoordinator;
+    private View mAnchor;
 
     @Before
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         FrameLayout root = new FrameLayout(activity);
-        View anchor = new View(activity);
-        root.addView(anchor, new FrameLayout.LayoutParams(100, 100));
+        mAnchor = new View(activity);
+        root.addView(mAnchor, new FrameLayout.LayoutParams(100, 100));
         activity.setContentView(root);
         ShadowLooper.idleMainLooper();
 
@@ -78,7 +79,7 @@ public class DownloadTrayCoordinatorTest {
                 new DownloadTrayCoordinator(
                         activity,
                         mModel,
-                        () -> anchor,
+                        () -> mAnchor,
                         /* isWindowFocused= */ () -> true,
                         /* isIncognitoSelected= */ () -> false,
                         mOnActioned,
@@ -161,6 +162,7 @@ public class DownloadTrayCoordinatorTest {
         assertHasHeaderAndFooter(shownContent(), false);
         // It opens on its own, so it leaves focus in the page.
         assertFalse(isFocusable(shownContent()));
+        assertFalse(mAnchor.isSelected());
 
         ShadowLooper.idleMainLooper(
                 DownloadTrayCoordinator.AUTO_DISMISS_MS - 1, TimeUnit.MILLISECONDS);
@@ -212,6 +214,7 @@ public class DownloadTrayCoordinatorTest {
         assertEquals(1, shownAdapter().getItemCount());
         assertHasHeaderAndFooter(content, true);
         assertTrue(isFocusable(content));
+        assertTrue(mAnchor.isSelected());
 
         // Opened by the user, it neither auto-dismisses nor closes on hover.
         ShadowLooper.idleMainLooper(DownloadTrayCoordinator.AUTO_DISMISS_MS, TimeUnit.MILLISECONDS);
@@ -219,6 +222,7 @@ public class DownloadTrayCoordinatorTest {
 
         content.findViewById(R.id.download_tray_close).performClick();
         assertNull(mCoordinator.getPopupForTesting());
+        assertFalse(mAnchor.isSelected());
     }
 
     @Test
@@ -235,7 +239,18 @@ public class DownloadTrayCoordinatorTest {
         dispatchTouch(root, MotionEvent.ACTION_DOWN, headerLocation[0] + 1, headerLocation[1] + 1);
         shownPopup();
 
-        dispatchTouch(root, MotionEvent.ACTION_OUTSIDE, 0, 0);
+        // So does one on the toolbar button, whose own click then toggles the tray closed.
+        int[] anchorLocation = new int[2];
+        mAnchor.getLocationOnScreen(anchorLocation);
+        dispatchTouch(
+                root, MotionEvent.ACTION_OUTSIDE, anchorLocation[0] + 1, anchorLocation[1] + 1);
+        shownPopup();
+
+        dispatchTouch(
+                root,
+                MotionEvent.ACTION_OUTSIDE,
+                anchorLocation[0] + 2 * mAnchor.getWidth(),
+                anchorLocation[1] + 2 * mAnchor.getHeight());
         assertNull(mCoordinator.getPopupForTesting());
     }
 
