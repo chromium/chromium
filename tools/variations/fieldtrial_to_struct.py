@@ -36,7 +36,6 @@ _platforms = [
 
 _form_factors = [
   'desktop',
-  'foldable',
   'phone',
   'tablet',
 ]

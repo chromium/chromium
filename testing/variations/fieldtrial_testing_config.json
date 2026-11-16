@@ -7943,11 +7943,6 @@
                 "android",
                 "android_desktop"
             ],
-            "form_factors": [
-                "desktop",
-                "foldable",
-                "phone"
-            ],
             "experiments": [
                 {
                     "name": "Enabled",
@@ -9365,11 +9360,6 @@
                 "android",
                 "android_desktop"
             ],
-            "form_factors": [
-                "desktop",
-                "foldable",
-                "phone"
-            ],
             "experiments": [
                 {
                     "name": "Enabled_BottomBar_LaunchCandidate",
@@ -9413,31 +9403,6 @@
                     ],
                     "disable_features": [
                         "IPH_AndroidBottomBarAddressBar"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GlicAndroidTablet": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "form_factors": [
-                "tablet"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20261110",
-                    "params": {
-                        "glic-actor-eligible-tiers": "1,2,3",
-                        "glic_actor_enterprise_pref_default": "disabled_by_default"
-                    },
-                    "enable_features": [
-                        "EnableAndroidSidePanel",
-                        "GlicActor",
-                        "GlicAndroidSidePanel",
-                        "GlicAndroidTablet"
                     ]
                 }
             ]
