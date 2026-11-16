@@ -298,8 +298,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     // Editing mode will be exited only if user confirms saving.
     if ([self passwordsDidChange]) {
       DCHECK(self.handler);
-      // TODO(crbug.com/40884045): Show Password Edit Dialog when Password
-      // Grouping is enabled.
       [self.handler showPasswordEditDialogWithOrigin:self.pageTitle];
     } else {
       [self passwordEditingConfirmed];
