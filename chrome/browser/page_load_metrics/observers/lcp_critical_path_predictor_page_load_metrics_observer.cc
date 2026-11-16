@@ -798,9 +798,6 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
     lcpp_data_inputs_.emplace();
   }
   ++lcpp_data_inputs_->font_url_count;
-  if (hit) {
-    ++lcpp_data_inputs_->font_url_hit_count;
-  }
 
   if (!(commit_url_ && IsSameSite(font_url, *commit_url_)) &&
       !blink::features::kLCPPCrossSiteFontPredictionAllowed.Get()) {
@@ -809,9 +806,6 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
   if (lcpp_data_inputs_->font_urls.size() >=
       GetLCPPFontURLPredictorMaxUrlCountPerOrigin()) {
     return;
-  }
-  if (hit) {
-    ++lcpp_data_inputs_->font_url_reenter_count;
   }
   lcpp_data_inputs_->font_urls.push_back(font_url);
 }

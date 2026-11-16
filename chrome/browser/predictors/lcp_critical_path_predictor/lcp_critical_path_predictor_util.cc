@@ -1023,18 +1023,6 @@ bool UpdateLcppStatWithLcppDataInputs(const LcppDataInputs& inputs,
       blink::features::kLCPPDeferUnusedPreloadSlidingWindowSize.Get(),
       blink::features::kLCPPDeferUnusedPreloadMaxHistogramBuckets.Get(),
       inputs.unused_preload_resources, stat);
-  if (inputs.font_url_count > 0 && inputs.font_urls.size() > 0) {
-    base::UmaHistogramCounts10000(
-        "Blink.LCPP.RecordedFontUrlHitCountForPagesWithFonts",
-        base::checked_cast<int>(inputs.font_url_hit_count));
-    base::UmaHistogramPercentage(
-        "Blink.LCPP.RecordedFontUrlPredictionHitPercent",
-        base::checked_cast<int>(100 * inputs.font_url_hit_count /
-                                inputs.font_url_count));
-    base::UmaHistogramCounts10000(
-        "Blink.LCPP.RecordedFontUrlReenterCountForPagesWithFonts",
-        base::checked_cast<int>(inputs.font_url_reenter_count));
-  }
   return data_updated;
 }
 
