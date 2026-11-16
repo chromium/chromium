@@ -539,6 +539,8 @@ class BrowserAutofillManager : public AutofillManager {
       std::vector<SuggestionGenerator::ReturnedSuggestions>
           returned_suggestions);
 
+  void CancelSuggestionGenerator(FillingProduct product);
+
   // Returns true if TouchToFill is already showing, otherwise checks whether or
   // not to show it and returns true if it was shown and false otherwise.
   bool TryToShowTouchToFillSuggestions(
@@ -767,6 +769,11 @@ class BrowserAutofillManager : public AutofillManager {
   // kAutofillNewSuggestionGeneration.
   base::WeakPtrFactory<BrowserAutofillManager>
       generate_suggestions_and_maybe_show_ui_phase2_weak_ptr_factory_{this};
+
+  // Invalidated whenever a suggestion generation cycle starts, completes, or
+  // resets so callbacks from a superseded cycle cannot mutate a newer cycle.
+  base::WeakPtrFactory<BrowserAutofillManager>
+      suggestion_generation_weak_ptr_factory_{this};
 
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };

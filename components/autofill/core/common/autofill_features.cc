@@ -955,6 +955,13 @@ BASE_FEATURE(kAutofillOnlyConsiderSingleFieldFormsAsSearchForms,
 BASE_FEATURE(kAutofillOptimizeIsNormalizedNameVariantOf,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, launches asynchronous suggestion generators first and uses
+// `SuggestionBarrierCallback` to eagerly cancel lower-priority non-mergeable
+// generators once a higher-priority source returns suggestions.
+// TODO(crbug.com/409962888): Remove once launched.
+BASE_FEATURE(kAutofillOptimizeSuggestionGeneration,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, uses the tab-scoped `OtpCoordinator` and per-frame
 // `OtpTabToFrameOrchestrator` instead of `OtpManagerImpl`.
 BASE_FEATURE(kAutofillOtpCoordinator, base::FEATURE_DISABLED_BY_DEFAULT);

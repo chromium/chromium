@@ -135,6 +135,7 @@
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_barrier_callback.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -817,6 +818,26 @@ FilterSuggestionsByPrioritization(
   return prioritized_suggestions;
 }
 
+// Launch asynchronous generators first so their background work runs in
+// parallel while synchronous generators execute, followed by synchronous
+// generators in priority order so higher-priority results can skip
+// lower-priority non-mergeable generators altogether.
+constexpr auto kSuggestionGeneratorLaunchOrder = std::to_array<FillingProduct>({
+    FillingProduct::kOneTimePassword,
+    FillingProduct::kAutocomplete,
+    FillingProduct::kAutofillAi,
+    FillingProduct::kCreditCard,
+    FillingProduct::kAddress,
+    FillingProduct::kIdentityCredential,
+    FillingProduct::kLoyaltyCard,
+    FillingProduct::kCompose,
+    FillingProduct::kMerchantPromoCode,
+    FillingProduct::kIban,
+    FillingProduct::kPasskey,
+    FillingProduct::kPassword,
+    FillingProduct::kNone,
+});
+
 std::unique_ptr<OtpManager> CreateOtpManager(
     BrowserAutofillManager& owner,
     one_time_tokens::SmsOtpService* service) {
@@ -1310,18 +1331,47 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   InitializeSuggestionGenerators(trigger_source, form.global_id(), field);
-  auto barrier_callback =
-      base::BarrierCallback<SuggestionGenerator::ReturnedSuggestions>(
-          suggestion_generators_.size(),
-          base::BindOnce(
-              &BrowserAutofillManager::OnIndividualSuggestionsGenerated,
-              weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-              suggestion_generation_start_time, std::move(scoped_on_after)));
+  base::WeakPtr<BrowserAutofillManager> generation_weak_self =
+      suggestion_generation_weak_ptr_factory_.GetWeakPtr();
+  auto on_suggestions_generated = base::BindOnce(
+      &BrowserAutofillManager::OnIndividualSuggestionsGenerated,
+      generation_weak_self, form, field, trigger_source,
+      suggestion_generation_start_time, std::move(scoped_on_after));
 
-  for (const auto& [product, suggestion_generator] : suggestion_generators_) {
-    suggestion_generator->GenerateSuggestions(form, field, form_structure,
-                                              autofill_field, client(),
-                                              barrier_callback);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillOptimizeSuggestionGeneration)) {
+    auto barrier_callback =
+        base::BarrierCallback<SuggestionGenerator::ReturnedSuggestions>(
+            suggestion_generators_.size(), std::move(on_suggestions_generated));
+    for (const auto& [product, suggestion_generator] : suggestion_generators_) {
+      suggestion_generator->GenerateSuggestions(form, field, form_structure,
+                                                autofill_field, client(),
+                                                barrier_callback);
+    }
+    return;
+  }
+
+  const FillingProductSet waiting_products(
+      suggestion_generators_, [](const auto& pair) { return pair.first; });
+  CHECK(FillingProductSet(kSuggestionGeneratorLaunchOrder)
+            .contains_all(waiting_products));
+
+  SuggestionBarrierCallback barrier(
+      waiting_products,
+      base::BindRepeating(&BrowserAutofillManager::CancelSuggestionGenerator,
+                          generation_weak_self),
+      std::move(on_suggestions_generated));
+
+  for (FillingProduct product : kSuggestionGeneratorLaunchOrder) {
+    if (!generation_weak_self) {
+      return;
+    }
+    if (SuggestionGenerator* suggestion_generator =
+            base::FindPtrOrNull(suggestion_generators_, product)) {
+      suggestion_generator->GenerateSuggestions(
+          form, field, form_structure, autofill_field, client(),
+          barrier.CreateCallbackForProduct(product));
+    }
   }
 }
 
@@ -1334,6 +1384,7 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     std::vector<SuggestionGenerator::ReturnedSuggestions>
         returned_suggestions) {
   // `SuggestionGenerator`s' lifespan is limited to only when they are needed.
+  suggestion_generation_weak_ptr_factory_.InvalidateWeakPtrs();
   suggestion_generators_.clear();
 
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
@@ -1400,6 +1451,10 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
   // combination during prioritization.
   CHECK_EQ(prioritized_suggestions.size(), 1u);
   on_generate_suggestions_complete(prioritized_suggestions.begin()->second);
+}
+
+void BrowserAutofillManager::CancelSuggestionGenerator(FillingProduct product) {
+  suggestion_generators_.erase(product);
 }
 
 bool BrowserAutofillManager::TryToShowTouchToFillSuggestions(
@@ -2864,6 +2919,7 @@ void BrowserAutofillManager::Reset() {
 
   generate_suggestions_and_maybe_show_ui_phase2_weak_ptr_factory_
       .InvalidateWeakPtrs();
+  suggestion_generation_weak_ptr_factory_.InvalidateWeakPtrs();
   suggestion_generators_.clear();
   four_digit_combinations_in_dom_.clear();
   last_unlocked_credit_card_cvc_.clear();
@@ -3547,6 +3603,7 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
     const FormFieldData& field) {
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
+  suggestion_generation_weak_ptr_factory_.InvalidateWeakPtrs();
   suggestion_generators_.clear();
   const FillingProductSet relevant_filling_products =
       GetFillingProductsToSuggest(trigger_source);
