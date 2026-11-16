@@ -8,7 +8,9 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_enterprise_policy_checker.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -239,6 +241,37 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskBindsHeadlessSurface) {
 }
 
 TEST_F(ActorKeyedServiceAdapterTest,
+       StartTaskCreatesHeadlessSurfaceForHeadlessTargetWithoutId) {
+  const std::optional<int32_t> tab_ids[] = {std::nullopt, 0};
+  for (const std::optional<int32_t>& tab_id : tab_ids) {
+    SCOPED_TRACE(testing::PrintToString(tab_id));
+    proto::StartTaskRequest request;
+    proto::TargetSurface* target = request.add_target_surfaces();
+    if (tab_id) {
+      target->set_tab_id(*tab_id);
+    }
+    target->set_execution_mode(proto::TargetSurface::HEADLESS);
+
+    base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
+    adapter_.StartTask(request, future.GetCallback());
+
+    const auto& [task_id, response] = future.Get();
+    EXPECT_EQ(response.status(), proto::StartTaskResponse::STATUS_OK);
+    ASSERT_EQ(response.bound_surfaces_size(), 1);
+    EXPECT_EQ(response.bound_surfaces(0).execution_mode(),
+              proto::TargetSurface::HEADLESS);
+    const ActorSurfaceHandle handle =
+        ActorSurfaceHandle::FromRawValue(response.bound_surfaces(0).tab_id());
+    ActorSurface* surface = actor_service_->GetSurfaceRegistry().Get(handle);
+    ASSERT_TRUE(surface);
+    EXPECT_FALSE(surface->IsTab());
+    ActorTask* task = actor_service_->GetTask(task_id);
+    ASSERT_TRUE(task);
+    EXPECT_TRUE(task->IsActingOnActorSurface(handle));
+  }
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
        StartTaskRejectsTabIdThatIsNotAnActorSurfaceId) {
   // ActorSurfaceRegistry::OnTabCreated() maps a tab that hosts a headless
   // surface's WebContents to that surface, so the tab ID differs from the
@@ -291,18 +324,32 @@ TEST_F(ActorKeyedServiceAdapterTest,
 
 TEST_F(ActorKeyedServiceAdapterTest,
        StartTaskReturnsTargetTabNotFoundForUnresolvedSurfaceIds) {
-  // An unset or 0 ID asks Chrome to create a surface, which StartTask() does
-  // not support yet. CreateForTesting() mints a handle that resolves to no
-  // surface; it is negative while kUseTabHandleAsSurfaceHandle is enabled.
-  const std::optional<int32_t> tab_ids[] = {
-      std::nullopt, 0, ActorSurfaceHandle::CreateForTesting().raw_value()};
-  for (const std::optional<int32_t>& tab_id : tab_ids) {
-    SCOPED_TRACE(testing::PrintToString(tab_id));
+  // StartTask() creates a surface only for a HEADLESS target whose ID is unset
+  // or 0. CreateForTesting() mints a handle that resolves to no surface; it is
+  // negative while kUseTabHandleAsSurfaceHandle is enabled.
+  const int32_t unresolved_id =
+      ActorSurfaceHandle::CreateForTesting().raw_value();
+  const struct {
+    std::optional<int32_t> tab_id;
+    proto::TargetSurface::ExecutionMode execution_mode;
+  } kTestCases[] = {
+      {std::nullopt, proto::TargetSurface::EXECUTION_MODE_UNSPECIFIED},
+      {0, proto::TargetSurface::EXECUTION_MODE_UNSPECIFIED},
+      {std::nullopt, proto::TargetSurface::HEADED},
+      {0, proto::TargetSurface::HEADED},
+      {unresolved_id, proto::TargetSurface::EXECUTION_MODE_UNSPECIFIED},
+      {unresolved_id, proto::TargetSurface::HEADLESS},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "tab_id=" << testing::PrintToString(test_case.tab_id)
+                 << " execution_mode=" << test_case.execution_mode);
     proto::StartTaskRequest request;
     proto::TargetSurface* surface = request.add_target_surfaces();
-    if (tab_id) {
-      surface->set_tab_id(*tab_id);
+    if (test_case.tab_id) {
+      surface->set_tab_id(*test_case.tab_id);
     }
+    surface->set_execution_mode(test_case.execution_mode);
 
     base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
     adapter_.StartTask(request, future.GetCallback());
@@ -405,6 +452,86 @@ TEST_F(ActorKeyedServiceAdapterTest, StopTaskReturnsFalseForUnknownTask) {
   adapter_.StopTask(TaskId(9999), proto::StopTaskRequest(),
                     stop_future.GetCallback());
   EXPECT_FALSE(stop_future.Get());
+}
+
+TEST_F(ActorKeyedServiceAdapterTest, StopTaskDestroysCreatedHeadlessSurface) {
+  proto::StartTaskRequest request;
+  request.add_target_surfaces()->set_execution_mode(
+      proto::TargetSurface::HEADLESS);
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(request, start_future.GetCallback());
+  const auto& [task_id, response] = start_future.Get();
+  ASSERT_EQ(response.bound_surfaces_size(), 1);
+  const ActorSurfaceHandle handle =
+      ActorSurfaceHandle::FromRawValue(response.bound_surfaces(0).tab_id());
+  ASSERT_TRUE(actor_service_->GetSurfaceRegistry().Get(handle));
+
+  base::test::TestFuture<bool> stop_future;
+  adapter_.StopTask(task_id, proto::StopTaskRequest(),
+                    stop_future.GetCallback());
+  // ActorKeyedService destroys the surface before StopTask() returns.
+  EXPECT_FALSE(actor_service_->GetSurfaceRegistry().Get(handle));
+  EXPECT_TRUE(stop_future.Get());
+}
+
+// Stopping task A destroys the headless surface that StartTask() created for
+// it. Task B also acts on that surface, so destroying it stops B. The nested
+// NotifyTaskStateChanged() call for B destroys B's own headless surface while
+// A's surface is still alive.
+TEST_F(ActorKeyedServiceAdapterTest,
+       StopTaskStopsOtherTaskActingOnItsHeadlessSurface) {
+  auto start_headless_task = [this] {
+    proto::StartTaskRequest request;
+    request.add_target_surfaces()->set_execution_mode(
+        proto::TargetSurface::HEADLESS);
+    base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
+    adapter_.StartTask(request, future.GetCallback());
+    return future.Take();
+  };
+  auto [task_a, response_a] = start_headless_task();
+  auto [task_b, response_b] = start_headless_task();
+  ASSERT_EQ(response_a.bound_surfaces_size(), 1);
+  ASSERT_EQ(response_b.bound_surfaces_size(), 1);
+  const ActorSurfaceHandle surface_a =
+      ActorSurfaceHandle::FromRawValue(response_a.bound_surfaces(0).tab_id());
+  const ActorSurfaceHandle surface_b =
+      ActorSurfaceHandle::FromRawValue(response_b.bound_surfaces(0).tab_id());
+
+  // An action for task B that targets task A's surface. Act() adds that
+  // surface to B.
+  proto::PerformActionsRequest act_request;
+  auto* navigate = act_request.add_actions()->mutable_navigate();
+  navigate->set_tab_id(surface_a.raw_value());
+  navigate->set_url("https://example.com/");
+  adapter_.Act(task_b, act_request, base::DoNothing());
+  ASSERT_TRUE(actor_service_->GetTask(task_b)->HasActorSurface(surface_a));
+
+  std::optional<ActorTask::StoppedReason> task_b_stopped_reason;
+  bool surface_a_alive_when_task_b_stopped = false;
+  base::CallbackListSubscription subscription =
+      actor_service_->AddTaskStateChangedCallback(
+          base::BindLambdaForTesting([&, task_b_id = task_b](ActorTask& task) {
+            if (task.id() != task_b_id || !task.IsCompleted()) {
+              return;
+            }
+            task_b_stopped_reason = task.stopped_reason();
+            surface_a_alive_when_task_b_stopped =
+                actor_service_->GetSurfaceRegistry().Get(surface_a) != nullptr;
+          }));
+
+  proto::StopTaskRequest stop_request;
+  stop_request.set_reason(proto::StopTaskRequest::TASK_COMPLETED);
+  base::test::TestFuture<bool> stop_future;
+  adapter_.StopTask(task_a, stop_request, stop_future.GetCallback());
+
+  EXPECT_EQ(task_b_stopped_reason, ActorTask::StoppedReason::kTabDetached);
+  EXPECT_TRUE(surface_a_alive_when_task_b_stopped);
+  EXPECT_FALSE(actor_service_->GetTask(task_b));
+  // Both surfaces are gone before StopTask() returns. Only the nested
+  // NotifyTaskStateChanged() call for B destroys B's surface.
+  EXPECT_FALSE(actor_service_->GetSurfaceRegistry().Get(surface_a));
+  EXPECT_FALSE(actor_service_->GetSurfaceRegistry().Get(surface_b));
+  EXPECT_TRUE(stop_future.Get());
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, PauseTaskMapsReasonsToPausedStates) {

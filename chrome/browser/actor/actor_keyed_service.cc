@@ -724,12 +724,14 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
     std::optional<glic::mojom::InvocationSource> initial_invocation_source,
     AllowedSchemes allowed_schemes,
     base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-        agent_container_config) {
+        agent_container_config,
+    ExecutionMode execution_mode) {
   CHECK(ui_state_manager);
   return CreateTaskImpl(ui::NewUiEventDispatcher(ui_state_manager), source_info,
                         policy_checker, std::move(options), std::move(delegate),
                         ui_state_manager, initial_invocation_source,
-                        allowed_schemes, agent_container_config);
+                        allowed_schemes, agent_container_config,
+                        execution_mode);
 }
 
 TaskId ActorKeyedService::CreateTaskForTesting(
@@ -756,7 +758,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
     std::optional<glic::mojom::InvocationSource> initial_invocation_source,
     AllowedSchemes allowed_schemes,
     base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-        agent_container_config) {
+        agent_container_config,
+    ExecutionMode execution_mode) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
 
@@ -765,6 +768,12 @@ TaskId ActorKeyedService::CreateTaskImpl(
   if (options && options->actuation_tab_id.has_value()) {
     initial_actor_surface =
         ActorSurfaceHandle::FromRawValue(options->actuation_tab_id.value());
+  }
+  if (initial_actor_surface.is_null() &&
+      execution_mode == ExecutionMode::kHeadless) {
+    ScopedHeadlessActorSurface headless_surface = CreateHeadlessActorSurface();
+    initial_actor_surface = headless_surface.actor_surface_handle();
+    task_headless_surfaces_.emplace(task_id, std::move(headless_surface));
   }
 
   CHECK(ui_state_manager);
@@ -825,6 +834,15 @@ void ActorKeyedService::NotifyTaskStateChanged(ActorTask& task) {
   }
 
   task_state_change_callback_list_.Notify(task);
+
+  if (task.IsCompleted()) {
+    // ActorTask::Stop() has already detached the task from its surfaces, so its
+    // headless surface is safe to destroy. Destroying it can stop another task
+    // that acts on the same surface, and stopping that task calls this method
+    // again from inside erase(). This is safe because libc++ removes the entry
+    // from the map before it destroys the ScopedHeadlessActorSurface.
+    task_headless_surfaces_.erase(task.id());
+  }
 }
 
 base::CallbackListSubscription

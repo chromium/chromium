@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -381,6 +382,73 @@ TEST_F(ActorKeyedServiceTest, InitialUnknownSurfaceNotAssociated) {
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);
   EXPECT_TRUE(task->GetActorSurfaces().empty());
+}
+
+// A kHeadless task that has no initial surface gets a new headless surface.
+TEST_F(ActorKeyedServiceTest, HeadlessModeCreatesHeadlessSurface) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  TaskId id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
+      /*delegate=*/nullptr, ui_state_manager(),
+      /*initial_invocation_source=*/std::nullopt,
+      ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
+      /*agent_container_config=*/std::nullopt,
+      ActorKeyedService::ExecutionMode::kHeadless);
+
+  ActorTask* task = actor_service->GetTask(id);
+  ASSERT_TRUE(task);
+  const ActorSurfaceHandle handle = task->GetLastActuatedActorSurface();
+  ActorSurface* surface = actor_service->GetSurfaceRegistry().Get(handle);
+  ASSERT_TRUE(surface);
+  EXPECT_FALSE(surface->IsTab());
+  EXPECT_TRUE(task->IsActingOnActorSurface(handle));
+}
+
+// The service destroys the headless surface that it created for a task as
+// soon as the task completes.
+TEST_F(ActorKeyedServiceTest, StoppingTaskDestroysItsHeadlessSurface) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  TaskId id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), /*options=*/nullptr,
+      /*delegate=*/nullptr, ui_state_manager(),
+      /*initial_invocation_source=*/std::nullopt,
+      ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
+      /*agent_container_config=*/std::nullopt,
+      ActorKeyedService::ExecutionMode::kHeadless);
+  ActorTask* task = actor_service->GetTask(id);
+  ASSERT_TRUE(task);
+  const ActorSurfaceHandle handle = task->GetLastActuatedActorSurface();
+  ASSERT_TRUE(actor_service->GetSurfaceRegistry().Get(handle));
+
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+
+  EXPECT_FALSE(actor_service->GetSurfaceRegistry().Get(handle));
+}
+
+// A kHeadless task that already has an initial surface uses that surface, and
+// the service does not destroy it.
+TEST_F(ActorKeyedServiceTest, HeadlessModeKeepsCallerOwnedSurface) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ScopedHeadlessActorSurface headless =
+      actor_service->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+  auto options = webui::mojom::TaskOptions::New();
+  options->actuation_tab_id = handle.raw_value();
+  TaskId id = actor_service->CreateTaskWithOptions(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker(), std::move(options),
+      /*delegate=*/nullptr, ui_state_manager(),
+      /*initial_invocation_source=*/std::nullopt,
+      ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
+      /*agent_container_config=*/std::nullopt,
+      ActorKeyedService::ExecutionMode::kHeadless);
+  ActorTask* task = actor_service->GetTask(id);
+  ASSERT_TRUE(task);
+  EXPECT_EQ(task->GetActorSurfaces().size(), 1u);
+  EXPECT_TRUE(task->HasActorSurface(handle));
+
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
+
+  EXPECT_TRUE(actor_service->GetSurfaceRegistry().Get(handle));
 }
 
 TEST_F(ActorKeyedServiceTest, TraceRecordingToFile) {

@@ -72,9 +72,17 @@ up like a tab, through `ActorTask::AddActorSurface()`.
 `ScopedHeadlessActorSurface`. Whoever holds it decides how long the page lives:
 dropping it destroys the surface and its page, typically after the task acting
 on it has completed. This also covers surfaces whose task was never created.
-`ActorKeyedService::StopTask()` does not destroy surfaces, and it can't be used
-after the task has completed. Surfaces still alive at profile shutdown are
-destroyed by `ActorKeyedService::Shutdown()`.
+`ActorKeyedService::StopTask()` does not destroy surfaces that a feature holds,
+and it can't be used after the task has completed. Surfaces still alive at
+profile shutdown are destroyed by `ActorKeyedService::Shutdown()`.
+
+**Surfaces created for a task.** A feature can instead pass
+`ExecutionMode::kHeadless` and no initial surface to
+`ActorKeyedService::CreateTaskWithOptions()`. `ActorKeyedService` then creates
+a headless surface for the task, holds its `ScopedHeadlessActorSurface`, and
+destroys the surface when the task completes.
+`ActorKeyedServiceAdapter::StartTask()` does this for a HEADLESS target without
+a surface ID.
 
 **Not tied to the page or a window.** Unlike a tab, a headless page can't close
 itself: `window.close()` is ignored, and the surface and its `WebContents`

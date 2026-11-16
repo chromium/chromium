@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_H_
 
 #include <compare>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -133,10 +134,22 @@ class ActorKeyedService : public KeyedService,
 
   using AllowedSchemes = ActorTask::AllowedSchemes;
 
+  // Used by CreateTaskWithOptions() only when the new task has no initial
+  // surface. kHeaded creates no surface. kHeadless creates a headless surface
+  // for the task.
+  enum class ExecutionMode {
+    kHeaded,
+    kHeadless,
+  };
+
   // Starts a new task with an execution engine and returns the new task's id.
   // `options`, when provided, contains information used to initialize the task.
   // The provided `policy_checker` and `ui_state_manager` must be non-null and
   // must outlive the ActorTask.
+  //
+  // If `execution_mode` is kHeadless and `options` has no initial surface,
+  // CreateTaskWithOptions() creates a headless surface for the task. This
+  // service destroys the surface when the task completes.
   TaskId CreateTask(
       const TaskSourceInfo& source_info,
       const EnterprisePolicyChecker* policy_checker,
@@ -151,7 +164,8 @@ class ActorKeyedService : public KeyedService,
           std::nullopt,
       AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp,
       base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-          agent_container_config = std::nullopt);
+          agent_container_config = std::nullopt,
+      ExecutionMode execution_mode = ExecutionMode::kHeaded);
   TaskId CreateTaskForTesting(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
@@ -430,7 +444,8 @@ class ActorKeyedService : public KeyedService,
       std::optional<glic::mojom::InvocationSource> initial_invocation_source,
       AllowedSchemes allowed_schemes,
       base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
-          agent_container_config = std::nullopt);
+          agent_container_config = std::nullopt,
+      ExecutionMode execution_mode = ExecutionMode::kHeaded);
 
   void AssignAgentContainerConfig(
       ActorTask& task,
@@ -476,6 +491,10 @@ class ActorKeyedService : public KeyedService,
   // For avoiding reentrancy. A temporary set of headless surfaces being
   // destroyed.
   base::flat_set<ActorSurfaceHandle> headless_actor_surfaces_being_destroyed_;
+
+  // Headless surfaces that CreateTaskImpl() created for tasks, keyed by task
+  // ID. NotifyTaskStateChanged() destroys a surface when its task completes.
+  std::map<TaskId, ScopedHeadlessActorSurface> task_headless_surfaces_;
 
   // Registered with `TransportService` when `kBrowserActuator` is
   // enabled, and unregistered and destroyed in `Shutdown()` after tasks are

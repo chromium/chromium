@@ -262,26 +262,27 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
   }
 
   proto::StartTaskResponse response;
+  auto execution_mode = ActorKeyedService::ExecutionMode::kHeaded;
   // TODO(crbug.com/576384635): Support binding multiple initial target surfaces
   // and failing task creation on unbindable tabs in ActorKeyedService.
   if (!request.target_surfaces().empty()) {
     const proto::TargetSurface& surface = request.target_surfaces(0);
     // `tab_id` holds an actor surface ID, so it can name a tab-backed or a
-    // headless surface. An unset or 0 ID asks Chrome to create a surface,
-    // which StartTask() does not support yet; ActorSurfaceRegistry::Get()
-    // resolves no surface for it.
-    if (!actor_service_->GetSurfaceRegistry().Get(
-            ActorSurfaceHandle::FromRawValue(surface.tab_id()))) {
+    // headless surface. An unset or 0 ID asks Chrome to create a surface.
+    // ActorKeyedService creates one only for HEADLESS targets. For other modes,
+    // the registry lookup below finds no surface.
+    if (surface.tab_id() == 0 &&
+        surface.execution_mode() == proto::TargetSurface::HEADLESS) {
+      execution_mode = ActorKeyedService::ExecutionMode::kHeadless;
+    } else if (actor_service_->GetSurfaceRegistry().Get(
+                   ActorSurfaceHandle::FromRawValue(surface.tab_id()))) {
+      options->actuation_tab_id = surface.tab_id();
+    } else {
       response.set_status(
           proto::StartTaskResponse::STATUS_TARGET_TAB_NOT_FOUND);
       std::move(callback).Run(TaskId(), std::move(response));
       return;
     }
-    options->actuation_tab_id = surface.tab_id();
-    proto::StartTaskResponse::BoundSurface* bound_surface =
-        response.add_bound_surfaces();
-    bound_surface->set_tab_id(surface.tab_id());
-    bound_surface->set_execution_mode(surface.execution_mode());
   }
 
   TaskId task_id = actor_service_->CreateTaskWithOptions(
@@ -294,7 +295,20 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
       ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
       request.has_agent_container_config()
           ? base::optional_ref(request.agent_container_config())
-          : std::nullopt);
+          : std::nullopt,
+      execution_mode);
+
+  if (!request.target_surfaces().empty()) {
+    // The task's initial surface is either the surface in `tab_id` or the
+    // headless surface that ActorKeyedService created for the task.
+    ActorTask* task = actor_service_->GetTask(task_id);
+    CHECK(task);
+    proto::StartTaskResponse::BoundSurface* bound_surface =
+        response.add_bound_surfaces();
+    bound_surface->set_tab_id(task->GetLastActuatedActorSurface().raw_value());
+    bound_surface->set_execution_mode(
+        request.target_surfaces(0).execution_mode());
+  }
 
   response.set_status(proto::StartTaskResponse::STATUS_OK);
   std::move(callback).Run(task_id, std::move(response));
