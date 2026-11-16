@@ -61,6 +61,13 @@ bool SystemMenuModelDelegate::IsCommandIdChecked(int command_id) const {
 }
 
 bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
+#if BUILDFLAG(IS_LINUX)
+  if (command_id == IDC_USE_SYSTEM_TITLE_BAR &&
+      browser_->GetProfile()->GetPrefs()->IsManagedPreference(
+          prefs::kUseCustomChromeFrame)) {
+    return false;
+  }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
     return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();

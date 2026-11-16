@@ -1,0 +1,32 @@
+caption: Use the system title bar and borders on Linux
+default: null
+desc: |-
+  Controls whether normal browser windows in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> use the system title bar and borders on <ph name="LINUX_OS_NAME">Linux</ph>. This policy does not affect web app, floating, or popup windows.
+
+  If you enable this policy, normal browser windows use the title bar and borders provided by the window manager when supported. Otherwise, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> continues to draw the window decorations.
+
+  If you disable this policy, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> draws the title bar and borders for normal browser windows instead of the window manager.
+
+  If this policy is set, users cannot change this setting.
+
+  If this policy is not set, users can choose whether to use the system title bar and borders in Settings > Appearance or the window title bar context menu, when supported by the window manager.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Use the system title bar and borders
+  value: true
+- caption: Use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> window decorations
+  value: false
+- caption: Allow the user to choose
+  value: null
+owners:
+- thomasanderson@chromium.org
+- file://chrome/browser/ui/views/frame/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.linux:160-
+tags: []
+type: main

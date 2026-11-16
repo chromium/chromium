@@ -2700,6 +2700,7 @@ chromium-metrics-reviews@google.com.
   <int value="1495" label="ManagedClientCertificateForUserConfig"/>
   <int value="1496" label="GeminiEnterpriseUrl"/>
   <int value="1497" label="IsolatedModeUserInstalledExtensionsSettings"/>
+  <int value="1498" label="SystemTitleBarEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

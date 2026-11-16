@@ -230,6 +230,13 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
   }
 
   profile_pref_registrar_.Init(profile()->GetPrefs());
+#if BUILDFLAG(IS_LINUX)
+  profile_pref_registrar_.Add(
+      prefs::kUseCustomChromeFrame,
+      base::BindRepeating(
+          &BrowserCommandController::UpdateCommandsForSystemTitleBar,
+          base::Unretained(this)));
+#endif
 #if !BUILDFLAG(IS_CHROMEOS)
   profile_pref_registrar_.Add(
       prefs::kDesktopSharingHubEnabled,
@@ -743,14 +750,7 @@ void BrowserCommandController::InitCommandState() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
-  bool use_system_title_bar = true;
-#if BUILDFLAG(IS_OZONE)
-  use_system_title_bar = ui::OzonePlatform::GetInstance()
-                             ->GetPlatformRuntimeProperties()
-                             .supports_server_side_window_decorations;
-#endif  // BUILDFLAG(IS_OZONE)
-  command_updater_->UpdateCommandEnabled(IDC_USE_SYSTEM_TITLE_BAR,
-                                         use_system_title_bar);
+  UpdateCommandsForSystemTitleBar();
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
@@ -1290,6 +1290,21 @@ void BrowserCommandController::UpdateCommandsForBookmarkEditing() {
   command_updater_->UpdateCommandEnabled(IDC_BOOKMARK_ALL_TABS,
                                          CanBookmarkAllTabs(browser_));
 }
+
+#if BUILDFLAG(IS_LINUX)
+void BrowserCommandController::UpdateCommandsForSystemTitleBar() {
+  bool use_system_title_bar = true;
+#if BUILDFLAG(IS_OZONE)
+  use_system_title_bar = ui::OzonePlatform::GetInstance()
+                             ->GetPlatformRuntimeProperties()
+                             .supports_server_side_window_decorations;
+#endif  // BUILDFLAG(IS_OZONE)
+  command_updater_->UpdateCommandEnabled(
+      IDC_USE_SYSTEM_TITLE_BAR,
+      use_system_title_bar && !profile()->GetPrefs()->IsManagedPreference(
+                                  prefs::kUseCustomChromeFrame));
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 void BrowserCommandController::UpdateCommandsForBookmarkBar() {
   if (IsInLockedFullscreenMode(/*allow_ontask=*/false)) {

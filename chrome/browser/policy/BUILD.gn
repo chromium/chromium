@@ -635,6 +635,20 @@ source_set("browser_tests") {
     sources += [ "test/audio_sandbox_enabled_browsertest.cc" ]
   }
 
+  if (is_linux) {
+    sources += [ "test/system_title_bar_enabled_browsertest.cc" ]
+    deps += [
+      "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/views/frame:browser_native_widget_aura_linux",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:system_menu_model_delegate",
+      "//ui/actions",
+      "//ui/ozone",
+    ]
+  }
+
   if (is_mac) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_mac_util.h",
@@ -1191,6 +1205,10 @@ source_set("policy") {
     ]
   }
 
+  if (is_linux) {
+    public += [ "system_title_bar_enabled_policy_handler.h" ]
+  }
+
   if (is_linux || is_chromeos) {
     public += [ "browser_dm_token_storage_linux.h" ]
   }
@@ -1579,6 +1597,10 @@ source_set("impl") {
       "//chrome/browser/browser_switcher",
       "//components/themes:policy",
     ]
+  }
+
+  if (is_linux) {
+    sources += [ "system_title_bar_enabled_policy_handler.cc" ]
   }
 
   if (is_linux || is_chromeos) {

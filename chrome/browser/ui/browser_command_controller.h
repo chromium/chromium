@@ -191,6 +191,11 @@ class BrowserCommandController : public CommandUpdater,
   // Updates commands for bookmark editing.
   void UpdateCommandsForBookmarkEditing();
 
+#if BUILDFLAG(IS_LINUX)
+  // Updates the title-bar command and action when policy management changes.
+  void UpdateCommandsForSystemTitleBar();
+#endif
+
   // Updates commands that affect the bookmark bar.
   void UpdateCommandsForBookmarkBar();
 

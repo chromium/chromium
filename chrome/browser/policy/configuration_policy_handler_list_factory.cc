@@ -303,6 +303,10 @@
 #include "chrome/browser/indigo/indigo_prefs.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/policy/system_title_bar_enabled_policy_handler.h"
+#endif
+
 namespace policy {
 namespace {
 
@@ -3573,6 +3577,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 #if BUILDFLAG(IS_LINUX)
+  handlers->AddHandler(std::make_unique<SystemTitleBarEnabledPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kAllowSystemNotifications, prefs::kAllowSystemNotifications,
       base::Value::Type::BOOLEAN));

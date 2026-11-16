@@ -2915,6 +2915,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](Profile* profile, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 PrefService* prefs = profile->GetPrefs();
+                CHECK(
+                    !prefs->IsManagedPreference(prefs::kUseCustomChromeFrame));
                 prefs->SetBoolean(
                     prefs::kUseCustomChromeFrame,
                     !prefs->GetBoolean(prefs::kUseCustomChromeFrame));
