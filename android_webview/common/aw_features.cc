@@ -457,6 +457,11 @@ BASE_FEATURE(kWebViewTestNonembeddedLowEntropySource,
 // regardless of the user agent reduction policy.
 BASE_FEATURE(kWebViewUnreducedProductVersion, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for updating the DisplayAndroid observer when the display
+// changes.
+BASE_FEATURE(kWebViewUpdateDisplayObserverOnDisplayChanges,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Use WebView's nonembedded MetricsUploadService to upload UMA metrics instead
 // of sending it directly to GMS-core when running within the SDK Runtime.
 BASE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime,

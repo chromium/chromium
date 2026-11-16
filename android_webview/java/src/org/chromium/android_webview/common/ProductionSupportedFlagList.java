@@ -1587,6 +1587,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES,
                 "When enabled, maps Android a11y controls to their new className strings."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_UPDATE_DISPLAY_OBSERVER_ON_DISPLAY_CHANGES,
+                "Updates the DisplayAndroid observer when the display changes."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

@@ -454,6 +454,7 @@ public class AwContents implements SmartClipProvider {
     private final AwScrollOffsetManager mScrollOffsetManager;
     private final AwOverScrollHelper mOverScrollHelper;
     private final DisplayAndroidObserver mDisplayObserver;
+    private @Nullable DisplayAndroid mObservedDisplay;
     private final AwPasswordEchoSettingController mPasswordEchoSettingController;
     // This can be accessed on any thread after construction. See AwContentsIoThreadClient.
     private final AwSettings mSettings;
@@ -988,7 +989,28 @@ public class AwContents implements SmartClipProvider {
             AwContentsJni.get().setDipScale(mNativeAwContents, dipScale);
             mLayoutSizer.setDipScale(dipScale);
             mSettings.setDipScale(dipScale);
+            if (AwFeatureMap.isEnabled(
+                    AwFeatures.WEBVIEW_UPDATE_DISPLAY_OBSERVER_ON_DISPLAY_CHANGES)) {
+                postInvalidate(false);
+            }
         }
+    }
+
+    private void updateDisplayObserver() {
+        if (!AwFeatureMap.isEnabled(
+                AwFeatures.WEBVIEW_UPDATE_DISPLAY_OBSERVER_ON_DISPLAY_CHANGES)) {
+            return;
+        }
+        if (!mIsAttachedToWindow || mWindowAndroid == null) return;
+        DisplayAndroid display = mWindowAndroid.getWindowAndroid().getDisplay();
+        if (display == mObservedDisplay) return;
+
+        if (mObservedDisplay != null) {
+            mObservedDisplay.removeObserver(mDisplayObserver);
+        }
+        mObservedDisplay = display;
+        mObservedDisplay.addObserver(mDisplayObserver);
+        mDisplayObserver.onDIPScaleChanged(display.getDipScale());
     }
 
     // --------------------------------------------------------------------------------------------
@@ -5090,6 +5112,10 @@ public class AwContents implements SmartClipProvider {
             if (TRACE) Log.i(TAG, "%s onConfigurationChanged", AwContents.this);
 
             if (!isDestroyed(NO_WARN)) {
+                if (AwFeatureMap.isEnabled(
+                        AwFeatures.WEBVIEW_UPDATE_DISPLAY_OBSERVER_ON_DISPLAY_CHANGES)) {
+                    updateDisplayObserver();
+                }
                 mViewEventSink.onConfigurationChanged(newConfig);
                 mCurrentInternalAccessAdapter.super_onConfigurationChanged(newConfig);
                 mWebContents.notifyRendererPreferenceUpdate();
@@ -5108,9 +5134,7 @@ public class AwContents implements SmartClipProvider {
             mIsAttachedToWindow = true;
             mTemporarilyDetached = false;
 
-            DisplayAndroid display = mWindowAndroid.getWindowAndroid().getDisplay();
-            mDisplayObserver.onDIPScaleChanged(display.getDipScale());
-            display.addObserver(mDisplayObserver);
+            updateDisplayObserver();
 
             mPasswordEchoSettingController.onAttachedToWindow();
 
@@ -5162,7 +5186,10 @@ public class AwContents implements SmartClipProvider {
 
             mPasswordEchoSettingController.onDetachedFromWindow();
 
-            mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
+            if (mObservedDisplay != null) {
+                mObservedDisplay.removeObserver(mDisplayObserver);
+                mObservedDisplay = null;
+            }
             detachWindowCoverageTracker();
 
             mIsAttachedToWindow = false;
