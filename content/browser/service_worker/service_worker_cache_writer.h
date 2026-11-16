@@ -73,11 +73,14 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   };
 
   // Create a cache writer instance that copies a script already in storage. The
-  // script is read by |copy_reader|.
+  // script is read by |copy_reader|. If |response_head_to_write| is provided,
+  // it is written as the response head for the new resource instead of the
+  // response head read from |copy_reader|.
   static std::unique_ptr<ServiceWorkerCacheWriter> CreateForCopy(
       mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader,
       mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
-      int64_t writer_resource_id);
+      int64_t writer_resource_id,
+      network::mojom::URLResponseHeadPtr response_head_to_write = nullptr);
 
   // Create a cache writer instance that unconditionally write back data
   // supplied to |MaybeWriteHeaders| and |MaybeWriteData| to storage.
@@ -164,6 +167,9 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   ChecksumUpdateTiming checksum_update_timing() const {
     return checksum_update_timing_;
   }
+
+  // Takes ownership of the response head passed to MaybeWriteHeaders().
+  network::mojom::URLResponseHeadPtr TakeResponseHeadToWrite();
 
  private:
   class ReadResponseHeadCallbackAdapter;

@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class GURL;
 
@@ -88,6 +89,7 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
   // success.
   void CopyScript(const GURL& url,
                   int64_t resource_id,
+                  network::mojom::URLResponseHeadPtr response_head,
                   base::OnceCallback<void(int64_t, net::Error)> callback,
                   int64_t new_resource_id);
 

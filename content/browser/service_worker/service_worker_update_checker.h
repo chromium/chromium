@@ -44,7 +44,8 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
         std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::PausedState>
             paused_state,
         std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
-            failure_info);
+            failure_info,
+        network::mojom::URLResponseHeadPtr response_head = nullptr);
     ComparedScriptInfo(ComparedScriptInfo&& other);
     ComparedScriptInfo& operator=(ComparedScriptInfo&& other);
     ~ComparedScriptInfo();
@@ -65,6 +66,12 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
     // which the update checker saw to the renderer when installing the worker.
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::FailureInfo>
         failure_info;
+
+    // This is set when |result| is kIdentical. It holds the newly fetched
+    // response head from the network so that updated headers are persisted if
+    // another script triggers an update and this script is copied to the new
+    // version.
+    network::mojom::URLResponseHeadPtr response_head;
   };
 
   // This is to notify the update check result. Value of |result| can be:

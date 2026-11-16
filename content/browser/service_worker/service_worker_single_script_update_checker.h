@@ -191,6 +191,9 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   const scoped_refptr<PolicyContainerHost> policy_container_host() const {
     return policy_container_host_;
   }
+  // Takes ownership of the response head from |cache_writer_| when the script
+  // comparison finishes with Result::kIdentical.
+  network::mojom::URLResponseHeadPtr TakeResponseHead();
   void FlushRemotesForTesting();
 
   static const char* ResultToString(Result result);

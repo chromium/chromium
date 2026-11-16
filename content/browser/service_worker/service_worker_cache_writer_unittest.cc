@@ -880,6 +880,57 @@ TEST_F(ServiceWorkerCacheWriterTest, CopyScript_AsyncMultipleRead) {
   EXPECT_TRUE(writer->AllExpectedWritesDone());
 }
 
+TEST_F(ServiceWorkerCacheWriterTest, CopyScript_WithUpdatedHeaders) {
+  const std::string data_from_cache = "abcd";
+  const size_t bytes_cached = data_from_cache.size();
+
+  MockServiceWorkerResourceWriter* writer = ExpectWriter();
+  MockServiceWorkerResourceReader* copy_reader = ExpectReader();
+
+  copy_reader->ExpectReadResponseHeadOk(bytes_cached);
+  copy_reader->ExpectReadDataOk(data_from_cache);
+
+  writer->ExpectWriteResponseHeadOk(bytes_cached);
+  writer->ExpectWriteDataOk(bytes_cached);
+
+  auto updated_response_head = network::mojom::URLResponseHead::New();
+  const char kUpdatedHeaders[] =
+      "HTTP/1.1 200 OK\0Content-Security-Policy: script-src 'self'\0\0";
+  updated_response_head->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(
+          std::string(kUpdatedHeaders, std::size(kUpdatedHeaders)));
+  updated_response_head->content_length = -1;
+
+  cache_writer_ = ServiceWorkerCacheWriter::CreateForCopy(
+      CreateReader(), CreateWriter(), /*writer_resource_id=*/0,
+      std::move(updated_response_head));
+  MockServiceWorkerCacheWriterObserver observer;
+  cache_writer_->set_write_observer(&observer);
+
+  write_complete_ = false;
+  cache_writer_->StartCopy(CreateWriteCallback());
+  EXPECT_FALSE(write_complete_);
+
+  copy_reader->CompletePendingRead();
+  ASSERT_TRUE(observer.response_);
+  ASSERT_TRUE(observer.response_->headers);
+  EXPECT_EQ(static_cast<int64_t>(bytes_cached),
+            observer.response_->content_length);
+  EXPECT_EQ("script-src 'self'",
+            observer.response_->headers->GetNormalizedHeader(
+                "Content-Security-Policy"));
+
+  writer->CompletePendingWrite();
+  copy_reader->CompletePendingRead();
+  writer->CompletePendingWrite();
+
+  EXPECT_TRUE(write_complete_);
+  EXPECT_EQ(net::OK, last_error_);
+  EXPECT_EQ(bytes_cached, cache_writer_->bytes_written().InBytes());
+  EXPECT_TRUE(writer->AllExpectedWritesDone());
+  cache_writer_->set_write_observer(nullptr);
+}
+
 // The observer runs synchronously and the response writer runs asynchronously.
 TEST_F(ServiceWorkerCacheWriterTest, ObserverSyncResponseWriterAsync) {
   const size_t kHeaderSize = 16;

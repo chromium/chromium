@@ -437,7 +437,8 @@ class ServiceWorkerUpdateCheckTestUtils {
       ServiceWorkerSingleScriptUpdateChecker::Result compare_result,
       std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::PausedState>
           paused_state,
-      ServiceWorkerVersion* version);
+      ServiceWorkerVersion* version,
+      network::mojom::URLResponseHeadPtr response_head = nullptr);
 
   // This method calls above three methods to create a cache writer, paused
   // state and compared script info. Then set it to the service worker version.

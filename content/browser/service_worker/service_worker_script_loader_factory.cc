@@ -125,16 +125,20 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
     auto it = compared_script_info_map.find(resource_request.url);
     if (it != compared_script_info_map.end()) {
       switch (it->second.result) {
-        case ServiceWorkerSingleScriptUpdateChecker::Result::kIdentical:
+        case ServiceWorkerSingleScriptUpdateChecker::Result::kIdentical: {
           // Case D.1:
+          ServiceWorkerUpdateChecker::ComparedScriptInfo info =
+              version->TakeComparedScriptInfo(resource_request.url);
           context_->GetStorageControl()->GetNewResourceId(base::BindOnce(
               &ServiceWorkerScriptLoaderFactory::CopyScript,
-              weak_factory_.GetWeakPtr(), it->first, it->second.old_resource_id,
+              weak_factory_.GetWeakPtr(), resource_request.url,
+              info.old_resource_id, std::move(info.response_head),
               base::BindOnce(
                   &ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished,
                   weak_factory_.GetWeakPtr(), std::move(receiver), options,
                   resource_request.url, std::move(client))));
           return;
+        }
         case ServiceWorkerSingleScriptUpdateChecker::Result::kFailed:
           // Network failure is treated as D.2
         case ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent:
@@ -221,6 +225,7 @@ bool ServiceWorkerScriptLoaderFactory::CheckIfScriptRequestIsValid(
 void ServiceWorkerScriptLoaderFactory::CopyScript(
     const GURL& url,
     int64_t resource_id,
+    network::mojom::URLResponseHeadPtr response_head,
     base::OnceCallback<void(int64_t, net::Error)> callback,
     int64_t new_resource_id) {
   if (!context_ || !worker_host_) {
@@ -244,7 +249,8 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
       new_resource_id, writer.BindNewPipeAndPassReceiver());
 
   cache_writer_ = ServiceWorkerCacheWriter::CreateForCopy(
-      std::move(reader), std::move(writer), new_resource_id);
+      std::move(reader), std::move(writer), new_resource_id,
+      std::move(response_head));
 
   scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();
   version->script_cache_map()->NotifyStartedCaching(url, new_resource_id);

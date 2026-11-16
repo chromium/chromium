@@ -291,17 +291,20 @@ std::unique_ptr<ServiceWorkerCacheWriter>
 ServiceWorkerCacheWriter::CreateForCopy(
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader,
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
-    int64_t writer_resource_id) {
+    int64_t writer_resource_id,
+    network::mojom::URLResponseHeadPtr response_head_to_write) {
   CHECK(copy_reader, base::NotFatalUntil::M159);
   CHECK(copy_reader.is_connected(), base::NotFatalUntil::M159);
   CHECK(writer, base::NotFatalUntil::M159);
   CHECK(writer.is_connected(), base::NotFatalUntil::M159);
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> null_remote;
-  return base::WrapUnique(new ServiceWorkerCacheWriter(
+  auto cache_writer = base::WrapUnique(new ServiceWorkerCacheWriter(
       std::move(null_remote) /* compare_reader */, std::move(copy_reader),
       std::move(writer), writer_resource_id,
       /*pause_when_not_identical=*/false,
       ChecksumUpdateTiming::kCacheMismatch));
+  cache_writer->response_head_to_write_ = std::move(response_head_to_write);
+  return cache_writer;
 }
 
 std::unique_ptr<ServiceWorkerCacheWriter>
@@ -686,7 +689,7 @@ int ServiceWorkerCacheWriter::DoReadHeadersForCopyDone(int result) {
 
 // Write the just-read headers back to the cache.
 // Note that this *discards* the read headers and replaces them with the net
-// headers if the cache writer is not for copy, otherwise write the read
+// headers if provided (`response_head_to_write_`), otherwise writes the read
 // headers.
 int ServiceWorkerCacheWriter::DoWriteHeadersForCopy(int result) {
   CHECK_GE(result, 0, base::NotFatalUntil::M159);
@@ -708,6 +711,15 @@ int ServiceWorkerCacheWriter::DoWriteHeadersForCopy(int result) {
     } else {
       bytes_to_copy_ = base::ByteSize(
           base::checked_cast<uint64_t>(response_head_to_read_->content_length));
+    }
+    if (response_head_to_write_) {
+      // `response_head_to_write_` is captured from the network before the body
+      // is read, so its `content_length` may be -1 (e.g. chunked transfer) or
+      // reflect the compressed wire size. Preserve the exact cached body size
+      // from `response_head_to_read_` for write observers and storage writers.
+      response_head_to_write_->content_length =
+          response_head_to_read_->content_length;
+      return WriteResponseHead(std::move(response_head_to_write_));
     }
     return WriteResponseHead(std::move(response_head_to_read_));
   } else {
@@ -990,6 +1002,12 @@ std::string ServiceWorkerCacheWriter::GetSha256Checksum() {
   std::array<uint8_t, crypto::hash::kSha256Size> result;
   checksum_.Finish(result);
   return base::HexEncode(result);
+}
+
+network::mojom::URLResponseHeadPtr
+ServiceWorkerCacheWriter::TakeResponseHeadToWrite() {
+  CHECK(response_head_to_write_, base::NotFatalUntil::M159);
+  return std::move(response_head_to_write_);
 }
 
 }  // namespace content

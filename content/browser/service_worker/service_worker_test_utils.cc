@@ -873,12 +873,13 @@ void ServiceWorkerUpdateCheckTestUtils::SetComparedScriptInfoForVersion(
     ServiceWorkerSingleScriptUpdateChecker::Result compare_result,
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::PausedState>
         paused_state,
-    ServiceWorkerVersion* version) {
+    ServiceWorkerVersion* version,
+    network::mojom::URLResponseHeadPtr response_head) {
   std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo> info_map;
   info_map.emplace(script_url,
                    ServiceWorkerUpdateChecker::ComparedScriptInfo(
                        resource_id, compare_result, std::move(paused_state),
-                       /*failure_info=*/nullptr));
+                       /*failure_info=*/nullptr, std::move(response_head)));
   version->PrepareForUpdate(
       std::move(info_map),
       (compare_result ==

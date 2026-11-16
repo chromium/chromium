@@ -225,6 +225,41 @@ TEST_F(ServiceWorkerScriptLoaderFactoryCopyResumeTest, CopyScript) {
   CheckResponse(kOldData);
 }
 
+// Tests that when a script is compared to be identical in an update check,
+// newly fetched response headers are written to storage and returned when
+// copying the script.
+TEST_F(ServiceWorkerScriptLoaderFactoryCopyResumeTest,
+       CopyScriptWithNewHeaders) {
+  auto new_response_head = network::mojom::URLResponseHead::New();
+  const char kNewRawHeaders[] =
+      "HTTP/1.1 200 OK\0Content-Type: text/javascript\0"
+      "Content-Security-Policy: script-src 'self'\0\0";
+  new_response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      std::string(kNewRawHeaders, std::size(kNewRawHeaders)));
+  new_response_head->content_length = -1;
+
+  ServiceWorkerUpdateCheckTestUtils::SetComparedScriptInfoForVersion(
+      script_url_, kOldResourceId,
+      ServiceWorkerSingleScriptUpdateChecker::Result::kIdentical, nullptr,
+      version_.get(), std::move(new_response_head));
+
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(&client_);
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+
+  CheckResponse(kOldData);
+  ASSERT_TRUE(client_.response_head());
+  ASSERT_TRUE(client_.response_head()->headers);
+  EXPECT_TRUE(client_.response_head()->headers->HasHeaderValue(
+      "Content-Security-Policy", "script-src 'self'"));
+  ASSERT_TRUE(version_->GetMainScriptResponse());
+  ASSERT_TRUE(version_->GetMainScriptResponse()->headers);
+  EXPECT_TRUE(version_->GetMainScriptResponse()->headers->HasHeaderValue(
+      "Content-Security-Policy", "script-src 'self'"));
+}
+
 // Tests loader factory creates resume type ServiceWorkerNewScriptLoader to
 // continue paused download in update check.
 TEST_F(ServiceWorkerScriptLoaderFactoryCopyResumeTest,

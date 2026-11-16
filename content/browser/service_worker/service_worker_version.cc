@@ -450,6 +450,7 @@ void ServiceWorkerVersion::SetStatus(Status status) {
 
   if (status == INSTALLED) {
     embedded_worker_->OnWorkerVersionInstalled();
+    compared_script_info_map_.clear();
   } else if (status == ACTIVATED) {
     // Notify the hid delegate observer if the active service worker has any hid
     // event handlers.
@@ -471,6 +472,7 @@ void ServiceWorkerVersion::SetStatus(Status status) {
 #endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
   } else if (status == REDUNDANT) {
     embedded_worker_->OnWorkerVersionDoomed();
+    compared_script_info_map_.clear();
 
     // Drop the remote reference to tell the storage system that the worker
     // script resources can now be deleted.
@@ -3536,7 +3538,7 @@ void ServiceWorkerVersion::PrepareForUpdate(
   if (!GetContentClient()
            ->browser()
            ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
-               updated_script_url)) {
+               script_url_)) {
     SetPolicyContainerHost(policy_container_host);
   }
 }

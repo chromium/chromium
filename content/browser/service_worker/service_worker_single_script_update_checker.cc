@@ -441,6 +441,11 @@ const char* ServiceWorkerSingleScriptUpdateChecker::ResultToString(
   }
 }
 
+network::mojom::URLResponseHeadPtr
+ServiceWorkerSingleScriptUpdateChecker::TakeResponseHead() {
+  return cache_writer_ ? cache_writer_->TakeResponseHeadToWrite() : nullptr;
+}
+
 void ServiceWorkerSingleScriptUpdateChecker::FlushRemotesForTesting() {
   if (cache_writer_) {
     cache_writer_->FlushRemotesForTesting();  // IN-TEST
