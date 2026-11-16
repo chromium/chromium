@@ -3782,6 +3782,14 @@
     <variant value="3">INSTANCE_DESTROYED</variant>
     <variant value="4">ACCEPTED_ELSEWHERE</variant>
   </enum>
+
+  <enum name="GlicTurnEnd">
+    <variant value="0">RESPONSE_COMPLETED</variant>
+    <variant value="1">STOPPED_BY_USER</variant>
+    <variant value="2">STOPPED_OTHER</variant>
+    <variant value="3">SUPERSEDED</variant>
+    <variant value="4">INSTANCE_DESTROYED</variant>
+  </enum>
   <event name="InvokeStarted">
     <summary>
       Recorded when a Glic invocation is initiated.
@@ -4132,6 +4140,108 @@
       <summary>
         Milliseconds between the panel opening and the decision. Absent when
         InvocationId is absent and no attempt was in flight.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="TurnSubmitted">
+    <summary>
+      Recorded when the web client reports that the user submitted input to
+      a Glic instance (the same point as Glic.Turn.PromptType), once per turn.
+      Together with TurnTerminated this gives each turn an outcome and a
+      latency, and marks the first turn of an instance and turns submitted
+      before the profile consented (message-first FRE), which the existing
+      Glic.Fre.UserInput / Glic.Turn.* histograms cannot tell apart.
+    </summary>
+    <metric name="InvocationId" type="int">
+      <summary>
+        The invocation in flight when the input was submitted, or else the
+        invocation that opened or most recently invoked this open of the
+        panel, joining the turn to InvokeStarted, InvokeTerminated,
+        FreImpression, and FreDecision. Cleared when the panel closes.
+      </summary>
+    </metric>
+    <metric name="TurnSeq" type="int">
+      <summary>
+        1-based position of the turn among the instance's submitted turns. 1
+        is the instance's first turn.
+      </summary>
+    </metric>
+    <metric name="PreConsent" type="int">
+      <summary>
+        1 if the user submitted the input before consenting, else 0. Covers
+        both an input submitted while the profile had not consented (inline
+        FRE arms) and a message-first prompt the web client held until the
+        user accepted the FRE, which the client reports through
+        OnUserInputHeldForOnboarding() when it holds it and through
+        OnUserInputSubmitted() only after consent.
+      </summary>
+    </metric>
+    <metric name="PromptType" type="int">
+      <summary>
+        How the prompt was entered, mapped from mojom::PromptType (typed
+        text, zero state suggestion, auto prompt, audio).
+      </summary>
+    </metric>
+    <metric name="InputMode" type="int">
+      <summary>
+        The web client mode, mapped from mojom::WebClientMode.
+      </summary>
+    </metric>
+    <metric name="InvocationSource" type="int">
+      <summary>
+        The source of the most recent open of the instance, mapped from
+        mojom::InvocationSource.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="TurnTerminated">
+    <summary>
+      Recorded once per TurnSubmitted when the turn ends: the web client
+      reported the response stopped (completed, stopped by the user, or
+      stopped by the client), another input was submitted before any
+      response was reported, or the instance was destroyed first. The last
+      two are turns the client never reports an outcome for and so are
+      invisible to the Glic.Turn.ResponseStopTime.* histograms. GlicTurnEnd
+      mirrors glic::GlicInstanceMetrics::TurnEnd, translated by an exhaustive
+      switch in glic_instance_metrics.cc.
+    </summary>
+    <metric name="InvocationId" type="int">
+      <summary>
+        See TurnSubmitted.InvocationId.
+      </summary>
+    </metric>
+    <metric name="TurnSeq" type="int">
+      <summary>
+        See TurnSubmitted.TurnSeq.
+      </summary>
+    </metric>
+    <metric name="End" type="GlicTurnEnd">
+      <summary>
+        How the turn ended.
+      </summary>
+    </metric>
+    <metric name="PreConsent" type="int">
+      <summary>
+        See TurnSubmitted.PreConsent.
+      </summary>
+    </metric>
+    <metric name="HadContext" type="int">
+      <summary>
+        1 if the web client requested tab context during the turn, else 0.
+      </summary>
+    </metric>
+    <metric name="TimeToResponseStartMs" type="int">
+      <summary>
+        Milliseconds from input submission to the web client reporting the
+        response started. Absent if no response was reported before the turn
+        ended.
+      </summary>
+    </metric>
+    <metric name="TimeToEndMs" type="int">
+      <summary>
+        Milliseconds from input submission to the end of the turn.
       </summary>
     </metric>
   </event>

@@ -635,6 +635,7 @@ chromium-metrics-reviews@google.com.
   <int value="110" label="OnTooltipImpression"/>
   <int value="111" label="OnTooltipHidden"/>
   <int value="112" label="OnOptinRejected"/>
+  <int value="113" label="OnUserInputHeldForOnboarding"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->
@@ -1368,6 +1369,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->
+
+<!-- LINT.IfChange(GlicResponseStopCause) -->
+
+<enum name="GlicResponseStopCause">
+  <int value="0" label="Unknown (completed)"/>
+  <int value="1" label="User"/>
+  <int value="2" label="Other (stopped by the client)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ResponseStopCause) -->
 
 <!-- LINT.IfChange(GlicSbThreatType) -->
 

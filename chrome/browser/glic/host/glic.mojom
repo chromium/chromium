@@ -1437,6 +1437,13 @@ interface WebClientHandler {
   OnUserInputSubmitted(
       WebClientMode mode, [MinVersion=1] PromptType prompt_type);
 
+  // Called when the web client holds a submitted prompt until the user
+  // completes the FRE (message-first onboarding), at the time it is held.
+  // The prompt itself is reported through OnUserInputSubmitted() once the
+  // user has consented and the client releases it; this lets the browser
+  // attribute that turn to the pre-consent submission.
+  OnUserInputHeldForOnboarding();
+
   // Called when starting to upload context to the server.
   OnContextUploadStarted();
 
@@ -1848,6 +1855,7 @@ enum ClientErrorDialogType {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicClientErrorDialogType)
+// LINT.IfChange(ResponseStopCause)
 [Stable, Extensible]
 enum ResponseStopCause {
   // The stop cause was omitted by the web client (`cause === undefined`),
@@ -1856,6 +1864,8 @@ enum ResponseStopCause {
   kUser = 1,
   kOther = 2,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseStopCause)
 
 // @generate glic_api
 // Details for metrics recording purposes.

@@ -82,6 +82,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OnTooltipHidden"/>
   <variant name="OnTooltipImpression"/>
   <variant name="OnTurnCompleted"/>
+  <variant name="OnUserInputHeldForOnboarding"/>
   <variant name="OnUserInputSubmitted"/>
   <variant name="OpenContactInfoSettingsPage"/>
   <variant name="OpenGlicSettingsPage"/>
@@ -932,6 +933,35 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <owner>perrier@chromium.org</owner>
   <summary>
     Records the onboarding flow source where the user dismissed Glic opt-in.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.FirstResponse.StopCause" enum="GlicResponseStopCause"
+    expires_after="2027-05-01">
+<!-- Allowed unsplittable: Consumer FRE funnel metric matching Glic.Fre.UserInput.*; GEiC onboarding is tracked separately (b/571507463). -->
+
+  <owner>markeh@google.com</owner>
+  <owner>wry@chromium.org</owner>
+  <summary>
+    Recorded when the response to the first query submitted after the user
+    accepts the web client FRE stops, at most once per acceptance and only if
+    Chrome is not restarted in between. Records why the response stopped:
+    completed, stopped by the user, or stopped by the client (an error). The
+    counterpart of Glic.Fre.UserInput.InvocationSource, so that the two can be
+    compared to find users whose first query never got an answer.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.FirstResponseTime" units="ms"
+    expires_after="2027-05-01">
+<!-- Allowed unsplittable: Consumer FRE funnel metric matching Glic.FreToFirstQueryTime; GEiC onboarding is tracked separately (b/571507463). -->
+
+  <owner>markeh@google.com</owner>
+  <owner>wry@chromium.org</owner>
+  <summary>
+    Recorded with Glic.Fre.FirstResponse.StopCause: the time from the first
+    query submitted after FRE acceptance to its response stopping, for any stop
+    cause.
   </summary>
 </histogram>
 

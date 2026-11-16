@@ -220,6 +220,25 @@ metrics::structured::events::v2::glic::GlicFreDecision ToStructuredFreDecision(
       return Decision::ACCEPTED_ELSEWHERE;
   }
 }
+
+// As above, for GlicInstanceMetrics::TurnEnd.
+metrics::structured::events::v2::glic::GlicTurnEnd ToStructuredTurnEnd(
+    GlicInstanceMetrics::TurnEnd end) {
+  using End = metrics::structured::events::v2::glic::GlicTurnEnd;
+  using TurnEnd = GlicInstanceMetrics::TurnEnd;
+  switch (end) {
+    case TurnEnd::kResponseCompleted:
+      return End::RESPONSE_COMPLETED;
+    case TurnEnd::kStoppedByUser:
+      return End::STOPPED_BY_USER;
+    case TurnEnd::kStoppedOther:
+      return End::STOPPED_OTHER;
+    case TurnEnd::kSuperseded:
+      return End::SUPERSEDED;
+    case TurnEnd::kInstanceDestroyed:
+      return End::INSTANCE_DESTROYED;
+  }
+}
 #endif
 
 std::string_view GetTurnModeSuffix(bool is_actor) {
@@ -339,6 +358,10 @@ void GlicInstanceMetrics::OnOnboardingCompleted() {
 
 void GlicInstanceMetrics::OnOptinRejected() {
   RecordFreDecision(FreDecision::kNoThanks);
+}
+
+void GlicInstanceMetrics::OnUserInputHeldForOnboarding() {
+  held_input_pending_ = true;
 }
 
 void GlicInstanceMetrics::MaybeStartFreAttempt() {
@@ -500,6 +523,7 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
 
   session_manager_.OnOwnerDestroyed();
   RecordFreDecision(FreDecision::kInstanceDestroyed);
+  RecordTurnTerminated(TurnEnd::kInstanceDestroyed);
 
   if (visibility_tracker_ && visibility_tracker_->state()) {
     RecordTooltipClosedMetrics();
@@ -1015,6 +1039,10 @@ void GlicInstanceMetrics::OnClose(bool is_active_embedder) {
   // A frame submitted during this invocation is stale for the next one.
   guest_actionable_.frame_submitted_while_hidden = false;
   opt_in_impression_recorded_for_current_open_ = false;
+  open_invocation_id_.reset();
+  // A prompt held in this open that was never released is restored by the
+  // client in a later session and reported as a plain submit then.
+  held_input_pending_ = false;
   open_start_time_ = base::TimeTicks();
 }
 
@@ -1301,6 +1329,9 @@ void GlicInstanceMetrics::UninterruptActorTask() {
 void GlicInstanceMetrics::SetActiveInvocationId(
     std::optional<uint64_t> invocation_id) {
   active_invocation_id_ = invocation_id;
+  if (invocation_id.has_value()) {
+    open_invocation_id_ = invocation_id;
+  }
   active_invocation_start_time_ =
       invocation_id ? base::TimeTicks::Now() : base::TimeTicks();
   input_focused_for_current_invocation_ = false;
@@ -1703,9 +1734,21 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
     }
   }
 
+  // A turn that never got a response is dropped here without the client
+  // ever reporting it stopped; record that before it is forgotten.
+  RecordTurnTerminated(TurnEnd::kSuperseded);
+
   // Reset turn data and start populating it for the new turn being started.
   turn_ = {};
   turn_.input_submitted_time_ = base::TimeTicks::Now();
+  turn_.seq_ = ++turn_count_;
+  // A held message-first prompt is released after consent, so the profile's
+  // status alone would call it a post-consent turn.
+  turn_.pre_consent_ = std::exchange(held_input_pending_, false) ||
+                       !GlicEnabling::HasConsentedForProfile(profile_);
+  turn_.prompt_type_ = prompt_type;
+  turn_.invocation_id_ =
+      active_invocation_id_ ? active_invocation_id_ : open_invocation_id_;
   if (sharing_manager_) {
     // Use the focused tab for UKM source if available. If no tab is focused,
     // leave turn_.chosen_source_id_ as its default of NoURLSourceId.
@@ -1717,6 +1760,49 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
   turn_.input_mode_ = mode;
   input_mode_ = mode;
   inputs_modes_used_.Put(mode);
+  RecordTurnSubmitted();
+}
+
+void GlicInstanceMetrics::RecordTurnSubmitted() {
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  metrics::structured::events::v2::glic::TurnSubmitted event;
+  event.SetTurnSeq(turn_.seq_)
+      .SetPreConsent(turn_.pre_consent_ ? 1 : 0)
+      .SetPromptType(static_cast<int>(turn_.prompt_type_))
+      .SetInputMode(static_cast<int>(turn_.input_mode_))
+      .SetInvocationSource(static_cast<int>(last_invocation_source_));
+  if (turn_.invocation_id_.has_value()) {
+    event.SetInvocationId(*turn_.invocation_id_);
+  }
+  metrics::structured::StructuredMetricsClient::Record(std::move(event));
+#endif
+}
+
+void GlicInstanceMetrics::RecordTurnTerminated(TurnEnd end) {
+  if (turn_.seq_ == 0 || turn_.input_submitted_time_.is_null()) {
+    return;
+  }
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+  const base::TimeTicks now = base::TimeTicks::Now();
+  metrics::structured::events::v2::glic::TurnTerminated event;
+  event.SetTurnSeq(turn_.seq_)
+      .SetEnd(ToStructuredTurnEnd(end))
+      .SetPreConsent(turn_.pre_consent_ ? 1 : 0)
+      .SetHadContext(turn_.did_request_context_ ? 1 : 0)
+      .SetTimeToEndMs((now - turn_.input_submitted_time_).InMilliseconds());
+  if (!turn_.response_started_time_.is_null()) {
+    event.SetTimeToResponseStartMs(
+        (turn_.response_started_time_ - turn_.input_submitted_time_)
+            .InMilliseconds());
+  }
+  if (turn_.invocation_id_.has_value()) {
+    event.SetInvocationId(*turn_.invocation_id_);
+  }
+  metrics::structured::StructuredMetricsClient::Record(std::move(event));
+#endif
+  // Not reset wholesale: OnResponseStopped() still reads the turn. Clearing
+  // the sequence number is what marks it as terminated.
+  turn_.seq_ = 0;
 }
 
 void GlicInstanceMetrics::DidRequestContextFromFocusedTab() {
@@ -1730,6 +1816,13 @@ void GlicInstanceMetrics::DidRequestContextFromTab() {
 }
 
 void GlicInstanceMetrics::OnResponseStarted() {
+  if (turn_.response_started_time_.is_null()) {
+    turn_.response_started_time_ = base::TimeTicks::Now();
+  }
+  RecordResponseStarted();
+}
+
+void GlicInstanceMetrics::RecordResponseStarted() {
   LogEvent(GlicInstanceEvent::kResponseStarted);
   base::RecordAction(base::UserMetricsAction("GlicResponseStart"));
   turn_.response_started_ = true;
@@ -1795,9 +1888,10 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
   bool has_action_result = !turn_.action_result_submitted_time_.is_null();
 
   // The client may call "stopped" without "started" for very short responses.
-  // We synthetically call it ourselves in this case.
+  // Synthetically record legacy response-start metrics without populating
+  // `turn_.response_started_time_` on `TurnTerminated`.
   if ((has_input || has_action_result) && !turn_.response_started_) {
-    OnResponseStarted();
+    RecordResponseStarted();
   }
 
   base::RecordAction(base::UserMetricsAction("GlicResponseStop"));
@@ -1807,11 +1901,13 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
       cause_suffix = ".ByUser";
       base::RecordAction(base::UserMetricsAction("GlicResponseStopByUser"));
       LogEvent(GlicInstanceEvent::kResponseStoppedByUser);
+      RecordTurnTerminated(TurnEnd::kStoppedByUser);
       break;
     case mojom::ResponseStopCause::kOther:
       cause_suffix = ".Other";
       base::RecordAction(base::UserMetricsAction("GlicResponseStopOther"));
       LogEvent(GlicInstanceEvent::kResponseStoppedOther);
+      RecordTurnTerminated(TurnEnd::kStoppedOther);
       break;
     case mojom::ResponseStopCause::kUnknown:
       // `kUnknown` represents an omitted stop cause (`cause === undefined`)
@@ -1820,6 +1916,7 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
       base::RecordAction(
           base::UserMetricsAction("GlicResponseStopUnknownCause"));
       LogEvent(GlicInstanceEvent::kResponseStoppedSuccess);
+      RecordTurnTerminated(TurnEnd::kResponseCompleted);
       break;
   }
 

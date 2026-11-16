@@ -1238,6 +1238,10 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
         enumFromClient(promptType) ?? PromptTypeMojo.kUnspecified);
   }
 
+  onUserInputHeldForOnboarding(): void {
+    this.handler.onUserInputHeldForOnboarding();
+  }
+
   onReaction(reactionType: number): void {
     this.handler.onReaction(reactionType);
   }

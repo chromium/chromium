@@ -1671,6 +1671,13 @@ export declare interface GlicBrowserHostMetrics {
   onUserInputSubmitted?(mode: WebClientMode, promptType?: PromptType): void;
 
   /**
+   * Called when the web client holds a submitted prompt until the user
+   * completes the FRE (message-first onboarding), at the time it is held. The
+   * prompt is still reported through onUserInputSubmitted() once released.
+   */
+  onUserInputHeldForOnboarding?(): void;
+
+  /**
    * Called when the web client sends a browser actuation result over the
    * network. This is used to track metrics for model responses. For a single
    * actuation, this may be called multiple times if retries occur.

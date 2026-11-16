@@ -4042,4 +4042,211 @@ TEST_F(GlicInstanceMetricsFreAttemptTest, DecisionWithoutAttempt) {
 
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+
+// TurnSubmitted / TurnTerminated structured events. structured.xml
+// GlicTurnEnd wire values; these must not change.
+constexpr int kTurnEndResponseCompletedWireValue = 0;
+constexpr int kTurnEndStoppedByUserWireValue = 1;
+constexpr int kTurnEndStoppedOtherWireValue = 2;
+constexpr int kTurnEndSupersededWireValue = 3;
+constexpr int kTurnEndInstanceDestroyedWireValue = 4;
+
+class GlicInstanceMetricsTurnEventsTest : public GlicInstanceMetricsTest {
+ public:
+  GlicInstanceMetricsTurnEventsTest() {
+    profile_.GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(prefs::FreStatus::kCompleted));
+    metrics_.OnVisibilityChanged(true);
+  }
+
+ protected:
+  void Submit() { Submit(mojom::PromptType::kTypedText); }
+  void Submit(mojom::PromptType prompt_type) {
+    metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText, prompt_type);
+  }
+
+  ScopedStructuredEventCapture capture_;
+};
+
+TEST_F(GlicInstanceMetricsTurnEventsTest, SubmittedAndCompleted) {
+  // Simulate a toggle open whose invocation finishes as soon as the panel is
+  // open, before the user types a prompt.
+  metrics_.SetActiveInvocationId(kInvocationId);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton,
+                  ShowOptions{FloatingShowOptions{}});
+  metrics_.SetActiveInvocationId(std::nullopt);
+  Submit(mojom::PromptType::kZeroStateSuggestions);
+  metrics_.DidRequestContextFromFocusedTab();
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  metrics_.OnResponseStarted();
+  task_environment_.FastForwardBy(base::Milliseconds(600));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  auto submitted = capture_.GetEvents("TurnSubmitted");
+  ASSERT_EQ(submitted.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*submitted[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+  EXPECT_EQ(GetIntMetric(*submitted[0], "TurnSeq"), 1);
+  EXPECT_EQ(GetIntMetric(*submitted[0], "PreConsent"), 0);
+  EXPECT_EQ(GetIntMetric(*submitted[0], "PromptType"),
+            static_cast<int>(mojom::PromptType::kZeroStateSuggestions));
+  EXPECT_EQ(GetIntMetric(*submitted[0], "InputMode"),
+            static_cast<int>(mojom::WebClientMode::kText));
+
+  auto terminated = capture_.GetEvents("TurnTerminated");
+  ASSERT_EQ(terminated.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "InvocationId"),
+            static_cast<int64_t>(kInvocationId));
+  EXPECT_EQ(GetIntMetric(*terminated[0], "TurnSeq"), 1);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "End"),
+            kTurnEndResponseCompletedWireValue);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "HadContext"), 1);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "TimeToResponseStartMs"), 400);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "TimeToEndMs"), 1000);
+
+  // Closing the panel clears the open invocation id.
+  metrics_.OnClose();
+  Submit();
+  submitted = capture_.GetEvents("TurnSubmitted");
+  ASSERT_EQ(submitted.size(), 2u);
+  EXPECT_EQ(GetIntMetric(*submitted[1], "InvocationId"), std::nullopt);
+}
+
+TEST_F(GlicInstanceMetricsTurnEventsTest, StopCausesMapToEnds) {
+  Submit();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
+  Submit();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kOther);
+
+  auto terminated = capture_.GetEvents("TurnTerminated");
+  ASSERT_EQ(terminated.size(), 2u);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "TurnSeq"), 1);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "End"),
+            kTurnEndStoppedByUserWireValue);
+  EXPECT_EQ(GetIntMetric(*terminated[1], "TurnSeq"), 2);
+  EXPECT_EQ(GetIntMetric(*terminated[1], "End"), kTurnEndStoppedOtherWireValue);
+  // A stop without a prior OnResponseStarted() leaves TimeToResponseStartMs
+  // unset so pre-first-token failures and cancellations stay distinguishable.
+  EXPECT_EQ(GetIntMetric(*terminated[0], "TimeToResponseStartMs"),
+            std::nullopt);
+  EXPECT_EQ(GetIntMetric(*terminated[1], "TimeToResponseStartMs"),
+            std::nullopt);
+}
+
+// A turn the client never reports an outcome for is terminated when the next
+// input replaces it.
+TEST_F(GlicInstanceMetricsTurnEventsTest, SupersededTurn) {
+  Submit();
+  task_environment_.FastForwardBy(base::Milliseconds(5000));
+  Submit();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  auto terminated = capture_.GetEvents("TurnTerminated");
+  ASSERT_EQ(terminated.size(), 2u);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "TurnSeq"), 1);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "End"), kTurnEndSupersededWireValue);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "TimeToResponseStartMs"),
+            std::nullopt);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "TimeToEndMs"), 5000);
+  EXPECT_EQ(GetIntMetric(*terminated[1], "TurnSeq"), 2);
+  EXPECT_EQ(GetIntMetric(*terminated[1], "End"),
+            kTurnEndResponseCompletedWireValue);
+}
+
+TEST_F(GlicInstanceMetricsTurnEventsTest, TerminatedOnceOnly) {
+  Submit();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+  // A second stop for the same turn, or a stop with no turn, adds nothing.
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  EXPECT_EQ(capture_.GetEvents("TurnTerminated").size(), 1u);
+}
+
+TEST_F(GlicInstanceMetricsTurnEventsTest, InstanceDestroyedWhilePending) {
+  {
+    GlicInstanceMetrics metrics(&profile_metrics_service_, &profile_);
+    metrics.OnVisibilityChanged(true);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                 mojom::PromptType::kTypedText);
+    metrics.OnResponseStarted();
+  }
+
+  auto terminated = capture_.GetEvents("TurnTerminated");
+  ASSERT_EQ(terminated.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "End"),
+            kTurnEndInstanceDestroyedWireValue);
+  EXPECT_NE(GetIntMetric(*terminated[0], "TimeToResponseStartMs"),
+            std::nullopt);
+}
+
+TEST_F(GlicInstanceMetricsTurnEventsTest, PreConsentTurn) {
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
+  Submit();
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  auto submitted = capture_.GetEvents("TurnSubmitted");
+  ASSERT_EQ(submitted.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*submitted[0], "PreConsent"), 1);
+  EXPECT_EQ(GetIntMetric(*submitted[0], "InvocationId"), std::nullopt);
+  auto terminated = capture_.GetEvents("TurnTerminated");
+  ASSERT_EQ(terminated.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "PreConsent"), 1);
+}
+
+// A message-first prompt is held by the client and released only after the
+// user consented, so the profile is already consented at submit time; the
+// hold report is what marks it pre-consent. It applies to that turn only.
+TEST_F(GlicInstanceMetricsTurnEventsTest, HeldPromptIsPreConsent) {
+  metrics_.OnUserInputHeldForOnboarding();
+  Submit();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+  Submit();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  auto submitted = capture_.GetEvents("TurnSubmitted");
+  ASSERT_EQ(submitted.size(), 2u);
+  EXPECT_EQ(GetIntMetric(*submitted[0], "PreConsent"), 1);
+  EXPECT_EQ(GetIntMetric(*submitted[1], "PreConsent"), 0);
+  auto terminated = capture_.GetEvents("TurnTerminated");
+  ASSERT_EQ(terminated.size(), 2u);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "PreConsent"), 1);
+  EXPECT_EQ(GetIntMetric(*terminated[1], "PreConsent"), 0);
+}
+
+// A hold that is never released in this open does not leak into the next
+// open's first turn.
+TEST_F(GlicInstanceMetricsTurnEventsTest, HeldPromptClearedOnClose) {
+  metrics_.OnUserInputHeldForOnboarding();
+  metrics_.OnClose();
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnVisibilityChanged(true);
+  Submit();
+
+  auto submitted = capture_.GetEvents("TurnSubmitted");
+  ASSERT_EQ(submitted.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*submitted[0], "PreConsent"), 0);
+}
+
+// Inputs the instance metrics reject (hidden panel, response in progress)
+// are not turns.
+TEST_F(GlicInstanceMetricsTurnEventsTest, RejectedInputIsNotATurn) {
+  Submit();
+  metrics_.OnResponseStarted();
+  Submit();  // kInputSubmittedWhileResponseInProgress.
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+  metrics_.OnVisibilityChanged(false);
+  Submit();  // kInputSubmittedWhileHidden.
+
+  EXPECT_EQ(capture_.GetEvents("TurnSubmitted").size(), 1u);
+  EXPECT_EQ(capture_.GetEvents("TurnTerminated").size(), 1u);
+}
+
+#endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+
 }  // namespace glic

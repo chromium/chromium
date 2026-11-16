@@ -98,6 +98,12 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // without this call would be indistinguishable from closing it undecided.
   void OnOptinRejected();
 
+  // Called when the web client holds a submitted prompt until the user
+  // completes the FRE (message-first onboarding). The client reports the
+  // prompt through OnUserInputSubmitted() only after consent, so this is what
+  // marks that turn as submitted pre-consent.
+  void OnUserInputHeldForOnboarding();
+
   // How an FRE attempt ended. Mirrored by GlicFreDecision in
   // //tools/metrics/structured/sync/structured.xml and translated by an
   // exhaustive switch in glic_instance_metrics.cc.
@@ -119,6 +125,26 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     kAcceptedElsewhere = 4,
   };
   // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml:GlicFreDecision)
+
+  // How a turn ended. Mirrored by GlicTurnEnd in
+  // //tools/metrics/structured/sync/structured.xml and translated by an
+  // exhaustive switch in glic_instance_metrics.cc.
+  // LINT.IfChange(TurnEnd)
+  enum class TurnEnd {
+    // OnResponseStopped() without a cause: the response completed.
+    kResponseCompleted = 0,
+    // OnResponseStopped() with ResponseStopCause::kUser.
+    kStoppedByUser = 1,
+    // OnResponseStopped() with ResponseStopCause::kOther: the client
+    // stopped it, e.g. on an error.
+    kStoppedOther = 2,
+    // Another input was submitted before any response was reported for
+    // this turn, which the client never reported as stopped.
+    kSuperseded = 3,
+    // The instance was destroyed before any response was reported.
+    kInstanceDestroyed = 4,
+  };
+  // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml:GlicTurnEnd)
 
   // Multi-tab tooltip metrics.
   void OnTooltipImpression(mojom::TooltipImpressionType impression);
@@ -348,12 +374,37 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     // OnResponseStopped(). This is a workaround copied from GlicMetrics and
     // should be removed, see crbug.com/399151164.
     bool response_started_ = false;
+    // When OnResponseStarted() was first called for this turn; null until
+    // then.
+    base::TimeTicks response_started_time_;
     bool did_request_context_ = false;
     EmbedderType ui_mode_ = EmbedderType::kUnknown;
     mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
+    mojom::PromptType prompt_type_ = mojom::PromptType::kUnspecified;
     bool pending_scroll_complete_ = false;
     ukm::SourceId chosen_source_id_ = ukm::NoURLSourceId();
+    // 1-based position of this turn among the instance's submitted turns;
+    // 0 while no input has been submitted.
+    int seq_ = 0;
+    // Whether the user submitted the input before consenting: either the
+    // profile had not consented when it was submitted (inline FRE arms) or
+    // the web client held it until consent (message-first arms, reported via
+    // OnUserInputHeldForOnboarding()).
+    bool pre_consent_ = false;
+    // The invocation that opened or most recently invoked this open of the
+    // panel when the input was submitted, if any.
+    std::optional<uint64_t> invocation_id_;
   };
+
+  // Records the TurnSubmitted structured event for `turn_`.
+  void RecordTurnSubmitted();
+  // Records the TurnTerminated structured event for `turn_` if it has
+  // submitted input that has not terminated yet.
+  void RecordTurnTerminated(TurnEnd end);
+  // Records per-turn response-start histograms, actions, and UKM. Called from
+  // OnResponseStarted() and synthetically from OnResponseStopped() when a turn
+  // ends without a prior OnResponseStarted() call.
+  void RecordResponseStarted();
 
   // Logs the given event to the EventTotals histogram, and if the count is 0,
   // also logs to the EventCounts histogram. Increments the counter.
@@ -471,6 +522,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   TurnInfo turn_;
   TurnInfo last_turn_;
+  // Number of turns submitted to this instance so far.
+  int turn_count_ = 0;
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   base::EnumSet<mojom::WebClientMode> inputs_modes_used_;
 
@@ -504,6 +557,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
       mojom::InvocationSource::kUnsupported;
   std::optional<PendingCompletedResponse> pending_completed_response_;
   std::optional<uint64_t> active_invocation_id_ = std::nullopt;
+  // The invocation that opened or most recently invoked the current open of
+  // this instance; survives after a toggle invocation completes until OnClose.
+  std::optional<uint64_t> open_invocation_id_ = std::nullopt;
   // When `active_invocation_id_` was set. Null when there is no invocation in
   // flight. Used to report how far into an invocation a failure happened.
   base::TimeTicks active_invocation_start_time_;
@@ -553,6 +609,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   bool guest_reported_opt_in_impression_ = false;
   std::optional<FreAttempt> fre_attempt_;
   bool has_consented_ = false;
+  // Set by OnUserInputHeldForOnboarding(); consumed by the next
+  // OnUserInputSubmitted() on this open, cleared when the panel closes.
+  bool held_input_pending_ = false;
   OptInShownCallback opt_in_shown_callback_;
 
   base::CallbackListSubscription pinned_tabs_changed_subscription_;

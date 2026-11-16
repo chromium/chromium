@@ -663,6 +663,52 @@ TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnce) {
                                         1);
 }
 
+TEST_F(GlicMetricsTest, FreFirstResponseReportedOnceAfterFirstQuery) {
+  metrics()->OnFreAccepted();
+  metrics()->OnUserInputSubmitted();
+  task_environment().FastForwardBy(base::Milliseconds(250));
+  metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+  // Later responses are not the first one.
+  metrics()->OnUserInputSubmitted();
+  metrics()->OnResponseStopped(mojom::ResponseStopCause::kOther);
+
+  histogram_tester().ExpectUniqueSample("Glic.Fre.FirstResponse.StopCause",
+                                        mojom::ResponseStopCause::kUnknown, 1);
+  histogram_tester().ExpectUniqueTimeSample("Glic.Fre.FirstResponseTime",
+                                            base::Milliseconds(250), 1);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.FirstResponse"), 1);
+}
+
+TEST_F(GlicMetricsTest, FreFirstResponseNotReportedWithoutFreAcceptance) {
+  metrics()->OnUserInputSubmitted();
+  metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  histogram_tester().ExpectTotalCount("Glic.Fre.FirstResponse.StopCause", 0);
+  histogram_tester().ExpectTotalCount("Glic.Fre.FirstResponseTime", 0);
+}
+
+// A first post-FRE query that is superseded before any response is reported
+// has no first response; the next turn's stop must not be counted as one.
+TEST_F(GlicMetricsTest, FreFirstResponseNotReportedWhenFirstQuerySuperseded) {
+  metrics()->OnFreAccepted();
+  metrics()->OnUserInputSubmitted();
+  metrics()->OnUserInputSubmitted();
+  metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  histogram_tester().ExpectTotalCount("Glic.Fre.FirstResponse.StopCause", 0);
+  histogram_tester().ExpectTotalCount("Glic.Fre.FirstResponseTime", 0);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.FirstResponse"), 0);
+}
+
+TEST_F(GlicMetricsTest, FreFirstResponseRecordsStopCause) {
+  metrics()->OnFreAccepted();
+  metrics()->OnUserInputSubmitted();
+  metrics()->OnResponseStopped(mojom::ResponseStopCause::kUser);
+
+  histogram_tester().ExpectUniqueSample("Glic.Fre.FirstResponse.StopCause",
+                                        mojom::ResponseStopCause::kUser, 1);
+}
+
 TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnlyOnce) {
   metrics()->OnFreAccepted();
   task_environment().FastForwardBy(base::Milliseconds(100));

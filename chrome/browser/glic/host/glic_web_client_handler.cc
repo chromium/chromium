@@ -1541,6 +1541,11 @@ class GlicWebClientHandler
     host().instance_metrics().OnOptinRejected();
   }
 
+  void OnUserInputHeldForOnboarding() override {
+    LogApiRequest(GlicHostApiRequestId::kOnUserInputHeldForOnboarding);
+    host().instance_metrics().OnUserInputHeldForOnboarding();
+  }
+
   void OnInputFocused() override {
     LogApiRequest(GlicHostApiRequestId::kOnInputFocused);
     host().instance_metrics().OnInputFocused();
@@ -1588,6 +1593,7 @@ class GlicWebClientHandler
     if (details) {
       cause = details->cause;
     }
+    glic_service_->metrics()->OnResponseStopped(cause);
     host().instance_metrics().OnResponseStopped(cause);
     host().instance_delegate().OnResponseStopped(cause);
   }

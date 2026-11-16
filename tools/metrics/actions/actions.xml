@@ -13912,6 +13912,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.FirstResponse">
+  <owner>markeh@google.com</owner>
+  <owner>wry@chromium.org</owner>
+  <description>
+    Logged when the response to the first input submitted after accepting the
+    FRE stops (completed, stopped by the user, or stopped by the client), at
+    most once per acceptance and only if Chrome is not restarted in between. The
+    counterpart of Glic.Fre.InputSubmitted.
+  </description>
+</action>
+
 <action name="Glic.Fre.InputSubmitted">
   <owner>birnie@google.com</owner>
   <owner>erikchen@chromium.org</owner>

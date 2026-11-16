@@ -233,6 +233,9 @@ void GlicMetrics::OnOptInRejected(OptInFlow flow) {
 }
 
 void GlicMetrics::OnUserInputSubmitted() {
+  // A new input before the first post-FRE query reported a response
+  // supersedes it: whatever answers now is not the first response.
+  first_query_after_fre_time_ = base::TimeTicks();
   if (!fre_accepted_time_.is_null()) {
     base::TimeDelta delta = base::TimeTicks::Now() - fre_accepted_time_;
     base::RecordAction(base::UserMetricsAction("Glic.Fre.InputSubmitted"));
@@ -242,7 +245,23 @@ void GlicMetrics::OnUserInputSubmitted() {
     base::UmaHistogramEnumeration("Glic.Fre.UserInput.InvocationSource",
                                   onboarding_invocation_source_);
     fre_accepted_time_ = base::TimeTicks();
+    first_query_after_fre_time_ = base::TimeTicks::Now();
   }
+}
+
+void GlicMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
+  if (first_query_after_fre_time_.is_null()) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.FirstResponse"));
+  // Justification: Consumer FRE funnel metric matching Glic.Fre.UserInput.*.
+  base::UmaHistogramEnumeration("Glic.Fre.FirstResponse.StopCause", cause);
+  // Justification: Consumer FRE funnel metric matching
+  // Glic.FreToFirstQueryTime.
+  base::UmaHistogramMediumTimes(
+      "Glic.Fre.FirstResponseTime",
+      base::TimeTicks::Now() - first_query_after_fre_time_);
+  first_query_after_fre_time_ = base::TimeTicks();
 }
 
 void GlicMetrics::OnContextUploadStarted() {

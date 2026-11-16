@@ -64,6 +64,11 @@ class GlicMetrics {
   // browser session.
   void OnUserInputSubmitted();
 
+  // Called when the web client reports a response stopped, with its cause.
+  // Records the Glic.Fre.FirstResponse* histograms for the first response
+  // after the first query following FRE acceptance.
+  void OnResponseStopped(mojom::ResponseStopCause cause);
+
   // See glic.mojom for details. These are events from the web client.
   void OnContextUploadStarted();
   void OnContextUploadCompleted();
@@ -161,6 +166,12 @@ class GlicMetrics {
   // after the FRE-to-first-query metrics are recorded in
   // OnUserInputSubmitted(); null otherwise.
   base::TimeTicks fre_accepted_time_;
+
+  // Time at which the first query after FRE acceptance was submitted (set
+  // in OnUserInputSubmitted() while `fre_accepted_time_` was set). Cleared
+  // after the Glic.Fre.FirstResponse* metrics are recorded in
+  // OnResponseStopped(); null otherwise.
+  base::TimeTicks first_query_after_fre_time_;
 
   // The current web client input mode, as last reported via
   // SetWebClientMode(). Used to suffix the Glic.Api.GetContext*.Error
