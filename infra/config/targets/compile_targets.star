@@ -155,6 +155,11 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "chrome/browser/media/webrtc",
+    label = "//chrome/browser/media/webrtc:webrtc",
+)
+
+targets.compile_target(
     name = "chrome/installer/linux",
     label = "//chrome/installer/linux:linux",
 )

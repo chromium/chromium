@@ -469,6 +469,10 @@
     "label": "//chrome/browser/media/router:unittests",
     "type": "additional_compile_target",
   },
+  "chrome/browser/media/webrtc": {
+    "label": "//chrome/browser/media/webrtc:webrtc",
+    "type": "additional_compile_target",
+  },
   "chrome/enterprise_companion:all": {
     "label": "//chrome/enterprise_companion:all",
     "type": "additional_compile_target",

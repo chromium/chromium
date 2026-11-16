@@ -3,51 +3,33 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "android_chromium_compile": {
     "additional_compile_targets": [
-      "blink_unittests",
-      "capture_unittests",
-      "content_browsertests",
-      "content_unittests"
+      "blink_unittests"
     ]
   },
   "linux_chromium_compile": {
     "additional_compile_targets": [
-      "blink_unittests",
-      "browser_tests",
       "capture_unittests",
-      "content_browsertests",
+      "chrome/browser/media/webrtc",
       "content_unittests",
       "remoting_unittests"
     ]
   },
   "linux_chromium_compile_dbg": {
     "additional_compile_targets": [
-      "blink_unittests",
-      "browser_tests",
       "capture_unittests",
-      "content_browsertests",
-      "content_unittests",
+      "chrome/browser/media/webrtc",
       "remoting_unittests"
     ]
   },
   "mac_chromium_compile": {
     "additional_compile_targets": [
-      "blink_unittests",
-      "browser_tests",
       "capture_unittests",
-      "content_browsertests",
+      "chrome/browser/media/webrtc",
       "content_unittests",
       "remoting_unittests"
     ]
   },
   "webrtc_linux_chromium": {
-    "additional_compile_targets": [
-      "blink_unittests",
-      "browser_tests",
-      "capture_unittests",
-      "content_browsertests",
-      "content_unittests",
-      "remoting_unittests"
-    ],
     "isolated_scripts": [
       {
         "args": [
@@ -131,20 +113,16 @@
   },
   "win_chromium_compile": {
     "additional_compile_targets": [
-      "blink_unittests",
-      "browser_tests",
       "capture_unittests",
-      "content_browsertests",
+      "chrome/browser/media/webrtc",
       "content_unittests",
       "remoting_unittests"
     ]
   },
   "win_chromium_compile_dbg": {
     "additional_compile_targets": [
-      "blink_unittests",
-      "browser_tests",
       "capture_unittests",
-      "content_browsertests",
+      "chrome/browser/media/webrtc",
       "content_unittests",
       "remoting_unittests"
     ]

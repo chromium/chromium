@@ -1271,37 +1271,31 @@
       'android_chromium_compile': {
         'additional_compile_targets': [
           'blink_unittests',
-          'capture_unittests',
-          'content_browsertests',
-          'content_unittests',
         ],
       },
       'linux_chromium_compile': {
         'additional_compile_targets': [
-          'blink_unittests',
-          'browser_tests',
           'capture_unittests',
-          'content_browsertests',
+          'chrome/browser/media/webrtc',
           'content_unittests',
           'remoting_unittests',
         ],
       },
       'linux_chromium_compile_dbg': {
+        # content_unittests is omitted here to keep this bot's p50 runtime
+        # under 20m (given its higher bot_update and gn gen overhead on GCE);
+        # content_unittests remains covered on mac_chromium_compile (Release)
+        # and win_chromium_compile_dbg (Debug).
         'additional_compile_targets': [
-          'blink_unittests',
-          'browser_tests',
           'capture_unittests',
-          'content_browsertests',
-          'content_unittests',
+          'chrome/browser/media/webrtc',
           'remoting_unittests',
         ],
       },
       'mac_chromium_compile': {
         'additional_compile_targets': [
-          'blink_unittests',
-          'browser_tests',
           'capture_unittests',
-          'content_browsertests',
+          'chrome/browser/media/webrtc',
           'content_unittests',
           'remoting_unittests',
         ],
@@ -1310,34 +1304,22 @@
         'mixins': [
           'linux-jammy',
         ],
-        'additional_compile_targets': [
-          'blink_unittests',
-          'browser_tests',
-          'capture_unittests',
-          'content_browsertests',
-          'content_unittests',
-          'remoting_unittests',
-        ],
         'test_suites': {
           'isolated_scripts': 'webrtc_chromium_wpt_tests',
         },
       },
       'win_chromium_compile': {
         'additional_compile_targets': [
-          'blink_unittests',
-          'browser_tests',
           'capture_unittests',
-          'content_browsertests',
+          'chrome/browser/media/webrtc',
           'content_unittests',
           'remoting_unittests',
         ],
       },
       'win_chromium_compile_dbg': {
         'additional_compile_targets': [
-          'blink_unittests',
-          'browser_tests',
           'capture_unittests',
-          'content_browsertests',
+          'chrome/browser/media/webrtc',
           'content_unittests',
           'remoting_unittests',
         ],
