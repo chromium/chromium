@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import android.media.MediaDrm;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -19,16 +21,21 @@ import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.permission.Resource;
 import org.chromium.base.test.util.Feature;
 
+import java.util.UUID;
+
 /**
  * TestSuite for EME key systems.
  *
- * MediaDrm support requires KitKat or later.
- * Although, WebView requires Lollipop for the onPermissionRequest() API,
- * this test intercepts this path and thus can run on KitKat.
+ * <p>MediaDrm support requires KitKat or later. Although, WebView requires Lollipop for the
+ * onPermissionRequest() API, this test intercepts this path and thus can run on KitKat.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class KeySystemTest extends AwParameterizedTest {
+    // Widevine scheme UUID from https://dashif.org/identifiers/content_protection/.
+    private static final UUID WIDEVINE_UUID =
+            UUID.fromString("edef8ba9-79d6-4ace-a3c8-27dcd51d21ed");
+
     @Rule public AwActivityTestRule mActivityTestRule;
 
     /**
@@ -84,6 +91,10 @@ public class KeySystemTest extends AwParameterizedTest {
         return !result.isEmpty();
     }
 
+    private static boolean isWidevineSupported() {
+        return MediaDrm.isCryptoSchemeSupported(WIDEVINE_UUID);
+    }
+
     private String getResultFromJS() {
         String result = "null";
         try {
@@ -96,11 +107,12 @@ public class KeySystemTest extends AwParameterizedTest {
         return result;
     }
 
-    private String getPlatformKeySystemExpectations() throws Exception {
+    private String getKeySystemExpectations(boolean requiresWidevine) throws Exception {
         // isKeySystemSupported() calls navigator.requestMediaKeySystemAccess()
         // with a video/mp4 configuration. mp4 is only supported if
-        // areProprietaryCodecsSupported().
-        if (areProprietaryCodecsSupported()) {
+        // areProprietaryCodecsSupported(), and Widevine-backed key systems also
+        // require MediaDrm crypto scheme support on the device.
+        if (areProprietaryCodecsSupported() && (!requiresWidevine || isWidevineSupported())) {
             return "\"supported\"";
         }
 
@@ -115,7 +127,8 @@ public class KeySystemTest extends AwParameterizedTest {
         // specifies a video/mp4 configuration, so it only succeeds if
         // proprietary codecs are supported.
         Assert.assertEquals(
-                getPlatformKeySystemExpectations(), isKeySystemSupported("org.w3.clearkey"));
+                getKeySystemExpectations(/* requiresWidevine= */ false),
+                isKeySystemSupported("org.w3.clearkey"));
     }
 
     @Test
@@ -123,7 +136,8 @@ public class KeySystemTest extends AwParameterizedTest {
     @SmallTest
     public void testSupportWidevineKeySystem() throws Throwable {
         Assert.assertEquals(
-                getPlatformKeySystemExpectations(), isKeySystemSupported("com.widevine.alpha"));
+                getKeySystemExpectations(/* requiresWidevine= */ true),
+                isKeySystemSupported("com.widevine.alpha"));
     }
 
     @Test
@@ -137,8 +151,9 @@ public class KeySystemTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testSupportPlatformKeySystem() throws Throwable {
+        // Test shell maps com.oem.test-keysystem to Widevine's UUID in config.xml.
         Assert.assertEquals(
-                getPlatformKeySystemExpectations(),
+                getKeySystemExpectations(/* requiresWidevine= */ true),
                 isKeySystemSupported("com.oem.test-keysystem"));
     }
 }
