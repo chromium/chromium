@@ -119,6 +119,7 @@ source_set("ui") {
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/settings/ui_bundled/password/resources",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
@@ -301,7 +302,6 @@ source_set("eg_app_support+eg2") {
     "password_settings_app_interface.mm",
   ]
   deps = [
-    ":password",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/common",

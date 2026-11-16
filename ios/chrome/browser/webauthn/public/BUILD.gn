@@ -13,7 +13,6 @@ source_set("public") {
     "//base",
     "//components/webauthn/ios:passkey_types",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_header",
     "//ios/chrome/common/credential_provider/ui",

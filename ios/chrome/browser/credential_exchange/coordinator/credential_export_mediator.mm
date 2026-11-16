@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/passwords/password_exporter/coordinator/password_exporter.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_items.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
 namespace {

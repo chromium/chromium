@@ -24,7 +24,6 @@ source_set("ui") {
     ":options",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/menu/ui_bundled",
-    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",

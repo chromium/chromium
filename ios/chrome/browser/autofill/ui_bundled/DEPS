@@ -23,7 +23,6 @@ include_rules = [
   "+ios/chrome/browser/personal_context/model",
   "+ios/chrome/browser/settings/ui_bundled/autofill/autofill_constants.h",
   "+ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h",
-  "+ios/chrome/browser/settings/ui_bundled/password",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/subscription_eligibility/model",
   "+ios/chrome/browser/sync/model/sync_service_factory.h",

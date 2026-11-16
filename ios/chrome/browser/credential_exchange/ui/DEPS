@@ -1,5 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+ios/chrome/browser/settings/ui_bundled/password",
-  # keep-sorted end
-]
