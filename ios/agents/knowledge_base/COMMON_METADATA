@@ -3,11 +3,53 @@
 # found in the LICENSE file.
 
 agentic_review {
+  # Core exclusions: server-side C++ and IPC rules that conflict with
+  # Objective-C++ syntax, iOS presubmit checks, EarlGrey 2, or iOS KB rules.
+  exclude_rules: "ipc/knowledge_base/webui/bind-webui-interfaces-via-mojo-webui-controller-and-standard.md"
+  exclude_rules: "styleguide/c++/knowledge_base/checks/do-not-handle-dcheck-failures.md"
+  exclude_rules: "styleguide/c++/knowledge_base/checks/enforce-impossible-states-with-check-or-notreached.md"
+  exclude_rules: "styleguide/c++/knowledge_base/checks/tests-use-gtest-assertions-not-check.md"
+  exclude_rules: "styleguide/c++/knowledge_base/comments/todo-format-and-bug-or-owner.md"
+  exclude_rules: "styleguide/c++/knowledge_base/const/constexpr-for-true-constants.md"
+  exclude_rules: "styleguide/c++/knowledge_base/features/no-nonstandard-pragmas.md"
+  exclude_rules: "styleguide/c++/knowledge_base/functions/param-types-by-role-and-optionality.md"
+  exclude_rules: "styleguide/c++/knowledge_base/functions/return-value-or-reference-pointer-only-if-null.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/header-definitions-must-be-odr-safe-inline.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/include-what-you-use.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/prefer-forward-declarations-over-includes.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/class-vs-struct-data-member-underscores.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/function-names-pascal-case-and-inline-accessors.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/lowercase-specific-file-names-and-extensions.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/variable-and-parameter-names-snake-case.md"
+  exclude_rules: "styleguide/c++/knowledge_base/ownership/prefer-const-raw-ref-for-never-null-fields.md"
+  exclude_rules: "styleguide/c++/knowledge_base/ownership/raw-ptr-raw-ref-for-non-owning-fields.md"
+  exclude_rules: "styleguide/c++/knowledge_base/scoping/declare-local-variables-in-narrowest-scope.md"
+  exclude_rules: "styleguide/c++/knowledge_base/scoping/no-class-just-to-group-static-members.md"
+  exclude_rules: "styleguide/c++/knowledge_base/scoping/place-code-in-namespace.md"
+  exclude_rules: "styleguide/c++/knowledge_base/scoping/unnamed-namespace-for-cc-local-items.md"
+  exclude_rules: "styleguide/c++/knowledge_base/testing/test-only-classes-in-testonly-targets-and-test-dirs.md"
+  exclude_rules: "styleguide/c++/knowledge_base/types/nullptr-for-pointers-nul-char-for-chars.md"
+  exclude_rules: "styleguide/c++/knowledge_base/types/use-size-t-for-sizes-counts-indices.md"
+
+  # Optional deduplication and policy exclusions: rules superseded by
+  # Objective-C++-aware iOS KB rules or conflicting with iOS idioms.
+  exclude_rules: "styleguide/c++/knowledge_base/checks/prefer-check-over-dcheck.md"
+  exclude_rules: "styleguide/c++/knowledge_base/comments/document-pointer-retention-nullability-and-out-params.md"
+  exclude_rules: "styleguide/c++/knowledge_base/comments/function-declaration-comments-and-indicative-mood.md"
+  exclude_rules: "styleguide/c++/knowledge_base/features/no-statement-expressions-or-elvis-operator.md"
+  exclude_rules: "styleguide/c++/knowledge_base/functions/prefer-return-values-over-output-params.md"
+  exclude_rules: "styleguide/c++/knowledge_base/general/no-hardcoded-user-facing-text-in-source.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/angle-bracket-includes-only-for-system-headers.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/associated-header-for-cc-files.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/no-pointer-members-just-for-forward-declaration.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/avoid-unfamiliar-and-letter-deleting-abbreviations.md"
+  exclude_rules: "styleguide/c++/knowledge_base/types/prefer-using-over-typedef.md"
+
   capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "@property[^;\\n]*\\b(?:Browser|ProfileIOS|AppState|ProfileState|SceneState|ApplicationContext|CommandDispatcher)\\s*\\*"
-    content_patterns: "-\\s*\\([^)]*\\)\\s*initWith[^;]*\\b(?:Browser|ProfileIOS|AppState|ProfileState|SceneState|ApplicationContext|CommandDispatcher)\\s*\\*"
+    content_patterns: "-\\s*\\([^)\\n]*\\)\\s*initWith[^;\\n]*\\b(?:Browser|ProfileIOS|AppState|ProfileState|SceneState|ApplicationContext|CommandDispatcher)\\s*\\*"
     content_patterns: "\\bHandlerForProtocol\\s*\\(\\s*(?:self\\.)?_?(?:commandD|d)ispatcher\\b"
     content_patterns: "\\bGetApplicationContext\\s*\\(\\s*\\)"
     content_patterns: "\\b[A-Za-z0-9_]+(?:Service)?Factory::GetFor(?:Profile|BrowserState)\\b"
@@ -37,10 +79,10 @@ agentic_review {
     path_expression_exclusion: ".*/test/.*"
     path_expression_exclusion: ".*_(?:egtest|unittest)\\.mm"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\.(?:text|title|placeholder|accessibilityLabel|accessibilityHint|accessibilityValue)\\s*=\\s*@\"[^\"]*[A-Za-z]"
-    content_patterns: "\\bsetTitle:\\s*@\"[^\"]*[A-Za-z]"
-    content_patterns: "\\b(?:actionWithTitle|alertControllerWithTitle|menuWithTitle):\\s*@\"[^\"]*[A-Za-z]"
-    content_patterns: "\\bmessage:\\s*@\"[^\"]*[A-Za-z]"
+    content_patterns: "\\.(?:text|title|placeholder|accessibilityLabel|accessibilityHint|accessibilityValue)\\s*=\\s*@\"[^\"\\n]*[A-Za-z]"
+    content_patterns: "\\bsetTitle:\\s*@\"[^\"\\n]*[A-Za-z]"
+    content_patterns: "\\b(?:actionWithTitle|alertControllerWithTitle|menuWithTitle):\\s*@\"[^\"\\n]*[A-Za-z]"
+    content_patterns: "\\bmessage:\\s*@\"[^\"\\n]*[A-Za-z]"
     rules: "ios/agents/knowledge_base/rules/general/localize-user-visible-strings.md"
   }
   capability_groups {
@@ -48,9 +90,8 @@ agentic_review {
     path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\bstd::(?:vector|set|list|deque)<\\s*(?:(?:const\\s+)?[A-Za-z0-9_:]+\\s*\\*|(?:base::)?raw_ptr<\\s*(?:const\\s+)?[A-Za-z0-9_:]+\\s*>)\\s*>"
-    content_patterns: "\\bstd::(?:unordered_)?map<[^,<>]+,\\s*(?:(?:const\\s+)?[A-Za-z0-9_:]+\\s*\\*|(?:base::)?raw_ptr<\\s*(?:const\\s+)?[A-Za-z0-9_:]+\\s*>)\\s*>"
+    content_patterns: "\\bstd::(?:unordered_)?map<[^,<>\\n]+,\\s*(?:(?:const\\s+)?[A-Za-z0-9_:]+\\s*\\*|(?:base::)?raw_ptr<\\s*(?:const\\s+)?[A-Za-z0-9_:]+\\s*>)\\s*>"
     content_patterns: "\\b(?:base::)?raw_ptr<\\s*(?:const\\s+)?[A-Za-z0-9_:]*(?:Entry|Item|Form|Suggestion|Credential|Node)\\s*>"
-    content_patterns: "\\bconst\\s+[A-Za-z0-9_:]*(?:Entry|Item|Form|Suggestion|Credential|Node)\\s*\\*\\s*_[a-zA-Z0-9_]+\\s*;"
     rules: "ios/agents/knowledge_base/rules/chrome/mediators-store-owned-values-not-pointers-into-model-caches.md"
   }
   capability_groups {
@@ -59,7 +100,7 @@ agentic_review {
     path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "@property[^;\\n]*\\b(?:AppState|Browser|CommandDispatcher|ProfileIOS|ProfileState|SceneState|WebStateList|web::WebState|[A-Za-z0-9_]*(?:BrowserAgent|TabHelper|Service))\\s*\\*"
-    content_patterns: "-\\s*\\([^)]*\\)\\s*init[^;{]*\\b(?:AppState|Browser|CommandDispatcher|ProfileIOS|ProfileState|SceneState|WebStateList|web::WebState|[A-Za-z0-9_]*(?:BrowserAgent|TabHelper|Service))\\s*\\*"
+    content_patterns: "-\\s*\\([^)\\n]*\\)\\s*init[^;{\\n]*\\b(?:AppState|Browser|CommandDispatcher|ProfileIOS|ProfileState|SceneState|WebStateList|web::WebState|[A-Za-z0-9_]*(?:BrowserAgent|TabHelper|Service))\\s*\\*"
     content_patterns: "\\b(?:(?:base::)?raw_ptr<\\s*(?:const\\s+)?(?:AppState|Browser|CommandDispatcher|ProfileIOS|ProfileState|SceneState|WebStateList|web::WebState|[A-Za-z0-9_:]*(?:BrowserAgent|TabHelper|Service))\\s*>|(?:AppState|Browser|CommandDispatcher|ProfileIOS|ProfileState|SceneState|WebStateList|web::WebState|[A-Za-z0-9_:]*(?:BrowserAgent|TabHelper|Service))\\s*\\*)\\s*_[a-zA-Z0-9_]+\\s*;"
     rules: "ios/agents/knowledge_base/rules/chrome/no-model-objects-in-view-controllers-or-views.md"
   }
@@ -67,7 +108,7 @@ agentic_review {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "@synchronized\\s*\\("
-    content_patterns: "@property\\s*\\([^)]*\\batomic\\b"
+    content_patterns: "@property\\s*\\([^)\\n]*\\batomic\\b"
     content_patterns: "\\b(?:base::Lock|base::AutoLock|std::mutex|std::lock_guard|NSLock|NSRecursiveLock|os_unfair_lock)\\b"
     rules: "ios/agents/knowledge_base/rules/general/no-multithreaded-objects.md"
   }
@@ -76,17 +117,16 @@ agentic_review {
     path_expression_exclusion: ".*/test/.*"
     path_expression_exclusion: ".*_(?:egtest|unittest)\\.mm"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\baccessibility(?:Label|Value)\\s*=[^;]*@\"[^\"]*\\b(?:[Ss]elected|[Uu]nselected|[Dd]isabled|[Ee]nabled|[Cc]hecked|[Oo]n|[Oo]ff)\\b"
-    content_patterns: "\\baccessibility(?:Label|Value)\\s*=[^;]*\\bIDS_[A-Z0-9_]*(?:SELECTED|DISABLED|ENABLED|CHECKED|_ON|_OFF)\\b"
-    content_patterns: "\\baccessibility(?:Label|Value)\\s*=[^;]*\\b(?:stringWithFormat|stringByAppendingString)\\b"
+    content_patterns: "\\baccessibility(?:Label|Value)\\s*=[^;\\n]*@\"[^\"\\n]*\\b(?:[Ss]elected|[Uu]nselected|[Dd]isabled|[Ee]nabled|[Cc]hecked|[Oo]n|[Oo]ff)\\b"
+    content_patterns: "(?:\\baccessibility(?:Label|Value)\\s*=[^;\\n]*\\bIDS_[A-Z0-9_]*_(?:SELECTED|UNSELECTED|DISABLED|ENABLED|CHECKED|ON|OFF)(?:_[A-Z0-9_]*)?\\b|\\bIDS_[A-Z0-9_]*(?:_(?:SELECTED|UNSELECTED|DISABLED|ENABLED|CHECKED|ON|OFF)(?:_[A-Z0-9_]*)?_ACCESSIBILITY_(?:LABEL|VALUE)|ACCESSIBILITY_(?:LABEL|VALUE)_(?:SELECTED|UNSELECTED|DISABLED|ENABLED|CHECKED|ON|OFF))\\b)"
+    content_patterns: "\\baccessibility(?:Label|Value)\\s*=[^;\\n]*\\b(?:stringWithFormat|stringByAppendingString)\\b"
     rules: "ios/agents/knowledge_base/rules/general/use-system-accessibility-traits-for-state.md"
   }
   capability_groups {
     path_expression: "ios/chrome/(?:.*/)?[^/]*_unittest\\.mm"
     path_expression_exclusion: "ios/third_party/.*"
-    content_patterns: "\\bfor\\s*\\(\\s*(?:__(?:strong|weak)\\s+)?(?:[A-Z]\\w*\\s*\\*|id)\\s*\\w+\\s+in\\s+[^)]*\\.subviews\\b"
-    content_patterns: "\\.subviews\\s+enumerateObjectsUsingBlock\\b"
-    content_patterns: "\\b[A-Z]\\w*(?:<[^>]*>)?\\s*\\*\\s*Find[A-Z]\\w*\\s*\\(\\s*UIView\\s*\\*"
+    content_patterns: "\\bfor\\s*\\(\\s*(?:__(?:strong|weak)\\s+)?(?:[A-Z]\\w*\\s*\\*|id)\\s*\\w+\\s+in\\s+(?:[^)\\n]*\\.subviews\\b|\\[[^\\]\\n]*\\bsubviews\\])"
+    content_patterns: "\\b[A-Z]\\w*(?:<[^>\\n]*>)?\\s*\\*\\s*Find[A-Z]\\w*\\s*\\(\\s*UIView\\s*\\*"
     rules: "ios/agents/knowledge_base/rules/chrome/use-uikit-test-util-for-view-lookup.md"
   }
 }

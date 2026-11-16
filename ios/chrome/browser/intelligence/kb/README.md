@@ -1,6 +1,7 @@
 # iOS Code Review Knowledge Base
 
-> **Frozen — do not land new rules here.** Land new rules in
+> **Frozen — do not land new rules or rule exclusions here.** Land new rules and
+> `//ios`-wide `exclude_rules` entries in
 > [`//ios/agents/knowledge_base/`](/ios/agents/knowledge_base/README.md) instead
 > (crbug.com/576358854). Once migration completes, this directory and the
 > `mixins:` lines that point here will be removed.
@@ -44,6 +45,8 @@ next to its `agentic_review` block:
 
 ```
 # //ios/chrome/browser/<feature>/DIR_METADATA
+# TODO(crbug.com/576358854): Remove //ios/chrome/browser/intelligence/kb/COMMON_METADATA
+# once the knowledge base has fully landed in //ios/agents/knowledge_base/.
 mixins: "//ios/agents/knowledge_base/COMMON_METADATA"
 mixins: "//ios/chrome/browser/intelligence/kb/COMMON_METADATA"
 
@@ -102,7 +105,9 @@ Conventions that every rule follows:
 - Objective-C examples follow the Objective-C conventions (`BOOL`, acronyms in
   capitals such as `URL`); C++ examples follow Chromium C++ style.
 
-## Adding or changing a rule
+## Adding or changing rules or exclusions
 
-This directory is frozen. Do not land new rules here; land them in
+This directory is frozen. Do not add or edit rules or `exclude_rules` here;
+`//ios`-wide inherited-rule exclusions (`exclude_rules`) and new or updated KB
+rules live in
 [`//ios/agents/knowledge_base/`](/ios/agents/knowledge_base/README.md) instead.

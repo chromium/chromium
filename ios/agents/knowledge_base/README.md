@@ -24,20 +24,24 @@ ios/agents/knowledge_base/
                        # lifetimes, GN/DEPS, testing, comments)
 ```
 
-`COMMON_METADATA` groups the rules by the files they apply to
-(`path_expression`, matched against the repository-relative paths modified by a
-CL) and is generated from the rule metadata; edit it by hand only to adjust a
-rule's scope.
+`COMMON_METADATA` excludes inherited server-side C++ and IPC rules that conflict
+with Objective-C++ (`exclude_rules`) and groups the `//ios` rules by the files
+they apply to (`path_expression`, matched against the repository-relative paths
+modified by a CL).
 
 ## Opting a directory in
 
-The KB is **import-only**: nothing under `//ios` is reviewed automatically. A
-directory that opts in to automated review lists this file as a mixin next to
-its `agentic_review` block:
+The KB is **import-only**: nothing under `//ios` is reviewed automatically.
+While the remaining rules finish migrating from
+`//ios/chrome/browser/intelligence/kb/`, a directory that opts in to automated
+review lists both `COMMON_METADATA` mixins next to its `agentic_review` block:
 
 ```
 # //ios/chrome/browser/<feature>/DIR_METADATA
+# TODO(crbug.com/576358854): Remove //ios/chrome/browser/intelligence/kb/COMMON_METADATA
+# once the knowledge base has fully landed in //ios/agents/knowledge_base/.
 mixins: "//ios/agents/knowledge_base/COMMON_METADATA"
+mixins: "//ios/chrome/browser/intelligence/kb/COMMON_METADATA"
 
 agentic_review {}
 ```
