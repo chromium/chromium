@@ -12,6 +12,8 @@
 #include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -19,6 +21,35 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace web_app {
+
+namespace {
+
+// Records whether the last committed primary main frame navigation was served
+// from the back/forward cache.
+class BackForwardCacheRestoreObserver : public content::WebContentsObserver {
+ public:
+  explicit BackForwardCacheRestoreObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  bool last_navigation_served_from_bfcache() const {
+    return last_navigation_served_from_bfcache_;
+  }
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (navigation_handle->IsInPrimaryMainFrame() &&
+        navigation_handle->HasCommitted()) {
+      last_navigation_served_from_bfcache_ =
+          navigation_handle->IsServedFromBackForwardCache();
+    }
+  }
+
+ private:
+  bool last_navigation_served_from_bfcache_ = false;
+};
+
+}  // namespace
 
 // Test app title scenarios with valid, empty and dynamic app title.
 class WebAppTitleBrowserTest : public WebAppBrowserTestBase {
@@ -183,8 +214,13 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
                               ->GetWindowTitleForCurrentTab(false));
 
   // Navigate to page with app title.
+  BackForwardCacheRestoreObserver bfcache_observer(web_contents);
   web_contents->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  // A page restored from the back/forward cache does not record its use
+  // counters again, but a page that is loaded again does.
+  const int expected_app_title_count =
+      bfcache_observer.last_navigation_served_from_bfcache() ? 1 : 2;
   EXPECT_EQ(u"A Web App - ApplicationTitle",
             WindowMetadataController::From(app_browser)
                 ->GetWindowTitleForCurrentTab(false));
@@ -200,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
   // Explicitly fetch the metrics from the child processes and merge them.
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histogram_tester.ExpectCounts({{blink::mojom::WebFeature::kWebAppTitle, 1}});
+  histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kWebAppTitle, expected_app_title_count}});
 }
 
 // Test app title with empty app title.

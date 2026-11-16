@@ -1313,6 +1313,7 @@ if (!is_android) {
       "save_desktop_snapshot_browsertest.cc",
       "test_chrome_web_ui_controller_factory_browsertest.cc",
       "ui_test_utils_browsertest.cc",
+      "web_feature_histogram_tester_browsertest.cc",
       "web_ui_mocha_browser_test_browsertest.cc",
     ]
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -1324,6 +1325,7 @@ if (!is_android) {
       ":test_switches",
       ":tracing",
       ":ui_test_utils",
+      ":web_feature_histogram_tester",
       ":web_ui_mocha_browser_test",
       ":web_ui_test_support",
       "//base",
