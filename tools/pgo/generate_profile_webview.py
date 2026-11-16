@@ -175,25 +175,27 @@ def trigger_dump(port=9222):
         ws = websocket.create_connection(
             ws_url, suppress_origin=True, timeout=5
         )
-        _LOGGER.info(
-            "Connected. Sending NativeProfiling.dumpProfilingDataOfAllProcesses"
-        )
-        request = {
-            "id": 1,
-            "method": "NativeProfiling.dumpProfilingDataOfAllProcesses",
-        }
-        ws.send(json.dumps(request))
-        response = ws.recv()
-        _LOGGER.info(f"Response: {response}")
-        ws.close()
-        return True
+        try:
+            _LOGGER.info(
+                "Connected. Sending "
+                "NativeProfiling.dumpProfilingDataOfAllProcesses"
+            )
+            request = {
+                "id": 1,
+                "method": "NativeProfiling.dumpProfilingDataOfAllProcesses",
+            }
+            ws.send(json.dumps(request))
+            response = ws.recv()
+            _LOGGER.info(f"Response: {response}")
+        finally:
+            ws.close()
     except Exception as e:
-        _LOGGER.error(f"Failed to connect or send command: {e}")
-        _LOGGER.error(
-            "Ensure the app is debuggable "
-            "(setWebContentsDebuggingEnabled(true))."
-        )
-        return False
+        raise RuntimeError(
+            f'Failed to connect or send command: {e}. Ensure the app is '
+            'debuggable (setWebContentsDebuggingEnabled(true)).'
+        ) from e
+    if 'error' in json.loads(response):
+        raise RuntimeError(f'Failed to dump profiling data: {response}')
 
 
 def get_pid(device, package_name):
@@ -388,31 +390,29 @@ def run_target(device, target: str, args: OptionsNamespace):
 
     pid = get_pid(device, process_name)
     if not pid:
-        _LOGGER.error(f"Could not find PID for {process_name}")
-        return
+        raise RuntimeError(f'Could not find PID for {process_name}')
 
     _LOGGER.info(f"Found PID {pid} for {process_name}")
     forward_socket(device, pid)
     try:
-        if trigger_dump():
-            # Wait a moment for the device to finish writing files
-            time.sleep(10)
-            pull_profraw(device, device_profiles_dir, profraw_path)
+        trigger_dump()
+        # Wait a moment for the device to finish writing files
+        time.sleep(10)
+        pull_profraw(device, device_profiles_dir, profraw_path)
 
-            if not args.skip_profdata:
-                profraw_files = glob.glob(
-                    f'{profraw_path}/**/*.profraw', recursive=True
-                )
-                if not profraw_files:
-                    _LOGGER.error(f"No profraw files found in {profraw_path}")
-                    return
+        if not args.skip_profdata:
+            profraw_files = glob.glob(
+                f'{profraw_path}/**/*.profraw', recursive=True
+            )
+            if not profraw_files:
+                raise RuntimeError(f'No profraw files found in {profraw_path}')
 
-                run_profdata_merge(profdata_path, profraw_files, args)
+            run_profdata_merge(profdata_path, profraw_files, args)
 
-                # Test merge to prevent issues like: https://crbug.com/353702041
-                with tempfile.NamedTemporaryFile() as f:
-                    _LOGGER.debug("Testing profdata merge")
-                    run_profdata_merge(f.name, [profdata_path], args)
+            # Test merge to prevent issues like: https://crbug.com/353702041
+            with tempfile.NamedTemporaryFile() as f:
+                _LOGGER.debug("Testing profdata merge")
+                run_profdata_merge(f.name, [profdata_path], args)
     finally:
         device.adb.ForwardRemove('tcp:9222')
 
