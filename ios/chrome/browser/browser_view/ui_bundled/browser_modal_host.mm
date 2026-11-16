@@ -1057,8 +1057,17 @@ const char kContextPanelDismissedHistogram[] =
 }
 
 - (void)showSaveEntityDialogOnWebState:(web::WebState*)webState {
-  // TODO(crbug.com/578817847): Prompt restoration UI is wired up in a follow-up
-  // CL.
+  // Do not show the dialog if the current tab is not the one where the request
+  // was triggered from, or if the dialog is already visible.
+  if (!webState || self.activeWebState != webState ||
+      _autofillAISaveEntityCoordinator) {
+    return;
+  }
+
+  _autofillAISaveEntityCoordinator = [[AutofillAISaveEntityCoordinator alloc]
+      initWithBaseViewController:_baseViewController
+                         browser:_browser];
+  [_autofillAISaveEntityCoordinator start];
 }
 
 - (void)showSaveEntityDialog:(autofill::SaveEntityParams)params {

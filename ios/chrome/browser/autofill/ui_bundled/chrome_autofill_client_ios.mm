@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_prefetch_failure_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_infobar_delegate_ios.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_prompt_model.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
@@ -978,7 +979,18 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
   }
 
   SaveEntityParams params = delegate->ExtractParams();
-  [commands_handler_ showSaveEntityDialog:std::move(params)];
+
+  if (base::FeatureList::IsEnabled(kAutofillReshowSavePromptOnTabReturn)) {
+    AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
+        AutofillBottomSheetTabHelper::FromWebState(web_state());
+    CHECK(bottom_sheet_tab_helper);
+    auto model =
+        std::make_unique<AutofillAiSaveEntityPromptModel>(std::move(params));
+    bottom_sheet_tab_helper->ShowAutofillAiSaveEntityBottomSheet(
+        std::move(model));
+  } else {
+    [commands_handler_ showSaveEntityDialog:std::move(params)];
+  }
 }
 
 void ChromeAutofillClientIOS::OnActorTaskStateChange(bool is_actuating) {

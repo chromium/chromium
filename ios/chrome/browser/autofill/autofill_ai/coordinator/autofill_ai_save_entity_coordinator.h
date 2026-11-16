@@ -16,11 +16,7 @@ struct SaveEntityParams;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                    params:(autofill::SaveEntityParams)params
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
+                                    params:(autofill::SaveEntityParams)params;
 
 @end
 

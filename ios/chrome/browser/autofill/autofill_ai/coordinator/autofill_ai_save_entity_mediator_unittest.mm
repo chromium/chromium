@@ -4,11 +4,17 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/autofill_ai_save_entity_mediator.h"
 
+#import <tuple>
+
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
+#import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
@@ -16,8 +22,15 @@
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_consumer.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_prompt_model.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -89,7 +102,53 @@ class AutofillAISaveEntityMediatorTest : public PlatformTest {
     return consumer;
   }
 
+  // Configures the feature flag, fake web state, and tab helper for tab helper
+  // integration test cases.
+  void SetUpTabHelperIntegration() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kAutofillReshowSavePromptOnTabReturn);
+    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web::ContentWorld content_world =
+        AutofillBottomSheetJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    fake_web_state_.SetWebFramesManager(content_world,
+                                        std::move(frames_manager));
+    AutofillBottomSheetTabHelper::CreateForWebState(&fake_web_state_);
+    tab_helper_ = AutofillBottomSheetTabHelper::FromWebState(&fake_web_state_);
+  }
+
+  // Creates SaveEntityParams with the provided callback and entity.
+  autofill::SaveEntityParams CreateDefaultSaveEntityParams(
+      base::OnceCallback<void(
+          autofill::AutofillClient::AutofillAiBubbleResult,
+          std::optional<autofill::EntityInstance>,
+          const autofill::AutofillClient::EntityImportUIContext&)> callback,
+      autofill::EntityInstance entity = CreateTestEntity()) {
+    return autofill::SaveEntityParams(
+        std::move(entity), /*old_entity=*/std::nullopt,
+        /*user_email=*/u"test@example.com",
+        /*save_is_synchronous=*/true, std::move(callback),
+        /*public_passes_notice=*/{},
+        /*show_explicit_decline_button=*/false);
+  }
+
+  // Sets up tab helper integration, stages the prompt model, and creates a
+  // mediator initialized with the tab helper.
+  AutofillAISaveEntityMediator* CreateMediatorWithPromptModel(
+      autofill::SaveEntityParams params) {
+    SetUpTabHelperIntegration();
+    auto model =
+        std::make_unique<AutofillAiSaveEntityPromptModel>(std::move(params));
+    tab_helper_->ShowAutofillAiSaveEntityBottomSheet(std::move(model));
+    EXPECT_NE(nullptr, tab_helper_->GetAutofillAiSaveEntityPromptModel());
+    return [[AutofillAISaveEntityMediator alloc] initWithTabHelper:tab_helper_
+                                                 entityDataManager:nullptr];
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+  web::FakeWebState fake_web_state_;
+  raw_ptr<AutofillBottomSheetTabHelper> tab_helper_ = nullptr;
 };
 
 // Tests that the footer displays the local storage notice and no legal messages
@@ -289,4 +348,238 @@ TEST_F(AutofillAISaveEntityMediatorTest,
       PushEntityToMediator(CreateTestEntity());
 
   EXPECT_FALSE(consumer.showsExplicitDeclineButton);
+}
+
+// Tests that `acceptSaving` invokes the completion callback with `kAccepted`
+// when the feature flag is disabled.
+TEST_F(AutofillAISaveEntityMediatorTest, AcceptSavingReportsAccepted) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kAutofillReshowSavePromptOnTabReturn);
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  autofill::SaveEntityParams params =
+      CreateDefaultSaveEntityParams(base::BindLambdaForTesting(
+          [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+              std::optional<autofill::EntityInstance> entity,
+              const autofill::AutofillClient::EntityImportUIContext& context) {
+            callback_result = result;
+          }));
+
+  AutofillAISaveEntityMediator* mediator =
+      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
+                                         entityDataManager:nullptr];
+  [mediator acceptSaving];
+
+  EXPECT_EQ(callback_result,
+            autofill::AutofillClient::AutofillAiBubbleResult::kAccepted);
+  [mediator disconnect];
+}
+
+// Tests that `cancelSaving` invokes the completion callback with `kCancelled`
+// when the feature flag is disabled.
+TEST_F(AutofillAISaveEntityMediatorTest, CancelSavingReportsCancelled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kAutofillReshowSavePromptOnTabReturn);
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  autofill::SaveEntityParams params =
+      CreateDefaultSaveEntityParams(base::BindLambdaForTesting(
+          [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+              std::optional<autofill::EntityInstance> entity,
+              const autofill::AutofillClient::EntityImportUIContext& context) {
+            callback_result = result;
+          }));
+
+  AutofillAISaveEntityMediator* mediator =
+      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
+                                         entityDataManager:nullptr];
+  [mediator cancelSaving];
+
+  EXPECT_EQ(callback_result,
+            autofill::AutofillClient::AutofillAiBubbleResult::kCancelled);
+  [mediator disconnect];
+}
+
+// Tests that under the legacy fallback path, `dismissSaving` falls back to
+// `cancelSaving` and reports `kCancelled`.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       DismissSavingFallsBackToCancelSavingWhenFeatureDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kAutofillReshowSavePromptOnTabReturn);
+
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  autofill::SaveEntityParams params =
+      CreateDefaultSaveEntityParams(base::BindLambdaForTesting(
+          [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+              std::optional<autofill::EntityInstance> entity,
+              const autofill::AutofillClient::EntityImportUIContext& context) {
+            callback_result = result;
+          }));
+
+  AutofillAISaveEntityMediator* mediator =
+      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
+                                         entityDataManager:nullptr];
+  [mediator dismissSaving];
+
+  EXPECT_EQ(callback_result,
+            autofill::AutofillClient::AutofillAiBubbleResult::kCancelled);
+  [mediator disconnect];
+}
+
+// Tests that under the legacy fallback path, disconnecting without user action
+// invokes the completion callback with `kUnknown`.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       DisconnectInvokesCallbackWithUnknownWhenFeatureDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kAutofillReshowSavePromptOnTabReturn);
+
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  autofill::SaveEntityParams params =
+      CreateDefaultSaveEntityParams(base::BindLambdaForTesting(
+          [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+              std::optional<autofill::EntityInstance> entity,
+              const autofill::AutofillClient::EntityImportUIContext& context) {
+            callback_result = result;
+          }));
+
+  AutofillAISaveEntityMediator* mediator =
+      [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
+                                         entityDataManager:nullptr];
+  [mediator disconnect];
+
+  EXPECT_EQ(callback_result,
+            autofill::AutofillClient::AutofillAiBubbleResult::kUnknown);
+}
+
+// Tests that when initialized with model and tab helper and the feature flag is
+// enabled, `acceptSaving` consumes the model from the tab helper and reports
+// `kAccepted`.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       TabHelperIntegrationAcceptConsumesModel) {
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  AutofillAISaveEntityMediator* mediator = CreateMediatorWithPromptModel(
+      CreateDefaultSaveEntityParams(base::BindLambdaForTesting(
+          [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+              std::optional<autofill::EntityInstance> entity,
+              const autofill::AutofillClient::EntityImportUIContext& context) {
+            callback_result = result;
+          })));
+
+  [mediator acceptSaving];
+
+  EXPECT_EQ(callback_result,
+            autofill::AutofillClient::AutofillAiBubbleResult::kAccepted);
+  EXPECT_EQ(nullptr, tab_helper_->GetAutofillAiSaveEntityPromptModel());
+  [mediator disconnect];
+}
+
+// Tests that when initialized with a `ServerWallet` entity and tab helper,
+// `acceptSaving` populates `EntityImportUIContext` on the prompt model.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       TabHelperIntegrationAcceptServerWalletPassesUIContext) {
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  std::optional<autofill::AutofillClient::EntityImportUIContext> ui_context;
+  autofill::EntityInstance vehicle =
+      autofill::test::GetVehicleEntityInstance().CopyWithNewRecordType(
+          autofill::EntityInstance::RecordType::kServerWallet);
+  AutofillAISaveEntityMediator* mediator =
+      CreateMediatorWithPromptModel(CreateDefaultSaveEntityParams(
+          base::BindLambdaForTesting(
+              [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+                  std::optional<autofill::EntityInstance> entity,
+                  const autofill::AutofillClient::EntityImportUIContext&
+                      context) {
+                callback_result = result;
+                ui_context = context;
+              }),
+          std::move(vehicle)));
+
+  [mediator acceptSaving];
+
+  EXPECT_EQ(callback_result,
+            autofill::AutofillClient::AutofillAiBubbleResult::kAccepted);
+  ASSERT_TRUE(ui_context.has_value());
+  EXPECT_EQ(ui_context->accepted_consent_string_ids,
+            std::vector<int>{autofill::GetSaveToWalletSubtitleStringId(
+                /*is_private=*/false)});
+  EXPECT_EQ(ui_context->accept_button_string_id,
+            autofill::GetSaveEntityAcceptButtonStringId());
+  EXPECT_EQ(nullptr, tab_helper_->GetAutofillAiSaveEntityPromptModel());
+  [mediator disconnect];
+}
+
+// Tests that when initialized with model and tab helper and the feature flag is
+// enabled, `cancelSaving` consumes the model from the tab helper and reports
+// `kCancelled`.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       TabHelperIntegrationCancelConsumesModel) {
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  AutofillAISaveEntityMediator* mediator = CreateMediatorWithPromptModel(
+      CreateDefaultSaveEntityParams(base::BindLambdaForTesting(
+          [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+              std::optional<autofill::EntityInstance> entity,
+              const autofill::AutofillClient::EntityImportUIContext& context) {
+            callback_result = result;
+          })));
+
+  [mediator cancelSaving];
+
+  EXPECT_EQ(callback_result,
+            autofill::AutofillClient::AutofillAiBubbleResult::kCancelled);
+  EXPECT_EQ(nullptr, tab_helper_->GetAutofillAiSaveEntityPromptModel());
+  [mediator disconnect];
+}
+
+// Tests that when initialized with model and tab helper and the feature flag is
+// enabled, `dismissSaving` consumes the model from the tab helper and reports
+// `kClosed`.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       TabHelperIntegrationDismissConsumesModel) {
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  AutofillAISaveEntityMediator* mediator = CreateMediatorWithPromptModel(
+      CreateDefaultSaveEntityParams(base::BindLambdaForTesting(
+          [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+              std::optional<autofill::EntityInstance> entity,
+              const autofill::AutofillClient::EntityImportUIContext& context) {
+            callback_result = result;
+          })));
+
+  [mediator dismissSaving];
+
+  EXPECT_EQ(callback_result,
+            autofill::AutofillClient::AutofillAiBubbleResult::kClosed);
+  EXPECT_EQ(nullptr, tab_helper_->GetAutofillAiSaveEntityPromptModel());
+  [mediator disconnect];
+}
+
+// Tests that disconnecting without user action leaves the model pending in
+// the tab helper so it can be reshown upon return.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       TabHelperIntegrationDisconnectLeavesModelPending) {
+  std::optional<autofill::AutofillClient::AutofillAiBubbleResult>
+      callback_result;
+  AutofillAISaveEntityMediator* mediator = CreateMediatorWithPromptModel(
+      CreateDefaultSaveEntityParams(base::BindLambdaForTesting(
+          [&](autofill::AutofillClient::AutofillAiBubbleResult result,
+              std::optional<autofill::EntityInstance> entity,
+              const autofill::AutofillClient::EntityImportUIContext& context) {
+            callback_result = result;
+          })));
+
+  // Disconnect without accept/cancel/dismiss.
+  [mediator disconnect];
+
+  // Callback was not invoked, and model remains pending in tab helper.
+  EXPECT_FALSE(callback_result.has_value());
+  EXPECT_NE(nullptr, tab_helper_->GetAutofillAiSaveEntityPromptModel());
+
+  // Explicitly destroy the pending model while callback_result is still in
+  // scope to avoid stack-use-after-scope during test teardown.
+  std::ignore = tab_helper_->TakeAutofillAiSaveEntityPromptModel();
 }

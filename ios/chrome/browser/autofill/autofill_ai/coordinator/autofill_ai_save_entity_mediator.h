@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_mutator.h"
 
+class AutofillBottomSheetTabHelper;
 class GURL;
-
 namespace autofill {
 class EntityDataManager;
 }  // namespace autofill
@@ -28,10 +28,13 @@ class EntityDataManager;
 // Autofill commands handler to dismiss the dialog.
 @property(nonatomic, weak) id<AutofillCommands> autofillHandler;
 
-// Initializes the mediator with `SaveEntityParams`.
+// Initializes the mediator with the tab helper and entity data manager.
+- (instancetype)initWithTabHelper:(AutofillBottomSheetTabHelper*)tabHelper
+                entityDataManager:
+                    (autofill::EntityDataManager*)entityDataManager;
+
 - (instancetype)initWithParams:(autofill::SaveEntityParams)params
-             entityDataManager:(autofill::EntityDataManager*)dataManager
-    NS_DESIGNATED_INITIALIZER;
+             entityDataManager:(autofill::EntityDataManager*)entityDataManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
