@@ -57,9 +57,7 @@ if (swift_toolchain_path == -1) {
   if (_can_use_hermetic_swift && !(is_ios && xcode_version_int >= 1500)) {
     # Version of the hermetic compiler. Needs to be updated when a new version
     # of the compiler is rolled to ensure that all outputs are regenerated. It
-    # must be kept in sync with the `version` of `third_party/swift-toolchain`
-    # in
-    # //DEPS.
+    # must be kept in sync with `swift_toolchain_version` in //DEPS.
     swiftc_version = "swift-6.4.0-release"
 
     # Use the hermetic swift toolchain.

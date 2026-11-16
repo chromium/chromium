@@ -578,6 +578,12 @@ vars = {
   # GN CIPD package version.
   'gn_version': 'git_revision:ddc6c4ae595393d43b38e62f2e2baa7661af716f',
 
+  # CIPD version of the src/third_party/swift-toolchain/* packages. Override
+  # it in .gclient custom_vars to try a different Swift release without
+  # editing DEPS. Keep `swiftc_version` in build/toolchain/apple/toolchain.gni
+  # in sync when changing it here.
+  'swift_toolchain_version': 'version:2@6.4.0-release',
+
   # ninja CIPD package.
   'ninja_package': 'infra/3pp/tools/ninja/',
 
@@ -3132,7 +3138,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/tools/swift-toolchain/linux-amd64',
-              'version': 'version:2@6.4.0-release',
+              'version': Var('swift_toolchain_version'),
           },
       ],
       'condition': 'checkout_ios and host_os == "linux" and non_git_source',
@@ -3143,7 +3149,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/tools/swift-toolchain/mac-amd64',
-              'version': 'version:2@6.4.0-release',
+              'version': Var('swift_toolchain_version'),
           },
       ],
       'condition': 'host_os == "mac" and host_cpu == "x64"',
@@ -3154,7 +3160,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/tools/swift-toolchain/mac-arm64',
-              'version': 'version:2@6.4.0-release',
+              'version': Var('swift_toolchain_version'),
           },
       ],
       'condition': 'host_os == "mac" and host_cpu == "arm64"',
