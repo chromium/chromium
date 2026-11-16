@@ -267,14 +267,10 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
           features::kLCPScriptObserverMaxUrlLength.Get();
       size_t max_allowed_url_count =
           features::kLCPScriptObserverMaxUrlCountPerOrigin.Get();
-      size_t max_url_length_encountered = 0;
-      size_t prediction_match_count = 0;
 
       Vector<KURL> filtered_script_urls;
 
       for (auto& url : creators) {
-        max_url_length_encountered =
-            std::max<size_t>(max_url_length_encountered, url.length());
         if (url.length() >= max_allowed_url_length) {
           continue;
         }
@@ -284,30 +280,11 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
           continue;
         }
         filtered_script_urls.push_back(parsed_url);
-        if (lcp_influencer_scripts_.Contains(parsed_url)) {
-          prediction_match_count++;
-        }
         if (filtered_script_urls.size() >= max_allowed_url_count) {
           break;
         }
       }
       GetHost().SetLcpInfluencerScriptUrls(filtered_script_urls);
-
-      base::UmaHistogramCounts10000(
-          "Blink.LCPP.LCPInfluencerUrlsCount",
-          base::checked_cast<int>(filtered_script_urls.size()));
-      base::UmaHistogramCounts10000(
-          "Blink.LCPP.LCPInfluencerUrlsMaxLength",
-          base::checked_cast<int>(max_url_length_encountered));
-      base::UmaHistogramCounts10000(
-          "Blink.LCPP.LCPInfluencerUrlsPredictionMatchCount",
-          base::checked_cast<int>(prediction_match_count));
-      if (!lcp_influencer_scripts_.empty()) {
-        base::UmaHistogramCounts10000(
-            "Blink.LCPP.LCPInfluencerUrlsPredictionMatchPercent",
-            base::checked_cast<int>((double)prediction_match_count /
-                                    lcp_influencer_scripts_.size() * 100));
-      }
     }
   }
 }
