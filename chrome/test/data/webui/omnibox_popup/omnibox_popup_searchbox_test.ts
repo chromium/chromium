@@ -814,6 +814,29 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals('search', input.inputMode);
   });
 
+  test('FollowsInputLanguageChangesWithoutChangingText', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'abc',
+      selection: {start: 3, end: 3},
+      userInputInProgress: true,
+      isFocused: true,
+      prefersUrlInput: true,
+    }));
+    await microtasksFinished();
+    const input = searchbox.$.input.inputElement;
+    assertEquals('url', input.inputMode);
+
+    // E.g. the user switches to a CJK input language on Windows.
+    callbackRouter.setPrefersUrlInput(false);
+    await microtasksFinished();
+    assertEquals('search', input.inputMode);
+    assertEquals('abc', input.value);
+
+    callbackRouter.setPrefersUrlInput(true);
+    await microtasksFinished();
+    assertEquals('url', input.inputMode);
+  });
+
   test('SendsCaretToOldTabOnTabSwitch', async () => {
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       tabId: 1,

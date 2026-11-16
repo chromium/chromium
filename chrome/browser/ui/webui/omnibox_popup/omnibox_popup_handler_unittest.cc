@@ -162,6 +162,12 @@ TEST_F(OmniboxPopupHandlerTest, SetInputState) {
   page_.FlushForTesting();
 }
 
+TEST_F(OmniboxPopupHandlerTest, OnInputLocaleChanged) {
+  EXPECT_CALL(page_, SetPrefersUrlInput(true));
+  handler_->OnInputLocaleChanged();
+  page_.FlushForTesting();
+}
+
 TEST_F(OmniboxPopupHandlerTest, SyncsDefaultSearchProvider) {
   EXPECT_CALL(page_,
               SetDefaultSearchProvider(testing::_, testing::_, testing::_));

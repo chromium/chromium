@@ -40,12 +40,23 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+// Returns whether the page's input should expect URLs, like the Views omnibox.
+bool PrefersUrlInput(const ui::InputMethod* input_method) {
+  return OmniboxViewViews::GetPreferredTextInputType(input_method) ==
+         ui::TEXT_INPUT_TYPE_URL;
+}
+
+}  // namespace
 
 OmniboxPopupHandler::OmniboxPopupHandler(
     mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver,
@@ -305,14 +316,20 @@ void OmniboxPopupHandler::SetInputState(
         current_match.GetVectorIcon(is_bookmarked, associated_keyword_turl));
     state->current_match = std::move(mojom_match);
   }
-  // The input language is the same for all widgets.
+  // The input language is the same for all widgets, but Windows only tells the
+  // focused window's input method when it changes, and that's the popup's
+  // while the user types in it.
   views::Widget* widget = web_contents_
                               ? views::Widget::GetTopLevelWidgetForNativeView(
                                     web_contents_->GetNativeView())
                               : nullptr;
-  state->prefers_url_input = OmniboxViewViews::GetPreferredTextInputType(
-                                 widget ? widget->GetInputMethod() : nullptr) ==
-                             ui::TEXT_INPUT_TYPE_URL;
+  ui::InputMethod* input_method = widget ? widget->GetInputMethod() : nullptr;
+  if (input_method &&
+      !input_method_observation_.IsObservingSource(input_method)) {
+    input_method_observation_.Reset();
+    input_method_observation_.Observe(input_method);
+  }
+  state->prefers_url_input = PrefersUrlInput(input_method);
   // Extract active tab ID if in a Chrome browser window context.
   if (controller_ && controller_->client()->IsChromeOmniboxClient()) {
     auto* chrome_client =
@@ -354,6 +371,16 @@ void OmniboxPopupHandler::OnTemplateURLServiceChanged() {
 
 void OmniboxPopupHandler::OnTemplateURLServiceShuttingDown() {
   template_url_service_observation_.Reset();
+}
+
+void OmniboxPopupHandler::OnInputMethodDestroyed(
+    const ui::InputMethod* input_method) {
+  input_method_observation_.Reset();
+}
+
+void OmniboxPopupHandler::OnInputLocaleChanged() {
+  page_->SetPrefersUrlInput(
+      PrefersUrlInput(input_method_observation_.GetSource()));
 }
 
 std::string GetDefaultSearchProviderIcon(

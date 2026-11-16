@@ -155,6 +155,10 @@ void InputMethodBase::NotifyTextInputCaretBoundsChanged(
   observer_list_.Notify(&InputMethodObserver::OnCaretBoundsChanged, client);
 }
 
+void InputMethodBase::NotifyInputLocaleChanged() {
+  observer_list_.Notify(&InputMethodObserver::OnInputLocaleChanged);
+}
+
 void InputMethodBase::SetFocusedTextInputClientInternal(
     TextInputClient* client) {
   TextInputClient* old = text_input_client_;

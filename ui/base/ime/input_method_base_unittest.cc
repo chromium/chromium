@@ -126,6 +126,8 @@ class MockInputMethodBase : public InputMethodBase {
 
   ~MockInputMethodBase() override = default;
 
+  using InputMethodBase::NotifyInputLocaleChanged;
+
  private:
   // InputMethod:
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent*) override {
@@ -174,6 +176,8 @@ class MockInputMethodObserver : public InputMethodObserver {
 
   ~MockInputMethodObserver() override = default;
 
+  int input_locale_changes() const { return input_locale_changes_; }
+
  private:
   void OnFocus() override {}
   void OnBlur() override {}
@@ -182,9 +186,11 @@ class MockInputMethodObserver : public InputMethodObserver {
     verifier_->OnTextInputStateChanged(client);
   }
   void OnInputMethodDestroyed(const InputMethod* client) override {}
+  void OnInputLocaleChanged() override { ++input_locale_changes_; }
 
   // Not owned.
   const raw_ptr<ClientChangeVerifier> verifier_;
+  int input_locale_changes_ = 0;
 };
 
 typedef base::ScopedObservation<InputMethod, InputMethodObserver>
@@ -323,6 +329,17 @@ TEST_F(InputMethodBaseTest, SetsPasswordWhenHasBeenCustomPassword) {
   input_method.SetFocusedTextInputClient(&fake_text_input_client);
 
   EXPECT_EQ(TEXT_INPUT_TYPE_PASSWORD, input_method.GetTextInputType());
+}
+
+TEST_F(InputMethodBaseTest, NotifyInputLocaleChanged) {
+  ClientChangeVerifier verifier;
+  MockInputMethodBase input_method(&verifier);
+  MockInputMethodObserver input_method_observer(&verifier);
+  InputMethodScopedObservation scoped_observation(&input_method_observer);
+  scoped_observation.Observe(&input_method);
+
+  input_method.NotifyInputLocaleChanged();
+  EXPECT_EQ(1, input_method_observer.input_locale_changes());
 }
 
 }  // namespace

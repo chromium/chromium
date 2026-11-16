@@ -40,6 +40,11 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodObserver
   // Called when an API call is used to explicitly show / hide the virtual
   // keyboard.
   virtual void OnVirtualKeyboardVisibilityChangedIfEnabled(bool should_show) {}
+
+  // Called when the system tells the observed input method's window that the
+  // input locale changed, e.g. because the user switched to another input
+  // language. Currently only called on Windows.
+  virtual void OnInputLocaleChanged() {}
 };
 
 }  // namespace ui
