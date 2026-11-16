@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -195,6 +197,9 @@ class DisplayLockContextTest : public testing::Test {
   bool HasSelection(DisplayLockContext* context) {
     return context->render_affecting_state_[static_cast<int>(
         DisplayLockContext::RenderAffectingState::kSubtreeHasSelection)];
+  }
+  bool SubtreeHasTopLayerElement(DisplayLockContext* context) {
+    return context->SubtreeHasTopLayerElement();
   }
   DisplayLockUtilities::ScopedForcedUpdate GetScopedForcedUpdate(
       const Node* node,
@@ -4669,6 +4674,94 @@ TEST_F(DisplayLockContextTest,
       ThreadState::StackState::kNoHeapPointers);
   EXPECT_FALSE(weak_state1);
   EXPECT_FALSE(weak_state2);
+}
+
+TEST_F(DisplayLockContextTest,
+       TopLayerPendingSlotAssignmentRecalcDoesNotInvalidateIterator) {
+  ResizeAndFocus();
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot name="s">fallback</slot>
+        <div style="height: 10000px;"></div>
+        <div id="locked" style="content-visibility: auto">
+          <slot name="locked-slot"></slot>
+        </div>
+      </template>
+      <dialog id="dlg1" slot="s">top layer 1</dialog>
+      <dialog id="dlg2" slot="s">top layer 2</dialog>
+    </div>
+    <div id="ticker"
+         style="content-visibility: hidden; contain: layout style; width: 10px; height: 10px;"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = GetDocument().getElementById(AtomicString("host"));
+  auto* locked = host->GetShadowRoot()->getElementById(AtomicString("locked"));
+  auto* dlg1 =
+      To<HTMLDialogElement>(GetDocument().getElementById(AtomicString("dlg1")));
+  auto* dlg2 =
+      To<HTMLDialogElement>(GetDocument().getElementById(AtomicString("dlg2")));
+  auto* ticker = GetDocument().getElementById(AtomicString("ticker"));
+  ASSERT_TRUE(locked->GetDisplayLockContext());
+  ASSERT_TRUE(ticker->GetDisplayLockContext());
+
+  dlg1->showModal(ASSERT_NO_EXCEPTION);
+  dlg2->showModal(ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(GetDocument().TopLayerElements().size(), 4u);
+
+  // Change both dialogs' `slot` attributes so the shadow root has a pending
+  // slot assignment recalc that will remove two ::backdrop elements from
+  // `Document::TopLayerElements()`.
+  dlg1->setAttribute(html_names::kSlotAttr, AtomicString("does-not-exist"));
+  dlg2->setAttribute(html_names::kSlotAttr, AtomicString("does-not-exist"));
+
+  // Disconnect and reconnect `ticker` so it runs
+  // `DetermineIfSubtreeHasTopLayerElement()` at the start of the next lifecycle
+  // update while slot assignment is dirty.
+  ticker->remove();
+  GetDocument().body()->AppendChild(ticker);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().TopLayerElements().size(), 2u);
+  EXPECT_EQ(GetDocument().TopLayerElements()[0], dlg1);
+  EXPECT_EQ(GetDocument().TopLayerElements()[1], dlg2);
+  EXPECT_FALSE(SubtreeHasTopLayerElement(ticker->GetDisplayLockContext()));
+
+  // Now slot `dlg1` into `s` and `dlg2` into `locked-slot` inside `#locked`
+  // and show both as modal.
+  dlg1->close();
+  dlg2->close();
+  dlg1->setAttribute(html_names::kSlotAttr, AtomicString("s"));
+  dlg2->setAttribute(html_names::kSlotAttr, AtomicString("locked-slot"));
+  dlg1->showModal(ASSERT_NO_EXCEPTION);
+  dlg2->showModal(ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(SubtreeHasTopLayerElement(locked->GetDisplayLockContext()));
+  EXPECT_EQ(GetDocument().TopLayerElements().size(), 4u);
+
+  // Unslot `dlg1` while keeping `dlg2` inside `#locked`, and reconnect `ticker`
+  // to trigger the top-layer check while slot assignment is dirty.
+  dlg1->setAttribute(html_names::kSlotAttr, AtomicString("does-not-exist"));
+  ticker->remove();
+  GetDocument().body()->AppendChild(ticker);
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().TopLayerElements().size(), 3u);
+  EXPECT_TRUE(SubtreeHasTopLayerElement(locked->GetDisplayLockContext()));
+
+  // Finally unslot `dlg2` as well and verify `#locked` clears its top-layer
+  // state without iterator invalidation.
+  dlg2->setAttribute(html_names::kSlotAttr, AtomicString("does-not-exist"));
+  ticker->remove();
+  GetDocument().body()->AppendChild(ticker);
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetDocument().TopLayerElements().size(), 2u);
+  EXPECT_FALSE(SubtreeHasTopLayerElement(locked->GetDisplayLockContext()));
 }
 
 }  // namespace blink
