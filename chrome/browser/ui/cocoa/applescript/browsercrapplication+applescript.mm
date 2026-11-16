@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/applescript/browsercrapplication+applescript.h"
+
 #include <Foundation/Foundation.h>
 
 #include <map>
@@ -15,7 +17,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_folder_applescript.h"
-#import "chrome/browser/ui/cocoa/applescript/browsercrapplication+applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/window_applescript.h"
@@ -124,19 +125,6 @@ using bookmarks::BookmarkModel;
 
 - (NSArray<BookmarkFolderAppleScript*>*)bookmarkFolders {
   return @[ self.otherBookmarks, self.bookmarksBar ];
-}
-
-- (void)insertInBookmarksFolders:(BookmarkFolderAppleScript*)aBookmarkFolder {
-  NOTIMPLEMENTED();
-}
-
-- (void)insertInBookmarksFolders:(BookmarkFolderAppleScript*)aBookmarkFolder
-                         atIndex:(int)index {
-  NOTIMPLEMENTED();
-}
-
-- (void)removeFromBookmarksFoldersAtIndex:(int)index {
-  NOTIMPLEMENTED();
 }
 
 @end

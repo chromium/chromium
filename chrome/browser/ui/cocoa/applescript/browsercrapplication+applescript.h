@@ -47,13 +47,6 @@
 // Returns the Bookmarks Bar and Other Bookmarks Folders.
 @property(readonly) NSArray<BookmarkFolderAppleScript*>* bookmarkFolders;
 
-// Required functions, even though bookmarkFolders is declared as
-// read-only, cocoa scripting does not currently prevent writing.
-- (void)insertInBookmarksFolders:(BookmarkFolderAppleScript*)aBookmarkFolder;
-- (void)insertInBookmarksFolders:(BookmarkFolderAppleScript*)aBookmarkFolder
-                         atIndex:(int)index;
-- (void)removeFromBookmarksFoldersAtIndex:(int)index;
-
 @end
 
 #endif  // CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BROWSERCRAPPLICATION_APPLESCRIPT_H_
