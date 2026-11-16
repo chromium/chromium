@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -26,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -251,10 +253,12 @@ public class ActorBackgroundActuationManagerTest {
 
         // Verify setup failed notification was sent to native
         verify(mActorKeyedService).notifyBackgroundSetupFailed(MESSAGE_ID_FAIL);
-        // Verify cleanup stopped offscreen rendering and destroyed tab
-        verify(mTab).removeObserver(observer);
-        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
-        verify(mTab).destroy();
+        // Verify the observer was removed before cleanup destroyed the tab, so destroying the tab
+        // cannot re-enter the observer.
+        InOrder inOrder = inOrder(mTab, mOffscreenRenderingManager);
+        inOrder.verify(mTab).removeObserver(observer);
+        inOrder.verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        inOrder.verify(mTab).destroy();
     }
 
     @Test

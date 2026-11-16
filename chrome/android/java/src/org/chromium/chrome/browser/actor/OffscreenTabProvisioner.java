@@ -125,40 +125,32 @@ final class OffscreenTabProvisioner {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
                         Log.d(TAG, "Actor: Offscreen page load finished: %s", url.getSpec());
-                        if (!mInitialLoadFinished) {
-                            mInitialLoadFinished = true;
-                            callback.onResult(tab);
-                            tab.removeObserver(this);
-                        }
+                        finish(tab);
                     }
 
                     @Override
                     public void onPageLoadFailed(Tab tab, int errorCode) {
                         Log.d(TAG, "Actor: Offscreen page load failed, error: %d", errorCode);
-                        if (!mInitialLoadFinished) {
-                            mInitialLoadFinished = true;
-                            callback.onResult(null);
-                            tab.removeObserver(this);
-                        }
+                        finish(null);
                     }
 
                     @Override
                     public void onCrash(Tab tab) {
                         Log.d(TAG, "Actor: Offscreen tab crashed");
-                        if (!mInitialLoadFinished) {
-                            mInitialLoadFinished = true;
-                            callback.onResult(null);
-                            tab.removeObserver(this);
-                        }
+                        finish(null);
                     }
 
                     @Override
                     public void onDestroyed(Tab tab) {
+                        finish(null);
+                    }
+
+                    private void finish(@Nullable Tab result) {
                         if (!mInitialLoadFinished) {
                             mInitialLoadFinished = true;
-                            callback.onResult(null);
+                            tab.removeObserver(this);
+                            callback.onResult(result);
                         }
-                        tab.removeObserver(this);
                     }
                 };
         tab.addObserver(observer);
