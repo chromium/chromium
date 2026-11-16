@@ -278,6 +278,7 @@ suite('ReadonlyOmnibox', function() {
     let placeHolderStyle = getComputedStyle(input, '::placeholder');
     assertEquals('rgb(0, 255, 255)', placeHolderStyle.color);
     assertEquals('Search your Default Search Engine', input.placeholder);
+    assertEquals('visible', placeHolderStyle.visibility);
 
     omnibox.browserOmniboxState = {
       ...initialState,
@@ -292,6 +293,18 @@ suite('ReadonlyOmnibox', function() {
     placeHolderStyle = getComputedStyle(getTextInput(), '::placeholder');
     assertEquals('rgb(0, 0, 255)', placeHolderStyle.color);
     assertEquals('Some other placeholder hint', input.placeholder);
+    assertEquals('visible', placeHolderStyle.visibility);
+  });
+
+  test('Null placeholder means empty', async () => {
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [],
+      placeholder: null,
+    };
+    const input = getTextInput();
+    await microtasksFinished();
+    assertEquals('', input.placeholder);
   });
 
   test('RTL mode handling', async () => {

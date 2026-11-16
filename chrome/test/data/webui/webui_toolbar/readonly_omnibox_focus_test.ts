@@ -48,9 +48,15 @@ suite('ReadOnlyOmniboxFocus', function() {
     const browserProxy = new TestToolbarBrowserProxy();
     uiHandler = browserProxy.toolbarUIHandler;
     BrowserProxyImpl.setInstance(browserProxy);
-
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     omnibox = document.createElement('readonly-omnibox');
+
+    omnibox.style.setProperty('--color-omnibox-text', 'rgb(0, 255, 255)');
+    omnibox.style.setProperty('--color-omnibox-text-dimmed', 'rgb(0, 255, 0)');
+    omnibox.style.setProperty(
+        '--color-omnibox-foreground-disabled', 'rgb(0, 0, 255)');
+    omnibox.style.setProperty(
+        '--color-omnibox-security-chip-dangerous', 'rgb(255, 0, 0)');
     // `other` can be any focusable element; it's here for tests that move
     // the focus around.
     other = document.createElement('input');
@@ -222,5 +228,40 @@ suite('ReadOnlyOmniboxFocus', function() {
     assertFalse(args[4].focusChange.hasFocus);
     assertEquals(3, args[4].focusChange.selection.start);
     assertEquals(2, args[4].focusChange.selection.end);
+  });
+
+  test('Placeholder formatting when focused', async () => {
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [],
+      placeholder: {
+        text: 'Search your Default Search Engine',
+        strikethrough: false,
+        color: OmniboxTextColor.kOmniboxText,
+      },
+    };
+    const input = getTextInput();
+    await microtasksFinished();
+    let placeHolderStyle = getComputedStyle(input, '::placeholder');
+    assertEquals('rgb(0, 255, 255)', placeHolderStyle.color);
+    assertEquals('Search your Default Search Engine', input.placeholder);
+    assertTrue(input.matches(':focus'));
+    assertEquals('visible', placeHolderStyle.visibility);
+
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [],
+      placeholder: {
+        text: 'Some other placeholder hint',
+        strikethrough: false,
+        color: OmniboxTextColor.kOmniboxForegroundDisabled,
+      },
+    };
+    await microtasksFinished();
+    placeHolderStyle = getComputedStyle(getTextInput(), '::placeholder');
+    assertEquals('rgb(0, 0, 255)', placeHolderStyle.color);
+    assertEquals('Some other placeholder hint', input.placeholder);
+    assertTrue(input.matches(':focus'));
+    assertEquals('visible', placeHolderStyle.visibility);
   });
 });

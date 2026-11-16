@@ -94,6 +94,7 @@
 
 #textInput::part(searchbox-input)::placeholder {
   color: var(--color-omnibox-text);
+  visibility: visible;
 }
 
 #textContainer .color-dim {

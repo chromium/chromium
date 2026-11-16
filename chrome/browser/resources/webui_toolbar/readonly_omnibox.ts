@@ -1483,8 +1483,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     return classes.join(' ');
   }
 
-  protected getInputPlaceholder_(): string|undefined {
-    return this.omniboxViewState.placeholder?.text;
+  protected getInputPlaceholder_(): string {
+    return this.omniboxViewState.placeholder?.text || '';
   }
 
   protected getInputClasses_(): string|undefined {
