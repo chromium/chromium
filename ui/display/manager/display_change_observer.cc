@@ -409,8 +409,9 @@ void DisplayChangeObserver::UpdateInternalDisplay(
         (force_first_display_internal &&
          (!HasInternalDisplay() || IsInternalDisplayId(state->display_id())))) {
       if (HasInternalDisplay()) {
-        CHECK_EQ(Display::InternalDisplayId(), state->display_id(),
-                 base::NotFatalUntil::M163);
+        // TODO(crbug.com/585411746): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK_EQ(Display::InternalDisplayId(), state->display_id());
       }
       SetInternalDisplayIds({state->display_id()});
 
