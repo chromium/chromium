@@ -74,6 +74,11 @@ public class ChromeItemPickerActivityTest {
         return intent;
     }
 
+    private ChromeItemPickerActivity launchPickerActivity(Runnable launchRunnable) {
+        return ApplicationTestUtils.waitForActivityWithClass(
+                ChromeItemPickerActivity.class, Stage.CREATED, launchRunnable);
+    }
+
     private void doTestActivityThemeColor(boolean isIncognito) {
         // EnableFeature(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
         final ChromeItemPickerActivity activity =
@@ -141,13 +146,13 @@ public class ChromeItemPickerActivityTest {
         final Context context = ContextUtils.getApplicationContext();
 
         final ChromeItemPickerActivity activity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeItemPickerActivity.class,
-                        Stage.CREATED,
-                        () -> context.startActivity(intent));
-
-        assertNotNull(activity);
-        assertEquals(TEST_WINDOW_ID, activity.getWindowIdForTesting());
+                launchPickerActivity(() -> context.startActivity(intent));
+        try {
+            assertNotNull(activity);
+            assertEquals(TEST_WINDOW_ID, activity.getWindowIdForTesting());
+        } finally {
+            ApplicationTestUtils.finishActivity(activity);
+        }
     }
 
     @Test
@@ -168,12 +173,12 @@ public class ChromeItemPickerActivityTest {
         // lookup.
 
         ChromeItemPickerActivity activity =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeItemPickerActivity.class,
-                        Stage.CREATED,
-                        () -> hostActivity.startActivity(intent));
-
-        assertNotNull(activity);
-        assertEquals(expectedWindowId, activity.getWindowIdForTesting());
+                launchPickerActivity(() -> hostActivity.startActivity(intent));
+        try {
+            assertNotNull(activity);
+            assertEquals(expectedWindowId, activity.getWindowIdForTesting());
+        } finally {
+            ApplicationTestUtils.finishActivity(activity);
+        }
     }
 }
