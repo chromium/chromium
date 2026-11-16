@@ -232,13 +232,13 @@ class AutoBuildHelper final : public NativeEventListener {
 
 namespace {
 
-String ReplaceUnpairedSurrogates(const String& node_text) {
+String ReplaceUnpairedSurrogates(const StringView& node_text) {
   if (!RuntimeEnabledFeatures::AIPageContentConvertNodeTextToUtf8Enabled()) {
-    return node_text;
+    return node_text.ToString();
   }
 
   if (node_text.IsNull() || node_text.empty()) {
-    return node_text;
+    return node_text.ToString();
   }
 
   // These strings need to be converted between formats (mojom, protobuf, etc)
@@ -256,7 +256,7 @@ String ReplaceUnpairedSurrogates(const String& node_text) {
   // Strings that are already in 8 bit representation (like Latin1 encoding)
   // can't contain unpaired surrogates, so we can return those transparently.
   if (node_text.Is8Bit()) {
-    return node_text;
+    return node_text.ToString();
   }
 
   return String::FromUtf8(
@@ -264,7 +264,7 @@ String ReplaceUnpairedSurrogates(const String& node_text) {
 }
 
 String ConvertNodeTextToUtf8(const AtomicString& node_text) {
-  return ReplaceUnpairedSurrogates(node_text.GetString());
+  return ReplaceUnpairedSurrogates(node_text);
 }
 
 // Coordinate mapping flags
@@ -1239,7 +1239,7 @@ String NormalizeLabelCandidate(const StringView& text) {
   if (text.SubstringContainsOnlyWhitespaceOrEmpty(0, text.length())) {
     return String();
   }
-  return ReplaceUnpairedSurrogates(text.ToString());
+  return ReplaceUnpairedSurrogates(text);
 }
 
 // Reads the first <title> or <desc> child of this element. Does not use titles
@@ -1755,7 +1755,7 @@ void ProcessRootMathNode(const MathMLElement& mathml_element,
   StringBuilder builder;
   if (SerializeMathMLNode(mathml_element, builder, /*depth=*/1,
                           /*should_preserve_whitespace=*/false)) {
-    String serialized = ReplaceUnpairedSurrogates(builder.ToString());
+    String serialized = ReplaceUnpairedSurrogates(builder);
     const size_t byte_size = serialized.Utf8().length();
     if (byte_size <= kMaxStrippedMathMLBytes) {
       base::UmaHistogramCounts1M(
@@ -1813,7 +1813,7 @@ void ProcessTableNode(const LayoutTable& layout_table,
           table_name.Append(layout_text->TransformedText());
         }
       }
-      table_data->table_name = ReplaceUnpairedSurrogates(table_name.ToString());
+      table_data->table_name = ReplaceUnpairedSurrogates(table_name);
     }
   }
   attributes.table_data = std::move(table_data);
