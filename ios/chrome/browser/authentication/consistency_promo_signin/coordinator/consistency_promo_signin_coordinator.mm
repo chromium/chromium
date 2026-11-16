@@ -8,7 +8,6 @@
 #import <optional>
 #import <utility>
 
-#import "base/check_deref.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
@@ -678,12 +677,11 @@
                         signinAccount:(const CoreAccountId&)signin_account
                          withCallback:
                              (const base::RepeatingCallback<void(
-                                  signin::WebSigninTracker::Result)>*)callback
+                                  signin::WebSigninTracker::Result)>&)callback
                           withTimeout:
                               (const std::optional<base::TimeDelta>&)timeout {
   return std::make_unique<signin::WebSigninTracker>(
-      identityManager, accountReconcilor, signin_account, CHECK_DEREF(callback),
-      timeout);
+      identityManager, accountReconcilor, signin_account, callback, timeout);
 }
 
 - (ChangeProfileContinuation)changeProfileContinuation {

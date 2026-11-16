@@ -96,7 +96,7 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
                         signinAccount:(const CoreAccountId&)signin_account
                          withCallback:
                              (const base::RepeatingCallback<void(
-                                  signin::WebSigninTracker::Result)>*)callback
+                                  signin::WebSigninTracker::Result)>&)callback
                           withTimeout:
                               (const std::optional<base::TimeDelta>&)timeout;
 

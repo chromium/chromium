@@ -287,7 +287,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       [self.delegate trackWebSigninWithIdentityManager:_identityManager
                                      accountReconcilor:_accountReconcilor
                                          signinAccount:accountId
-                                          withCallback:&callback
+                                          withCallback:callback
                                            withTimeout:kSigninTimeout];
   // TODO(crbug.com/570450501): Stub the tracker in tests and remove this check.
   if (_webSigninTracker) {

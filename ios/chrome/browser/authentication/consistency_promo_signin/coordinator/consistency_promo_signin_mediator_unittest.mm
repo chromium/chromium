@@ -138,10 +138,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
                             accountReconcilor:ios::OCM::AnyPointer<
                                                   AccountReconcilor>()
                                 signinAccount:CoreAccountId()
-                                 withCallback:ios::OCM::AnyPointer<
-                                                  base::RepeatingCallback<void(
-                                                      signin::WebSigninTracker::
-                                                          Result)>>()
+                                 withCallback:base::DoNothing()
                                   withTimeout:std::nullopt])
         .ignoringNonObjectArgs()
         .andAssignStructParameterAtAddressToVariable(captured_callback_, 3);
