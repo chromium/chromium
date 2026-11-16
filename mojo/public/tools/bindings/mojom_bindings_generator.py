@@ -130,6 +130,8 @@ def _GetModulePath(path, output_dir):
 
 
 def ScrambleMethodOrdinals(interfaces, salt):
+  if not salt or not salt.strip():
+    raise ValueError('Mojo message ID scrambling salt must not be empty.')
   already_generated = set()
   for interface in interfaces:
     i = 0
@@ -266,9 +268,13 @@ class MojomProcessor:
     with open(module_path, 'rb') as f:
       module = Module.Load(f)
 
-    if args.scrambled_message_id_salt_paths:
+    if args.scrambled_message_id_salts or args.scrambled_message_id_salt_paths:
       salt = b''.join(
-        map(ReadFileContents, args.scrambled_message_id_salt_paths)
+        [s.encode('utf-8') for s in (args.scrambled_message_id_salts or [])]
+        + [
+          ReadFileContents(p)
+          for p in (args.scrambled_message_id_salt_paths or [])
+        ]
       )
       ScrambleMethodOrdinals(module.interfaces, salt)
 
@@ -413,7 +419,7 @@ def _Precompile(args, _):
   return 0
 
 
-def main():
+def _CreateArgumentParser():
   parser = argparse.ArgumentParser(
     description="Generate bindings from mojom files."
   )
@@ -526,12 +532,22 @@ def main():
     help="Generate code that is shared by different variants.",
   )
   generate_parser.add_argument(
+    "--scrambled_message_id_salt",
+    dest="scrambled_message_id_salts",
+    help="If non-empty, a literal string to be used as a salt for generating "
+    "scrambled message IDs. If this switch is specified more than once or "
+    "combined with --scrambled_message_id_salt_path, all salt values are "
+    "concatenated to form the salt value.",
+    default=[],
+    action="append",
+  )
+  generate_parser.add_argument(
     "--scrambled_message_id_salt_path",
     dest="scrambled_message_id_salt_paths",
-    help="If non-empty, the path to a file whose contents should be used as"
-    "a salt for generating scrambled message IDs. If this switch is specified"
-    "more than once, the contents of all salt files are concatenated to form"
-    "the salt value.",
+    help="If non-empty, the path to a file whose contents should be used as "
+    "a salt for generating scrambled message IDs. If this switch is specified "
+    "more than once or combined with --scrambled_message_id_salt, all salt "
+    "values are concatenated to form the salt value.",
     default=[],
     action="append",
   )
@@ -596,8 +612,12 @@ def main():
     help="comma-separated list of generators",
   )
   precompile_parser.set_defaults(func=_Precompile)
+  return parser
 
-  args, remaining_args = parser.parse_known_args()
+
+def main(argv=None):
+  parser = _CreateArgumentParser()
+  args, remaining_args = parser.parse_known_args(argv)
   return args.func(args, remaining_args)
 
 

@@ -36,9 +36,9 @@ declare_args() {
   enable_mojom_typemapping = true
 
   # Controls message ID scrambling behavior. If |true|, message IDs are
-  # scrambled (i.e. randomized based on the contents of //chrome/VERSION) on
-  # non-Chrome OS desktop platforms. Enabled on official builds by default.
-  # Set to |true| to enable message ID scrambling on a specific build.
+  # scrambled (i.e. randomized based on the BUILD number in //chrome/VERSION by
+  # default) on non-Chrome OS desktop platforms. Enabled on official builds by
+  # default. Set to |true| to enable message ID scrambling on a specific build.
   # See also `enable_scrambled_message_ids` below for more details.
   enable_mojom_message_id_scrambling = is_official_build
 
@@ -120,18 +120,7 @@ mojom_generator_sources =
     ]
 
 if (enable_scrambled_message_ids) {
-  declare_args() {
-    # The path to a file whose contents can be used as the basis for a message
-    # ID scrambling salt.
-    mojom_message_id_salt_path = "//chrome/VERSION"
-  }
-
-  assert(mojom_message_id_salt_path != "")
-  message_scrambling_args = [
-    "--scrambled_message_id_salt_path",
-    rebase_path(mojom_message_id_salt_path, root_build_dir),
-  ]
-  message_scrambling_inputs = [ mojom_message_id_salt_path ]
+  import("//mojo/public/tools/bindings/mojom_message_id_scrambling.gni")
 } else {
   message_scrambling_args = []
   message_scrambling_inputs = []
