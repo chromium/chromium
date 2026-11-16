@@ -16,6 +16,7 @@ import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
 import {GIF_ERROR_TRY_AGAIN} from './events.js';
 import Fuse from './fuse.js';
+import type {IFuseOptions} from './fuse.js';
 import {Status} from './tenor_types.mojom-webui.js';
 import type {CategoryData, EmojiGroupData, EmojiVariants, Gender, Tone} from './types.js';
 import {CategoryEnum} from './types.js';
@@ -68,7 +69,7 @@ export class EmojiSearch extends PolymerElement {
   declare private globalGender: Gender|null;
 
   // TODO(b/235419647): Update the config to use extended search.
-  private fuseConfig: Fuse.IFuseOptions<EmojiVariants> = {
+  private fuseConfig: IFuseOptions<EmojiVariants> = {
     threshold: 0.0,        // Exact match only.
     ignoreLocation: true,  // Match in all locations.
     keys:

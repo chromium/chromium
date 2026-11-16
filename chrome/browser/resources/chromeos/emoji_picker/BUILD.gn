@@ -90,7 +90,7 @@ generate_grd("build_fuse_grdp") {
 }
 
 copy("copy_fuse") {
-  sources = [ "//third_party/fusejs/src/dist/fuse.basic.esm.min.js" ]
+  sources = [ "//third_party/fusejs/src/dist/fuse.basic.min.mjs" ]
   outputs = [ "$preprocess_folder/fuse.js" ]
 }
 

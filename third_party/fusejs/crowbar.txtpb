@@ -1,9 +1,9 @@
 upstream {
-  commit: "e5c990744321d2b673944af65d98609198e37402"
+  version: "v7.5.0"
   artifacts {
     git {
       repository: "https://github.com/krisk/Fuse"
-      commit: "e5c990744321d2b673944af65d98609198e37402"
+      commit: "45bac9fe2e71fe8c680c861a35a8b226c4ae6d5a"
     }
   }
 }
@@ -12,4 +12,18 @@ stages {
     patch { copybara {} }
   }
   publish { git {} }
+}
+latest {
+  # TODO(http://b/585043556): Switch to SemVer after it supports excluding
+  # pre-release versions.
+  generic {
+    format: "v${n0}.${n1}.${n2}"
+    regex_groups { key: "n0" value: "[0-9]+" }
+    regex_groups { key: "n1" value: "[0-9]+" }
+    regex_groups { key: "n2" value: "[0-9]+" }
+  }
+  git {
+    repository: "https://github.com/krisk/Fuse"
+    tags {}
+  }
 }

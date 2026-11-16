@@ -1,293 +1,362 @@
-// Type definitions for Fuse.js v6.4.1
-// TypeScript v3.9.5
 
-export default Fuse
-export as namespace Fuse
-
-declare class Fuse<T> {
-  constructor(
-    list: ReadonlyArray<T>,
-    options?: Fuse.IFuseOptions<T>,
-    index?: FuseIndex<T>
-  )
+//#region src/types.d.ts
+type RangeTuple = [number, number];
+interface SearchResult {
+  isMatch: boolean;
+  score: number;
+  indices?: ReadonlyArray<RangeTuple>;
+  /** @internal Aggregation flag for extended-search inverse terms. */
+  hasInverse?: boolean;
   /**
-   * Search function for the Fuse instance.
-   *
-   * ```typescript
-   * const list: MyType[] = [myType1, myType2, etc...]
-
-   * const options: Fuse.IFuseOptions<MyType> = {
-   *  keys: ['key1', 'key2']
-   * }
-   *
-   * const myFuse = new Fuse(list, options)
-   * let result = myFuse.search('pattern')
-   * ```
-   *
-   * @param pattern The pattern to search
-   * @param options `Fuse.FuseSearchOptions`
-   * @returns An array of search results
+   * @internal Token-search `tokenMatch: 'all'` coverage for this text.
+   * `matchedMask` bit `i` ⇒ query term `i` matched here (≤31-term fast path);
+   * `matchedTerms` is the equivalent set for the ≥32-term fallback.
    */
-  search<R = T>(
-    pattern: string | Fuse.Expression,
-    options?: Fuse.FuseSearchOptions
-  ): Fuse.FuseResult<R>[]
-
-  setCollection(docs: ReadonlyArray<T>, index?: FuseIndex<T>): void
-
-  /**
-   * Adds a doc to the end the list.
-   */
-  add(doc: T): void
-
-  /**
-   * Removes all documents from the list which the predicate returns truthy for,
-   * and returns an array of the removed docs.
-   * The predicate is invoked with two arguments: (doc, index).
-   */
-  remove(predicate: (doc: T, idx: number) => boolean): T[]
-
-  /**
-   * Removes the doc at the specified index.
-   */
-  removeAt(idx: number): void
-
-  /**
-   * Returns the generated Fuse index
-   */
-  getIndex(): FuseIndex<T>
-
-  /**
-   * Return the current version.
-   */
-  static version: string
-
-  /**
-   * Use this method to pre-generate the index from the list, and pass it
-   * directly into the Fuse instance.
-   *
-   * _Note that Fuse will automatically index the table if one isn't provided
-   * during instantiation._
-   *
-   * ```typescript
-   * const list: MyType[] = [myType1, myType2, etc...]
-   *
-   * const index = Fuse.createIndex<MyType>(
-   *  keys: ['key1', 'key2']
-   *  list: list
-   * )
-   *
-   * const options: Fuse.IFuseOptions<MyType> = {
-   *  keys: ['key1', 'key2']
-   * }
-   *
-   * const myFuse = new Fuse(list, options, index)
-   * ```
-   * @param keys    The keys to index
-   * @param list    The list from which to create an index
-   * @param options?
-   * @returns An indexed list
-   */
-  static createIndex<U>(
-    keys: Array<Fuse.FuseOptionKey>,
-    list: ReadonlyArray<U>,
-    options?: Fuse.FuseIndexOptions<U>
-  ): FuseIndex<U>
-
-  static parseIndex<U>(
-    index: any,
-    options?: Fuse.FuseIndexOptions<U>
-  ): FuseIndex<U>
+  matchedMask?: number;
+  /** @internal */
+  matchedTerms?: Set<number>;
+  /** @internal Query token count; descriptor for the record-level AND gate. */
+  termCount?: number;
 }
-
-declare class FuseIndex<T> {
-  constructor(options?: Fuse.FuseIndexOptions<T>)
-  setSources(docs: ReadonlyArray<T>): void
-  setKeys(keys: ReadonlyArray<string>): void
-  setIndexRecords(records: Fuse.FuseIndexRecords): void
-  create(): void
-  add(doc: T): void
+interface Searcher {
+  searchIn(text: string): SearchResult;
+}
+interface FuseOptionKeyObject<T> {
+  name: string | string[];
+  weight?: number;
+  getFn?: (obj: T) => ReadonlyArray<string> | string | null | undefined;
+}
+type FuseOptionKey<T> = FuseOptionKeyObject<T> | string | string[];
+interface KeyObject {
+  path: string[];
+  id: string;
+  weight: number;
+  src: string | string[];
+  getFn?: ((obj: any) => ReadonlyArray<string> | string | null | undefined) | null;
+}
+type FuseGetFunction<T> = (obj: T, path: string | string[]) => ReadonlyArray<string> | string;
+type GetFunction = (obj: any, path: string | string[]) => any;
+/**
+ * Custom tokenizer for `useTokenSearch`. Receives the field/query text after
+ * case-folding and diacritic-stripping (per `isCaseSensitive` /
+ * `ignoreDiacritics`) and must return the term list. Functions must be
+ * deterministic — non-deterministic output silently breaks `df` accounting.
+ */
+type FuseTokenizeFunction = (text: string) => string[];
+interface NormInterface {
+  get(value: string): number;
+  clear(): void;
+}
+interface RecordEntryObject {
+  /** The text value */
+  v: string;
+  /** The field-length norm */
+  n: number;
+}
+type RecordEntryArrayItem = ReadonlyArray<RecordEntryObject & {
+  i: number;
+}>;
+type RecordEntry = {
+  [key: string]: RecordEntryObject | RecordEntryArrayItem;
+};
+interface FuseIndexObjectRecord {
+  /** The index of the record in the source list */
+  i: number;
+  $: RecordEntry;
+}
+interface FuseIndexStringRecord {
+  /** The index of the record in the source list */
+  i: number;
+  /** The text value */
+  v: string;
+  /** The field-length norm */
+  n: number;
+}
+type FuseIndexRecords = ReadonlyArray<FuseIndexObjectRecord> | ReadonlyArray<FuseIndexStringRecord>;
+interface IndexRecord {
+  i: number;
+  v?: string;
+  n?: number;
+  $?: Record<number, SubRecord | SubRecord[]>;
+}
+interface SubRecord {
+  v: string;
+  i?: number;
+  n: number;
+}
+type FuseSortFunctionItem = {
+  [key: string]: {
+    $: string;
+  } | {
+    $: string;
+    idx: number;
+  }[];
+};
+type FuseSortFunctionMatch = {
+  score: number;
+  key: KeyObject;
+  value: string;
+  indices: ReadonlyArray<number>[];
+};
+type FuseSortFunctionMatchList = FuseSortFunctionMatch & {
+  idx: number;
+};
+type FuseSortFunctionArg = {
+  idx: number;
+  item: FuseSortFunctionItem;
+  score: number;
+  matches?: (FuseSortFunctionMatch | FuseSortFunctionMatchList)[];
+};
+type FuseSortFunction = (a: FuseSortFunctionArg, b: FuseSortFunctionArg) => number;
+interface MatchScore {
+  score: number;
+  key?: KeyObject | null;
+  value: string;
+  idx?: number;
+  hasInverse?: boolean;
+  norm: number;
+  indices?: ReadonlyArray<RangeTuple>;
+  /** @internal Token-search `tokenMatch: 'all'` coverage carried up for record-level gating. */
+  matchedMask?: number;
+  /** @internal */
+  matchedTerms?: Set<number>;
+  /** @internal */
+  termCount?: number;
+}
+interface InternalResult {
+  idx: number;
+  item: any;
+  score?: number;
+  matches: MatchScore[];
+}
+interface IFuseOptions<T> {
+  /** Indicates whether comparisons should be case sensitive. */
+  isCaseSensitive?: boolean;
+  /** Indicates whether comparisons should ignore diacritics (accents). */
+  ignoreDiacritics?: boolean;
+  /** Determines how close the match must be to the fuzzy location. */
+  distance?: number;
+  /** When true, the matching function will continue to the end of a search pattern even if a perfect match has already been located in the string. */
+  findAllMatches?: boolean;
+  /** The function to use to retrieve an object's value at the provided path. */
+  getFn?: FuseGetFunction<T>;
+  /** When `true`, search will ignore `location` and `distance`. */
+  ignoreLocation?: boolean;
+  /** When `true`, the calculation for the relevance score will ignore the field-length norm. */
+  ignoreFieldNorm?: boolean;
+  /** Determines how much the field-length norm affects scoring. */
+  fieldNormWeight?: number;
+  /** Whether the matches should be included in the result set. */
+  includeMatches?: boolean;
+  /** Whether the score should be included in the result set. */
+  includeScore?: boolean;
+  /** List of keys that will be searched. */
+  keys?: Array<FuseOptionKey<T>>;
+  /** Determines approximately where in the text is the pattern expected to be found. */
+  location?: number;
+  /** Only the matches whose length exceeds this value will be returned. */
+  minMatchCharLength?: number;
+  /** Whether to sort the result list, by score. */
+  shouldSort?: boolean;
+  /** The function to use to sort all the results. */
+  sortFn?: FuseSortFunction;
+  /** At what point does the match algorithm give up. */
+  threshold?: number;
+  /** When `true`, it enables the use of unix-like search commands. */
+  useExtendedSearch?: boolean;
+  /** When `true`, enables token search with TF-IDF scoring. */
+  useTokenSearch?: boolean;
+  /**
+   * Tokenizer used by `useTokenSearch`, applied identically at index-build
+   * and query time. Accepts either a global `RegExp` or a function returning
+   * `string[]`. Defaults to `/[\p{L}\p{M}\p{N}_]+/gu`, which handles CJK,
+   * Cyrillic, Greek, Arabic, Hebrew, Devanagari, etc. out of the box. Use a
+   * function form (e.g. wrapping `Intl.Segmenter`) for word-segmentation in
+   * scripts without whitespace boundaries.
+   */
+  tokenize?: RegExp | FuseTokenizeFunction;
+  /**
+   * How the words of a multi-word query combine, for `useTokenSearch` only.
+   * `'any'` (default) returns a record if it matches any query word (OR);
+   * `'all'` returns it only when every query word matches somewhere in the
+   * record — any field or array element (AND). Use `'all'` for filtering,
+   * where adding a word should narrow the results. Has no effect unless
+   * `useTokenSearch` is `true`.
+   */
+  tokenMatch?: 'all' | 'any';
+}
+interface FuseIndexOptions<T> {
+  getFn?: FuseGetFunction<T>;
+  fieldNormWeight?: number;
+}
+interface FuseSearchOptions {
+  limit?: number;
+}
+interface FuseResultMatch {
+  indices: ReadonlyArray<RangeTuple>;
+  key?: string;
+  refIndex?: number;
+  value?: string;
+}
+interface FuseResult<T> {
+  item: T;
+  refIndex: number;
+  score?: number;
+  matches?: ReadonlyArray<FuseResultMatch>;
+}
+type Expression = string | {
+  [key: string]: string;
+} | {
+  $path: ReadonlyArray<string>;
+  $val: string;
+} | {
+  $and?: Expression[];
+} | {
+  $or?: Expression[];
+};
+//#endregion
+//#region src/tools/FuseIndex.d.ts
+declare class FuseIndex<T = any> {
+  norm: NormInterface;
+  getFn: GetFunction;
+  isCreated: boolean;
+  docs: ReadonlyArray<T>;
+  records: IndexRecord[];
+  keys: KeyObject[];
+  _keysMap: Record<string, number>;
+  constructor({
+    getFn,
+    fieldNormWeight
+  }?: FuseIndexOptions<T>);
+  setSources(docs?: ReadonlyArray<T>): void;
+  setIndexRecords(records?: IndexRecord[]): void;
+  setKeys(keys?: KeyObject[]): void;
+  create(): void;
+  add(doc: T, docIndex: number): IndexRecord | null;
+  removeAt(idx: number): void;
+  removeAll(indices: number[]): void;
+  getValueForItemAtKeyId(item: any, keyId: string): any;
+  size(): number;
+  _createStringRecord(doc: string, docIndex: number): IndexRecord | null;
+  _createObjectRecord(doc: any, docIndex: number): IndexRecord;
   toJSON(): {
-    keys: ReadonlyArray<string>
-    collection: Fuse.FuseIndexRecords
-  }
+    keys: ReadonlyArray<Omit<KeyObject, 'getFn'>>;
+    records: IndexRecord[];
+  };
 }
-
-declare namespace Fuse {
-  type FuseGetFunction<T> = (
-    obj: T,
-    path: string | string[]
-  ) => ReadonlyArray<string> | string
-
-  export type FuseIndexOptions<T> = {
-    getFn: FuseGetFunction<T>
-  }
-
-  // {
-  //   title: { '$': "Old Man's War" },
-  //   'author.firstName': { '$': 'Codenar' }
-  // }
-  //
-  // OR
-  //
-  // {
-  //   tags: [
-  //     { $: 'nonfiction', idx: 0 },
-  //     { $: 'web development', idx: 1 },
-  //   ]
-  // }
-  export type FuseSortFunctionItem = {
-    [key: string]: { $: string } | { $: string; idx: number }[]
-  }
-
-  // {
-  //   score: 0.001,
-  //   key: 'author.firstName',
-  //   value: 'Codenar',
-  //   indices: [ [ 0, 3 ] ]
-  // }
-  export type FuseSortFunctionMatch = {
-    score: number
-    key: string
-    value: string
-    indices: ReadonlyArray<number>[]
-  }
-
-  // {
-  //   score: 0,
-  //   key: 'tags',
-  //   value: 'nonfiction',
-  //   idx: 1,
-  //   indices: [ [ 0, 9 ] ]
-  // }
-  export type FuseSortFunctionMatchList = FuseSortFunctionMatch & {
-    idx: number
-  }
-
-  export type FuseSortFunctionArg = {
-    idx: number
-    item: FuseSortFunctionItem
-    score: number
-    matches?: (FuseSortFunctionMatch | FuseSortFunctionMatchList)[]
-  }
-
-  export type FuseSortFunction = (
-    a: FuseSortFunctionArg,
-    b: FuseSortFunctionArg
-  ) => number
-
-  // title: {
-  //   '$': "Old Man's War",
-  //   'n': 0.5773502691896258
-  // }
-  type RecordEntryObject = {
-    v: string // The text value
-    n: number // The field-length norm
-  }
-
-  // 'author.tags.name': [{
-  //   'v': 'pizza lover',
-  //   'i': 2,
-  //   'n: 0.7071067811865475
-  // }
-  type RecordEntryArrayItem = ReadonlyArray<RecordEntryObject & { i: number }>
-
-  // TODO: this makes it difficult to infer the type. Need to think more about this
-  type RecordEntry = { [key: string]: RecordEntryObject | RecordEntryArrayItem }
-
-  // {
-  //   i: 0,
-  //   '$': {
-  //     '0': { v: "Old Man's War", n: 0.5773502691896258 },
-  //     '1': { v: 'Codenar', n: 1 },
-  //     '2': [
-  //       { v: 'pizza lover', i: 2, n: 0.7071067811865475 },
-  //       { v: 'helo wold', i: 1, n: 0.7071067811865475 },
-  //       { v: 'hello world', i: 0, n: 0.7071067811865475 }
-  //     ]
-  //   }
-  // }
-  type FuseIndexObjectRecord = {
-    i: number // The index of the record in the source list
-    $: RecordEntry
-  }
-
-  // {
-  //   keys: null,
-  //   list: [
-  //     { v: 'one', i: 0, n: 1 },
-  //     { v: 'two', i: 1, n: 1 },
-  //     { v: 'three', i: 2, n: 1 }
-  //   ]
-  // }
-  type FuseIndexStringRecord = {
-    i: number // The index of the record in the source list
-    v: string // The text value
-    n: number // The field-length norm
-  }
-
-  type FuseIndexRecords =
-    | ReadonlyArray<FuseIndexObjectRecord>
-    | ReadonlyArray<FuseIndexStringRecord>
-
-  // {
-  //   name: 'title',
-  //   weight: 0.7
-  // }
-  export type FuseOptionKeyObject = {
-    name: string | string[]
-    weight: number
-  }
-
-  export type FuseOptionKey = FuseOptionKeyObject | string | string[]
-
-  export interface IFuseOptions<T> {
-    isCaseSensitive?: boolean
-    distance?: number
-    findAllMatches?: boolean
-    getFn?: FuseGetFunction<T>
-    ignoreLocation?: boolean
-    ignoreFieldNorm?: boolean
-    includeMatches?: boolean
-    includeScore?: boolean
-    keys?: Array<FuseOptionKey>
-    location?: number
-    minMatchCharLength?: number
-    shouldSort?: boolean
-    sortFn?: FuseSortFunction
-    threshold?: number
-    useExtendedSearch?: boolean
-  }
-
-  // Denotes the start/end indices of a match
-  //                 start    end
-  //                   ↓       ↓
-  type RangeTuple = [number, number]
-
-  export type FuseResultMatch = {
-    indices: ReadonlyArray<RangeTuple>
-    key?: string
-    refIndex?: number
-    value?: string
-  }
-
-  export type FuseSearchOptions = {
-    limit: number
-  }
-
-  export type FuseResult<T> = {
-    item: T
-    refIndex: number
-    score?: number
-    matches?: ReadonlyArray<FuseResultMatch>
-  }
-
-  export type Expression =
-    | { [key: string]: string }
-    | {
-        $path: ReadonlyArray<string>
-        $val: string
-      }
-    | { $and?: Expression[] }
-    | { $or?: Expression[] }
+declare function createIndex<T>(keys: FuseOptionKey<T>[], docs: ReadonlyArray<T>, {
+  getFn,
+  fieldNormWeight
+}?: FuseIndexOptions<T>): FuseIndex<T>;
+declare function parseIndex<T>(data: {
+  keys: ReadonlyArray<KeyObject>;
+  records: IndexRecord[];
+}, {
+  getFn,
+  fieldNormWeight
+}?: FuseIndexOptions<T>): FuseIndex<T>;
+//#endregion
+//#region src/tools/KeyStore.d.ts
+declare class KeyStore {
+  _keys: KeyObject[];
+  _keyMap: Record<string, KeyObject>;
+  constructor(keys: FuseOptionKey<any>[]);
+  get(keyId: string): KeyObject;
+  keys(): KeyObject[];
+  toJSON(): string;
 }
+//#endregion
+//#region src/core/queryParser.d.ts
+interface ParsedLeaf {
+  keyId: string | null;
+  pattern: string;
+  searcher?: Searcher;
+}
+interface ParsedOperator {
+  children: ParsedNode[];
+  operator: string;
+}
+type ParsedNode = ParsedLeaf | ParsedOperator;
+declare function parse(query: Expression, options: any, {
+  auto
+}?: {
+  auto?: boolean | undefined;
+}): ParsedNode;
+//#endregion
+//#region src/core/config.d.ts
+declare const Config: Required<IFuseOptions<any>>;
+//#endregion
+//#region src/tools/MaxHeap.d.ts
+type Comparator = (a: InternalResult, b: InternalResult) => number;
+declare class MaxHeap {
+  limit: number;
+  heap: InternalResult[];
+  comparator: Comparator;
+  constructor(limit: number, comparator: Comparator);
+  get size(): number;
+  insert(item: InternalResult): void;
+  extractSorted(): InternalResult[];
+  _bubbleUp(i: number): void;
+  _sinkDown(i: number): void;
+}
+//#endregion
+//#region src/search/token/InvertedIndex.d.ts
+interface InvertedIndexData {
+  fieldCount: number;
+  df: Map<string, number>;
+  docFieldCount: Map<number, number>;
+  docTermFieldHits: Map<number, Map<string, number>>;
+}
+//#endregion
+//#region src/core/index.d.ts
+interface HeapSearchOptions {
+  heap?: MaxHeap;
+  ignoreFieldNorm?: boolean;
+}
+declare class Fuse<T> {
+  options: Required<IFuseOptions<T>>;
+  _keyStore: KeyStore;
+  _docs: T[];
+  _myIndex: FuseIndex<T>;
+  _invertedIndex: InvertedIndexData | null;
+  _lastQuery: string | null;
+  _lastSearcher: Searcher | null;
+  static version: string;
+  static createIndex: typeof createIndex;
+  static parseIndex: typeof parseIndex;
+  static config: typeof Config;
+  static parseQuery: typeof parse;
+  static use: (...plugins: any[]) => void;
+  static match: (pattern: string, text: string, options?: IFuseOptions<any>) => SearchResult;
+  constructor(docs: ReadonlyArray<T>, options?: IFuseOptions<T>, index?: FuseIndex<T>);
+  _getSearcher(query: string): Searcher;
+  setCollection(docs: ReadonlyArray<T>, index?: FuseIndex<T>): void;
+  add(doc: T): void;
+  remove(predicate?: (doc: T, idx: number) => boolean): T[];
+  removeAt(idx: number): T;
+  _invalidateSearcherCache(): void;
+  getIndex(): FuseIndex<T>;
+  _normalizedKeys(): KeyObject[];
+  search(query: string | Expression, options?: FuseSearchOptions): FuseResult<T>[];
+  _searchStringList(query: string, {
+    heap,
+    ignoreFieldNorm
+  }?: HeapSearchOptions): InternalResult[] | null;
+  _searchLogical(query: Expression): InternalResult[];
+  _searchObjectList(query: string, {
+    heap,
+    ignoreFieldNorm
+  }?: HeapSearchOptions): InternalResult[] | null;
+  _findMatches({
+    key,
+    value,
+    searcher
+  }: {
+    key: KeyObject | null;
+    value: SubRecord | SubRecord[] | undefined;
+    searcher: Searcher;
+  }): MatchScore[];
+  _coversAllTokens(matches: MatchScore[]): boolean;
+}
+//#endregion
+export { type Expression, type FuseGetFunction, type FuseIndex, type FuseIndexObjectRecord, type FuseIndexOptions, type FuseIndexRecords, type FuseIndexStringRecord, type FuseOptionKey, type FuseOptionKeyObject, type FuseResult, type FuseResultMatch, type FuseSearchOptions, type FuseSortFunction, type FuseSortFunctionArg, type FuseSortFunctionItem, type FuseSortFunctionMatch, type FuseSortFunctionMatchList, type FuseTokenizeFunction, type IFuseOptions, type RangeTuple, type RecordEntry, type RecordEntryArrayItem, type RecordEntryObject, type SearchResult, Fuse as default };

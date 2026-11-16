@@ -1,6 +1,8 @@
 Name: Fuse.js
 URL: https://fusejs.io
-Version: 6.4.1
+     https://github.com/krisk/Fuse
+Version: v7.5.0
+Revision: 45bac9fe2e71fe8c680c861a35a8b226c4ae6d5a
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
