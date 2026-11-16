@@ -331,6 +331,18 @@ TEST_F(FullscreenModelTest, IgnoreContentHeightChangesWhileScrolling) {
   EXPECT_FALSE(model()->enabled());
 }
 
+// Tests that if the model was disabled for short content before a scroll
+// started, an update to a tall content height during the scroll re-enables the
+// model.
+TEST_F(FullscreenModelTest, ReenableForTallContentWhileScrolling) {
+  model()->SetContentHeight(kScrollViewHeight / 2.0);
+  ASSERT_FALSE(model()->enabled());
+  model()->SetScrollViewIsScrolling(true);
+  model()->SetContentHeight(kContentHeight);
+  EXPECT_TRUE(model()->enabled());
+  model()->SetScrollViewIsScrolling(false);
+}
+
 // Tests that the model detects when the page is scrolled to the top and bottom.
 TEST_F(FullscreenModelTest, ScrolledToTopAndBottom) {
   // Scroll to the top of the page and verify that only is_scrolled_to_top()

@@ -73,7 +73,16 @@
     self.model->SetTopContentInset(webViewScrollViewProxy.contentInset.top);
     self.model->SetContentHeight(webViewScrollViewProxy.contentSize.height);
     self.model->SetScrollViewHeight(webViewScrollViewProxy.frame.size.height);
+    BOOL wasDecelerating = webViewScrollViewProxy.isDecelerating;
     self.model->SetYContentOffset(webViewScrollViewProxy.contentOffset.y);
+    // Programmatically updating `contentOffset` in `FullscreenWebViewResizer`
+    // while `UIScrollView` is decelerating cancels deceleration in UIKit
+    // without invoking `-scrollViewDidEndDecelerating:`. End the scroll state
+    // in the model so the toolbar snap animation can complete.
+    if (wasDecelerating && !webViewScrollViewProxy.isDecelerating &&
+        !webViewScrollViewProxy.isDragging) {
+      self.model->SetScrollViewIsScrolling(false);
+    }
   }
 }
 

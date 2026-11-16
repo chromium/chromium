@@ -481,13 +481,6 @@ void FullscreenModel::UpdateProgress() {
 }
 
 void FullscreenModel::UpdateDisabledCounterForContentHeight() {
-  // Sometimes the content size and scroll view sizes are updated mid-scroll
-  // such that the scroll view height is updated before the content is re-
-  // rendered, causing the model to be disabled.  These changes should be
-  // ignored while the content is scrolling.
-  if (scrolling_) {
-    return;
-  }
   // The model should be disabled when the content fits.
   CGFloat disabling_threshold = scroll_view_height_;
   if (resizes_scroll_view_) {
@@ -513,6 +506,15 @@ void FullscreenModel::UpdateDisabledCounterForContentHeight() {
 
   bool disable = areBothHeightsSet && content_height_ <= disabling_threshold;
   if (disabled_for_short_content_ == disable) {
+    return;
+  }
+  // Sometimes the content size and scroll view sizes are updated mid-scroll
+  // such that the scroll view height is updated before the content is re-
+  // rendered, causing the model to be disabled.  These changes should be
+  // ignored while the content is scrolling.  However, if the model was
+  // previously disabled for short content and the page finishes laying out
+  // tall content (`!disable`), allow re-enabling the model.
+  if (scrolling_ && disable) {
     return;
   }
   disabled_for_short_content_ = disable;

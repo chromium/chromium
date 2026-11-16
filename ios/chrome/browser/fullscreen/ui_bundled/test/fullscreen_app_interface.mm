@@ -19,6 +19,7 @@
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -65,8 +66,32 @@ constexpr NSTimeInterval kTouchTimeout = 10.0;
 }
 
 + (BOOL)isScrolledToBottom {
+  web::WebState* webState = chrome_test_util::GetCurrentWebState();
   Browser* browser = chrome_test_util::GetCurrentBrowser();
-  if (!browser) {
+  if (!webState || !browser) {
+    return NO;
+  }
+
+  CRWWebViewScrollViewProxy* scrollViewProxy =
+      webState->GetWebViewProxy().scrollViewProxy;
+  UIEdgeInsets maxInsets = [self currentViewportInsets];
+  if (!IsFullscreenRefactoringEnabled()) {
+    FullscreenController* fullscreenController =
+        FullscreenController::FromBrowser(browser);
+    if (fullscreenController) {
+      maxInsets = fullscreenController->GetMaxViewportInsets();
+    }
+  }
+  // Before WebKit commits the tall page's layout to `contentSize`,
+  // `contentSize.height` can be 0 or equal to the initial screen height
+  // (`<= frame.size.height + maxInsets.top + maxInsets.bottom`), which
+  // disables FullscreenModel for short content. Treat the page as scrolled to
+  // the bottom until the scrollable content height is committed.
+  if (scrollViewProxy.contentSize.height <=
+      scrollViewProxy.frame.size.height + maxInsets.top + maxInsets.bottom) {
+    return YES;
+  }
+  if (scrollViewProxy.contentOffset.y <= 0) {
     return NO;
   }
 
