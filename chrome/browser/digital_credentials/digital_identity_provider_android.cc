@@ -81,7 +81,6 @@ void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,
                                          base::ValueView request,
                                          UiWarningLevel warning_level,
                                          DigitalIdentityCallback callback) {
-  // TODO(crbug.com/409836575): Make use of `warning_level`.
   TRACE_EVENT("content.digitalcredentials",
               "DigitalIdentityProviderAndroid::Get");
   std::optional<std::string> request_str = base::WriteJson(request);
@@ -91,16 +90,20 @@ void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,
     return;
   }
 
-  callback_ = std::move(callback);
-
-  ScopedJavaLocalRef<jobject> j_window = nullptr;
-  if (web_contents && web_contents->GetTopLevelNativeWindow()) {
-    j_window = web_contents->GetTopLevelNativeWindow()->GetJavaObject();
+  // Reject early if the WebContents is detached from a native window, since
+  // the Android credential presentation flow requires a live WindowAndroid.
+  if (!web_contents || !web_contents->GetTopLevelNativeWindow()) {
+    std::move(callback).Run(
+        base::unexpected(RequestStatusForMetrics::kErrorOther));
+    return;
   }
 
+  callback_ = std::move(callback);
+
   Java_DigitalIdentityProvider_request(
-      AttachCurrentThread(), j_digital_identity_provider_android_, j_window,
-      origin.Serialize(), *request_str);
+      AttachCurrentThread(), j_digital_identity_provider_android_,
+      web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
+      origin.Serialize(), *request_str, warning_level);
 }
 
 void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,

@@ -101,7 +101,8 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     private static class ReturnTokenIdentityCredentialsDelegate
             extends IdentityCredentialsDelegate {
         @Override
-        public Promise<DigitalCredential> get(WindowAndroid window, String origin, String request) {
+        public Promise<DigitalCredential> get(
+                WindowAndroid window, String origin, String request, int warningLevel) {
             return Promise.fulfilled(
                     new DigitalCredential("protocol", "{\"token\" : \"test_token\"}"));
         }

@@ -21,6 +21,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
+import org.chromium.content_public.browser.webid.DigitalIdentityUiWarningLevel;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Class for issuing request to the Identity Credentials Manager in GMS core. */
@@ -58,7 +59,8 @@ public class DigitalIdentityProvider {
 
     // Methods that are called by native implementation
     @CalledByNative
-    private static DigitalIdentityProvider create(long digitalIdentityProvider) {
+    @VisibleForTesting
+    static DigitalIdentityProvider create(long digitalIdentityProvider) {
         return new DigitalIdentityProvider(digitalIdentityProvider);
     }
 
@@ -73,14 +75,18 @@ public class DigitalIdentityProvider {
      * @param window The window associated with the request.
      * @param origin The origin of the requester.
      * @param request The request.
+     * @param warningLevel The UI warning level hint computed for the presentation request.
      */
     @CalledByNative
     void request(
             WindowAndroid window,
             @JniType("std::string") String origin,
-            @JniType("std::string") String request) {
+            @JniType("std::string") String request,
+            @JniType("content::DigitalIdentityProvider::UiWarningLevel")
+                    @DigitalIdentityUiWarningLevel
+                    int warningLevel) {
         sCredentials
-                .get(window, origin, request)
+                .get(window, origin, request, warningLevel)
                 .then(
                         response -> {
                             if (mDigitalIdentityProvider != 0) {

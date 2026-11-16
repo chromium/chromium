@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webid;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.LargeTest;
@@ -33,6 +34,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.webid.DigitalIdentityUiWarningLevel;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
@@ -68,7 +70,7 @@ public class DigitalCredentialProviderTest {
     @LargeTest
     @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
     public void testRequestMDoc() throws TimeoutException {
-        when(mDelegate.get(any(), any(), any()))
+        when(mDelegate.get(any(), any(), any(), eq(DigitalIdentityUiWarningLevel.HINT_NO_ISSUES)))
                 .thenAnswer(
                         input ->
                                 Promise.fulfilled(
@@ -78,6 +80,35 @@ public class DigitalCredentialProviderTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_only_button");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String mdoc =
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        mActivityTestRule.getWebContents(),
+                                        "document.getElementById('log').textContent");
+                        String expected = "\"" + EXPECTED_MDOC + "\"";
+                        Criteria.checkThat("mdoc string is not as expected.", mdoc, is(expected));
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures("WebIdentityDigitalCredentials:dialog/no_dialog")
+    public void testRequestMDocWithCaution() throws TimeoutException {
+        when(mDelegate.get(any(), any(), any(), eq(DigitalIdentityUiWarningLevel.HINT_CAUTION)))
+                .thenAnswer(
+                        input ->
+                                Promise.fulfilled(
+                                        new DigitalCredential(
+                                                "protocol",
+                                                "{\"token\": \"" + EXPECTED_MDOC + "\"}")));
+
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_and_name_button");
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {

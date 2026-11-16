@@ -5,6 +5,12 @@
 package org.chromium.chrome.browser.webid;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.credentials.exceptions.CreateCredentialCancellationException;
 import androidx.credentials.exceptions.CreateCredentialInterruptedException;
@@ -16,8 +22,11 @@ import androidx.credentials.exceptions.NoCredentialException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
+import org.chromium.content_public.browser.webid.DigitalIdentityUiWarningLevel;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for {@link DigitalIdentityProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,5 +77,40 @@ public class DigitalIdentityProviderUnitTest {
                 DigitalIdentityRequestStatusForMetrics.ERROR_OTHER,
                 DigitalIdentityProvider.computeStatusForMetricsFromException(
                         new Exception("message")));
+    }
+
+    @Test
+    public void testRequestForwardsWarningLevelToDelegate() {
+        WindowAndroid window = mock(WindowAndroid.class);
+        IdentityCredentialsDelegate mockDelegate = mock(IdentityCredentialsDelegate.class);
+        when(mockDelegate.get(any(), anyString(), anyString(), anyInt()))
+                .thenReturn(new Promise<>());
+
+        DigitalIdentityProvider.setDelegateForTesting(mockDelegate);
+        DigitalIdentityProvider provider = DigitalIdentityProvider.create(0L);
+
+        provider.request(
+                window,
+                "https://rp.example",
+                "{\"requests\":[]}",
+                DigitalIdentityUiWarningLevel.HINT_NO_ISSUES);
+        verify(mockDelegate)
+                .get(
+                        window,
+                        "https://rp.example",
+                        "{\"requests\":[]}",
+                        DigitalIdentityUiWarningLevel.HINT_NO_ISSUES);
+
+        provider.request(
+                window,
+                "https://rp.example",
+                "{\"requests\":[]}",
+                DigitalIdentityUiWarningLevel.HINT_CAUTION);
+        verify(mockDelegate)
+                .get(
+                        window,
+                        "https://rp.example",
+                        "{\"requests\":[]}",
+                        DigitalIdentityUiWarningLevel.HINT_CAUTION);
     }
 }

@@ -22,10 +22,12 @@ import android.os.Bundle;
 import android.os.Looper;
 
 import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.GetDigitalCredentialOption;
 import androidx.credentials.exceptions.GetCredentialException;
 import androidx.credentials.exceptions.GetCredentialUnknownException;
 import androidx.credentials.provider.PendingIntentHandler;
 
+import com.google.android.gms.identitycredentials.GetCredentialRequest;
 import com.google.android.gms.identitycredentials.IdentityCredentialClient;
 import com.google.android.gms.identitycredentials.PendingGetCredentialHandle;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -33,6 +35,7 @@ import com.google.android.gms.tasks.TaskCompletionSource;
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -40,6 +43,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
+import org.chromium.content_public.browser.webid.DigitalIdentityUiWarningLevel;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -137,7 +141,11 @@ public class DigitalCredentialsPresentationDelegateTest {
         DigitalCredentialsPresentationDelegate delegate =
                 new DigitalCredentialsPresentationDelegate();
         Promise<DigitalCredential> promise =
-                delegate.get(windowAndroid, "https://rp.example", "{\"requests\":[]}");
+                delegate.get(
+                        windowAndroid,
+                        "https://rp.example",
+                        "{\"requests\":[]}",
+                        DigitalIdentityUiWarningLevel.HINT_CAUTION);
 
         assertTrue(promise.isRejected());
     }
@@ -150,7 +158,11 @@ public class DigitalCredentialsPresentationDelegateTest {
         DigitalCredentialsPresentationDelegate delegate =
                 new DigitalCredentialsPresentationDelegate();
         Promise<DigitalCredential> promise =
-                delegate.get(windowAndroid, "https://rp.example", "{\"requests\":[]}");
+                delegate.get(
+                        windowAndroid,
+                        "https://rp.example",
+                        "{\"requests\":[]}",
+                        DigitalIdentityUiWarningLevel.HINT_CAUTION);
 
         assertTrue(promise.isRejected());
     }
@@ -175,7 +187,11 @@ public class DigitalCredentialsPresentationDelegateTest {
                 };
 
         Promise<DigitalCredential> promise =
-                delegate.get(windowAndroid, "https://rp.example", "{\"requests\":[]}");
+                delegate.get(
+                        windowAndroid,
+                        "https://rp.example",
+                        "{\"requests\":[]}",
+                        DigitalIdentityUiWarningLevel.HINT_NO_ISSUES);
         assertTrue(promise.isPending());
 
         when(windowAndroid.isDestroyed()).thenReturn(true);
@@ -186,5 +202,61 @@ public class DigitalCredentialsPresentationDelegateTest {
 
         assertTrue(promise.isRejected());
         verify(windowAndroid, never()).showCancelableIntent(any(PendingIntent.class), any(), any());
+    }
+
+    @Test
+    public void testGetMapsWarningLevelHint() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getActivity()).thenReturn(new ImmutableWeakReference<>(activity));
+
+        IdentityCredentialClient mockClient = mock(IdentityCredentialClient.class);
+        ArgumentCaptor<GetCredentialRequest> requestCaptor =
+                ArgumentCaptor.forClass(GetCredentialRequest.class);
+        when(mockClient.getCredential(requestCaptor.capture()))
+                .thenReturn(new TaskCompletionSource<PendingGetCredentialHandle>().getTask());
+
+        DigitalCredentialsPresentationDelegate delegate =
+                new DigitalCredentialsPresentationDelegate() {
+                    @Override
+                    IdentityCredentialClient getIdentityCredentialClient(Activity window) {
+                        return mockClient;
+                    }
+                };
+
+        delegate.get(
+                windowAndroid,
+                "https://rp.example",
+                "{\"requests\":[]}",
+                DigitalIdentityUiWarningLevel.HINT_NO_ISSUES);
+        delegate.get(
+                windowAndroid,
+                "https://rp.example",
+                "{\"requests\":[]}",
+                DigitalIdentityUiWarningLevel.HINT_CAUTION);
+
+        Bundle sentRequestData1 =
+                requestCaptor
+                        .getAllValues()
+                        .get(0)
+                        .getCredentialOptions()
+                        .get(0)
+                        .getCredentialRetrievalData();
+        assertEquals(
+                GetDigitalCredentialOption.UI_WARNING_LEVEL_HINT_NO_ISSUES,
+                sentRequestData1.getInt(
+                        GetDigitalCredentialOption.BUNDLE_KEY_UI_WARNING_LEVEL_HINT, -1));
+
+        Bundle sentRequestData2 =
+                requestCaptor
+                        .getAllValues()
+                        .get(1)
+                        .getCredentialOptions()
+                        .get(0)
+                        .getCredentialRetrievalData();
+        assertEquals(
+                GetDigitalCredentialOption.UI_WARNING_LEVEL_HINT_CAUTION,
+                sentRequestData2.getInt(
+                        GetDigitalCredentialOption.BUNDLE_KEY_UI_WARNING_LEVEL_HINT, -1));
     }
 }

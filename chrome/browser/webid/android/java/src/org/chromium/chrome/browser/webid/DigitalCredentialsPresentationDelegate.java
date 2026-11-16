@@ -36,6 +36,7 @@ import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
+import org.chromium.content_public.browser.webid.DigitalIdentityUiWarningLevel;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -77,7 +78,10 @@ public class DigitalCredentialsPresentationDelegate {
 
     @OptIn(markerClass = ExperimentalDigitalCredentialApi.class)
     public Promise<DigitalCredential> get(
-            WindowAndroid windowAndroid, String origin, String request) {
+            WindowAndroid windowAndroid,
+            String origin,
+            String request,
+            @DigitalIdentityUiWarningLevel int warningLevel) {
         if (windowAndroid.isDestroyed()) return Promise.rejected();
         Activity window = windowAndroid.getActivity().get();
         if (window == null) return Promise.rejected();
@@ -114,7 +118,12 @@ public class DigitalCredentialsPresentationDelegate {
                     }
                 };
 
-        GetDigitalCredentialOption option = new GetDigitalCredentialOption(request);
+        int uiWarningLevelHint =
+                warningLevel == DigitalIdentityUiWarningLevel.HINT_NO_ISSUES
+                        ? GetDigitalCredentialOption.UI_WARNING_LEVEL_HINT_NO_ISSUES
+                        : GetDigitalCredentialOption.UI_WARNING_LEVEL_HINT_CAUTION;
+        GetDigitalCredentialOption option =
+                new GetDigitalCredentialOption(request, uiWarningLevelHint);
         Bundle requestData = option.getRequestData();
         requestData.putParcelable(
                 EXTRA_LARGE_PAYLOAD_RESULT_RECEIVER,
