@@ -315,7 +315,8 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForTrash) {
       extensions::CreateAndUseTestEventRouter(profile_.get());
   TestEventRouterObserver observer(test_event_router);
   auto event_router = std::make_unique<EventRouter>(
-      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
+      /*app_registry_cache=*/nullptr);
   event_router->ForceBroadcastingForTesting(true);
 
   io_task::EntryStatus source_entry =
@@ -359,7 +360,8 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForCopyPause) {
       extensions::CreateAndUseTestEventRouter(profile_.get());
   TestEventRouterObserver observer(test_event_router);
   auto event_router = std::make_unique<EventRouter>(
-      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
+      /*app_registry_cache=*/nullptr);
   event_router->ForceBroadcastingForTesting(true);
 
   io_task::EntryStatus source_entry =
@@ -395,7 +397,8 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
       extensions::CreateAndUseTestEventRouter(profile_.get());
   TestEventRouterObserver observer(test_event_router);
   auto event_router = std::make_unique<EventRouter>(
-      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
+      /*app_registry_cache=*/nullptr);
   event_router->ForceBroadcastingForTesting(true);
 
   io_task::EntryStatus source_entry =
@@ -447,7 +450,8 @@ TEST_F(FileManagerEventRouterLocalFilesTest, OnLocalUserFilesPolicyChanged) {
       extensions::CreateAndUseTestEventRouter(profile_.get());
   TestEventRouterObserver observer(test_event_router);
   auto event_router = std::make_unique<EventRouter>(
-      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
+      TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
+      /*app_registry_cache=*/nullptr);
   event_router->ForceBroadcastingForTesting(true);
 
   // Expect the preferences changed event.

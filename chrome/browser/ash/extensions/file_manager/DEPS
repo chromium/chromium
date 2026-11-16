@@ -37,6 +37,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # The keyed service factory is the //chrome seam: it resolves the
+  # apps::AppRegistryCache that EventRouter takes by constructor.
+  "event_router_factory\\.cc": [
+    "+chrome/browser/apps/app_service",
+  ],
+
   "event_router_unittest\\.cc": [
     "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
     "+chromeos/ash/components/browser_context_helper/annotated_account_id.h",

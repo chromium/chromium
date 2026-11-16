@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
@@ -64,10 +65,16 @@ EventRouterFactory::BuildServiceInstanceForBrowserContext(
   if (!ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context)) {
     return nullptr;
   }
+  Profile* profile = Profile::FromBrowserContext(context);
+  apps::AppRegistryCache* app_registry_cache =
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
+          ? &apps::AppServiceProxyFactory::GetForProfile(profile)
+                 ->AppRegistryCache()
+          : nullptr;
   // NOTE: Allow g_browser_process here as this class is initialized lazily
   // with base::NoDestructor.
   return std::make_unique<EventRouter>(g_browser_process->local_state(),
-                                       Profile::FromBrowserContext(context));
+                                       profile, app_registry_cache);
 }
 
 bool EventRouterFactory::ServiceIsCreatedWithBrowserContext() const {

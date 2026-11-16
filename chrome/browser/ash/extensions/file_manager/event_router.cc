@@ -28,8 +28,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -83,8 +81,6 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "ui/display/tablet_state.h"
 
-using apps::AppServiceProxy;
-using apps::AppServiceProxyFactory;
 using arc::ArcIntentHelperBridge;
 using ash::LoginState;
 using ash::disks::Disk;
@@ -582,7 +578,9 @@ fmp::MountError MountErrorToMountCompletedStatus(ash::MountError error) {
   }
 }
 
-EventRouter::EventRouter(PrefService* local_state, Profile* profile)
+EventRouter::EventRouter(PrefService* local_state,
+                         Profile* profile,
+                         apps::AppRegistryCache* app_registry_cache)
     : LocalUserFilesPolicyObserver(local_state),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       profile_(profile),
@@ -602,7 +600,7 @@ EventRouter::EventRouter(PrefService* local_state, Profile* profile)
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   // Notification manager can call into Drive FS for dialog handling.
   notification_manager_->SetDriveFSEventRouter(drivefs_event_router_.get());
-  ObserveEvents();
+  ObserveEvents(app_registry_cache);
 }
 
 EventRouter::~EventRouter() = default;
@@ -676,7 +674,7 @@ void EventRouter::Shutdown() {
   profile_ = nullptr;
 }
 
-void EventRouter::ObserveEvents() {
+void EventRouter::ObserveEvents(apps::AppRegistryCache* app_registry_cache) {
   CHECK(profile_, base::NotFatalUntil::M160);
 
   if (!LoginState::IsInitialized() || !LoginState::Get()->IsUserLoggedIn()) {
@@ -756,11 +754,8 @@ void EventRouter::ObserveEvents() {
     service->MountProviderRegistry()->AddObserver(this);
   }
 
-  if (AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
-    AppServiceProxy* const proxy =
-        AppServiceProxyFactory::GetForProfile(profile_);
-    CHECK(proxy, base::NotFatalUntil::M160);
-    app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
+  if (app_registry_cache) {
+    app_registry_cache_observer_.Observe(app_registry_cache);
   }
 
   if (DlpClient* const client = DlpClient::Get()) {

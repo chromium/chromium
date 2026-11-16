@@ -85,7 +85,11 @@ class EventRouter
                                    const std::vector<url::Origin>& listeners)>;
 
   // `local_state` must be non-null and outlive `this`.
-  EventRouter(PrefService* local_state, Profile* profile);
+  // `app_registry_cache` is null if the AppService is not available for
+  // `profile`. Otherwise it must outlive `this`.
+  EventRouter(PrefService* local_state,
+              Profile* profile,
+              apps::AppRegistryCache* app_registry_cache);
 
   EventRouter(const EventRouter&) = delete;
   EventRouter& operator=(const EventRouter&) = delete;
@@ -229,8 +233,9 @@ class EventRouter
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, PopulateCrostiniEvent);
   friend class ScopedSuppressDriveNotificationsForPath;
 
-  // Starts observing file system change events.
-  void ObserveEvents();
+  // Starts observing file system change events, and the apps in
+  // `app_registry_cache` if it is not null.
+  void ObserveEvents(apps::AppRegistryCache* app_registry_cache);
 
   // Called when prefs related to file manager change.
   void OnFileManagerPrefsChanged();
