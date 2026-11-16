@@ -30,8 +30,10 @@
 #include "third_party/blink/renderer/core/events/focus_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event_context.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -53,8 +55,17 @@ void NodeEventContext::Trace(Visitor* visitor) const {
 void NodeEventContext::HandleLocalEvents(Event& event) const {
   if (TouchEventContext* touch_context = GetTouchEventContext()) {
     touch_context->HandleLocalEvents(event);
-  } else if (RelatedTarget()) {
-    event.SetRelatedTarget(RelatedTarget());
+  } else {
+    if (RuntimeEnabledFeatures::RetargetEventsInPointerEventListsEnabled()) {
+      if (PointerEventContext* pointer_context = GetPointerEventContext()) {
+        pointer_context->HandleLocalEvents(event);
+      }
+    }
+    // TODO(mustaq@chromium.org): Investigate why TouchEvents skip retargeting
+    // of relatedTarget.
+    if (RelatedTarget()) {
+      event.SetRelatedTarget(RelatedTarget());
+    }
   }
   event.SetTarget(Target());
   event.SetCurrentTarget(current_target_.Get());
