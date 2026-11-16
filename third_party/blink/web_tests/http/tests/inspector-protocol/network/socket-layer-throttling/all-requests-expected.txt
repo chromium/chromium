@@ -1,0 +1,9 @@
+Verifies that socket-layer network throttling applies to all requests.
+fetch(): throttled
+fetch() reports the rule: true
+<script>: throttled
+Navigation: throttled
+Cross-site navigation: throttled
+fetch() after it: throttled
+fetch() after clearing: not throttled
+

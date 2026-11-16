@@ -896,6 +896,12 @@ TEST_F(NetworkContextTest, DisableQuic) {
                    .enable_quic);
 }
 
+// The throttling client (e.g. a DevTools session) that socket-layer network
+// conditions are set for.
+base::UnguessableToken ThrottlingClientId() {
+  return base::UnguessableToken::CreateForTesting(1, 1);
+}
+
 TEST_F(NetworkContextTest, SetSocketLayerNetworkConditionsValidatesInput) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
@@ -907,37 +913,201 @@ TEST_F(NetworkContextTest, SetSocketLayerNetworkConditionsValidatesInput) {
   // used to reach CHECKs / undefined float->int conversions deeper in the
   // stack).
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(-5), /*download=*/1000.0,
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(-5),
+      /*download=*/1000.0,
       /*upload=*/1000.0);
   EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::TimeDelta::Max(), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::TimeDelta::Max(), 1000.0, 1000.0);
   EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10),
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10),
       /*download=*/std::numeric_limits<double>::infinity(), 1000.0);
   EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0,
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0,
       /*upload=*/std::numeric_limits<double>::quiet_NaN());
   EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
 
   // A positive sub-byte/sec throughput is clamped up to one byte/sec rather
   // than truncating to zero (which used to CHECK-crash the network service).
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), /*download=*/0.0005,
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10),
+      /*download=*/0.0005,
       /*upload=*/0.0005);
   EXPECT_TRUE(network_context->GetIsolatedTransactionFactory(profile_id, url));
 
   // Non-positive throughput means unconstrained and is accepted.
-  network_context->SetSocketLayerNetworkConditions(profile_id,
-                                                   base::Milliseconds(10),
-                                                   /*download=*/0.0,
-                                                   /*upload=*/-1.0);
+  network_context->SetSocketLayerNetworkConditions(
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10),
+      /*download=*/0.0,
+      /*upload=*/-1.0);
   EXPECT_TRUE(network_context->GetIsolatedTransactionFactory(profile_id, url));
 
-  network_context->ClearSocketLayerNetworkConditions(profile_id);
+  network_context->ClearSocketLayerNetworkConditions(profile_id,
+                                                     ThrottlingClientId());
   EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
+}
+
+// As with legacy network conditions, clients don't replace or clear each
+// other's socket-layer conditions, and requests use those of the first client,
+// by `client_order`.
+TEST_F(NetworkContextTest, SocketLayerNetworkConditionsArePerClient) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  const base::UnguessableToken first_client = base::UnguessableToken::Create();
+  const base::UnguessableToken second_client = base::UnguessableToken::Create();
+  const GURL url("https://example.com/");
+  auto set_conditions = [&](const base::UnguessableToken& client_id,
+                            uint64_t client_order) {
+    network_context->SetSocketLayerNetworkConditions(
+        profile_id, client_id, client_order, base::Milliseconds(10),
+        /*download=*/0.0, /*upload=*/0.0);
+  };
+  auto clear_conditions = [&](const base::UnguessableToken& client_id) {
+    network_context->ClearSocketLayerNetworkConditions(profile_id, client_id);
+  };
+  auto factory = [&] {
+    return network_context->GetIsolatedTransactionFactory(profile_id, url);
+  };
+
+  set_conditions(first_client, /*client_order=*/1);
+  const scoped_refptr<net::HttpTransactionFactoryHandle> first_handle =
+      factory();
+  ASSERT_TRUE(first_handle);
+  set_conditions(second_client, /*client_order=*/2);
+  EXPECT_EQ(factory(), first_handle);
+  clear_conditions(second_client);
+  EXPECT_EQ(factory(), first_handle);
+
+  // Once the first client clears its conditions, the next client's apply.
+  set_conditions(second_client, /*client_order=*/3);
+  clear_conditions(first_client);
+  const scoped_refptr<net::HttpTransactionFactoryHandle> second_handle =
+      factory();
+  ASSERT_TRUE(second_handle);
+  EXPECT_NE(second_handle, first_handle);
+
+  // Updated conditions keep their client's order.
+  set_conditions(first_client, /*client_order=*/4);
+  EXPECT_EQ(factory(), second_handle);
+  set_conditions(second_client, /*client_order=*/3);
+  const scoped_refptr<net::HttpTransactionFactoryHandle> updated_second_handle =
+      factory();
+  EXPECT_NE(updated_second_handle, second_handle);
+  clear_conditions(first_client);
+  EXPECT_EQ(factory(), updated_second_handle);
+
+  clear_conditions(second_client);
+  EXPECT_FALSE(factory());
+}
+
+// Clients are ordered by `client_order` rather than by when their conditions
+// arrived, so that moving conditions to another profile keeps their order.
+TEST_F(NetworkContextTest, SocketLayerNetworkConditionsFollowClientOrder) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  const base::UnguessableToken first_client = base::UnguessableToken::Create();
+  const base::UnguessableToken second_client = base::UnguessableToken::Create();
+  const GURL url("https://example.com/");
+
+  network_context->SetSocketLayerNetworkConditions(
+      profile_id, second_client, /*client_order=*/2, base::Milliseconds(10),
+      /*download=*/0.0, /*upload=*/0.0);
+  const scoped_refptr<net::HttpTransactionFactoryHandle> second_handle =
+      network_context->GetIsolatedTransactionFactory(profile_id, url);
+  ASSERT_TRUE(second_handle);
+  network_context->SetSocketLayerNetworkConditions(
+      profile_id, first_client, /*client_order=*/1, base::Milliseconds(10),
+      /*download=*/0.0, /*upload=*/0.0);
+  EXPECT_NE(network_context->GetIsolatedTransactionFactory(profile_id, url),
+            second_handle);
+  network_context->ClearSocketLayerNetworkConditions(profile_id, first_client);
+  EXPECT_EQ(network_context->GetIsolatedTransactionFactory(profile_id, url),
+            second_handle);
+}
+
+// Conditions without throttling get no isolated session, but keep their place
+// among clients' conditions: while they come first, requests use the primary
+// session.
+TEST_F(NetworkContextTest,
+       SocketLayerNetworkConditionsWithoutThrottlingKeepTheirPlace) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  const base::UnguessableToken first_client = base::UnguessableToken::Create();
+  const base::UnguessableToken second_client = base::UnguessableToken::Create();
+  const GURL url("https://example.com/");
+
+  network_context->SetSocketLayerNetworkConditions(
+      profile_id, first_client, /*client_order=*/1, base::TimeDelta(),
+      /*download=*/0.0, /*upload=*/-1.0);
+  EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
+  network_context->SetSocketLayerNetworkConditions(
+      profile_id, second_client, /*client_order=*/2, base::Milliseconds(10),
+      /*download=*/0.0, /*upload=*/0.0);
+  EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
+
+  // Once the first client clears its conditions, the next client's apply.
+  network_context->ClearSocketLayerNetworkConditions(profile_id, first_client);
+  const scoped_refptr<net::HttpTransactionFactoryHandle> second_handle =
+      network_context->GetIsolatedTransactionFactory(profile_id, url);
+  EXPECT_TRUE(second_handle);
+
+  // Updating throttling conditions to ones without throttling retires their
+  // session.
+  network_context->SetSocketLayerNetworkConditions(
+      profile_id, second_client, /*client_order=*/2, base::TimeDelta(),
+      /*download=*/-1.0, /*upload=*/-1.0);
+  EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
+  EXPECT_EQ(network_context->GetRetiredIsolatedSessionCountForTesting(), 1u);
+
+  network_context->ClearSocketLayerNetworkConditions(profile_id, second_client);
+  EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
+}
+
+// Proxy credentials that a retiring session learned reach the other clients'
+// sessions, as well as the primary session.
+TEST_F(NetworkContextTest, RetiredSessionProxyAuthReachesOtherSessions) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  const base::UnguessableToken first_client = base::UnguessableToken::Create();
+  const base::UnguessableToken second_client = base::UnguessableToken::Create();
+  const GURL url("http://example.test/");
+  auto auth_cache = [&] {
+    return network_context->GetIsolatedTransactionFactory(profile_id, url)
+        ->factory()
+        ->GetSession()
+        ->http_auth_cache();
+  };
+  network_context->SetSocketLayerNetworkConditions(
+      profile_id, first_client, /*client_order=*/1, base::Milliseconds(10),
+      1000.0, 1000.0);
+  network_context->SetSocketLayerNetworkConditions(
+      profile_id, second_client, /*client_order=*/2, base::Milliseconds(10),
+      1000.0, 1000.0);
+
+  // The first client's session learns proxy credentials after the second
+  // client's session was created, then retires.
+  url::SchemeHostPort proxy(GURL("http://proxy.test/"));
+  auth_cache()->Add(proxy, net::HttpAuth::AUTH_PROXY, "proxyrealm",
+                    net::HttpAuth::AUTH_SCHEME_BASIC,
+                    net::NetworkAnonymizationKey(), "Basic realm=proxyrealm",
+                    net::AuthCredentials(u"user", u"pass"), "/");
+  network_context->ClearSocketLayerNetworkConditions(profile_id, first_client);
+
+  EXPECT_TRUE(auth_cache()->Lookup(
+      proxy, net::HttpAuth::AUTH_PROXY, "proxyrealm",
+      net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkAnonymizationKey()));
 }
 
 TEST_F(NetworkContextTest, RequestThroughIsolatedSessionIsDelayed) {
@@ -957,7 +1127,8 @@ TEST_F(NetworkContextTest, RequestThroughIsolatedSessionIsDelayed) {
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   constexpr base::TimeDelta kRtt = base::Milliseconds(300);
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, kRtt, /*download=*/0.0, /*upload=*/0.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0, kRtt,
+      /*download=*/0.0, /*upload=*/0.0);
 
   ResourceRequest request;
   request.url = test_server.GetURL("/echo");
@@ -997,7 +1168,9 @@ TEST_F(NetworkContextTest, ClearHttpCacheEvictsIsolatedCacheEntries) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(1), /*download=*/0.0, /*upload=*/0.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(1), /*download=*/0.0,
+      /*upload=*/0.0);
 
   ResourceRequest request;
   request.url = test_server.GetURL("/cachetime");
@@ -1047,7 +1220,9 @@ TEST_F(NetworkContextTest, ComputeHttpCacheSizeExcludesIsolatedCaches) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(1), /*download=*/0.0, /*upload=*/0.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(1), /*download=*/0.0,
+      /*upload=*/0.0);
 
   // Populate the isolated session's cache. The second fetch being served
   // from it confirms the entry is there.
@@ -1075,7 +1250,8 @@ TEST_F(NetworkContextTest, IsolatedSessionAltSvcDoesNotLeakToPrimary) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   scoped_refptr<net::HttpTransactionFactoryHandle> handle =
       network_context->GetIsolatedTransactionFactory(
           profile_id, GURL("https://example.com/"));
@@ -1113,7 +1289,8 @@ TEST_F(NetworkContextTest, DisableQuicReachesIsolatedSessions) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   scoped_refptr<net::HttpTransactionFactoryHandle> handle =
       network_context->GetIsolatedTransactionFactory(
           profile_id, GURL("https://example.com/"));
@@ -1183,7 +1360,9 @@ TEST_F(NetworkContextTest, SharedDictionaryWorksThroughIsolatedSession) {
       CreateContextWithParams(std::move(params));
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(1), /*download=*/0.0, /*upload=*/0.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(1), /*download=*/0.0,
+      /*upload=*/0.0);
 
   // Throttled, same-origin requests from a secure context: the conditions
   // under which dictionaries may be both stored and used.
@@ -1237,14 +1416,16 @@ TEST_F(NetworkContextTest, SetSocketLayerNetworkConditionsOnUnmanagedContext) {
 
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   scoped_refptr<net::HttpTransactionFactoryHandle> handle =
       network_context->GetIsolatedTransactionFactory(
           profile_id, GURL("https://example.com/"));
   ASSERT_TRUE(handle);
   EXPECT_EQ(handle->factory()->GetCache(), nullptr);
   EXPECT_TRUE(handle->factory()->GetSession());
-  network_context->ClearSocketLayerNetworkConditions(profile_id);
+  network_context->ClearSocketLayerNetworkConditions(profile_id,
+                                                     ThrottlingClientId());
 }
 
 TEST_F(NetworkContextTest, CacheDisabledContextGetsNoIsolatedCache) {
@@ -1257,7 +1438,8 @@ TEST_F(NetworkContextTest, CacheDisabledContextGetsNoIsolatedCache) {
       CreateContextWithParams(std::move(params));
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   scoped_refptr<net::HttpTransactionFactoryHandle> handle =
       network_context->GetIsolatedTransactionFactory(
           profile_id, GURL("https://example.com/"));
@@ -1313,7 +1495,8 @@ TEST_F(NetworkContextTest, RetiredSessionsCoveredByMaintenance) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   scoped_refptr<net::HttpTransactionFactoryHandle> handle =
       network_context->GetIsolatedTransactionFactory(
           profile_id, GURL("http://example.test/"));
@@ -1323,7 +1506,8 @@ TEST_F(NetworkContextTest, RetiredSessionsCoveredByMaintenance) {
   // Update the conditions: the old session is retired but `handle`
   // (standing in for an in-flight request) keeps it alive.
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(20), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(20), 1000.0, 1000.0);
 
   // Browser-pushed credentials reach the retired session...
   url::SchemeHostPort scheme_host_port(GURL("http://example.test/"));
@@ -1386,7 +1570,8 @@ TEST_F(NetworkContextTest, IsolatedSessionSeededWithProxyAuthEntries) {
 
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   net::HttpAuthCache* isolated_cache =
       network_context
           ->GetIsolatedTransactionFactory(profile_id,
@@ -1410,7 +1595,8 @@ TEST_F(NetworkContextTest, RetiredSessionFreedWhenLastHandleDrains) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   scoped_refptr<net::HttpTransactionFactoryHandle> handle =
       network_context->GetIsolatedTransactionFactory(
           profile_id, GURL("https://example.com/"));
@@ -1420,7 +1606,8 @@ TEST_F(NetworkContextTest, RetiredSessionFreedWhenLastHandleDrains) {
   // the test's reference (standing in for an in-flight request) is now the
   // only thing keeping the session alive...
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(20), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(20), 1000.0, 1000.0);
   EXPECT_TRUE(handle->factory());
   EXPECT_TRUE(handle->HasOneRef());
   EXPECT_EQ(network_context->GetRetiredIsolatedSessionCountForTesting(), 1u);
@@ -1453,7 +1640,9 @@ TEST_F(NetworkContextTest, FanOutOverRetiredSessionWithInFlightRequest) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(1), /*download=*/0.0, /*upload=*/0.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(1), /*download=*/0.0,
+      /*upload=*/0.0);
 
   // Start a request that never completes, so it is still in flight (holding
   // the session's factory handle) when the profile is retired.
@@ -1478,7 +1667,8 @@ TEST_F(NetworkContextTest, FanOutOverRetiredSessionWithInFlightRequest) {
 
   // Retire the profile: the in-flight request now holds the retired
   // session's last handle reference.
-  network_context->ClearSocketLayerNetworkConditions(profile_id);
+  network_context->ClearSocketLayerNetworkConditions(profile_id,
+                                                     ThrottlingClientId());
   ASSERT_EQ(network_context->GetRetiredIsolatedSessionCountForTesting(), 1u);
 
   // Fan-outs over the retired session are safe while it is in use.
@@ -1512,7 +1702,8 @@ TEST_F(NetworkContextTest, QuicHintsReplayedIntoNewIsolatedSessions) {
 
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   net::HttpServerProperties* isolated_properties =
       network_context
           ->GetIsolatedTransactionFactory(profile_id,
@@ -1534,7 +1725,8 @@ TEST_F(NetworkContextTest, QuicHintsReplayedIntoNewIsolatedSessions) {
   ASSERT_TRUE(cleared.Wait());
   const base::UnguessableToken profile_id2 = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id2, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id2, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   EXPECT_TRUE(
       network_context
           ->GetIsolatedTransactionFactory(profile_id2,
@@ -1570,7 +1762,8 @@ TEST_F(NetworkContextTest, QuicHintsReplayedIntoNewIsolatedSessionsInLRUOrder) {
 
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   net::HttpServerProperties* isolated_properties =
       network_context
           ->GetIsolatedTransactionFactory(profile_id,
@@ -1609,7 +1802,8 @@ TEST_F(NetworkContextTest, SplitAuthCacheSettingAppliedToNewIsolatedSessions) {
 
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   EXPECT_TRUE(network_context
                   ->GetIsolatedTransactionFactory(profile_id,
                                                   GURL("https://example.com/"))
@@ -1657,7 +1851,8 @@ TEST_F(NetworkContextTest,
   // reach an already-existing session rather than one seeded at creation.
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   net::HttpAuthCache* isolated_cache =
       network_context
           ->GetIsolatedTransactionFactory(profile_id,
@@ -1699,7 +1894,8 @@ TEST_F(NetworkContextTest, QuicHintsAndHistoryClearingReachIsolatedSessions) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   net::HttpServerProperties* isolated_properties =
       network_context
           ->GetIsolatedTransactionFactory(profile_id,
@@ -1739,7 +1935,8 @@ TEST_F(NetworkContextTest, LogicalCacheClearingCoversIsolatedCaches) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   net::HttpCache* isolated_cache =
       network_context
           ->GetIsolatedTransactionFactory(profile_id,
@@ -1772,7 +1969,8 @@ TEST_F(NetworkContextTest, SocketLayerConditionsUpdateKeepsCapturedSession) {
   const GURL url("https://example.com/");
 
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   scoped_refptr<net::HttpTransactionFactoryHandle> handle1 =
       network_context->GetIsolatedTransactionFactory(profile_id, url);
   ASSERT_TRUE(handle1);
@@ -1781,7 +1979,8 @@ TEST_F(NetworkContextTest, SocketLayerConditionsUpdateKeepsCapturedSession) {
   // Updating the conditions retires the old session, but the captured
   // handle keeps vending the old factory; new lookups get the new one.
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(20), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(20), 1000.0, 1000.0);
   EXPECT_TRUE(handle1->factory());
   scoped_refptr<net::HttpTransactionFactoryHandle> handle2 =
       network_context->GetIsolatedTransactionFactory(profile_id, url);
@@ -1791,7 +1990,8 @@ TEST_F(NetworkContextTest, SocketLayerConditionsUpdateKeepsCapturedSession) {
 
   // Clearing the conditions likewise leaves captured handles functional;
   // only new lookups fall back to the primary factory.
-  network_context->ClearSocketLayerNetworkConditions(profile_id);
+  network_context->ClearSocketLayerNetworkConditions(profile_id,
+                                                     ThrottlingClientId());
   EXPECT_TRUE(handle1->factory());
   EXPECT_TRUE(handle2->factory());
   EXPECT_FALSE(network_context->GetIsolatedTransactionFactory(profile_id, url));
@@ -1805,7 +2005,8 @@ TEST_F(NetworkContextTest, AuthCacheChangesPropagateToIsolatedSessions) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
   scoped_refptr<net::HttpTransactionFactoryHandle> handle =
       network_context->GetIsolatedTransactionFactory(
           profile_id, GURL("http://example.test/"));
@@ -1855,14 +2056,16 @@ TEST_F(NetworkContextTest, ProfileClearedWhileCacheClearingInFlight) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
 
   base::test::TestFuture<void> clear_done;
   network_context->ClearHttpCache(base::Time(), base::Time::Max(),
                                   /*filter=*/nullptr, clear_done.GetCallback());
 
   // Retire the profile immediately, while the clearing is in flight.
-  network_context->ClearSocketLayerNetworkConditions(profile_id);
+  network_context->ClearSocketLayerNetworkConditions(profile_id,
+                                                     ThrottlingClientId());
 
   // It still completes cleanly against the kept-alive session.
   EXPECT_TRUE(clear_done.Wait());
@@ -1876,14 +2079,16 @@ TEST_F(NetworkContextTest, ClearHttpCacheCoversIsolatedSessions) {
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(10), 1000.0, 1000.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(10), 1000.0, 1000.0);
 
   base::test::TestFuture<void> clear_done;
   network_context->ClearHttpCache(base::Time(), base::Time::Max(),
                                   /*filter=*/nullptr, clear_done.GetCallback());
   EXPECT_TRUE(clear_done.Wait());
 
-  network_context->ClearSocketLayerNetworkConditions(profile_id);
+  network_context->ClearSocketLayerNetworkConditions(profile_id,
+                                                     ThrottlingClientId());
 }
 
 TEST_F(NetworkContextTest, UserAgentAndLanguage) {

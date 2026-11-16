@@ -1,0 +1,6 @@
+Verifies that socket-layer throughput limits apply to the bytes on the wire.
+Incompressible response: throttled
+Compressible response: not throttled
+Large request body: throttled
+Small request body: not throttled
+

@@ -114,6 +114,7 @@ crbug.com/1229701 [ Release Win ] http/tests/inspector-protocol/network/disable-
 crbug.com/1300409 http/tests/inspector-protocol/network/websocket/offline-no-send.js [ Slow ]
 crbug.com/1280873 http/tests/inspector-protocol/network/xhr-cors-preflight-redirect-failure.js [ Slow ]
 crbug.com/1280585 http/tests/inspector-protocol/network/xhr-post-replay-cors.js [ Slow ]
+crbug.com/496616821 virtual/socket-layer-network-throttling/http/tests/inspector-protocol/network/socket-layer-throttling/* [ Slow ]
 crbug.com/1280537 http/tests/inspector-protocol/network/blocked-cookie-same-site-lax-browser-navigate.js [ Slow ]
 crbug.com/1280537 [ Linux ] http/tests/inspector-protocol/network/blocked-cookie-same-site-lax-js-navigate.js [ Slow ]
 crbug.com/1280537 [ Release Win ] http/tests/inspector-protocol/network/blocked-cookie-same-site-lax-js-navigate.js [ Slow ]

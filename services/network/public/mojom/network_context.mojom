@@ -1446,16 +1446,30 @@ interface NetworkContext {
 
   // Configures network conditions for the specified throttling profile.
   // The throttling will be applied only to requests that have matching
-  // throttling_profile_id.
+  // throttling_profile_id. With the SocketLayerNetworkThrottling feature,
+  // requests only apply the conditions' offline emulation, and callers apply
+  // their latency and throughputs with SetSocketLayerNetworkConditions instead.
+  // P2P sockets apply all of the conditions either way.
   SetNetworkConditions(mojo_base.mojom.UnguessableToken throttling_profile_id,
                        mojo_base.mojom.UnguessableToken throttling_client_id,
                        array<MatchedNetworkConditions> conditions);
 
-  // Applies network delay at the socket layer. Unlike SetNetworkConditions
-  // (which throttles at the URLLoader level), this creates or updates an
-  // isolated throttling session for a specific throttling profile (DevTools
-  // session). Requests carrying this throttling_profile_id will use an isolated
-  // HttpNetworkSession with socket-level delay instead of the primary session.
+  // Applies network delay at the socket layer, for the
+  // SocketLayerNetworkThrottling feature (see SetNetworkConditions). Unlike
+  // SetNetworkConditions, this creates or updates an isolated throttling
+  // session for a throttling profile (e.g. a frame) and client (e.g. a
+  // DevTools session). Requests carrying this throttling_profile_id will use
+  // an isolated HttpNetworkSession with socket-level delay instead of the
+  // primary session.
+  //
+  // As with SetNetworkConditions, each client of a profile has its own
+  // conditions, which other clients' calls don't replace or clear. Requests
+  // use those of the profile's client with the lowest `client_order`, which
+  // callers derive from the order clients first set conditions in, so that it
+  // survives moving conditions to another profile or network context.
+  // Conditions that don't throttle (with no latency, and no positive
+  // throughput) need no isolated session: while they come first, requests use
+  // the primary session.
   //
   // `latency` is the simulated round-trip time applied at the socket layer.
   // Unlike the legacy NetworkConditions latency (a one-time delay injected
@@ -1474,15 +1488,20 @@ interface NetworkContext {
   // under their captured conditions.
   SetSocketLayerNetworkConditions(
       mojo_base.mojom.UnguessableToken throttling_profile_id,
+      mojo_base.mojom.UnguessableToken throttling_client_id,
+      uint64 client_order,
       mojo_base.mojom.TimeDelta latency,
       double download_throughput_bytes_per_second,
       double upload_throughput_bytes_per_second);
 
-  // Removes the isolated throttling session for a throttling profile.
-  // In-flight requests finish under their captured conditions; requests
-  // started afterwards use the primary, unthrottled session.
+  // Removes the socket-layer conditions of a throttling profile's client, and
+  // their isolated throttling session, if any. In-flight requests finish under
+  // their captured conditions; requests started afterwards use the conditions
+  // of the profile's next client, if any, or else the primary, unthrottled
+  // session.
   ClearSocketLayerNetworkConditions(
-      mojo_base.mojom.UnguessableToken throttling_profile_id);
+      mojo_base.mojom.UnguessableToken throttling_profile_id,
+      mojo_base.mojom.UnguessableToken throttling_client_id);
 
   // Updates the Accept-Language header to be used for requests.
   SetAcceptLanguage(string new_accept_language);

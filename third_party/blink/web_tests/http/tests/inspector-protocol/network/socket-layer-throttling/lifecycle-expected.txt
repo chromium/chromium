@@ -1,0 +1,18 @@
+Verifies when socket-layer network throttling applies, and when it stops.
+A rejected command leaves the conditions unchanged:
+Error: Socket-layer network throttling doesn't support throttling rules with a URL pattern yet.
+fetch(): throttled
+Detaching a session that set no conditions keeps them:
+fetch(): throttled
+Network.disable clears the conditions:
+fetch(): not throttled
+Detaching clears the conditions:
+fetch(): throttled
+fetch() after detaching: not throttled
+Conditions without throttling don't throttle:
+fetch(): throttled
+fetch(): not throttled
+The deprecated emulateNetworkConditions throttles too:
+fetch(): throttled
+fetch(): not throttled
+

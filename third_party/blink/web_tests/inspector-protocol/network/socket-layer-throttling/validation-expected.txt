@@ -1,0 +1,17 @@
+Verifies which network conditions socket-layer network throttling accepts.
+A rule without a URL pattern: 1 rule id(s)
+A throttling rule with a URL pattern: error -32602: Socket-layer network throttling doesn't support throttling rules with a URL pattern yet.
+An offline rule with a URL pattern: 1 rule id(s)
+An offline rule with a URL pattern before a throttling one: 2 rule id(s)
+A rule with a URL pattern that doesn't throttle: 1 rule id(s)
+A rule with a URL pattern that doesn't throttle before a throttling one: error -32602: Socket-layer network throttling can't exempt requests that match a URL pattern from a rule without one.
+A negative latency: error -32602: Socket-layer network throttling requires a finite, non-negative latency and finite throughputs.
+An overflowing latency: error -32602: Socket-layer network throttling requires a finite, non-negative latency and finite throughputs.
+A negative latency in an offline rule: 1 rule id(s)
+Offline: 1 rule id(s)
+Offline, with a throttling rule with a URL pattern: 1 rule id(s)
+An offline rule: 1 rule id(s)
+Offline service worker: 1 rule id(s)
+A negative latency with the deprecated emulateNetworkConditions: error -32602: Socket-layer network throttling requires a finite, non-negative latency and finite throughputs.
+A negative latency without throttling, with the deprecated emulateNetworkConditions: success
+

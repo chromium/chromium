@@ -3468,6 +3468,34 @@
     "expires": "Jul 1, 2027"
   },
   {
+    "prefix": "socket-layer-network-throttling",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/inspector-protocol/network/socket-layer-throttling",
+      "inspector-protocol/network/socket-layer-throttling",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline.js",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline-frame.js",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline-iframe-worker.js",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline-nested-worker.js",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline-oopif-frame.js",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline-service-worker.js",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline-subresource-frame.js",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline-subresource-oopif-frame.js",
+      "http/tests/inspector-protocol/network/matched-network-conditions-offline-worker.js",
+      "http/tests/inspector-protocol/network/network-conditions-by-rule-service-worker-auto-attach.js",
+      "http/tests/inspector-protocol/network/network-conditions-by-rule-shared-worker-auto-attach.js",
+      "http/tests/inspector-protocol/network/offline.js",
+      "http/tests/inspector-protocol/network/offline-dedicated-worker.js"
+    ],
+    "exclusive_tests": [
+      "http/tests/inspector-protocol/network/socket-layer-throttling",
+      "inspector-protocol/network/socket-layer-throttling"
+    ],
+    "args": ["--enable-features=SocketLayerNetworkThrottling"],
+    "owners": ["yoavweiss@chromium.org"],
+    "expires": "Nov 1, 2027"
+  },
+  {
     "prefix": "speculation-rules-prerender-cross-origin-iframes",
     "platforms": [
       "Linux",

@@ -2685,6 +2685,7 @@ test("content_unittests") {
     "../browser/devtools/protocol/digital_credentials_handler_unittest.cc",
     "../browser/devtools/protocol/display_capture_launcher_unittest.cc",
     "../browser/devtools/protocol/media_recorder_unittest.cc",
+    "../browser/devtools/protocol/network_handler_unittest.cc",
     "../browser/devtools/protocol/tracing_handler_unittest.cc",
     "../browser/devtools/protocol_unittest.cc",
     "../browser/devtools/request_body_collector_unittest.cc",

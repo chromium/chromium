@@ -1092,7 +1092,7 @@ NetworkContext::~NetworkContext() {
   // destruction callbacks reentrantly (OnIsolatedSessionHandleDestroyed),
   // which mutate these same containers.
   retired_isolated_session_handles_.clear();
-  std::map<base::UnguessableToken, scoped_refptr<IsolatedSession>>
+  std::map<base::UnguessableToken, std::vector<ClientIsolatedSession>>
       isolated_sessions = std::move(isolated_sessions_);
   std::vector<scoped_refptr<IsolatedSession>> retired_isolated_sessions =
       std::move(retired_isolated_sessions_);
@@ -2208,6 +2208,8 @@ std::optional<uint64_t> ThroughputToBytesPerSec(double bytes_per_second) {
 
 void NetworkContext::SetSocketLayerNetworkConditions(
     const base::UnguessableToken& throttling_profile_id,
+    const base::UnguessableToken& throttling_client_id,
+    uint64_t client_order,
     base::TimeDelta latency,
     double download_throughput_bytes_per_second,
     double upload_throughput_bytes_per_second) {
@@ -2229,15 +2231,42 @@ void NetworkContext::SetSocketLayerNetworkConditions(
           ThroughputToBytesPerSec(upload_throughput_bytes_per_second),
   };
 
-  // If a session already exists for this profile, retire it: requests keep
-  // the conditions captured when they started, so the old handle stays
-  // functional (it is NOT Reset) and the old session lives on - kept alive
-  // by in-flight requests' handle refs and tracked in
-  // `retired_isolated_sessions_` - until they drain. New requests pick up
-  // the replacement session below.
-  auto existing = isolated_sessions_.find(throttling_profile_id);
-  if (existing != isolated_sessions_.end()) {
-    RetireIsolatedSession(existing);
+  // If this client already has a session, retire it: requests keep the
+  // conditions captured when they started, so the old handle stays functional
+  // (it is NOT Reset) and the old session lives on - kept alive by in-flight
+  // requests' handle refs and tracked in `retired_isolated_sessions_` - until
+  // they drain. New requests pick up the replacement session below.
+  std::vector<ClientIsolatedSession>& client_sessions =
+      isolated_sessions_[throttling_profile_id];
+  DCHECK(std::ranges::is_sorted(client_sessions, {},
+                                &ClientIsolatedSession::client_order));
+  if (auto existing =
+          std::ranges::find(client_sessions, throttling_client_id,
+                            &ClientIsolatedSession::throttling_client_id);
+      existing != client_sessions.end()) {
+    scoped_refptr<IsolatedSession> old_session = std::move(existing->session);
+    client_sessions.erase(existing);
+    if (old_session) {
+      RetireIsolatedSession(std::move(old_session));
+    }
+  }
+  // Clients with equal orders keep the order they set conditions in.
+  auto add_client_session =
+      [&](scoped_refptr<IsolatedSession> isolated_session) {
+        client_sessions.insert(
+            std::ranges::upper_bound(client_sessions, client_order, {},
+                                     &ClientIsolatedSession::client_order),
+            {throttling_client_id, client_order, std::move(isolated_session)});
+      };
+
+  // Conditions without throttling need no isolated session: while they come
+  // first, requests use the primary session. They still keep their place among
+  // the profile's clients' conditions, so that requests keep using them rather
+  // than those of clients that set theirs later.
+  if (!latency.is_positive() && !config.download_throughput_bytes_per_sec &&
+      !config.upload_throughput_bytes_per_sec) {
+    add_client_session(nullptr);
+    return;
   }
 
   // Get the inner socket factory from the existing session. On Windows,
@@ -2331,7 +2360,7 @@ void NetworkContext::SetSocketLayerNetworkConditions(
                          scoped_refptr<IsolatedSession>(session)),
           /*disables_network_quality_estimation=*/true);
 
-  isolated_sessions_.emplace(throttling_profile_id, std::move(session));
+  add_client_session(std::move(session));
 }
 
 void NetworkContext::RemoveInvalidationFilterFromIsolatedCaches(
@@ -2347,10 +2376,12 @@ void NetworkContext::RemoveInvalidationFilterFromIsolatedCaches(
 std::vector<scoped_refptr<NetworkContext::IsolatedSession>>
 NetworkContext::GetAllIsolatedSessions() {
   std::vector<scoped_refptr<IsolatedSession>> sessions;
-  sessions.reserve(isolated_sessions_.size() +
-                   retired_isolated_sessions_.size());
-  for (const auto& [token, session] : isolated_sessions_) {
-    sessions.push_back(session);
+  for (const auto& [profile_id, client_sessions] : isolated_sessions_) {
+    for (const ClientIsolatedSession& client_session : client_sessions) {
+      if (client_session.session) {
+        sessions.push_back(client_session.session);
+      }
+    }
   }
   for (const auto& session : retired_isolated_sessions_) {
     sessions.push_back(session);
@@ -2359,27 +2390,35 @@ NetworkContext::GetAllIsolatedSessions() {
 }
 
 void NetworkContext::RetireIsolatedSession(
-    std::map<base::UnguessableToken, scoped_refptr<IsolatedSession>>::iterator
-        it) {
-  scoped_refptr<IsolatedSession> session = std::move(it->second);
-  isolated_sessions_.erase(it);
+    scoped_refptr<IsolatedSession> session) {
   // Merge proxy credentials the retiring session learned back into the
   // primary cache, so they reach both unthrottled requests and the next
   // generation of isolated sessions (which seed from the primary) instead
-  // of being lost on every profile update. Proxy credentials are
-  // profile-wide in Chromium; server credentials stay per-session.
+  // of being lost on every profile update, and into the other live isolated
+  // sessions, which seeded theirs when they were created. Proxy credentials
+  // are profile-wide in Chromium; server credentials stay per-session.
   //
-  // TODO(crbug.com/496616821): This bulk copy is not conflict-aware: an
-  // entry updated in the primary cache by an unthrottled request while this
-  // session was running is overwritten by this session's older copy. Making
-  // it conflict-aware needs a net/ API, since HttpAuthCache keeps its
-  // entries private and offers no enumeration - e.g. a CopyProxyEntriesFrom
-  // variant that skips keys already present in the destination. Low impact
-  // for DevTools throttling (proxy credentials rarely change mid-session).
+  // TODO(crbug.com/496616821): These bulk copies are not conflict-aware: an
+  // entry updated in a destination cache while this session was running is
+  // overwritten by this session's older copy. Making them conflict-aware
+  // needs a net/ API, since HttpAuthCache keeps its entries private and
+  // offers no enumeration - e.g. a CopyProxyEntriesFrom variant that skips
+  // keys already present in the destination. Low impact for DevTools
+  // throttling (proxy credentials rarely change mid-session).
+  const net::HttpAuthCache& retiring_auth_cache =
+      *session->session->http_auth_cache();
   url_request_context_->http_transaction_factory()
       ->GetSession()
       ->http_auth_cache()
-      ->CopyProxyEntriesFrom(*session->session->http_auth_cache());
+      ->CopyProxyEntriesFrom(retiring_auth_cache);
+  for (const auto& [profile_id, client_sessions] : isolated_sessions_) {
+    for (const ClientIsolatedSession& client_session : client_sessions) {
+      if (client_session.session) {
+        client_session.session->session->http_auth_cache()
+            ->CopyProxyEntriesFrom(retiring_auth_cache);
+      }
+    }
+  }
   retired_isolated_sessions_.push_back(session);
   retired_isolated_session_handles_[session.get()] =
       session->factory_handle.get();
@@ -2400,16 +2439,32 @@ void NetworkContext::OnIsolatedSessionHandleDestroyed(
 }
 
 void NetworkContext::ClearSocketLayerNetworkConditions(
-    const base::UnguessableToken& throttling_profile_id) {
+    const base::UnguessableToken& throttling_profile_id,
+    const base::UnguessableToken& throttling_client_id) {
   auto it = isolated_sessions_.find(throttling_profile_id);
-  if (it != isolated_sessions_.end()) {
-    // Requests keep the conditions captured when they started: the handle
-    // is NOT Reset, so in-flight requests continue on the retired session
-    // (kept alive by their handle refs and tracked in
-    // `retired_isolated_sessions_`) rather than silently falling back to
-    // the unthrottled primary factory mid-request. Requests started after
-    // this call use the primary factory.
-    RetireIsolatedSession(it);
+  if (it == isolated_sessions_.end()) {
+    return;
+  }
+  std::vector<ClientIsolatedSession>& client_sessions = it->second;
+  auto client_session =
+      std::ranges::find(client_sessions, throttling_client_id,
+                        &ClientIsolatedSession::throttling_client_id);
+  if (client_session == client_sessions.end()) {
+    return;
+  }
+  scoped_refptr<IsolatedSession> session = std::move(client_session->session);
+  client_sessions.erase(client_session);
+  if (client_sessions.empty()) {
+    isolated_sessions_.erase(it);
+  }
+  // Requests keep the conditions captured when they started: the handle is
+  // NOT Reset, so in-flight requests continue on the retired session (kept
+  // alive by their handle refs and tracked in `retired_isolated_sessions_`)
+  // rather than silently switching conditions mid-request. Requests started
+  // after this call use the conditions of the profile's next client, if any,
+  // or else the primary factory.
+  if (session) {
+    RetireIsolatedSession(std::move(session));
   }
 }
 
@@ -2417,13 +2472,17 @@ scoped_refptr<net::HttpTransactionFactoryHandle>
 NetworkContext::GetIsolatedTransactionFactory(
     const base::UnguessableToken& throttling_profile_id,
     const GURL& url) {
-  // This profile has a single session serving every URL, so `url` is not
-  // consulted; URL-scoped sessions select on it.
   auto it = isolated_sessions_.find(throttling_profile_id);
   if (it == isolated_sessions_.end()) {
     return nullptr;
   }
-  return it->second->factory_handle;
+  // Requests use the conditions of the profile's first client, the one with
+  // the lowest `client_order`: its session, if it throttles, or else the
+  // primary factory. Each session serves every URL, so `url` is not consulted;
+  // URL-scoped sessions select on it.
+  CHECK(!it->second.empty());
+  const scoped_refptr<IsolatedSession>& session = it->second.front().session;
+  return session ? session->factory_handle : nullptr;
 }
 
 void NetworkContext::SetAcceptLanguage(const std::string& new_accept_language) {

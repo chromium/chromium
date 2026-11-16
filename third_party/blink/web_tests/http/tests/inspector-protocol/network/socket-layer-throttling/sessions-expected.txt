@@ -1,0 +1,14 @@
+Verifies that sessions don't replace or clear each other's socket-layer network conditions.
+Another session's conditions don't replace these:
+fetch(): throttled
+Another session clearing its conditions keeps these:
+fetch(): throttled
+Once these are cleared, the next session's conditions apply:
+fetch(): throttled
+Conditions without throttling keep their place:
+fetch(): not throttled
+fetch() once they're cleared: throttled
+fetch() after that session detaches: not throttled
+Conditions keep their order across a cross-site navigation:
+fetch(): throttled
+

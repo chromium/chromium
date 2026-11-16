@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/http/http_request_info.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/throttling/network_conditions.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
@@ -18,6 +20,25 @@
 #endif
 
 namespace network {
+
+namespace {
+
+// Returns the parts of `conditions` that requests (and WebSocket frames) apply.
+// With socket-layer network throttling, their sockets apply the latency and
+// throughputs, so requests only apply the offline emulation, and report the
+// rule id. P2P sockets aren't throttled at the socket layer, so they still
+// apply all of the conditions.
+NetworkConditions GetRequestConditions(const NetworkConditions& conditions) {
+  if (!base::FeatureList::IsEnabled(features::kSocketLayerNetworkThrottling)) {
+    return conditions;
+  }
+  return NetworkConditions(conditions.offline(), /*latency=*/0,
+                           /*download_throughput=*/0, /*upload_throughput=*/0,
+                           /*packet_loss=*/0, /*packet_queue_length=*/0,
+                           /*packet_reordering=*/false, conditions.rule_id());
+}
+
+}  // namespace
 
 ThrottlingController::ThrottlingController() = default;
 ThrottlingController::~ThrottlingController() = default;
@@ -101,7 +122,7 @@ ThrottlingController::InterceptorMatcher::InterceptorMatcher(
     NetworkConditions conditions)
     : conditions(std::move(conditions)) {
   interceptor = std::make_unique<ThrottlingNetworkInterceptor>();
-  interceptor->UpdateConditions(this->conditions);
+  interceptor->UpdateConditions(GetRequestConditions(this->conditions));
 }
 
 ThrottlingController::InterceptorMatcher::~InterceptorMatcher() {

@@ -1,0 +1,15 @@
+Verifies offline emulation with socket-layer network throttling.
+Offline:
+fetch(): Failed to fetch
+Error: net::ERR_INTERNET_DISCONNECTED
+Offline while throttled:
+fetch() of a cacheable resource: throttled
+fetch() of the cached resource: 200
+fetch() of another resource: Failed to fetch
+Back online:
+fetch() of the cached resource: not throttled
+fetch() of another resource: throttled
+An offline rule with a URL pattern:
+fetch() of a matching resource: Failed to fetch
+fetch() of another resource: throttled
+

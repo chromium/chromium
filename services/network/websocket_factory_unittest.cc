@@ -313,6 +313,12 @@ class WebSocketFactoryHandshakeTest : public WebSocketFactoryTest {
   net::EmbeddedTestServer test_server_;
 };
 
+// The throttling client (e.g. a DevTools session) that socket-layer network
+// conditions are set for.
+base::UnguessableToken ThrottlingClientId() {
+  return base::UnguessableToken::CreateForTesting(1, 1);
+}
+
 // Verifies that clearing (or updating) socket-layer conditions while a
 // WebSocket connection established under that profile is still open does
 // not crash: the connection holds a socket handed out by the isolated
@@ -322,7 +328,9 @@ TEST_F(WebSocketFactoryHandshakeTest,
        ClearingConditionsWithOpenWebSocketDoesNotCrash) {
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context_->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(1), /*download=*/0.0, /*upload=*/0.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(1), /*download=*/0.0,
+      /*upload=*/0.0);
 
   StubWebSocketHandshakeClient* client =
       CreateWebSocket(net::test_server::GetWebSocketURL(test_server_, "/echo"),
@@ -331,10 +339,14 @@ TEST_F(WebSocketFactoryHandshakeTest,
 
   // The handshake URLRequest is gone (destroyed on upgrade); the WebSocket
   // itself must be keeping the isolated session alive now.
-  network_context_->ClearSocketLayerNetworkConditions(profile_id);
+  network_context_->ClearSocketLayerNetworkConditions(profile_id,
+                                                      ThrottlingClientId());
   network_context_->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(2), /*download=*/0.0, /*upload=*/0.0);
-  network_context_->ClearSocketLayerNetworkConditions(profile_id);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(2), /*download=*/0.0,
+      /*upload=*/0.0);
+  network_context_->ClearSocketLayerNetworkConditions(profile_id,
+                                                      ThrottlingClientId());
 
   // The connection must still be genuinely live across the retirements:
   // exchange a frame with the echo server.
@@ -350,7 +362,9 @@ TEST_F(WebSocketFactoryHandshakeTest,
        ContextTeardownWithOpenWebSocketDoesNotCrash) {
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   network_context_->SetSocketLayerNetworkConditions(
-      profile_id, base::Milliseconds(1), /*download=*/0.0, /*upload=*/0.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0,
+      base::Milliseconds(1), /*download=*/0.0,
+      /*upload=*/0.0);
 
   // Route through the NetworkContext's own internal WebSocketFactory (as
   // production does) so the teardown ordering inside ~NetworkContext is
@@ -374,7 +388,8 @@ TEST_F(WebSocketFactoryHandshakeTest,
   // reference is now the only thing keeping it alive, which is the fragile
   // teardown ordering (the handle must not release the session before the
   // channel returns its socket).
-  network_context_->ClearSocketLayerNetworkConditions(profile_id);
+  network_context_->ClearSocketLayerNetworkConditions(profile_id,
+                                                      ThrottlingClientId());
   // Confirm the connection is genuinely live (not merely handshaked) before
   // tearing the context down under it.
   EXPECT_EQ(stub.SendAndReceiveEcho("hello"), "hello");
@@ -396,7 +411,8 @@ TEST_F(WebSocketFactoryHandshakeTest, SocketLayerConditionsApplyToWebSockets) {
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   constexpr base::TimeDelta kRtt = base::Milliseconds(300);
   network_context_->SetSocketLayerNetworkConditions(
-      profile_id, kRtt, /*download=*/0.0, /*upload=*/0.0);
+      profile_id, ThrottlingClientId(), /*client_order=*/0, kRtt,
+      /*download=*/0.0, /*upload=*/0.0);
 
   const base::TimeTicks start = base::TimeTicks::Now();
   StubWebSocketHandshakeClient* client =

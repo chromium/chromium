@@ -371,11 +371,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   void SetSocketLayerNetworkConditions(
       const base::UnguessableToken& throttling_profile_id,
+      const base::UnguessableToken& throttling_client_id,
+      uint64_t client_order,
       base::TimeDelta latency,
       double download_throughput_bytes_per_second,
       double upload_throughput_bytes_per_second) override;
   void ClearSocketLayerNetworkConditions(
-      const base::UnguessableToken& throttling_profile_id) override;
+      const base::UnguessableToken& throttling_profile_id,
+      const base::UnguessableToken& throttling_client_id) override;
 
   scoped_refptr<net::HttpTransactionFactoryHandle>
   GetIsolatedTransactionFactory(
@@ -931,6 +934,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     ~IsolatedSession();
   };
 
+  // The isolated session applying a throttling client's socket-layer
+  // conditions, if they throttle.
+  struct ClientIsolatedSession {
+    base::UnguessableToken throttling_client_id;
+    uint64_t client_order;
+    // Null if the client's conditions don't throttle, so that its requests use
+    // the primary session.
+    scoped_refptr<IsolatedSession> session;
+  };
+
   // To be called back from CookieManager on settings change.
   void OnCookieManagerSettingsChanged();
 
@@ -1062,13 +1075,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // session while the iteration is still using it.
   std::vector<scoped_refptr<IsolatedSession>> GetAllIsolatedSessions();
 
-  // Moves the session for `it` into `retired_isolated_sessions_`. The
-  // session's handle stays functional, so in-flight requests continue under
-  // their captured conditions; the session is freed as soon as its last
-  // handle reference drains (which may be within this very call).
-  void RetireIsolatedSession(
-      std::map<base::UnguessableToken, scoped_refptr<IsolatedSession>>::iterator
-          it);
+  // Moves `session`, which the caller removed from `isolated_sessions_`, into
+  // `retired_isolated_sessions_`. The session's handle stays functional, so
+  // in-flight requests continue under their captured conditions; the session
+  // is freed as soon as its last handle reference drains (which may be within
+  // this very call).
+  void RetireIsolatedSession(scoped_refptr<IsolatedSession> session);
 
   // Runs when the last reference to an isolated session's factory handle is
   // released; drops the (retired) session's tracking entries, freeing it.
@@ -1381,9 +1393,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // updated from those passed via the initial params.
   variations::mojom::VariationsHeadersPtr variations_headers_;
 
-  // Isolated throttling sessions (see IsolatedSession), keyed by
-  // throttling_profile_id.
-  std::map<base::UnguessableToken, scoped_refptr<IsolatedSession>>
+  // Isolated throttling sessions (see IsolatedSession) by throttling profile:
+  // one per client of the profile, sorted by `client_order`. Requests use the
+  // conditions of their profile's first client, as legacy conditions apply
+  // those of the first client that matches.
+  std::map<base::UnguessableToken, std::vector<ClientIsolatedSession>>
       isolated_sessions_;
 
   // Sessions retired by a conditions update or clear but kept alive because

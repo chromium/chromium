@@ -19,6 +19,7 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/protocol.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
@@ -64,6 +65,7 @@ class RenderFrameHostImpl;
 class NavigationRequest;
 class SignedExchangeEnvelope;
 class StoragePartition;
+class StoragePartitionImpl;
 struct SignedExchangeError;
 
 namespace protocol {
@@ -92,7 +94,8 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   ~NetworkHandler() override;
 
-  static std::vector<NetworkHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
+  CONTENT_EXPORT static std::vector<NetworkHandler*> ForAgentHost(
+      DevToolsAgentHostImpl* host);
 
   static std::string NetErrorToString(int net_error);
   static const char* ResourceTypeToString(
@@ -126,7 +129,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   // Used to set a storage partition for a service worker agent host
   // before the service worker agent host has a renderer. The storage
   // partition will be updated via SetRenderer once the renderer is available.
-  void SetStoragePartition(StoragePartition* storage_partition);
+  CONTENT_EXPORT void SetStoragePartition(StoragePartition* storage_partition);
 
 #if BUILDFLAG(ENABLE_REPORTING)
   void OnReportAdded(const net::ReportingReport& report) override;
@@ -384,6 +387,17 @@ class NetworkHandler : public DevToolsDomainHandler,
       base::TimeTicks timestamp);
 
  private:
+  // Conditions that the sockets of the session's requests apply, with
+  // socket-layer network throttling. They don't throttle by default.
+  struct SocketLayerNetworkConditions {
+    friend bool operator==(const SocketLayerNetworkConditions&,
+                           const SocketLayerNetworkConditions&) = default;
+
+    base::TimeDelta latency;
+    double download_throughput = 0;
+    double upload_throughput = 0;
+  };
+
   void RequestWillBeSent(
       const std::string& request_id,
       const std::string& loader_id,
@@ -411,6 +425,18 @@ class NetworkHandler : public DevToolsDomainHandler,
       std::vector<network::mojom::MatchedNetworkConditionsPtr>
           matched_conditions,
       bool offline);
+  // With socket-layer network throttling, applies the latency and throughputs
+  // of `rules` to the sockets of this session's requests, whenever the session
+  // has a storage partition.
+  void SetSocketLayerNetworkConditions(
+      const std::vector<network::mojom::MatchedNetworkConditionsPtr>& rules);
+  // Clears the socket-layer network conditions of this session, if any.
+  void ClearSocketLayerNetworkConditions();
+  // Has the network service apply `socket_layer_conditions_`, if any, to the
+  // current frame's requests in the current storage partition, after clearing
+  // them from where they were applied before, if that changed.
+  // `conditions_changed` re-applies them even if it didn't.
+  void UpdateSocketLayerNetworkConditions(bool conditions_changed);
   void ProcessDurableMessageOrGetLocalData(
       const String& request_id,
       std::unique_ptr<GetResponseBodyCallback> callback,
@@ -430,7 +456,10 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   std::unique_ptr<Network::Frontend> frontend_;
   raw_ptr<BrowserContext> browser_context_;
-  raw_ptr<StoragePartition> storage_partition_;
+  // Weak, as the partition of an installing service worker (see
+  // SetStoragePartition()) can be destroyed before the worker's DevTools
+  // host, and so this handler.
+  base::WeakPtr<StoragePartitionImpl> storage_partition_;
   raw_ptr<RenderFrameHostImpl> host_;
   bool enabled_ = false;
   bool enable_third_party_cookie_restriction_ = false;
@@ -458,6 +487,18 @@ class NetworkHandler : public DevToolsDomainHandler,
   const raw_ref<DevToolsSession> root_session_;
   const base::UnguessableToken throttling_client_id_;
   bool network_conditions_configured_ = false;
+  // With socket-layer network throttling, orders this session's network
+  // conditions, if any, among other sessions' by when it set them.
+  std::optional<uint64_t> network_conditions_order_;
+  // The socket-layer network conditions of this session, if any.
+  std::optional<SocketLayerNetworkConditions> socket_layer_conditions_;
+  // Where `socket_layer_conditions_` are applied: the network context of this
+  // storage partition, for requests with this throttling profile token. It's
+  // weak like `storage_partition_`, which it can outlive when the handler
+  // moves to another partition, and the conditions go with its network
+  // context.
+  base::WeakPtr<StoragePartitionImpl> socket_layer_storage_partition_;
+  base::UnguessableToken socket_layer_throttling_token_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };
 

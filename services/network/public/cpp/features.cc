@@ -558,5 +558,6 @@ BASE_FEATURE_PARAM(std::string,
                    &kDnsHostMappingExperiment,
                    /*name=*/"rules",
                    /*default_value=*/"");
+BASE_FEATURE(kSocketLayerNetworkThrottling, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace network::features
