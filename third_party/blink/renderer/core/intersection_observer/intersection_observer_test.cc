@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/intersection_observer_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
@@ -3404,6 +3406,129 @@ TEST_F(IntersectionObserverTest,
   EXPECT_EQ(observer_delegate->CallCount(), 1);
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+}
+
+namespace {
+
+class ObserveAndDirtySlotResizeObserverDelegate final
+    : public ResizeObserver::Delegate {
+ public:
+  ObserveAndDirtySlotResizeObserverDelegate(IntersectionObserver& observer,
+                                            Element& target,
+                                            Element& slot_child)
+      : observer_(observer), target_(target), slot_child_(slot_child) {}
+
+  void OnResize(
+      const HeapVector<Member<ResizeObserverEntry>>& entries) override {
+    if (did_run_) {
+      return;
+    }
+    did_run_ = true;
+    observer_->observe(target_.Get());
+    slot_child_->setAttribute(html_names::kSlotAttr, AtomicString("x"));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ResizeObserver::Delegate::Trace(visitor);
+    visitor->Trace(observer_);
+    visitor->Trace(target_);
+    visitor->Trace(slot_child_);
+  }
+
+ private:
+  Member<IntersectionObserver> observer_;
+  Member<Element> target_;
+  Member<Element> slot_child_;
+  bool did_run_ = false;
+};
+
+}  // namespace
+
+// Regression test for https://crbug.com/583238769 (vulnerability 2):
+// When a ResizeObserver callback calls IntersectionObserver::observe() on a
+// target in a nested throttled frame that is already at kPrePaintClean, the
+// repeated lifecycle pass must rewind the throttled frame and its ancestors to
+// kVisualUpdatePending so that pending slot assignments are recalculated before
+// ComputeIntersections runs.
+TEST_F(IntersectionObserverTest,
+       DirtySlotAssignmentInThrottledFrameObservedFromResizeObserver) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest middle_resource("https://example.com/middle.html", "text/html");
+  SimRequest inner_resource("https://example.com/inner.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <iframe id="middle" src="middle.html" sandbox
+            style="position: absolute; top: 1000px"></iframe>
+  )HTML");
+  middle_resource.Complete(R"HTML(
+    <iframe id="inner" src="inner.html"></iframe>
+  )HTML");
+  inner_resource.Complete(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <div id="t1">1</div>
+      <div id="t2">2</div>
+      <div id="wrap"></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* middle_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  ASSERT_TRUE(middle_frame);
+  auto* inner_frame = To<WebLocalFrameImpl>(middle_frame->FirstChild());
+  ASSERT_TRUE(inner_frame);
+  LocalFrameView* middle_view = middle_frame->GetFrame()->View();
+  Document* inner_document = inner_frame->GetFrame()->GetDocument();
+  LocalFrameView* inner_view = inner_document->View();
+  EXPECT_TRUE(middle_view->CanThrottleRendering());
+  EXPECT_TRUE(inner_view->CanThrottleRendering());
+
+  Element* t1 = inner_document->getElementById(AtomicString("t1"));
+  Element* t2 = inner_document->getElementById(AtomicString("t2"));
+  Element* wrap = inner_document->getElementById(AtomicString("wrap"));
+  Element* host = inner_document->getElementById(AtomicString("host"));
+  ASSERT_TRUE(t1);
+  ASSERT_TRUE(t2);
+  ASSERT_TRUE(wrap);
+  ASSERT_TRUE(host);
+  ShadowRoot* shadow_root = host->OpenShadowRoot();
+  ASSERT_TRUE(shadow_root);
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(*inner_document);
+  IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
+      *observer_delegate, std::nullopt,
+      IntersectionObserver::Params{.root = inner_document, .thresholds = {0}});
+
+  // Observe `t1` from a normal task so that the next BeginFrame advances
+  // `middle` and `inner` to kPrePaintClean while keeping them throttled.
+  observer->observe(t1);
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(DocumentLifecycle::kPrePaintClean,
+            middle_frame->GetFrame()->GetDocument()->Lifecycle().GetState());
+  EXPECT_EQ(DocumentLifecycle::kPrePaintClean,
+            inner_document->Lifecycle().GetState());
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+
+  // Now register a ResizeObserver on the main document that will fire during
+  // the lifecycle update, call `observer->observe(t2)`, and dirty slot
+  // assignment in `inner`.
+  auto* resize_delegate =
+      MakeGarbageCollected<ObserveAndDirtySlotResizeObserverDelegate>(
+          *observer, *t2, *wrap);
+  ResizeObserver* resize_observer =
+      ResizeObserver::Create(GetDocument().domWindow(), resize_delegate);
+  resize_observer->observe(GetDocument().body());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_FALSE(shadow_root->NeedsSlotAssignmentRecalc());
+  EXPECT_EQ(observer_delegate->EntryCount(), 2);
 }
 
 }  // namespace blink

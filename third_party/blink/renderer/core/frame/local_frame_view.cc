@@ -2537,7 +2537,7 @@ void LocalFrameView::PrepareForLifecycleUpdateRecursive() {
   // throttling is forced (see ShouldThrottleRendering()).
   if (!ShouldThrottleRendering() ||
       (intersection_observation_state_ == kRequired &&
-       !LocalFrameTreeForcesThrottling())) {
+       !IsDisplayLockThrottled() && !LocalFrameTreeForcesThrottling())) {
     Lifecycle().EnsureStateAtMost(DocumentLifecycle::kVisualUpdatePending);
     ForAllChildLocalFrameViews([](LocalFrameView& child) {
       child.PrepareForLifecycleUpdateRecursive();
@@ -2717,27 +2717,9 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   // observations, container query list notifications, and view transitions).
   // Any of these steps can dirty style or layout and require repeating the
   // lifecycle phases.
-
-  // A LocalFrameView can be unthrottled at this point, but become throttled as
-  // it advances through lifecycle stages. If that happens, it will prevent
-  // subsequent passes through the loop from updating the newly-throttled views.
-  // To avoid that, we lock in the set of unthrottled views before entering the
-  // loop.
-  HeapVector<Member<LocalFrameView>> unthrottled_frame_views;
-  ForAllNonThrottledLocalFrameViews(
-      [&unthrottled_frame_views](LocalFrameView& frame_view) {
-        unthrottled_frame_views.push_back(&frame_view);
-      });
-
   while (true) {
-    for (LocalFrameView* frame_view : unthrottled_frame_views) {
-      // Steps in this loop (such as ResizeObserver and ContainerQueryList) may
-      // run arbitrary script, which can cause a frame to become detached.
-      if (frame_view->GetFrame().IsAttached()) {
-        frame_view->Lifecycle().EnsureStateAtMost(
-            DocumentLifecycle::kVisualUpdatePending);
-      }
-    }
+    PrepareForLifecycleUpdateRecursive();
+
     bool run_more_lifecycle_phases =
         RunStyleAndLayoutLifecyclePhases(target_state);
     if (!run_more_lifecycle_phases) {
