@@ -9,6 +9,7 @@ import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashMap;
 
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
@@ -26,6 +27,9 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public abstract class Flag {
     // Used to reset all flags between tests.
+    private static final Object sFlagsCreatedLock = new Object();
+
+    @GuardedBy("sFlagsCreatedLock")
     private static HashMap<String, Flag> sFlagsCreatedForTesting = new HashMap<>();
 
     protected final FeatureMap mFeatureMap;
@@ -36,8 +40,10 @@ public abstract class Flag {
         mFeatureName = featureName;
 
         if (BuildConfig.IS_FOR_TEST) {
-            Flag previous = sFlagsCreatedForTesting.put(mFeatureName, this);
-            assert previous == null : "Duplicate flag creation for feature: " + featureName;
+            synchronized (sFlagsCreatedLock) {
+                Flag previous = sFlagsCreatedForTesting.put(mFeatureName, this);
+                assert previous == null : "Duplicate flag creation for feature: " + featureName;
+            }
         }
     }
 
@@ -69,8 +75,10 @@ public abstract class Flag {
      * individual tests other than those that exercise Flag subclasses.
      */
     public static void resetAllInMemoryCachedValuesForTesting() {
-        for (Flag flag : sFlagsCreatedForTesting.values()) {
-            flag.clearInMemoryCachedValueForTesting();
+        synchronized (sFlagsCreatedLock) {
+            for (Flag flag : sFlagsCreatedForTesting.values()) {
+                flag.clearInMemoryCachedValueForTesting();
+            }
         }
     }
 
@@ -79,8 +87,16 @@ public abstract class Flag {
      * in the same process (batched or Robolectric).
      */
     public static void useTemporaryFlagsCreatedForTesting() {
-        HashMap<String, Flag> oldValues = sFlagsCreatedForTesting;
-        sFlagsCreatedForTesting = new HashMap<>();
-        ResettersForTesting.register(() -> sFlagsCreatedForTesting = oldValues);
+        HashMap<String, Flag> oldValues;
+        synchronized (sFlagsCreatedLock) {
+            oldValues = sFlagsCreatedForTesting;
+            sFlagsCreatedForTesting = new HashMap<>();
+        }
+        ResettersForTesting.register(
+                () -> {
+                    synchronized (sFlagsCreatedLock) {
+                        sFlagsCreatedForTesting = oldValues;
+                    }
+                });
     }
 }
