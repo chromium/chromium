@@ -68,7 +68,9 @@ int ComputeHeadingMessageFromUsage(
       usage.readable_directories.empty()) {
     // Only writable files.
     if (usage.readable_files.empty()) {
-      CHECK(!usage.writable_files.empty(), base::NotFatalUntil::M162);
+      // TODO(crbug.com/586133721): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!usage.writable_files.empty());
       if (usage.writable_files.size() == 1) {
         *embedded_path = usage.writable_files.front();
         return IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_WRITABLE_FILE_TEXT;
