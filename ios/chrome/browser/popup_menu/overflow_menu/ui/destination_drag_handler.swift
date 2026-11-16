@@ -184,7 +184,7 @@ class DidEndItemProvider: NSItemProvider {
   let id: UUID = UUID.init()
   weak var delegate: DidEndItemProviderDelegate?
   deinit {
-    Task { @MainActor[weak delegate, id] in
+    Task { @MainActor [weak delegate, id] in
       delegate?.didEndItemProviderDidEnd(id)
     }
   }

@@ -118,8 +118,7 @@ where Content: View {
 
     self.scrollView = scrollView
 
-    let sizingTarget: any
-    OverflowMenuSizing = self
+    let sizingTarget: any OverflowMenuSizing = self
     contentSizeObservation = scrollView.observe(\.contentSize, options: [.initial, .new]) {
       [weak sizingTarget] _, _ in
       guard let sizingTarget = sizingTarget else { return }

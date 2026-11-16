@@ -610,7 +610,7 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
       // doesn't ensure if it's safe to pass `cell.item` across threads since NSObject doesn't
       // conform to Sendable protocol.
       nonisolated(unsafe)
-      let cellItem = cell.item
+        let cellItem = cell.item
       let completion = {
         @Sendable (item: TabSwitcherItem?, tabSnapshotAndFavicon: TabSnapshotAndFavicon?) -> Void in
         if let item = item, item == cellItem {
