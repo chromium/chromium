@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/i18n/message_formatter.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "ui/base/l10n/l10n_util.h"
 

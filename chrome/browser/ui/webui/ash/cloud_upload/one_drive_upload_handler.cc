@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"

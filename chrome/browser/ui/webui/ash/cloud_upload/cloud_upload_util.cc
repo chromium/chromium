@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"

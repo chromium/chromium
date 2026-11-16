@@ -36,8 +36,8 @@ static_library("office_fallback") {
   ]
 
   deps = [
+    "//ash/strings",
     "//ash/webui/common/resources/office_fallback:resources",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/cloud_upload",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
@@ -65,8 +65,8 @@ source_set("browser_tests") {
   deps = [
     ":office_fallback",
     "//ash/constants",
+    "//ash/strings",
     "//base/test:test_support",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/file_system_provider",

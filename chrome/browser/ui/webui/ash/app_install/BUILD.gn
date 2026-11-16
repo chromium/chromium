@@ -49,6 +49,7 @@ static_library("app_install") {
 
   deps = [
     "//ash",
+    "//ash/strings",
     "//ash/webui/common:trusted_types_util",
     "//chrome/app:generated_resources",
     "//chrome/browser/apps/app_service",

@@ -10924,6 +10924,326 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_PAIRING_A11Y_LABEL" desc="Bluetooth pairing dialog: Accessibility label for unpaired Bluetooth device list item, when pairing to the a device is in progress.">
         Pairing to <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
       </message>
+
+      <!-- Strings for the office fallback dialog -->
+      <message name="IDS_OFFICE_FALLBACK_CANCEL" desc="Label for the button that cancels office fallback.">
+        Cancel
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_TRY_AGAIN" desc="Label for the button that retries opening the office file with the original application.">
+        Try again
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_OK" desc="Label for the office fallback dialog's OK button.">
+        OK
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_OPEN_IN_BASIC_EDITOR" desc="Label for the button that uses the basic fallback editor to open the office file.">
+        Open in basic editor
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_TITLE_OFFLINE" desc="Title for a dialog that appears when an office file is unable to be opened due to the system being offline.">
+        Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> when offline
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_REASON_OFFLINE" desc="Explanation for a dialog that appears when an office file is unable to be opened due to the system being offline.">
+        The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> isn’t available offline.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is offline.">
+        Check your internet connection and choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_TITLE_METERED" desc="Title for a dialog that appears when an office file is unable to be uploaded to Google Drive due to the system being on a metered network (network where bandwidth usage incurs cost to the user).">
+        Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> while on a metered connection
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_REASON_METERED" desc="Explanation for a dialog that appears when an office file is unable to be uploaded to Google Drive due to the system being on a metered network (network where bandwidth usage incurs cost to the user).">
+        Can't upload files while on a metered connection.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is on a metered network (network where bandwidth usage incurs cost to the user).">
+        Change your internet connection and choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE" desc="Title for a dialog that appears when an office file is unable to be opened due to Google Drive not being available.">
+        Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> when Google Drive is not available
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE" desc="Explanation for a dialog that appears when an office file is unable to be opened due to Google Drive not being available.">
+        The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> requires Google Drive to be available.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DISABLE_DRIVE_PREFERENCE" desc="Office Fallback dialog instructions for the choices (buttons) the user has available when Google Drive is disabled in settings.">
+        Try enabling Google Drive in Settings and choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_REASON_DRIVE_DISABLED_FOR_ACCOUNT" desc="Explanation for a dialog that appears when Google Drive is not available for the account type.">
+        Google Drive is disabled for this account type.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_DISABLED_FOR_ACCOUNT" desc="Office Fallback dialog instructions for the choices (buttons) the user has available when Google Drive is not available for the account type.">
+        Choose "Open in basic editor" to use limited view and editing options.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS" desc="Office Fallback dialog instructions for the choices (buttons) the user has available to open the office file.">
+        Choose "Try again", or choose "Open in basic editor" to use limited view and editing options.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_TITLE_WAITING_FOR_UPLOAD" desc="Title for a dialog that appears when a user attempts to open a file in Web Drive before it is fully synced.">
+        Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph>
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_REASON_WAITING_FOR_UPLOAD" desc="Explanation for a dialog that appears when a user attempts to open a file in Web Drive before it is fully synced.">
+        The file is still being synced to Drive.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_WAITING_FOR_UPLOAD" desc="Office Fallback dialog instructions when a user attempts to open a file in Web Drive before it is fully synced.">
+        Try again after the file has finished syncing.
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_TITLE_ANDROID_ONE_DRIVE_LOCATION_NOT_SUPPORTED" desc="Title for a dialog that appears when a user attempts to open a file from an unsupported location in the Android OneDrive app.">
+        Microsoft 365 can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> from this folder
+      </message>
+      <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_ANDROID_ONE_DRIVE_LOCATION_NOT_SUPPORTED" desc="Office Fallback dialog instructions when a user attempts to open a file from an unsupported location in the Android OneDrive app.">
+        Try opening the file from another folder, or choose "Open in basic editor" to use limited view and editing options.
+      </message>
+
+      <!-- Office file handler selection dialog -->
+      <message name="IDS_OFFICE_FILE_HANDLER_TITLE" desc="Title for office file handler selection dialog, which allows the user to choose an app to open office files.">
+        Choose an app to open <ph name="FILE_TYPE">$1<ex>Word</ex></ph> files
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_FILE_TYPE_WORD" desc="File type for Word.">
+        Word
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_FILE_TYPE_EXCEL" desc="File type for Excel.">
+        Excel
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_FILE_TYPE_POWERPOINT" desc="File type for PowerPoint.">
+        PowerPoint
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_DOCS" desc="App name for Google Docs.">
+        Google Docs
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_SHEETS" desc="App name for Google Sheets.">
+        Google Sheets
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_SLIDES" desc="App name for Google Slides.">
+        Google Slides
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_APP_OTHERS" desc="App name for others.">
+        Other apps
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_STORAGE_GOOGLE" desc="Description for using Google Drive as storage.">
+        Uses Google Drive storage
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_STORAGE_MICROSOFT" desc="Description for using Microsoft OneDrive as storage.">
+        Uses Microsoft OneDrive storage
+      </message>
+      <message name="IDS_OFFICE_FILE_HANDLER_OPEN_BUTTON" desc="Text for a button located in the dialog footer which opens the app.">
+        Open
+      </message>
+
+      <!-- Office setup welcome dialog -->
+      <message name="IDS_OFFICE_WELCOME_TITLE" desc="Title for the welcome dialog when the user sets up Microsoft Office for the first time.">
+        Set up Microsoft 365 to open files
+      </message>
+      <message name="IDS_OFFICE_WELCOME_BODY_TEXT" desc="Body text for the welcome dialog when the user sets up Microsoft Office for the first time.">
+        <ph name="LINK_BEGIN">&lt;a href="https://support.google.com/chromebook?p=edit_office_files" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph> about Microsoft 365 on your Chromebook.
+      </message>
+      <message name="IDS_OFFICE_WELCOME_INSTALL_MICROSOFT365" desc="A bullet point in the welcome dialog when the user sets up Microsoft Office for the first time, telling the user that Microsoft 365 web app will be installed.">
+        Install Microsoft 365
+      </message>
+      <message name="IDS_OFFICE_WELCOME_CONNECT_ONEDRIVE" desc="A bullet point in the welcome dialog when the user sets up Microsoft Office for the first time, telling the user that Microsoft OneDrive account will be installed.">
+        Connect to Microsoft OneDrive
+      </message>
+      <message name="IDS_OFFICE_WELCOME_FILES_WILL_MOVE" desc="A bullet point in the welcome dialog when the user sets up Microsoft Office for the first time, telling the user that selected files will be moved to the user's Microsoft OneDrive account when opened with Microsoft 365 web app.">
+        Files will move to OneDrive when opening in Microsoft 365
+      </message>
+      <message name="IDS_OFFICE_WELCOME_GET_STARTED" desc="Caption for a button that starts the setup flow in the welcome dialog when the user sets up Microsoft Office for the first time.">
+        Get started
+      </message>
+      <message name="IDS_OFFICE_WELCOME_SET_UP" desc="Caption for a button that starts the setup flow in the welcome dialog when the user sets up Microsoft Office, but both Microsoft 365 web app and Microsoft OneDrive were previously set up.">
+        Set up
+      </message>
+
+      <!-- Office setup Connect OneDrive dialog -->
+      <message name="IDS_CONNECT_TO_ONEDRIVE_TITLE" desc="Title for a dialog which allows the user to connect Files app and Microsoft OneDrive storage.">
+        Connect to Microsoft OneDrive
+      </message>
+      <message name="IDS_CONNECT_TO_ONEDRIVE_BODY_TEXT" desc="Explanation text for a dialog which allows the user to connect Files app and Microsoft OneDrive storage.">
+        Connect OneDrive to the Files app to manage your stored documents from your Chromebook. You'll need to sign in with your Microsoft account.
+      </message>
+      <message name="IDS_CONNECT_TO_ONEDRIVE_SIGNIN_FLOW_BODY_TEXT" desc="Explanation text for a dialog which allows the user to connect Files app and Microsoft OneDrive storage via sign in flow.">
+        Microsoft 365 uses OneDrive to open and edit Word, Excel, and PowerPoint files. These files will be found in the Files app side navigation labeled “Microsoft OneDrive.” You'll need to sign in with your Microsoft account. <ph name="LINK_BEGIN">&lt;a href="https://support.google.com/chromebook?p=edit_office_files" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_CANT_CONNECT_ONEDRIVE" desc="Error message text displayed when the user has tried to connect to OneDrive storage, but failed for any reason.">
+        Can't connect to OneDrive. Try again.
+      </message>
+      <message name="IDS_CONNECT_ONEDRIVE" desc="Text for a button which triggers a UI flow to connect the user to OneDrive storage.">
+        Connect to OneDrive
+      </message>
+      <message name="IDS_ONEDRIVE_CONNECTED_TITLE" desc="Text for a button which triggers a UI flow to connect the user to OneDrive storage.">
+        Microsoft OneDrive connected
+      </message>
+      <message name="IDS_ONEDRIVE_CONNECTED_BODY_TEXT" desc="Text for a button which triggers a UI flow to connect the user to OneDrive storage.">
+        OneDrive will now appear in the Files app
+      </message>
+
+      <!-- Office install PWA dialog -->
+      <message name="IDS_OFFICE_INSTALL_PWA_TITLE" desc="Title for a dialog which allows the user to install Microsoft 365 PWA.">
+        Install Microsoft 365
+      </message>
+      <message name="IDS_OFFICE_INSTALL_PWA_BODY_TEXT" desc="Explanation text for a dialog which allows the user to install Microsoft 365 PWA.">
+        Open, edit, and save Word, Excel, and PowerPoint files. A subscription may be required for some features.
+      </message>
+      <message name="IDS_OFFICE_INSTALL_PWA_INSTALLING_BUTTON" desc="Text for a button that indicates the PWA is now installing.">
+        Installing
+      </message>
+      <message name="IDS_OFFICE_INSTALL_PWA_INSTALLED_BUTTON" desc="Text for a button that indicates the PWA is successfully installed.">
+        Installed
+      </message>
+
+      <!-- Office cancel setup dialog -->
+      <message name="IDS_OFFICE_CANCEL_SETUP_TITLE" desc="Title for a dialog which allows the user to cancel the Microsoft 365 setup.">
+        Cancel Microsoft 365 setup?
+      </message>
+      <message name="IDS_OFFICE_CANCEL_SETUP_BODY_TEXT" desc="Explanation text for a dialog which allows the user to cancel the Microsoft 365 setup.">
+        You won’t be able to open files in Microsoft 365 until setup is complete.
+      </message>
+      <message name="IDS_OFFICE_CANCEL_SETUP_CANCEL_BUTTON" desc="Text for a button which cancels the Microsoft 365 setup flow.">
+        Cancel setup
+      </message>
+      <message name="IDS_OFFICE_CANCEL_SETUP_CONTINUE_BUTTON" desc="Text for a button which continues the Microsoft 365 setup flow.">
+        Continue setup
+      </message>
+
+      <!-- Office Microsoft 365 setup complete dialog -->
+      <message name="IDS_OFFICE_ONEDRIVE_SETUP_COMPLETE_TITLE" desc="Title for a dialog which indicates the Microsoft 365 setup has been completed.">
+        Microsoft 365 setup complete
+      </message>
+      <message name="IDS_OFFICE_ONEDRIVE_SETUP_COMPLETE_BODY_TEXT" desc="Explanation text for a dialog which indicates the Microsoft 365 setup has been completed.">
+        When opening Word, Excel, and Powerpoint files, the files will move to Microsoft OneDrive before opening in Microsoft 365
+      </message>
+
+      <!-- Office move confirmation dialog -->
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_MOVE_TITLE" desc="Title for a dialog asking the user to confirm moving one file to OneDrive/Google Drive before opening it.">
+        Move 1 file to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> to open?
+      </message>
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_MOVE_TITLE_PLURAL" desc="Title for a dialog asking the user to confirm moving more than one files to OneDrive/Google Drive before opening it.">
+        Move <ph name="NUM_OF_FILES">$2<ex>5</ex></ph> files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> to open?
+      </message>
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_COPY_TITLE" desc="Title for a dialog asking the user to confirm copying one file to OneDrive/Google Drive before opening it.">
+        Copy 1 file to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> to open?
+      </message>
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_COPY_TITLE_PLURAL" desc="Title for a dialog asking the user to confirm copying more than one files to OneDrive/Google Drive before opening it.">
+        Copy <ph name="NUM_OF_FILES">$2<ex>5</ex></ph> files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> to open?
+      </message>
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_ONEDRIVE_BODY_TEXT" desc="Explanation text for a dialog asking the user to confirm moving files to OneDrive before opening it.">
+        Microsoft 365 requires files to be stored in OneDrive. Local files will move and files from other locations will copy. Your files can be found in the Microsoft OneDrive folder in the Files app.
+      </message>
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_GOOGLE_DRIVE_BODY_TEXT" desc="Explanation text for a dialog asking the user to confirm moving files to Google Drive before opening it.">
+        Google Docs, Sheets, and Slides require files to be stored in Google Drive. Local files will move and files from other locations will copy. Your files can be found in the Google Drive folder in the Files app.
+      </message>
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_ALWAYS_MOVE_CHECKBOX" desc="Checkbox label which allows the user to always move/copy files to OneDrive/Google Drive without asking each time.">
+        Don’t ask again
+      </message>
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_MOVE_BUTTON" desc="Text for a button which triggers the move and open action for the file.">
+        Move and open
+      </message>
+      <message name="IDS_OFFICE_MOVE_CONFIRMATION_COPY_BUTTON" desc="Text for a button which triggers the copy and open action for the file.">
+        Copy and open
+      </message>
+      <message name="IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE" desc="Cloud provider name for OneDrive.">
+        Microsoft OneDrive
+      </message>
+      <message name="IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE_SHORT" desc="Short name for OneDrive.">
+        OneDrive
+      </message>
+      <message name="IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE" desc="Cloud provider name for Google Drive.">
+        Google Drive
+      </message>
+      <message name="IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE_SHORT" desc="Short name for Google Drive.">
+        Drive
+      </message>
+
+      <!-- Office notification -->
+      <message name="IDS_OFFICE_NOTIFICATION_MOVING_FILES" desc="Title for a notification indicating that files are in the process of moving to OneDrive/Google Drive.">
+        {NUM_OF_FILES, plural,
+      =1 {Moving 1 file to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}
+      other {Moving {NUM_OF_FILES} files to <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph>}}
+      </message>
+      <message name="IDS_OFFICE_NOTIFICATION_FILES_MOVED" desc="Title for a notification indicating that files are already moved to OneDrive/Google Drive.">
+        {NUM_OF_FILES, plural,
+      =1 {Moved 1 file}
+      other {Moved {NUM_OF_FILES} files}}
+      </message>
+      <message name="IDS_OFFICE_NOTIFICATION_COPYING_FILES" desc="Title for a notification indicating that files are in the process of copying to OneDrive/Google Drive.">
+        {NUM_OF_FILES, plural,
+      =1 {Copying 1 file to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}
+      other {Copying {NUM_OF_FILES} files to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}}
+      </message>
+      <message name="IDS_OFFICE_NOTIFICATION_FILES_COPIED" desc="Title for a notification indicating that files are already copied to OneDrive/Google Drive.">
+        {NUM_OF_FILES, plural,
+      =1 {Copied 1 file}
+      other {Copied {NUM_OF_FILES} files}}
+      </message>
+      <!-- TODO(b/272601262) Display or delete this message. -->
+      <message name="IDS_OFFICE_NOTIFICATION_FILES_WILL_OPEN" desc="Subtitle for a notification indicating that files will open in Microsoft 365 or Google Docs/Sheets/Slides." translateable="false">
+        {NUM_OF_FILES, plural,
+      =1 {File will open in <ph name="TARGET_APP">{1}<ex>Microsoft 365</ex></ph>}
+      other {Files will open in <ph name="TARGET_APP">{1}<ex>Google Docs</ex></ph>}}
+      </message>
+      <message name="IDS_OFFICE_NOTIFICATION_FILES_OPENING" desc="Subtitle for a notification indicating that files is opening in Microsoft 365 or Google Docs/Sheets/Slides.">
+        Opening in <ph name="TARGET_APP">$1<ex>Microsoft 365</ex></ph>
+      </message>
+      <message name="IDS_OFFICE_NOTIFICATION_SHOW_IN_FOLDER_BUTTON" desc="Text for a button in the office notification which allows the user to see the file in the Files folder after clicking.">
+        Show in folder
+      </message>
+      <message name="IDS_OFFICE_NOTIFICATION_SIGN_IN_BUTTON" desc="Text for a button in the office notification which allows the user to sign in when reauthentication is needed.">
+        Sign in
+      </message>
+      <message name="IDS_ONEDRIVE_AUTOMATED_MOUNT_ERROR_TITLE" desc="Text for the OneDrive automated mount notification">
+        OneDrive setup failed
+      </message>
+      <message name="IDS_ONEDRIVE_AUTOMATED_MOUNT_ERROR_MESSAGE" desc="Text for the OneDrive automated mount notification">
+        Your administrator configured your account to be connected to Microsoft OneDrive automatically, but something went wrong.
+      </message>
+      <message name="IDS_ONEDRIVE_AUTOMATED_MOUNT_BUTTON_TITLE" desc="Text for the OneDrive automated mount notification resolve button">
+        Manually connect to OneDrive
+      </message>
+
+      <!-- Office upload errors -->
+      <message name="IDS_OFFICE_UPLOAD_ERROR_CANT_MOVE_FILES" desc="Error message for uploading office files indicating that the files cannot be moved to OneDrive/Google Drive.">
+        {NUM_OF_FILES, plural,
+      =1 {Can't move file to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}
+      other {Can't move files to <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph>}}
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_CANT_COPY_FILES" desc="Error message for uploading office files indicating that files cannot be copied to OneDrive/Google Drive.">
+        {NUM_OF_FILES, plural,
+      =1 {Can't copy file to <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph>}
+      other {Can't copy files to <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph>}}
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_FREE_UP_SPACE_TO_MOVE" desc="Error message for uploading office files indicating that the user needs to free up space before moving files to OneDrive/Google Drive.">
+        {NUM_OF_FILES, plural,
+      =1 {Free up space in <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph> to move this file}
+      other {Free up space in <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph> to move these files}}
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_FREE_UP_SPACE_TO_COPY" desc="Error message for uploading office files indicating that the user needs to free up space before copying files to OneDrive/Google Drive.">
+        {NUM_OF_FILES, plural,
+      =1 {Free up space in <ph name="CLOUD_PROVIDER">{1}<ex>Microsoft OneDrive</ex></ph> to copy this file}
+      other {Free up space in <ph name="CLOUD_PROVIDER">{1}<ex>Google Drive</ex></ph> to copy these files}}
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_MOVE" desc="Error message for uploading office files indicating that the file does not exist so it cannot be moved.">
+        The file can't be moved because it no longer exists
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_FILE_NOT_EXIST_TO_COPY" desc="Error message for uploading office files indicating that the file does not exist so it cannot be copied.">
+        The file can't be copied because it no longer exists
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_REJECTED" desc="Error message for uploading office files indicating that the upload is rejected by the remote service.">
+        Microsoft OneDrive rejected the request. Please try again later.
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_GENERIC" desc="Generic error message for uploading office files.">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_REAUTHENTICATION_REQUIRED" desc="Error message for uploading office files indicating that the needs to sign in to Microsoft first before uploading the files.">
+        Sign in to your Microsoft account and then try again
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_NOT_A_VALID_DOCUMENT" desc="Error message for opening office files indicating that the file is not an valid document.">
+        File is not a valid document
+      </message>
+      <message name="IDS_OFFICE_UPLOAD_ERROR_CANT_OPEN_FILE" desc="Error message for uploading office files indicating that file cannot be open.">
+        {NUM_OF_FILES, plural,
+      =1 {Can't open file}
+      other {Can't open files}}
+      </message>
+      <message name="IDS_OFFICE_FILE_ALREADY_BEING_OPENED_MESSAGE" desc="Message for opening office files explaining what to do when the same file is already being opened.">
+        Wait for the file to open before trying again
+      </message>
+      <message name="IDS_OFFICE_FILE_ALREADY_BEING_OPENED_TITLE" desc="Title of notification for opening office files indicating same file is already being opened.">
+        File is already being opened
+      </message>
     </messages>
   </release>
 </grit>

@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/cloud_upload/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/office_fallback_resources.h"
 #include "chrome/grit/office_fallback_resources_map.h"
 #include "chromeos/constants/chromeos_features.h"

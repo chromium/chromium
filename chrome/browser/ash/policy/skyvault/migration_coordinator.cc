@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/base_paths.h"
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "storage/browser/file_system/file_system_url.h"
