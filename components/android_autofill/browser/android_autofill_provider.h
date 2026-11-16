@@ -262,9 +262,16 @@ class AndroidAutofillProvider : public AutofillProvider,
   // TODO(crbug.com/40284788): Remove once a fix is landed on the renderer side.
   void SetBottomSheetShownOff();
 
-  // Clears the completion callback on the `WebAuthnCredManDelegate` of
-  // `credman_sheet_rfh_id_` and resets `credman_sheet_rfh_id_`.
-  void ClearCredManCompletionCallback();
+  enum class CredManBottomSheetLifecycle {
+    kNotShown,   // The sheet hasn't been shown. Does not indicate it will be.
+    kIsShowing,  // The sheet was triggered. Does not guarantee it's visible.
+    kClosed,     // The sheet was dismissed and shouldn't be auto-shown again.
+  };
+
+  // Sets `credman_sheet_status_` to `new_status`, clears the completion
+  // callback on the `WebAuthnCredManDelegate` of `credman_sheet_rfh_id_`, and
+  // resets `credman_sheet_rfh_id_`.
+  void ClearCredManCompletionCallback(CredManBottomSheetLifecycle new_status);
 
   // Stops the keyboard suppression. Called when the CredMan UI was closed. If
   // the UI was dismissed without selecting a passkey, `success` will be false.
@@ -297,12 +304,6 @@ class AndroidAutofillProvider : public AutofillProvider,
       content::RenderFrameHost* rfh,
       FormGlobalId form_id,
       std::optional<AndroidAutofillProviderBridge::FieldInfo> field_to_focus);
-
-  enum class CredManBottomSheetLifecycle {
-    kNotShown,   // The sheet hasn't been shown. Does not indicate it will be.
-    kIsShowing,  // The sheet was triggered. Does not guarantee it's visible.
-    kClosed,     // The sheet was dismissed and shouldn't be auto-shown again.
-  };
 
   // Groups all state that is specific to the current autofill session.
   // A session starts when StartNewSession() is called and ends when Reset() is

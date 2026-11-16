@@ -10,6 +10,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -146,8 +148,7 @@ void AndroidAutofillProvider::RenderFrameDeleted(
   if (credman_sheet_rfh_id_ == rfh->GetGlobalId()) {
     // `WebAuthnCredManDelegateFactory` takes care of cleaning up
     // `GetCredManDelegate(rfh)`.
-    credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
-    credman_sheet_rfh_id_ = {};
+    ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kNotShown);
   }
 }
 
@@ -174,8 +175,7 @@ void AndroidAutofillProvider::RenderFrameHostStateChanged(
       OnHidePopup(session_state_->manager.get());
     }
     if (credman_sheet_rfh_id_ == rfh->GetGlobalId()) {
-      ClearCredManCompletionCallback();
-      credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
+      ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kNotShown);
     }
   }
 }
@@ -198,8 +198,7 @@ void AndroidAutofillProvider::DidFinishNavigation(
     // Clear the callback to prevent a race condition where the platform UI
     // dismissal (triggered by navigation) calls back and overwrites the
     // `credman_sheet_status_` to `kClosed` after we reset it to `kNotShown`.
-    ClearCredManCompletionCallback();
-    credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
+    ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kNotShown);
   }
 }
 
@@ -886,12 +885,11 @@ gfx::RectF AndroidAutofillProvider::ToClientAreaBound(
 }
 
 void AndroidAutofillProvider::Reset() {
-  ClearCredManCompletionCallback();
+  ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kNotShown);
 
   // Clear all session-specific state.
   session_state_.reset();
 
-  credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
   was_shown_bottom_sheet_timer_.Stop();
   was_bottom_sheet_just_shown_ = false;
 
@@ -1030,7 +1028,10 @@ AndroidAutofillProvider::CachedData::operator=(CachedData&&) = default;
 
 AndroidAutofillProvider::CachedData::~CachedData() = default;
 
-void AndroidAutofillProvider::ClearCredManCompletionCallback() {
+void AndroidAutofillProvider::ClearCredManCompletionCallback(
+    CredManBottomSheetLifecycle new_status) {
+  CHECK_NE(new_status, CredManBottomSheetLifecycle::kIsShowing);
+  credman_sheet_status_ = new_status;
   if (!credman_sheet_rfh_id_) {
     return;
   }
@@ -1055,8 +1056,7 @@ void AndroidAutofillProvider::OnCredManUiClosed(
       credman_sheet_rfh_id_ != rfh_id) {
     return;
   }
-  credman_sheet_status_ = CredManBottomSheetLifecycle::kClosed;
-  ClearCredManCompletionCallback();
+  ClearCredManCompletionCallback(CredManBottomSheetLifecycle::kClosed);
   if (keyboard_suppressor_) {
     keyboard_suppressor_->Unsuppress();
   }
