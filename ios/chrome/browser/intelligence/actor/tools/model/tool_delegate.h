@@ -27,6 +27,10 @@ class AggregatedJournal;
 // layer. The lifetime of this is tied to the ActorTask, which outlives any
 // tools that use it.
 //
+// Methods that change the task's `ActorTaskState` are posted so that a tool
+// never re-enters the task on its own stack. Queries and registration (e.g.
+// `InsertWebState()`) stay synchronous as they must return a result.
+//
 // This is based on chrome/browser/actor/tools/tool_delegate.h.
 class ToolDelegate {
  public:
@@ -45,12 +49,16 @@ class ToolDelegate {
   virtual ActorTaskFormFillingHandler* GetActorTaskFormFillingHandler() = 0;
 
   // Temporarily interrupts the task's execution flow because the tool is
-  // waiting for user interaction (e.g. device re-authentication). This pauses
-  // the task and transitions it to the `ActorTaskState::kWaitingOnUser` state.
+  // waiting for user interaction (e.g. device re-authentication). Ignored
+  // unless the tool is executing. Posts a call that moves the task to
+  // `ActorTaskState::kWaitingOnUser`, dropped if the tool completes, fails or
+  // is cancelled first.
   virtual void InterruptFromTool() = 0;
 
   // Resumes the task's execution flow once the user interaction is completed.
-  // This restores the task to `ActorTaskState::kActing`.
+  // Ignored unless the tool is executing. Posts a call that restores the task
+  // to `ActorTaskState::kActing`, dropped if the tool completes, fails or is
+  // cancelled first.
   virtual void UninterruptFromTool() = 0;
 
   // Returns whether the window identified by `window_id` exists.

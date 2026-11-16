@@ -266,16 +266,37 @@ void ToolController::FailCurrentTool(mojom::ActionResultCode code) {
 
   // Posted so that the tool is never cancelled while it is on the stack.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ToolController::FailCurrentToolInternal,
+      FROM_HERE, base::BindOnce(&ToolController::DoFailCurrentTool,
                                 weak_ptr_factory_.GetWeakPtr(), code));
 }
 
-void ToolController::FailCurrentToolInternal(mojom::ActionResultCode code) {
+void ToolController::DoFailCurrentTool(mojom::ActionResultCode code) {
   if (state_ != State::kInvoking) {
     return;
   }
 
   PostInvokeTool(ToolExecutionResult(code));
+}
+
+void ToolController::PostTaskForActiveTool(base::OnceClosure task) {
+  if (state_ != State::kInvoking) {
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ToolController::RunTaskForActiveTool,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(task)));
+}
+
+void ToolController::RunTaskForActiveTool(base::OnceClosure task) {
+  // `Cancel()` resets the tool while still `kInvoking`, so a task posted from
+  // the tool's own `Cancel()` holds a fresh weak pointer.
+  if (state_ != State::kInvoking) {
+    return;
+  }
+
+  std::move(task).Run();
 }
 
 void ToolController::DidFinishToolExecution(ToolExecutionResult result) {

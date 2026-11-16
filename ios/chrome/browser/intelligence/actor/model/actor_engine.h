@@ -222,6 +222,14 @@ class ActorEngine : public ToolDelegate {
   // pass.
   void OnPreExecutionChecksComplete();
 
+  // Interrupts the owner task on behalf of a tool. Posted by
+  // `InterruptFromTool()`.
+  void DoInterruptFromTool();
+
+  // Uninterrupts the owner task on behalf of a tool. Posted by
+  // `UninterruptFromTool()`.
+  void DoUninterruptFromTool();
+
   // The current state of the execution engine.
   State state_;
 

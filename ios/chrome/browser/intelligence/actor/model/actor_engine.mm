@@ -295,13 +295,13 @@ ActorTaskFormFillingHandler* ActorEngine::GetActorTaskFormFillingHandler() {
 }
 
 void ActorEngine::InterruptFromTool() {
-  CHECK(owner_task_);
-  owner_task_->InterruptForTool(base::PassKey<ActorEngine>());
+  tool_controller_->PostTaskForActiveTool(base::BindOnce(
+      &ActorEngine::DoInterruptFromTool, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorEngine::UninterruptFromTool() {
-  CHECK(owner_task_);
-  owner_task_->UninterruptForTool(base::PassKey<ActorEngine>());
+  tool_controller_->PostTaskForActiveTool(base::BindOnce(
+      &ActorEngine::DoUninterruptFromTool, weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool ActorEngine::IsWindowIdValid(int32_t window_id) {
@@ -620,6 +620,16 @@ void ActorEngine::OnPreExecutionChecksComplete() {
 
   // TODO(crbug.com/496195979): Add UI pre-invoke.
   UiPreInvoke();
+}
+
+void ActorEngine::DoInterruptFromTool() {
+  CHECK(owner_task_);
+  owner_task_->InterruptForTool(base::PassKey<ActorEngine>());
+}
+
+void ActorEngine::DoUninterruptFromTool() {
+  CHECK(owner_task_);
+  owner_task_->UninterruptForTool(base::PassKey<ActorEngine>());
 }
 
 void ActorEngine::AddWritableMainframeOrigins(

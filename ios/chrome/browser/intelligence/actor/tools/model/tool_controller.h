@@ -65,6 +65,10 @@ class ToolController {
   // Asynchronously fails the currently executing tool with `code`. Safe to call
   // from within the tool.
   void FailCurrentTool(mojom::ActionResultCode code);
+  // Posts `task` on behalf of the currently executing tool. Ignored unless the
+  // tool is executing. `task` is dropped if the tool completes, fails or is
+  // cancelled before it runs.
+  void PostTaskForActiveTool(base::OnceClosure task);
 
   // Returns the current state of the controller.
   State state() const { return state_; }
@@ -105,7 +109,10 @@ class ToolController {
   void DidFinishToolExecution(ToolExecutionResult result);
 
   // Applies a failure posted by `FailCurrentTool()`.
-  void FailCurrentToolInternal(mojom::ActionResultCode code);
+  void DoFailCurrentTool(mojom::ActionResultCode code);
+
+  // Runs a task posted by `PostTaskForActiveTool()`.
+  void RunTaskForActiveTool(base::OnceClosure task);
 
   // Clears the current tool invocation and returns the result.
   void CompleteToolRequest(ToolExecutionResult result);

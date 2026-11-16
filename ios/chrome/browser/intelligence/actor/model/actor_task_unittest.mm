@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/test/controllable_actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -322,7 +323,7 @@ class ActorTaskTest : public PlatformTest {
         {kEnableBackgroundContinuedProcessing});
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
-    tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
+    tool_factory_ = CreateToolFactory();
     profile_context_resolver_ =
         std::make_unique<ProfileContextResolver>(profile_.get());
 
@@ -341,6 +342,12 @@ class ActorTaskTest : public PlatformTest {
     journal_.reset();
     profile_.reset();
     PlatformTest::TearDown();
+  }
+
+  // Returns the factory used by the task to create tools. Overridden by
+  // fixtures that drive tool execution by hand.
+  virtual std::unique_ptr<ActorToolFactory> CreateToolFactory() {
+    return std::make_unique<ActorToolFactory>(profile_.get());
   }
 
   void AddControlledWebState(base::WeakPtr<web::WebState> web_state) {
@@ -1975,13 +1982,39 @@ TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationSyncResolution) {
   EXPECT_EQ(state_after_completion, ActorTaskState::kWaitingOnUser);
 }
 
+// Test fixture for tool interrupts, driving a tool whose validation and
+// execution are completed by hand.
+class ActorTaskToolInterruptTest : public ActorTaskTest {
+ protected:
+  std::unique_ptr<ActorToolFactory> CreateToolFactory() override {
+    return std::make_unique<ControllableActorToolFactory>(profile_.get(),
+                                                          hooks_);
+  }
+
+  // Starts a single-action sequence. Returns once the tool is executing.
+  void StartActionAndWaitForExecuting() {
+    std::vector<std::unique_ptr<ActorToolRequest>> actions;
+    actions.push_back(MakeSuccessfulActorToolRequest());
+    task_->Act(std::move(actions), "test update", base::DoNothing());
+    ASSERT_TRUE(base::test::RunUntil(
+        [this]() { return !hooks_.validate_callback.is_null(); }));
+    std::move(hooks_.validate_callback).Run(ToolExecutionResult::Ok());
+    ASSERT_TRUE(base::test::RunUntil(
+        [this]() { return !hooks_.execute_callback.is_null(); }));
+    ASSERT_EQ(task_->GetState(), ActorTaskState::kActing);
+  }
+
+  ControllableToolHooks hooks_;
+};
+
 // Tests that a tool interrupt transitions the task to `kWaitingOnUser` without
 // prompting.
-TEST_F(ActorTaskTest, InterruptForToolWaitsOnUserWithoutPrompting) {
+TEST_F(ActorTaskToolInterruptTest,
+       InterruptForToolWaitsOnUserWithoutPrompting) {
   FakeActorTaskInterventionDelegate* delegate =
       [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
-  SetTaskState(ActorTaskState::kActing);
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForExecuting());
 
   task_->engine().InterruptFromTool();
   FlushCurrentSequence();
@@ -1991,10 +2024,13 @@ TEST_F(ActorTaskTest, InterruptForToolWaitsOnUserWithoutPrompting) {
 }
 
 // Tests that a tool interrupt leaves a task outside executing states unchanged.
-TEST_F(ActorTaskTest, InterruptForToolIgnoredWhenNotExecuting) {
+TEST_F(ActorTaskToolInterruptTest, InterruptForToolIgnoredWhenNotExecuting) {
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForExecuting());
   SetTaskState(ActorTaskState::kPausedByUser);
 
   task_->engine().InterruptFromTool();
+  // Drain the sequence, since an ignored interrupt has no observable signal.
+  FlushCurrentSequence();
 
   EXPECT_EQ(task_->GetState(), ActorTaskState::kPausedByUser);
 }

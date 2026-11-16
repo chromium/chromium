@@ -151,8 +151,8 @@ class ActorTaskFormFillingHandler {
 
   // Handles the user selection of an autofill suggestion.
   void OnAutofillSuggestionSelectedByUser(
-      ActorFormSuggestion* selected_suggestion,
-      size_t form_index);
+      size_t form_index,
+      ActorFormSuggestion* selected_suggestion);
 
   ActorTaskId task_id_;
   std::unique_ptr<actor_login::ActorLoginService> login_service_;

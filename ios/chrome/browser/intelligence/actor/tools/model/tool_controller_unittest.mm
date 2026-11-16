@@ -5,11 +5,14 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
 
 #import <optional>
+#import <utility>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/strcat.h"
+#import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -103,8 +106,8 @@ class SyncActorToolFactory : public ActorToolFactory {
 // A test tool that never completes and optionally records when it is cancelled.
 class AsyncActorTool : public ActorTool {
  public:
-  explicit AsyncActorTool(bool* cancelled_flag)
-      : cancelled_flag_(cancelled_flag) {}
+  AsyncActorTool(bool* cancelled_flag, base::RepeatingClosure on_cancel)
+      : cancelled_flag_(cancelled_flag), on_cancel_(std::move(on_cancel)) {}
 
   void Validate(ToolExecutionCallback callback) override {
     std::move(callback).Run(ToolExecutionResult::Ok());
@@ -117,6 +120,9 @@ class AsyncActorTool : public ActorTool {
     if (cancelled_flag_) {
       *cancelled_flag_ = true;
     }
+    if (on_cancel_) {
+      on_cancel_.Run();
+    }
     ActorTool::Cancel();
   }
   base::WeakPtr<web::WebState> GetTargetWebState() const override {
@@ -127,21 +133,26 @@ class AsyncActorTool : public ActorTool {
 
  private:
   raw_ptr<bool> cancelled_flag_ = nullptr;
+  base::RepeatingClosure on_cancel_;
 };
 
 class AsyncActorToolFactory : public ActorToolFactory {
  public:
   explicit AsyncActorToolFactory(ProfileIOS* profile,
-                                 bool* cancelled_flag = nullptr)
-      : ActorToolFactory(profile), cancelled_flag_(cancelled_flag) {}
+                                 bool* cancelled_flag = nullptr,
+                                 base::RepeatingClosure on_cancel = {})
+      : ActorToolFactory(profile),
+        cancelled_flag_(cancelled_flag),
+        on_cancel_(std::move(on_cancel)) {}
   base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
       const ActorToolRequest& request,
       ToolDelegate* tool_delegate) override {
-    return std::make_unique<AsyncActorTool>(cancelled_flag_);
+    return std::make_unique<AsyncActorTool>(cancelled_flag_, on_cancel_);
   }
 
  private:
   raw_ptr<bool> cancelled_flag_ = nullptr;
+  base::RepeatingClosure on_cancel_;
 };
 
 // A test tool that completes by requiring page stabilization.
@@ -591,6 +602,80 @@ TEST_F(ToolControllerTest, CancelDropsPendingFailCurrentTool) {
   // Flush the posted failure.
   FlushCurrentSequence();
   EXPECT_EQ(ToolController::State::kReady, controller_->state());
+}
+
+// Tests that a task posted for the executing tool runs asynchronously.
+TEST_F(ToolControllerTest, PostTaskForActiveToolRunsWhileInvoking) {
+  tool_factory_ = std::make_unique<AsyncActorToolFactory>(profile_.get());
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  ASSERT_TRUE(validation_future.Get().IsOk());
+  controller_->Invoke(base::DoNothing());
+
+  base::test::TestFuture<void> task_future;
+  controller_->PostTaskForActiveTool(task_future.GetCallback());
+
+  EXPECT_FALSE(task_future.IsReady());
+  EXPECT_TRUE(task_future.Wait());
+}
+
+// Tests that a task posted while no tool is executing is ignored.
+TEST_F(ToolControllerTest, PostTaskForActiveToolIgnoredWhenNotInvoking) {
+  tool_factory_ = std::make_unique<AsyncActorToolFactory>(profile_.get());
+  bool task_ran = false;
+  controller_->PostTaskForActiveTool(
+      base::BindLambdaForTesting([&task_ran]() { task_ran = true; }));
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     base::DoNothing());
+  ASSERT_EQ(ToolController::State::kValidating, controller_->state());
+  controller_->PostTaskForActiveTool(
+      base::BindLambdaForTesting([&task_ran]() { task_ran = true; }));
+
+  // Drain the sequence, since ignored work has no observable signal.
+  FlushCurrentSequence();
+  EXPECT_FALSE(task_ran);
+}
+
+// Tests that cancelling the tool drops a task posted before the cancel.
+TEST_F(ToolControllerTest, CancelDropsPendingTaskForActiveTool) {
+  tool_factory_ = std::make_unique<AsyncActorToolFactory>(profile_.get());
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  ASSERT_TRUE(validation_future.Get().IsOk());
+  controller_->Invoke(base::DoNothing());
+
+  bool task_ran = false;
+  controller_->PostTaskForActiveTool(
+      base::BindLambdaForTesting([&task_ran]() { task_ran = true; }));
+  controller_->Cancel();
+
+  // Drain the sequence, since dropped work has no observable signal.
+  FlushCurrentSequence();
+  EXPECT_FALSE(task_ran);
+}
+
+// Tests that a task posted by the tool from its own `Cancel()` is dropped.
+TEST_F(ToolControllerTest, TaskPostedFromCancellingToolDropped) {
+  bool task_ran = false;
+  tool_factory_ = std::make_unique<AsyncActorToolFactory>(
+      profile_.get(), /*cancelled_flag=*/nullptr,
+      base::BindLambdaForTesting([this, &task_ran]() {
+        controller_->PostTaskForActiveTool(
+            base::BindLambdaForTesting([&task_ran]() { task_ran = true; }));
+      }));
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*MakeSuccessfulActorToolRequest(),
+                                     validation_future.GetCallback());
+  ASSERT_TRUE(validation_future.Get().IsOk());
+  controller_->Invoke(base::DoNothing());
+
+  controller_->Cancel();
+
+  // Drain the sequence, since dropped work has no observable signal.
+  FlushCurrentSequence();
+  EXPECT_FALSE(task_ran);
 }
 
 // Tests that cancelling drops a validation result that is posted but not yet

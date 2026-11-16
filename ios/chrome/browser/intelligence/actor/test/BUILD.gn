@@ -5,6 +5,8 @@
 source_set("test_support") {
   testonly = true
   sources = [
+    "controllable_actor_tool.h",
+    "controllable_actor_tool.mm",
     "fake_actor_task_intervention_delegate.h",
     "fake_actor_task_intervention_delegate.mm",
   ]
@@ -12,5 +14,9 @@ source_set("test_support") {
     "//base",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",
+    "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/web/public",
   ]
 }

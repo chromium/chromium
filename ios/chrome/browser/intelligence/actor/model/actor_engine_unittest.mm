@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 
 #import "base/functional/callback_helpers.h"
-#import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
@@ -32,9 +31,9 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/test/controllable_actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
@@ -69,84 +68,6 @@ constexpr char kSourceUrl[] = "https://safe.com";
 TaskSourceInfo TestSource() {
   return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
 }
-
-// State shared between a test and the `ControllableActorTool`s it creates,
-// letting the test complete validation and execution by hand.
-struct ControllableToolHooks {
-  // Completes the pending `Validate()` call when run.
-  ToolExecutionCallback validate_callback;
-  // Completes the pending `Execute()` call when run.
-  ToolExecutionCallback execute_callback;
-  // If set, run synchronously from within `Execute()`.
-  base::OnceClosure on_execute;
-  // Target WebStateID of each tool that began `Execute()`.
-  std::vector<web::WebStateID> executed_action_ids;
-  // ToolDelegate passed to the active tool, cleared on tool destruction.
-  raw_ptr<ToolDelegate> tool_delegate = nullptr;
-  // Whether the most recently created tool has been destroyed.
-  bool tool_destroyed = false;
-};
-
-// A tool that only completes validation and execution when the test runs the
-// callbacks stored in its `ControllableToolHooks`.
-class ControllableActorTool : public ActorTool {
- public:
-  ControllableActorTool(ControllableToolHooks& hooks,
-                        ToolDelegate* tool_delegate,
-                        web::WebStateID target_web_state_id)
-      : hooks_(hooks), target_web_state_id_(target_web_state_id) {
-    CHECK(!hooks_->tool_delegate);
-    hooks_->tool_delegate = tool_delegate;
-    hooks_->tool_destroyed = false;
-  }
-  ~ControllableActorTool() override {
-    hooks_->validate_callback.Reset();
-    hooks_->execute_callback.Reset();
-    hooks_->on_execute.Reset();
-    hooks_->tool_delegate = nullptr;
-    hooks_->tool_destroyed = true;
-  }
-
-  void Validate(ToolExecutionCallback callback) override {
-    hooks_->validate_callback = std::move(callback);
-  }
-
-  void Execute(ToolExecutionCallback callback) override {
-    hooks_->executed_action_ids.push_back(target_web_state_id_);
-    hooks_->execute_callback = std::move(callback);
-    if (hooks_->on_execute) {
-      std::move(hooks_->on_execute).Run();
-    }
-  }
-
-  base::WeakPtr<web::WebState> GetTargetWebState() const override {
-    return nullptr;
-  }
-  ToolType GetToolType() const override { return ToolType::kWait; }
-  std::string DebugString() const override { return "ControllableActorTool"; }
-
- private:
-  const raw_ref<ControllableToolHooks> hooks_;
-  const web::WebStateID target_web_state_id_;
-};
-
-// Creates `ControllableActorTool`s bound to `hooks`.
-class ControllableActorToolFactory : public ActorToolFactory {
- public:
-  ControllableActorToolFactory(ProfileIOS* profile,
-                               ControllableToolHooks& hooks)
-      : ActorToolFactory(profile), hooks_(hooks) {}
-
-  base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> CreateTool(
-      const ActorToolRequest& request,
-      ToolDelegate* tool_delegate) override {
-    return std::make_unique<ControllableActorTool>(
-        *hooks_, tool_delegate, request.GetTargetWebStateId());
-  }
-
- private:
-  const raw_ref<ControllableToolHooks> hooks_;
-};
 
 struct DelegateCall {
   ToolType tool_type;
@@ -300,22 +221,6 @@ TEST_F(ActorEngineTest, SetInterventionDelegateForwarding) {
   EXPECT_TRUE(delegate.cancelSuggestionSelectionCalled);
 
   task_->SetInterventionDelegate(nil);
-}
-
-// Tests that ToolDelegate InterruptFromTool and UninterruptFromTool change
-// task state properly.
-TEST_F(ActorEngineTest, ToolDelegateInterruptAndUninterrupt) {
-  ToolDelegate* tool_delegate = engine_.get();
-  base::test::TestFuture<std::vector<ActionResult>> future;
-  task_->Act({}, "test update", future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  ASSERT_EQ(task_->GetState(), ActorTaskState::kReflecting);
-
-  tool_delegate->InterruptFromTool();
-  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
-
-  tool_delegate->UninterruptFromTool();
-  EXPECT_EQ(task_->GetState(), ActorTaskState::kActing);
 }
 
 // Tests that a single action executing successfully completes the engine
@@ -715,8 +620,8 @@ TEST_F(ActorEngineTest,
   EXPECT_EQ(decision.attribution, origin_gating::DecisionSource::kNoVerdict);
 }
 
-// Test fixture for `FailCurrentTool()`, driving a tool whose validation and
-// execution are completed by hand.
+// Test fixture for `FailCurrentTool()` and tool interrupts, driving a tool
+// whose validation and execution are completed by hand.
 class ActorEngineFailCurrentToolTest : public ActorEngineTest {
  protected:
   std::unique_ptr<ActorToolFactory> CreateToolFactory() override {
@@ -738,6 +643,20 @@ class ActorEngineFailCurrentToolTest : public ActorEngineTest {
     ASSERT_NO_FATAL_FAILURE(StartAction(std::move(callback)));
     CompleteValidation(ToolExecutionResult::Ok());
     ASSERT_TRUE(WaitForToolInvoking());
+  }
+
+  // Starts a single-action sequence through `task_`, so that the task is
+  // acting. Returns once the tool is executing.
+  void StartTaskActionAndWaitForExecuting() {
+    std::vector<std::unique_ptr<ActorToolRequest>> actions;
+    actions.push_back(MakeSuccessfulActorToolRequest());
+    task_->Act(std::move(actions), "test update", base::DoNothing());
+    ASSERT_TRUE(base::test::RunUntil(
+        [this]() { return !hooks_.validate_callback.is_null(); }));
+    CompleteValidation(ToolExecutionResult::Ok());
+    ASSERT_TRUE(base::test::RunUntil(
+        [this]() { return !hooks_.execute_callback.is_null(); }));
+    ASSERT_EQ(task_->GetState(), ActorTaskState::kActing);
   }
 
   void CompleteValidation(ToolExecutionResult result) {
@@ -873,6 +792,87 @@ TEST_F(ActorEngineFailCurrentToolTest, FailCurrentToolDoesNotLeakIntoNextTool) {
   std::vector<ActionResult> results = future.Take();
   ASSERT_EQ(results.size(), 1U);
   EXPECT_TRUE(results[0].tool_result.IsOk());
+}
+
+// Tests that a tool interrupt posted after the tool is failed is dropped once
+// the tool completes.
+TEST_F(ActorEngineFailCurrentToolTest, InterruptFromToolDroppedAfterFailure) {
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(future.GetCallback()));
+  ASSERT_EQ(task_->GetState(), ActorTaskState::kInit);
+
+  engine_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  engine_->InterruptFromTool();
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kInit);
+}
+
+// Tests that tool interrupts move an acting task to `kWaitingOnUser` and back
+// only once the posted tasks run.
+TEST_F(ActorEngineFailCurrentToolTest, ToolDelegateInterruptAndUninterrupt) {
+  ASSERT_NO_FATAL_FAILURE(StartTaskActionAndWaitForExecuting());
+  ToolDelegate& tool_delegate = task_->engine();
+
+  tool_delegate.InterruptFromTool();
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kActing);
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    return task_->GetState() == ActorTaskState::kWaitingOnUser;
+  }));
+
+  tool_delegate.UninterruptFromTool();
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+  EXPECT_TRUE(base::test::RunUntil(
+      [this]() { return task_->GetState() == ActorTaskState::kActing; }));
+}
+
+// Tests that a tool interrupt posted before the engine is cancelled is dropped.
+TEST_F(ActorEngineFailCurrentToolTest,
+       ToolDelegateInterruptDroppedAfterCancel) {
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(base::DoNothing()));
+  ASSERT_EQ(task_->GetState(), ActorTaskState::kInit);
+
+  engine_->InterruptFromTool();
+  engine_->CancelOngoingAndPendingActions(
+      ActorEngine::EngineResult::kCancelled);
+  // Drain the sequence, since dropped work has no observable signal.
+  FlushCurrentSequence();
+
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kInit);
+}
+
+// Tests that a tool uninterrupt posted before the engine is cancelled is
+// dropped.
+TEST_F(ActorEngineFailCurrentToolTest,
+       ToolDelegateUninterruptDroppedAfterCancel) {
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(base::DoNothing()));
+  engine_->InterruptFromTool();
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    return task_->GetState() == ActorTaskState::kWaitingOnUser;
+  }));
+
+  engine_->UninterruptFromTool();
+  engine_->CancelOngoingAndPendingActions(
+      ActorEngine::EngineResult::kCancelled);
+  // Drain the sequence, since dropped work has no observable signal.
+  FlushCurrentSequence();
+
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+}
+
+// Tests that a tool interrupt and uninterrupt posted back-to-back run in order.
+TEST_F(ActorEngineFailCurrentToolTest,
+       ToolDelegateInterruptAndUninterruptRunInOrder) {
+  ASSERT_NO_FATAL_FAILURE(StartActionAndWaitForInvoking(base::DoNothing()));
+  ASSERT_EQ(task_->GetState(), ActorTaskState::kInit);
+
+  engine_->InterruptFromTool();
+  engine_->UninterruptFromTool();
+
+  // If run in reverse, the uninterrupt is ignored and the task never acts.
+  EXPECT_TRUE(base::test::RunUntil(
+      [this]() { return task_->GetState() == ActorTaskState::kActing; }));
 }
 
 class ActorEngineOriginGatingTest : public ActorEngineTest {
