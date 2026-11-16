@@ -44,9 +44,11 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/disable_reason.h"
@@ -1711,6 +1713,160 @@ TEST_F(ExtensionInfoGeneratorReviewPromptUnitTest, CanShowReviewPrompt) {
     ASSERT_TRUE(unpacked_info);
     EXPECT_FALSE(unpacked_info->can_show_review_prompt);
   }
+}
+
+class ExtensionInfoGeneratorIsolatedModeUnitTest
+    : public ExtensionInfoGeneratorUnitTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsIsolatedMode() const { return GetParam(); }
+
+  void SetExtensionForceInstalled(const ExtensionId& extension_id) {
+    ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
+        pref_updater(testing_pref_service());
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        extension_id, extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+  }
+
+  void SetIsIncognitoEnabledPref(const ExtensionId& extension_id,
+                                 bool enabled) {
+    ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+    if (IsIsolatedMode()) {
+      prefs->SetIsIsolatedModeEnabled(extension_id, enabled);
+    } else {
+      prefs->SetIsIncognitoEnabled(extension_id, enabled);
+    }
+  }
+
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{IsIsolatedMode()};
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionInfoGeneratorIsolatedModeUnitTest,
+                         testing::Bool());
+
+// Tests that an enabled force-installed extension reports
+// `incognito_access.is_active` and `isolated_mode_access_controlled_by_policy`
+// as true in Enterprise Isolated Mode.
+TEST_P(ExtensionInfoGeneratorIsolatedModeUnitTest, ForcedExtension) {
+  const scoped_refptr<const Extension> forced_extension =
+      ExtensionBuilder("forced")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  registrar()->AddExtension(forced_extension.get());
+  SetExtensionForceInstalled(forced_extension->id());
+
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(forced_extension->id());
+  ASSERT_TRUE(info);
+  EXPECT_EQ(info->state, developer::ExtensionState::kEnabled);
+  EXPECT_TRUE(info->incognito_access.is_enabled);
+  EXPECT_EQ(info->incognito_access.is_active, IsIsolatedMode());
+  EXPECT_EQ(info->isolated_mode_access_controlled_by_policy, IsIsolatedMode());
+}
+
+// Tests that a disabled force-installed extension still reports
+// `incognito_access.is_active` and `isolated_mode_access_controlled_by_policy`
+// as true in Enterprise Isolated Mode.
+TEST_P(ExtensionInfoGeneratorIsolatedModeUnitTest, ForcedExtensionDisabled) {
+  const scoped_refptr<const Extension> forced_extension =
+      ExtensionBuilder("forced")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  registrar()->AddExtension(forced_extension.get());
+  SetExtensionForceInstalled(forced_extension->id());
+  registrar()->DisableExtension(forced_extension->id(),
+                                {disable_reason::DISABLE_CORRUPTED});
+
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(forced_extension->id());
+  ASSERT_TRUE(info);
+  EXPECT_EQ(info->state, developer::ExtensionState::kDisabled);
+  EXPECT_EQ(info->incognito_access.is_active, IsIsolatedMode());
+  EXPECT_EQ(info->isolated_mode_access_controlled_by_policy, IsIsolatedMode());
+}
+
+// Tests that a terminated force-installed extension still reports
+// `incognito_access.is_active` and `isolated_mode_access_controlled_by_policy`
+// as true in Enterprise Isolated Mode.
+TEST_P(ExtensionInfoGeneratorIsolatedModeUnitTest, ForcedExtensionTerminated) {
+  const scoped_refptr<const Extension> forced_extension =
+      ExtensionBuilder("forced")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  registrar()->AddExtension(forced_extension.get());
+  SetExtensionForceInstalled(forced_extension->id());
+  TerminateExtension(forced_extension->id());
+
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(forced_extension->id());
+  ASSERT_TRUE(info);
+  EXPECT_EQ(info->state, developer::ExtensionState::kTerminated);
+  EXPECT_EQ(info->incognito_access.is_active, IsIsolatedMode());
+  EXPECT_EQ(info->isolated_mode_access_controlled_by_policy, IsIsolatedMode());
+}
+
+// Tests that a force-installed extension with `"incognito": "not_allowed"`
+// cannot run in Incognito or Isolated Mode and is not marked as controlled by
+// policy.
+TEST_P(ExtensionInfoGeneratorIsolatedModeUnitTest,
+       ForcedExtensionIncognitoNotAllowed) {
+  const scoped_refptr<const Extension> not_allowed_forced_extension =
+      ExtensionBuilder("not_allowed")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .SetManifestKey("incognito", "not_allowed")
+          .Build();
+  registrar()->AddExtension(not_allowed_forced_extension.get());
+  SetExtensionForceInstalled(not_allowed_forced_extension->id());
+
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(not_allowed_forced_extension->id());
+  ASSERT_TRUE(info);
+  EXPECT_FALSE(info->incognito_access.is_enabled);
+  EXPECT_FALSE(info->incognito_access.is_active);
+  EXPECT_FALSE(info->isolated_mode_access_controlled_by_policy);
+}
+
+// Tests that an internal extension defaults to inactive in both Incognito and
+// Isolated Mode and is not marked as controlled by policy.
+TEST_P(ExtensionInfoGeneratorIsolatedModeUnitTest, InternalExtension) {
+  const scoped_refptr<const Extension> internal_extension =
+      ExtensionBuilder("internal")
+          .SetLocation(ManifestLocation::kInternal)
+          .Build();
+  registrar()->AddExtension(internal_extension.get());
+
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(internal_extension->id());
+  ASSERT_TRUE(info);
+  EXPECT_FALSE(info->incognito_access.is_active);
+  EXPECT_FALSE(info->isolated_mode_access_controlled_by_policy);
+}
+
+// Tests that enabling Incognito/Isolated Mode on an internal extension makes
+// `incognito_access.is_active` true while
+// `isolated_mode_access_controlled_by_policy` remains false.
+TEST_P(ExtensionInfoGeneratorIsolatedModeUnitTest,
+       InternalExtensionIncognitoEnabled) {
+  const scoped_refptr<const Extension> internal_extension =
+      ExtensionBuilder("internal")
+          .SetLocation(ManifestLocation::kInternal)
+          .Build();
+  registrar()->AddExtension(internal_extension.get());
+  SetIsIncognitoEnabledPref(internal_extension->id(), true);
+
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(internal_extension->id());
+  ASSERT_TRUE(info);
+  EXPECT_TRUE(info->incognito_access.is_active);
+  EXPECT_FALSE(info->isolated_mode_access_controlled_by_policy);
 }
 
 }  // namespace extensions

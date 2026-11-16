@@ -371,7 +371,9 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         ` : ''}
         ${this.shouldShowIncognitoOption_() ? html`
           <extensions-toggle-row id="allow-incognito"
-              ?checked="${this.data.incognitoAccess.isActive}" class="hr"
+              ?checked="${this.data.incognitoAccess.isActive}"
+              ?disabled="${this.data.isolatedModeAccessControlledByPolicy}"
+              class="hr"
               @change="${this.onAllowIncognitoChange_}">
             <div>
               <div>${this.getItemAllowIncognitoString_()}</div>
@@ -383,6 +385,12 @@ this text can be found by Ctrl + F because it isn't hidden. -->
                 $i18n{pendingChangeWarning}
               </div>
             </div>
+            <cr-tooltip-icon slot="icon"
+                ?hidden="${!this.data.isolatedModeAccessControlledByPolicy}"
+                tooltip-text="$i18n{controlledSettingPolicy}"
+                icon-class="cr20:domain"
+                icon-aria-label="${this.getItemAllowIncognitoString_()}">
+            </cr-tooltip-icon>
           </extensions-toggle-row>
         ` : ''}
         ${this.data.fileAccess.isEnabled ? html`

@@ -15,6 +15,7 @@ export function getHtml(this: ExtensionsToggleRowElement) {
       .disabled="${this.disabled}">
   <slot></slot>
 </label>
+<slot name="icon"></slot>
 <cr-toggle id="crToggle" ?checked="${this.checked}" aria-labelledby="label"
     @change="${this.onCrToggleChange_}" ?disabled="${this.disabled}">
 </cr-toggle>

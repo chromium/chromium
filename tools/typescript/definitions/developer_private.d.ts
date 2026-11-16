@@ -226,6 +226,7 @@ declare global {
         incognitoAccess: AccessModifier;
         userScriptsAccess: AccessModifier;
         incognitoAccessPendingChange: boolean;
+        isolatedModeAccessControlledByPolicy: boolean;
         installWarnings: string[];
         isCommandRegistrationHandledExternally: boolean;
         launchUrl?: string;

@@ -737,8 +737,11 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
   // Incognito access.
   info.incognito_access.is_enabled = util::CanBeIncognitoEnabled(&extension);
   info.incognito_access.is_active =
-      util::IsIncognitoEnabled(extension.id(), browser_context_);
+      util::IsIncognitoEnabled(&extension, browser_context_);
+  info.isolated_mode_access_controlled_by_policy =
+      management_policy->MustRemainIsolatedModeEnabled(&extension);
 #if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/573504328): Add isolated mode support.
   info.incognito_access_pending_change =
       extension_prefs_->HasIncognitoEnabledPendingUpdate(extension.id());
   if (info.incognito_access_pending_change) {

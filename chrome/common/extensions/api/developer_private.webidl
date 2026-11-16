@@ -226,6 +226,7 @@ dictionary ExtensionInfo {
   required AccessModifier incognitoAccess;
   required AccessModifier userScriptsAccess;
   required boolean incognitoAccessPendingChange;
+  required boolean isolatedModeAccessControlledByPolicy;
   required sequence<DOMString> installWarnings;
   required boolean isCommandRegistrationHandledExternally;
   DOMString launchUrl;

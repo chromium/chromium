@@ -20,8 +20,11 @@ input {
 
 label {
   box-sizing: border-box;
-  cursor: pointer;
   flex: 1;
+}
+
+:host(:not([disabled])) label {
+  cursor: pointer;
 }
 
 cr-toggle {
@@ -29,6 +32,5 @@ cr-toggle {
 }
 
 :host ::slotted(*) {
-  flex: 1;
   margin-inline-end: 20px;
 }

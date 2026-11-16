@@ -105,6 +105,11 @@ suite('ExtensionDetailViewTest', function() {
 
     assertTrue(isChildVisible(item, '#allow-incognito'));
     assertFalse(isChecked('#allow-incognito'), '#allow-incognito');
+    assertFalse(
+        item.shadowRoot
+            .querySelector<ExtensionsToggleRowElement>(
+                '#allow-incognito')!.disabled);
+    assertFalse(isChildVisible(item, '#allow-incognito cr-tooltip-icon'));
     assertFalse(isChildVisible(item, '#allow-incognito-warning'));
     await updateItemData({incognitoAccessPendingChange: true});
     assertTrue(isChildVisible(item, '#allow-incognito-warning'));
@@ -117,6 +122,22 @@ suite('ExtensionDetailViewTest', function() {
     await updateItemData({incognitoAccess: {isEnabled: true, isActive: true}});
     assertTrue(isChildVisible(item, '#allow-incognito'));
     assertTrue(isChecked('#allow-incognito'));
+    await updateItemData({isolatedModeAccessControlledByPolicy: true});
+    assertTrue(
+        item.shadowRoot
+            .querySelector<ExtensionsToggleRowElement>(
+                '#allow-incognito')!.disabled);
+    const tooltipIcon =
+        item.shadowRoot.querySelector<HTMLElement>(
+            '#allow-incognito cr-tooltip-icon')!;
+    assertTrue(isVisible(tooltipIcon));
+    assertEquals('icon', tooltipIcon.slot);
+    await updateItemData({isolatedModeAccessControlledByPolicy: false});
+    assertFalse(
+        item.shadowRoot
+            .querySelector<ExtensionsToggleRowElement>(
+                '#allow-incognito')!.disabled);
+    assertFalse(isVisible(tooltipIcon));
 
     assertTrue(isChildVisible(item, '#allow-on-file-urls'));
     assertFalse(isChecked('#allow-on-file-urls'), '#allow-on-file-urls');

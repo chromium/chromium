@@ -301,6 +301,7 @@ export function createDummyExtensionInfo():
     incognitoAccess: {isEnabled: false, isActive: false},
     userScriptsAccess: {isEnabled: false, isActive: false},
     incognitoAccessPendingChange: false,
+    isolatedModeAccessControlledByPolicy: false,
     installWarnings: [],
     location: chrome.developerPrivate.Location.UNKNOWN,
     manifestErrors: [],
