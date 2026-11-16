@@ -34,8 +34,10 @@ class ExtensionPoliciesValueProvider
   // PolicyValueProvider overrides.
   // Returns each individual extension policy in a dictionary.
   base::DictValue GetValues() override;
+  policy::PolicyGroupMojoMap GetValuesMojo() const override;
 
   base::DictValue GetNames() override;
+  policy::PolicyGroupNamesMojoMap GetNamesMojo() const override;
 
   // extensions::ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -51,7 +53,10 @@ class ExtensionPoliciesValueProvider
                        const policy::PolicyMap& current) override;
 
  private:
-  base::DictValue GetExtensionPolicyNames(policy::PolicyDomain policy_domain);
+  base::DictValue GetExtensionPolicyNames(
+      policy::PolicyDomain policy_domain) const;
+  policy::PolicyGroupNamesMojoMap GetExtensionPolicyNamesMojo(
+      policy::PolicyDomain policy_domain) const;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

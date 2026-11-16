@@ -4,10 +4,13 @@
 
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_map.h"
+#include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -26,6 +29,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -61,21 +65,25 @@ base::DictValue GetIdentityFieldsFromPolicy(
     return identity_fields;
   }
 
-  if (policy->has_device_id())
+  if (policy->has_device_id()) {
     identity_fields.Set("client_id", policy->device_id());
+  }
 
   if (policy->has_annotated_location()) {
     identity_fields.Set("device_location", policy->annotated_location());
   }
 
-  if (policy->has_annotated_asset_id())
+  if (policy->has_annotated_asset_id()) {
     identity_fields.Set("asset_id", policy->annotated_asset_id());
+  }
 
-  if (policy->has_display_domain())
+  if (policy->has_display_domain()) {
     identity_fields.Set("display_domain", policy->display_domain());
+  }
 
-  if (policy->has_machine_name())
+  if (policy->has_machine_name()) {
     identity_fields.Set("machine_name", policy->machine_name());
+  }
 
   return identity_fields;
 }
@@ -118,30 +126,88 @@ base::ListValue ChromePolicyConversionsClient::GetExtensionPolicies(
   base::ListValue policies;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
   const bool for_signin_screen =
       policy_domain == POLICY_DOMAIN_SIGNIN_EXTENSIONS;
+  ForEachExtensionWithPolicy(
+      policy_domain,
+      [&](const extensions::Extension& extension, const PolicyMap& policy_map,
+          const std::optional<PolicyConversions::PolicyToSchemaMap>&
+              known_policies) {
+        PolicyErrorMap empty_error_map;
+        base::DictValue extension_policies =
+            GetPolicyValues(policy_map, &empty_error_map, PoliciesSet(),
+                            PoliciesSet(), known_policies);
+        base::DictValue extension_policies_data;
+        extension_policies_data.Set(policy::kNameKey, extension.name());
+        extension_policies_data.Set(policy::kIdKey, extension.id());
+        extension_policies_data.Set("forSigninScreen", for_signin_screen);
+        extension_policies_data.Set("isExtension", true);
+        extension_policies_data.Set(policy::kPoliciesKey,
+                                    std::move(extension_policies));
+        policies.Append(std::move(extension_policies_data));
+      });
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  return policies;
+}
+
+base::flat_map<std::string, mojom::PolicyGroupPtr>
+ChromePolicyConversionsClient::GetExtensionPoliciesMojo(
+    PolicyDomain policy_domain) {
+  base::flat_map<std::string, mojom::PolicyGroupPtr> policies;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  const bool for_signin_screen =
+      policy_domain == POLICY_DOMAIN_SIGNIN_EXTENSIONS;
+  ForEachExtensionWithPolicy(
+      policy_domain,
+      [&](const extensions::Extension& extension, const PolicyMap& policy_map,
+          const std::optional<PolicyConversions::PolicyToSchemaMap>&
+              known_policies) {
+        PolicyErrorMap empty_error_map;
+        auto group = mojom::PolicyGroup::New();
+        group->name = extension.name();
+        group->is_extension = true;
+        group->for_signin_screen = for_signin_screen;
+        group->policies =
+            GetPolicyValuesMojo(policy_map, &empty_error_map, PoliciesSet(),
+                                PoliciesSet(), known_policies);
+        policies.insert_or_assign(extension.id(), std::move(group));
+      });
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  return policies;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+void ChromePolicyConversionsClient::ForEachExtensionWithPolicy(
+    PolicyDomain policy_domain,
+    base::FunctionRef<void(
+        const extensions::Extension&,
+        const PolicyMap&,
+        const std::optional<PolicyConversions::PolicyToSchemaMap>&)> callback) {
 #if BUILDFLAG(IS_CHROMEOS)
-  Profile* extension_profile = for_signin_screen
+  Profile* extension_profile = policy_domain == POLICY_DOMAIN_SIGNIN_EXTENSIONS
                                    ? ash::ProfileHelper::GetSigninProfile()
                                    : profile_.get();
 #else   // BUILDFLAG(IS_CHROMEOS)
-  Profile* extension_profile = profile_;
+  Profile* extension_profile = profile_.get();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  if (!extension_profile) {
+    return;
+  }
   const extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(extension_profile);
   if (!registry) {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
         << "Cannot dump extension policies, no extension registry";
-    return policies;
+    return;
   }
   auto* schema_registry_service =
       extension_profile->GetOriginalProfile()->GetPolicySchemaRegistryService();
   if (!schema_registry_service || !schema_registry_service->registry()) {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
         << "Cannot dump extension policies, no schema registry service";
-    return policies;
+    return;
   }
   const scoped_refptr<SchemaMap> schema_map =
       schema_registry_service->registry()->schema_map();
@@ -156,25 +222,14 @@ base::ListValue ChromePolicyConversionsClient::GetExtensionPolicies(
 
     PolicyNamespace policy_namespace =
         PolicyNamespace(policy_domain, extension->id());
-    PolicyErrorMap empty_error_map;
-    base::DictValue extension_policies =
-        GetPolicyValues(extension_profile->GetProfilePolicyConnector()
-                            ->policy_service()
-                            ->GetPolicies(policy_namespace),
-                        &empty_error_map, PoliciesSet(), PoliciesSet(),
-                        GetKnownPolicies(schema_map, policy_namespace));
-    base::DictValue extension_policies_data;
-    extension_policies_data.Set(policy::kNameKey, extension->name());
-    extension_policies_data.Set(policy::kIdKey, extension->id());
-    extension_policies_data.Set("forSigninScreen", for_signin_screen);
-    extension_policies_data.Set("isExtension", true);
-    extension_policies_data.Set(policy::kPoliciesKey,
-                                std::move(extension_policies));
-    policies.Append(std::move(extension_policies_data));
+    callback(*extension,
+             extension_profile->GetProfilePolicyConnector()
+                 ->policy_service()
+                 ->GetPolicies(policy_namespace),
+             GetKnownPolicies(schema_map, policy_namespace));
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  return policies;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
 base::ListValue ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
@@ -262,8 +317,9 @@ base::ListValue ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
 
 base::DictValue ChromePolicyConversionsClient::GetIdentityFields() {
   base::DictValue identity_fields;
-  if (!GetDeviceInfoEnabled())
+  if (!GetDeviceInfoEnabled()) {
     return base::DictValue();
+  }
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector) {

@@ -1134,14 +1134,15 @@ class ExtensionPolicyUITest
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
                        MAYBE_ExtensionLoadAndSendPolicy) {
-  // TODO(b/40897784): Re-enable once mojo migration is supports extension
-  // policies.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/40897784): Remove once `UpdaterStatusAndValueProvider`
+  // implements `GetValuesMojo()`/`GetNamesMojo()`, as `VerifyPolicies()`
+  // expects the Google Update policy rows.
   if (base::FeatureList::IsEnabled(
           policy::features::kPolicyPageMojoMigration)) {
-    GTEST_SKIP()
-        << "Extension policy tests are not yet supported with the mojo "
-           "migration enabled.";
+    GTEST_SKIP() << "Google Update policies are not supported over mojo yet.";
   }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir_;

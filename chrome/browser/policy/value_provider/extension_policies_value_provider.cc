@@ -5,6 +5,9 @@
 #include "chrome/browser/policy/value_provider/extension_policies_value_provider.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
@@ -14,11 +17,13 @@
 #include "chrome/browser/policy/value_provider/value_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/policy_conversions.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -42,13 +47,26 @@ bool ContainsStorageManagedSchema(const extensions::Extension* extension) {
 void AddExtensionPolicyValueToDict(base::Value& policy,
                                    base::DictValue& extension_policies) {
   base::DictValue* policy_dict = policy.GetIfDict();
-  if (!policy_dict)
+  if (!policy_dict) {
     return;
+  }
   std::string* id = policy_dict->FindString(policy::kIdKey);
-  if (!id)
+  if (!id) {
     return;
+  }
   policy_dict->Remove(*id);
   extension_policies.Set(*id, std::move(policy));
+}
+
+Profile* GetExtensionProfile(Profile* profile,
+                             policy::PolicyDomain policy_domain) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return policy_domain == policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
+             ? ash::ProfileHelper::GetSigninProfile()
+             : profile;
+#else   // BUILDFLAG(IS_CHROMEOS)
+  return profile;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -91,17 +109,42 @@ base::DictValue ExtensionPoliciesValueProvider::GetNames() {
   return extension_policy_names;
 }
 
-base::DictValue ExtensionPoliciesValueProvider::GetExtensionPolicyNames(
-    policy::PolicyDomain policy_domain) {
-  base::DictValue names;
+policy::PolicyGroupMojoMap ExtensionPoliciesValueProvider::GetValuesMojo()
+    const {
+  policy::PolicyGroupMojoMap extension_policies;
+  auto client =
+      std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
+  if (client->HasUserPolicies()) {
+    extension_policies =
+        client->GetExtensionPoliciesMojo(policy::POLICY_DOMAIN_EXTENSIONS);
+  }
 #if BUILDFLAG(IS_CHROMEOS)
-  Profile* extension_profile =
-      policy_domain == policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
-          ? ash::ProfileHelper::GetSigninProfile()
-          : profile_.get();
-#else   // BUILDFLAG(IS_CHROMEOS)
-  Profile* extension_profile = profile_.get();
+  for (auto& [id, group] : client->GetExtensionPoliciesMojo(
+           policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS)) {
+    extension_policies.insert_or_assign(id, std::move(group));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  return extension_policies;
+}
+
+policy::PolicyGroupNamesMojoMap ExtensionPoliciesValueProvider::GetNamesMojo()
+    const {
+  policy::PolicyGroupNamesMojoMap extension_policy_names =
+      GetExtensionPolicyNamesMojo(policy::POLICY_DOMAIN_EXTENSIONS);
+#if BUILDFLAG(IS_CHROMEOS)
+  for (auto& [id, group_names] :
+       GetExtensionPolicyNamesMojo(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS)) {
+    extension_policy_names.insert_or_assign(id, std::move(group_names));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return extension_policy_names;
+}
+
+base::DictValue ExtensionPoliciesValueProvider::GetExtensionPolicyNames(
+    policy::PolicyDomain policy_domain) const {
+  base::DictValue names;
+  Profile* extension_profile =
+      GetExtensionProfile(profile_.get(), policy_domain);
 
   scoped_refptr<policy::SchemaMap> schema_map =
       extension_profile->GetOriginalProfile()
@@ -133,6 +176,55 @@ base::DictValue ExtensionPoliciesValueProvider::GetExtensionPolicyNames(
     }
     extension_value.Set(policy::kPolicyNamesKey, std::move(policy_names));
     names.Set(extension->id(), std::move(extension_value));
+  }
+  return names;
+}
+
+policy::PolicyGroupNamesMojoMap
+ExtensionPoliciesValueProvider::GetExtensionPolicyNamesMojo(
+    policy::PolicyDomain policy_domain) const {
+  policy::PolicyGroupNamesMojoMap names;
+  Profile* extension_profile =
+      GetExtensionProfile(profile_.get(), policy_domain);
+
+  const policy::SchemaRegistryService* schema_registry_service =
+      extension_profile->GetOriginalProfile()->GetPolicySchemaRegistryService();
+  if (!schema_registry_service) {
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << "Cannot get extension policy names, no schema registry service";
+    return names;
+  }
+  const scoped_refptr<policy::SchemaMap>& schema_map =
+      schema_registry_service->registry()->schema_map();
+
+  const extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(extension_profile);
+  if (!registry) {
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << "Cannot get extension policy names, no extension registry.";
+    return names;
+  }
+  const extensions::ExtensionSet extension_set =
+      registry->GenerateInstalledExtensionsSet();
+
+  for (const auto& extension : extension_set) {
+    // Skip this extension if it's not an enterprise extension.
+    if (!ContainsStorageManagedSchema(extension.get())) {
+      continue;
+    }
+    const policy::Schema* schema = schema_map->GetSchema(
+        policy::PolicyNamespace(policy_domain, extension->id()));
+    std::vector<std::string> policy_names;
+    if (schema && schema->valid()) {
+      // Get policy names from the extension's policy schema.
+      for (auto prop = schema->GetPropertiesIterator(); !prop.IsAtEnd();
+           prop.Advance()) {
+        policy_names.emplace_back(prop.key());
+      }
+    }
+    names.insert_or_assign(extension->id(),
+                           policy::mojom::PolicyGroupNames::New(
+                               extension->name(), std::move(policy_names)));
   }
   return names;
 }

@@ -27,6 +27,7 @@
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -357,6 +358,34 @@ TEST_F(ExtensionPoliciesValueProviderTest, GetNames) {
   ExtensionPoliciesValueProvider provider(profile_.get());
   VerifyProviderNames(provider.GetNames(), kExtensionId, "extension_name",
                       {"policy_a"});
+}
+
+TEST_F(ExtensionPoliciesValueProviderTest, GetValuesMojo) {
+  SetPolicy(extension_policy_map_, "policy_a", base::Value(123));
+
+  EXPECT_CALL(*policy_service_, GetPolicies(PolicyNamespace(
+                                    POLICY_DOMAIN_EXTENSIONS, kExtensionId)))
+      .WillRepeatedly(ReturnRef(extension_policy_map_));
+
+  ExtensionPoliciesValueProvider provider(profile_.get());
+  PolicyGroupMojoMap values = provider.GetValuesMojo();
+  ASSERT_TRUE(values.contains(kExtensionId));
+  const mojom::PolicyGroupPtr& group = values.at(kExtensionId);
+  EXPECT_EQ(group->name, "extension_name");
+  EXPECT_TRUE(group->is_extension);
+  EXPECT_FALSE(group->is_web_app);
+  EXPECT_FALSE(group->for_signin_screen);
+  ASSERT_TRUE(group->policies.contains("policy_a"));
+  EXPECT_EQ(group->policies.at("policy_a")->value, base::Value(123));
+}
+
+TEST_F(ExtensionPoliciesValueProviderTest, GetNamesMojo) {
+  ExtensionPoliciesValueProvider provider(profile_.get());
+  PolicyGroupNamesMojoMap names = provider.GetNamesMojo();
+  ASSERT_TRUE(names.contains(kExtensionId));
+  EXPECT_EQ(names.at(kExtensionId)->name, "extension_name");
+  EXPECT_THAT(names.at(kExtensionId)->policy_names,
+              testing::UnorderedElementsAre("policy_a"));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
