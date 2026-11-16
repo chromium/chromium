@@ -183,6 +183,8 @@ void ChildProcessLauncher::SetProcessPriority(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
+                                  base::TimeTicks launch_begin_time,
+                                  base::TimeTicks launch_complete_time,
 #if BUILDFLAG(IS_WIN)
                                   DWORD last_error,
 #endif
@@ -197,7 +199,8 @@ void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
   process_ = std::move(process);
 
   if (process_.process.IsValid()) {
-    process_start_time_ = base::TimeTicks::Now();
+    launch_begin_time_ = launch_begin_time;
+    launch_complete_time_ = launch_complete_time;
 
 #if BUILDFLAG(IS_MAC)
     // On mac, the task port is required to change the priority of the child

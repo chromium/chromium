@@ -467,12 +467,20 @@ MockRenderProcessHost::TakeMetricsAllocator() {
 }
 
 const base::TimeTicks& MockRenderProcessHost::GetLastInitTime() {
+  if (!last_init_time_.is_null()) {
+    return last_init_time_;
+  }
   static base::TimeTicks dummy_time = base::TimeTicks::Now();
   return dummy_time;
 }
 
 base::TimeTicks MockRenderProcessHost::GetProcessLaunchedTime() const {
   return process_launched_time_;
+}
+
+const RenderProcessHost::StartupTimings&
+MockRenderProcessHost::GetStartupTimings() const {
+  return startup_timings_;
 }
 
 base::Process::Priority MockRenderProcessHost::GetPriority() const {

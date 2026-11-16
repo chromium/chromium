@@ -151,6 +151,9 @@ class ChildProcessLauncherHelper
 
   ChildProcessId child_process_id() const { return child_process_id_; }
 
+  // Returns the time when this helper began initializing on the client thread.
+  base::TimeTicks init_start_time() const { return init_start_time_; }
+
 #if !BUILDFLAG(IS_FUCHSIA)
   // Called to give implementors a chance at creating a server pipe. Platform-
   // specific. Returns |std::nullopt| if the helper should initialize
@@ -219,6 +222,8 @@ class ChildProcessLauncherHelper
 
   // Posted by PostLaunchOnLauncherThread onto the client thread.
   void PostLaunchOnClientThread(ChildProcessLauncherHelper::Process process,
+                                base::TimeTicks launch_begin_time,
+                                base::TimeTicks launch_complete_time,
 #if BUILDFLAG(IS_WIN)
                                 DWORD last_error,
 #endif

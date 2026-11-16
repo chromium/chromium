@@ -295,6 +295,18 @@ class CONTENT_EXPORT ChildProcessLauncher
   // Getter for the process.  Only call after the process has started.
   const base::Process& GetProcess() const;
 
+  // Returns the time when `ChildProcessLauncherHelper` began initializing.
+  base::TimeTicks init_start_time() const { return helper_->init_start_time(); }
+
+  // Returns the time when `LaunchOnLauncherThread()` began executing on the
+  // process launcher thread.
+  base::TimeTicks launch_begin_time() const { return launch_begin_time_; }
+
+  // Returns the time when the process launcher thread finished launching the
+  // process (`PostLaunchOnLauncherThread()`). On Android the launch is
+  // asynchronous and this runs only after the child service has connected.
+  base::TimeTicks launch_complete_time() const { return launch_complete_time_; }
+
   // Call this when the child process exits to know what happened to it.
   // |known_dead| can be true if we already know the process is dead as it can
   // help the implementation figure the proper TerminationStatus.
@@ -342,6 +354,8 @@ class CONTENT_EXPORT ChildProcessLauncher
 
   // Notifies the client about the result of the operation.
   void Notify(internal::ChildProcessLauncherHelper::Process process,
+              base::TimeTicks launch_begin_time,
+              base::TimeTicks launch_complete_time,
 #if BUILDFLAG(IS_WIN)
               DWORD last_error,
 #endif
@@ -365,7 +379,11 @@ class CONTENT_EXPORT ChildProcessLauncher
   // The process associated with this ChildProcessLauncher. Set in Notify by
   // ChildProcessLauncherHelper once the process was started.
   internal::ChildProcessLauncherHelper::Process process_;
-  base::TimeTicks process_start_time_;
+
+  // Timestamps from the process launcher thread for when launching started and
+  // finished, set in `Notify()` once the process has started.
+  base::TimeTicks launch_begin_time_;
+  base::TimeTicks launch_complete_time_;
 
   ChildProcessTerminationInfo termination_info_;
   bool starting_;

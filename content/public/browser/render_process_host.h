@@ -145,6 +145,27 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
     GENERATE_CRASH_DUMP,
   };
 
+  // Browser-side timestamps for the most recent launch of this process
+  // (reset by each `Init()`). Fields stay null until the corresponding event
+  // happens. For the in-process renderer, `launch_begin` and `launch_complete`
+  // are set to `GetProcessLaunchedTime()`. For a spare process, these reflect
+  // when it was pre-launched, not when it was assigned.
+  struct StartupTimings {
+    // When `Init()` started launching the process
+    // (`ChildProcessLauncherHelper` construction). Unlike `GetLastInitTime()`,
+    // which is set at the end of `Init()` after `OnRenderProcessHostCreated()`
+    // observers run (and can therefore be later than `launch_begin`), this is
+    // recorded before the `OnRenderProcessHostCreated()` observers run.
+    base::TimeTicks init_start;
+
+    // When the process launcher thread started launching the process.
+    base::TimeTicks launch_begin;
+
+    // When the process launcher thread finished launching the process. On
+    // Android this is after the child service has connected.
+    base::TimeTicks launch_complete;
+  };
+
   enum class NotificationServiceCreatorType {
     kDocument,
     kDedicatedWorker,
@@ -544,8 +565,17 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // Returns the priority of this process.
   virtual base::Process::Priority GetPriority() const = 0;
 
-  // Returns the time when this process was launched.
+  // Returns the time when the most recent launch of this process completed on
+  // the UI thread (reset by each `Init()`, staying null until
+  // `OnProcessLaunched()` runs).
   virtual base::TimeTicks GetProcessLaunchedTime() const = 0;
+
+  // Returns browser-side timestamps for the most recent launch of this
+  // process. Reset by each `Init()`, with `init_start` set during `Init()` and
+  // `launch_begin` / `launch_complete` set when `OnProcessLaunched()` runs on
+  // the UI thread (at `GetProcessLaunchedTime()`). See `StartupTimings` for
+  // field details and how `init_start` differs from `GetLastInitTime()`.
+  virtual const StartupTimings& GetStartupTimings() const = 0;
 
   // Returns a list of durations for active KeepAlive requests.
   // For debugging only. TODO(wjmaclean): Remove once the causes behind

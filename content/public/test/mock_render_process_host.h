@@ -168,6 +168,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       override;
   const base::TimeTicks& GetLastInitTime() override;
   base::TimeTicks GetProcessLaunchedTime() const override;
+  const StartupTimings& GetStartupTimings() const override;
   base::Process::Priority GetPriority() const override;
   size_t GetWorkerRefCount() const;
   std::string GetKeepAliveDurations() const override;
@@ -323,8 +324,14 @@ class MockRenderProcessHost : public RenderProcessHost {
     process_still_launching_ = still_launching;
   }
 
+  void SetLastInitTime(base::TimeTicks time) { last_init_time_ = time; }
+
   void SetProcessLaunchedTime(base::TimeTicks time) {
     process_launched_time_ = time;
+  }
+
+  void SetStartupTimings(const StartupTimings& timings) {
+    startup_timings_ = timings;
   }
 
   void OverrideBinderForTesting(const std::string& interface_name,
@@ -368,7 +375,9 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool has_immersive_xr_session_ = false;
   bool is_ready_ = false;
   bool process_still_launching_ = false;
+  base::TimeTicks last_init_time_;
   base::TimeTicks process_launched_time_;
+  StartupTimings startup_timings_;
   int pending_view_count_;
   int worker_ref_count_;
   int pending_reuse_ref_count_;

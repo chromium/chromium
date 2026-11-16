@@ -2000,6 +2000,8 @@ bool RenderProcessHostImpl::Init() {
   is_initialized_ = true;
   is_dead_ = false;
   sent_render_process_ready_ = false;
+  process_launched_time_ = base::TimeTicks();
+  startup_timings_ = StartupTimings{};
 
   // We may reach Init() during process death notification (e.g.
   // RenderProcessExited on some observer). In this case the Channel may be
@@ -2116,6 +2118,7 @@ bool RenderProcessHostImpl::Init() {
     // on starting in-process-render-thread.
     // So put it here to trigger Channel initialization earlier to enable
     // in-process-render-thread using Channel there.
+    startup_timings_.init_start = base::TimeTicks::Now();
     for (auto* observer : GetAllCreationObservers()) {
       observer->OnRenderProcessHostCreated(this);
     }
@@ -2183,6 +2186,7 @@ bool RenderProcessHostImpl::Init() {
             ? metrics_memory_region_
             : nullptr,
         tracing_config_memory_region_, tracing_output_memory_region_);
+    startup_timings_.init_start = child_process_launcher_->init_start_time();
 
     // Send initialization messages to the renderer, before any other messages
     // that might need them (e.g. navigation commits).
@@ -3085,6 +3089,11 @@ int RenderProcessHostImpl::GetPendingReuseRefCountForTesting() const {
 
 base::TimeTicks RenderProcessHostImpl::GetProcessLaunchedTime() const {
   return process_launched_time_;
+}
+
+const RenderProcessHost::StartupTimings&
+RenderProcessHostImpl::GetStartupTimings() const {
+  return startup_timings_;
 }
 
 std::string RenderProcessHostImpl::GetKeepAliveDurations() const {
@@ -6210,6 +6219,15 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     return;
 
   process_launched_time_ = base::TimeTicks::Now();
+  if (child_process_launcher_) {
+    startup_timings_.launch_begin =
+        child_process_launcher_->launch_begin_time();
+    startup_timings_.launch_complete =
+        child_process_launcher_->launch_complete_time();
+  } else {
+    startup_timings_.launch_begin = process_launched_time_;
+    startup_timings_.launch_complete = process_launched_time_;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   next_launch_for_initial_outermost_main_frame_ = false;

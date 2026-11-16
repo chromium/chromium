@@ -381,6 +381,7 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
     DWORD last_error,
 #endif
     int launch_result) {
+  base::TimeTicks launch_complete_time = base::TimeTicks::Now();
 #if BUILDFLAG(IS_WIN)
   const bool launch_elevated = delegate_->ShouldLaunchElevated();
 #else
@@ -441,7 +442,8 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
   client_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ChildProcessLauncherHelper::PostLaunchOnClientThread,
-                     this, std::move(process),
+                     this, std::move(process), begin_launch_time_,
+                     launch_complete_time,
 #if BUILDFLAG(IS_WIN)
                      last_error,
 #endif
@@ -450,6 +452,8 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
 
 void ChildProcessLauncherHelper::PostLaunchOnClientThread(
     ChildProcessLauncherHelper::Process process,
+    base::TimeTicks launch_begin_time,
+    base::TimeTicks launch_complete_time,
 #if BUILDFLAG(IS_WIN)
     DWORD last_error,
 #endif
@@ -459,7 +463,8 @@ void ChildProcessLauncherHelper::PostLaunchOnClientThread(
     UMA_HISTOGRAM_TIMES("MPArch.ChildProcessLauncher.Notify",
                         base::TimeTicks::Now() - init_start_time_);
 
-    child_process_launcher_->Notify(std::move(process),
+    child_process_launcher_->Notify(std::move(process), launch_begin_time,
+                                    launch_complete_time,
 #if BUILDFLAG(IS_WIN)
                                     last_error,
 #endif
