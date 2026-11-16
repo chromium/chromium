@@ -24,6 +24,7 @@
 #include "ash/wm/pip/pip_test_utils.h"
 #include "ash/wm/pip/pip_window_resizer.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -520,5 +521,72 @@ TEST_F(PipAutoLayoutTest, TurningAutoLayoutOnAnimatesToRestingPosition) {
       ui::LayerAnimationElement::TRANSFORM));
   EXPECT_TRUE(PipPositioner::HasSnapFraction(window_state));
 }
+
+class PipPinnedModeTest : public PipTest,
+                          public testing::WithParamInterface<bool> {};
+
+// Entering pinned or trusted-pinned (locked fullscreen) mode exits existing
+// PiP windows, while still allowing new PiP windows to be opened afterward.
+TEST_P(PipPinnedModeTest, ExitsExistingPipAndAllowsNewPipWhilePinned) {
+  const bool trusted = GetParam();
+  auto pinned_widget = CreateWidget(Shell::GetPrimaryRootWindow());
+  pinned_widget->Show();
+
+  auto pip_widget = CreateWidget(Shell::GetPrimaryRootWindow());
+  const WMEvent enter_pip(WM_EVENT_PIP);
+  WindowState::Get(pip_widget->GetNativeWindow())->OnWMEvent(&enter_pip);
+  pip_widget->Show();
+  auto* pip_controller = Shell::Get()->pip_controller();
+  ASSERT_EQ(pip_widget->GetNativeWindow(), pip_controller->pip_window());
+
+  // Entering pinned mode closes the pre-existing PiP window.
+  window_util::PinWindow(pinned_widget->GetNativeWindow(), trusted);
+  EXPECT_TRUE(pip_widget->IsClosed());
+  EXPECT_EQ(nullptr, pip_controller->pip_window());
+
+  // Opening a new PiP window while pinned is still allowed.
+  auto new_pip_widget = CreateWidget(Shell::GetPrimaryRootWindow());
+  WindowState* new_pip_state =
+      WindowState::Get(new_pip_widget->GetNativeWindow());
+  new_pip_state->OnWMEvent(&enter_pip);
+  new_pip_widget->Show();
+  EXPECT_FALSE(new_pip_widget->IsClosed());
+  EXPECT_TRUE(new_pip_state->IsPip());
+  EXPECT_EQ(new_pip_widget->GetNativeWindow(), pip_controller->pip_window());
+
+  // Exiting pinned mode keeps the PiP window that was opened while pinned.
+  WindowState::Get(pinned_widget->GetNativeWindow())->Restore();
+  EXPECT_FALSE(new_pip_widget->IsClosed());
+  EXPECT_TRUE(new_pip_state->IsPip());
+  EXPECT_EQ(new_pip_widget->GetNativeWindow(), pip_controller->pip_window());
+}
+
+TEST_P(PipPinnedModeTest, ExitsTuckedPipWhenEnteringPinnedMode) {
+  const bool trusted = GetParam();
+  auto pinned_widget = CreateWidget(Shell::GetPrimaryRootWindow());
+  pinned_widget->Show();
+  pinned_widget->Activate();
+
+  auto pip_widget = CreateWidget(Shell::GetPrimaryRootWindow());
+  aura::Window* pip_window = pip_widget->GetNativeWindow();
+  pip_window->SetProperty(kPipParamsKey, PipParams{.activatable = true});
+  pip_window->SetBounds({100, 150, 100, 100});
+  const WMEvent enter_pip(WM_EVENT_PIP);
+  WindowState::Get(pip_window)->OnWMEvent(&enter_pip);
+  pip_widget->Show();
+
+  auto* pip_controller = Shell::Get()->pip_controller();
+  pip_controller->TuckWindow(/*left=*/true);
+  ASSERT_TRUE(pip_controller->is_tucked());
+
+  window_util::PinWindow(pinned_widget->GetNativeWindow(), trusted);
+  EXPECT_TRUE(pip_widget->IsClosed());
+  EXPECT_FALSE(pip_window->IsVisible());
+  EXPECT_FALSE(pip_controller->is_tucked());
+  EXPECT_EQ(nullptr, pip_controller->pip_window());
+  EXPECT_TRUE(pinned_widget->IsActive());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PipPinnedModeTest, testing::Bool());
 
 }  // namespace ash

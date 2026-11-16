@@ -102,6 +102,8 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/wm/window_pin_util.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
@@ -1507,3 +1509,81 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return pip_widget->GetWindowBoundsInScreen() == initial_bounds; }));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class DocumentPictureInPicturePinnedWindowBrowserTest
+    : public DocumentPictureInPictureWindowControllerBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
+  bool trusted_pinned() const { return std::get<1>(GetParam()); }
+
+  views::Widget* GetPipWidget() {
+    content::WebContents* pip_web_contents =
+        window_controller()->GetChildWebContents();
+    CHECK(pip_web_contents);
+    return views::Widget::GetWidgetForNativeWindow(
+        pip_web_contents->GetTopLevelNativeWindow());
+  }
+
+  // DocumentPictureInPictureWindowControllerBrowserTest:
+  bool UseStandaloneDocumentPip() const override {
+    return std::get<0>(GetParam());
+  }
+
+  std::vector<std::pair<base::test::FeatureRef, bool>>
+  GetAdditionalFeatureStates() const override {
+    return {{ash::features::kPipAutoLayoutToggle, true}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPicturePinnedWindowBrowserTest,
+                       ExitsExistingPipAndAllowsOpeningFromPinnedWindow) {
+  LoadTabAndEnterPictureInPicture(browser());
+  views::Widget* pip_widget = GetPipWidget();
+  ASSERT_NE(nullptr, pip_widget);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(pip_widget);
+
+  // Entering pinned or trusted-pinned mode closes the pre-existing Document
+  // PiP window.
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
+  ash::PinWindow(browser_window, trusted_pinned());
+  ASSERT_TRUE(ash::IsWindowPinned(browser_window));
+  destroyed_waiter.Wait();
+  EXPECT_EQ(nullptr, window_controller()->GetChildWebContents());
+
+  // TODO(crbug.com/585621058): Opening Document PiP from a trusted-pinned
+  // (locked-fullscreen) browser window is currently blocked by `NavigateImpl`
+  // in `browser_navigator.cc` rejecting all `Navigate()` requests (including
+  // `WindowOpenDisposition::kNewPictureInPicture`) while in locked fullscreen.
+  if (trusted_pinned()) {
+    return;
+  }
+
+  // The pinned window itself can still open Document PiP while pinned.
+  content::WebContents* active_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_NE(nullptr, active_web_contents);
+  ASSERT_EQ(true, EvalJs(active_web_contents,
+                         "createDocumentPipWindow({width: 500, height: 500})"));
+  ASSERT_NE(nullptr, window_controller()->GetChildWebContents());
+  views::Widget* new_pip_widget = GetPipWidget();
+  ASSERT_NE(nullptr, new_pip_widget);
+  EXPECT_TRUE(new_pip_widget->IsVisible());
+
+  // Exiting pinned mode keeps the Document PiP window open.
+  ash::UnpinWindow(browser_window);
+  EXPECT_FALSE(ash::IsWindowPinned(browser_window));
+  EXPECT_NE(nullptr, window_controller()->GetChildWebContents());
+  EXPECT_TRUE(new_pip_widget->IsVisible());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DocumentPictureInPicturePinnedWindowBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "Standalone" : "BrowserBacked", "_",
+           std::get<1>(info.param) ? "TrustedPinned" : "Pinned"});
+    });
+#endif  // BUILDFLAG(IS_CHROMEOS)

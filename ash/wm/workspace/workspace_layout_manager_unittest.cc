@@ -1484,13 +1484,15 @@ TEST_F(WorkspaceLayoutManagerSoloTest, PinnedSuspendsAlwaysOnTop) {
 }
 
 TEST_F(WorkspaceLayoutManagerSoloTest, PinnedDoesNotSuspendAlwaysOnTopForPip) {
-  gfx::Rect bounds(100, 100, 200, 200);
+  gfx::Rect bounds{100, 100, 200, 200};
   std::unique_ptr<aura::Window> pinned_window(
       CreateTestWindowInShell({.bounds = bounds}));
-  std::unique_ptr<aura::Window> pip_window(
-      CreateTestWindowInShell({.bounds = bounds}));
+  std::unique_ptr<views::Widget> pip_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET, nullptr,
+                       desks_util::GetActiveDeskContainerId(), bounds);
   {
-    WindowState* window_state = WindowState::Get(pip_window.get());
+    aura::Window* pip_window = pip_widget->GetNativeWindow();
+    WindowState* window_state = WindowState::Get(pip_window);
     const WMEvent enter_pip(WM_EVENT_PIP);
     window_state->OnWMEvent(&enter_pip);
     pip_window->SetProperty(aura::client::kZOrderingKey,
@@ -1500,14 +1502,12 @@ TEST_F(WorkspaceLayoutManagerSoloTest, PinnedDoesNotSuspendAlwaysOnTopForPip) {
               pip_window->GetProperty(aura::client::kZOrderingKey));
   }
 
-  // Making a window pinned temporarily suspends always on top state, except
-  // for PIP.
+  // Making a window pinned closes existing PIP windows.
   const bool trusted = false;
   window_util::PinWindow(pinned_window.get(), trusted);
-  EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
-            pip_window->GetProperty(aura::client::kZOrderingKey));
+  EXPECT_TRUE(pip_widget->IsClosed());
 
-  // Adding a new PIP window should still end up always on top.
+  // Adding a new PIP window while pinned should still end up always on top.
   std::unique_ptr<aura::Window> pip_window2(
       CreateTestWindowInShell({.bounds = bounds}));
   {
@@ -1521,10 +1521,9 @@ TEST_F(WorkspaceLayoutManagerSoloTest, PinnedDoesNotSuspendAlwaysOnTopForPip) {
               pip_window2->GetProperty(aura::client::kZOrderingKey));
   }
 
-  // Making pinned window normal should not affect existing PIP windows.
+  // Making pinned window normal should not affect PIP windows opened while
+  // pinned.
   WindowState::Get(pinned_window.get())->Restore();
-  EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
-            pip_window->GetProperty(aura::client::kZOrderingKey));
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
             pip_window2->GetProperty(aura::client::kZOrderingKey));
 }

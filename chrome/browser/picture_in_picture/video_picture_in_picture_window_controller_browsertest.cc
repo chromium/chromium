@@ -24,6 +24,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
@@ -74,6 +75,8 @@
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
+#include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #endif
 
@@ -2874,3 +2877,44 @@ INSTANTIATE_TEST_SUITE_P(
                     InteractionTestParam{ui::EventType::kMousePressed, false},
                     InteractionTestParam{ui::EventType::kGestureTap, false},
                     InteractionTestParam{ui::EventType::kMouseMoved, true}));
+
+#if BUILDFLAG(IS_CHROMEOS)
+class VideoPictureInPicturePinnedWindowBrowserTest
+    : public VideoPictureInPictureWindowControllerBrowserTest,
+      public testing::WithParamInterface<bool> {};
+
+IN_PROC_BROWSER_TEST_P(VideoPictureInPicturePinnedWindowBrowserTest,
+                       ExitsExistingPipAndAllowsOpeningFromPinnedWindow) {
+  const bool trusted = GetParam();
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+
+  content::WebContents* active_web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_NE(nullptr, active_web_contents);
+  ASSERT_NE(nullptr, GetOverlayWindow());
+  EXPECT_TRUE(GetOverlayWindow()->IsVisible());
+
+  // Entering pinned or trusted-pinned mode exits the pre-existing video PiP.
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
+  ash::PinWindow(browser_window, trusted);
+  ASSERT_TRUE(ash::IsWindowPinned(browser_window));
+  ExpectLeavePictureInPicture(active_web_contents);
+
+  // The pinned window itself can still open video PiP while pinned.
+  ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+  ASSERT_NE(nullptr, GetOverlayWindow());
+  EXPECT_TRUE(GetOverlayWindow()->IsVisible());
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
+
+  // Exiting pinned mode keeps the video PiP window open.
+  ash::UnpinWindow(browser_window);
+  EXPECT_FALSE(ash::IsWindowPinned(browser_window));
+  EXPECT_TRUE(GetOverlayWindow()->IsVisible());
+  EXPECT_EQ(true, EvalJs(active_web_contents, "isInPictureInPicture();"));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         VideoPictureInPicturePinnedWindowBrowserTest,
+                         testing::Bool());
+#endif  // BUILDFLAG(IS_CHROMEOS)

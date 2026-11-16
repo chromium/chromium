@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/pip/pip_positioner.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_dimmer.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -162,7 +163,9 @@ class PipScopedWindowTuckerDelegate : public ScopedWindowTucker::Delegate {
 
 }  // namespace
 
-PipController::PipController() = default;
+PipController::PipController() {
+  shell_observation_.Observe(Shell::Get());
+}
 PipController::~PipController() = default;
 
 void PipController::SetPipWindow(aura::Window* window) {
@@ -341,6 +344,18 @@ void PipController::OnWindowPropertyChanged(aura::Window* window,
   // that the position is restored after movement area changes.
   UpdatePipBounds();
   PipPositioner::SaveSnapFraction(window_state, window->GetBoundsInScreen());
+}
+
+void PipController::OnPinnedStateChanged(aura::Window* pinned_window) {
+  if (!pip_window_ || !Shell::Get()->screen_pinning_controller()->IsPinned() ||
+      pip_window_ == pinned_window) {
+    return;
+  }
+  // Unset before closing so `ScopedWindowTucker` does not re-show a tucked PiP
+  // window when `CloseWidgetForWindow()` hides it.
+  aura::Window* window = pip_window_;
+  UnsetPipWindow(window);
+  window_util::CloseWidgetForWindow(window);
 }
 
 bool PipController::HandleDoubleTap(const ui::Event& event) {

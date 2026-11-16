@@ -6,16 +6,19 @@
 #define ASH_WM_PIP_PIP_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/shell_observer.h"
 #include "ash/wm/scoped_window_tucker.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 
 namespace ash {
 
+class Shell;
 class WindowDimmer;
 
 // This controller manages the PiP window.
-class ASH_EXPORT PipController : public aura::WindowObserver {
+class ASH_EXPORT PipController : public aura::WindowObserver,
+                                 public ShellObserver {
  public:
   PipController();
   PipController(const PipController&) = delete;
@@ -57,6 +60,9 @@ class ASH_EXPORT PipController : public aura::WindowObserver {
                                const void* key,
                                intptr_t old) override;
 
+  // ShellObserver:
+  void OnPinnedStateChanged(aura::Window* pinned_window) override;
+
  private:
   class PipSizeSwitchHandler {
      public:
@@ -87,6 +93,8 @@ class ASH_EXPORT PipController : public aura::WindowObserver {
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       pip_window_observation_{this};
+
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 
   PipSizeSwitchHandler pip_size_switch_handler_;
 

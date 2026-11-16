@@ -352,6 +352,8 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [
+        "//ash",
+        "//ash/constants",
         "//chromeos/ui/base",
         "//ui/aura",
       ]
