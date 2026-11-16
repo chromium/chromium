@@ -86,9 +86,9 @@ void ImageFetcherMetricsReporter::ReportCacheResult(
 // static
 void ImageFetcherMetricsReporter::ReportImageLoadFromCacheTime(
     const std::string& client_name,
-    base::Time start_time) {
+    base::TimeTicks start_time) {
   DCHECK(!client_name.empty());
-  base::TimeDelta time_delta = base::Time::Now() - start_time;
+  base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;
   UMA_HISTOGRAM_TIMES(kImageLoadFromCacheHistogram, time_delta);
   GetTimeHistogram(kImageLoadFromCacheHistogram, client_name)
       ->Add(time_delta.InMilliseconds());
@@ -119,9 +119,9 @@ void ImageFetcherMetricsReporter::ReportTotalFetchFromNativeTimeJava(
 // static
 void ImageFetcherMetricsReporter::ReportImageLoadFromNetworkTime(
     const std::string& client_name,
-    base::Time start_time) {
+    base::TimeTicks start_time) {
   DCHECK(!client_name.empty());
-  base::TimeDelta time_delta = base::Time::Now() - start_time;
+  base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;
   UMA_HISTOGRAM_TIMES(kImageLoadFromNetworkHistogram, time_delta);
   GetTimeHistogram(kImageLoadFromNetworkHistogram, client_name)
       ->Add(time_delta.InMilliseconds());
@@ -130,9 +130,9 @@ void ImageFetcherMetricsReporter::ReportImageLoadFromNetworkTime(
 // static
 void ImageFetcherMetricsReporter::ReportImageLoadFromNetworkAfterCacheHit(
     const std::string& client_name,
-    base::Time start_time) {
+    base::TimeTicks start_time) {
   DCHECK(!client_name.empty());
-  base::TimeDelta time_delta = base::Time::Now() - start_time;
+  base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;
   UMA_HISTOGRAM_TIMES(kImageLoadFromNetworkAfterCacheHitHistogram, time_delta);
   GetTimeHistogram(kImageLoadFromNetworkAfterCacheHitHistogram, client_name)
       ->Add(time_delta.InMilliseconds());

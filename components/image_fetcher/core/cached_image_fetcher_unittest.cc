@@ -88,7 +88,10 @@ class ObservingImageDataStoreDisk : public ImageDataStoreDisk {
 
 class CachedImageFetcherTest : public testing::Test {
  public:
-  CachedImageFetcherTest() = default;
+  explicit CachedImageFetcherTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
+      : task_environment_(time_source) {}
 
   CachedImageFetcherTest(const CachedImageFetcherTest&) = delete;
   CachedImageFetcherTest& operator=(const CachedImageFetcherTest&) = delete;
@@ -166,6 +169,9 @@ class CachedImageFetcherTest : public testing::Test {
 
   MOCK_METHOD(void, OnImageLoaded, (bool, std::string), ());
 
+ protected:
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
  private:
   std::unique_ptr<ImageFetcher> image_fetcher_;
   std::unique_ptr<CachedImageFetcher> cached_image_fetcher_;
@@ -183,6 +189,17 @@ class CachedImageFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
+};
+
+class CachedImageFetcherTimingTest : public CachedImageFetcherTest {
+ public:
+  CachedImageFetcherTimingTest()
+      : CachedImageFetcherTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void AdvanceClock(base::TimeDelta delta) {
+    task_environment().AdvanceClock(delta);
+  }
 };
 
 MATCHER(EmptyImage, "") {
@@ -240,7 +257,7 @@ TEST_F(CachedImageFetcherTest, FailedCacheInitializationFallsBackToNetwork) {
                                        ImageFetcherEvent::kCacheMiss, 1);
 }
 
-TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
+TEST_F(CachedImageFetcherTimingTest, FetchImageFromCache) {
   // Save the image in the database.
   const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   image_cache()->SaveImage(
@@ -258,10 +275,12 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCache) {
   cached_image_fetcher()->FetchImageAndData(
       kImageUrl, data_callback.Get(), image_callback.Get(),
       ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+  AdvanceClock(base::Milliseconds(200));
   db()->LoadCallback(true);
   RunUntilIdle();
 
-  histogram_tester().ExpectTotalCount(kCacheLoadHistogramName, 1);
+  histogram_tester().ExpectUniqueTimeSample(kCacheLoadHistogramName,
+                                            base::Milliseconds(200), 1);
   histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
                                        ImageFetcherEvent::kImageRequest, 1);
   histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
@@ -406,7 +425,7 @@ TEST_F(CachedImageFetcherTest, FetchImageFromCacheReadOnly) {
   }
 }
 
-TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
+TEST_F(CachedImageFetcherTimingTest, FetchImagePopulatesCache) {
   // Expect the image to be fetched by URL.
   const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
   {
@@ -421,10 +440,12 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
     cached_image_fetcher()->FetchImageAndData(
         kImageUrl, data_callback.Get(), image_callback.Get(),
         ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+    AdvanceClock(base::Milliseconds(200));
     db()->LoadCallback(true);
     RunUntilIdle();
 
-    histogram_tester().ExpectTotalCount(kNetworkLoadHistogramName, 1);
+    histogram_tester().ExpectUniqueTimeSample(kNetworkLoadHistogramName,
+                                              base::Milliseconds(200), 1);
     histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
                                          ImageFetcherEvent::kImageRequest, 1);
     histogram_tester().ExpectBucketCount(kImageFetcherEventHistogramName,
@@ -456,6 +477,46 @@ TEST_F(CachedImageFetcherTest, FetchImagePopulatesCache) {
     db()->LoadCallback(true);
     RunUntilIdle();
   }
+}
+
+TEST_F(CachedImageFetcherTimingTest, NetworkTimingIncludesFailedCacheDecode) {
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  image_cache()->SaveImage(
+      kImageUrl.spec(),
+      base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /*needs_transcoding=*/false, /*expiration_interval=*/std::nullopt);
+  image_decoder()->SetDecodingValid(false);
+
+  base::test::TestFuture<void> network_requested;
+  test_url_loader_factory()->SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest&) { network_requested.SetValue(); }));
+  base::test::TestFuture<gfx::Image, RequestMetadata> image_result;
+  cached_image_fetcher()->FetchImageAndData(
+      kImageUrl, ImageDataFetcherCallback(),
+      image_result.GetCallback<const gfx::Image&, const RequestMetadata&>(),
+      ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName));
+  AdvanceClock(base::Milliseconds(200));
+  db()->LoadCallback(true);
+  const bool requested = network_requested.Wait();
+  test_url_loader_factory()->SetInterceptor({});
+  ASSERT_TRUE(requested);
+  EXPECT_FALSE(image_result.IsReady());
+
+  image_decoder()->SetDecodingValid(true);
+  AdvanceClock(base::Milliseconds(300));
+  test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
+  ASSERT_TRUE(image_result.Wait());
+  EXPECT_FALSE(image_result.Get<0>().IsEmpty());
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "ImageFetcher.ImageLoadFromNetworkAfterCacheHit", base::Milliseconds(500),
+      1);
+  histogram_tester().ExpectUniqueTimeSample(
+      std::string("ImageFetcher.ImageLoadFromNetworkAfterCacheHit.") +
+          kUmaClientName,
+      base::Milliseconds(500), 1);
+  histogram_tester().ExpectTotalCount(kCacheLoadHistogramName, 0);
+  histogram_tester().ExpectTotalCount(kNetworkLoadHistogramName, 0);
 }
 
 TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheReadOnly) {

@@ -38,7 +38,7 @@ struct CachedImageFetcherRequest {
   bool cache_hit_before_network_request;
 
   // The start time of the fetch sequence.
-  base::Time start_time;
+  base::TimeTicks start_time;
 
   // Unique id for this request, used for tracing
   uint64_t flow_id;
@@ -135,11 +135,10 @@ void CachedImageFetcher::FetchImageAndData(
   TRACE_EVENT("ui", "CachedImageFetcher::FetchImageAndData",
               perfetto::Flow::ProcessScoped(request_flow_id));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(wylieb): Inject a clock for better testability.
   CachedImageFetcherRequest request = {
       image_url, std::move(params),
       /* cache_hit_before_network_request */ false,
-      /* start_time */ base::Time::Now(), request_flow_id};
+      /* start_time */ base::TimeTicks::Now(), request_flow_id};
 
   ImageFetcherMetricsReporter::ReportEvent(request.params.uma_client_name(),
                                            ImageFetcherEvent::kImageRequest);

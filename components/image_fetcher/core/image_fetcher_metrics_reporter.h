@@ -77,7 +77,7 @@ class ImageFetcherMetricsReporter {
 
   // Report the time it takes to load an image from the cache in native code.
   static void ReportImageLoadFromCacheTime(const std::string& client_name,
-                                           base::Time start_time);
+                                           base::TimeTicks start_time);
 
   // Report the time it takes to load an image from the cache in java code.
   static void ReportImageLoadFromCacheTimeJava(const std::string& client_name,
@@ -89,13 +89,13 @@ class ImageFetcherMetricsReporter {
 
   // Report the time it takes to load an image from the network.
   static void ReportImageLoadFromNetworkTime(const std::string& client_name,
-                                             base::Time start_time);
+                                             base::TimeTicks start_time);
 
   // Report the time it takes to load an image from the network after a cache
   // hit.
   static void ReportImageLoadFromNetworkAfterCacheHit(
       const std::string& client_name,
-      base::Time start_time);
+      base::TimeTicks start_time);
 
   // Report the time between cache evictions.
   static void ReportTimeSinceLastCacheLRUEviction(base::Time start_time);
