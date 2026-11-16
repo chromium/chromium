@@ -12,16 +12,20 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Process;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,6 +49,7 @@ public class GracefulShutdownServiceImplTest {
     @Mock private Context mContext;
     @Mock private ForegroundServiceUtils mMockForegroundServiceUtils;
     @Mock private SplitCompatService mMockService;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private Activity mActivity;
     private GracefulShutdownServiceImpl mService;
@@ -58,7 +63,14 @@ public class GracefulShutdownServiceImplTest {
         lenient()
                 .when(mMockService.getResources())
                 .thenReturn(ContextUtils.getApplicationContext().getResources());
+        lenient().when(mMockService.stopSelfResult(anyInt())).thenReturn(true);
         mService.setServiceForTesting(mMockService);
+    }
+
+    private static Intent createStartIntent() {
+        Intent intent = new Intent();
+        intent.putExtra(GracefulShutdownServiceImpl.EXTRA_CALLING_PID, Process.myPid());
+        return intent;
     }
 
     @Test
@@ -76,7 +88,7 @@ public class GracefulShutdownServiceImplTest {
                         "Tab.Android.GracefulShutdownStatus",
                         GracefulShutdownService.Status.STARTED);
 
-        Intent intent = new Intent();
+        Intent intent = createStartIntent();
         int result = mService.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
         assertEquals(Service.START_NOT_STICKY, result);
 
@@ -99,23 +111,24 @@ public class GracefulShutdownServiceImplTest {
                         "Tab.Android.GracefulShutdownStatus",
                         GracefulShutdownService.Status.START_FOREGROUND_FAILED);
 
-        Intent intent = new Intent();
+        Intent intent = createStartIntent();
         int result = mService.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
         assertEquals(Service.START_NOT_STICKY, result);
 
-        verify(mMockService).stopSelf();
+        verify(mMockService).stopSelfResult(/* startId= */ 1);
         watcher.assertExpected();
     }
 
     @Test
     public void testOnStartCommand_schedulesStop() {
-        Intent intent = new Intent();
+        Intent intent = createStartIntent();
         int result = mService.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
         assertEquals(Service.START_NOT_STICKY, result);
 
-        // Before delayed timeout is reached, stopForeground and stopSelf should not be called.
+        // Before delayed timeout is reached, stopForeground and stopSelfResult should not be
+        // called.
         verify(mMockForegroundServiceUtils, never()).stopForeground(any(), anyInt());
-        verify(mMockService, never()).stopSelf();
+        verify(mMockService, never()).stopSelfResult(anyInt());
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -127,13 +140,70 @@ public class GracefulShutdownServiceImplTest {
 
         verify(mMockForegroundServiceUtils)
                 .stopForeground(eq(mMockService), eq(Service.STOP_FOREGROUND_REMOVE));
-        verify(mMockService).stopSelf();
+        verify(mMockService).stopSelfResult(/* startId= */ 1);
         watcher.assertExpected();
     }
 
     @Test
+    public void testOnStartCommand_staleCallingPidIgnored() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Tab.Android.GracefulShutdownStatus")
+                        .build();
+
+        // 1. Test null intent
+        int resultNull = mService.onStartCommand(null, /* flags= */ 0, /* startId= */ 1);
+        assertEquals(Service.START_NOT_STICKY, resultNull);
+        verify(mMockService).stopSelfResult(/* startId= */ 1);
+
+        // 2. Test mismatched calling PID
+        Intent staleIntent = new Intent();
+        staleIntent.putExtra(GracefulShutdownServiceImpl.EXTRA_CALLING_PID, Process.myPid() + 100);
+        int resultMismatched =
+                mService.onStartCommand(staleIntent, /* flags= */ 0, /* startId= */ 2);
+        assertEquals(Service.START_NOT_STICKY, resultMismatched);
+        verify(mMockService).stopSelfResult(/* startId= */ 2);
+
+        verify(mMockForegroundServiceUtils, never())
+                .startForeground(any(), anyInt(), any(), anyInt());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnStartCommand_stopRunnableUsesLatestDeliveredStartId() {
+        // 1. Undelivered newer start queued in AMS: stopSelfResult(1) returns false.
+        lenient().when(mMockService.stopSelfResult(1)).thenReturn(false);
+        lenient().when(mMockService.stopSelfResult(2)).thenReturn(true);
+
+        assertEquals(
+                Service.START_NOT_STICKY,
+                mService.onStartCommand(createStartIntent(), /* flags= */ 0, /* startId= */ 1));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mMockService).stopSelfResult(/* startId= */ 1);
+        verify(mMockForegroundServiceUtils, never()).stopForeground(any(), anyInt());
+
+        // 2. Delivered overlapping startId=2 that fails startForeground while startId=1's timer is
+        // active: timer must preserve startId=1's window, then stop with mLatestStartId=2.
+        assertEquals(
+                Service.START_NOT_STICKY,
+                mService.onStartCommand(createStartIntent(), /* flags= */ 0, /* startId= */ 1));
+        doThrow(new RuntimeException("BFSL denied"))
+                .when(mMockForegroundServiceUtils)
+                .startForeground(any(), anyInt(), any(), anyInt());
+        assertEquals(
+                Service.START_NOT_STICKY,
+                mService.onStartCommand(createStartIntent(), /* flags= */ 0, /* startId= */ 2));
+        verify(mMockService, never()).stopSelfResult(/* startId= */ 2);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mMockService).stopSelfResult(/* startId= */ 2);
+        verify(mMockForegroundServiceUtils)
+                .stopForeground(eq(mMockService), eq(Service.STOP_FOREGROUND_REMOVE));
+    }
+
+    @Test
     public void testOnTimeout() {
-        Intent intent = new Intent();
+        Intent intent = createStartIntent();
         mService.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
 
         var watcher =
@@ -157,7 +227,7 @@ public class GracefulShutdownServiceImplTest {
 
     @Test
     public void testOnTimeout_withFgsType() {
-        Intent intent = new Intent();
+        Intent intent = createStartIntent();
         mService.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
 
         var watcher =
@@ -175,7 +245,7 @@ public class GracefulShutdownServiceImplTest {
 
     @Test
     public void testOnDestroy_cancelsStopRunnable() {
-        Intent intent = new Intent();
+        Intent intent = createStartIntent();
         mService.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
 
         mService.onDestroy();
@@ -183,6 +253,7 @@ public class GracefulShutdownServiceImplTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mMockForegroundServiceUtils, never()).stopForeground(any(), anyInt());
         verify(mMockService, never()).stopSelf();
+        verify(mMockService, never()).stopSelfResult(anyInt());
     }
 
     @Test
@@ -190,9 +261,8 @@ public class GracefulShutdownServiceImplTest {
         mActivity.finish();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
-        doThrow(new IllegalStateException("ForegroundServiceStartNotAllowedException"))
-                .when(mMockForegroundServiceUtils)
-                .startForegroundService(any());
+        when(mContext.startService(any()))
+                .thenThrow(new IllegalStateException("BackgroundServiceStartNotAllowedException"));
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -217,7 +287,12 @@ public class GracefulShutdownServiceImplTest {
 
         GracefulShutdownServiceImpl.maybeStartGracefulShutdown(mContext);
 
-        verify(mMockForegroundServiceUtils).startForegroundService(any(Intent.class));
+        verify(mContext).startService(mIntentCaptor.capture());
+        assertEquals(
+                Process.myPid(),
+                mIntentCaptor
+                        .getValue()
+                        .getIntExtra(GracefulShutdownServiceImpl.EXTRA_CALLING_PID, -1));
         watcher.assertExpected();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.DESTROYED);
     }

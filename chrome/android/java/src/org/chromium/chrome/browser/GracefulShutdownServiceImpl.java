@@ -12,6 +12,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Process;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.SplitCompatService;
@@ -35,15 +38,21 @@ import org.chromium.components.browser_ui.notifications.channels.ChannelsInitial
  */
 @NullMarked
 public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
+    @VisibleForTesting
+    static final String EXTRA_CALLING_PID =
+            "org.chromium.chrome.browser.GracefulShutdownService.CALLING_PID";
+
     private static final String TAG = "GracefulShutdown";
     private static final String NOTIFICATION_NAMESPACE = "GracefulShutdownService";
     // 2000 ms was chosen to match the 2-second fallback timer in TabWebContentsDestroyer
     // (see chrome/browser/android/tab_android.cc), which was picked to give sufficient time for
     // unload handlers to run during window closure.
     private static final int DEFAULT_SHUTDOWN_TIMEOUT_MS = 2000;
+    private static final int INVALID_PID = -1;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private @Nullable Runnable mStopRunnable;
+    private int mLatestStartId;
 
     /** Starts the GracefulShutdownService ONLY if the last open activity is dying. */
     public static void maybeStartGracefulShutdown(Context context) {
@@ -53,7 +62,8 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
         Log.i(TAG, "Starting GracefulShutdownService.");
         try {
             Intent intent = new Intent(context, GracefulShutdownService.class);
-            ForegroundServiceUtils.getInstance().startForegroundService(intent);
+            intent.putExtra(EXTRA_CALLING_PID, Process.myPid());
+            context.startService(intent);
             GracefulShutdownService.recordStatus(GracefulShutdownService.Status.LAUNCH_ATTEMPTED);
         } catch (Throwable e) {
             GracefulShutdownService.recordStatus(GracefulShutdownService.Status.LAUNCH_FAILED);
@@ -73,7 +83,17 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        mLatestStartId = startId;
         Log.i(TAG, "GracefulShutdownServiceImpl onStartCommand");
+        if (intent == null
+                || intent.getIntExtra(EXTRA_CALLING_PID, INVALID_PID) != Process.myPid()) {
+            Log.i(TAG, "Ignoring stale GracefulShutdownService restart.");
+            if (mStopRunnable == null) {
+                getService().stopSelfResult(startId);
+            }
+            return Service.START_NOT_STICKY;
+        }
+
         try {
             new ChannelsInitializer(
                             new NotificationManagerProxyImpl(),
@@ -114,7 +134,9 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
             GracefulShutdownService.recordStatus(
                     GracefulShutdownService.Status.START_FOREGROUND_FAILED);
             Log.e(TAG, "Failed to startForeground", e);
-            getService().stopSelf();
+            if (mStopRunnable == null) {
+                getService().stopSelfResult(startId);
+            }
             return Service.START_NOT_STICKY;
         }
 
@@ -122,6 +144,10 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
 
         mStopRunnable =
                 () -> {
+                    mStopRunnable = null;
+                    if (!getService().stopSelfResult(mLatestStartId)) {
+                        return;
+                    }
                     Log.i(TAG, "GracefulShutdownServiceImpl stopping");
                     GracefulShutdownService.recordStatus(GracefulShutdownService.Status.TIMED_OUT);
                     try {
@@ -130,8 +156,6 @@ public class GracefulShutdownServiceImpl extends SplitCompatService.Impl {
                     } catch (Throwable e) {
                         Log.e(TAG, "Failed to stopForeground", e);
                     }
-                    getService().stopSelf();
-                    mStopRunnable = null;
                 };
         mHandler.postDelayed(mStopRunnable, DEFAULT_SHUTDOWN_TIMEOUT_MS);
 
