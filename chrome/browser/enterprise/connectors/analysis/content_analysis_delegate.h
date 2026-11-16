@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -93,6 +94,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
     // ID of the frame initiating the action. If provided, frame URL chain
     // collection starts from this frame instead of the currently focused frame.
     std::optional<content::GlobalRenderFrameHostId> initiating_frame_id;
+
+    // Optional cleanup action run when the scan finishes and this Data is
+    // destroyed, e.g. to delete temporary files created for the scan.
+    base::ScopedClosureRunner cleanup_closure;
   };
 
   // Result of deep scanning.  Each Result contains the verdicts of deep scans
