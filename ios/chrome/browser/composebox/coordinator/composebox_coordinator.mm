@@ -78,7 +78,6 @@
     _entrypoint = focusParams.entrypoint;
     _animationBase = animationBase;
     _modeHolder = [[ComposeboxModeHolder alloc] init];
-    _modeHolder.mode = focusParams.toolMode;
     _focusParams = focusParams;
   }
   return self;
