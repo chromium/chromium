@@ -3970,3 +3970,162 @@ suite('OmniboxComposeboxPersistentAimButtonTest', () => {
     }
   });
 });
+
+suite('OmniboxComposeboxDynamicAimFulfillmentTest', () => {
+  let omniboxComposebox: OmniboxComposeboxElement;
+  let testProxy: TestSearchboxBrowserProxy;
+
+  // Same wiring as OmniboxComposeboxTest, with dynamic AIM fulfillment enabled:
+  // the composebox starts in SRP mode.
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      composeboxShowZps: true,
+      searchboxLayoutMode: 'TallBottomContext',
+      caretAnimationEnabled: true,
+      energyEffectEnabled: true,
+      contextualMenuUsePecApi: true,
+      contextManagementInComposeboxEnabled: false,
+      composeboxSmartComposeEnabled: true,
+      contextButtonShapeIsOblong: true,
+      webuiOmniboxSimplificationEnabled: true,
+      voiceSearchCoherenceComposeboxesEnabled: false,
+      composeboxPersistentAimButton: false,
+      composeboxPersistentAimButtonWithX: false,
+      dynamicAimFulfillmentEnabled: true,
+    });
+
+    testProxy = new TestSearchboxBrowserProxy();
+    testProxy.handler.setPromiseResolveFor('getInputState', {
+      state: {
+        ...createDefaultInputState(),
+        willFulfillInAim: false,
+      },
+    });
+    SearchboxBrowserProxy.setInstance(testProxy);
+
+    const mockPageHandler = TestMock.fromClass(PageHandlerRemote);
+    mockPageHandler.setResultMapperFor(
+        'getSmartTabSharingActive', () => Promise.resolve({active: false}));
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockPageHandler,
+        testProxy.handler as unknown as SearchboxPageHandlerRemote,
+        testProxy.callbackRouter as unknown as SearchboxPageCallbackRouter));
+    testProxy.handler.setPromiseResolveFor('getPageClassification', {
+      metricSource: 'NTP_OMNIBOX_COMPOSEBOX',
+    });
+
+    omniboxComposebox = document.createElement('cr-omnibox-composebox');
+    document.body.appendChild(omniboxComposebox);
+    await microtasksFinished();
+  });
+
+  teardown(() => {
+    loadTimeData.overrideValues({
+      dynamicAimFulfillmentEnabled: false,
+    });
+  });
+
+  async function setWillFulfillInAim(willFulfillInAim: boolean) {
+    omniboxComposebox.inputState = {
+      ...createDefaultInputState(),
+      willFulfillInAim,
+    };
+    await microtasksFinished();
+  }
+
+  async function nextFrame() {
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    await microtasksFinished();
+  }
+
+  function isInnerGlowSpinning(): boolean {
+    const glow = omniboxComposebox.shadowRoot.querySelector<HTMLElement>(
+        '#animatedSearchElement');
+    assertTrue(!!glow);
+    return glow.shadowRoot!.getAnimations().some(
+        animation => animation instanceof CSSAnimation &&
+            animation.animationName === 'gradient-spin-expand' &&
+            animation.playState === 'running');
+  }
+
+  test('switching to AI Mode plays the inner glow', async () => {
+    // The popup opened in SRP mode, so the glow that was armed for the
+    // opening had nothing to animate.
+    assertFalse(omniboxComposebox.willFulfillInAim);
+    assertFalse(isInnerGlowSpinning());
+
+    await setWillFulfillInAim(true);
+    await nextFrame();
+
+    assertEquals(
+        GlowAnimationState.EXPANDING, omniboxComposebox.animationState);
+    assertTrue(isInnerGlowSpinning());
+  });
+
+  test('switching to AI Mode replays an idle glow', async () => {
+    // Showing the popup with a submittable composebox leaves the glow idle.
+    omniboxComposebox.input = 'query';
+    await microtasksFinished();
+    omniboxComposebox.playGlowAnimation();
+    await nextFrame();
+    assertEquals(GlowAnimationState.NONE, omniboxComposebox.animationState);
+
+    await setWillFulfillInAim(true);
+    assertEquals(GlowAnimationState.NONE, omniboxComposebox.animationState);
+    await nextFrame();
+
+    assertEquals(
+        GlowAnimationState.EXPANDING, omniboxComposebox.animationState);
+    assertTrue(isInnerGlowSpinning());
+  });
+
+  test('switching to AI Mode again replays the glow', async () => {
+    await setWillFulfillInAim(true);
+    await nextFrame();
+    await setWillFulfillInAim(false);
+    assertFalse(isInnerGlowSpinning());
+
+    await setWillFulfillInAim(true);
+    assertEquals(GlowAnimationState.NONE, omniboxComposebox.animationState);
+    await nextFrame();
+
+    assertEquals(
+        GlowAnimationState.EXPANDING, omniboxComposebox.animationState);
+    assertTrue(isInnerGlowSpinning());
+  });
+
+  test('staying in AI Mode does not replay the glow', async () => {
+    await setWillFulfillInAim(true);
+    await nextFrame();
+    omniboxComposebox.animationState = GlowAnimationState.NONE;
+    await microtasksFinished();
+
+    await setWillFulfillInAim(true);
+    await nextFrame();
+
+    assertEquals(GlowAnimationState.NONE, omniboxComposebox.animationState);
+  });
+
+  test('switching to AI Mode keeps the dragging glow', async () => {
+    omniboxComposebox.animationState = GlowAnimationState.DRAGGING;
+    await microtasksFinished();
+
+    await setWillFulfillInAim(true);
+    await nextFrame();
+
+    assertEquals(GlowAnimationState.DRAGGING, omniboxComposebox.animationState);
+  });
+
+  test('switching to AI Mode while submitting does not replay', async () => {
+    omniboxComposebox.animationState = GlowAnimationState.NONE;
+    omniboxComposebox.submitting = true;
+    // Entering AI Mode while submitting must not trigger the replay glow.
+    omniboxComposebox.willFulfillInAim = true;
+    await microtasksFinished();
+    await nextFrame();
+
+    assertEquals(GlowAnimationState.NONE, omniboxComposebox.animationState);
+  });
+});

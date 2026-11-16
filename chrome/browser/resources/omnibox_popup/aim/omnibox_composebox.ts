@@ -290,6 +290,19 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       this.isAimButtonShown_ = this.persistentAimButtonEnabled_ &&
           this.searchboxLayoutMode === 'TallBottomContext';
     }
+
+    // With dynamic AIM fulfillment the composebox can switch to AI Mode while
+    // the popup is open, which is when the inner glow first becomes visible.
+    // The glow that was armed when the popup opened may be gone by then (e.g.
+    // after a file was dropped), so replay it. `undefined` is the previous
+    // value on the first update, which is not a switch.
+    if (changedPrivateProperties.get('willFulfillInAim') === false &&
+        this.willFulfillInAim && !this.submitting &&
+        (this.animationState === GlowAnimationState.NONE ||
+         this.animationState === GlowAnimationState.EXPANDING)) {
+      this.animationState = GlowAnimationState.NONE;
+      this.expandGlowOnNextFrame_();
+    }
   }
 
   private computeSearchboxLayoutMode_(): string {
@@ -529,15 +542,23 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     // be re-trigered. Resetting it to NONE forces the animation related styles
     // to reset before switching to EXPANDING.
     this.animationState = GlowAnimationState.NONE;
-    // Wait for the style change for NONE to commit. This ensures the browser
-    // detects a state change when we switch to EXPANDING.
 
     // If the composebox is not submittable, trigger the animation.
     if (!this.submitEnabled) {
-      requestAnimationFrame(() => {
-        this.animationState = GlowAnimationState.EXPANDING;
-      });
+      this.expandGlowOnNextFrame_();
     }
+  }
+
+  // Starts the expanding glow once the style change for NONE has committed, so
+  // that the browser detects a state change and restarts the CSS animations.
+  // Does nothing if another glow (e.g. dragging or submitting) started in the
+  // meantime.
+  private expandGlowOnNextFrame_() {
+    requestAnimationFrame(() => {
+      if (this.animationState === GlowAnimationState.NONE) {
+        this.animationState = GlowAnimationState.EXPANDING;
+      }
+    });
   }
 
   isExpanded(): boolean {
