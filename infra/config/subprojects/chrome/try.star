@@ -354,6 +354,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder = "linux-bluebird-rel",
 )
 
@@ -408,6 +409,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-arm64-bluebird-rel",
 )
 
@@ -511,6 +513,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-arm64-bluebird-rel",
 )
 
@@ -525,6 +528,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-bluebird-rel",
 )
 
