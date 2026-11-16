@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1580,6 +1581,53 @@ TEST_F(AILanguageModelTest, QueuesOperations) {
               ElementsAreArray({"UfooEM", "UbarEM", "UforkEM"}));
 }
 
+TEST_F(AILanguageModelTest, ConcurrentInterleavedPromptsAcrossSessions) {
+  auto options1 = blink::mojom::AILanguageModelCreateOptions::New();
+  options1->initial_prompts.push_back(MakePrompt(Role::kSystem, "s1"));
+  auto session1 = CreateSession(std::move(options1));
+
+  auto options2 = blink::mojom::AILanguageModelCreateOptions::New();
+  options2->initial_prompts.push_back(MakePrompt(Role::kSystem, "s2"));
+  auto session2 = CreateSession(std::move(options2));
+
+  fake_broker_->settings().set_append_delay(base::Seconds(2));
+  fake_broker_->settings().set_execute_delay(base::Seconds(3));
+
+  AITestUtils::TestStreamingResponder responder1a;
+  AITestUtils::TestStreamingResponder responder1b;
+  session1->Prompt(MakeInput("one"), nullptr, /*thinking_effort=*/std::nullopt,
+                   responder1a.BindRemote());
+  session1->Prompt(MakeInput("two"), nullptr, /*thinking_effort=*/std::nullopt,
+                   responder1b.BindRemote());
+
+  // Advance partway through `session1`'s in-flight append before starting
+  // `session2` so both sessions execute concurrently.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  AITestUtils::TestStreamingResponder responder2a;
+  AITestUtils::TestStreamingResponder responder2b;
+  session2->Prompt(MakeInput("alpha"), nullptr,
+                   /*thinking_effort=*/std::nullopt, responder2a.BindRemote());
+  session2->Prompt(MakeInput("beta"), nullptr, /*thinking_effort=*/std::nullopt,
+                   responder2b.BindRemote());
+
+  task_environment()->FastForwardBy(base::Seconds(10));
+
+  EXPECT_TRUE(responder1a.WaitForCompletion());
+  EXPECT_THAT(responder1a.responses(), ElementsAreArray({"Ss1E", "UoneEM"}));
+
+  EXPECT_TRUE(responder1b.WaitForCompletion());
+  EXPECT_THAT(responder1b.responses(),
+              ElementsAreArray({"Ss1E", "UoneEM", "UtwoEM"}));
+
+  EXPECT_TRUE(responder2a.WaitForCompletion());
+  EXPECT_THAT(responder2a.responses(), ElementsAreArray({"Ss2E", "UalphaEM"}));
+
+  EXPECT_TRUE(responder2b.WaitForCompletion());
+  EXPECT_THAT(responder2b.responses(),
+              ElementsAreArray({"Ss2E", "UalphaEM", "UbetaEM"}));
+}
+
 TEST_F(AILanguageModelTest, Constraint) {
   auto session = CreateSession();
   EXPECT_THAT(
@@ -2138,6 +2186,43 @@ class AILanguageModelOpenLoopToolTest : public AILanguageModelTest {
   // Helper to disable tool call simulation.
   void DisableToolCallSimulation() {
     fake_broker_->settings().simulated_tool_calls.clear();
+  }
+
+  static constexpr char kYesOrNoSchema[] =
+      R"({"type":"string","enum":["yes","no"]})";
+  static constexpr char kYesNoRegex[] = "(yes|no)";
+
+  mojo::Remote<blink::mojom::AILanguageModel> CreateWeatherSession() {
+    std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+    tools.push_back(CreateWeatherTool());
+    return CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+  }
+
+  void ExpectWeatherToolAndConstraintInResponse(
+      const std::string& response,
+      std::string_view expected_constraint) {
+    EXPECT_THAT(response, testing::HasSubstr("Hint: constrained_decoding "));
+    EXPECT_THAT(response, testing::HasSubstr(base::StrCat(
+                              {"Constraint: ", expected_constraint})));
+    EXPECT_THAT(response, testing::HasSubstr("<tool name=get_weather>"));
+  }
+
+  void ExpectWeatherToolPromptsWithJsonSchemaAndRegex(
+      blink::mojom::AILanguageModel& session) {
+    ExpectWeatherToolAndConstraintInResponse(
+        base::JoinString(
+            Prompt(session, MakeInput("Weather json"),
+                   on_device_model::mojom::ResponseConstraint::NewJsonSchema(
+                       kYesOrNoSchema)),
+            ""),
+        base::StrCat({"json ", kYesOrNoSchema}));
+    ExpectWeatherToolAndConstraintInResponse(
+        base::JoinString(
+            Prompt(session, MakeInput("Weather regex"),
+                   on_device_model::mojom::ResponseConstraint::NewRegex(
+                       kYesNoRegex)),
+            ""),
+        base::StrCat({"regex ", kYesNoRegex}));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2734,6 +2819,188 @@ TEST_F(AILanguageModelOpenLoopToolTest, RejectToolResponseWithoutCapability) {
   ASSERT_FALSE(responder.WaitForCompletion());
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
+}
+
+// Verify tool schemas with property names colliding with JSON Schema keywords
+// (including nested `items.properties`) survive `AILanguageModel` to
+// `FakeOnDeviceSession`.
+TEST_F(AILanguageModelOpenLoopToolTest,
+       ToolSchemaWithJsonSchemaKeywordsSurvivesToService) {
+  auto schema = base::JSONReader::ReadDict(R"({
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "description": "Record kind",
+        "nullable": true
+      },
+      "description": {
+        "type": "string",
+        "description": "Summary text"
+      },
+      "properties": {
+        "type": "object",
+        "properties": {
+          "required": {
+            "type": "boolean"
+          },
+          "nullable": {
+            "type": "boolean"
+          }
+        },
+        "required": ["required"]
+      },
+      "required": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "properties": {
+              "type": "string",
+              "nullable": true
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "nullable": {
+              "type": "boolean"
+            }
+          },
+          "required": ["type", "description"]
+        }
+      },
+      "nullable": {
+        "type": "boolean"
+      }
+    },
+    "required": ["type", "description", "properties", "required", "nullable"]
+  })",
+                                           base::JSON_PARSE_RFC);
+  ASSERT_TRUE(schema);
+  base::DictValue expected_schema = schema->Clone();
+
+  auto tool = blink::mojom::AILanguageModelToolDeclaration::New();
+  tool->name = "describe_schema";
+  tool->description = "Inspect JSON schema fields";
+  tool->input_schema = std::move(*schema);
+
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(std::move(tool));
+  auto session = CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+
+  std::string response =
+      base::JoinString(Prompt(*session, MakeInput("Test")), "");
+  EXPECT_THAT(response, testing::HasSubstr("<tool name=describe_schema>"));
+
+  const auto& recorded_decls =
+      fake_broker_->settings().recorded_tool_declarations;
+  ASSERT_EQ(recorded_decls.size(), 1u);
+  const auto& recorded_decl = *recorded_decls[0];
+  EXPECT_EQ(recorded_decl.name, "describe_schema");
+  EXPECT_EQ(recorded_decl.description, "Inspect JSON schema fields");
+  EXPECT_EQ(recorded_decl.input_schema, expected_schema);
+
+  const base::DictValue* items_properties =
+      recorded_decl.input_schema.FindDictByDottedPath(
+          "properties.required.items.properties");
+  ASSERT_TRUE(items_properties);
+  EXPECT_TRUE(items_properties->contains("type"));
+  EXPECT_TRUE(items_properties->contains("description"));
+  EXPECT_TRUE(items_properties->contains("properties"));
+  EXPECT_TRUE(items_properties->contains("required"));
+  EXPECT_TRUE(items_properties->contains("nullable"));
+}
+
+// Verify tools combined with JSON Schema and regex `ResponseConstraint`s are
+// forwarded cleanly to `FakeOnDeviceSession`.
+TEST_F(AILanguageModelOpenLoopToolTest,
+       ToolsWithJsonSchemaAndRegexConstraints) {
+  auto session = CreateWeatherSession();
+
+  ExpectWeatherToolPromptsWithJsonSchemaAndRegex(*session);
+
+  const auto& constraints = fake_broker_->settings().recorded_constraints;
+  ASSERT_EQ(constraints.size(), 2u);
+  ASSERT_TRUE(constraints[0]->is_json_schema());
+  EXPECT_EQ(constraints[0]->get_json_schema(), kYesOrNoSchema);
+  ASSERT_TRUE(constraints[1]->is_regex());
+  EXPECT_EQ(constraints[1]->get_regex(), kYesNoRegex);
+}
+
+// Verify tools combined with JSON Schema and regex `ResponseConstraint`s are
+// preserved across `Fork()`.
+TEST_F(AILanguageModelOpenLoopToolTest, ToolsAndConstraintsPreservedInFork) {
+  auto session = CreateWeatherSession();
+
+  ExpectWeatherToolAndConstraintInResponse(
+      base::JoinString(
+          Prompt(*session, MakeInput("Original"),
+                 on_device_model::mojom::ResponseConstraint::NewJsonSchema(
+                     kYesOrNoSchema)),
+          ""),
+      base::StrCat({"json ", kYesOrNoSchema}));
+
+  auto forked_session = Fork(*session);
+  ExpectWeatherToolPromptsWithJsonSchemaAndRegex(*forked_session);
+
+  const auto& constraints = fake_broker_->settings().recorded_constraints;
+  ASSERT_EQ(constraints.size(), 3u);
+  ASSERT_TRUE(constraints[0]->is_json_schema());
+  EXPECT_EQ(constraints[0]->get_json_schema(), kYesOrNoSchema);
+  ASSERT_TRUE(constraints[1]->is_json_schema());
+  EXPECT_EQ(constraints[1]->get_json_schema(), kYesOrNoSchema);
+  ASSERT_TRUE(constraints[2]->is_regex());
+  EXPECT_EQ(constraints[2]->get_regex(), kYesNoRegex);
+}
+
+// Verify tools combined with JSON Schema and regex `ResponseConstraint`s work
+// cleanly across context overflow and replay.
+TEST_F(AILanguageModelOpenLoopToolTest,
+       ToolsAndConstraintsPreservedAfterOverflow) {
+  auto session = CreateWeatherSession();
+
+  // Append two items so the overflow prompt evicts the first item while
+  // replaying the second non-initial item via `HandleOverflow()`, keeping the
+  // echoed context under the 1024-token default `max_output_tokens` cap.
+  Append(*session, MakeInput(std::string(2650, 'a')));
+  Append(*session, MakeInput(std::string(150, 'b')));
+
+  AITestUtils::TestStreamingResponder overflow_responder;
+  session->Prompt(
+      MakeInput(std::string(250, 'c')),
+      on_device_model::mojom::ResponseConstraint::NewJsonSchema(kYesOrNoSchema),
+      /*thinking_effort=*/std::nullopt, overflow_responder.BindRemote());
+  overflow_responder.WaitForContextOverflow();
+  EXPECT_TRUE(overflow_responder.WaitForCompletion());
+
+  std::string overflow_response =
+      base::JoinString(overflow_responder.responses(), "");
+  ExpectWeatherToolAndConstraintInResponse(
+      overflow_response, base::StrCat({"json ", kYesOrNoSchema}));
+  EXPECT_THAT(overflow_response,
+              testing::Not(testing::HasSubstr(std::string(2650, 'a'))));
+  EXPECT_THAT(overflow_response, testing::HasSubstr(std::string(150, 'b')));
+
+  ExpectWeatherToolAndConstraintInResponse(
+      base::JoinString(
+          Prompt(*session, MakeInput("Followup"),
+                 on_device_model::mojom::ResponseConstraint::NewRegex(
+                     kYesNoRegex)),
+          ""),
+      base::StrCat({"regex ", kYesNoRegex}));
+
+  const auto& constraints = fake_broker_->settings().recorded_constraints;
+  ASSERT_EQ(constraints.size(), 2u);
+  ASSERT_TRUE(constraints[0]->is_json_schema());
+  EXPECT_EQ(constraints[0]->get_json_schema(), kYesOrNoSchema);
+  ASSERT_TRUE(constraints[1]->is_regex());
+  EXPECT_EQ(constraints[1]->get_regex(), kYesNoRegex);
 }
 
 TEST_F(AILanguageModelTest, CanCreatePermissionsPolicyDisabled) {

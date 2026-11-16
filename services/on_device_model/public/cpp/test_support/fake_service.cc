@@ -351,6 +351,7 @@ void FakeOnDeviceSession::GenerateImpl(
   }
 
   if (options->constraint) {
+    settings_->recorded_constraints.push_back(options->constraint.Clone());
     const auto& constraint = *options->constraint;
     auto chunk = mojom::ResponseChunk::New();
     if (constraint.is_json_schema()) {
@@ -425,6 +426,12 @@ void FakeOnDeviceSession::AppendImpl(
   // If the client was bound but is now disconnected, cancel the request.
   if (client && !client.is_connected()) {
     return;
+  }
+  for (const auto& piece : options->input->pieces) {
+    if (piece->is_tool_declaration()) {
+      settings_->recorded_tool_declarations.push_back(
+          piece->get_tool_declaration().Clone());
+    }
   }
   uint32_t input_tokens = static_cast<uint32_t>(
       OnDeviceInputToString(*options->input, params_->capabilities).size());

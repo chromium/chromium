@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -59,6 +60,12 @@ struct FakeOnDeviceServiceSettings final {
 
   // If non-empty, tool calls are simulated during Generate().
   std::vector<mojom::ToolCallPtr> simulated_tool_calls;
+
+  // Tool declarations received by `FakeOnDeviceSession::Append()`.
+  std::vector<mojom::ToolDeclarationPtr> recorded_tool_declarations;
+
+  // Response constraints received by `FakeOnDeviceSession::Generate()`.
+  std::vector<mojom::ResponseConstraintPtr> recorded_constraints;
 
   std::optional<ServiceDisconnectReason> service_disconnect_reason;
 
