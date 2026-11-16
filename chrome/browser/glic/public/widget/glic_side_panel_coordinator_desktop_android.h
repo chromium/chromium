@@ -48,6 +48,7 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
   base::CallbackListSubscription AddStateCallback(
       base::RepeatingCallback<void(State state)> callback) override;
   void SetWebContents(content::WebContents* web_contents) override;
+  void SetIsLoading(bool is_loading) override;
   int GetPreferredWidth() override;
   bool IsGlicSidePanelActive() override;
 
@@ -78,6 +79,8 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
   // Sets a new state and notifies about a state change.
   void SetState(State new_state);
 
+  void OnNativeCloseRequested();
+
   // Shows the message when Glic side panel is auto-closed due to window size
   // constraint, if applicable.
   //
@@ -92,6 +95,7 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
   base::RepeatingCallbackList<void(State state)> state_changed_callbacks_;
 
   State state_ = State::kClosed;
+  bool is_loading_ = false;
 
   std::unique_ptr<context_sharing::CoBrowseViewsBridge> cobrowse_views_bridge_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;

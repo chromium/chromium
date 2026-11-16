@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.glic.ui;
 
+import android.content.Context;
+import android.view.View;
+
+import androidx.annotation.ColorInt;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
@@ -22,11 +28,22 @@ public class GlicSidePanelComponentProvider implements CoBrowseComponentProvider
         return new GlicSidePanelComponentProvider();
     }
 
-    private GlicSidePanelComponentProvider() {}
+    GlicSidePanelComponentProvider() {}
 
     @Override
     public boolean setupPlaceholderView(TextViewWithCompoundDrawables placeholder) {
         GlicUiUtils.setupPlaceholderView(placeholder);
         return true;
+    }
+
+    @Override
+    public @Nullable View createLoadingPlaceholderView(
+            Context context,
+            @ColorInt int backgroundColor,
+            @ColorInt int placeholderElemColor,
+            boolean isSidePanel,
+            Runnable onCloseClicked) {
+        return GlicLoadingPlaceholderView.create(
+                context, backgroundColor, placeholderElemColor, onCloseClicked);
     }
 }

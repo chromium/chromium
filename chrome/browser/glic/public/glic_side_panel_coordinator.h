@@ -103,6 +103,10 @@ class GlicSidePanelCoordinator {
 
   // Sets the callback run when the user accepts the native FRE.
   virtual void SetNativeFreAcceptedCallback(base::RepeatingClosure callback) {}
+
+  // Updates whether the native loading placeholder should cover the panel
+  // contents while the Glic web client loads.
+  virtual void SetIsLoading(bool is_loading) {}
 #endif
 
   // Returns preferred side panel width. Not guaranteed to be used if user

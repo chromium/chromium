@@ -322,6 +322,26 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
+                       NativeFreTakesPrecedenceOverLoadingPlaceholder) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  auto* coordinator = GetSidePanelCoordinatorAndroid(tab);
+
+  ShowNativeFre(tab);
+  coordinator->SetIsLoading(true);
+
+  EXPECT_TRUE(coordinator->IsShowingNativeFreForTesting());
+  EXPECT_FALSE(coordinator->ShouldShowLoadingPlaceholderForTesting());
+
+  coordinator->OnNativeFreAccepted(base::android::AttachCurrentThread());
+
+  EXPECT_FALSE(coordinator->IsShowingNativeFreForTesting());
+  EXPECT_TRUE(coordinator->ShouldShowLoadingPlaceholderForTesting());
+
+  coordinator->SetIsLoading(false);
+  EXPECT_FALSE(coordinator->ShouldShowLoadingPlaceholderForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
                        CloseSheetClearsNativeFre) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   auto* coordinator = GetSidePanelCoordinatorAndroid(tab);

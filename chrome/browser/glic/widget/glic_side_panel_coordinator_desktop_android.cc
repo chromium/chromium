@@ -230,7 +230,11 @@ SidePanelNativeView GlicSidePanelCoordinatorDesktopAndroid::CreateView(
             context_sharing::CoBrowseContainerType::kSidePanel,
             java_component_provider_,
             /*enable_pinch_to_zoom=*/false, kColorGlicBackground,
-            kColorGlicPlaceholderElem);
+            kColorGlicPlaceholderElem,
+            base::BindRepeating(
+                &GlicSidePanelCoordinatorDesktopAndroid::OnNativeCloseRequested,
+                weak_ptr_factory_.GetWeakPtr()));
+    cobrowse_views_bridge_->SetIsLoading(is_loading_);
     cobrowse_views_bridge_->CreateCoBrowseViews(web_contents_.get(),
                                                 /*request_focus=*/false);
   }
@@ -255,6 +259,17 @@ void GlicSidePanelCoordinatorDesktopAndroid::SetWebContents(
     cobrowse_views_bridge_->SetWebContents(web_contents,
                                            /*request_focus=*/false);
   }
+}
+
+void GlicSidePanelCoordinatorDesktopAndroid::SetIsLoading(bool is_loading) {
+  is_loading_ = is_loading;
+  if (cobrowse_views_bridge_) {
+    cobrowse_views_bridge_->SetIsLoading(is_loading);
+  }
+}
+
+void GlicSidePanelCoordinatorDesktopAndroid::OnNativeCloseRequested() {
+  Close({});
 }
 
 int GlicSidePanelCoordinatorDesktopAndroid::GetPreferredWidth() {
