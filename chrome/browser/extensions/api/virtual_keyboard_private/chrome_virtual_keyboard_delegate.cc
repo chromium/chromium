@@ -544,6 +544,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       GenerateFeatureFlag("japaneseinputmodeswitchinvk",
                           base::FeatureList::IsEnabled(
                               ash::features::kJapaneseInputModeSwitchInVK)));
+  features.Append(GenerateFeatureFlag(
+      "usedirectxkblayoutforthaikedmaneeinputmethod",
+      base::FeatureList::IsEnabled(
+          ash::features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod)));
 
   results.Set("features", std::move(features));
 
