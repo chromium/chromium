@@ -230,14 +230,17 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// ChromeOS relies on the system crash_reporter (via kernel core_pattern) to
+// catch chrome_crashpad_handler crashes, so it uses the base class default
+// (false) instead of spawning a second --monitor-self handler process.
+#if BUILDFLAG(IS_LINUX)
 bool ChromeCrashReporterClient::ShouldMonitorCrashHandlerExpensively() {
   // TODO(jperaza): Turn this on less frequently for stable channels when
   // Crashpad is always enabled on Linux. Consider combining with the
   // macOS implementation.
   return true;
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 bool ChromeCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {

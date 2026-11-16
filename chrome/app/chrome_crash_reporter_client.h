@@ -63,7 +63,7 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
   bool ReportingIsEnforcedByPolicy(bool* breakpad_enabled) override;
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   bool ShouldMonitorCrashHandlerExpensively() override;
 #endif
 
