@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
@@ -37,6 +39,10 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtilsJni;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl.BringTabToFrontCallback;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,6 +55,7 @@ import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
@@ -76,6 +83,8 @@ public class OmniboxActionDelegateImplUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private LensOverlayCoordinator mLensOverlayCoordinator;
+    @Mock private ContextualTasksUtils.Natives mContextualTasksUtilsJni;
+    @Mock private WebContents mWebContents;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadParamsCaptor;
 
     private final AtomicReference<Tab> mTabReference = new AtomicReference<>();
@@ -184,6 +193,7 @@ public class OmniboxActionDelegateImplUnitTest {
 
     @Test
     public void openLensOverlay() {
+        ContextualTasksUtilsJni.setInstanceForTesting(mContextualTasksUtilsJni);
         // Provide a UserDataHost to prevent LensOverlayCoordinator from crashing on
         // getOrCreateForTab.
         UserDataHost userDataHost = new UserDataHost();
@@ -191,6 +201,21 @@ public class OmniboxActionDelegateImplUnitTest {
         doReturn(userDataHost).when(mTab).getUserDataHost();
         mDelegate.openLensOverlay();
         verify(mLensOverlayCoordinator).start(LensOverlayInvocationSource.OMNIBOX_PAGE_ACTION);
+        verify(mContextualTasksUtilsJni, never()).openAskGoogleAboutThisPage(any(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_ENTRY_POINTS)
+    public void openLensOverlay_routesToAskGoogleWhenEligible() {
+        ContextualTasksUtilsJni.setInstanceForTesting(mContextualTasksUtilsJni);
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(true).when(mContextualTasksUtilsJni).shouldShowAskGoogleEntryPoints(mWebContents);
+
+        mDelegate.openLensOverlay();
+
+        verify(mContextualTasksUtilsJni)
+                .openAskGoogleAboutThisPage(
+                        mWebContents, LensOverlayInvocationSource.OMNIBOX_PAGE_ACTION);
     }
 
     @Test
