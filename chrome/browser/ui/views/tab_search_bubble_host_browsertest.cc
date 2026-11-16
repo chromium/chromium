@@ -41,8 +41,7 @@
 class TabSearchBubbleHostBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchBubbleHostBrowserTest() {
-    // TODO(crbug.com/579025166): Fix test failures related to missing tab
-    // search bubble.
+    // TODO(crbug.com/584313535): Delete old tab search tests after launch.
     scoped_feature_list_.InitAndDisableFeature(
         organizer_panel::kOrganizerPanel);
   }
@@ -165,8 +164,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
 class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
  public:
   FullscreenTabSearchBubbleDialogTest() {
-    // TODO(crbug.com/579025166): Fix test failures related to missing tab
-    // search bubble.
+    // TODO(crbug.com/584313535): Delete old tab search tests after launch.
     scoped_feature_list_.InitAndDisableFeature(
         organizer_panel::kOrganizerPanel);
 #if BUILDFLAG(IS_CHROMEOS)

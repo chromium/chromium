@@ -87,8 +87,7 @@ class WebUIChangeObserver : public views::WidgetObserver,
 class TabSearchBubbleUIBrowserTest : public DialogBrowserTest {
  public:
   TabSearchBubbleUIBrowserTest() {
-    // TODO(crbug.com/579025166): Fix test failures related to missing tab
-    // search bubble.
+    // TODO(crbug.com/584313535): Delete old tab search tests after launch.
     scoped_feature_list_.InitAndDisableFeature(
         organizer_panel::kOrganizerPanel);
   }
