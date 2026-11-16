@@ -1135,11 +1135,35 @@ export class OmniboxPopupSearchboxElement extends
       const input = this.getInputElement().inputElement;
       if (input.selectionStart === 0 &&
           input.selectionEnd === input.value.length) {
+        const elidedText = input.value;
+        const wasFullUrlShown = this.fullUrlShown_;
         this.showFullUrlOnDeselect_();
-        if (e.key === 'ArrowLeft' || e.key === 'Home') {
-          input.setSelectionRange(0, 0);
+        const toStart = e.key === 'ArrowLeft' || e.key === 'Home';
+        let caret = toStart ? 0 : input.value.length;
+        // Leave keys with modifiers (e.g. Alt+Left to go back) as they were.
+        const hasModifier = e.altKey || e.ctrlKey || e.metaKey;
+        // Like `OmniboxViewViews`, ArrowLeft puts the caret at the start of
+        // the elided URL within the unelided one, e.g. after "https://www.",
+        // while Home puts it at the very start.
+        if (e.key === 'ArrowLeft' && !hasModifier && !wasFullUrlShown &&
+            this.fullUrlShown_) {
+          caret = Math.max(0, this.getElidedPrefixLength_(elidedText));
+          // Don't let the key's default action move the caret any further,
+          // e.g. to before the last "." of "https://www.".
+          e.preventDefault();
+        }
+        input.setSelectionRange(caret, caret);
+        // Blink doesn't scroll a text field for `setSelectionRange()`, so
+        // scroll the caret into view.
+        if (this.multiLineEnabled) {
+          input.scrollTop = toStart ? 0 : input.scrollHeight;
+        } else if (toStart) {
+          input.scrollLeft = 0;
         } else {
-          input.setSelectionRange(input.value.length, input.value.length);
+          // An RTL input (e.g. for an Arabic query) scrolls towards its end
+          // with negative offsets, which are clamped like positive ones.
+          const isRtl = getComputedStyle(input).direction === 'rtl';
+          input.scrollLeft = isRtl ? -input.scrollWidth : input.scrollWidth;
         }
       }
     }
@@ -1321,14 +1345,8 @@ export class OmniboxPopupSearchboxElement extends
     }
 
     // Find the length of the prefix that was chopped off to form the elided
-    // URL. This only works because only prefixes are elided from the full URL.
-    let offset = this.fullUrl_.indexOf(elidedText);
-    // Some intranet URLs have an elided form that's not a substring of the full
-    // URL, e.g. "https://foobar" has the elided form "foobar/". In this case,
-    // chop off the trailing slash and search again.
-    if (offset === -1 && elidedText.endsWith('/')) {
-      offset = this.fullUrl_.indexOf(elidedText.slice(0, -1));
-    }
+    // URL.
+    const offset = this.getElidedPrefixLength_(elidedText);
     if (offset === -1) {
       return;
     }
@@ -1345,6 +1363,23 @@ export class OmniboxPopupSearchboxElement extends
     // offset, but scroll as little as needed to show the caret.
     this.scrollOffsetIntoView_(
         direction === 'backward' ? start : end, scrollLeft);
+  }
+
+  /**
+   * Returns the length of the prefix (e.g. "https://www.") that was chopped
+   * off `fullUrl_` to form `elidedText`, or -1 if `elidedText` isn't an elided
+   * form of `fullUrl_`.
+   */
+  private getElidedPrefixLength_(elidedText: string): number {
+    // This only works because only prefixes are elided from the full URL.
+    let offset = this.fullUrl_.indexOf(elidedText);
+    // Some intranet URLs have an elided form that's not a substring of the full
+    // URL, e.g. "https://foobar" has the elided form "foobar/". In this case,
+    // chop off the trailing slash and search again.
+    if (offset === -1 && elidedText.endsWith('/')) {
+      offset = this.fullUrl_.indexOf(elidedText.slice(0, -1));
+    }
+    return offset;
   }
 
   private isChromeScheme_(): boolean {
