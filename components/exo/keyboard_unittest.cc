@@ -19,6 +19,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/mock_log.h"
 #include "chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -131,6 +132,15 @@ class TestEventHandler : public ui::EventHandler {
 
   raw_ptr<aura::Window> focus_window_;
 };
+
+void ExpectNoWarningLogs(base::test::MockLog& log) {
+  EXPECT_CALL(log,
+              Log(testing::_, testing::_, testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(log, Log(::logging::LOGGING_WARNING, testing::_, testing::_,
+                       testing::_, testing::_))
+      .Times(0);
+}
 
 // Verifies that switching desks via alt-tab doesn't prevent Seat from receiving
 // key events. https://crbug.com/1008574.
@@ -1455,8 +1465,66 @@ TEST_F(KeyboardTest, AckKeyboardKeyMoveFocus) {
   focus_client->FocusWindow(nullptr);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
-  // Send ack for the key press. |AcceleratorPressed()| should not be called.
+  // Send ack for the key press. |AcceleratorPressed()| should not be called,
+  // and no expiration warning should be logged since focus moved away.
+  base::test::MockLog log;
+  ExpectNoWarningLogs(log);
+  log.StartCapturingLogs();
   keyboard.AckKeyboardKey(1, false /* handled */);
+  log.StopCapturingLogs();
+}
+
+TEST_F(KeyboardTest, AckKeyboardKeyExpiredMoveFocus) {
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
+
+  aura::client::FocusClient* focus_client =
+      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
+  focus_client->FocusWindow(nullptr);
+
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  auto* delegate_ptr = delegate.get();
+  Seat seat;
+  Keyboard keyboard(std::move(delegate), &seat);
+
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(
+      *delegate_ptr,
+      OnKeyboardEnter(
+          surface, base::flat_map<PhysicalCode, base::flat_set<KeyState>>()));
+  focus_client->FocusWindow(surface->window());
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  keyboard.SetNeedKeyboardKeyAcks(true);
+
+  // Press KEY_W with Ctrl and advance past the 1000ms expiration timeout so the
+  // entry moves into `expired_key_acks_`.
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
+                                 kControlMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardKey(testing::_, ui::DomCode::US_W, true))
+      .WillOnce(testing::Return(1));
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::US_W);
+  generator.PressKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+
+  // Moving focus away clears `expired_key_acks_`, so a subsequent late ack for
+  // the old surface must not emit an expiration warning.
+  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface));
+  focus_client->FocusWindow(nullptr);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  base::test::MockLog log;
+  ExpectNoWarningLogs(log);
+  log.StartCapturingLogs();
+  keyboard.AckKeyboardKey(1, false /* handled */);
+  log.StopCapturingLogs();
 }
 
 TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
@@ -1507,24 +1575,105 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
                                         ui::Accelerator::KeyState::PRESSED)))
       .Times(0);
 
-  // Wait until |ProcessExpiredPendingKeyAcks| is fired.
+  // Wait until `ProcessExpiredPendingKeyAcks()` is fired. Normal expiration
+  // without a late ack must not emit a warning because clients may omit acks
+  // for handled keys.
+  base::test::MockLog log;
+  ExpectNoWarningLogs(log);
+  log.StartCapturingLogs();
   task_environment()->FastForwardBy(base::Milliseconds(1000));
+  log.StopCapturingLogs();
+  testing::Mock::VerifyAndClearExpectations(&log);
 
   // Send ack for the key press as if it was not handled. In the normal case,
   // |AcceleratorPressed()| should be called, but since the timeout passed, the
   // key should have been treated as handled already and removed from the
   // pending_key_acks_ map. Since the event is no longer in the map,
-  // |AcceleratorPressed()| should not be called.
+  // |AcceleratorPressed()| should not be called, and a warning should be logged
+  // with non-sensitive event metadata and elapsed time.
+  task_environment()->FastForwardBy(base::Milliseconds(150));
+  EXPECT_CALL(log,
+              Log(testing::_, testing::_, testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(
+      log, Log(::logging::LOGGING_WARNING, testing::_, testing::_, testing::_,
+               testing::AllOf(
+                   testing::HasSubstr("Dropping late unhandled key ack after "
+                                      "expiration: serial=1"),
+                   testing::HasSubstr("type=EventType::kKeyPressed"),
+                   testing::HasSubstr("has_accelerator_modifiers=1"),
+                   testing::HasSubstr("elapsed=1150ms (timeout=1000ms)"))))
+      .WillOnce(testing::Return(true));
+  log.StartCapturingLogs();
   keyboard.AckKeyboardKey(1, false /* handled */);
+  log.StopCapturingLogs();
+  testing::Mock::VerifyAndClearExpectations(&log);
+
+  // Duplicate late ack for the same serial should not warn again because the
+  // expired entry was erased.
+  ExpectNoWarningLogs(log);
+  log.StartCapturingLogs();
+  keyboard.AckKeyboardKey(1, false /* handled */);
+  log.StopCapturingLogs();
+  testing::Mock::VerifyAndClearExpectations(&log);
 
   // Release the key and reset modifier_flags.
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(*delegate_ptr,
-              OnKeyboardKey(testing::_, ui::DomCode::US_W, false));
+              OnKeyboardKey(testing::_, ui::DomCode::US_W, false))
+      .WillOnce(testing::Return(2));
   generator.ReleaseKey(ui::VKEY_W, 0);
   // Verify before destroying keyboard to make sure the expected call
   // is made on the methods above, rather than in the destructor.
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  // A late `handled=true` ack after expiration should not emit a warning
+  // because expiration already assumed the event was handled, and it must still
+  // erase the expired entry so a subsequent unhandled ack does not warn.
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  ExpectNoWarningLogs(log);
+  log.StartCapturingLogs();
+  keyboard.AckKeyboardKey(2, true /* handled */);
+  keyboard.AckKeyboardKey(2, false /* handled */);
+  log.StopCapturingLogs();
+  testing::Mock::VerifyAndClearExpectations(&log);
+
+  // Typing modifiers such as Shift are excluded from
+  // `has_accelerator_modifiers`.
+  EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
+                                 kShiftMask | kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardKey(testing::_, ui::DomCode::US_A, true))
+      .WillOnce(testing::Return(3));
+  seat.set_physical_code_for_currently_processing_event_for_testing(
+      ui::DomCode::US_A);
+  generator.PressKey(ui::VKEY_A, ui::EF_SHIFT_DOWN);
+  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+
+  task_environment()->FastForwardBy(base::Milliseconds(1050));
+  EXPECT_CALL(log,
+              Log(testing::_, testing::_, testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(
+      log, Log(::logging::LOGGING_WARNING, testing::_, testing::_, testing::_,
+               testing::AllOf(
+                   testing::HasSubstr("Dropping late unhandled key ack after "
+                                      "expiration: serial=3"),
+                   testing::HasSubstr("type=EventType::kKeyPressed"),
+                   testing::HasSubstr("has_accelerator_modifiers=0"),
+                   testing::HasSubstr("elapsed=1050ms (timeout=1000ms)"))))
+      .WillOnce(testing::Return(true));
+  log.StartCapturingLogs();
+  keyboard.AckKeyboardKey(3, false /* handled */);
+  log.StopCapturingLogs();
+  testing::Mock::VerifyAndClearExpectations(&log);
+
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
+  EXPECT_CALL(*delegate_ptr,
+              OnKeyboardKey(testing::_, ui::DomCode::US_A, false))
+      .WillOnce(testing::Return(4));
+  generator.ReleaseKey(ui::VKEY_A, 0);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 

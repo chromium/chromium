@@ -11,6 +11,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -138,6 +139,16 @@ class Keyboard : public ui::EventHandler,
   // Key state changes that are expected to be acknowledged.
   using KeyStateChange = std::pair<ui::KeyEvent, base::TimeTicks>;
   base::flat_map<uint32_t, KeyStateChange> pending_key_acks_;
+
+  // Recently expired pending key acks (bounded LRU cache, cleared on focus
+  // changes), retained so late unhandled acks can be logged with event
+  // metadata and elapsed latency.
+  struct ExpiredKeyAck {
+    ui::EventType type;
+    bool has_accelerator_modifiers;
+    base::TimeTicks expiration_time;
+  };
+  base::LRUCache<uint32_t, ExpiredKeyAck> expired_key_acks_;
 
   // Indicates that a ProcessExpiredPendingKeyAcks call is pending.
   bool process_expired_pending_key_acks_pending_ = false;

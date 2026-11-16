@@ -20,6 +20,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -43,6 +44,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/views/widget/widget.h"
@@ -58,6 +60,15 @@ static_assert(Seat::IsValidObserverPriority(kKeyboardSeatObserverPriority),
 
 // Delay until a key state change expected to be acknowledged is expired.
 constexpr int kExpirationDelayForPendingKeyAcksMs = 1000;
+
+// Maximum number of recently expired key acks retained to diagnose late acks.
+constexpr size_t kMaxExpiredKeyAcksToTrack = 64;
+
+// Non-typing accelerator modifier flags reported when a late unhandled key ack
+// is dropped (excludes Shift/CapsLock to avoid logging typing state).
+constexpr int kAcceleratorModifierFlags =
+    ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
+    ui::EF_FUNCTION_DOWN;
 
 // The accelerator keys reserved to be processed by chrome.
 constexpr struct {
@@ -148,6 +159,7 @@ bool IsAutoRepeatEnabled(const ui::KeyEvent& event) {
 Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
     : delegate_(std::move(delegate)),
       seat_(seat),
+      expired_key_acks_(kMaxExpiredKeyAcksToTrack),
       expiration_delay_for_pending_key_acks_(
           base::Milliseconds(kExpirationDelayForPendingKeyAcksMs)) {
   seat_->AddObserver(this, kKeyboardSeatObserverPriority);
@@ -219,8 +231,26 @@ bool Keyboard::AreKeyboardKeyAcksNeeded() const {
 
 void Keyboard::AckKeyboardKey(uint32_t serial, bool handled) {
   auto it = pending_key_acks_.find(serial);
-  if (it == pending_key_acks_.end())
+  if (it == pending_key_acks_.end()) {
+    auto expired_it = expired_key_acks_.Peek(serial);
+    if (expired_it != expired_key_acks_.end()) {
+      if (!handled) {
+        const ExpiredKeyAck& expired = expired_it->second;
+        const base::TimeDelta elapsed =
+            (base::TimeTicks::Now() - expired.expiration_time) +
+            expiration_delay_for_pending_key_acks_;
+        LOG(WARNING)
+            << "Dropping late unhandled key ack after expiration: serial="
+            << serial << " type=" << ui::EventTypeName(expired.type)
+            << " has_accelerator_modifiers="
+            << expired.has_accelerator_modifiers
+            << " elapsed=" << elapsed.InMilliseconds() << "ms (timeout="
+            << expiration_delay_for_pending_key_acks_.InMilliseconds() << "ms)";
+      }
+      expired_key_acks_.Erase(expired_it);
+    }
     return;
+  }
 
   auto* key_event = &it->second.first;
   if (!handled && !key_event->handled() && focus_)
@@ -485,6 +515,7 @@ void Keyboard::SetFocus(Surface* surface) {
     focus_->RemoveSurfaceObserver(this);
     focus_ = nullptr;
     pending_key_acks_.clear();
+    expired_key_acks_.Clear();
   }
   if (surface) {
     pressed_keys_ = seat_->pressed_keys();
@@ -508,12 +539,26 @@ void Keyboard::ProcessExpiredPendingKeyAcks() {
 
   while (!pending_key_acks_.empty()) {
     auto it = pending_key_acks_.begin();
-    const ui::KeyEvent event = it->second.first;
+    const ui::KeyEvent& event = it->second.first;
 
     if (it->second.second > current_time)
       break;
 
     // Expiration time has passed, assume the event was handled.
+    // Keep this log debug-only (`DVLOG`):
+    // - Clients such as ARC do not send `ack_key` for handled keys, so every
+    //   normal key press and release reaches here after 1000ms.
+    // - Late unhandled acks are logged in production via `LOG(WARNING)` in
+    //   `AckKeyboardKey()` (using `expired_key_acks_` below).
+    DVLOG(1) << "Pending key ack expired: serial=" << it->first
+             << " type=" << ui::EventTypeName(event.type());
+    if (!event.handled()) {
+      const bool has_accelerator_modifiers =
+          (event.flags() & kAcceleratorModifierFlags) != 0;
+      expired_key_acks_.Put(
+          it->first, ExpiredKeyAck{event.type(), has_accelerator_modifiers,
+                                   it->second.second});
+    }
     pending_key_acks_.erase(it);
   }
 
