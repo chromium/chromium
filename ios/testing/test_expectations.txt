@@ -685,3 +685,6 @@ crbug.com/441013259 [ iOS26 iPhone Device ] PasswordSharingTestCase/testPassword
 crbug.com/441013259 [ iOS26 iPhone Device ] PasswordSharingTestCase/testTappingFamilyPickerIneligibleRecipientInfoPopup [ Pass Failure ]
 crbug.com/579165092 [ iOS26 iPhone Device ] OtpInputDialogEgtest/testOtpInputDialogContent [ Pass Failure ]
 crbug.com/584668880 GeminiContainerTestCase/testSwipeDownWithConversationMinimizesContainer [ Pass Failure ]
+
+# Gardening suppression 2026-11-16
+crbug.com/585110131 [ Device ] ComposeboxEligiblityTestCase/testTabPickerScrollsToActiveTab [ Pass Failure ]
