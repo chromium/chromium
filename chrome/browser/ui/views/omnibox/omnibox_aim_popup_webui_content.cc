@@ -290,6 +290,9 @@ void OmniboxAimPopupWebUIContent::SendShow(OmniboxPopupAimHandler& handler) {
       session_handle->set_invocation_source(context->invocation_source.value_or(
           lens::LensOverlayInvocationSource::kOmniboxContextualQuery));
     }
+    if (controller()->edit_model()->enter_aim_mode()) {
+      webui_controller->EnterAimMode();
+    }
   }
   // TODO (crbug.com/502961786): Fix flickering of previous text on a new
   // instance of composebox.

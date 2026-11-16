@@ -50,6 +50,7 @@ class OmniboxPopupUI;
 
 namespace contextual_search {
 class ContextualSearchSessionHandle;
+class InputStateModel;
 }  // namespace contextual_search
 
 class OmniboxPopupUIConfig
@@ -148,6 +149,9 @@ class OmniboxPopupUI : public TopChromeWebUIController,
           pending_searchbox_handler) override;
   ComposeboxHandler* composebox_handler() { return composebox_handler_.get(); }
 
+  // Enters AI Mode in the compose box, e.g. for the Omnibox AI Mode button.
+  void EnterAimMode();
+
   // Returns the active ContextualSearchboxHandler (either composebox_handler_
   // or omnibox_handler_).
   ContextualSearchboxHandler* GetContextualSearchboxHandler();
@@ -209,6 +213,11 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   // Called when the Lens icon anchor is shown in any WebUI; triggers the AskG
   // Lens icon IPH if `element` belongs to this popup.
   void OnLensIconShown(ui::TrackedElement* element);
+
+  // Returns the model behind the compose box. The page creates
+  // `composebox_handler_` shortly after it loads, so until then this returns
+  // the model that handler will use.
+  contextual_search::InputStateModel* GetComposeboxInputStateModel();
 
   // The profile of the window showing the popup.
   raw_ptr<Profile> profile_;

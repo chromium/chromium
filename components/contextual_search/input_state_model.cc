@@ -961,6 +961,12 @@ void InputStateModel::EnableDynamicAimFulfillment() {
   NotifySubscribers();
 }
 
+void InputStateModel::EnterAimMode() {
+  aim_mode_active_ = true;
+  UpdateDisabledState();
+  NotifySubscribers();
+}
+
 void InputStateModel::RecomputeRouting() {
   if (!dynamic_aim_fulfillment_enabled_) {
     state_.will_fulfill_in_aim = true;

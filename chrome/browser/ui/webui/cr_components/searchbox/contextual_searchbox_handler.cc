@@ -1784,16 +1784,23 @@ ContextualSearchboxHandler::GetOrCreateInputStateModel() {
   if (!session_handle) {
     return nullptr;
   }
+  return GetOrCreateInputStateModelForSession(web_contents_, *session_handle);
+}
 
-  // In the case of the Omnibox popup, `web_contents_` refers to the popup's own
+// static
+base::WeakPtr<contextual_search::InputStateModel>
+ContextualSearchboxHandler::GetOrCreateInputStateModelForSession(
+    content::WebContents* web_contents,
+    contextual_search::ContextualSearchSessionHandle& session_handle) {
+  // In the case of the Omnibox popup, `web_contents` refers to the popup's own
   // WebContents, which is shared across multiple tabs. To achieve true per-tab
   // persistence, we must associate the `InputStateModel` with the active tab's
   // `WebContents` instead. For other embedders of `ComposeboxHandler` (e.g.,
-  // the Side Panel), `web_contents_` already points to the tab's WebContents,
+  // the Side Panel), `web_contents` already points to the tab's WebContents,
   // so this fallback ensures correct behavior across different embedding
   // contexts.
   content::WebContents* target_web_contents =
-      GetActiveTabWebContents(web_contents_);
+      GetActiveTabWebContents(web_contents);
   if (!target_web_contents) {
     return nullptr;
   }
@@ -1808,7 +1815,7 @@ ContextualSearchboxHandler::GetOrCreateInputStateModel() {
             target_web_contents);
   }
 
-  return user_data->GetOrCreateInputStateModel(*session_handle);
+  return user_data->GetOrCreateInputStateModel(session_handle);
 }
 
 void ContextualSearchboxHandler::OptInToDynamicAimFulfillment() {

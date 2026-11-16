@@ -2273,6 +2273,25 @@ TEST_F(InputStateModelDynamicAimTest, ColdStartDoesNotEnterAimMode) {
   EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
 }
 
+// Entering AI Mode before the model opts in or has its models shows the default
+// model once it does.
+TEST_F(InputStateModelDynamicAimTest, EnterAimModeShowsDefaultModel) {
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, omnibox::SearchboxConfig(), active_url_,
+      /*is_off_the_record=*/false, /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  input_state_model_->EnterAimMode();
+  input_state_model_->EnableDynamicAimFulfillment();
+  input_state_model_->UpdateConfig(config_);
+  EXPECT_TRUE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  // Clearing the model (e.g. on close) leaves AI Mode.
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_FALSE(WillFulfillInAim());
+}
+
 // With no model shown, the default model's rule limits tools, since routing
 // picks that model if a tool switches the query to AI Mode.
 TEST_F(InputStateModelDynamicAimTest, DefaultModelRuleLimitsToolsWithoutModel) {

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/plural_string_provider.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
@@ -49,6 +50,7 @@
 #include "chrome/grit/omnibox_popup_resources_map.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
@@ -563,6 +565,25 @@ void OmniboxPopupUI::OnLensIconShown(ui::TrackedElement* element) {
     user_education->MaybeShowFeaturePromo(
         feature_engagement::kIPHOmniboxAskGLensIconFeature);
   }
+}
+
+void OmniboxPopupUI::EnterAimMode() {
+  if (auto* input_state_model = GetComposeboxInputStateModel()) {
+    input_state_model->EnterAimMode();
+  }
+}
+
+contextual_search::InputStateModel*
+OmniboxPopupUI::GetComposeboxInputStateModel() {
+  if (composebox_handler_) {
+    return composebox_handler_->input_state_model();
+  }
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  return session_handle
+             ? ContextualSearchboxHandler::GetOrCreateInputStateModelForSession(
+                   web_ui()->GetWebContents(), *session_handle)
+                   .get()
+             : nullptr;
 }
 
 ContextualSearchboxHandler* OmniboxPopupUI::GetContextualSearchboxHandler() {

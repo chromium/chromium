@@ -84,6 +84,7 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
@@ -800,6 +801,7 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 }
 
 void OmniboxEditModel::OpenComposeboxForAskG() {
+  enter_aim_mode_ = false;
   PopulateActiveTabContext();
   controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
 }
@@ -864,6 +866,10 @@ void OmniboxEditModel::OpenAiMode(AimActivation activation) {
   }
 
   if (ShouldOpenAimPopup(activation, current_match.type)) {
+    // The AI Mode button opens the compose box in AI Mode; the "+" menu
+    // doesn't.
+    enter_aim_mode_ = activation != AimActivation::kContextMenu &&
+                      omnibox::IsDynamicAimFulfillmentEnabledForOmnibox();
     controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
     return;
   }

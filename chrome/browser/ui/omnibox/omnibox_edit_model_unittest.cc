@@ -53,6 +53,7 @@
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
@@ -2434,6 +2435,30 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabledPopupOpened) {
       "Omnibox.AimEntrypoint.Activated.ViaKeyboard", false, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.AimEntrypoint.Activated.UserTextPresent", false, 1);
+}
+
+// The AI Mode button opens the compose box in AI Mode; the "+" menu doesn't,
+// even right after the button.
+TEST_F(OmniboxEditModelPopupTest, AiModeButtonEntersAimMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kDynamicAimFulfillment, omnibox::kDynamicAimFulfillmentOmnibox},
+      {});
+  EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
+
+  model()->OpenAiMode(OmniboxEditModel::AimActivation::kClickOrGesture);
+  EXPECT_TRUE(model()->enter_aim_mode());
+
+  model()->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+  EXPECT_FALSE(model()->enter_aim_mode());
+}
+
+TEST_F(OmniboxEditModelPopupTest,
+       AiModeButtonWithoutDynamicAimFulfillmentDoesNotEnterAimMode) {
+  EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
+
+  model()->OpenAiMode(OmniboxEditModel::AimActivation::kClickOrGesture);
+  EXPECT_FALSE(model()->enter_aim_mode());
 }
 
 TEST_F(OmniboxEditModelPopupTest, RecordAiModeMetrics_ThirdParty) {
