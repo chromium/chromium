@@ -512,16 +512,6 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    public void testBuildListContent_ExcludesFeedOnAndroidDesktop() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
-        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
-
-        assertFalse(FeedFeatures.isFeedEnabled(mProfile));
-        assertFalse(mMediator.buildListContent(mContext).contains(FEED));
-    }
-
-    @Test
     public void testBuildListContent_ExcludesNtpCardsOnAndroidDesktop() {
         DeviceInfo.setIsDesktopForTesting(true);
 

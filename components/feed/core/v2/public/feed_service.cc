@@ -39,6 +39,10 @@
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace feed {
 namespace {
 class EulaObserver : public web_resource::EulaAcceptedNotifier::Observer {
@@ -334,6 +338,14 @@ const std::string& FeedService::GetFeedLaunchCuiMetadata() const {
 
 // static
 bool FeedService::IsEnabled(const PrefService& pref_service) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android desktop doesn't show the feed. Checking it here, rather than only
+  // in the Java UI, also stops native loads such as background refreshes.
+  if (base::android::device_info::is_desktop()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   return pref_service.GetBoolean(feed::prefs::kEnableSnippets);
 }
 

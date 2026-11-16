@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -23,12 +22,11 @@ public final class FeedFeatures {
     /**
      * @param profile the profile of the current user.
      * @return Whether the feed is allowed to be used. Returns false if the feed is disabled due to
-     *     enterprise policy, or by flag. The value returned should not be cached as it may change.
+     *     enterprise policy, by flag, or on Android desktop (checked natively by
+     *     FeedService::IsEnabled()). The value returned should not be cached as it may change.
      */
     public static boolean isFeedEnabled(Profile profile) {
-        return !DeviceInfo.isDesktop()
-                && FeedServiceBridge.isEnabled()
-                && isFeedEnabledByDse(profile);
+        return FeedServiceBridge.isEnabled() && isFeedEnabledByDse(profile);
     }
 
     private static boolean isFeedEnabledByDse(Profile profile) {

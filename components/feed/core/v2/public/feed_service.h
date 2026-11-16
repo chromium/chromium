@@ -123,7 +123,9 @@ class FeedService : public KeyedService {
     return refresh_task_scheduler_.get();
   }
 
-  // Whether Feedv2 is enabled. If false, the FeedService should not be created.
+  // Whether Feedv2 is enabled. Returns false on Android desktop, where the feed
+  // isn't shown, and when the feed is turned off by `prefs::kEnableSnippets`
+  // (e.g. by enterprise policy).
   static bool IsEnabled(const PrefService& pref_service);
 
   // Returns the client ID for reliability logging.
