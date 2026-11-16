@@ -34,6 +34,9 @@ class IdentityRegistryDelegate {
   // associated WebContents).
   // If `account_id` is nullopt, uses the account that was selected in the
   // account chooser.
+  // Returns false if the token was not accepted, e.g. because the request is
+  // not waiting for one or because closing the modal dialog destroyed `this`.
+  // The IdP's `resolve()` promise is then rejected with a `NotAllowedError`.
   virtual bool OnResolve(GURL idp_config_url,
                          const std::optional<std::string>& account_id,
                          blink::mojom::ResolveTokenParamsPtr params) = 0;
