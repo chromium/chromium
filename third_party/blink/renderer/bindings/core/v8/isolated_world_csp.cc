@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -61,8 +61,8 @@ class IsolatedWorldCSPDelegate final
     // https://w3c.github.io/webappsec-csp/#violation-url.
     // TODO(crbug.com/916885): Figure out if we want to support violation
     // reporting for isolated world CSPs.
-    DEFINE_STATIC_LOCAL(const KURL, g_empty_url, ());
-    return g_empty_url;
+    static const base::NoDestructor<KURL> g_empty_url;
+    return *g_empty_url;
   }
 
   // Isolated world CSPs don't support these directives: "sandbox",
@@ -146,8 +146,8 @@ class IsolatedWorldCSPDelegate final
 // static
 IsolatedWorldCSP& IsolatedWorldCSP::Get() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(IsolatedWorldCSP, g_isolated_world_csp, ());
-  return g_isolated_world_csp;
+  static base::NoDestructor<IsolatedWorldCSP> g_isolated_world_csp;
+  return *g_isolated_world_csp;
 }
 
 void IsolatedWorldCSP::SetContentSecurityPolicy(

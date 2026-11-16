@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_paint_callback.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint_generated_image.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
@@ -122,11 +124,11 @@ PaintRecord CSSPaintDefinition::Paint(
   PaintSize* paint_size = MakeGarbageCollected<PaintSize>(specified_size);
 
   if (!paint_arguments) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        ThreadSpecific<Persistent<GCedCSSStyleValueVector>>,
-        static_empty_arguments, {});
+    static base::NoDestructor<
+        ThreadSpecific<Persistent<GCedCSSStyleValueVector>>>
+        static_empty_arguments;
     Persistent<GCedCSSStyleValueVector>& empty_arguments =
-        *static_empty_arguments;
+        **static_empty_arguments;
     if (!empty_arguments) [[unlikely]] {
       empty_arguments = MakeGarbageCollected<GCedCSSStyleValueVector>();
       LEAK_SANITIZER_IGNORE_OBJECT(&empty_arguments);

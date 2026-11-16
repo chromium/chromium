@@ -5,6 +5,7 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
@@ -19,30 +20,8 @@ namespace {
 const char k{{feature.name}}PolicyName[] = "{{feature.permissions_policy_name}}";
 {% endfor %}
 
-}  // namespace
-
-// Features which depend on a flag also have the same flag controlling whether
-// they are in this map. Features which are shipping as part of an origin trial
-// add their feature names to this map unconditionally, as the trial token could
-// be added after the HTTP header needs to be parsed. This also means that
-// top-level documents which simply want to embed another page which uses an
-// origin trial feature, without using the feature themselves, can use
-// permissions policy to allow use of the feature in subframes (The framed
-// document will still require a valid origin trial token to use the feature in
-// this scenario).
-const FeatureNameMap& GetDefaultFeatureNameMap(bool is_isolated_context) {
-  DEFINE_STATIC_LOCAL(FeatureNameMap, isolated_default_feature_name_map, ());
-  DEFINE_STATIC_LOCAL(FeatureNameMap, non_isolated_default_feature_name_map, ());
-
-  FeatureNameMap& default_feature_name_map = is_isolated_context ?
-    isolated_default_feature_name_map : non_isolated_default_feature_name_map;
-
-  // If we've already computed the map, return it.
-  if (default_feature_name_map.size() > 0) {
-    return default_feature_name_map;
-  }
-
-  // Build the map for the first time.
+FeatureNameMap BuildDefaultFeatureNameMap(bool is_isolated_context) {
+  FeatureNameMap default_feature_name_map;
   default_feature_name_map.ReserveCapacityForSize({{ permissions_policy_features|length }});
 
   {% for feature in permissions_policy_features %}
@@ -80,10 +59,34 @@ const FeatureNameMap& GetDefaultFeatureNameMap(bool is_isolated_context) {
   return default_feature_name_map;
 }
 
+}  // namespace
+
+// Features which depend on a flag also have the same flag controlling whether
+// they are in this map. Features which are shipping as part of an origin trial
+// add their feature names to this map unconditionally, as the trial token could
+// be added after the HTTP header needs to be parsed. This also means that
+// top-level documents which simply want to embed another page which uses an
+// origin trial feature, without using the feature themselves, can use
+// permissions policy to allow use of the feature in subframes (The framed
+// document will still require a valid origin trial token to use the feature in
+// this scenario).
+const FeatureNameMap& GetDefaultFeatureNameMap(bool is_isolated_context) {
+  if (is_isolated_context) {
+    static const base::NoDestructor<FeatureNameMap>
+        isolated_default_feature_name_map(
+            BuildDefaultFeatureNameMap(/*is_isolated_context=*/true));
+    return *isolated_default_feature_name_map;
+  }
+  static const base::NoDestructor<FeatureNameMap>
+      non_isolated_default_feature_name_map(
+          BuildDefaultFeatureNameMap(/*is_isolated_context=*/false));
+  return *non_isolated_default_feature_name_map;
+}
+
 
 DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeaturesInternal() {
-  DEFINE_STATIC_LOCAL(DocumentPolicyFeatureSet, features, ());
-  return features;
+  static base::NoDestructor<DocumentPolicyFeatureSet> features;
+  return *features;
 }
 
 

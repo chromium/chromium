@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -34,8 +35,9 @@ constexpr std::array<base::TimeDelta, kMaxReportCount> kTimeToReport = {
 
 void HighestPmfReporter::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DEFINE_STATIC_LOCAL(HighestPmfReporter, reporter, (std::move(task_runner)));
-  (void)reporter;
+  static base::NoDestructor<HighestPmfReporter> reporter{
+      std::move(task_runner)};
+  (void)*reporter;
 }
 
 HighestPmfReporter::HighestPmfReporter(

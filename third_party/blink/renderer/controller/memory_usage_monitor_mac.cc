@@ -6,8 +6,11 @@
 
 #include <mach/mach.h>
 
+#include "base/check.h"
 #include "base/mac/mac_util.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -50,8 +53,9 @@ static MemoryUsageMonitor* g_instance_for_testing = nullptr;
 
 // static
 MemoryUsageMonitor& MemoryUsageMonitor::Instance() {
-  DEFINE_STATIC_LOCAL(MemoryUsageMonitorMac, monitor, ());
-  return g_instance_for_testing ? *g_instance_for_testing : monitor;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<MemoryUsageMonitorMac> monitor;
+  return g_instance_for_testing ? *g_instance_for_testing : *monitor;
 }
 
 // static

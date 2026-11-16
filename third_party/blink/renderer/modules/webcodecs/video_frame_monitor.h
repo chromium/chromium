@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -91,6 +92,8 @@ class MODULES_EXPORT VideoFrameMonitor {
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
  private:
+  friend class base::NoDestructor<VideoFrameMonitor>;
+
   VideoFrameMonitor() = default;
 
   // key: unique ID of a frame.

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/controller/memory_saver_controller.h"
 
 #include "base/byte_size.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
@@ -17,8 +18,8 @@
 namespace blink {
 
 void MemorySaverController::Initialize() {
-  DEFINE_STATIC_LOCAL(MemorySaverController, controller, ());
-  (void)controller;
+  static base::NoDestructor<MemorySaverController> controller;
+  (void)*controller;
 }
 
 MemorySaverController::MemorySaverController() {

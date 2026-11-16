@@ -41,6 +41,7 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -925,9 +926,9 @@ bool AXNodeObject::ShouldIncludeCustomElement() const {
   //   kept in tree to pass AutomationApiTest.LocationInWebView).
   //   Custom elements in actual web content always have a hyphenated name,
   //   and therefore <webview> in real web content cannot be a custom element.
-  DEFINE_STATIC_LOCAL(const AtomicString, web_view_tag,
-                      (AtomicString::FromLiteral<"webview">()));
-  if (element->HasLocalName(web_view_tag)) {
+  static const base::NoDestructor<AtomicString> web_view_tag(
+      AtomicString::FromLiteral<"webview">());
+  if (element->HasLocalName(*web_view_tag)) {
     return true;
   }
 
@@ -1651,46 +1652,42 @@ String AXNodeObject::GetCSSContentText(const Element* element) {
 // sectionfooter.
 // This function only handles the complementary, banner, and contentInfo roles,
 // which belong to the landmark roles set.
-static HashSet<ax::mojom::blink::Role>& GetLandmarkIsNotAllowedAncestorRoles(
-    ax::mojom::blink::Role landmark) {
+static const HashSet<ax::mojom::blink::Role>&
+GetLandmarkIsNotAllowedAncestorRoles(ax::mojom::blink::Role landmark) {
   // clang-format off
-  DEFINE_STATIC_LOCAL(
-      // https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2
-      // The aside element should not assume the complementary role when nested
-      // within the following sectioning content elements.
-      HashSet<ax::mojom::blink::Role>, complementary_is_not_allowed_roles,
-      ({
+  // https://html.spec.whatwg.org/multipage/dom.html#sectioning-content-2
+  // The aside element should not assume the complementary role when nested
+  // within the following sectioning content elements.
+  static const base::NoDestructor<HashSet<ax::mojom::blink::Role>> complementary_is_not_allowed_roles({
         ax::mojom::blink::Role::kArticle,
         ax::mojom::blink::Role::kComplementary,
         ax::mojom::blink::Role::kNavigation,
         ax::mojom::blink::Role::kSection
-      }));
+      });
       // https://w3c.github.io/html-aam/#el-header-ancestorbody
       // The header and footer elements should not assume the banner and
       // contentInfo roles, respectively, when nested within any of the
       // sectioning content elements or the main element.
-  DEFINE_STATIC_LOCAL(
-      HashSet<ax::mojom::blink::Role>, landmark_is_not_allowed_roles,
-      ({
+  static const base::NoDestructor<HashSet<ax::mojom::blink::Role>> landmark_is_not_allowed_roles({
         ax::mojom::blink::Role::kArticle,
         ax::mojom::blink::Role::kComplementary,
         ax::mojom::blink::Role::kMain,
         ax::mojom::blink::Role::kNavigation,
         ax::mojom::blink::Role::kSection
-      }));
+      });
   // clang-format on
 
   if (landmark == ax::mojom::blink::Role::kComplementary) {
-    return complementary_is_not_allowed_roles;
+    return *complementary_is_not_allowed_roles;
   }
-  return landmark_is_not_allowed_roles;
+  return *landmark_is_not_allowed_roles;
 }
 
 bool AXNodeObject::IsDescendantOfLandmarkDisallowedElement() const {
   if (!GetNode())
     return false;
 
-  auto role_names = GetLandmarkIsNotAllowedAncestorRoles(RoleValue());
+  const auto& role_names = GetLandmarkIsNotAllowedAncestorRoles(RoleValue());
 
   for (AXObject* parent = ParentObjectUnignored(); parent;
        parent = parent->ParentObjectUnignored()) {

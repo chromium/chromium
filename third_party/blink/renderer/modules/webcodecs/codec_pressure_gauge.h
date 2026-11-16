@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -77,6 +78,8 @@ class MODULES_EXPORT CodecPressureGauge {
   // Used on platforms with a different limit for encoders and decoders.
   static CodecPressureGauge& DecoderInstance();
   static CodecPressureGauge& EncoderInstance();
+
+  friend class base::NoDestructor<CodecPressureGauge>;
 
   explicit CodecPressureGauge(size_t pressure_threshold);
 

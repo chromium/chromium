@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
@@ -458,7 +457,7 @@ const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
     return nullptr;
   }
 
-  DEFINE_STATIC_LOCAL(const intptr_t*, reference_table, (nullptr));
+  static const intptr_t* reference_table(nullptr);
   if (reference_table) {
     return reference_table;
   }

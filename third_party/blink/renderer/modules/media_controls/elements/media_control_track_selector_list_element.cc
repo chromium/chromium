@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -79,9 +80,9 @@ std::vector<String> GetPreferenceList(
 
 const QualifiedName& SelectedTrackIdAttr() {
   // Save the track id in an attribute.
-  DEFINE_STATIC_LOCAL(QualifiedName, selected_track_id,
-                      (AtomicString("data-selected-track-id")));
-  return selected_track_id;
+  static const base::NoDestructor<QualifiedName> selected_track_id(
+      AtomicString::FromLiteral<"data-selected-track-id">());
+  return *selected_track_id;
 }
 
 }  // namespace

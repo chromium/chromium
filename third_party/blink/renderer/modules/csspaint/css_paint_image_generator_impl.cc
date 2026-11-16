@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/csspaint/css_paint_image_generator_impl.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_definition.h"
@@ -111,19 +112,19 @@ unsigned CSSPaintImageGeneratorImpl::GetRegisteredDefinitionCountForTesting()
 
 const Vector<CSSPropertyID>&
 CSSPaintImageGeneratorImpl::NativeInvalidationProperties() const {
-  DEFINE_STATIC_LOCAL(Vector<CSSPropertyID>, empty_vector, ());
+  static base::NoDestructor<Vector<CSSPropertyID>> empty_vector;
   DocumentPaintDefinition* definition;
   if (!GetValidDocumentDefinition(definition))
-    return empty_vector;
+    return *empty_vector;
   return definition->NativeInvalidationProperties();
 }
 
 const Vector<AtomicString>&
 CSSPaintImageGeneratorImpl::CustomInvalidationProperties() const {
-  DEFINE_STATIC_LOCAL(Vector<AtomicString>, empty_vector, ());
+  static base::NoDestructor<Vector<AtomicString>> empty_vector;
   DocumentPaintDefinition* definition;
   if (!GetValidDocumentDefinition(definition))
-    return empty_vector;
+    return *empty_vector;
   return definition->CustomInvalidationProperties();
 }
 
@@ -136,10 +137,10 @@ bool CSSPaintImageGeneratorImpl::HasAlpha() const {
 
 const Vector<CSSSyntaxDefinition>&
 CSSPaintImageGeneratorImpl::InputArgumentTypes() const {
-  DEFINE_STATIC_LOCAL(Vector<CSSSyntaxDefinition>, empty_vector, ());
+  static base::NoDestructor<Vector<CSSSyntaxDefinition>> empty_vector;
   DocumentPaintDefinition* definition;
   if (!GetValidDocumentDefinition(definition))
-    return empty_vector;
+    return *empty_vector;
   return definition->InputArgumentTypes();
 }
 

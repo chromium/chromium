@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -264,8 +266,9 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
 };
 
 V8DetailedMemoryReporterImpl& GetV8DetailedMemoryReporter() {
-  DEFINE_STATIC_LOCAL(V8DetailedMemoryReporterImpl, v8_memory_reporter, ());
-  return v8_memory_reporter;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<V8DetailedMemoryReporterImpl> v8_memory_reporter;
+  return *v8_memory_reporter;
 }
 
 }  // namespace

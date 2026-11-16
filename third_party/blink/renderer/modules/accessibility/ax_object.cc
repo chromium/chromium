@@ -36,6 +36,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -150,7 +151,6 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -323,25 +323,25 @@ void AddIntListAttributeFromOffsetVector(
 }
 
 const QualifiedName& DeprecatedAriaColtextAttrName() {
-  DEFINE_STATIC_LOCAL(QualifiedName, aria_coltext_attr,
-                      (AtomicString("aria-coltext")));
-  return aria_coltext_attr;
+  static const base::NoDestructor<QualifiedName> aria_coltext_attr(
+      AtomicString::FromLiteral<"aria-coltext">());
+  return *aria_coltext_attr;
 }
 
 const QualifiedName& DeprecatedAriaRowtextAttrName() {
-  DEFINE_STATIC_LOCAL(QualifiedName, aria_rowtext_attr,
-                      (AtomicString("aria-rowtext")));
-  return aria_rowtext_attr;
+  static const base::NoDestructor<QualifiedName> aria_rowtext_attr(
+      AtomicString::FromLiteral<"aria-rowtext">());
+  return *aria_rowtext_attr;
 }
 
 const AtomicString& AriaTokenAttributeFromValue(const QualifiedName& attribute,
                                                 const AtomicString& value) {
-  DEFINE_STATIC_LOCAL(const AtomicString, undefined_value,
-                      (AtomicString::FromLiteral<"undefined">()));
+  static const base::NoDestructor<AtomicString> undefined_value(
+      AtomicString::FromLiteral<"undefined">());
   if (IsAriaTokenAttribute(attribute) || IsAriaTokenListAttribute(attribute)) {
     // These properties support a list of tokens, and "undefined"/"" is
     // equivalent to not setting the attribute.
-    return value.empty() || value == undefined_value ? g_null_atom : value;
+    return value.empty() || value == *undefined_value ? g_null_atom : value;
   }
   DCHECK(false) << "Not a token attribute. Use AriaFloatAttribute(), "
                    "AriaIntAttribute(), AriaStringAttribute(), etc. instead.";
@@ -1646,41 +1646,44 @@ void AXObject::SerializeHTMLAttributesForSnapshot(
 void AXObject::SerializeHTMLNonStandardAttributesForJAWS(
     ui::AXNodeData* node_data) const {
 #if BUILDFLAG(IS_WIN)
-  DEFINE_STATIC_LOCAL(
-      HashSet<AtomicString>, attributes_for_jaws,
-      ({// brailleonlyregion: a nonstandard attribute used by national testing
-        // orgs to allow testing of reading ability by rendering only to Braille
-        // display, and not to TTS.
-        // TODO(https://github.com/w3c/aria/issues/2352): replace with ARIA
-        // feature.
-        AtomicString("brailleonlyregion"),
-        // data-at-shortcutkeys: a nonstandard attribute used by Twitter and
-        // Facebook to provide keyboard shortcuts for an entire web page, in the
-        // form of a parseable JSON map, which AT can use to help avoid keyboard
-        // conflicts.
-        // TODO(https://github.com/w3c/aria/issues/2351): Replace with ARIA
-        // feature.
-        AtomicString("data-at-shortcutkeys"),
-        // formcontrolname: a nonstandard attribute used by Angular and consumed
-        // by some password managers (see https://crbug.com/378908266).
-        AtomicString("formcontrolname"),
-        // The rest of these are used by proprietary JAWS scripts needed by
-        // customers of JAWS/Vispero.
-        AtomicString("headers"),
-        AtomicString("_segmentid"),  // Nonstandard.
-        AtomicString("aria-activedescendant"), AtomicString("aria-checked"),
-        AtomicString("aria-describedby"), AtomicString("aria-expanded"),
-        AtomicString("aria-labelledby"), AtomicString("aria-pressed"),
-        AtomicString("aria-selected"),
-        AtomicString("display"),  // Nonstandard.
-        AtomicString("size"), AtomicString("tabindex"),
-        AtomicString("title")}));
+  static const base::NoDestructor<HashSet<AtomicString>> attributes_for_jaws(
+      {// brailleonlyregion: a nonstandard attribute used by national testing
+       // orgs to allow testing of reading ability by rendering only to Braille
+       // display, and not to TTS.
+       // TODO(https://github.com/w3c/aria/issues/2352): replace with ARIA
+       // feature.
+       AtomicString::FromLiteral<"brailleonlyregion">(),
+       // data-at-shortcutkeys: a nonstandard attribute used by Twitter and
+       // Facebook to provide keyboard shortcuts for an entire web page, in the
+       // form of a parseable JSON map, which AT can use to help avoid keyboard
+       // conflicts.
+       // TODO(https://github.com/w3c/aria/issues/2351): Replace with ARIA
+       // feature.
+       AtomicString::FromLiteral<"data-at-shortcutkeys">(),
+       // formcontrolname: a nonstandard attribute used by Angular and consumed
+       // by some password managers (see https://crbug.com/378908266).
+       AtomicString::FromLiteral<"formcontrolname">(),
+       // The rest of these are used by proprietary JAWS scripts needed by
+       // customers of JAWS/Vispero.
+       AtomicString::FromLiteral<"headers">(),
+       AtomicString::FromLiteral<"_segmentid">(),  // Nonstandard.
+       AtomicString::FromLiteral<"aria-activedescendant">(),
+       AtomicString::FromLiteral<"aria-checked">(),
+       AtomicString::FromLiteral<"aria-describedby">(),
+       AtomicString::FromLiteral<"aria-expanded">(),
+       AtomicString::FromLiteral<"aria-labelledby">(),
+       AtomicString::FromLiteral<"aria-pressed">(),
+       AtomicString::FromLiteral<"aria-selected">(),
+       AtomicString::FromLiteral<"display">(),  // Nonstandard.
+       AtomicString::FromLiteral<"size">(),
+       AtomicString::FromLiteral<"tabindex">(),
+       AtomicString::FromLiteral<"title">()});
 
   for (const Attribute& attr : GetElement()->AttributesWithoutUpdate()) {
     // Add attribute if in the allow list.
     const QualifiedName& attr_qname = attr.GetName();
     const AtomicString& attr_name = attr_qname.LocalName();
-    if (attributes_for_jaws.Contains(attr_name)) {
+    if (attributes_for_jaws->Contains(attr_name)) {
       std::string value = attr.Value().Utf8();
       node_data->html_attributes.push_back(
           std::make_pair(attr_name.Utf8(), value));
@@ -1952,8 +1955,8 @@ String AXObject::KeyboardShortcut() const {
   if (access_key.IsNull())
     return String();
 
-  DEFINE_STATIC_LOCAL(String, modifier_string, ());
-  if (modifier_string.IsNull()) {
+  static base::NoDestructor<String> modifier_string;
+  if (modifier_string->IsNull()) {
     unsigned modifiers = KeyboardEventManager::kAccessKeyModifiers;
     // Follow the same order as Mozilla MSAA implementation:
     // Ctrl+Alt+Shift+Meta+key. MSDN states that keyboard shortcut strings
@@ -1967,10 +1970,10 @@ String AXObject::KeyboardShortcut() const {
       modifier_string_builder.Append("Shift+");
     if (modifiers & WebInputEvent::kMetaKey)
       modifier_string_builder.Append("Win+");
-    modifier_string = modifier_string_builder.ToString();
+    *modifier_string = modifier_string_builder.ToString();
   }
 
-  return StrCat({modifier_string, access_key});
+  return StrCat({*modifier_string, access_key});
 }
 
 void AXObject::SerializeOtherScreenReaderAttributes(
@@ -5959,31 +5962,30 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
   // role="presentation"/"none" to be exposed, and does not contain ARIA
   // properties who's global status is being deprecated.
   // clang-format off
-  DEFINE_STATIC_LOCAL(
-      HashSet<AtomicString>, aria_global_properties,
-      ({
-        AtomicString("ARIA-ATOMIC"),
-        AtomicString("ARIA-BRAILLELABEL"),
-        AtomicString("ARIA-BRAILLEROLEDESCRIPTION"),
-        AtomicString("ARIA-BUSY"),
-        AtomicString("ARIA-CONTROLS"),
-        AtomicString("ARIA-CURRENT"),
-        AtomicString("ARIA-DESCRIBEDBY"),
-        AtomicString("ARIA-DESCRIPTION"),
-        AtomicString("ARIA-DETAILS"),
-        AtomicString("ARIA-FLOWTO"),
-        AtomicString("ARIA-KEYSHORTCUTS"),
-        AtomicString("ARIA-LABEL"),
-        AtomicString("ARIA-LABELEDBY"),
-        AtomicString("ARIA-LABELLEDBY"),
-        AtomicString("ARIA-LIVE"),
-        AtomicString("ARIA-OWNS"),
-        AtomicString("ARIA-RELEVANT"),
-        AtomicString("ARIA-ROLEDESCRIPTION")
-      }));
+  static const base::NoDestructor<HashSet<AtomicString>> aria_global_properties(
+      {
+        AtomicString::FromLiteral<"ARIA-ATOMIC">(),
+        AtomicString::FromLiteral<"ARIA-BRAILLELABEL">(),
+        AtomicString::FromLiteral<"ARIA-BRAILLEROLEDESCRIPTION">(),
+        AtomicString::FromLiteral<"ARIA-BUSY">(),
+        AtomicString::FromLiteral<"ARIA-CONTROLS">(),
+        AtomicString::FromLiteral<"ARIA-CURRENT">(),
+        AtomicString::FromLiteral<"ARIA-DESCRIBEDBY">(),
+        AtomicString::FromLiteral<"ARIA-DESCRIPTION">(),
+        AtomicString::FromLiteral<"ARIA-DETAILS">(),
+        AtomicString::FromLiteral<"ARIA-FLOWTO">(),
+        AtomicString::FromLiteral<"ARIA-KEYSHORTCUTS">(),
+        AtomicString::FromLiteral<"ARIA-LABEL">(),
+        AtomicString::FromLiteral<"ARIA-LABELEDBY">(),
+        AtomicString::FromLiteral<"ARIA-LABELLEDBY">(),
+        AtomicString::FromLiteral<"ARIA-LIVE">(),
+        AtomicString::FromLiteral<"ARIA-OWNS">(),
+        AtomicString::FromLiteral<"ARIA-RELEVANT">(),
+        AtomicString::FromLiteral<"ARIA-ROLEDESCRIPTION">()
+      });
   // clang-format on
 
-  return aria_global_properties.Contains(name);
+  return aria_global_properties->Contains(name);
 }
 
 bool AXObject::ElementHasAnyAriaAttribute(
@@ -6107,12 +6109,12 @@ bool AXObject::IsActiveLiveRegionRoot() const {
 }
 
 const AtomicString& AXObject::LiveRegionStatus() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_assertive,
-                      (AtomicString::FromLiteral<"assertive">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_polite,
-                      (AtomicString::FromLiteral<"polite">()));
-  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_undefined,
-                      (AtomicString::FromLiteral<"undefined">()));
+  static const base::NoDestructor<AtomicString> live_region_status_assertive(
+      AtomicString::FromLiteral<"assertive">());
+  static const base::NoDestructor<AtomicString> live_region_status_polite(
+      AtomicString::FromLiteral<"polite">());
+  static const base::NoDestructor<AtomicString> live_region_status_undefined(
+      AtomicString::FromLiteral<"undefined">());
 
   const AtomicString& live_region_status =
       AriaTokenAttribute(html_names::kAriaLiveAttr);
@@ -6123,14 +6125,14 @@ const AtomicString& AXObject::LiveRegionStatus() const {
   const AtomicString& implicit_value = GetImplicitAriaLive(RoleValue());
   // "undefined" means this element is not a live region.
   // See: https://github.com/w3c/aria/issues/2653
-  if (implicit_value == live_region_status_undefined) {
+  if (implicit_value == *live_region_status_undefined) {
     return g_null_atom;
   }
-  if (implicit_value == live_region_status_assertive) {
-    return live_region_status_assertive;
+  if (implicit_value == *live_region_status_assertive) {
+    return *live_region_status_assertive;
   }
-  if (implicit_value == live_region_status_polite) {
-    return live_region_status_polite;
+  if (implicit_value == *live_region_status_polite) {
+    return *live_region_status_polite;
   }
   if (implicit_value == keywords::kOff) {
     return keywords::kOff;
@@ -6140,14 +6142,14 @@ const AtomicString& AXObject::LiveRegionStatus() const {
 }
 
 const AtomicString& AXObject::LiveRegionRelevant() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, default_live_region_relevant,
-                      (AtomicString::FromLiteral<"additions text">()));
+  static const base::NoDestructor<AtomicString> default_live_region_relevant(
+      AtomicString::FromLiteral<"additions text">());
   const AtomicString& relevant =
       AriaTokenAttribute(html_names::kAriaRelevantAttr);
 
   // Default aria-relevant = "additions text".
   if (relevant.empty())
-    return default_live_region_relevant;
+    return *default_live_region_relevant;
 
   return relevant;
 }

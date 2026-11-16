@@ -14,6 +14,7 @@
 {% for agent in agents|sort %}
 #include "{{agent | agent_name_to_include}}"
 {% endfor %}
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 
 namespace blink {
@@ -21,8 +22,8 @@ namespace blink {
 namespace {
 
 base::Lock& AgentCountLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 }  // namespace

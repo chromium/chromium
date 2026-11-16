@@ -27,7 +27,7 @@ struct CodecTraceNames {
   }
 
   // Disallow copy and assign, because we should be using CodecTraceNames with
-  // DEFINE_THREAD_SAFE_STATIC_LOCAL, and never accidentally copy it. Otherwise,
+  // base::NoDestructor, and never accidentally copy it. Otherwise,
   // we end up with trace names pointing to destroyed strings.
   CodecTraceNames(const CodecTraceNames&) = delete;
   CodecTraceNames& operator=(const CodecTraceNames&) = delete;

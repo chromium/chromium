@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -21,7 +22,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "ui/accessibility/ax_common.h"
 
 namespace blink {
@@ -654,17 +654,17 @@ AXRelationCache::GetTextRelationAttributes() {
   // This is also needed to tell whether a hidden popover is a plain or a rich
   // hint. See AXNodeObject::TextAlternativeFromTooltip() and
   // AXObject::GetRichHintTargetPopover().
-  DEFINE_STATIC_LOCAL(
-      TextRelationAttributeArray, text_attributes,
-      ({{html_names::kAriaLabelledbyAttr,
-         Element::FilterForAttribute(html_names::kAriaLabelledbyAttr)},
-        {html_names::kAriaLabeledbyAttr,
-         Element::FilterForAttribute(html_names::kAriaLabeledbyAttr)},
-        {html_names::kAriaDescribedbyAttr,
-         Element::FilterForAttribute(html_names::kAriaDescribedbyAttr)},
-        {html_names::kInterestforAttr,
-         Element::FilterForAttribute(html_names::kInterestforAttr)}}));
-  return text_attributes;
+  static base::NoDestructor<TextRelationAttributeArray> text_attributes(
+      TextRelationAttributeArray{
+          {{html_names::kAriaLabelledbyAttr,
+            Element::FilterForAttribute(html_names::kAriaLabelledbyAttr)},
+           {html_names::kAriaLabeledbyAttr,
+            Element::FilterForAttribute(html_names::kAriaLabeledbyAttr)},
+           {html_names::kAriaDescribedbyAttr,
+            Element::FilterForAttribute(html_names::kAriaDescribedbyAttr)},
+           {html_names::kInterestforAttr,
+            Element::FilterForAttribute(html_names::kInterestforAttr)}}});
+  return *text_attributes;
 }
 
 void AXRelationCache::UpdateReverseTextRelations(Element& source) {
@@ -771,26 +771,26 @@ void AXRelationCache::UpdateReverseOwnsRelations(Element& source) {
 
 const AXRelationCache::OtherRelationAttributeArray&
 AXRelationCache::GetOtherRelationAttributes() {
-  DEFINE_STATIC_LOCAL(
-      OtherRelationAttributeArray, attributes,
-      ({{html_names::kAriaControlsAttr,
-         Element::FilterForAttribute(html_names::kAriaControlsAttr)},
-        {html_names::kAriaDetailsAttr,
-         Element::FilterForAttribute(html_names::kAriaDetailsAttr)},
-        {html_names::kAriaErrormessageAttr,
-         Element::FilterForAttribute(html_names::kAriaErrormessageAttr)},
-        {html_names::kAriaFlowtoAttr,
-         Element::FilterForAttribute(html_names::kAriaFlowtoAttr)},
-        {html_names::kAriaActionsAttr,
-         Element::FilterForAttribute(html_names::kAriaActionsAttr)},
-        {html_names::kCommandforAttr,
-         Element::FilterForAttribute(html_names::kCommandforAttr)},
-        {html_names::kPopovertargetAttr,
-         Element::FilterForAttribute(html_names::kPopovertargetAttr)},
-        // Used by the FilterableSelect feature for <input filter=select_id>.
-        {html_names::kFilterAttr,
-         Element::FilterForAttribute(html_names::kFilterAttr)}}));
-  return attributes;
+  static base::NoDestructor<OtherRelationAttributeArray> attributes(
+      OtherRelationAttributeArray{
+          {{html_names::kAriaControlsAttr,
+            Element::FilterForAttribute(html_names::kAriaControlsAttr)},
+           {html_names::kAriaDetailsAttr,
+            Element::FilterForAttribute(html_names::kAriaDetailsAttr)},
+           {html_names::kAriaErrormessageAttr,
+            Element::FilterForAttribute(html_names::kAriaErrormessageAttr)},
+           {html_names::kAriaFlowtoAttr,
+            Element::FilterForAttribute(html_names::kAriaFlowtoAttr)},
+           {html_names::kAriaActionsAttr,
+            Element::FilterForAttribute(html_names::kAriaActionsAttr)},
+           {html_names::kCommandforAttr,
+            Element::FilterForAttribute(html_names::kCommandforAttr)},
+           {html_names::kPopovertargetAttr,
+            Element::FilterForAttribute(html_names::kPopovertargetAttr)},
+           // Used by the FilterableSelect feature for <input filter=select_id>.
+           {html_names::kFilterAttr,
+            Element::FilterForAttribute(html_names::kFilterAttr)}}});
+  return *attributes;
 }
 
 // static

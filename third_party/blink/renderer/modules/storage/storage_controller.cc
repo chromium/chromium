@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
@@ -42,12 +42,12 @@ StorageController::DomStorageConnection GetDomStorageConnection() {
 
 // static
 StorageController* StorageController::GetInstance() {
-  DEFINE_STATIC_LOCAL(StorageController, gCachedStorageAreaController,
-                      (GetDomStorageConnection(),
-                       base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()
-                           ? kStorageControllerTotalCacheLimitInBytesLowEnd
-                           : kStorageControllerTotalCacheLimitInBytes));
-  return &gCachedStorageAreaController;
+  static base::NoDestructor<StorageController> gCachedStorageAreaController(
+      GetDomStorageConnection(),
+      base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()
+          ? kStorageControllerTotalCacheLimitInBytesLowEnd
+          : kStorageControllerTotalCacheLimitInBytes);
+  return gCachedStorageAreaController.get();
 }
 
 // static

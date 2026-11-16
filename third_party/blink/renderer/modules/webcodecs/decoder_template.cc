@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/decoder_status.h"
@@ -58,9 +59,9 @@ base::AtomicSequenceNumber g_sequence_num_for_counters;
 // static
 template <typename Traits>
 const CodecTraceNames* DecoderTemplate<Traits>::GetTraceNames() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const CodecTraceNames, trace_names,
-                                  (Traits::GetName()));
-  return &trace_names;
+  static const base::NoDestructor<CodecTraceNames> trace_names(
+      Traits::GetName());
+  return trace_names.get();
 }
 
 template <typename Traits>

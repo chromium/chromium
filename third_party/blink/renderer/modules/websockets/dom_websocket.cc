@@ -38,6 +38,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
@@ -74,7 +75,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -87,11 +87,10 @@ ScopedWebSocketChannelCreateFunctionForTesting::WebSocketChannelCreateFunction&
 GetChannelCreateFunction() {
   // This is thread-safe when it is null. It is only set to a different value in
   // tests.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ScopedWebSocketChannelCreateFunctionForTesting::
-          WebSocketChannelCreateFunction,
-      func, ());
-  return func;
+  static base::NoDestructor<ScopedWebSocketChannelCreateFunctionForTesting::
+                                WebSocketChannelCreateFunction>
+      func;
+  return *func;
 }
 
 template <typename Union>

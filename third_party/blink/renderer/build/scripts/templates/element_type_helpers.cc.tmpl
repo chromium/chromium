@@ -12,7 +12,7 @@
 {% endif %}
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "base/no_destructor.h"
 
 namespace blink {
 {% if namespace == "HTML" %}
@@ -35,8 +35,8 @@ HTMLTypeMap CreateHTMLTypeMap() {
 }
 
 static const HTMLTypeMap& GetHTMLTypeMap() {
-  DEFINE_STATIC_LOCAL(const HTMLTypeMap, html_type_map, (CreateHTMLTypeMap()));
-  return html_type_map;
+  static const base::NoDestructor<HTMLTypeMap> html_type_map(CreateHTMLTypeMap());
+  return *html_type_map;
 }
 
 ElementType HtmlElementTypeForTag(const AtomicString& tag_name, const Document* document) {

@@ -4,14 +4,14 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "base/no_destructor.h"
 
 namespace blink {
 
 // static
 VideoFrameMonitor& VideoFrameMonitor::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(VideoFrameMonitor, instance, ());
-  return instance;
+  static base::NoDestructor<VideoFrameMonitor> instance;
+  return *instance;
 }
 
 void VideoFrameMonitor::OnOpenFrame(const std::string& source_id,

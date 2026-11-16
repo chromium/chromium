@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_INITIAL_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_INITIAL_VALUES_H_
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -129,9 +130,9 @@ class ComputedStyleInitialValues{
 
  private:
   CORE_EXPORT static const FilterOperations& InitialFilterInternal() {
-    DEFINE_STATIC_LOCAL(const Persistent<FilterOperationsWrapper>, ops,
-        (MakeGarbageCollected<FilterOperationsWrapper>()));
-    return ops->Operations();
+    static const base::NoDestructor<Persistent<FilterOperationsWrapper>> ops(
+        MakeGarbageCollected<FilterOperationsWrapper>());
+    return (*ops)->Operations();
   }
 };
 

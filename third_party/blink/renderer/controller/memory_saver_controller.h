@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_MEMORY_SAVER_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_MEMORY_SAVER_CONTROLLER_H_
 
+#include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 
@@ -16,6 +17,8 @@ class CONTROLLER_EXPORT MemorySaverController {
   static void Initialize();
 
  private:
+  friend class base::NoDestructor<MemorySaverController>;
+
   MemorySaverController();
 
   void Sample();

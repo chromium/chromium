@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/controller/javascript_call_stack_generator.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/controller/javascript_call_stack_collector.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -12,9 +13,9 @@ namespace blink {
 namespace {
 
 JavaScriptCallStackGenerator& GetJavaScriptCallStackGenerator() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(JavaScriptCallStackGenerator,
-                                  javascript_call_stack_generator, ());
-  return javascript_call_stack_generator;
+  static base::NoDestructor<JavaScriptCallStackGenerator>
+      javascript_call_stack_generator;
+  return *javascript_call_stack_generator;
 }
 
 }  // namespace

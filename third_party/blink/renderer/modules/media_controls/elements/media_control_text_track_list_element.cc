@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_text_track_list_element.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -36,19 +37,18 @@ constexpr int kTrackIndexOffValue = -1;
 const QualifiedName& TrackIndexAttrName() {
   // Save the track index in an attribute to avoid holding a pointer to the text
   // track.
-  DEFINE_STATIC_LOCAL(QualifiedName, track_index_attr,
-                      (AtomicString("data-track-index")));
-  return track_index_attr;
+  static const base::NoDestructor<QualifiedName> track_index_attr(
+      AtomicString::FromLiteral<"data-track-index">());
+  return *track_index_attr;
 }
 
 // Shadow pseudo-id of the caption settings (gear) row, shared by the code that
 // creates the row and the click handler that identifies it.
 const AtomicString& CaptionSettingsShadowPseudoId() {
-  DEFINE_STATIC_LOCAL(
-      AtomicString, id,
-      (AtomicString::FromLiteral<
-          "-internal-media-controls-text-track-list-caption-settings">()));
-  return id;
+  static const base::NoDestructor<AtomicString> id(
+      AtomicString::FromLiteral<
+          "-internal-media-controls-text-track-list-caption-settings">());
+  return *id;
 }
 
 bool HasDuplicateLabel(TextTrack* current_track) {

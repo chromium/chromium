@@ -37,6 +37,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
@@ -162,6 +163,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -363,8 +365,8 @@ constexpr base::TimeDelta kDurationBetweenRestoreAttempts = base::Seconds(1);
 const int kMaxGLErrorsAllowedToConsole = 256;
 
 base::Lock& WebGLContextLimitLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 using WebGLRenderingContextBaseSet =
@@ -372,11 +374,11 @@ using WebGLRenderingContextBaseSet =
 WebGLRenderingContextBaseSet* TryActiveContexts(bool create_if_absent = false) {
   using WebGLRenderingContextBaseSetHolder =
       DisallowNewWrapper<WebGLRenderingContextBaseSet>;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<WebGLRenderingContextBaseSetHolder>>,
-      active_contexts, ());
+  static base::NoDestructor<
+      ThreadSpecific<Persistent<WebGLRenderingContextBaseSetHolder>>>
+      active_contexts;
   Persistent<WebGLRenderingContextBaseSetHolder>& active_contexts_persistent =
-      *active_contexts;
+      **active_contexts;
   if (!active_contexts_persistent) {
     if (!create_if_absent) {
       return nullptr;
@@ -398,10 +400,10 @@ WebGLRenderingContextBaseMap* TryForciblyEvictedContexts(
     bool create_if_absent = false) {
   using WebGLRenderingContextBaseMapHolder =
       DisallowNewWrapper<WebGLRenderingContextBaseMap>;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<WebGLRenderingContextBaseMapHolder>>, holder,
-      ());
-  Persistent<WebGLRenderingContextBaseMapHolder>& holder_persistent = *holder;
+  static base::NoDestructor<
+      ThreadSpecific<Persistent<WebGLRenderingContextBaseMapHolder>>>
+      holder;
+  Persistent<WebGLRenderingContextBaseMapHolder>& holder_persistent = **holder;
   if (!holder_persistent) {
     if (!create_if_absent) {
       return nullptr;

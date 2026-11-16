@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_HIGHEST_PMF_REPORTER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
@@ -31,6 +32,8 @@ class CONTROLLER_EXPORT HighestPmfReporter
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
+  friend class base::NoDestructor<HighestPmfReporter>;
+
   explicit HighestPmfReporter(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 

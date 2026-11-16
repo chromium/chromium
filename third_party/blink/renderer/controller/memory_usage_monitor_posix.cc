@@ -9,9 +9,12 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -29,8 +32,9 @@ bool ReadFileContents(int fd, base::span<char> contents) {
 static MemoryUsageMonitor* g_instance_for_testing = nullptr;
 
 MemoryUsageMonitorPosix& GetMemoryUsageMonitor() {
-  DEFINE_STATIC_LOCAL(MemoryUsageMonitorPosix, monitor, ());
-  return monitor;
+  DCHECK(IsMainThread());
+  static base::NoDestructor<MemoryUsageMonitorPosix> monitor;
+  return *monitor;
 }
 
 }  // namespace

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
@@ -1989,9 +1990,8 @@ BackgroundResourceScriptStreamer::BackgroundProcessorFactory::Create() && {
 void BackgroundJSStreamManager::SetState(BackgroundStreamingState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   using S = BackgroundStreamingState;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      base::StateTransitions<S>, transitions,
-      ({
+  static base::NoDestructor<base::StateTransitions<S>> transitions(
+      base::StateTransitions<S>({
           {S::kResponseReceived,
            {// The mime type of the response is not supported, or the received
             // metadata contains code cache.
@@ -2034,7 +2034,7 @@ void BackgroundJSStreamManager::SetState(BackgroundStreamingState state) {
            {// Received the result from the script decoder.
             S::kFinished}},
       }));
-  CHECK_STATE_TRANSITION(&transitions, state_, state);
+  CHECK_STATE_TRANSITION(transitions.get(), state_, state);
   state_ = state;
 }
 

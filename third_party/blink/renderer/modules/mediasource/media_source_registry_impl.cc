@@ -32,6 +32,7 @@
 
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -42,8 +43,8 @@ namespace blink {
 // static
 void MediaSourceRegistryImpl::Init() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(MediaSourceRegistryImpl, instance, ());
-  DVLOG(1) << __func__ << " instance=" << &instance;
+  static base::NoDestructor<MediaSourceRegistryImpl> instance;
+  DVLOG(1) << __func__ << " instance=" << &*instance;
 }
 
 KURL MediaSourceRegistryImpl::RegisterUrl(

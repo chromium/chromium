@@ -7,6 +7,8 @@
 #include <memory>
 #include <ranges>
 
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -24,6 +26,7 @@
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -137,10 +140,11 @@ using EnabledAgentsMultimap =
                 Member<GCedHeapHashSet<Member<InspectorAccessibilityAgent>>>>;
 
 EnabledAgentsMultimap& EnabledAgents() {
+  DCHECK(IsMainThread());
   using EnabledAgentsMultimapHolder = DisallowNewWrapper<EnabledAgentsMultimap>;
-  DEFINE_STATIC_LOCAL(Persistent<EnabledAgentsMultimapHolder>, holder,
-                      (MakeGarbageCollected<EnabledAgentsMultimapHolder>()));
-  return holder->Value();
+  static base::NoDestructor<Persistent<EnabledAgentsMultimapHolder>> holder(
+      MakeGarbageCollected<EnabledAgentsMultimapHolder>());
+  return (*holder)->Value();
 }
 
 InspectorAccessibilityAgent::InspectorAccessibilityAgent(

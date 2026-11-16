@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_validation_message.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -65,15 +66,15 @@ bool AXValidationMessage::IsVisible() const {
 }
 
 const AtomicString& AXValidationMessage::LiveRegionStatus() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_assertive,
-                      (AtomicString::FromLiteral<"assertive">()));
-  return live_region_status_assertive;
+  static const base::NoDestructor<AtomicString> live_region_status_assertive(
+      AtomicString::FromLiteral<"assertive">());
+  return *live_region_status_assertive;
 }
 
 const AtomicString& AXValidationMessage::LiveRegionRelevant() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, live_region_relevant_additions,
-                      (AtomicString::FromLiteral<"additions">()));
-  return live_region_relevant_additions;
+  static const base::NoDestructor<AtomicString> live_region_relevant_additions(
+      AtomicString::FromLiteral<"additions">());
+  return *live_region_relevant_additions;
 }
 
 ax::mojom::blink::Role AXValidationMessage::NativeRoleIgnoringAria() const {

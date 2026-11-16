@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -53,9 +54,9 @@ base::AtomicSequenceNumber g_sequence_num_for_counters;
 // static
 template <typename Traits>
 const CodecTraceNames* EncoderBase<Traits>::GetTraceNames() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const CodecTraceNames, trace_names,
-                                  (Traits::GetName()));
-  return &trace_names;
+  static const base::NoDestructor<CodecTraceNames> trace_names(
+      Traits::GetName());
+  return trace_names.get();
 }
 
 template <typename Traits>

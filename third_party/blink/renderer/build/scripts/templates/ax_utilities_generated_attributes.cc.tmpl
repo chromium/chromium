@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
 
 #include <algorithm>
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
@@ -83,8 +84,9 @@ const AtomicString& GetImplicit{{ attr.base_name }}(ax::mojom::blink::Role inter
     case ax::mojom::blink::Role::{{ role }}:
   {% endfor %}
       {
-        DEFINE_STATIC_LOCAL(AtomicString, kValue, ("{{ value }}"));
-        return kValue;
+        static const base::NoDestructor<AtomicString> kValue(
+            AtomicString::FromLiteral<"{{ value }}">());
+        return *kValue;
       }
   {% endfor %}
     default:
@@ -92,8 +94,9 @@ const AtomicString& GetImplicit{{ attr.base_name }}(ax::mojom::blink::Role inter
   }
   {% endif %}
   {% if attr.default_value %}
-  DEFINE_STATIC_LOCAL(AtomicString, kDefaultValue, ("{{ attr.default_value }}"));
-  return kDefaultValue;
+  static const base::NoDestructor<AtomicString> kDefaultValue(
+      AtomicString::FromLiteral<"{{ attr.default_value }}">());
+  return *kDefaultValue;
   {% else %}
   return g_empty_atom;
   {% endif %}

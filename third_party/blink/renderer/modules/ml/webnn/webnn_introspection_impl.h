@@ -7,6 +7,7 @@
 
 #include <atomic>
 
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -38,6 +39,8 @@ class MODULES_EXPORT WebNNIntrospectionImpl
 #endif
 
  private:
+  friend class base::NoDestructor<WebNNIntrospectionImpl>;
+
   WebNNIntrospectionImpl();
 
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)

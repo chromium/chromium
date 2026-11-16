@@ -38,6 +38,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -66,7 +67,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
@@ -78,31 +78,31 @@ bool IsTrivialScript(const String& script) {
     return false;
   }
 
-  DEFINE_STATIC_LOCAL(Vector<String>, trivial_scripts,
-                      ({"void(0)",
-                        "void0",
-                        "void(false)",
-                        "void(null)",
-                        "void(-1)",
-                        "false",
-                        "true",
-                        "",
-                        "''",
-                        "\"\"",
-                        "undefined",
-                        "0",
-                        "1",
-                        "'1'",
-                        "print()",
-                        "window.print()",
-                        "close()",
-                        "window.close()",
-                        "history.back()",
-                        "window.history.back()",
-                        "history.go(-1)",
-                        "window.history.go(-1)"}));
+  static base::NoDestructor<Vector<String>> trivial_scripts(
+      {"void(0)",
+       "void0",
+       "void(false)",
+       "void(null)",
+       "void(-1)",
+       "false",
+       "true",
+       "",
+       "''",
+       "\"\"",
+       "undefined",
+       "0",
+       "1",
+       "'1'",
+       "print()",
+       "window.print()",
+       "close()",
+       "window.close()",
+       "history.back()",
+       "window.history.back()",
+       "history.go(-1)",
+       "window.history.go(-1)"});
   String processed_script = script.StripWhiteSpace().Replace(";", "");
-  return trivial_scripts.Contains(processed_script);
+  return trivial_scripts->Contains(processed_script);
 }
 
 }  // namespace

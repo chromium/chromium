@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_gauge.h"
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 #if !BUILDFLAG(IS_WIN)
 #define USE_SHARED_INSTANCE
@@ -56,26 +56,26 @@ CodecPressureGauge& CodecPressureGauge::GetInstance(
 #if defined(USE_SHARED_INSTANCE)
 // static
 CodecPressureGauge& CodecPressureGauge::SharedInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CodecPressureGauge, shared_instance,
-                                  (kSharedPressureThreshold));
+  static base::NoDestructor<CodecPressureGauge> shared_instance(
+      kSharedPressureThreshold);
 
-  return shared_instance;
+  return *shared_instance;
 }
 #else
 // static
 CodecPressureGauge& CodecPressureGauge::DecoderInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CodecPressureGauge, decoder_instance,
-                                  (kDecoderPressureThreshold));
+  static base::NoDestructor<CodecPressureGauge> decoder_instance(
+      kDecoderPressureThreshold);
 
-  return decoder_instance;
+  return *decoder_instance;
 }
 
 // static
 CodecPressureGauge& CodecPressureGauge::EncoderInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CodecPressureGauge, encoder_instance,
-                                  (kEncoderPressureThreshold));
+  static base::NoDestructor<CodecPressureGauge> encoder_instance(
+      kEncoderPressureThreshold);
 
-  return encoder_instance;
+  return *encoder_instance;
 }
 #endif
 

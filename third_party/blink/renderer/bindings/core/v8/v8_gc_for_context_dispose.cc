@@ -30,13 +30,14 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_for_context_dispose.h"
 
+#include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -58,7 +59,8 @@ size_t GetMemoryUsage(v8::Isolate* isolate) {
 
 // static
 V8GCForContextDispose& V8GCForContextDispose::Instance() {
-  DEFINE_STATIC_LOCAL(V8GCForContextDispose, static_instance, ());
+  DCHECK(IsMainThread());
+  static V8GCForContextDispose static_instance;
   return static_instance;
 }
 
@@ -77,10 +79,9 @@ void V8GCForContextDispose::NotifyContextDisposed(
     const size_t post_gc_memory_usage = GetMemoryUsage(isolate);
     const int reduction = static_cast<int>(pre_gc_memory_usage) -
                           static_cast<int>(post_gc_memory_usage);
-    DEFINE_STATIC_LOCAL(
-        CustomCountHistogram, reduction_histogram,
-        ("BlinkGC.LowMemoryPageNavigationGC.Reduction", 1, 512, 50));
-    reduction_histogram.Count(reduction / 1024 / 1024);
+    base::UmaHistogramCustomCounts(
+        "BlinkGC.LowMemoryPageNavigationGC.Reduction", reduction / 1024 / 1024,
+        1, 512, 50);
 
     force_page_navigation_gc_ = false;
   }

@@ -11,6 +11,7 @@
 
 #include "third_party/blink/renderer/core/css/properties/{{include}}"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value_mappings.h"
@@ -71,9 +72,8 @@ StringView {{class_name}}::GetPropertyName() const {
 }
 
 const AtomicString& {{class_name}}::GetPropertyNameAtomicString() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, name,
-                                  ("{{exposed_property.name}}"));
-  return name;
+  static const base::NoDestructor<AtomicString> name("{{exposed_property.name}}");
+  return *name;
 }
 
 StringView {{class_name}}::GetJSPropertyName() const {

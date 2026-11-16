@@ -7,6 +7,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -50,6 +51,8 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
   void ResetForTesting();
 
  protected:
+  friend class base::NoDestructor<CrashMemoryMetricsReporterImpl>;
+
   CrashMemoryMetricsReporterImpl();
 
  private:

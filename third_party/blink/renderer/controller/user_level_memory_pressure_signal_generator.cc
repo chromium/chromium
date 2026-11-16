@@ -11,6 +11,7 @@
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -48,9 +49,9 @@ UserLevelMemoryPressureSignalGenerator::Instance() {
 // static
 void UserLevelMemoryPressureSignalGenerator::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DEFINE_STATIC_LOCAL(UserLevelMemoryPressureSignalGenerator, generator,
-                      (std::move(task_runner)));
-  (void)generator;
+  static base::NoDestructor<UserLevelMemoryPressureSignalGenerator> generator{
+      std::move(task_runner)};
+  (void)*generator;
 }
 
 UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator(

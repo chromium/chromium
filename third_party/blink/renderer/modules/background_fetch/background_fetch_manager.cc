@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
@@ -191,9 +192,9 @@ BackgroundFetchManager::GetServiceWorkerFetchStatus(
       origins = BackgroundFetchManager::ParseAllowlist(allowlist_str);
     }
   };
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ParsedAllowlist, parsed_allowlist, ());
+  static base::NoDestructor<ParsedAllowlist> parsed_allowlist;
 
-  if (parsed_allowlist.origins.Contains(
+  if (parsed_allowlist->origins.Contains(
           execution_context->GetSecurityOrigin())) {
     return ServiceWorkerFetchStatus::kAllowedByOriginAllowlist;
   }

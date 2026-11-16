@@ -31,10 +31,10 @@
 #include "third_party/blink/renderer/controller/blink_initializer.h"
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -113,8 +113,7 @@ class EndOfTaskRunner : public Thread::TaskObserver {
 Thread::TaskObserver* g_end_of_task_runner = nullptr;
 
 BlinkInitializer& GetBlinkInitializer() {
-  DEFINE_STATIC_LOCAL(std::unique_ptr<BlinkInitializer>, initializer,
-                      (std::make_unique<BlinkInitializer>()));
+  static base::NoDestructor<BlinkInitializer> initializer;
   return *initializer;
 }
 
@@ -173,8 +172,8 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAndroidSystemFontPrewarming)) {
-    DEFINE_STATIC_LOCAL(FontPrewarmer, font_prewarmer, ());
-    FontCache::SetFontPrewarmer(&font_prewarmer);
+    static base::NoDestructor<FontPrewarmer> font_prewarmer;
+    FontCache::SetFontPrewarmer(font_prewarmer.get());
   }
 #endif
 }

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/schema_org/common/metadata.mojom-blink.h"
 #include "third_party/blink/public/mojom/document_metadata/document_metadata.mojom-blink.h"
@@ -55,19 +56,26 @@ constexpr wtf_size_t kMaxRepeatedSize = 100;
 constexpr char kJSONLDKeyType[] = "@type";
 constexpr char kJSONLDKeyGraph[] = "@graph";
 bool IsSupportedType(AtomicString type) {
-  DEFINE_STATIC_LOCAL(
-      HashSet<AtomicString>, elements,
-      ({// Common types that include addresses.
-        AtomicString("AutoDealer"), AtomicString("Hotel"),
-        AtomicString("LocalBusiness"), AtomicString("Organization"),
-        AtomicString("Person"), AtomicString("Place"),
-        AtomicString("PostalAddress"), AtomicString("Product"),
-        AtomicString("ProductGroup"), AtomicString("Residence"),
-        AtomicString("Restaurant"), AtomicString("SingleFamilyResidence"),
-        // Common types including phone numbers
-        AtomicString("Store"), AtomicString("ContactPoint"),
-        AtomicString("LodgingBusiness"), AtomicString("LoginAction")}));
-  return type && elements.Contains(type);
+  static const base::NoDestructor<HashSet<AtomicString>> elements(
+      {// Common types that include addresses.
+       AtomicString::FromLiteral<"AutoDealer">(),
+       AtomicString::FromLiteral<"Hotel">(),
+       AtomicString::FromLiteral<"LocalBusiness">(),
+       AtomicString::FromLiteral<"Organization">(),
+       AtomicString::FromLiteral<"Person">(),
+       AtomicString::FromLiteral<"Place">(),
+       AtomicString::FromLiteral<"PostalAddress">(),
+       AtomicString::FromLiteral<"Product">(),
+       AtomicString::FromLiteral<"ProductGroup">(),
+       AtomicString::FromLiteral<"Residence">(),
+       AtomicString::FromLiteral<"Restaurant">(),
+       AtomicString::FromLiteral<"SingleFamilyResidence">(),
+       // Common types including phone numbers
+       AtomicString::FromLiteral<"Store">(),
+       AtomicString::FromLiteral<"ContactPoint">(),
+       AtomicString::FromLiteral<"LodgingBusiness">(),
+       AtomicString::FromLiteral<"LoginAction">()});
+  return type && elements->Contains(type);
 }
 
 void ExtractEntity(const JSONObject&, int recursion_level, Entity&);

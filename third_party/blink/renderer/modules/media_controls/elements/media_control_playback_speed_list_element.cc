@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
@@ -49,9 +50,9 @@ constexpr auto kPlaybackSpeeds = std::to_array<PlaybackSpeed>({
 
 const QualifiedName& PlaybackRateAttrName() {
   // Save the playback rate in an attribute.
-  DEFINE_STATIC_LOCAL(QualifiedName, playback_rate_attr,
-                      (AtomicString("data-playback-rate")));
-  return playback_rate_attr;
+  static const base::NoDestructor<QualifiedName> playback_rate_attr(
+      AtomicString::FromLiteral<"data-playback-rate">());
+  return *playback_rate_attr;
 }
 
 }  // anonymous namespace

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/controller/private_memory_footprint_provider.h"
 
+#include "base/no_destructor.h"
 #include "base/task/task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -13,9 +14,9 @@ namespace blink {
 
 void PrivateMemoryFootprintProvider::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DEFINE_STATIC_LOCAL(PrivateMemoryFootprintProvider, provider,
-                      (std::move(task_runner)));
-  (void)provider;
+  static base::NoDestructor<PrivateMemoryFootprintProvider> provider{
+      std::move(task_runner)};
+  (void)*provider;
 }
 
 PrivateMemoryFootprintProvider::PrivateMemoryFootprintProvider(

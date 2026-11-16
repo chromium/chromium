@@ -6,9 +6,12 @@
 #include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
 
 #include <algorithm>
+#include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink {
@@ -45,30 +48,31 @@ Vector<AtomicString> GetAriaRoleNames() {
 
 ax::mojom::blink::Role AriaRoleToInternalRole(const AtomicString& aria_role_name) {
   using StringToRoleMap = HashMap<AtomicString, ax::mojom::blink::Role>;
-  DEFINE_STATIC_LOCAL(StringToRoleMap, role_map, ());
-
-  if (role_map.empty()) {
+  static const base::NoDestructor<StringToRoleMap> role_map([] {
+    StringToRoleMap map;
     for (const auto& entry : kAriaRoles) {
-      role_map.Set(AtomicString(entry.aria_role), entry.internal_role);
+      map.Set(AtomicString(entry.aria_role), entry.internal_role);
     }
     for (const auto& entry : kDeprecatedAriaRoles) {
-      role_map.Set(AtomicString(entry.aria_role), entry.internal_role);
+      map.Set(AtomicString(entry.aria_role), entry.internal_role);
     }
-  }
+    return map;
+  }());
 
-  auto it = role_map.find(aria_role_name);
-  if (it != role_map.end()) {
+  auto it = role_map->find(aria_role_name);
+  if (it != role_map->end()) {
     return it->value;
   }
   return ax::mojom::blink::Role::kUnknown;
 }
 
 const AtomicString& InternalRoleToAriaRole(ax::mojom::blink::Role internal_role) {
+  DCHECK(IsMainThread());
   using RoleToStringMap = HashMap<ax::mojom::blink::Role, AtomicString>;
-  DEFINE_STATIC_LOCAL(RoleToStringMap, role_map, ());
+  static base::NoDestructor<RoleToStringMap> role_map;
 
-  auto it = role_map.find(internal_role);
-  if (it != role_map.end()) {
+  auto it = role_map->find(internal_role);
+  if (it != role_map->end()) {
     return it->value;
   }
 
@@ -88,7 +92,7 @@ const AtomicString& InternalRoleToAriaRole(ax::mojom::blink::Role internal_role)
       return g_empty_atom;
   }
 
-  return role_map.Set(internal_role, AtomicString(role_string)).stored_value->value;
+  return role_map->Set(internal_role, AtomicString(role_string)).stored_value->value;
 }
 
 }  // namespace blink

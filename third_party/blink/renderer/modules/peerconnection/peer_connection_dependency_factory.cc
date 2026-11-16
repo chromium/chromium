@@ -26,6 +26,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -103,7 +104,6 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/async_dns_resolver.h"
 #include "third_party/webrtc/api/create_modular_peer_connection_factory.h"
@@ -608,8 +608,8 @@ class PeerConnectionStaticDeps {
 };
 
 PeerConnectionStaticDeps& StaticDeps() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(PeerConnectionStaticDeps, instance, ());
-  return instance;
+  static base::NoDestructor<PeerConnectionStaticDeps> instance;
+  return *instance;
 }
 
 webrtc::Thread* GetSignalingThread() {

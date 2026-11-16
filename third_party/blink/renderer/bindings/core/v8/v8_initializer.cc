@@ -32,6 +32,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -1000,9 +1001,9 @@ V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
 void V8Initializer::InitializeIsolateHolder(
     const intptr_t* reference_table,
     const std::string& js_command_line_flags) {
-  DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
+  static base::NoDestructor<ArrayBufferAllocator> array_buffer_allocator;
   gin::IsolateHolder::Initialize(
-      gin::IsolateHolder::kNonStrictMode, &array_buffer_allocator,
+      gin::IsolateHolder::kNonStrictMode, array_buffer_allocator.get(),
       reference_table, js_command_line_flags,
       Platform::Current()->DisallowV8FeatureFlagOverrides(), ReportV8FatalError,
       ReportV8OOMError);

@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -63,7 +64,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -74,9 +74,9 @@ namespace blink {
 namespace {
 
 SerializedScriptValue::CanDeserializeInCallback& GetCanDeserializeInCallback() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      SerializedScriptValue::CanDeserializeInCallback, g_callback, ());
-  return g_callback;
+  static base::NoDestructor<SerializedScriptValue::CanDeserializeInCallback>
+      g_callback;
+  return *g_callback;
 }
 
 }  // namespace

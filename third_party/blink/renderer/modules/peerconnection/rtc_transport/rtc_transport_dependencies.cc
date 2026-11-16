@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/webrtc/api/environment/environment_factory.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 
@@ -122,8 +122,8 @@ class RtcTransportProcessWideDeps {
 };
 
 RtcTransportProcessWideDeps& ProcessWideDeps() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(RtcTransportProcessWideDeps, instance, ());
-  return instance;
+  static base::NoDestructor<RtcTransportProcessWideDeps> instance;
+  return *instance;
 }
 
 // static

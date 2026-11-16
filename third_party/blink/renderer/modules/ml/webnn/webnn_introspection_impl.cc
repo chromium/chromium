@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/webnn_introspection_impl.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -13,8 +14,8 @@ namespace blink {
 
 // static
 WebNNIntrospectionImpl& WebNNIntrospectionImpl::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(WebNNIntrospectionImpl, instance, ());
-  return instance;
+  static base::NoDestructor<WebNNIntrospectionImpl> instance;
+  return *instance;
 }
 
 WebNNIntrospectionImpl::WebNNIntrospectionImpl() = default;

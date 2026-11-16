@@ -9,6 +9,7 @@
 #include "base/atomicops.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/process/memory.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
@@ -34,9 +35,9 @@ void CrashMemoryMetricsReporterImpl::Bind(
 }
 
 CrashMemoryMetricsReporterImpl& CrashMemoryMetricsReporterImpl::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CrashMemoryMetricsReporterImpl,
-                                  crash_memory_metrics_reporter_impl, ());
-  return crash_memory_metrics_reporter_impl;
+  static base::NoDestructor<CrashMemoryMetricsReporterImpl>
+      crash_memory_metrics_reporter_impl;
+  return *crash_memory_metrics_reporter_impl;
 }
 
 CrashMemoryMetricsReporterImpl::CrashMemoryMetricsReporterImpl()

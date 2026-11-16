@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_request.h"
@@ -63,12 +64,13 @@ namespace {
 using CursorSet = GCedHeapHashSet<WeakMember<IDBCursor>>;
 
 CursorSet& GetGlobalCursorSet() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<CursorSet>>,
-                                  thread_specific_instance, ());
-  if (!*thread_specific_instance) {
-    *thread_specific_instance = MakeGarbageCollected<CursorSet>();
+  static base::NoDestructor<ThreadSpecific<Persistent<CursorSet>>>
+      thread_specific_instance;
+  Persistent<CursorSet>& cursor_set = **thread_specific_instance;
+  if (!cursor_set) {
+    cursor_set = MakeGarbageCollected<CursorSet>();
   }
-  return **thread_specific_instance;
+  return *cursor_set;
 }
 
 void RegisterCursor(IDBCursor* cursor) {

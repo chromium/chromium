@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -83,9 +84,9 @@ class OffscreenFontCache {
 };
 
 OffscreenFontCache& GetOffscreenFontCache() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<OffscreenFontCache>,
-                                  thread_specific_pool, ());
-  return *thread_specific_pool;
+  static base::NoDestructor<ThreadSpecific<OffscreenFontCache>>
+      thread_specific_pool;
+  return **thread_specific_pool;
 }
 
 }  // namespace
