@@ -116,3 +116,36 @@ TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
   EXPECT_CALL(*mock_jni_bridge(), Dismiss);
   controller_.reset();
 }
+
+// Regression test for crbug.com/584280944: a second `Show()` must dismiss the
+// Java bridge of the first sheet before replacing it. Otherwise the first Java
+// bridge keeps a pointer to the native bridge and outlives it.
+TEST_F(AcknowledgeGroupedCredentialSheetControllerTest,
+       SecondShowDismissesFirstSheet) {
+  base::MockCallback<base::OnceCallback<void(DismissReson)>> first_reply;
+  base::MockCallback<base::OnceCallback<void(DismissReson)>> second_reply;
+  EXPECT_CALL(first_reply, Run).Times(0);
+  EXPECT_CALL(second_reply, Run).Times(0);
+
+  {
+    testing::InSequence in_sequence;
+    // There is nothing to dismiss yet, which is up to the delegate to notice.
+    EXPECT_CALL(*mock_jni_bridge(), Dismiss);
+    EXPECT_CALL(*mock_jni_bridge(), Create);
+    EXPECT_CALL(*mock_jni_bridge(), Show);
+    // The first sheet is dismissed before the second Java bridge is created.
+    EXPECT_CALL(*mock_jni_bridge(), Dismiss);
+    EXPECT_CALL(*mock_jni_bridge(), Create);
+    EXPECT_CALL(*mock_jni_bridge(), Show);
+    // The second sheet is dismissed when the controller is destroyed.
+    EXPECT_CALL(*mock_jni_bridge(), Dismiss);
+  }
+
+  controller_->ShowAcknowledgeSheet(kCurrentHostname, kCredentialHostname,
+                                    window_android_.get()->get(),
+                                    first_reply.Get());
+  controller_->ShowAcknowledgeSheet(kCurrentHostname, kCredentialHostname,
+                                    window_android_.get()->get(),
+                                    second_reply.Get());
+  controller_.reset();
+}
