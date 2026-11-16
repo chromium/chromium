@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -160,11 +161,16 @@ void OmniboxPopupPresenterBase::Show() {
     base::TimeTicks result_ready_time =
         controller()->autocomplete_controller()->result().result_ready_time();
     is_deferred_ = timeout.has_value();
+    // The callback can run synchronously, either right away or when content
+    // drops it, e.g. while the RenderWidgetHost rebinds its interfaces for a
+    // navigation. Showing the WebContents from there re-enters the
+    // RenderWidgetHost in an inconsistent state, so always post it.
     content->GetWebContents()->GetPrimaryMainFrame()->InsertVisualStateCallback(
-        base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
-                       visual_state_weak_factory_.GetWeakPtr(),
-                       show_request_time, result_ready_time,
-                       /*from_fallback=*/false));
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
+                           visual_state_weak_factory_.GetWeakPtr(),
+                           show_request_time, result_ready_time,
+                           /*from_fallback=*/false)));
     if (is_deferred_) {
       // Add a backup timer in case the visual state callback is never called.
       // The visual state callback should always be called, but this fallback
