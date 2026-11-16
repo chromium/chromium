@@ -1999,6 +1999,186 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectCancel) {
   EXPECT_FALSE(response.data);
 }
 
+TEST_F(ResourceRequestSenderSyncTest,
+       SendSyncRedirectCompleteBeforeFollowRedirect) {
+  base::WaitableEvent complete_processed_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  scoped_refptr<MockRequestClient> mock_client =
+      base::MakeRefCounted<MockRequestClient>();
+  mock_client->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
+      [&](const net::RedirectInfo& redirect_info,
+          network::mojom::URLResponseHeadPtr head,
+          ResourceRequestClient::FollowRedirectCallback callback) {
+        EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
+        complete_processed_event.Wait();
+        std::move(callback).Run({}, {});
+      }));
+
+  auto loader_factory = base::MakeRefCounted<
+      FakeURLLoaderFactoryForBackgroundThread>(base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+          mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+        std::unique_ptr<MockLoader> mock_loader =
+            std::make_unique<MockLoader>();
+        MockLoader* mock_loader_ptr = mock_loader.get();
+        mojo::MakeSelfOwnedReceiver(std::move(mock_loader), std::move(loader));
+
+        mojo::Remote<network::mojom::URLLoaderClient> loader_client(
+            std::move(client));
+
+        net::RedirectInfo redirect_info;
+        redirect_info.new_url = GURL(kRedirectedUrl);
+        loader_client->OnReceiveRedirect(
+            redirect_info, network::mojom::URLResponseHead::New());
+        loader_client->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_FAILED));
+
+        scoped_refptr<RefCountedURLLoaderClientRemote> refcounted_client =
+            base::MakeRefCounted<RefCountedURLLoaderClientRemote>(
+                std::move(loader_client));
+        refcounted_client->data.FlushAsyncForTesting(
+            base::BindLambdaForTesting([&]() {
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&base::WaitableEvent::Signal,
+                                 base::Unretained(&complete_processed_event)));
+            }));
+
+        mock_loader_ptr->SetFollowRedirectCallback(base::BindRepeating(
+            [](scoped_refptr<RefCountedURLLoaderClientRemote> refcounted_client,
+               const std::vector<std::string>& removed_headers,
+               const net::HttpRequestHeaders& modified_headers) {
+              // FollowRedirect() must not be called after OnComplete().
+              NOTREACHED();
+            },
+            std::move(refcounted_client)));
+      }));
+
+  SyncLoadResponse response = SendSync(mock_client, std::move(loader_factory));
+  EXPECT_EQ(net::ERR_FAILED, response.error_code);
+  EXPECT_FALSE(response.redirect_info.has_value());
+  EXPECT_FALSE(response.data);
+}
+
+TEST_F(ResourceRequestSenderSyncTest,
+       SendSyncRedirectCompleteBeforeCancelRedirect) {
+  base::WaitableEvent complete_processed_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  scoped_refptr<MockRequestClient> mock_client =
+      base::MakeRefCounted<MockRequestClient>();
+  mock_client->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
+      [&](const net::RedirectInfo& redirect_info,
+          network::mojom::URLResponseHeadPtr head,
+          ResourceRequestClient::FollowRedirectCallback callback) {
+        EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
+        complete_processed_event.Wait();
+        // Don't call callback to cancel the request.
+      }));
+
+  auto loader_factory = base::MakeRefCounted<
+      FakeURLLoaderFactoryForBackgroundThread>(base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+          mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+        std::unique_ptr<MockLoader> mock_loader =
+            std::make_unique<MockLoader>();
+        MockLoader* mock_loader_ptr = mock_loader.get();
+        mojo::MakeSelfOwnedReceiver(std::move(mock_loader), std::move(loader));
+
+        mojo::Remote<network::mojom::URLLoaderClient> loader_client(
+            std::move(client));
+
+        net::RedirectInfo redirect_info;
+        redirect_info.new_url = GURL(kRedirectedUrl);
+        loader_client->OnReceiveRedirect(
+            redirect_info, network::mojom::URLResponseHead::New());
+        loader_client->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_FAILED));
+
+        scoped_refptr<RefCountedURLLoaderClientRemote> refcounted_client =
+            base::MakeRefCounted<RefCountedURLLoaderClientRemote>(
+                std::move(loader_client));
+        refcounted_client->data.FlushAsyncForTesting(
+            base::BindLambdaForTesting([&]() {
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&base::WaitableEvent::Signal,
+                                 base::Unretained(&complete_processed_event)));
+            }));
+
+        mock_loader_ptr->SetFollowRedirectCallback(base::BindRepeating(
+            [](scoped_refptr<RefCountedURLLoaderClientRemote> refcounted_client,
+               const std::vector<std::string>& removed_headers,
+               const net::HttpRequestHeaders& modified_headers) {
+              // FollowRedirect() must not be called.
+              NOTREACHED();
+            },
+            std::move(refcounted_client)));
+      }));
+
+  SyncLoadResponse response = SendSync(mock_client, std::move(loader_factory));
+  EXPECT_EQ(net::ERR_ABORTED, response.error_code);
+  EXPECT_FALSE(response.redirect_info.has_value());
+  EXPECT_FALSE(response.data);
+}
+
+TEST_F(ResourceRequestSenderSyncTest,
+       SendSyncRedirectMojoDisconnectBeforeFollowRedirect) {
+  base::WaitableEvent disconnect_processed_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  scoped_refptr<MockRequestClient> mock_client =
+      base::MakeRefCounted<MockRequestClient>();
+  mock_client->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
+      [&](const net::RedirectInfo& redirect_info,
+          network::mojom::URLResponseHeadPtr head,
+          ResourceRequestClient::FollowRedirectCallback callback) {
+        EXPECT_EQ(GURL(kRedirectedUrl), redirect_info.new_url);
+        disconnect_processed_event.Wait();
+        std::move(callback).Run({}, {});
+      }));
+
+  auto loader_factory =
+      base::MakeRefCounted<FakeURLLoaderFactoryForBackgroundThread>(
+          base::BindLambdaForTesting(
+              [&](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+                  mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+                mojo::MakeSelfOwnedReceiver(std::make_unique<MockLoader>(),
+                                            std::move(loader));
+
+                mojo::Remote<network::mojom::URLLoaderClient> loader_client(
+                    std::move(client));
+
+                net::RedirectInfo redirect_info;
+                redirect_info.new_url = GURL(kRedirectedUrl);
+                loader_client->OnReceiveRedirect(
+                    redirect_info, network::mojom::URLResponseHead::New());
+                // Drop the URLLoaderClient remote while the redirect is being
+                // handled on the calling thread, triggering
+                // ThrottlingURLLoader's disconnect handler ->
+                // OnComplete(ERR_ABORTED).
+                loader_client.reset();
+                base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                    FROM_HERE, base::BindLambdaForTesting([&]() {
+                      base::SingleThreadTaskRunner::GetCurrentDefault()
+                          ->PostTask(
+                              FROM_HERE,
+                              base::BindOnce(&base::WaitableEvent::Signal,
+                                             base::Unretained(
+                                                 &disconnect_processed_event)));
+                    }));
+              }));
+
+  SyncLoadResponse response = SendSync(mock_client, std::move(loader_factory));
+  EXPECT_EQ(net::ERR_ABORTED, response.error_code);
+  EXPECT_FALSE(response.redirect_info.has_value());
+  EXPECT_FALSE(response.data);
+}
+
 class TimeConversionTest : public ResourceRequestSenderTest {
  public:
   void PerformTest(network::mojom::URLResponseHeadPtr response_head) {

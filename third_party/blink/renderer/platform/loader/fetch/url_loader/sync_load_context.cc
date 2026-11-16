@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/byte_size.h"
 #include "base/check_op.h"
@@ -176,7 +177,9 @@ void SyncLoadContext::OnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head,
     FollowRedirectCallback follow_redirect_callback) {
-  DCHECK(!Completed());
+  CHECK(!Completed());
+  CHECK(!follow_redirect_callback_);
+  CHECK(!deferred_completion_status_);
 
   if (has_authorization_header_ &&
       !url::IsSameOriginWith(response_->url, redirect_info.new_url)) {
@@ -195,19 +198,29 @@ void SyncLoadContext::OnReceivedRedirect(
 void SyncLoadContext::FollowRedirect(std::vector<std::string> removed_headers,
                                      net::HttpRequestHeaders modified_headers) {
   CHECK(follow_redirect_callback_);
+  if (deferred_completion_status_) {
+    follow_redirect_callback_.Reset();
+    response_->redirect_info.reset();
+    *context_for_redirect_ = nullptr;
+    OnCompletedRequest(
+        *std::exchange(deferred_completion_status_, std::nullopt));
+    return;
+  }
   if (!signals_->RestartAfterRedirect()) {
     CancelRedirect();
     return;
   }
 
-  response_->redirect_info = net::RedirectInfo();
+  response_->redirect_info.reset();
   *context_for_redirect_ = nullptr;
   std::move(follow_redirect_callback_)
       .Run(std::move(removed_headers), std::move(modified_headers));
 }
 
 void SyncLoadContext::CancelRedirect() {
-  response_->redirect_info = net::RedirectInfo();
+  follow_redirect_callback_.Reset();
+  deferred_completion_status_.reset();
+  response_->redirect_info.reset();
   *context_for_redirect_ = nullptr;
 
   response_->error_code = net::ERR_ABORTED;
@@ -218,7 +231,9 @@ void SyncLoadContext::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
-  DCHECK(!Completed());
+  CHECK(!Completed());
+  CHECK(!follow_redirect_callback_);
+  CHECK(!deferred_completion_status_);
   response_->head = std::move(head);
 
   if (!body) {
@@ -260,6 +275,24 @@ void SyncLoadContext::OnCompletedRequest(
   if (Completed()) {
     // It means the response has been aborted due to an error before finishing
     // the response.
+    return;
+  }
+  if (follow_redirect_callback_) {
+    // Defer completion until FollowRedirect() or CancelRedirect() runs so
+    // `response_` is not mutated and `this` is not deleted while the calling
+    // thread is handling the redirect.
+    if (!deferred_completion_status_) {
+      network::URLLoaderCompletionStatus deferred_status = status;
+      // Completing with `net::OK` before the redirect is followed means no
+      // final `OnReceivedResponse()` was received. Coerce it to `ERR_FAILED`
+      // so `URLLoader::LoadSynchronously()` does not treat the unfollowed
+      // redirect's URL and headers as a valid final response in release builds
+      // (where `MojoURLLoaderClient::OnComplete()`'s `DCHECK` is compiled out).
+      if (deferred_status.error_code == net::OK) {
+        deferred_status.error_code = net::ERR_FAILED;
+      }
+      deferred_completion_status_ = std::move(deferred_status);
+    }
     return;
   }
   request_completed_ = true;
@@ -346,6 +379,9 @@ void SyncLoadContext::OnTimeout() {
 void SyncLoadContext::CompleteRequest() {
   DCHECK(blob_finished_ || (mode_ != Mode::kBlob));
   DCHECK(!body_handle_.is_valid());
+  CHECK(!follow_redirect_callback_);
+  CHECK(!deferred_completion_status_);
+  CHECK(!*context_for_redirect_);
   body_watcher_.Cancel();
   signals_->SignalRedirectOrResponseComplete();
   signals_ = nullptr;
