@@ -74,15 +74,26 @@ TEST_F(GeminiSessionMetricsManagerTest, TestSessionDismissedWithViewState) {
   histogram_tester_.ExpectBucketCount(kSessionTabSwitchCountHistogram, 0, 1);
 }
 
-// Tests that `sessionDismissed` records and resets the session tab switch
-// count.
+// Tests that `sessionDismissed` records the dismissed view state based on the
+// current detent and resets the session tab switch count.
 TEST_F(GeminiSessionMetricsManagerTest, TestSessionDismissed) {
   [metrics_manager_ activeTabSwitched];
   [metrics_manager_ sessionDismissed];
   histogram_tester_.ExpectBucketCount(kSessionTabSwitchCountHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kFloatyDismissedStateHistogram,
+      static_cast<int>(GeminiViewState::kExpanded), 1);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "MobileGeminiFloatyExpandedToDismissed"));
 
+  [metrics_manager_ didChangeDetent:AssistantContainerDetent::kMinimized];
   [metrics_manager_ sessionDismissed];
   histogram_tester_.ExpectBucketCount(kSessionTabSwitchCountHistogram, 0, 1);
+  histogram_tester_.ExpectBucketCount(
+      kFloatyDismissedStateHistogram,
+      static_cast<int>(GeminiViewState::kCollapsed), 1);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "MobileGeminiFloatyCollapsedToDismissed"));
 }
 
 // Tests that floaty view state changes track minimized duration and record

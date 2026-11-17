@@ -47,17 +47,17 @@ using ios::provider::GeminiViewState;
 
 - (void)sessionDismissedWithViewState:(GeminiViewState)viewState {
   RecordFloatyDismissedState(viewState);
-  [self sessionDismissed];
-}
-
-- (void)sessionDismissed {
-  // TODO(crbug.com/573666470): Record the last detent, equivalent to
-  // `RecordFloatyDismissedState`.
   RecordSessionTabSwitchCount(_sessionTabSwitchCount);
   _sessionTabSwitchCount = 0;
   _startTime = base::TimeTicks();
   _elapsedMinimizedFloatyTime = base::TimeTicks();
   _isMinimized = NO;
+}
+
+- (void)sessionDismissed {
+  [self sessionDismissedWithViewState:_isMinimized
+                                          ? GeminiViewState::kCollapsed
+                                          : GeminiViewState::kExpanded];
 }
 
 #pragma mark - View State

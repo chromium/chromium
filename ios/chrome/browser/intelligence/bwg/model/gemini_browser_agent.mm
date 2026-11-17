@@ -1245,11 +1245,19 @@ void GeminiBrowserAgent::CollapseFloatyIfInvoked() {
 void GeminiBrowserAgent::SetLastShownViewState(
     ios::provider::GeminiViewState view_state) {
   if (view_state == ios::provider::GeminiViewState::kHidden ||
+      view_state == ios::provider::GeminiViewState::kUnknown ||
       view_state == last_shown_view_state_) {
     return;
   }
 
-  [session_metrics_manager_ didChangeViewState:view_state];
+  const bool is_collapse_or_expand_transition =
+      (view_state == ios::provider::GeminiViewState::kCollapsed &&
+       last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded) ||
+      (view_state == ios::provider::GeminiViewState::kExpanded &&
+       last_shown_view_state_ == ios::provider::GeminiViewState::kCollapsed);
+  if (is_collapse_or_expand_transition) {
+    [session_metrics_manager_ didChangeViewState:view_state];
+  }
   last_shown_view_state_ = view_state;
 }
 
@@ -1376,6 +1384,7 @@ void GeminiBrowserAgent::DismissFloaty() {
   [session_metrics_manager_
       sessionDismissedWithViewState:last_shown_view_state_];
 
+  last_shown_view_state_ = ios::provider::GeminiViewState::kUnknown;
   is_floaty_invoked_ = false;
   for (auto& observer : observers_) {
     observer.OnFloatyInvokedChanged(is_floaty_invoked_);

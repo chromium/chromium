@@ -525,6 +525,12 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)assistantContainer:(AssistantContainerViewController*)container
            didChangeDetent:(AssistantContainerDetent)newDetent {
+  // Ignore layout-driven detent callbacks before `connect` initializes the view
+  // mode.
+  if (_stateManager.viewMode == GeminiViewMode::kUnknown) {
+    return;
+  }
+
   BOOL minimized = (newDetent == kMinimized);
   if (_stateManager.currentUIState.detent == kMinimized && !minimized) {
     [self requestActivePageContextGeneration];

@@ -2048,3 +2048,40 @@ TEST_F(GeminiBrowserAgentTest,
   EXPECT_OCMOCK_VERIFY(mediator);
   [mediator stopMocking];
 }
+
+// Tests that `SetLastShownViewState` only records view state transition user
+// actions when transitioning between `kExpanded` and `kCollapsed`, and that
+// `DismissFloaty` resets the last shown view state to `kUnknown`.
+TEST_F(GeminiBrowserAgentTest, TestSetLastShownViewStateMetrics) {
+  base::UserActionTester user_action_tester;
+
+  // Initial transition from `kUnknown` to `kExpanded` should not record
+  // `MobileGeminiFloatyCollapsedToExpanded`.
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kExpanded);
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyCollapsedToExpanded"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyExpandedToCollapsed"));
+
+  // Transitioning from `kExpanded` to `kCollapsed` records the collapse action.
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kCollapsed);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyExpandedToCollapsed"));
+
+  // Transitioning from `kCollapsed` to `kExpanded` records the expand action.
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kExpanded);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyCollapsedToExpanded"));
+
+  // Dismissing the floaty resets `last_shown_view_state_` to `kUnknown`, so a
+  // subsequent initial `kCollapsed` state does not record a false collapse.
+  SetIsFloatyInvoked(true);
+  gemini_browser_agent_->DismissFloaty();
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kCollapsed);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyExpandedToCollapsed"));
+}

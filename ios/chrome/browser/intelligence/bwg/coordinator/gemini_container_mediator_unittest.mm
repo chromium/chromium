@@ -14,6 +14,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -816,6 +817,7 @@ TEST_F(GeminiContainerMediatorTest,
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   AppendActiveWebState();
   [mediator_ connect];
@@ -831,6 +833,8 @@ TEST_F(GeminiContainerMediatorTest,
   [mediator_ disconnect];
 
   histogram_tester.ExpectUniqueSample(kSessionTabSwitchCountHistogram, 1, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyExpandedToDismissed"));
 }
 
 // Tests that the mediator correctly notifies the delegate when the user barges
@@ -1149,11 +1153,13 @@ TEST_F(GeminiContainerMediatorTest,
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
 
+  AppendActiveWebState();
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  [mediator_ connect];
   // Seed a non-default value so an unexpected update is detectable.
   consumer.worklogDisplayMode = ActuationWorklogDisplayModeExpanded;
-  mediator_.consumer = consumer;
 
   [mediator_ assistantContainer:nil
                 didChangeDetent:AssistantContainerDetent::kMinimized];
@@ -1177,9 +1183,11 @@ TEST_F(GeminiContainerMediatorTest,
   scoped_feature_list.InitWithFeatures(
       {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
 
+  AppendActiveWebState();
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
+  [mediator_ connect];
 
   [mediator_ setActuationActive:YES];
   EXPECT_EQ(ActuationWorklogDisplayModeCompact, consumer.worklogDisplayMode);
@@ -2534,6 +2542,39 @@ TEST_F(GeminiContainerMediatorTest,
                       sessionID:@"session"
                  conversationID:@"conv"];
   EXPECT_OCMOCK_VERIFY(strict_fullscreen_handler);
+}
+
+// Tests that `assistantContainer:didChangeDetent:` does not record collapse
+// metrics before `connect` initializes the view mode, and records them once
+// connected.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidChangeDetentDoesNotRecordMetricsBeforeConnect) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+  base::UserActionTester user_action_tester;
+
+  // Before `connect`, `viewMode` is `kUnknown`. Layout-driven detent callbacks
+  // at `kMinimized` should not record collapse metrics.
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyExpandedToCollapsed"));
+
+  AppendActiveWebState();
+  [mediator_ connect];
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMedium];
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyCollapsedToExpanded"));
+
+  // After `connect` initializes `viewMode`, minimizing records the collapse
+  // metric.
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MobileGeminiFloatyExpandedToCollapsed"));
 }
 
 }  // namespace
