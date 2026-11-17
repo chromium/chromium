@@ -42,7 +42,9 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_SMART_CARD)
@@ -269,6 +271,46 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
   web_contents_focus_tracker.WaitForFocus(false);
   EXPECT_TRUE(location_bar_focus_tracker.focused());
   EXPECT_FALSE(web_contents_focus_tracker.focused());
+}
+
+// Regression test for crbug.com/515294767: selecting "Site settings" from the
+// PageInfo bubble opens a new foreground Settings tab and closes the bubble,
+// which should focus the newly opened tab's web contents rather than advancing
+// focus to the first focusable view in Top Chrome (e.g. Tab Search).
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewFocusInteractiveUiTest,
+                       FocusMovesToNewTabOnSiteSettingsClick) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  WebContentsFocusTracker initial_focus_tracker(web_contents());
+  web_contents()->Focus();
+  initial_focus_tracker.WaitForFocus(true);
+
+  LocationIconTestAccessor(browser()).ShowBubble();
+  auto* page_info_bubble_view =
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(web_contents());
+  ASSERT_NE(nullptr, page_info_bubble_view);
+  views::test::WaitForWidgetActive(page_info_bubble_view->GetWidget(), true);
+
+  auto* site_settings_button = views::Button::AsButton(
+      page_info_bubble_view->GetWidget()->GetRootView()->GetViewByID(
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS));
+  ASSERT_NE(nullptr, site_settings_button);
+
+  content::WebContentsAddedObserver new_tab_observer;
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      site_settings_button);
+  content::WebContents* settings_contents = new_tab_observer.GetWebContents();
+  ASSERT_NE(nullptr, settings_contents);
+  WebContentsFocusTracker settings_focus_tracker(settings_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(settings_contents));
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::test::WaitForWidgetActive(browser_view->GetWidget(), true);
+  settings_focus_tracker.WaitForFocus(true);
+  EXPECT_EQ(settings_contents,
+            browser()->GetTabStripModel()->GetActiveWebContents());
+  EXPECT_EQ(browser_view->GetActiveContentsWebView(),
+            browser_view->GetFocusManager()->GetFocusedView());
+  EXPECT_TRUE(settings_focus_tracker.focused());
 }
 
 class PageInfoBubbleViewInteractiveUiTest : public InteractiveBrowserTest {

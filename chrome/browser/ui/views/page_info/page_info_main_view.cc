@@ -646,6 +646,12 @@ void PageInfoMainView::HandleMoreInfoRequest(views::View* source) {
 void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
   switch (view_id) {
     case PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
+      // Close the bubble before opening Settings so that activation returns to
+      // the browser window before the new tab is activated. Otherwise the
+      // bubble closes in the middle of the tab switch and focus can land on
+      // Top Chrome instead of the new tab. `presenter_` outlives the widget's
+      // asynchronous destruction.
+      GetWidget()->Close();
       presenter_->OpenSiteSettingsView();
       break;
     default:
