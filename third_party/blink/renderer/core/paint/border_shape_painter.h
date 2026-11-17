@@ -39,9 +39,10 @@ class BorderShapePainter {
                               const PhysicalRect& outer_reference_rect,
                               const PhysicalRect& inner_reference_rect);
 
-  // Paints an outline that follows the border-shape path.
-  // Returns true if an outline was painted.
-  static bool PaintOutline(GraphicsContext&,
+  // Paints an outline that follows the border-shape path. The caller must
+  // ensure the style has a border-shape, is not outline-style: auto, and has
+  // a positive outline width.
+  static void PaintOutline(GraphicsContext&,
                            const ComputedStyle&,
                            const PhysicalRect& outer_reference_rect,
                            int outline_width,

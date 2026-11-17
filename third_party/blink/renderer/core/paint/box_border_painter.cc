@@ -613,26 +613,6 @@ bool DarkenBoxSide(BoxSide side, EBorderStyle style) {
          (style == EBorderStyle::kInset);
 }
 
-Color CalculateInsetOutsetColor(bool is_darken, const Color& color) {
-  // This algorithm is chosen to match WebKit's behavior for softening
-  // inset/outset colors.
-  constexpr float kBaseDarkColorLuminance =
-      0.014443844f;  // Luminance of rgb(32, 32, 32)
-  constexpr float kBaseLightColorLuminance =
-      0.83077f;  // Luminance of rgb(235, 235, 235)
-  float luminance = color_utils::GetRelativeLuminance4f(color.toSkColor4f());
-
-  // Special case very dark colors to give them extra contrast.
-  if (luminance <= kBaseDarkColorLuminance) {
-    return is_darken ? color.Light() : color.Light().Light();
-  }
-  if (is_darken) {
-    return color.Dark();
-  }
-  // For very light colors, return the color as-is. Otherwise, lighten it.
-  return luminance > kBaseLightColorLuminance ? color : color.Light();
-}
-
 void DrawDoubleBoxSide(GraphicsContext& context,
                        int x1,
                        int y1,
@@ -936,7 +916,8 @@ void DrawLineForBoxSide(GraphicsContext& context,
       break;
     case EBorderStyle::kInset:
     case EBorderStyle::kOutset:
-      color = CalculateInsetOutsetColor(DarkenBoxSide(side, style), color);
+      color = BoxBorderPainter::CalculateInsetOutsetColor(
+          DarkenBoxSide(side, style), color);
       [[fallthrough]];
     case EBorderStyle::kSolid:
       DrawSolidBoxSide(context, x1, y1, x2, y2, side, color, adjacent_width1,
@@ -1134,6 +1115,28 @@ void ClipBorderSidePolygonFromCorners(GraphicsContext& context,
 }
 
 }  // anonymous namespace
+
+// static
+Color BoxBorderPainter::CalculateInsetOutsetColor(bool is_darken,
+                                                  const Color& color) {
+  // This algorithm is chosen to match WebKit's behavior for softening
+  // inset/outset colors.
+  constexpr float kBaseDarkColorLuminance =
+      0.014443844f;  // Luminance of rgb(32, 32, 32)
+  constexpr float kBaseLightColorLuminance =
+      0.83077f;  // Luminance of rgb(235, 235, 235)
+  float luminance = color_utils::GetRelativeLuminance4f(color.toSkColor4f());
+
+  // Special case very dark colors to give them extra contrast.
+  if (luminance <= kBaseDarkColorLuminance) {
+    return is_darken ? color.Light() : color.Light().Light();
+  }
+  if (is_darken) {
+    return color.Dark();
+  }
+  // For very light colors, return the color as-is. Otherwise, lighten it.
+  return luminance > kBaseLightColorLuminance ? color : color.Light();
+}
 
 // Holds edges grouped by opacity and sorted in paint order.
 struct BoxBorderPainter::ComplexBorderInfo {
@@ -1784,8 +1787,8 @@ void BoxBorderPainter::DrawCurvedBoxSide(int border_thickness,
       return;
     case EBorderStyle::kInset:
     case EBorderStyle::kOutset:
-      color =
-          CalculateInsetOutsetColor(DarkenBoxSide(side, border_style), color);
+      color = BoxBorderPainter::CalculateInsetOutsetColor(
+          DarkenBoxSide(side, border_style), color);
       [[fallthrough]];
     case EBorderStyle::kSolid:
       break;
@@ -1889,7 +1892,8 @@ void BoxBorderPainter::DrawCurvedRidgeGrooveBoxSide(
   const gfx::Rect rect = gfx::ToRoundedRect(outer_.Rect());
 
   // Paint full border
-  context_.SetFillColor(CalculateInsetOutsetColor(darken_s1, color));
+  context_.SetFillColor(
+      BoxBorderPainter::CalculateInsetOutsetColor(darken_s1, color));
   context_.FillRect(rect, auto_dark_mode);
 
   // Paint inner only
@@ -1899,7 +1903,8 @@ void BoxBorderPainter::DrawCurvedRidgeGrooveBoxSide(
           style_, border_rect_, CenterOutsets(), sides_to_include_);
 
   ClipContouredRect(clip_rect);
-  context_.SetFillColor(CalculateInsetOutsetColor(!darken_s1, color));
+  context_.SetFillColor(
+      BoxBorderPainter::CalculateInsetOutsetColor(!darken_s1, color));
   context_.FillRect(rect, auto_dark_mode);
 }
 

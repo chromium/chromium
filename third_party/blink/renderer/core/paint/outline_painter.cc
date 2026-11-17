@@ -1016,7 +1016,8 @@ void OutlinePainter::PaintOutlineRects(
 
   // Handle border-shape outline: if the element has a border-shape, the outline
   // should follow the border-shape path instead of the rectangular outline.
-  if (style.HasBorderShape() && layout_object && !style.OutlineStyleIsAuto()) {
+  if (style.HasBorderShape() && layout_object && !style.OutlineStyleIsAuto() &&
+      info.width > 0) {
     PhysicalRect border_rect = outline_rects[0];
     std::optional<BorderShapeReferenceRects> shape_ref_rects =
         ComputeBorderShapeReferenceRects(border_rect, style, *layout_object);
@@ -1026,11 +1027,10 @@ void OutlinePainter::PaintOutlineRects(
     // BorderShapePainter::PaintOutline which currently doesn't handle
     // fragmented boxes. See bug for follow-up to support fragmentation and
     // ensure the outline follows the border-shape across fragments.
-    if (BorderShapePainter::PaintOutline(paint_info.context, style,
-                                         outer_reference_rect, info.width,
-                                         info.offset)) {
-      return;
-    }
+    BorderShapePainter::PaintOutline(paint_info.context, style,
+                                     outer_reference_rect, info.width,
+                                     info.offset);
+    return;
   }
 
   if (style.OutlineStyleIsAuto()) {

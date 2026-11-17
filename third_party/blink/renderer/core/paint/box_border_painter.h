@@ -72,6 +72,11 @@ class BoxBorderPainter {
                                 const StyledStrokeData&,
                                 const AutoDarkMode& auto_dark_mode);
 
+  // Returns the WebKit-style softened inset/outset color for `color`.
+  // `is_darken` selects the darker of the two shades; the implementation
+  // special-cases very dark and very light colors to keep contrast.
+  static Color CalculateInsetOutsetColor(bool is_darken, const Color& color);
+
  private:
   enum class BorderAreaMaskTag { kTag };
 

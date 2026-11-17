@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
+#include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
+#include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -47,8 +49,8 @@ Path OuterPathWithoutStroke(const ComputedStyle& style,
 
 StrokeData GetStrokeData(const StyleBorderShape& border_shape,
                          const Path& path,
-                         float thickness) {
-  StrokeData stroke_data;
+                         float thickness,
+                         StrokeData stroke_data = StrokeData()) {
   stroke_data.SetThickness(thickness);
 
   // The default miter limit of 4.0 is suitable for shapes containing curves or
@@ -272,24 +274,25 @@ void BorderShapePainter::PaintBorderArea(
                    inner_reference_rect, Color::kBlack, thickness);
 }
 
-bool BorderShapePainter::PaintOutline(GraphicsContext& context,
+void BorderShapePainter::PaintOutline(GraphicsContext& context,
                                       const ComputedStyle& style,
                                       const PhysicalRect& outer_reference_rect,
                                       int outline_width,
                                       int outline_offset) {
-  const StyleBorderShape* border_shape = style.BorderShape();
-  if (!border_shape || outline_width <= 0) {
-    return false;
+  CHECK(style.HasBorderShape());
+  CHECK_GT(outline_width, 0);
+
+  const BorderEdge edge(
+      outline_width, style.VisitedDependentColor(GetCSSPropertyOutlineColor()),
+      style.OutlineStyle());
+  if (!edge.ShouldRender()) {
+    return;
   }
 
-  const Color outline_color =
-      style.VisitedDependentColor(GetCSSPropertyOutlineColor());
   const AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBorder));
 
   context.SetShouldAntialias(true);
-
-  EBorderStyle outline_style = style.OutlineStyle();
 
   auto fill_outline_band = [&](float outer_extent, float inner_extent) {
     const Path outer_path =
@@ -299,38 +302,103 @@ bool BorderShapePainter::PaintOutline(GraphicsContext& context,
     SkPathBuilder builder(SkPathFillType::kEvenOdd);
     builder.addPath(outer_path.GetSkPath());
     builder.addPath(inner_path.GetSkPath());
-    SkPath sk_result = builder.detach();
-    context.FillPath(Path(sk_result), auto_dark_mode);
+    context.FillPath(Path(builder.detach()), auto_dark_mode);
   };
 
-  // Draw solid outline as a filled region: OuterBound - InnerBound
-  if (outline_style == EBorderStyle::kSolid) {
-    context.SetFillColor(outline_color);
-    fill_outline_band(outline_offset + outline_width, outline_offset);
-    return true;
-  }
+  auto paint_dotted_or_dashed = [&](EBorderStyle outline_style) {
+    const StrokeStyle stroke_style =
+        outline_style == EBorderStyle::kDashed ? kDashedStroke : kDottedStroke;
+    StyledStrokeData styled_stroke;
+    styled_stroke.SetStyle(stroke_style);
+    // The stroke is clipped to the band; drawing wider than the band ensures
+    // dashes/dots fill the clip when outline_width is odd (matches the
+    // behavior in ComplexOutlinePainter::PaintDottedOrDashedOutline).
+    const bool odd_dashed =
+        (outline_width % 2) &&
+        StyledStrokeData::StrokeIsDashed(outline_width, stroke_style);
+    styled_stroke.SetThickness(odd_dashed ? outline_width + 2 : outline_width);
 
-  if (outline_style == EBorderStyle::kDouble) {
-    context.SetFillColor(outline_color);
-    const float stroke_width =
-        std::round(static_cast<float>(outline_width) / 3.0f);
+    const float center_extent = outline_offset + outline_width / 2.0f;
+    const Path center_path =
+        OuterPathWithOffset(style, outer_reference_rect, center_extent);
+    const StrokeData stroke_data = GetStrokeData(
+        *style.BorderShape(), center_path, styled_stroke.Thickness(),
+        styled_stroke.ConvertToStrokeData(
+            {static_cast<int>(center_path.length()), outline_width,
+             center_path.IsClosed()}));
 
-    if (stroke_width < 1) {
-      // Fall back to solid logic if too thin
+    // Clip to the outline band so an oversized stroke stays within it.
+    GraphicsContextStateSaver saver(context);
+    const Path outer_path = OuterPathWithOffset(style, outer_reference_rect,
+                                                outline_offset + outline_width);
+    const Path inner_path =
+        OuterPathWithOffset(style, outer_reference_rect, outline_offset);
+    SkPathBuilder clip_builder(SkPathFillType::kEvenOdd);
+    clip_builder.addPath(outer_path.GetSkPath());
+    clip_builder.addPath(inner_path.GetSkPath());
+    context.ClipPath(clip_builder.detach(), kAntiAliased);
+
+    context.SetStrokeColor(edge.GetColor());
+    context.SetStroke(stroke_data);
+    context.StrokePath(center_path, auto_dark_mode);
+  };
+
+  switch (edge.BorderStyle()) {
+    case EBorderStyle::kNone:
+    case EBorderStyle::kHidden:
+      return;
+
+    case EBorderStyle::kSolid:
+      context.SetFillColor(edge.GetColor());
       fill_outline_band(outline_offset + outline_width, outline_offset);
-    } else {
-      // Outer Band
-      fill_outline_band(outline_offset + outline_width,
-                        outline_offset + outline_width - stroke_width);
-      // Inner Band
-      fill_outline_band(outline_offset + stroke_width, outline_offset);
-    }
-    return true;
-  }
+      return;
 
-  // For other styles (dotted, dashed, groove, ridge, etc.), fall back to
-  // standard outline painting by returning false.
-  return false;
+    case EBorderStyle::kDouble: {
+      context.SetFillColor(edge.GetColor());
+      const int outer_stripe =
+          edge.GetDoubleBorderStripeWidth(BorderEdge::kDoubleBorderStripeOuter);
+      const int inner_stripe =
+          edge.GetDoubleBorderStripeWidth(BorderEdge::kDoubleBorderStripeInner);
+      fill_outline_band(outline_offset + outline_width,
+                        outline_offset + outline_width - outer_stripe);
+      fill_outline_band(outline_offset + outline_width - inner_stripe,
+                        outline_offset);
+      return;
+    }
+
+    case EBorderStyle::kDotted:
+    case EBorderStyle::kDashed:
+      paint_dotted_or_dashed(edge.BorderStyle());
+      return;
+
+    case EBorderStyle::kInset:
+    case EBorderStyle::kOutset: {
+      // For an arbitrary border-shape the only well-defined split of the
+      // outline is between its outer and inner halves, so fill the whole band
+      // with the softened inset/outset shade rather than falling back to the
+      // rectangular painter that ignores border-shape.
+      const bool is_inset = edge.BorderStyle() == EBorderStyle::kInset;
+      context.SetFillColor(BoxBorderPainter::CalculateInsetOutsetColor(
+          is_inset, edge.GetColor()));
+      fill_outline_band(outline_offset + outline_width, outline_offset);
+      return;
+    }
+
+    case EBorderStyle::kGroove:
+    case EBorderStyle::kRidge: {
+      const bool groove = edge.BorderStyle() == EBorderStyle::kGroove;
+      const float half = outline_width / 2.0f;
+      context.SetFillColor(
+          BoxBorderPainter::CalculateInsetOutsetColor(groove, edge.GetColor()));
+      fill_outline_band(outline_offset + outline_width,
+                        outline_offset + outline_width - half);
+      context.SetFillColor(BoxBorderPainter::CalculateInsetOutsetColor(
+          !groove, edge.GetColor()));
+      fill_outline_band(outline_offset + half, outline_offset);
+      return;
+    }
+  }
+  NOTREACHED();
 }
 
 // static
