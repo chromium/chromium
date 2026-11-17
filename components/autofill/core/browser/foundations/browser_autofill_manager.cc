@@ -3426,7 +3426,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       break;
     case FillingProduct::kOneTimePassword:
       if (client().IsContextSecure()) {
-        suggestions = BuildOtpSuggestions(one_time_tokens);
+        suggestions =
+            BuildOtpSuggestions(GetOtpsToSuggest(one_time_tokens, field));
       }
       break;
     case FillingProduct::kAtMemory:

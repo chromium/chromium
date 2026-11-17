@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 
 #include <string>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -21,6 +22,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +40,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
+using ::testing::Property;
 
 class OtpSuggestionGeneratorTest : public testing::Test {
  protected:
@@ -277,5 +280,167 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions_InsecureContext) {
                                   form_structure.field(0), client(),
                                   suggestions_generated_callback.Get());
 }
+
+// Tests that an OTP that completes the value the user has typed into the
+// trigger field is suggested.
+TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions_FieldValueIsPrefix) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = ONE_TIME_CODE, .value = u"08"}}});
+  FormStructure form_structure(form);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE),
+                                     /*source=*/std::nullopt);
+
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(std::vector<OneTimeToken>{
+          OneTimeToken(OneTimeTokenType::kGmail, "083203",
+                       base::TimeTicks::Now(), "sender@example.com")}));
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(Pair(
+          SuggestionGenerator::SuggestionDataSource::kOneTimePassword,
+          ElementsAre(
+              AllOf(Field(&Suggestion::main_text,
+                          Field(&Suggestion::Text::value, u"083203")),
+                    Field(&Suggestion::type,
+                          SuggestionType::kGmailOneTimePasswordEntry)),
+              Field(&Suggestion::type, SuggestionType::kSeparator),
+              Field(&Suggestion::type, SuggestionType::kOpenGmailForOtps)))));
+
+  generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
+                                  form_structure.field(0), client(),
+                                  suggestions_generated_callback.Get());
+}
+
+// Tests that no OTP suggestions (including the "Open Gmail" footer) are
+// generated if the available OTP contradicts the value the user is typing into
+// the trigger field.
+TEST_F(OtpSuggestionGeneratorTest,
+       GenerateOtpSuggestions_FieldValueContradictsOtp) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = ONE_TIME_CODE, .value = u"12"}}});
+  FormStructure form_structure(form);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE),
+                                     /*source=*/std::nullopt);
+
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(std::vector<OneTimeToken>{
+          OneTimeToken(OneTimeTokenType::kGmail, "083203",
+                       base::TimeTicks::Now(), "sender@example.com")}));
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(Pair(SuggestionGenerator::SuggestionDataSource::kOneTimePassword,
+               IsEmpty())));
+
+  generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
+                                  form_structure.field(0), client(),
+                                  suggestions_generated_callback.Get());
+}
+
+// Tests that `GetOtpsToSuggest()` matches every OTP independently against the
+// value of the trigger field.
+TEST(GetOtpsToSuggestTest, MatchesEachOtpAgainstFieldValue) {
+  FormFieldData field;
+  field.set_value(u"2");
+  EXPECT_THAT(GetOtpsToSuggest(
+                  {OneTimeToken(OneTimeTokenType::kSmsOtp, "111111",
+                                base::TimeTicks::Now()),
+                   OneTimeToken(OneTimeTokenType::kGmail, "222222",
+                                base::TimeTicks::Now(), "sender@example.com"),
+                   OneTimeToken(OneTimeTokenType::kSmsOtp, "233333",
+                                base::TimeTicks::Now())},
+                  field),
+              ElementsAre(Property(&OneTimeToken::value, "222222"),
+                          Property(&OneTimeToken::value, "233333")));
+}
+
+struct GetOtpsToSuggestTestCase {
+  std::u16string field_value;
+  bool is_autofilled = false;
+  std::string otp_value;
+  bool expect_suggested = false;
+};
+
+class GetOtpsToSuggestParamTest
+    : public testing::TestWithParam<GetOtpsToSuggestTestCase> {};
+
+// Tests whether `GetOtpsToSuggest()` keeps an OTP given the value and the
+// autofill state of the trigger field.
+TEST_P(GetOtpsToSuggestParamTest, MatchesOtpAgainstFieldValue) {
+  const GetOtpsToSuggestTestCase& test_case = GetParam();
+  FormFieldData field;
+  field.set_value(test_case.field_value);
+  field.set_is_autofilled_according_to_renderer(test_case.is_autofilled);
+
+  std::vector<OneTimeToken> otps_to_suggest = GetOtpsToSuggest(
+      {OneTimeToken(OneTimeTokenType::kSmsOtp, test_case.otp_value,
+                    base::TimeTicks::Now())},
+      field);
+
+  if (test_case.expect_suggested) {
+    EXPECT_THAT(otps_to_suggest, ElementsAre(Property(&OneTimeToken::value,
+                                                      test_case.otp_value)));
+  } else {
+    EXPECT_THAT(otps_to_suggest, IsEmpty());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GetOtpsToSuggestParamTest,
+    testing::Values(
+        // An empty field is compatible with every OTP.
+        GetOtpsToSuggestTestCase{.field_value = u"",
+                                 .otp_value = "083203",
+                                 .expect_suggested = true},
+        // OTPs that complete the typed value are kept.
+        GetOtpsToSuggestTestCase{.field_value = u"08",
+                                 .otp_value = "083203",
+                                 .expect_suggested = true},
+        // OTPs that contradict the typed value are dropped.
+        GetOtpsToSuggestTestCase{.field_value = u"12", .otp_value = "083203"},
+        GetOtpsToSuggestTestCase{.field_value = u"0832031",
+                                 .otp_value = "083203"},
+        // OTPs equal to the field value are dropped.
+        GetOtpsToSuggestTestCase{.field_value = u"083203",
+                                 .otp_value = "083203"},
+        GetOtpsToSuggestTestCase{.field_value = u"083-203",
+                                 .otp_value = "083203"},
+        // Whitespace, ASCII punctuation (e.g. input mask placeholders) and the
+        // case of ASCII letters are ignored.
+        GetOtpsToSuggestTestCase{.field_value = u" 083 2-0",
+                                 .otp_value = "083203",
+                                 .expect_suggested = true},
+        GetOtpsToSuggestTestCase{.field_value = u"08__-___",
+                                 .otp_value = "083203",
+                                 .expect_suggested = true},
+        GetOtpsToSuggestTestCase{.field_value = u"___-___",
+                                 .otp_value = "083203",
+                                 .expect_suggested = true},
+        GetOtpsToSuggestTestCase{.field_value = u"ab1",
+                                 .otp_value = "AB12CD",
+                                 .expect_suggested = true},
+        // Non-ASCII digits (here Arabic-Indic "12") are not ignored.
+        GetOtpsToSuggestTestCase{.field_value = u"\u0661\u0662",
+                                 .otp_value = "083203"},
+        // On autofilled fields, OTPs other than the filled value are kept
+        // regardless of the field value, so that e.g. a resent OTP can replace
+        // the filled one.
+        GetOtpsToSuggestTestCase{.field_value = u"111111",
+                                 .is_autofilled = true,
+                                 .otp_value = "222222",
+                                 .expect_suggested = true},
+        GetOtpsToSuggestTestCase{.field_value = u"222222",
+                                 .is_autofilled = true,
+                                 .otp_value = "222222"}));
 
 }  // namespace autofill

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -66,6 +67,20 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
   return suggestion;
 }
 
+// Returns `value` without whitespace and ASCII punctuation (e.g. separators
+// like '-' or input mask placeholders like '_') and with ASCII letters in
+// lower case, so that OTPs can be compared independently of their formatting.
+std::u16string NormalizeOtpForComparison(std::u16string_view value) {
+  std::u16string normalized;
+  normalized.reserve(value.size());
+  for (char16_t c : value) {
+    if (!base::IsUnicodeWhitespace(c) && !base::IsAsciiPunctuation(c)) {
+      normalized.push_back(base::ToLowerASCII(c));
+    }
+  }
+  return normalized;
+}
+
 }  // namespace
 
 std::vector<Suggestion> BuildOtpSuggestions(
@@ -100,6 +115,25 @@ std::vector<Suggestion> BuildOtpSuggestions(
   return suggestions;
 }
 
+std::vector<one_time_tokens::OneTimeToken> GetOtpsToSuggest(
+    std::vector<one_time_tokens::OneTimeToken> one_time_tokens,
+    const FormFieldData& trigger_field) {
+  const std::u16string field_value =
+      NormalizeOtpForComparison(trigger_field.value());
+  if (field_value.empty()) {
+    return one_time_tokens;
+  }
+  std::erase_if(
+      one_time_tokens, [&](const one_time_tokens::OneTimeToken& token) {
+        const std::u16string otp_value =
+            NormalizeOtpForComparison(base::UTF8ToUTF16(token.value()));
+        return otp_value == field_value ||
+               (!trigger_field.is_autofilled_according_to_renderer() &&
+                !otp_value.starts_with(field_value));
+      });
+  return one_time_tokens;
+}
+
 OtpSuggestionGenerator::OtpSuggestionGenerator(OtpManager& otp_manager)
     : otp_manager_(otp_manager) {}
 
@@ -130,14 +164,17 @@ void OtpSuggestionGenerator::GenerateSuggestions(
   otp_manager_->GetOtpSuggestions(
       *form_structure, trigger_field,
       base::BindOnce(&OtpSuggestionGenerator::OnOtpReturned,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     trigger_field));
 }
 
 void OtpSuggestionGenerator::OnOtpReturned(
     base::OnceCallback<void(ReturnedSuggestions)> callback,
+    const FormFieldData& trigger_field,
     std::vector<one_time_tokens::OneTimeToken> one_time_tokens) {
   std::move(callback).Run({SuggestionDataSource::kOneTimePassword,
-                           BuildOtpSuggestions(one_time_tokens)});
+                           BuildOtpSuggestions(GetOtpsToSuggest(
+                               std::move(one_time_tokens), trigger_field))});
 }
 
 }  // namespace autofill
