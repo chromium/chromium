@@ -68,7 +68,8 @@ export function getHtml(this: AddPasswordDialogElement) {
       $i18n{cancel}
     </cr-button>
     <cr-button id="addButton" class="action-button"
-        ?disabled="${!this.canAddPassword_}" @click="${this.onAddButtonClick_}">
+        ?disabled="${this.isAddButtonDisabled_()}"
+        @click="${this.onAddButtonClick_}">
       $i18n{save}
     </cr-button>
   </div>

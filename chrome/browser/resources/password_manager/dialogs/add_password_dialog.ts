@@ -154,7 +154,6 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
       usernameErrorMessage_: {type: String},
       isPasswordInvalid_: {type: Boolean},
-      canAddPassword_: {type: Boolean},
     };
   }
 
@@ -168,7 +167,6 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   protected accessor websiteErrorMessage_: string|null = null;
   protected accessor usernameErrorMessage_: string|null = null;
   protected accessor isPasswordInvalid_: boolean = false;
-  protected accessor canAddPassword_: boolean = false;
 
   protected readonly storeOptionAccountValue_: string =
       chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
@@ -208,16 +206,6 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         changedPrivateProperties.has('username_') ||
         changedPrivateProperties.has('usernamesBySignonRealm_')) {
       this.usernameErrorMessage_ = this.computeUsernameErrorMessage_();
-    }
-
-    if (changedPrivateProperties.has('websiteErrorMessage_') ||
-        changedPrivateProperties.has('website_') ||
-        changedPrivateProperties.has('domainInfo_') ||
-        changedPrivateProperties.has('username_') ||
-        changedPrivateProperties.has('usernamesBySignonRealm_') ||
-        changedPrivateProperties.has('password_') ||
-        changedPrivateProperties.has('note_')) {
-      this.canAddPassword_ = this.computeCanAddPassword_();
     }
   }
 
@@ -335,24 +323,13 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
             PASSWORD_NOTE_MAX_CHARACTER_COUNT);
   }
 
-  private computeCanAddPassword_(): boolean {
-    if (this.isWebsiteInputInvalid_() || this.website_.length === 0) {
-      return false;
-    }
-    if (this.doesUsernameExistAlready_()) {
-      return false;
-    }
-    if (this.password_.length === 0) {
-      return false;
-    }
-    if (this.isNoteInputInvalid_()) {
-      return false;
-    }
-    return true;
+  protected isAddButtonDisabled_(): boolean {
+    return !this.website_ || !this.password_ || this.isWebsiteInputInvalid_() ||
+        this.doesUsernameExistAlready_() || this.isNoteInputInvalid_();
   }
 
   protected onAddButtonClick_() {
-    assert(this.computeCanAddPassword_());
+    assert(!this.isAddButtonDisabled_());
     assert(this.domainInfo_);
     recordAddCredentialInteraction(
         AddCredentialFromSettingsUserInteractions.CREDENTIAL_ADDED);
