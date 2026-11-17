@@ -118,7 +118,7 @@ struct TestBrowser {
 class InitialWebUIProfileServiceRefillTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  InitialWebUIProfileServiceRefillTest()
+  explicit InitialWebUIProfileServiceRefillTest(bool at_startup = false)
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeaturesAndParameters(
@@ -129,7 +129,9 @@ class InitialWebUIProfileServiceRefillTest
            {"WebUIReloadButtonProfilePrewarming", "true"}}},
          {features::kTopChromeWebUIPrerendering,
           {{"TopChromeWebUIPrerenderingDelay", "500ms"},
-           {"TopChromeWebUIPrerenderingPaintDeadline", "4s"}}}},
+           {"TopChromeWebUIPrerenderingPaintDeadline", "4s"},
+           {"TopChromeWebUIPrerenderingAtStartup",
+            at_startup ? "true" : "false"}}}},
         {});
   }
 
@@ -323,6 +325,50 @@ TEST_F(InitialWebUIProfileServiceRefillTest,
   EXPECT_FALSE(service()->IsSpareCurrent(*spare));
 }
 
+TEST_F(InitialWebUIProfileServiceRefillTest,
+       MaybeBuildStartupSpareRequiresStartupParam) {
+  CloseBrowser();
+  InitialWebUIProfileService::MaybeBuildStartupSpare(*profile());
+  EXPECT_FALSE(service()->has_toolbar_contents_for_testing());
+  EXPECT_FALSE(prerenderer()->is_refill_pending_for_testing());
+}
+
+class InitialWebUIProfileServiceStartupTest
+    : public InitialWebUIProfileServiceRefillTest {
+ public:
+  InitialWebUIProfileServiceStartupTest()
+      : InitialWebUIProfileServiceRefillTest(/*at_startup=*/true) {}
+};
+
+// With `TopChromeWebUIPrerenderingAtStartup`, a regular profile gets one spare
+// with no window open, and the first window adopts it and starts the refill.
+TEST_F(InitialWebUIProfileServiceStartupTest, FirstWindowAdoptsStartupSpare) {
+  // Startup has no window open.
+  CloseBrowser();
+
+  InitialWebUIProfileService::MaybeBuildStartupSpare(
+      *profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  EXPECT_FALSE(service()->has_toolbar_contents_for_testing());
+
+  InitialWebUIProfileService::MaybeBuildStartupSpare(*profile());
+  content::WebContents* spare = service()->toolbar_web_contents_for_testing();
+  ASSERT_TRUE(spare);
+  InitialWebUIProfileService::MaybeBuildStartupSpare(*profile());
+  EXPECT_EQ(spare, service()->toolbar_web_contents_for_testing());
+  EXPECT_FALSE(prerenderer()->is_refill_pending_for_testing());
+
+  AddBrowser(other_browser_, BrowserWindowInterface::TYPE_NORMAL);
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::WebContents> taken =
+      service()->TakeToolbarContents(*profile());
+  EXPECT_EQ(spare, taken.get());
+  histogram_tester.ExpectUniqueSample(kTakeResultHistogram,
+                                      TakeResult::kAdopted, 1);
+  EXPECT_TRUE(prerenderer()->is_refill_pending_for_testing());
+  task_environment()->FastForwardBy(kPaintDeadline + kRefillDelay);
+  EXPECT_TRUE(service()->has_toolbar_contents_for_testing());
+}
+
 TEST(InitialWebUIProfileServiceTest, PrerenderingRequiresFeaturesAndParams) {
   {
     base::test::ScopedFeatureList feature_list;
@@ -464,6 +510,17 @@ TEST_F(InitialWebUIProfileServiceNoRefillTest,
   EXPECT_FALSE(service()->TakeToolbarContents(*profile()));
 }
 
+TEST_F(InitialWebUIProfileServiceNoRefillTest,
+       MaybeBuildStartupSpareRequiresPrerendering) {
+  ASSERT_FALSE(InitialWebUIProfileService::IsPrerenderingEnabled());
+  ASSERT_FALSE(service()->toolbar_prerenderer_for_testing());
+  EXPECT_TRUE(service()->TakeToolbarContents(*profile()));
+  ASSERT_FALSE(service()->has_toolbar_contents_for_testing());
+
+  InitialWebUIProfileService::MaybeBuildStartupSpare(*profile());
+  EXPECT_FALSE(service()->has_toolbar_contents_for_testing());
+}
+
 class InitialWebUIProfileServiceParamsTest : public testing::Test {
  protected:
   void InitFeatures(const std::string& skip_memory_pressure,
@@ -514,7 +571,8 @@ class InitialWebUIProfileServiceUnboundTest
     : public ChromeRenderViewHostTestHarness {
  public:
   explicit InitialWebUIProfileServiceUnboundTest(
-      std::string evict_memory_pressure = "never")
+      std::string evict_memory_pressure = "never",
+      bool at_startup = false)
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeaturesAndParameters(
@@ -530,7 +588,9 @@ class InitialWebUIProfileServiceUnboundTest
            {"TopChromeWebUIPrerenderingPaintDeadline", "4s"},
            {"TopChromeWebUIPrerenderingEvictMemoryPressure",
             std::move(evict_memory_pressure)},
-           {"TopChromeWebUIPrerenderingUnbound", "true"}}}},
+           {"TopChromeWebUIPrerenderingUnbound", "true"},
+           {"TopChromeWebUIPrerenderingAtStartup",
+            at_startup ? "true" : "false"}}}},
         {});
   }
 
@@ -857,6 +917,58 @@ TEST_F(InitialWebUIProfileServiceUnboundEvictionTest,
   test_memory_consumer_registry_.NotifyReleaseMemory();
   EXPECT_FALSE(service()->has_toolbar_contents_for_testing());
   EXPECT_TRUE(spare_watcher.IsDestroyed());
+}
+
+class InitialWebUIProfileServiceUnboundStartupTest
+    : public InitialWebUIProfileServiceUnboundTest {
+ public:
+  InitialWebUIProfileServiceUnboundStartupTest()
+      : InitialWebUIProfileServiceUnboundTest("never", /*at_startup=*/true) {}
+};
+
+// With `TopChromeWebUIPrerenderingAtStartup`, the starting regular profile
+// seeds the one unbound spare with no window open, and the first window adopts
+// it.
+TEST_F(InitialWebUIProfileServiceUnboundStartupTest,
+       FirstWindowAdoptsStartupSpareSeededFromStartingProfile) {
+  CloseBrowser(browser_);
+  ASSERT_FALSE(service()->has_toolbar_contents_for_testing());
+
+  InitialWebUIProfileService::MaybeBuildStartupSpare(
+      *profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  EXPECT_FALSE(service()->has_toolbar_contents_for_testing());
+
+  std::unique_ptr<TestingProfile> disallowed_profile =
+      TestingProfile::Builder().DisallowBrowserWindows().Build();
+  ASSERT_TRUE(disallowed_profile->IsRegularProfile());
+  ASSERT_FALSE(disallowed_profile->AllowsBrowserWindows());
+  InitialWebUIProfileService::MaybeBuildStartupSpare(*disallowed_profile);
+  EXPECT_FALSE(service()->has_toolbar_contents_for_testing());
+
+  TestingProfile starting_profile;
+  starting_profile.GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  InitialWebUIProfileService::MaybeBuildStartupSpare(starting_profile);
+  content::WebContents* spare = service()->toolbar_web_contents_for_testing();
+  ASSERT_TRUE(spare);
+  EXPECT_FALSE(webui::GetUserProfile(spare));
+  const auto* seed_data =
+      WebUIToolbarUnboundSeedUserData::FromWebContents(spare);
+  ASSERT_TRUE(seed_data);
+  EXPECT_TRUE(seed_data->home_button_should_be_shown());
+
+  // Only one spare exists process-wide.
+  InitialWebUIProfileService::MaybeBuildStartupSpare(*profile());
+  EXPECT_EQ(spare, service()->toolbar_web_contents_for_testing());
+
+  AddBrowser(other_browser_, profile(), BrowserWindowInterface::TYPE_NORMAL);
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::WebContents> taken =
+      service()->TakeToolbarContents(*profile());
+  EXPECT_EQ(spare, taken.get());
+  EXPECT_EQ(profile(), webui::GetUserProfile(taken.get()));
+  histogram_tester.ExpectUniqueSample(kTakeResultHistogram,
+                                      TakeResult::kAdopted, 1);
+  EXPECT_TRUE(prerenderer()->is_refill_pending_for_testing());
 }
 
 }  // namespace

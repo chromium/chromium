@@ -32,9 +32,11 @@ class WebContents;
 //
 // With `TopChromeWebUIPrerendering`, no toolbar is built at profile creation;
 // the first window builds its own toolbar, and its take call schedules the
-// first refill. After each take, a `WebUIContentsPrerenderer` keeps a prewarmed
-// toolbar ready for the next window, and the service builds it and checks that
-// its staleness inputs are still current. In per-profile mode, each regular
+// first refill. With `TopChromeWebUIPrerenderingAtStartup`, a spare is built
+// before the first window instead, and the first window adopts it. After each
+// take, a `WebUIContentsPrerenderer` keeps a prewarmed toolbar ready for the
+// next window, and the service builds it and checks that its staleness inputs
+// are still current. In per-profile mode, each regular
 // profile owns a service and drops its spare when that profile's last window
 // closes. With `TopChromeWebUIPrerenderingUnbound`, `TopChromeWebUIProfile`
 // owns one process-wide unbound service whose spare binds the adopting window's
@@ -87,6 +89,22 @@ class InitialWebUIProfileService : public KeyedService,
   // `TopChromeWebUIProfileImpl` builds no keyed services.
   static InitialWebUIProfileService* GetForTopChromeWebUIProfile();
 
+  // Returns the service from which a window of `profile` takes its prewarmed
+  // toolbar: the unbound `TopChromeWebUIProfile` service when
+  // `IsUnboundPrerenderingEnabled()`, or `profile`'s own service otherwise.
+  static InitialWebUIProfileService* GetForWindowProfile(Profile& profile);
+
+  // With prerendering and the `TopChromeWebUIPrerenderingAtStartup` param,
+  // builds a spare for the startup window to adopt, unless one exists or
+  // `profile` is not a regular profile that allows browser windows. Seeds an
+  // unbound spare from `profile`. Call before the startup window opens and,
+  // if toolbars live in `TopChromeWebUIProfile`, after it is created. The
+  // first normal window of `profile` takes a per-profile spare, and the first
+  // normal window of any profile takes an unbound one, adopting or dropping
+  // it. If no such window opens, the spare stays until shutdown or memory
+  // pressure evicts it.
+  static void MaybeBuildStartupSpare(Profile& profile);
+
   // Returns the pre-created WebContents, passing ownership to the caller, and
   // binds `window_profile` in unbound mode. Returns nullptr if it has already
   // been taken or prewarming is disabled. With prerendering enabled, also
@@ -134,6 +152,9 @@ class InitialWebUIProfileService : public KeyedService,
 
  private:
   void PrewarmWebUI();
+  // Builds a spare seeded from `template_profile` now, even with no normal
+  // window open, unless one exists.
+  void BuildStartupSpare(Profile& template_profile);
   bool is_unbound() const;
   BrowserCollection* GetBrowserCollection() const;
   bool HasNormalBrowser() const;
@@ -151,6 +172,8 @@ class InitialWebUIProfileService : public KeyedService,
   std::unique_ptr<WebUIContentsPrerenderer> toolbar_prerenderer_;
   // Staleness inputs recorded when the last spare was created.
   std::optional<ToolbarInputs> spare_inputs_;
+  // Set only while `BuildStartupSpare()` runs.
+  raw_ptr<Profile> startup_template_profile_ = nullptr;
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 };

@@ -1580,10 +1580,12 @@ using TakeResult = WebUIContentsPrerenderer::TakeResult;
 // Returns `additional_features` plus profile prewarming and prerendering, where
 // the refill builds the next toolbar as soon as the taken one paints. The
 // paint deadline is short, so that refills after windows that built their own
-// toolbar, such as the startup window, do not keep tests idle.
+// toolbar, such as the startup window, do not keep tests idle. With
+// `at_startup`, a spare is also built before the startup window opens.
 std::vector<base::test::FeatureRefAndParams> GetRefillFeatures(
     std::vector<base::test::FeatureRefAndParams> additional_features,
-    bool unbound = false) {
+    bool unbound = false,
+    bool at_startup = false) {
   additional_features.emplace_back(
       features::kWebUIReloadButton,
       base::FieldTrialParams{
@@ -1592,7 +1594,8 @@ std::vector<base::test::FeatureRefAndParams> GetRefillFeatures(
           {"WebUIReloadButtonProfilePrewarming", "true"}});
   base::FieldTrialParams prerendering_params{
       {"TopChromeWebUIPrerenderingDelay", "0s"},
-      {"TopChromeWebUIPrerenderingPaintDeadline", "100ms"}};
+      {"TopChromeWebUIPrerenderingPaintDeadline", "100ms"},
+      {"TopChromeWebUIPrerenderingAtStartup", at_startup ? "true" : "false"}};
   if (unbound) {
     prerendering_params["TopChromeWebUIPrerenderingUnbound"] = "true";
   }
@@ -1616,9 +1619,12 @@ class InitialWebUIProfilePrewarmRefillBrowserTest
   explicit InitialWebUIProfilePrewarmRefillBrowserTest(
       std::vector<base::test::FeatureRefAndParams> additional_features,
       std::vector<base::test::FeatureRef> disabled_features,
-      bool unbound = false)
+      bool unbound = false,
+      bool at_startup = false)
       : InitialWebUIBrowserTestBase(
-            GetRefillFeatures(std::move(additional_features), unbound),
+            GetRefillFeatures(std::move(additional_features),
+                              unbound,
+                              at_startup),
             std::move(disabled_features)) {}
 
   InitialWebUIProfileService* GetService() {
@@ -2055,6 +2061,44 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(profile, webui::GetUserProfile(next_spare));
 }
 
+class InitialWebUISharedRendererProfilePrewarmStartupBrowserTest
+    : public InitialWebUIProfilePrewarmRefillBrowserTest {
+ public:
+  InitialWebUISharedRendererProfilePrewarmStartupBrowserTest()
+      : InitialWebUIProfilePrewarmRefillBrowserTest(
+            {{features::kTopChromeWebUISharedRenderer, {}}},
+            /*disabled_features=*/{},
+            /*unbound=*/false,
+            /*at_startup=*/true) {}
+};
+
+// Verifies that with `TopChromeWebUIPrerenderingAtStartup` and the shared
+// renderer, the startup profile gets a spare in TopChromeWebUIProfile before
+// its first window opens, that window adopts it, and the refill builds the
+// next one.
+IN_PROC_BROWSER_TEST_F(
+    InitialWebUISharedRendererProfilePrewarmStartupBrowserTest,
+    StartupWindowAdoptsStartupSpare) {
+  base::HistogramBase* histogram =
+      base::StatisticsRecorder::FindHistogram(kTakeResultHistogram);
+  ASSERT_TRUE(histogram);
+  std::unique_ptr<base::HistogramSamples> samples =
+      histogram->SnapshotSamples();
+  EXPECT_EQ(1, samples->GetCount(static_cast<base::HistogramBase::Sample32>(
+                   TakeResult::kAdopted)));
+  EXPECT_EQ(0, samples->GetCount(static_cast<base::HistogramBase::Sample32>(
+                   TakeResult::kNoSpare)));
+
+  content::WebContents* toolbar = GetToolbarContents(browser());
+  ASSERT_TRUE(toolbar);
+  EXPECT_EQ(webui::GetTopChromeWebUIProfile(), toolbar->GetBrowserContext());
+  EXPECT_EQ(browser()->GetProfile(), webui::GetUserProfile(toolbar));
+
+  InitialWebUIProfileService* service = GetService();
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(WaitForPrewarmedToolbar(service));
+}
+
 // Creating and destroying a profile needs a full user session on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 // Verifies that with kTopChromeWebUISharedRenderer and prerendering enabled, a
@@ -2106,14 +2150,19 @@ class InitialWebUIUnboundPrerenderBrowserTest
     : public InitialWebUIProfilePrewarmRefillBrowserTest {
  public:
   InitialWebUIUnboundPrerenderBrowserTest()
+      : InitialWebUIUnboundPrerenderBrowserTest(/*at_startup=*/false) {}
+
+ protected:
+  // With `at_startup`, a spare is built before the startup window opens.
+  explicit InitialWebUIUnboundPrerenderBrowserTest(bool at_startup)
       : InitialWebUIProfilePrewarmRefillBrowserTest(
             {{features::kTopChromeWebUISharedRenderer, {}},
              {features::kWebUIToolbar, {}},
              {features::kGlic, {}}},
             /*disabled_features=*/{},
-            /*unbound=*/true) {}
+            /*unbound=*/true,
+            at_startup) {}
 
- protected:
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, `chromeos::features::kFeatureManagementGlic` is off by default
   // and `AvatarToolbarButtonInterface::CanShowForProfile()` hides `#avatar` on
@@ -2295,4 +2344,49 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
   EXPECT_TRUE(WaitForUnboundSpare());
 }
 
+// Verifies that without `TopChromeWebUIPrerenderingAtStartup`, no spare exists
+// before the startup window, which builds its own toolbar, and the refill
+// after it still builds a spare.
+IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
+                       StartupWindowBuildsOwnToolbarWithoutStartupParam) {
+  base::HistogramBase* histogram =
+      base::StatisticsRecorder::FindHistogram(kTakeResultHistogram);
+  ASSERT_TRUE(histogram);
+  std::unique_ptr<base::HistogramSamples> samples =
+      histogram->SnapshotSamples();
+  EXPECT_EQ(1, samples->GetCount(static_cast<base::HistogramBase::Sample32>(
+                   TakeResult::kNoSpare)));
+  EXPECT_EQ(0, samples->GetCount(static_cast<base::HistogramBase::Sample32>(
+                   TakeResult::kAdopted)));
+  EXPECT_TRUE(WaitForUnboundSpare());
+}
+
+class InitialWebUIUnboundStartupPrerenderBrowserTest
+    : public InitialWebUIUnboundPrerenderBrowserTest {
+ public:
+  InitialWebUIUnboundStartupPrerenderBrowserTest()
+      : InitialWebUIUnboundPrerenderBrowserTest(/*at_startup=*/true) {}
+};
+
+// Verifies that with `TopChromeWebUIPrerenderingAtStartup`, the startup window
+// adopts the unbound spare built before it opened, binds its profile, and
+// the refill builds the next spare.
+IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundStartupPrerenderBrowserTest,
+                       StartupWindowAdoptsStartupSpare) {
+  base::HistogramBase* histogram =
+      base::StatisticsRecorder::FindHistogram(kTakeResultHistogram);
+  ASSERT_TRUE(histogram);
+  std::unique_ptr<base::HistogramSamples> samples =
+      histogram->SnapshotSamples();
+  EXPECT_EQ(1, samples->GetCount(static_cast<base::HistogramBase::Sample32>(
+                   TakeResult::kAdopted)));
+  EXPECT_EQ(0, samples->GetCount(static_cast<base::HistogramBase::Sample32>(
+                   TakeResult::kNoSpare)));
+
+  content::WebContents* toolbar = GetToolbarContents(browser());
+  ASSERT_TRUE(toolbar);
+  EXPECT_EQ(webui::GetTopChromeWebUIProfile(), toolbar->GetBrowserContext());
+  EXPECT_EQ(browser()->GetProfile(), webui::GetUserProfile(toolbar));
+  EXPECT_TRUE(WaitForUnboundSpare());
+}
 }  // namespace waap

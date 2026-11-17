@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
-#include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -32,11 +31,8 @@ InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
       // If `WebUIReloadButtonProfilePrewarming` is enabled, the WebContents is
       // created and pre-navigated in the profile service (or the unbound
       // TopChromeWebUIProfile service), so we just take it from there.
-      InitialWebUIProfileService* profile_service =
-          InitialWebUIProfileService::IsUnboundPrerenderingEnabled()
-              ? InitialWebUIProfileService::GetForTopChromeWebUIProfile()
-              : InitialWebUIProfileServiceFactory::GetForProfile(profile);
-      if (profile_service) {
+      if (InitialWebUIProfileService* profile_service =
+              InitialWebUIProfileService::GetForWindowProfile(*profile)) {
         toolbar_web_contents_ = profile_service->TakeToolbarContents(*profile);
       }
     }

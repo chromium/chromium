@@ -2020,6 +2020,13 @@ BASE_FEATURE_PARAM(bool,
                    kTopChromeWebUIPrerenderingUnbound,
                    &kTopChromeWebUIPrerendering,
                    false);
+// Whether to build a spare toolbar before the first window opens, so that the
+// startup window adopts it instead of building its own. Refills after a take
+// do not read this param.
+BASE_FEATURE_PARAM(bool,
+                   kTopChromeWebUIPrerenderingAtStartup,
+                   &kTopChromeWebUIPrerendering,
+                   false);
 // Switches location bar over to a WebUI implementation.
 // See crbug.com/470042732
 BASE_FEATURE(kWebUILocationBar, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -1107,11 +1107,15 @@ chromium-metrics-reviews@google.com.
     WebUIReloadButtonPrewarmWebUIPreNavigate) while the WebUI toolbar, the
     TopChromeWebUIPrerendering feature, and the WebUIReloadButtonPrewarmWebUI
     and WebUIReloadButtonProfilePrewarming params of the WebUIReloadButton
-    feature are enabled. No prewarmed toolbar is built before the first window
-    opens, so windows opened before that first build, such as every window of a
-    startup or session restore, record &quot;No spare&quot;. So do windows
-    opened before the prewarmed toolbar is rebuilt after the last window took
-    it, or while memory pressure stops the rebuild.
+    feature are enabled. By default (TopChromeWebUIPrerenderingAtStartup off),
+    no prewarmed toolbar is built before the first window opens, so windows
+    opened before that first build, such as every window of a startup or session
+    restore, record &quot;No spare&quot;. With
+    TopChromeWebUIPrerenderingAtStartup on, one spare is built before the first
+    startup window opens. Windows opened after the last window took the spare
+    and before it is rebuilt (including later startup or session restore windows
+    when TopChromeWebUIPrerenderingAtStartup is on), or while memory pressure
+    stops the rebuild, also record &quot;No spare&quot;.
   </summary>
 </histogram>
 

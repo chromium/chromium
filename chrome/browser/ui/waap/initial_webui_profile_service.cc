@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory_coordinator/memory_limit.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_prerenderer.h"
@@ -142,6 +144,26 @@ InitialWebUIProfileService::GetForTopChromeWebUIProfile() {
   return holder->service();
 }
 
+// static
+InitialWebUIProfileService* InitialWebUIProfileService::GetForWindowProfile(
+    Profile& profile) {
+  return IsUnboundPrerenderingEnabled()
+             ? GetForTopChromeWebUIProfile()
+             : InitialWebUIProfileServiceFactory::GetForProfile(&profile);
+}
+
+// static
+void InitialWebUIProfileService::MaybeBuildStartupSpare(Profile& profile) {
+  if (!IsPrerenderingEnabled() ||
+      !features::kTopChromeWebUIPrerenderingAtStartup.Get() ||
+      !profile.IsRegularProfile() || !profile.AllowsBrowserWindows()) {
+    return;
+  }
+  if (InitialWebUIProfileService* service = GetForWindowProfile(profile)) {
+    service->BuildStartupSpare(profile);
+  }
+}
+
 void InitialWebUIProfileService::Shutdown() {
   browser_collection_observation_.Reset();
   if (toolbar_prerenderer_) {
@@ -196,6 +218,12 @@ void InitialWebUIProfileService::PrewarmWebUI() {
   }
 }
 
+void InitialWebUIProfileService::BuildStartupSpare(Profile& template_profile) {
+  base::AutoReset<raw_ptr<Profile>> reset(&startup_template_profile_,
+                                          &template_profile);
+  toolbar_prerenderer_->BuildSpareNow();
+}
+
 bool InitialWebUIProfileService::is_unbound() const {
   return profile_->IsTopChromeWebUIProfile();
 }
@@ -209,8 +237,9 @@ BrowserCollection* InitialWebUIProfileService::GetBrowserCollection() const {
 std::unique_ptr<content::WebContents>
 InitialWebUIProfileService::CreateSpare() {
   // No window would adopt a toolbar built while the browser quits or while no
-  // normal browser window is open.
-  if (browser_shutdown::IsTryingToQuit() || !HasNormalBrowser()) {
+  // normal browser window is open, except the startup window.
+  if (browser_shutdown::IsTryingToQuit() ||
+      (!startup_template_profile_ && !HasNormalBrowser())) {
     return nullptr;
   }
   TRACE_EVENT("waap", "InitialWebUIProfileService::CreateSpare");
@@ -218,7 +247,9 @@ InitialWebUIProfileService::CreateSpare() {
   // `IsSpareCurrent()` checks that these have not changed.
   spare_inputs_ = GetToolbarInputs();
   if (is_unbound()) {
-    Profile& template_profile = GetTemplateProfile();
+    Profile& template_profile = startup_template_profile_
+                                    ? *startup_template_profile_
+                                    : GetTemplateProfile();
     return waap::PrewarmHelper::PrewarmUnboundWebUIContents(
         template_profile, [&](content::WebContents& contents) {
           WebUIToolbarUnboundSeedUserData::CreateForWebContents(

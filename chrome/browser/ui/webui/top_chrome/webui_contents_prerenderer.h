@@ -116,6 +116,10 @@ class WebUIContentsPrerenderer : public content::WebContentsObserver,
   // paint deadline only. Replaces any refill that is already pending.
   void ScheduleRefill(content::WebContents* taken_contents);
 
+  // Builds a spare now, as a refill would, unless one exists. Cancels any
+  // pending refill if a spare exists afterward.
+  void BuildSpareNow();
+
   // Drops the spare and any pending refill.
   void Reset();
 

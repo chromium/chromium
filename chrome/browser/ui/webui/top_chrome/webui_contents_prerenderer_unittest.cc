@@ -271,6 +271,30 @@ TEST_F(WebUIContentsPrerendererTest, SkipsRefillWhenDelegateCreatesNothing) {
   EXPECT_FALSE(prerenderer().is_refill_pending_for_testing());
 }
 
+TEST_F(WebUIContentsPrerendererTest, BuildSpareNowKeepsExistingSpare) {
+  prerenderer().BuildSpareNow();
+  ASSERT_TRUE(prerenderer().has_spare());
+  EXPECT_FALSE(prerenderer().is_refill_pending_for_testing());
+  content::WebContents* spare = prerenderer().spare_for_testing();
+
+  prerenderer().BuildSpareNow();
+  EXPECT_EQ(spare, prerenderer().spare_for_testing());
+  EXPECT_EQ(1, delegate().create_count);
+}
+
+TEST_F(WebUIContentsPrerendererTest, BuildSpareNowCancelsPendingRefill) {
+  // The pending refill must not replace the spare that `BuildSpareNow()`
+  // built.
+  prerenderer().ScheduleRefill(nullptr);
+  prerenderer().BuildSpareNow();
+  content::WebContents* spare = prerenderer().spare_for_testing();
+  ASSERT_TRUE(spare);
+  EXPECT_FALSE(prerenderer().is_refill_pending_for_testing());
+  task_environment()->FastForwardBy(kDeadline + kDelay);
+  EXPECT_EQ(spare, prerenderer().spare_for_testing());
+  EXPECT_EQ(1, delegate().create_count);
+}
+
 TEST_F(WebUIContentsPrerendererTest, SkipsRefillUnderMemoryPressure) {
   prerenderer().ScheduleRefill(nullptr);
   test_memory_consumer_registry_.NotifyUpdateMemoryLimit(

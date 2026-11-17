@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/initial_webui_profile_service.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -804,6 +805,13 @@ void StartupBrowserCreator::LaunchBrowser(
       return;
     }
 #endif
+
+    // `TopChromeWebUIProfile` exists by now, and the startup window does not.
+    if (process_startup == chrome::startup::IsProcessStartup::kYes &&
+        restore_tabbed_browser &&
+        GlobalBrowserCollection::GetInstance()->IsEmpty()) {
+      InitialWebUIProfileService::MaybeBuildStartupSpare(*profile);
+    }
 
     StartupBrowserCreatorImpl lwp(cur_dir, command_line, this, is_first_run);
     lwp.Launch(profile,

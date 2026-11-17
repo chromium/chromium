@@ -91,6 +91,15 @@ void WebUIContentsPrerenderer::ScheduleRefill(
                               base::Unretained(this)));
 }
 
+void WebUIContentsPrerenderer::BuildSpareNow() {
+  if (!spare_) {
+    Refill();
+  }
+  if (spare_) {
+    CancelRefill();
+  }
+}
+
 void WebUIContentsPrerenderer::Reset() {
   CancelRefill();
   spare_.reset();
