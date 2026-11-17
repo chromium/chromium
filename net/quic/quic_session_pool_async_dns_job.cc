@@ -454,6 +454,8 @@ bool QuicSessionPool::AsyncDnsJob::MaybePoolToExistingSession() {
                 use_dns_aliases_, log_negative_ip_pool_result_)) {
       LogConnectionIpPooling(true);
       success_source_ = SuccessSource::kIpPooling;
+      pooled_via_stale_dns_ =
+          service_endpoint_request_->IsStaleWhileRefreshing();
       net_log_.AddEventReferencingSource(
           NetLogEventType::QUIC_SESSION_POOL_JOB_RESULT,
           session->net_log().source());
@@ -738,6 +740,53 @@ void QuicSessionPool::AsyncDnsJob::RecordMetrics(int rv) const {
   CHECK(success_source_ != SuccessSource::kNone);
   base::UmaHistogramEnumeration("Net.QuicSession.AsyncDnsJob.SuccessSource",
                                 success_source_);
+
+  if (success_source_ != SuccessSource::kActiveSession &&
+      service_endpoint_request_) {
+    auto calculate_freshness_status =
+        [&]() -> HostCache::UsedAnswerFreshnessStatus {
+      const bool used_stale_dns =
+          success_source_ == SuccessSource::kIpPooling
+              ? pooled_via_stale_dns_
+              : winning_connector_started_with_stale_dns_;
+      if (used_stale_dns) {
+        if (winning_connector_promoted_to_fresh_dns_) {
+          return HostCache::UsedAnswerFreshnessStatus::
+              kExpiredCacheConfirmedByFreshDns;
+        }
+        if (!service_endpoint_request_->IsStaleWhileRefreshing() &&
+            !GetUsableEndpoints().empty()) {
+          if (winning_connector_ip_endpoint_.has_value() &&
+              IsEndpointInFreshList(*winning_connector_ip_endpoint_)) {
+            return HostCache::UsedAnswerFreshnessStatus::
+                kExpiredCacheConfirmedByFreshDns;
+          }
+          return HostCache::UsedAnswerFreshnessStatus::
+              kExpiredCacheDivergedFromFreshDns;
+        }
+        if (resolution_finished_ &&
+            service_endpoint_request_->GetEndpointResults().empty()) {
+          return HostCache::UsedAnswerFreshnessStatus::
+              kExpiredCacheAfterFreshDnsFailed;
+        }
+        return HostCache::UsedAnswerFreshnessStatus::
+            kExpiredCacheFinishedBeforeFreshDns;
+      }
+      const std::optional<ResolutionDetails> resolution_details =
+          service_endpoint_request_->GetResolutionDetails();
+      if ((resolution_details.has_value() &&
+           resolution_details->source == ResolutionSource::kCache) ||
+          (cache_staleness_.has_value() && !cache_staleness_->is_stale())) {
+        return HostCache::UsedAnswerFreshnessStatus::kValidFromCache;
+      }
+      return HostCache::UsedAnswerFreshnessStatus::kFreshFromNetwork;
+    };
+
+    HostCache::RecordUsedAnswerMetrics(HostCache::UsedAnswerProtocol::kQuic,
+                                       calculate_freshness_status(),
+                                       cache_staleness_);
+  }
+
   if (successful_attempt_start_time_.is_null()) {
     return;
   }
@@ -760,6 +809,27 @@ void QuicSessionPool::AsyncDnsJob::RecordMetrics(int rv) const {
 
 void QuicSessionPool::AsyncDnsJob::DestroyOtherConnector(
     const EndpointConnector& connector) {
+  if (service_endpoint_request_ &&
+      !service_endpoint_request_->IsStaleWhileRefreshing() &&
+      !GetUsableEndpoints().empty()) {
+    for (EndpointConnector* c : {stale_state_.primary_connector.get(),
+                                 stale_state_.secondary_connector.get(),
+                                 fresh_state_.primary_connector.get(),
+                                 fresh_state_.secondary_connector.get()}) {
+      if (c && c->started_with_stale_dns() && c->attempt_ip_endpoint() &&
+          !c->recorded_ip_match_metrics()) {
+        const bool matched = IsEndpointInFreshList(*c->attempt_ip_endpoint());
+        HostCache::RecordOptimisticDnsStaleIpMatchMetrics(
+            HostCache::OptimisticDnsProtocol::kQuic, matched, cache_staleness_);
+        c->set_recorded_ip_match_metrics(true);
+      }
+    }
+  }
+  winning_connector_started_with_stale_dns_ =
+      connector.started_with_stale_dns();
+  winning_connector_promoted_to_fresh_dns_ =
+      connector.was_promoted_to_fresh_dns();
+  winning_connector_ip_endpoint_ = connector.attempt_ip_endpoint();
   if (!connector.has_attempt()) {
     // The connector succeeded by pooling, without an attempt. `success_source_`
     // was already set by `MaybePoolToExistingSession()`.
@@ -1037,30 +1107,45 @@ void QuicSessionPool::AsyncDnsJob::MaybePromoteStaleConnectors() {
   // promoted, but is allowed to complete its current attempt in the background
   // (consistent with TcpConnectJob behavior).
   auto try_promote = [&](std::unique_ptr<EndpointConnector>& stale_connector) {
-    if (stale_connector && stale_connector->has_attempt_in_flight()) {
-      const std::optional<IPEndPoint> address =
-          stale_connector->attempt_ip_endpoint();
-      if (address && IsEndpointInFreshList(*address)) {
-        if (!fresh_state_.primary_connector ||
-            !fresh_state_.primary_connector->has_attempt_in_flight()) {
-          fresh_state_.primary_connector = std::move(stale_connector);
-        } else if (!fresh_state_.secondary_connector ||
-                   !fresh_state_.secondary_connector->has_attempt_in_flight()) {
-          fresh_state_.secondary_connector = std::move(stale_connector);
-        }
+    if (!stale_connector || !stale_connector->has_attempt_in_flight()) {
+      return;
+    }
+    const std::optional<IPEndPoint> address =
+        stale_connector->attempt_ip_endpoint();
+    if (!address) {
+      return;
+    }
+    const bool matched = IsEndpointInFreshList(*address);
+    if (!GetUsableEndpoints().empty() &&
+        !stale_connector->recorded_ip_match_metrics() &&
+        (matched || resolution_finished_)) {
+      HostCache::RecordOptimisticDnsStaleIpMatchMetrics(
+          HostCache::OptimisticDnsProtocol::kQuic, matched, cache_staleness_);
+      stale_connector->set_recorded_ip_match_metrics(true);
+    }
+    if (!matched) {
+      return;
+    }
 
-        // Ensure the fresh state knows it has already tried this endpoint,
-        // whether promotion succeeded or was blocked by busy fresh slots.
-        for (const UsableEndpoint& usable : GetUsableEndpoints()) {
-          if (std::ranges::contains(usable.endpoint.ipv4_endpoints, *address) ||
-              std::ranges::contains(usable.endpoint.ipv6_endpoints, *address)) {
-            Candidate fresh_candidate{*address, usable.endpoint.metadata,
-                                      usable.quic_version};
-            if (!std::ranges::contains(fresh_state_.claimed_candidates_,
-                                       fresh_candidate)) {
-              fresh_state_.claimed_candidates_.push_back(fresh_candidate);
-            }
-          }
+    stale_connector->set_was_promoted_to_fresh_dns(true);
+    if (!fresh_state_.primary_connector ||
+        !fresh_state_.primary_connector->has_attempt_in_flight()) {
+      fresh_state_.primary_connector = std::move(stale_connector);
+    } else if (!fresh_state_.secondary_connector ||
+               !fresh_state_.secondary_connector->has_attempt_in_flight()) {
+      fresh_state_.secondary_connector = std::move(stale_connector);
+    }
+
+    // Ensure the fresh state knows it has already tried this endpoint, whether
+    // promotion succeeded or was blocked by busy fresh slots.
+    for (const UsableEndpoint& usable : GetUsableEndpoints()) {
+      if (std::ranges::contains(usable.endpoint.ipv4_endpoints, *address) ||
+          std::ranges::contains(usable.endpoint.ipv6_endpoints, *address)) {
+        Candidate fresh_candidate{*address, usable.endpoint.metadata,
+                                  usable.quic_version};
+        if (!std::ranges::contains(fresh_state_.claimed_candidates_,
+                                   fresh_candidate)) {
+          fresh_state_.claimed_candidates_.push_back(fresh_candidate);
         }
       }
     }
@@ -1171,6 +1256,10 @@ void QuicSessionPool::AsyncDnsJob::MaybeUpdateFallbackIpv4Addresses(
 
 std::optional<int>
 QuicSessionPool::AsyncDnsJob::ProcessServiceEndpointResults() {
+  if (service_endpoint_request_ && service_endpoint_request_->GetStaleInfo()) {
+    cache_staleness_ = *service_endpoint_request_->GetStaleInfo();
+  }
+
   if (MaybePoolToExistingSession()) {
     MaybeSetDnsResolutionEndTime();
     return OK;

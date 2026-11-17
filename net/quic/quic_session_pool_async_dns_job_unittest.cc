@@ -8088,4 +8088,172 @@ TEST_P(QuicSessionPoolAsyncDnsJobV6ToV4MigrationTest,
   ipv6_data.ExpectAllWriteDataConsumed();
 }
 
+TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
+       UsedAnswerAndOptimisticDnsMetrics) {
+  base::HistogramTester histogram_tester;
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddConnect(SYNCHRONOUS, OK);
+  socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(90);
+  staleness.original_ttl = base::Seconds(60);
+  staleness.expired_by = base::Seconds(30);
+  staleness.network_changes = 1;
+  endpoint_request->set_stale_info(staleness)
+      .set_is_stale_while_refreshing(true)
+      .add_endpoint(MakeUsableEndpoint(kIpv4Addr1))
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Fresh DNS arrives with the same IP while the stale attempt is in flight.
+  endpoint_request->ClearStaleInfo()
+      .set_is_stale_while_refreshing(false)
+      .set_endpoints({MakeUsableEndpoint(kIpv4Addr1)})
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Quic.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheConfirmedByFreshDns,
+      1);
+  histogram_tester.ExpectUniqueTimeSample("Net.DNS.UsedAnswer.Quic.Age",
+                                          base::Seconds(90), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Quic.Age.ExpiredCacheConfirmedByFreshDns",
+      base::Seconds(90), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Quic.ExpiredCache.ExpiredBy", base::Seconds(30), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Quic.ExpiredCache.ExpiredBy.ConfirmedByFreshDns",
+      base::Seconds(30), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Quic.ExpiredCache.NetworkChanges", 1, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Quic.StaleIpMatchFreshDns.Age.Matched",
+      base::Seconds(90), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Quic.StaleIpMatchFreshDns.ExpiredBy.Matched",
+      base::Seconds(30), 1);
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
+       StaggeredFreshDnsPromotesWithoutPrematureDivergence) {
+  base::HistogramTester histogram_tester;
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  // Stale IPv6 attempt will succeed.
+  MockQuicData stale_ipv6_data(version_);
+  stale_ipv6_data.AddConnect(SYNCHRONOUS, OK);
+  stale_ipv6_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  stale_ipv6_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  stale_ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+  client_maker_.Reset();
+
+  // Fresh IPv4 attempt will hang in handshake and be canceled.
+  MockQuicData fresh_ipv4_data(version_);
+  fresh_ipv4_data.AddConnect(SYNCHRONOUS, OK);
+  fresh_ipv4_data.AddReadPauseForever();
+  fresh_ipv4_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(90);
+  staleness.original_ttl = base::Seconds(60);
+  staleness.expired_by = base::Seconds(30);
+  endpoint_request->set_stale_info(staleness)
+      .set_is_stale_while_refreshing(true)
+      .add_endpoint(MakeUsableV6Endpoint(kIpv6Addr1))
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    TestCompletionCallback stale_creation_callback;
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        stale_creation_callback.callback()));
+    EXPECT_THAT(stale_creation_callback.WaitForResult(),
+                IsError(ERR_IO_PENDING));
+  }
+
+  // Partial fresh DNS update arrives with only IPv4.
+  endpoint_request->ClearStaleInfo()
+      .set_is_stale_while_refreshing(false)
+      .set_endpoints({MakeUsableEndpoint(kIpv4Addr1)})
+      .CallOnServiceEndpointsUpdated();
+
+  // No divergence metric should have been recorded on the partial update.
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.OptimisticDns.Quic.StaleIpMatchFreshDns.Age.Diverged", 0);
+
+  // Subsequent fresh DNS update includes the matching IPv6 endpoint.
+  endpoint_request->set_endpoints(
+      {MakeUsableEndpoint(kIpv4Addr1), MakeUsableV6Endpoint(kIpv6Addr1)});
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+
+  if (async_quic_session()) {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  ASSERT_GE(crypto_client_stream_factory_.streams().size(), 2u);
+  crypto_client_stream_factory_.streams()[0]->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.OptimisticDns.Quic.StaleIpMatchFreshDns.Age.Diverged", 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Quic.StaleIpMatchFreshDns.Age.Matched",
+      base::Seconds(90), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Quic.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheConfirmedByFreshDns,
+      1);
+
+  stale_ipv6_data.ExpectAllReadDataConsumed();
+  stale_ipv6_data.ExpectAllWriteDataConsumed();
+  fresh_ipv4_data.ExpectAllReadDataConsumed();
+  fresh_ipv4_data.ExpectAllWriteDataConsumed();
+}
+
 }  // namespace net::test

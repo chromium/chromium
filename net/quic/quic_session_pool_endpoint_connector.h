@@ -77,6 +77,18 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
 
   bool is_stale() const;
 
+  bool started_with_stale_dns() const { return started_with_stale_dns_; }
+
+  void set_was_promoted_to_fresh_dns(bool was_promoted_to_fresh_dns) {
+    was_promoted_to_fresh_dns_ = was_promoted_to_fresh_dns;
+  }
+  bool was_promoted_to_fresh_dns() const { return was_promoted_to_fresh_dns_; }
+
+  void set_recorded_ip_match_metrics(bool recorded_ip_match_metrics) {
+    recorded_ip_match_metrics_ = recorded_ip_match_metrics;
+  }
+  bool recorded_ip_match_metrics() const { return recorded_ip_match_metrics_; }
+
   // True when this connector could start an attempt as soon as the job has a
   // candidate for it. The job advances such connectors when new resolver
   // results arrive.
@@ -143,6 +155,9 @@ class QuicSessionPool::EndpointConnector : public QuicSessionAttempt::Delegate {
   // connector that already failed once re-checks IP pooling before it starts
   // another attempt.
   std::optional<int> last_attempt_error_;
+  bool started_with_stale_dns_ = false;
+  bool was_promoted_to_fresh_dns_ = false;
+  bool recorded_ip_match_metrics_ = false;
   base::WeakPtrFactory<EndpointConnector> weak_factory_{this};
 };
 

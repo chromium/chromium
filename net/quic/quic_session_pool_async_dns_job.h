@@ -480,6 +480,14 @@ class QuicSessionPool::AsyncDnsJob
   // is enabled. Operates independently until fresh results arrive.
   ConnectionState stale_state_;
 
+  // Snapshot of HostCache staleness info and winning connector state for
+  // recording `Net.DNS.UsedAnswer.Quic.*` histograms.
+  std::optional<HostCache::EntryStaleness> cache_staleness_;
+  bool pooled_via_stale_dns_ = false;
+  bool winning_connector_started_with_stale_dns_ = false;
+  bool winning_connector_promoted_to_fresh_dns_ = false;
+  std::optional<IPEndPoint> winning_connector_ip_endpoint_;
+
   CompletionOnceCallback callback_;
 
   base::WeakPtrFactory<AsyncDnsJob> weak_factory_{this};

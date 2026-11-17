@@ -59,6 +59,9 @@ std::optional<int> QuicSessionPool::EndpointConnector::TryAdvance() {
     AsyncDnsJob::AttemptParams params = job_->GetAttemptParams();
     attempt_start_time_ = base::TimeTicks::Now();
     ++attempts_started_;
+    started_with_stale_dns_ = is_stale();
+    was_promoted_to_fresh_dns_ = false;
+    recorded_ip_match_metrics_ = false;
     attempt_id_ =
         job_->WillStartAttempt(*this, *candidate, attempt_start_time_);
     // Passing a null `crypto_client_config_handle` is safe because the owning
