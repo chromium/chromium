@@ -26,6 +26,8 @@ grit("resources") {
     "file_manager_resources.pak",
     "file_manager_resources.rc",
   ]
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
   public_deps = [ "//ui/base:webui_resource_path" ]
 }
 
@@ -346,6 +348,8 @@ grit("file_manager_gen_resources") {
 
   source = generated_grd
   deps = [ ":build_grd" ]
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
   public_deps = [ "//ui/base:webui_resource_path" ]
 
   outputs = [

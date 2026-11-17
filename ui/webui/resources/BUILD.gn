@@ -176,6 +176,8 @@ grit("resources") {
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/webui_resources.grd"
   deps = [ ":build_grd" ]
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
   public_deps = [ "//ui/base:webui_resource_path" ]
 
   outputs = [
@@ -228,6 +230,8 @@ if (enable_webui_generate_code_cache) {
     enable_input_discovery_for_gn_analyze = false
     source = "$target_gen_dir/webui_code_cache_resources.grd"
     deps = [ ":build_code_cache_grd" ]
+
+    # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
     public_deps = [ "//ui/base:webui_resource_path" ]
 
     outputs = [

@@ -27,5 +27,7 @@ grit("resources") {
     "login_resources_300_percent.pak",
   ]
   use_brotli = true
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
   public_deps = [ "//ui/base:webui_resource_path" ]
 }

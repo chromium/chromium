@@ -15,5 +15,7 @@ grit("resources") {
     "ui_chromeos_resources_100_percent.pak",
     "ui_chromeos_resources_200_percent.pak",
   ]
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
   public_deps = [ "//ui/base:webui_resource_path" ]
 }

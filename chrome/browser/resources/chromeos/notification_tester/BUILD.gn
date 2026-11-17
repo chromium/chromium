@@ -49,6 +49,8 @@ grit("resources") {
     "notification_tester_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
   public_deps = [ "//ui/base:webui_resource_path" ]
 }
 

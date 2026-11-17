@@ -118,6 +118,8 @@ grit("resources_grit") {
   ]
 
   deps = [ ":inputview" ]
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
   public_deps = [ "//ui/base:webui_resource_path" ]
 }
 

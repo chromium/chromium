@@ -75,5 +75,7 @@ grit("resources") {
     "//chromeos/ash/components/language_packs/public/mojom:mojom_js",
     "//chromeos/ash/components/mantis/mojom:mojom_js",
   ]
+
+  # TODO(crbug.com/584115494): Remove once grit() adds this dependency.
   public_deps = [ "//ui/base:webui_resource_path" ]
 }
