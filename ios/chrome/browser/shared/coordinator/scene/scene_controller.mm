@@ -2272,7 +2272,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   UIImage* image = [UIImage imageWithData:imageData];
   SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
       initWithImage:image
-         // TODO(crbug.com/403235333): Add Lens entry point for Share extension.
          entryPoint:LensEntrypoint::ContextMenu];
   [lensHandler searchImageWithLens:command];
 }
