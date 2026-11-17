@@ -89,7 +89,7 @@ enum class ReasonToClearRenderBuffer {
 // This function copies |frame| to a new I420 or YV12A media::VideoFrame.
 scoped_refptr<media::VideoFrame> CopyFrame(
     scoped_refptr<media::VideoFrame> frame,
-    media::PaintCanvasVideoRenderer* video_renderer) {
+    base::WeakPtr<WebMediaPlayerMS> player) {
   scoped_refptr<media::VideoFrame> new_frame;
   if (frame->HasSharedImage()) {
     DCHECK(frame->format() == media::PIXEL_FORMAT_ARGB ||
@@ -99,6 +99,12 @@ scoped_refptr<media::VideoFrame> CopyFrame(
            frame->format() == media::PIXEL_FORMAT_I420 ||
            frame->format() == media::PIXEL_FORMAT_NV12);
     auto provider = Platform::Current()->SharedMainThreadContextProvider();
+    // Creating or accessing the shared main thread context provider can
+    // synchronously flush pending GPU channel callbacks, which may trigger
+    // garbage collection and shut down `player`.
+    if (!player) {
+      return nullptr;
+    }
     if (!provider) {
       // Return a black frame (yuv = {0, 0x80, 0x80}).
       return media::VideoFrame::CreateColorFrame(
@@ -111,7 +117,8 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     cc::SkiaPaintCanvas paint_canvas(bitmap);
 
     DCHECK(provider->RasterInterface());
-    video_renderer->Copy(frame.get(), &paint_canvas, provider.get());
+    player->GetPaintCanvasVideoRenderer()->Copy(frame.get(), &paint_canvas,
+                                                provider.get());
 
     bitmap.setImmutable();
     new_frame =
@@ -1337,7 +1344,15 @@ void WebMediaPlayerMSCompositor::ReplaceCurrentFrameWithACopy() {
   // there might be a finite number of available buffers. E.g, video that
   // originates from a video camera, HW decoded frames.
   scoped_refptr<media::VideoFrame> copied_frame =
-      CopyFrame(current_frame_ref, player_->GetPaintCanvasVideoRenderer());
+      CopyFrame(current_frame_ref, player_);
+  if (!copied_frame) {
+    // Pending GPU channel callbacks flushed while `CopyFrame()` accesses the
+    // context provider may trigger garbage collection and run
+    // `WebMediaPlayerMS::Shutdown()`, which posts `this` for deletion on
+    // another thread. Do not access any members of `this` when `copied_frame`
+    // is null.
+    return;
+  }
   // Copying frame can take time, so only set the copied frame if
   // |current_frame_| hasn't been changed.
   {
