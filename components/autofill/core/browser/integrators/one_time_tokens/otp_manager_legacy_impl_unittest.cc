@@ -1074,6 +1074,26 @@ TEST_F(OtpManagerLegacyImplDeliveryTest,
       1);
 }
 
+// Tests that SMS OTP suggestion delivery is suppressed when the PhishGuard
+// check fails.
+TEST_F(OtpManagerLegacyImplDeliveryTest,
+       MaybeShowOtpSuggestionsForSms_SuppressedWhenCheckFailed) {
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  RequestOtpSuggestions(future);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce(RunOnceCallback<1>(kCheckFailed));
+
+  one_time_tokens::OneTimeToken token(
+      one_time_tokens::OneTimeTokenType::kSmsOtp, kDefaultOtpValue,
+      base::TimeTicks::Now());
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
 // Tests that Gmail OTP tokens received via `OnOneTimeTokenReceived` (e.g.
 // from `GetRecentOneTimeTokens()` when `GmailOtpBackend` is enabled
 // independently) are ignored without triggering PhishGuard or resolving the

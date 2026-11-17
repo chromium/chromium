@@ -37,6 +37,8 @@ OtpDeliveryPolicy::Decision OtpDeliveryPolicy::Evaluate(const Input& input) {
       return {.allowed = false, .reason = SkipReason::kPhishingVerdict};
     case OneTimeTokensPhishGuardVerdict::kTimedOut:
       return {.allowed = false, .reason = SkipReason::kPhishGuardTimedOut};
+    case OneTimeTokensPhishGuardVerdict::kCheckFailed:
+      return {.allowed = false, .reason = SkipReason::kPhishGuardCheckFailed};
     case OneTimeTokensPhishGuardVerdict::kUnknown:
     case OneTimeTokensPhishGuardVerdict::kNotPhishing:
       break;
@@ -91,6 +93,8 @@ std::string_view OtpDeliveryPolicy::SkipReasonToStringView(SkipReason reason) {
       return "Reason: PhishGuard verdict is phishing.";
     case SkipReason::kPhishGuardTimedOut:
       return "Reason: PhishGuard check timed out.";
+    case SkipReason::kPhishGuardCheckFailed:
+      return "Reason: PhishGuard check failed.";
     case SkipReason::kTargetFieldMissing:
       return "Reason: Target OTP field is missing or frame has changed.";
     case SkipReason::kFrameInactive:

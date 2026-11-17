@@ -319,6 +319,11 @@ void OtpManagerLegacyImpl::MaybeShowOtpSuggestionsForSms(
         << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
         << "Reason: PhishGuard verdict is phishing.";
     suggestions.clear();
+  } else if (verdict == OneTimeTokensPhishGuardVerdict::kCheckFailed) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
+        << "Reason: PhishGuard check failed.";
+    suggestions.clear();
   } else if (!suggestions.empty()) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens

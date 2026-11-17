@@ -116,6 +116,8 @@ std::string_view OneTimeTokensPhishGuardVerdictToStringView(
       return "kNotPhishing";
     case OneTimeTokensPhishGuardVerdict::kTimedOut:
       return "kTimedOut";
+    case OneTimeTokensPhishGuardVerdict::kCheckFailed:
+      return "kCheckFailed";
   }
   NOTREACHED();
 }

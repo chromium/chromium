@@ -5893,6 +5893,7 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Phishing"/>
   <int value="2" label="Not Phishing"/>
   <int value="3" label="Timed Out"/>
+  <int value="4" label="Check Failed"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/integrators/one_time_tokens/otp_types.h:OneTimeTokensPhishGuardVerdict) -->

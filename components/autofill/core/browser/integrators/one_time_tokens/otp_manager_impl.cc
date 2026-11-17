@@ -697,6 +697,11 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForSms(
         << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
         << "Reason: PhishGuard verdict is phishing.";
     suggestions.clear();
+  } else if (verdict == OneTimeTokensPhishGuardVerdict::kCheckFailed) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
+        << "Reason: PhishGuard check failed.";
+    suggestions.clear();
   } else if (!suggestions.empty()) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
@@ -741,6 +746,10 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
       LOG_AF(owner_->client().GetCurrentLogManager())
           << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
           << "Reason: PhishGuard verdict is phishing.";
+    } else if (verdict == OneTimeTokensPhishGuardVerdict::kCheckFailed) {
+      LOG_AF(owner_->client().GetCurrentLogManager())
+          << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
+          << "Reason: PhishGuard check failed.";
     } else if (!IsActiveNonEmbeddedDriver(owner_->driver())) {
       LOG_AF(owner_->client().GetCurrentLogManager())
           << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
@@ -765,6 +774,12 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
         << "Reason: PhishGuard verdict is phishing.";
+    return;
+  }
+  if (verdict == OneTimeTokensPhishGuardVerdict::kCheckFailed) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
+        << "Reason: PhishGuard check failed.";
     return;
   }
 

@@ -142,7 +142,9 @@ enum class OneTimeTokensPhishGuardVerdict {
   kPhishing = 1,
   kNotPhishing = 2,
   kTimedOut = 3,
-  kMaxValue = kTimedOut,
+  // The check ended without a verdict, e.g. on a network error.
+  kCheckFailed = 4,
+  kMaxValue = kCheckFailed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:OneTimeTokensPhishGuardVerdict)
 

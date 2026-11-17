@@ -1874,6 +1874,26 @@ TEST_F(OtpManagerImplDeliveryTest,
       1);
 }
 
+// Tests that SMS OTP suggestion delivery is suppressed when the PhishGuard
+// check fails.
+TEST_F(OtpManagerImplDeliveryTest,
+       MaybeShowOtpSuggestionsForSms_SuppressedWhenCheckFailed) {
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  RequestOtpSuggestions(future);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce(RunOnceCallback<1>(kCheckFailed));
+
+  one_time_tokens::OneTimeToken token(
+      one_time_tokens::OneTimeTokenType::kSmsOtp, kDefaultOtpValue,
+      base::TimeTicks::Now());
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
 // Tests that Gmail OTP suggestion delivery works and delivers the suggestion to
 // the pending callback when PhishGuard approves.
 TEST_F(OtpManagerImplDeliveryTest,
@@ -1921,6 +1941,28 @@ TEST_F(OtpManagerImplDeliveryTest,
   histogram_tester_.ExpectUniqueSample(
       kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kPhishing,
       1);
+}
+
+// Tests that Gmail OTP suggestion delivery is suppressed when the PhishGuard
+// check fails, and that the cached Gmail OTP is kept for a later check.
+TEST_F(OtpManagerImplDeliveryTest,
+       MaybeShowOtpSuggestionsForGmail_SuppressedWhenCheckFailed) {
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  RequestOtpSuggestions(future);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce(RunOnceCallback<1>(kCheckFailed));
+
+  one_time_tokens::OneTimeToken token(one_time_tokens::OneTimeTokenType::kGmail,
+                                      kDefaultOtpValue, base::TimeTicks::Now(),
+                                      "sender@example.com");
+  test_api(otp_manager()).set_last_retrieved_gmail_otp(token);
+  test_api(otp_manager()).OnOneTimeTokenReceived(std::move(token));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(test_api(otp_manager()).SelectMostRecentToken().has_value());
 }
 
 // Tests that Gmail OTP suggestion delivery invokes the callback with empty
@@ -2219,6 +2261,27 @@ TEST_F(OtpManagerImplProactiveTriggerTest,
   histogram_tester_.ExpectUniqueSample(
       kPhishGuardVerdictHistogram,
       static_cast<int>(OneTimeTokensPhishGuardVerdict::kPhishing), 1);
+}
+
+// Tests that proactive triggering is suppressed if the PhishGuard check fails,
+// and that the cached Gmail OTP is kept for a later check.
+TEST_F(OtpManagerImplProactiveTriggerTest,
+       ProactiveTriggerSuggestions_SuppressedWhenCheckFailed) {
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  test_api(otp_manager())
+      .set_last_retrieved_gmail_otp(one_time_tokens::OneTimeToken(
+          one_time_tokens::OneTimeTokenType::kGmail, kDefaultOtpValue,
+          base::TimeTicks::Now(), "sender@example.com"));
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .WillOnce(RunOnceCallback<1>(kCheckFailed));
+  EXPECT_CALL(autofill_driver(), RendererShouldTriggerSuggestions).Times(0);
+
+  ReceiveGmailOtp();
+
+  EXPECT_TRUE(test_api(otp_manager()).SelectMostRecentToken().has_value());
 }
 
 // Tests that duplicate OTP tokens are ignored, but a newer/different OTP

@@ -52,14 +52,15 @@ std::optional<OtpProactiveTriggerSuppressionReason>
 MapSkipReasonToSuppressionReason(OtpDeliveryPolicy::SkipReason reason) {
   switch (reason) {
     // `kNone` only accompanies allowed decisions. `kOriginMismatch`,
-    // `kPhishingVerdict` and `kPhishGuardTimedOut` are verification-stage
-    // reasons that cannot occur at the proactive stage: only verified
-    // candidates are offered, and only to targets in the `SiteFrame` they were
-    // verified for.
+    // `kPhishingVerdict`, `kPhishGuardTimedOut` and `kPhishGuardCheckFailed`
+    // are verification-stage reasons that cannot occur at the proactive stage:
+    // only verified candidates are offered, and only to targets in the
+    // `SiteFrame` they were verified for.
     case OtpDeliveryPolicy::SkipReason::kNone:
     case OtpDeliveryPolicy::SkipReason::kOriginMismatch:
     case OtpDeliveryPolicy::SkipReason::kPhishingVerdict:
     case OtpDeliveryPolicy::SkipReason::kPhishGuardTimedOut:
+    case OtpDeliveryPolicy::SkipReason::kPhishGuardCheckFailed:
       return std::nullopt;
     // Edge case: Gmail OTP filling was turned off after the candidate was
     // verified, e.g. while its proactive trigger was deferred.
