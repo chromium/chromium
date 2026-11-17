@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -267,6 +268,7 @@ TEST_P(TextEncoderTest, Encode16BitAsciiString) {
 }
 
 TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   V8TestingScope scope;
   TextEncoder* encoder = MakeGarbageCollected<TextEncoder>(Utf8Encoding());
   DummyExceptionStateForTesting exception_state;

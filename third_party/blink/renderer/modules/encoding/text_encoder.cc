@@ -33,7 +33,8 @@
 #include <array>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_encoder_encode_into_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
@@ -53,6 +54,16 @@ BASE_FEATURE(kThrowExceptionWhenTextEncodeOOM,
 BASE_FEATURE(kTextEncoderFastPath, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
+
+void RecordEncodeMetrics(wtf_size_t input_length,
+                         TextEncoderFastPathResult result) {
+  if (!base::ShouldRecordSubsampledMetric(0.001)) {
+    return;
+  }
+  UMA_HISTOGRAM_COUNTS_100000("Blink.TextEncoder.Encode.InputLength",
+                              input_length);
+  UMA_HISTOGRAM_ENUMERATION("Blink.TextEncoder.Encode.FastPathResult", result);
+}
 
 NotShared<DOMUint8Array> CreateDOMUint8Array(
     base::span<const uint8_t> bytes,
@@ -92,19 +103,14 @@ String TextEncoder::encoding() const {
 
 NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
                                              ExceptionState& exception_state) {
-  base::UmaHistogramCounts100000("Blink.TextEncoder.Encode.InputLength",
-                                 input.length());
-
   if (base::FeatureList::IsEnabled(kTextEncoderFastPath)) {
     if (input.empty()) {
-      base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
-                                    TextEncoderFastPathResult::kEmpty);
+      RecordEncodeMetrics(0, TextEncoderFastPathResult::kEmpty);
       return CreateDOMUint8Array({}, exception_state);
     }
 
     if (input.Is8Bit() && input.ContainsOnlyAsciiOrEmpty()) {
-      base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
-                                    TextEncoderFastPathResult::kAscii8Bit);
+      RecordEncodeMetrics(input.length(), TextEncoderFastPathResult::kAscii8Bit);
       return CreateDOMUint8Array(input.Span8(), exception_state);
     }
 
@@ -114,8 +120,8 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
     // take 2 code units and at most 4 bytes).
     constexpr size_t kStackBufferSize = 256;
     if (input.length() <= kStackBufferSize / 3) {
-      base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
-                                    TextEncoderFastPathResult::kShortNonAscii);
+      RecordEncodeMetrics(input.length(),
+                          TextEncoderFastPathResult::kShortNonAscii);
       std::array<uint8_t, kStackBufferSize> stack_buffer;
       TextCodec::EncodeIntoResult encode_into_result =
           VisitCharacters(input, [this, &stack_buffer](auto chars) {
@@ -127,11 +133,9 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
           exception_state);
     }
 
-    base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
-                                  TextEncoderFastPathResult::kLongString);
+    RecordEncodeMetrics(input.length(), TextEncoderFastPathResult::kLongString);
   } else {
-    base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
-                                  TextEncoderFastPathResult::kDisabled);
+    RecordEncodeMetrics(input.length(), TextEncoderFastPathResult::kDisabled);
   }
 
   // Note that the UnencodableHandling here is never used since the

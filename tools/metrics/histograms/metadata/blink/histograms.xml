@@ -5201,10 +5201,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-loading@google.com</owner>
   <summary>
     Captures the execution path taken during TextEncoder.encode(). Recorded on
-    every call to TextEncoder.encode(). When kTextEncoderFastPath is disabled,
-    records Disabled. When enabled, records whether the input was empty, 8-bit
-    ASCII (direct buffer copy), short string (stack buffer), or long string
-    (heap fallback).
+    0.1% of calls to TextEncoder.encode() (subsampled for performance). When
+    kTextEncoderFastPath is disabled, records Disabled. When enabled, records
+    whether the input was empty, 8-bit ASCII (direct buffer copy), short string
+    (stack buffer), or long string (heap fallback).
   </summary>
 </histogram>
 
@@ -5214,7 +5214,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-loading@google.com</owner>
   <summary>
     The length in UTF-16 code units of strings passed to TextEncoder.encode().
-    Recorded on every call to TextEncoder.encode().
+    Recorded on 0.1% of calls to TextEncoder.encode() (subsampled for
+    performance).
   </summary>
 </histogram>
 
