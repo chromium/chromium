@@ -953,17 +953,4 @@ TEST_F(PaintPreviewCompositorTest,
   task_environment_.RunUntilIdle();
 }
 
-class NoOpDiscardableAllocator : public base::DiscardableMemoryAllocator {
- public:
-  NoOpDiscardableAllocator() = default;
-  ~NoOpDiscardableAllocator() override = default;
-
-  std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
-      size_t size) override {
-    return nullptr;
-  }
-  size_t GetBytesAllocated() const override { return 0U; }
-  void ReleaseFreeMemory() override {}
-};
-
 }  // namespace paint_preview
