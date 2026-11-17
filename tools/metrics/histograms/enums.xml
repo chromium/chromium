@@ -26527,18 +26527,6 @@ Called by update_net_error_codes.py.-->
   <int value="419" label="JSONL"/>
 </enum>
 
-<enum name="ScanFailureProgress">
-  <summary>
-    Shows which function caused a failure while scanning. These functions
-    correspond to function found in chromos's lorgnette.c
-  </summary>
-  <int value="1" label="StartScan"/>
-  <int value="2" label="GetScanCapabilities"/>
-  <int value="3" label="ConnectToDevice"/>
-  <int value="4" label="ScanLoop"/>
-  <int value="5" label="ListScanners"/>
-</enum>
-
 <enum name="ScanJobFailureReason">
   <int value="0" label="Unknown scanner error"/>
   <int value="1" label="Scanner not found"/>
