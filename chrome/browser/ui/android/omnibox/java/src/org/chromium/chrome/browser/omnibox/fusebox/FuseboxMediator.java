@@ -13,6 +13,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
@@ -27,6 +28,7 @@ import android.view.View;
 
 import androidx.annotation.CheckResult;
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -1185,14 +1187,16 @@ class FuseboxMediator implements BackPressHandler {
             return "";
         }
 
-        return switch (toolMode) {
-            case ToolMode.TOOL_MODE_UNSPECIFIED ->
-                    mContext.getString(R.string.fusebox_ai_mode_subtext);
-            case ToolMode.TOOL_MODE_IMAGE_GEN ->
-                    mContext.getString(R.string.fusebox_create_image_subtext);
-            case ToolMode.TOOL_MODE_CANVAS -> mContext.getString(R.string.fusebox_canvas_subtext);
-            default -> "";
-        };
+        @StringRes
+        int resId =
+                switch (toolMode) {
+                    case ToolMode.TOOL_MODE_UNSPECIFIED -> R.string.fusebox_ai_mode_subtext;
+                    case ToolMode.TOOL_MODE_IMAGE_GEN -> R.string.fusebox_create_image_subtext;
+                    case ToolMode.TOOL_MODE_CANVAS -> R.string.fusebox_canvas_subtext;
+                    case ToolMode.TOOL_MODE_GEMINI_PRO -> R.string.fusebox_ptm_tool_subtext;
+                    default -> Resources.ID_NULL;
+                };
+        return resId != Resources.ID_NULL ? mResourceProvider.getString(resId) : "";
     }
 
     private void launchCamera() {
