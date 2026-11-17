@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "third_party/omnibox_proto/suggest_template_info.pb.h"
+
 @protocol OmniboxIcon;
 @protocol OmniboxPedal;
 @class CrURL;
@@ -41,6 +43,9 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 @property(nonatomic, readonly) BOOL wrapPrimaryText;
 /// Whether `detailText` should be allowed to wrap to multiple lines.
 @property(nonatomic, readonly) BOOL wrapSecondaryText;
+/// The icon type of the trailing button of the suggestion.
+@property(nonatomic, readonly)
+    omnibox::SuggestTemplateInfo::ActionIconType actionIcon;
 
 /// Either nil or NSNumber-wrapped omnibox::GroupId.
 @property(nonatomic, readonly, strong) NSNumber* suggestionGroupId;
