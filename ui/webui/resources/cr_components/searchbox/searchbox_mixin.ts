@@ -981,11 +981,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       const resultsPending = this.activeQueryId !== -1 &&
           this.result?.queryId !== this.activeQueryId;
       if (isPureCtrlEnter) {
-        // Ctrl+Enter adds 'www.' and '.com' to the input or to the selected
-        // match. It doesn't need the up-to-date matches; if they're pending,
-        // the selection is stale, so use the input instead.
-        this.openCtrlEnterMatch(
-            !resultsPending && this.selectedMatch ? this.matchIndex : -1);
+        // Ctrl+Enter adds 'www.' and '.com' to the previewed match or the
+        // input, but not to the default match. If new results are pending, the
+        // preview is stale, so use the input.
+        const usePreview = !resultsPending &&
+            this.isMatchPreview_(this.selectedMatch, this.matchIndex);
+        this.openCtrlEnterMatch(usePreview ? this.matchIndex : -1);
       } else if (!resultsPending) {
         // If no new query's `results` are pending (though new async results for
         // the current query may be pending), navigate.

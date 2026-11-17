@@ -649,7 +649,8 @@ suite('SearchboxMixinTest', () => {
 
     const args =
         await testProxy.handler.whenCalled('openPopupSelectionWithDisposition');
-    assertEquals(0, args.selection.line);
+    // The default match isn't previewed, so Ctrl+Enter uses the input.
+    assertEquals(-1, args.selection.line);
     assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
   });
 
@@ -660,12 +661,19 @@ suite('SearchboxMixinTest', () => {
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
       queryId: element.activeQueryId,
       input: 'hello',
-      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+      matches: [
+        createSearchMatchForTesting({allowedToBeDefaultMatch: true}),
+        createUrlMatch(),
+      ],
     }));
     await microtasksFinished();
     assertTrue(element.dropdownIsVisible);
 
-    // Press Ctrl+Enter before the 'hello world' matches arrive.
+    // Preview the 2nd match. Then press Ctrl+Enter before the 'hello world'
+    // matches arrive.
+    mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+    await microtasksFinished();
+    assertEquals(1, element.selectedMatchIndex);
     await simulateUserTextInput(mockInput, 'hello world');
     const queryId = element.activeQueryId;
     const ctrlEnter = createKeyboardEvent('Enter', {ctrlKey: true});
@@ -673,8 +681,8 @@ suite('SearchboxMixinTest', () => {
     assertTrue(ctrlEnter.defaultPrevented);
     await microtasksFinished();
 
-    // Opens the input with '.com' appended right away, instead of waiting for
-    // the matches to open the default match.
+    // Opens the input with '.com' appended right away, instead of the stale
+    // preview, or waiting for the matches to open the default match.
     assertEquals(
         1, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
     const args =
