@@ -96,6 +96,9 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
                     AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(context, profile));
             mRadioButtonGroup.setCanUseTtc(
                     AdaptiveToolbarFeatures.isTtcEnabledForAdaptiveToolbar());
+            mRadioButtonGroup.setCanUseAskGoogle(
+                    AdaptiveToolbarFeatures.isAskGoogleEnabledForAdaptiveToolbar()
+                            && !AdaptiveToolbarFeatures.isAskGoogleForcedForAdaptiveToolbar());
             maybeSetUiStateFromBundleArgs();
             mRadioButtonGroup.setStatePredictor(
                     new AdaptiveToolbarStatePredictor(

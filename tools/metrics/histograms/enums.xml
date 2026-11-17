@@ -173,6 +173,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="16" label="Tab grouping"/>
   <int value="17" label="Glic"/>
   <int value="18" label="TTC"/>
+  <int value="19" label="Ask Google"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/android/toolbar/adaptive_toolbar_enums.h:AdaptiveToolbarButtonVariant) -->

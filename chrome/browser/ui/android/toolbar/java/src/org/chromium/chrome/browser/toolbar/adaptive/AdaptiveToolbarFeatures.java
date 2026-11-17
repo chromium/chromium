@@ -12,6 +12,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -72,6 +73,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.AUTO:
             case AdaptiveToolbarButtonVariant.GLIC:
             case AdaptiveToolbarButtonVariant.TTC:
+            case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
                 return false;
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
@@ -137,6 +139,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.DISCOUNTS:
             case AdaptiveToolbarButtonVariant.GLIC:
             case AdaptiveToolbarButtonVariant.TTC:
+            case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
                 return false;
             default:
                 assert false : "Unknown button variant " + buttonVariant;
@@ -179,6 +182,22 @@ public class AdaptiveToolbarFeatures {
      */
     public static boolean isTtcEnabledForAdaptiveToolbar() {
         return ChromeFeatureList.sTtc.isEnabled();
+    }
+
+    /** Returns whether Ask Google is enabled as an adaptive toolbar button. */
+    public static boolean isAskGoogleEnabledForAdaptiveToolbar() {
+        return ChromeFeatureList.sContextualTasksEntryPoints.isEnabled()
+                && ChromeFeatureList.sContextualTasksEntryPointsToolbarButton.getValue()
+                && ContextualTasksUtils.isContextualTasksUiEnabled();
+    }
+
+    /**
+     * Returns whether Ask Google is forced into the adaptive toolbar slot instead of being
+     * user-pinned via settings.
+     */
+    public static boolean isAskGoogleForcedForAdaptiveToolbar() {
+        return isAskGoogleEnabledForAdaptiveToolbar()
+                && ChromeFeatureList.sContextualTasksEntryPointsForceToolbarButton.getValue();
     }
 
     /**

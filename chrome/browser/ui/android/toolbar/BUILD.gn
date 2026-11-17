@@ -27,6 +27,7 @@ android_library("adaptive_features_java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/actor/android:java",
+    "//chrome/browser/contextual_tasks:utils_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/glic:public_java",
     "//chrome/browser/preferences:java",
@@ -476,6 +477,7 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/theme:java_resources",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/strings:components_strings_grd",
     "//ui/android:ui_java_resources",
   ]
 }

@@ -55,6 +55,8 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Glic"/>
   <int value="18" label="Auto with Glic"/>
   <int value="19" label="TTC"/>
+  <int value="20" label="Ask Google"/>
+  <int value="21" label="Auto with Ask Google"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStats.java:AdaptiveToolbarRadioButtonState) -->

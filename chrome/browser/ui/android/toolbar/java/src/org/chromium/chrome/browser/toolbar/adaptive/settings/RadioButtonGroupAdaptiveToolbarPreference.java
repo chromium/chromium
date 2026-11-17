@@ -44,6 +44,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     private @Nullable RadioButtonWithDescription mReadAloudButton;
     private @Nullable RadioButtonWithDescription mGlicButton;
     private @Nullable RadioButtonWithDescription mTtcButton;
+    private @Nullable RadioButtonWithDescription mAskGoogleButton;
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @AdaptiveToolbarButtonVariant int mAutoButtonCaption;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
@@ -53,6 +54,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
     private boolean mCanUseTranslate = true;
     private boolean mCanUseGlic;
     private boolean mCanUseTtc;
+    private boolean mCanUseAskGoogle;
     private @Nullable Runnable mOnComponentUpdated;
     private Runnable mInitRadioButtonRunnable = this::initializeRadioButtonSelection;
     private boolean mIsBound;
@@ -95,6 +97,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_read_aloud);
         mGlicButton = (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_glic);
         mTtcButton = (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_ttc);
+        mAskGoogleButton =
+                (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_ask_google);
 
         mIsBound = true;
 
@@ -113,7 +117,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         "mReadAloudButton",
         "mPageSummaryButton",
         "mGlicButton",
-        "mTtcButton"
+        "mTtcButton",
+        "mAskGoogleButton"
     })
     @SuppressWarnings("NullAway")
     private boolean isBound() {
@@ -187,6 +192,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         updateTranslateButtonVisibility();
         updateGlicButtonVisibility();
         updateTtcButtonVisibility();
+        updateAskGoogleButtonVisibility();
 
         if (mOnComponentUpdated != null) mOnComponentUpdated.run();
     }
@@ -214,6 +220,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
             mSelected = AdaptiveToolbarButtonVariant.GLIC;
         } else if (mTtcButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.TTC;
+        } else if (mAskGoogleButton.isChecked()) {
+            mSelected = AdaptiveToolbarButtonVariant.ASK_GOOGLE;
         } else {
             assert false : "No matching setting found.";
         }
@@ -255,6 +263,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
                 return mGlicButton;
             case AdaptiveToolbarButtonVariant.TTC:
                 return mTtcButton;
+            case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
+                return mAskGoogleButton;
         }
         return null;
     }
@@ -285,6 +295,9 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
                 break;
             case AdaptiveToolbarButtonVariant.TTC:
                 stringRes = R.string.ttc_entrypoint_label;
+                break;
+            case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
+                stringRes = R.string.contextual_search_open_lens_action_label;
                 break;
             case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
                 stringRes = R.string.menu_open_in_product_default;
@@ -325,6 +338,11 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
         updateTtcButtonVisibility();
     }
 
+    void setCanUseAskGoogle(boolean canUseAskGoogle) {
+        mCanUseAskGoogle = canUseAskGoogle;
+        updateAskGoogleButtonVisibility();
+    }
+
     private void updateNewTabButtonVisibility() {
         updateButtonVisibility(mNewTabButton, mCanUseNewTab);
     }
@@ -347,6 +365,10 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
 
     private void updateTtcButtonVisibility() {
         updateButtonVisibility(mTtcButton, mCanUseTtc);
+    }
+
+    private void updateAskGoogleButtonVisibility() {
+        updateButtonVisibility(mAskGoogleButton, mCanUseAskGoogle);
     }
 
     /**

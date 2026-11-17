@@ -194,6 +194,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
             case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
             case AdaptiveToolbarButtonVariant.GLIC:
+            case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
                 return true;
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:
@@ -267,6 +268,8 @@ public class AdaptiveToolbarStatePredictor {
                 return AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(mContext, mProfile);
             case AdaptiveToolbarButtonVariant.TTC:
                 return AdaptiveToolbarFeatures.isTtcEnabledForAdaptiveToolbar();
+            case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
+                return AdaptiveToolbarFeatures.isAskGoogleEnabledForAdaptiveToolbar();
             default:
                 return true;
         }

@@ -39,6 +39,8 @@ public class AdaptiveToolbarStats {
         AdaptiveToolbarRadioButtonState.GLIC,
         AdaptiveToolbarRadioButtonState.AUTO_WITH_GLIC,
         AdaptiveToolbarRadioButtonState.TTC,
+        AdaptiveToolbarRadioButtonState.ASK_GOOGLE,
+        AdaptiveToolbarRadioButtonState.AUTO_WITH_ASK_GOOGLE,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface AdaptiveToolbarRadioButtonState {
@@ -62,7 +64,9 @@ public class AdaptiveToolbarStats {
         int GLIC = 17;
         int AUTO_WITH_GLIC = 18;
         int TTC = 19;
-        int NUM_ENTRIES = 20;
+        int ASK_GOOGLE = 20;
+        int AUTO_WITH_ASK_GOOGLE = 21;
+        int NUM_ENTRIES = 22;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AdaptiveToolbarRadioButtonState)
@@ -130,6 +134,8 @@ public class AdaptiveToolbarStats {
                 return AdaptiveToolbarRadioButtonState.GLIC;
             case AdaptiveToolbarButtonVariant.TTC:
                 return AdaptiveToolbarRadioButtonState.TTC;
+            case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
+                return AdaptiveToolbarRadioButtonState.ASK_GOOGLE;
             case AdaptiveToolbarButtonVariant.AUTO:
                 switch (uiState.autoButtonCaption) {
                     case AdaptiveToolbarButtonVariant.NEW_TAB:
@@ -148,6 +154,8 @@ public class AdaptiveToolbarStats {
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_OPEN_IN_BROWSER;
                     case AdaptiveToolbarButtonVariant.GLIC:
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_GLIC;
+                    case AdaptiveToolbarButtonVariant.ASK_GOOGLE:
+                        return AdaptiveToolbarRadioButtonState.AUTO_WITH_ASK_GOOGLE;
                 }
         }
         assert false : "Invalid radio button state";
