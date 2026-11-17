@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] [required] erf float16 1D constant tensor
+  assert_array_approx_equals: test erf float16 property 7, expected 0.240478515625 +/- 0.001953125, expected 0.240478515625 but got 0.24267578125
+[FAIL] [required] erf float16 1D tensor
+  assert_array_approx_equals: test erf float16 property 7, expected 0.240478515625 +/- 0.001953125, expected 0.240478515625 but got 0.24267578125
+[FAIL] [required] erf float16 2D tensor
+  assert_array_approx_equals: test erf float16 property 7, expected 0.240478515625 +/- 0.001953125, expected 0.240478515625 but got 0.24267578125
+[FAIL] [required] erf float16 3D tensor
+  assert_array_approx_equals: test erf float16 property 7, expected 0.240478515625 +/- 0.001953125, expected 0.240478515625 but got 0.24267578125
+[FAIL] [required] erf float16 4D tensor
+  assert_array_approx_equals: test erf float16 property 7, expected 0.240478515625 +/- 0.001953125, expected 0.240478515625 but got 0.24267578125
+Harness: the test ran to completion.
+

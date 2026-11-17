@@ -1,0 +1,59 @@
+This is a testharness.js-based test.
+[FAIL] [required] pow float32 constant 1D base tensor and 1D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 1.0973213449005925e-7 should be close enough to expected -1.0973203501407625e-7 by ULP distance: expected a number less than or equal to 32n but got 1742162868n
+[FAIL] [required] pow float32 1D base tensor and 1D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 1.0973213449005925e-7 should be close enough to expected -1.0973203501407625e-7 by ULP distance: expected a number less than or equal to 32n but got 1742162868n
+[FAIL] [required] pow float32 2D base tensor and 2D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 1.0973213449005925e-7 should be close enough to expected -1.0973203501407625e-7 by ULP distance: expected a number less than or equal to 32n but got 1742162868n
+[FAIL] [required] pow float32 3D base tensor and 3D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 1.0973213449005925e-7 should be close enough to expected -1.0973203501407625e-7 by ULP distance: expected a number less than or equal to 32n but got 1742162868n
+[FAIL] [required] pow float32 4D base tensor and 4D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 1.0973213449005925e-7 should be close enough to expected -1.0973203501407625e-7 by ULP distance: expected a number less than or equal to 32n but got 1742162868n
+[FAIL] [required] pow float32 5D base tensor and 5D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 1.0973213449005925e-7 should be close enough to expected -1.0973203501407625e-7 by ULP distance: expected a number less than or equal to 32n but got 1742162868n
+[FAIL] [required] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 245.82125854492188 should be close enough to expected 124.94144439697266 by ULP distance: expected a number less than or equal to 32n but got 8122425n
+[FAIL] [required] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 4.3030548095703125 should be close enough to expected 1.5685393810272217 by ULP distance: expected a number less than or equal to 32n but got 12643514n
+[FAIL] [required] pow float32 4D base tensor and broadcastable 2D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 2.116201214263924e-9 should be close enough to expected -2.11619832768406e-9 by ULP distance: expected a number less than or equal to 32n but got 1646450985n
+[FAIL] [required] pow float32 4D base tensor and broadcastable 3D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 999110.375 should be close enough to expected -999109.625 by ULP distance: expected a number less than or equal to 32n but got 2464667840n
+[FAIL] [required] pow float32 5D and broadcastable 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 0.063106968998909 should be close enough to expected -0.0631069764494896 by ULP distance: expected a number less than or equal to 32n but got 2063760501n
+[FAIL] [required] pow float32 broadcasting two 5D inputs with a leading batch size of 1
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 0.063106968998909 should be close enough to expected -0.0631069764494896 by ULP distance: expected a number less than or equal to 32n but got 2063760501n
+[FAIL] [required] pow float32 5D inputs with alternating broadcast axes
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 0.063106968998909 should be close enough to expected -0.0631069764494896 by ULP distance: expected a number less than or equal to 32n but got 2063760501n
+[FAIL] [required] pow float32 two 5D inputs with identical shapes
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 0.0002513229555916041 should be close enough to expected -0.0002513229327168878 by ULP distance: expected a number less than or equal to 32n but got 1929873405n
+[FAIL] [required] pow float16 constant 1D base tensor and 1D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 0.0002512931823730469 should be close enough to expected -0.0002512931823730469 by ULP distance: expected a number less than or equal to 2 but got 6204
+[FAIL] [required] pow float16 1D base tensor and 1D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 0.0002512931823730469 should be close enough to expected -0.0002512931823730469 by ULP distance: expected a number less than or equal to 2 but got 6204
+[FAIL] [required] pow float16 2D base tensor and 2D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 0.0002512931823730469 should be close enough to expected -0.0002512931823730469 by ULP distance: expected a number less than or equal to 2 but got 6204
+[FAIL] [required] pow float16 3D base tensor and 3D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 0.0002512931823730469 should be close enough to expected -0.0002512931823730469 by ULP distance: expected a number less than or equal to 2 but got 6204
+[FAIL] [required] pow float16 4D base tensor and 4D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 0.0002512931823730469 should be close enough to expected -0.0002512931823730469 by ULP distance: expected a number less than or equal to 2 but got 6204
+[FAIL] [required] pow float16 5D base tensor and 5D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 0.0002512931823730469 should be close enough to expected -0.0002512931823730469 by ULP distance: expected a number less than or equal to 2 but got 6204
+[FAIL] [required] pow (square) float16 4D base tensor and broadcastable 0D integer exponent scalar
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 245.75 should be close enough to expected 125 by ULP distance: expected a number less than or equal to 2 but got 990
+[FAIL] [required] pow (sqrt) float16 4D positive base tensor and broadcastable 0D integer exponent scalar
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 4.30078125 should be close enough to expected 1.568359375 by ULP distance: expected a number less than or equal to 2 but got 1543
+[FAIL] [required] pow float16 4D base tensor and broadcastable 2D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 0.101318359375 should be close enough to expected -0.101318359375 by ULP distance: expected a number less than or equal to 2 but got 23800
+[FAIL] [required] pow float16 4D base tensor and broadcastable 3D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 15.84375 should be close enough to expected -15.84375 by ULP distance: expected a number less than or equal to 2 but got 38872
+[FAIL] [required] pow float16 5D and broadcastable 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 15.84375 should be close enough to expected -15.84375 by ULP distance: expected a number less than or equal to 2 but got 38872
+[FAIL] [required] pow float16 broadcasting two 5D inputs with a leading batch size of 1
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 15.84375 should be close enough to expected -15.84375 by ULP distance: expected a number less than or equal to 2 but got 38872
+[FAIL] [required] pow float16 5D inputs with alternating broadcast axes
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 15.84375 should be close enough to expected -15.84375 by ULP distance: expected a number less than or equal to 2 but got 38872
+[FAIL] [required] pow float16 two 5D inputs with identical shapes
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 0.0002512931823730469 should be close enough to expected -0.0002512931823730469 by ULP distance: expected a number less than or equal to 2 but got 6204
+Harness: the test ran to completion.
+

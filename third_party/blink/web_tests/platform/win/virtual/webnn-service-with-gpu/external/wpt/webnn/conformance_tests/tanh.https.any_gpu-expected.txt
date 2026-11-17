@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [required] tanh float32 1D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test tanh float32 actual 1.0089555978775024 should be close enough to expected 0.9999647736549377 by ULP distance: expected a number less than or equal to 16n but got 75716n
+[FAIL] [required] tanh float32 2D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test tanh float32 actual 1.0089555978775024 should be close enough to expected 0.9999647736549377 by ULP distance: expected a number less than or equal to 16n but got 75716n
+[FAIL] [required] tanh float32 3D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test tanh float32 actual 1.0089555978775024 should be close enough to expected 0.9999647736549377 by ULP distance: expected a number less than or equal to 16n but got 75716n
+[FAIL] [required] tanh float32 4D tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test tanh float32 actual 1.0089555978775024 should be close enough to expected 0.9999647736549377 by ULP distance: expected a number less than or equal to 16n but got 75716n
+Harness: the test ran to completion.
+

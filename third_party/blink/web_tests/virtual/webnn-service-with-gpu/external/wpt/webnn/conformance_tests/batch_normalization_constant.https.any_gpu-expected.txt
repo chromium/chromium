@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] [optional] batchNormalization float32 2D constant tensors default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test batchNormalization float32 actual -4.312742233276367 should be close enough to expected -6.995829105377197 by ULP distance: expected a number less than or equal to 6n but got 5626841n
+[FAIL] [optional] batchNormalization float16 2D constant tensors default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test batchNormalization float16 actual -4.3125 should be close enough to expected -6.99609375 by ULP distance: expected a number less than or equal to 6 but got 687
+Harness: the test ran to completion.
+

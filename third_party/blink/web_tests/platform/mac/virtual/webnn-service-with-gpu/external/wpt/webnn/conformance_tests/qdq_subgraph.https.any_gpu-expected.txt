@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] [required] quantized element-wise binary sub
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear sub quantizeLinear dequantizeLinear float32 actual 4.31958532333374 should be close enough to expected 4.319594860076904 by ULP distance: expected a number less than or equal to 1n but got 20n
+[FAIL] [required] quantized element-wise binary mul
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear mul quantizeLinear dequantizeLinear float32 actual 41.56863021850586 should be close enough to expected -56.4705924987793 by ULP distance: expected a number less than or equal to 1n but got 2223515690n
+[FAIL] [required] quantized element-wise binary max
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear max quantizeLinear dequantizeLinear float32 actual 48.03300857543945 should be close enough to expected 55.92414474487305 by ULP distance: expected a number less than or equal to 0n but got 2068614n
+[FAIL] [required] quantized element-wise logical greater
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear greater cast int32 actual 1 should be close enough to expected 0 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] quantized element-wise logical greaterOrEqual
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear greaterOrEqual cast int32 actual 1 should be close enough to expected 0 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] quantized element-wise logical lesser
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear lesser cast int32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] quantized element-wise logical lesserOrEqual
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear lesserOrEqual cast int32 actual 0 should be close enough to expected 1 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] quantized leaky relu
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear leakyRelu quantizeLinear dequantizeLinear float32 actual -0.20000001788139343 should be close enough to expected -0.501960813999176 by ULP distance: expected a number less than or equal to 1n but got 11776947n
+[FAIL] [required] quantized concat
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear dequantizeLinear concat quantizeLinear dequantizeLinear float32 actual -0.9921568632125854 should be close enough to expected -0.9921569228172302 by ULP distance: expected a number less than or equal to 0n but got 1n
+[FAIL] [required] quantized clamp with emulation
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear clamp quantizeLinear dequantizeLinear float32 actual 8.577322959899902 should be close enough to expected 7.89113712310791 by ULP distance: expected a number less than or equal to 0n but got 833669n
+Harness: the test ran to completion.
+

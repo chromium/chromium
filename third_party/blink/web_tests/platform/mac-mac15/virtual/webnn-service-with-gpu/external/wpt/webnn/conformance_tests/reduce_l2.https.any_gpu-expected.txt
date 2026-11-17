@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [required] reduceL2 float16 5D tensor default options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceL2 float16 actual 255.875 should be close enough to expected 272 by ULP distance: expected a number less than or equal to 50 but got 65
+Harness: the test ran to completion.
+

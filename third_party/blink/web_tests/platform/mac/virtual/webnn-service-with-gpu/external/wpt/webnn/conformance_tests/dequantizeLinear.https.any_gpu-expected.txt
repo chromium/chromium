@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] [required] dequantizeLinear uint8 1D constant tensor with float32 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -971.681640625 should be close enough to expected -29.127147674560547 by ULP distance: expected a number less than or equal to 1n but got 42592058n
+[FAIL] [optional] dequantizeLinear int32 1D tensor with float32 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual 29565672 should be close enough to expected 7391418.921366602 by ULP distance: expected a number less than or equal to 1n but got 16777214n
+[FAIL] [required] quantizeLinear then dequantizeLinear with different float32 scale and int8 zeroPoint
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear float32 actual 14.56357192993164 should be close enough to expected 3.6408934593200684 by ULP distance: expected a number less than or equal to 1n but got 16777214n
+[FAIL] [optional] dequantizeLinear int32 1D tensor with float16 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float16 actual Infinity should be close enough to expected 18336 by ULP distance: expected a number less than or equal to 1 but got 1926
+[FAIL] [required] quantizeLinear then dequantizeLinear with different float16 scale and int8 zeroPoint
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear float16 actual 14.5625 should be close enough to expected 3.640625 by ULP distance: expected a number less than or equal to 1 but got 2048
+Harness: the test ran to completion.
+

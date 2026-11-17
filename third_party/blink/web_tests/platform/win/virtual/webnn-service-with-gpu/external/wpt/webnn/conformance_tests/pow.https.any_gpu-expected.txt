@@ -1,0 +1,63 @@
+This is a testharness.js-based test.
+[FAIL] [required] pow float32 constant 1D base tensor and 1D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float32 1D base tensor and 1D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float32 2D base tensor and 2D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float32 3D base tensor and 3D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float32 4D base tensor and 4D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float32 5D base tensor and 5D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float32 actual 4.3030548095703125 should be close enough to expected 1.5685393810272217 by ULP distance: expected a number less than or equal to 32n but got 12643514n
+[FAIL] [required] pow float32 4D base tensor and broadcastable 2D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float32 4D base tensor and broadcastable 3D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float32 5D and broadcastable 4D
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 3 expected false but got true
+[FAIL] [required] pow float32 broadcasting two 5D inputs with a leading batch size of 1
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 3 expected false but got true
+[FAIL] [required] pow float32 5D inputs with alternating broadcast axes
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float32 two 5D inputs with identical shapes
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow (square) float32 5D base tensor and broadcastable 0D integer exponent scalar
+  assert_equals: assert_array_approx_equals_ulp: test pow float32 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float16 constant 1D base tensor and 1D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float16 1D base tensor and 1D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float16 2D base tensor and 2D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float16 3D base tensor and 3D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float16 4D base tensor and 4D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float16 5D base tensor and 5D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow (square) float16 4D base tensor and broadcastable 0D integer exponent scalar
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow (sqrt) float16 4D positive base tensor and broadcastable 0D integer exponent scalar
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 4.3046875 should be close enough to expected 1.568359375 by ULP distance: expected a number less than or equal to 2 but got 1544
+[FAIL] [required] pow float16 4D base tensor and broadcastable 2D integer exponent tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 5668 should be close enough to expected 5680 by ULP distance: expected a number less than or equal to 2 but got 3
+[FAIL] [required] pow float16 4D base tensor and broadcastable 3D integer exponent tensor
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float16 5D and broadcastable 4D
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 5668 should be close enough to expected 5680 by ULP distance: expected a number less than or equal to 2 but got 3
+[FAIL] [required] pow float16 broadcasting two 5D inputs with a leading batch size of 1
+  assert_less_than_equal: assert_array_approx_equals_ulp: test pow float16 actual 5668 should be close enough to expected 5680 by ULP distance: expected a number less than or equal to 2 but got 3
+[FAIL] [required] pow float16 5D inputs with alternating broadcast axes
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow float16 two 5D inputs with identical shapes
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+[FAIL] [required] pow (square) float16 5D base tensor and broadcastable 0D integer exponent scalar
+  assert_equals: assert_array_approx_equals_ulp: test pow float16 NaN classification differs at index 1 expected false but got true
+Harness: the test ran to completion.
+
