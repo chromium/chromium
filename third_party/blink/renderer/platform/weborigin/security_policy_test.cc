@@ -346,6 +346,15 @@ TEST(SecurityPolicyTest, ReferrerPolicyFromHeaderValue) {
        network::mojom::ReferrerPolicy::kOrigin},
       {"origin, foo bar", false, kDoNotSupportReferrerPolicyLegacyKeywords,
        network::mojom::ReferrerPolicy::kDefault},
+      {" \torigin\t ", true, kDoNotSupportReferrerPolicyLegacyKeywords,
+       network::mojom::ReferrerPolicy::kOrigin},
+      {"\vorigin", false, kDoNotSupportReferrerPolicyLegacyKeywords,
+       network::mojom::ReferrerPolicy::kDefault},
+      {"origin\f", false, kDoNotSupportReferrerPolicyLegacyKeywords,
+       network::mojom::ReferrerPolicy::kDefault},
+      {"origin, no-referrer\f", false,
+       kDoNotSupportReferrerPolicyLegacyKeywords,
+       network::mojom::ReferrerPolicy::kDefault},
   };
 
   for (TestCase test : inputs) {

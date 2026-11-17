@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -324,6 +325,11 @@ inline bool IsAsciiAlphaOrHyphen(CharType c) {
   return IsAsciiAlpha(c) || c == '-';
 }
 
+inline bool IsHTTPTabOrSpace(UChar c) {
+  // https://fetch.spec.whatwg.org/#http-tab-or-space
+  return c == uchar::kSpace || c == uchar::kTab;
+}
+
 }  // namespace
 
 bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
@@ -336,7 +342,7 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
   Vector<StringView> tokens = StringView(header_value).Split(',');
   for (const auto& token : tokens) {
     network::mojom::ReferrerPolicy current_result;
-    auto stripped_token = token.StripWhiteSpace();
+    auto stripped_token = token.StripWhiteSpace(IsHTTPTabOrSpace);
     if (SecurityPolicy::ReferrerPolicyFromString(
             stripped_token, legacy_keywords_support, &current_result)) {
       referrer_policy = current_result;

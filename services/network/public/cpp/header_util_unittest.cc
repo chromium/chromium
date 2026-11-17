@@ -202,6 +202,12 @@ TEST(HeaderUtilTest, ParseReferrerPolicy) {
       {"unknown-value", mojom::ReferrerPolicy::kDefault},
       // Multiple values.
       {"no-referrer,unsafe-url", mojom::ReferrerPolicy::kAlways},
+      // Whitespace handling: only HTTP tab or space (0x09, 0x20) is stripped.
+      {" \tno-referrer\t ", mojom::ReferrerPolicy::kNever},
+      {"\vno-referrer", mojom::ReferrerPolicy::kDefault},
+      {"no-referrer\f", mojom::ReferrerPolicy::kDefault},
+      {"origin, \vno-referrer", mojom::ReferrerPolicy::kOrigin},
+      {"origin, no-referrer\f", mojom::ReferrerPolicy::kOrigin},
   };
 
   for (const auto& test : kTests) {
