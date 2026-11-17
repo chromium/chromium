@@ -114,9 +114,6 @@ void PickerIndicatorElement::DidChooseValue(double value) {
 
 void PickerIndicatorElement::DidEndChooser() {
   chooser_.Clear();
-  if (!picker_indicator_owner_) {
-    return;
-  }
   picker_indicator_owner_->DidEndChooser();
   OwnerElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
   if (OwnerElement().GetLayoutObject()) {
@@ -137,13 +134,6 @@ void PickerIndicatorElement::OpenPopup() {
     return;
   chooser_ = GetDocument().GetPage()->GetChromeClient().OpenDateTimeChooser(
       GetDocument().GetFrame(), this, parameters);
-  if (!chooser_) {
-    return;
-  }
-  if (!picker_indicator_owner_) {
-    ClosePopup();
-    return;
-  }
   if (OwnerElement().GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is removed.
     OwnerElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();

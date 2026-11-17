@@ -69,9 +69,6 @@ class PickerIndicatorElement final : public HTMLDivElement,
   AXObject* PopupRootAXObject() const;
 
   // DateTimeChooserClient implementation.
-  bool HasOwnerElement() const override {
-    return picker_indicator_owner_ != nullptr;
-  }
   Element& OwnerElement() const override;
   void DidChooseValue(const String&) override;
   void DidChooseValue(double) override;

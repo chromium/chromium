@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PAGE_POPUP_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -51,7 +50,6 @@
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace cc {
 class Layer;
@@ -68,6 +66,7 @@ class PagePopupClient;
 class WebViewImpl;
 class LocalDOMWindow;
 class WidgetBase;
+class DOMRect;
 
 class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
                                            public WidgetEventHandler,
@@ -80,10 +79,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   WebPagePopupImpl(const WebPagePopupImpl&) = delete;
   WebPagePopupImpl& operator=(const WebPagePopupImpl&) = delete;
   ~WebPagePopupImpl() override;
-
-  // Shows the initialized popup and focuses it. Called by WebViewImpl once it
-  // has verified the popup can be attached.
-  void Show();
 
   // Cancel informs the PopupClient that it should initiate shutdown of this
   // popup via ClosePopup(). It is called to indicate the popup was closed due
@@ -184,7 +179,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // Called when the browser has shown the popup.
   void DidShowPopup();
 
-  static scoped_refptr<WebPagePopupImpl> Create(
+  static WebPagePopupImpl* Create(
       CrossVariantMojoAssociatedRemote<
           mojom::blink::PopupWidgetHostInterfaceBase> popup_widget_host,
       CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
@@ -194,8 +189,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       WebViewImpl* opener_impl,
       AgentGroupScheduler& agent_group_scheduler,
       const display::ScreenInfos& screen_infos,
-      PagePopupClient*,
-      const gfx::RectF& popup_owner_client_rect);
+      PagePopupClient*);
 
   void ExecuteEditCommand(const String& command, const String& value);
 
@@ -240,10 +234,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // This may only be called if page_ is non-null.
   LocalFrame& MainFrame() const;
 
-  class ScopedDeferClose;
-
   void Close();
-  void FinishClose();
 
   Element* FocusedElement() const;
 
@@ -259,18 +250,17 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   AXObject* RootAXObject(Element* popover_owner) override;
   void SetWindowRect(const gfx::Rect&) override;
 
-  WebPagePopupImpl(WebViewImpl* opener_impl,
-                   PagePopupClient* popup_client,
-                   const gfx::RectF& popup_owner_client_rect);
-  bool Initialize(
+  WebPagePopupImpl(
       CrossVariantMojoAssociatedRemote<
           mojom::blink::PopupWidgetHostInterfaceBase> popup_widget_host,
       CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
+      WebViewImpl* opener_impl,
       AgentGroupScheduler& agent_group_scheduler,
-      const display::ScreenInfos& screen_infos);
+      const display::ScreenInfos& screen_infos,
+      PagePopupClient*);
 
   void DestroyPage();
   void MainFrameDetached();
@@ -286,22 +276,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void WidgetHostDisconnected();
   void DidSetBounds();
 
-  enum class State {
-    // Popup is active and accepting input/updates.
-    kOpen,
-    // Renderer initiated closing via ClosePopup() and is awaiting browser
-    // disconnect.
-    kClosing,
-    // Browser disconnect arrived while a ScopedDeferClose is active on the
-    // stack; FinishClose() will run when the outermost scope unwinds.
-    kPendingClose,
-    // Browser disconnect has been processed in FinishClose() and the
-    // self-reference is released.
-    kClosed,
-  };
-
   // This is the WebView that opened the popup.
-  raw_ptr<WebViewImpl> opener_web_view_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease> opener_web_view_ = nullptr;
   Persistent<PagePopupChromeClient> chrome_client_;
   Persistent<EmptyLocalFrameClient> local_frame_client_;
   // WebPagePopupImpl wraps its own Page that renders the content in the popup.
@@ -311,14 +287,13 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // Document.
   Persistent<Page> page_;
   Persistent<PagePopupClient> popup_client_;
-  State state_ = State::kOpen;
-  int defer_close_count_ = 0;
+  bool closing_ = false;
 
   scoped_refptr<cc::Layer> root_layer_;
   base::TimeTicks raf_aligned_input_start_time_;
 
   bool suppress_next_keypress_event_ = false;
-  gfx::RectF popup_owner_client_rect_;
+  Persistent<DOMRect> popup_owner_client_rect_;
 
   // When emulation is enabled, and a popup widget is opened, the popup widget
   // needs these values to move between the popup's (non-emulated) coordinates

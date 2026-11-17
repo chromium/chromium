@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -86,7 +87,6 @@
 #include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 namespace {
@@ -200,9 +200,6 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
   Element* GetPopupClientOwnerElement() override {
     CHECK(popup_ && popup_->popup_client_);
-    if (!popup_->popup_client_->HasOwnerElement()) {
-      return nullptr;
-    }
     return &popup_->popup_client_->OwnerElement();
   }
 
@@ -265,7 +262,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     // Destroying/removing the popup's content can be seen as a mutation that
     // ends up calling ScheduleAnimation(). Since the popup is going away, we
     // do not wish to actually do anything.
-    if (popup_->state_ != WebPagePopupImpl::State::kOpen) {
+    if (popup_->closing_) {
       return;
     }
 
@@ -276,9 +273,6 @@ class PagePopupChromeClient final : public EmptyChromeClient {
       // step for the popup. Popup widgets don't run any composite step on their
       // own. And we don't run popup tests with a compositor thread, so no need
       // to check for that.
-      if (!popup_->popup_client_->HasOwnerElement()) {
-        return;
-      }
       Document& opener_document =
           popup_->popup_client_->OwnerElement().GetDocument();
       if (Page* page = opener_document.GetPage()) {
@@ -391,61 +385,37 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
 // WebPagePopupImpl ----------------------------------------------------------
 
-class WebPagePopupImpl::ScopedDeferClose {
-  STACK_ALLOCATED();
-
- public:
-  explicit ScopedDeferClose(WebPagePopupImpl* popup) : popup_(popup) {
-    ++popup_->defer_close_count_;
-  }
-  ScopedDeferClose(const ScopedDeferClose&) = delete;
-  ScopedDeferClose& operator=(const ScopedDeferClose&) = delete;
-  ~ScopedDeferClose() {
-    if (--popup_->defer_close_count_ == 0 &&
-        popup_->state_ == State::kPendingClose) {
-      popup_->FinishClose();
-    }
-  }
-
- private:
-  scoped_refptr<WebPagePopupImpl> popup_;
-};
-
-WebPagePopupImpl::WebPagePopupImpl(WebViewImpl* opener_web_view,
-                                   PagePopupClient* popup_client,
-                                   const gfx::RectF& popup_owner_client_rect)
-    : opener_web_view_(opener_web_view),
-      chrome_client_(MakeGarbageCollected<PagePopupChromeClient>(this)),
-      local_frame_client_(MakeGarbageCollected<EmptyLocalFrameClient>()),
-      page_(CreatePage(*chrome_client_, *opener_web_view)),
-      popup_client_(popup_client),
-      popup_owner_client_rect_(popup_owner_client_rect),
-      handle_(NextPopupHandle()) {
-  DCHECK(popup_client_);
-}
-
-bool WebPagePopupImpl::Initialize(
+WebPagePopupImpl::WebPagePopupImpl(
     CrossVariantMojoAssociatedRemote<mojom::blink::PopupWidgetHostInterfaceBase>
         popup_widget_host,
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
+    WebViewImpl* opener_web_view,
     AgentGroupScheduler& agent_group_scheduler,
-    const display::ScreenInfos& screen_infos) {
-  ScopedDeferClose defer_close(this);
-  popup_widget_host_.Bind(std::move(popup_widget_host));
+    const display::ScreenInfos& screen_infos,
+    PagePopupClient* popup_client)
+    : opener_web_view_(opener_web_view),
+      chrome_client_(MakeGarbageCollected<PagePopupChromeClient>(this)),
+      local_frame_client_(MakeGarbageCollected<EmptyLocalFrameClient>()),
+      page_(CreatePage(*chrome_client_, *opener_web_view)),
+      popup_client_(popup_client),
+      popup_widget_host_(std::move(popup_widget_host)),
+      widget_base_(std::make_unique<WidgetBase>(
+          /*widget_base_client=*/this,
+          std::move(widget_host),
+          std::move(widget),
+          agent_group_scheduler.DefaultTaskRunner(),
+          /*hidden=*/false,
+          /*never_composited=*/false,
+          /*is_embedded=*/false,
+          /*is_for_scalable_page=*/true)),
+      handle_(NextPopupHandle()) {
+  DCHECK(popup_client_);
   popup_widget_host_.set_disconnect_handler(blink::BindOnce(
       &WebPagePopupImpl::WidgetHostDisconnected, blink::Unretained(this)));
-  widget_base_ = std::make_unique<WidgetBase>(
-      /*widget_base_client=*/this, std::move(widget_host), std::move(widget),
-      agent_group_scheduler.DefaultTaskRunner(),
-      /*hidden=*/false,
-      /*never_composited=*/false,
-      /*is_embedded=*/false,
-      /*is_for_scalable_page=*/true);
-
-  if (auto* main_frame_widget = opener_web_view_->MainFrameViewWidget()) {
+  if (auto* main_frame_widget = opener_web_view->MainFrameViewWidget()) {
     if (auto* device_emulator = main_frame_widget->DeviceEmulator()) {
       opener_widget_screen_origin_ = device_emulator->ViewRectOrigin();
       opener_original_widget_screen_origin_ =
@@ -513,19 +483,12 @@ bool WebPagePopupImpl::Initialize(
 
   SegmentedBuffer data;
   popup_client_->WriteDocument(data);
-  if (state_ != State::kOpen) {
-    return false;
-  }
-
   frame->SetLayoutZoomFactor(popup_client_->ZoomFactor());
   frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
                                          std::move(data));
-  return state_ == State::kOpen;
-}
 
-void WebPagePopupImpl::Show() {
-  DCHECK_EQ(state_, State::kOpen);
-  ScopedDeferClose defer_close(this);
+  popup_owner_client_rect_ =
+      popup_client_->OwnerElement().GetBoundingClientRect();
   popup_widget_host_->ShowPopup(initial_rect_, GetAnchorRectInScreen(),
                                 blink::BindOnce(&WebPagePopupImpl::DidShowPopup,
                                                 blink::Unretained(this)));
@@ -541,10 +504,16 @@ WebPagePopupImpl::~WebPagePopupImpl() {
 }
 
 void WebPagePopupImpl::DidShowPopup() {
+  if (!widget_base_) {
+    return;
+  }
   widget_base_->AckPendingWindowRect();
 }
 
 void WebPagePopupImpl::DidSetBounds() {
+  if (!widget_base_) {
+    return;
+  }
   widget_base_->AckPendingWindowRect();
 }
 
@@ -684,26 +653,21 @@ void WebPagePopupImpl::PostMessageToPopup(const String& message) {
 }
 
 void WebPagePopupImpl::Update() {
-  if (state_ != State::kOpen || !popup_client_->HasOwnerElement()) {
+  if (!page_ && !popup_client_) {
     return;
   }
 
-  ScopedDeferClose defer_close(this);
-  Element& owner_element = popup_client_->OwnerElement();
-  owner_element.GetDocument().UpdateStyleAndLayoutForNode(
-      &owner_element, DocumentUpdateReason::kPagePopup);
-  if (state_ != State::kOpen) {
-    // Something inside UpdateStyleAndLayoutForNode() closed this popup.
-    return;
-  }
-  gfx::RectF owner_client_rect =
-      owner_element.GetBoundingClientRectNoLifecycleUpdate();
-  bool forced_update = (owner_client_rect != popup_owner_client_rect_);
+  DOMRect* dom_rect = popup_client_->OwnerElement().GetBoundingClientRect();
+  bool forced_update = (*dom_rect != *popup_owner_client_rect_);
   if (forced_update) {
-    popup_owner_client_rect_ = owner_client_rect;
+    popup_owner_client_rect_ = dom_rect;
   }
 
   popup_client_->Update(forced_update);
+  if (!widget_base_) {
+    // Something inside Update() closed this popup.
+    return;
+  }
   if (forced_update) {
     SetWindowRect(WindowRectInScreen());
   }
@@ -730,10 +694,6 @@ AXObject* WebPagePopupImpl::RootAXObject(Element* popup_owner) {
 }
 
 void WebPagePopupImpl::SetWindowRect(const gfx::Rect& rect_in_screen) {
-  if (state_ != State::kOpen) {
-    return;
-  }
-
   if (ShouldCheckPopupPositionForTelemetry()) {
     gfx::Rect owner_window_rect_in_screen = OwnerWindowRectInScreen();
     Document& document = popup_client_->OwnerElement().GetDocument();
@@ -811,10 +771,9 @@ void WebPagePopupImpl::Resize(const gfx::Size& new_size_in_viewport) {
 
 WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
     const WebKeyboardEvent& event) {
-  if (state_ != State::kOpen) {
+  if (closing_) {
     return WebInputEventResult::kNotHandled;
   }
-  ScopedDeferClose defer_close(this);
 
   if (suppress_next_keypress_event_) {
     suppress_next_keypress_event_ = false;
@@ -836,15 +795,13 @@ WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
   // While sending 3 notifications for a single user action is not terrible
   // (because we only ever track a _single_ user activation per Window), this
   // allows opportunistic "in-between" consumptions by the popup client.
-  if (popup_client_->HasOwnerElement()) {
-    LocalFrame::NotifyUserActivation(
-        popup_client_->OwnerElement().GetDocument().GetFrame(),
-        mojom::blink::UserActivationNotificationType::kInteraction,
-        RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
-    // User-activation handlers may synchronously close the popup.
-    if (state_ != State::kOpen) {
-      return WebInputEventResult::kNotHandled;
-    }
+  LocalFrame::NotifyUserActivation(
+      popup_client_->OwnerElement().GetDocument().GetFrame(),
+      mojom::blink::UserActivationNotificationType::kInteraction,
+      RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
+  // User-activation handlers may synchronously close the popup.
+  if (closing_) {
+    return WebInputEventResult::kNotHandled;
   }
   return MainFrame().GetEventHandler().KeyEvent(event);
 }
@@ -892,7 +849,7 @@ WebInputEventResult WebPagePopupImpl::HandleCharEvent(
 
 WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
     const WebGestureEvent& event) {
-  if (state_ != State::kOpen) {
+  if (closing_) {
     return WebInputEventResult::kNotHandled;
   }
   // TODO(crbug.com/40091540): Why is kGestureTapDown triggering user
@@ -904,15 +861,13 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
       Cancel();
       return WebInputEventResult::kNotHandled;
     }
-    if (popup_client_->HasOwnerElement()) {
-      LocalFrame::NotifyUserActivation(
-          popup_client_->OwnerElement().GetDocument().GetFrame(),
-          mojom::blink::UserActivationNotificationType::kInteraction,
-          RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
-      // User-activation handlers may synchronously close the popup.
-      if (state_ != State::kOpen) {
-        return WebInputEventResult::kNotHandled;
-      }
+    LocalFrame::NotifyUserActivation(
+        popup_client_->OwnerElement().GetDocument().GetFrame(),
+        mojom::blink::UserActivationNotificationType::kInteraction,
+        RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
+    // User-activation handlers may synchronously close the popup.
+    if (closing_) {
+      return WebInputEventResult::kNotHandled;
     }
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
@@ -971,20 +926,18 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
 
 void WebPagePopupImpl::HandleMouseDown(LocalFrame& main_frame,
                                        const WebMouseEvent& event) {
-  if (state_ != State::kOpen) {
+  if (closing_) {
     return;
   }
   if (IsViewportPointInWindow(event.PositionInWidget().x(),
                               event.PositionInWidget().y())) {
-    if (popup_client_->HasOwnerElement()) {
-      LocalFrame::NotifyUserActivation(
-          popup_client_->OwnerElement().GetDocument().GetFrame(),
-          mojom::blink::UserActivationNotificationType::kInteraction,
-          RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
-      // User-activation handlers may synchronously close the popup.
-      if (state_ != State::kOpen) {
-        return;
-      }
+    LocalFrame::NotifyUserActivation(
+        popup_client_->OwnerElement().GetDocument().GetFrame(),
+        mojom::blink::UserActivationNotificationType::kInteraction,
+        RuntimeEnabledFeatures::TrustedUserActivationTriggersEnabled());
+    // User-activation handlers may synchronously close the popup.
+    if (closing_) {
+      return;
     }
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
@@ -998,7 +951,7 @@ void WebPagePopupImpl::HandleMouseDown(LocalFrame& main_frame,
 WebInputEventResult WebPagePopupImpl::HandleMouseWheel(
     LocalFrame& main_frame,
     const WebMouseWheelEvent& event) {
-  if (state_ != State::kOpen) {
+  if (closing_) {
     return WebInputEventResult::kNotHandled;
   }
   if (IsViewportPointInWindow(event.PositionInWidget().x(),
@@ -1046,9 +999,7 @@ bool WebPagePopupImpl::IsViewportPointInWindow(int x, int y) {
 bool WebPagePopupImpl::ShouldCheckPopupPositionForTelemetry() const {
   // Avoid doing any telemetry work when the popup is closing or the
   // owner element is not shown anymore.
-  return state_ == State::kOpen && popup_client_ &&
-         popup_client_->HasOwnerElement() &&
-         popup_client_->OwnerElement().GetDocument().View();
+  return !closing_ && popup_client_->OwnerElement().GetDocument().View();
 }
 
 void WebPagePopupImpl::CheckScreenPointInOwnerWindowAndCount(
@@ -1081,20 +1032,20 @@ gfx::Rect WebPagePopupImpl::GetAnchorRectInScreen() const {
 }
 
 WebInputEventResult WebPagePopupImpl::DispatchBufferedTouchEvents() {
-  if (state_ != State::kOpen) {
+  if (closing_) {
     return WebInputEventResult::kNotHandled;
   }
-  ScopedDeferClose defer_close(this);
+  scoped_refptr<WebPagePopupImpl> protector(this);
   return MainFrame().GetEventHandler().DispatchBufferedTouchEvents();
 }
 
 WebInputEventResult WebPagePopupImpl::HandleInputEvent(
     const WebCoalescedInputEvent& event) {
-  if (state_ != State::kOpen) {
+  if (closing_) {
     return WebInputEventResult::kNotHandled;
   }
   DCHECK(!WebInputEvent::IsTouchEventType(event.Event().GetType()));
-  ScopedDeferClose defer_close(this);
+  scoped_refptr<WebPagePopupImpl> protector(this);
   return WidgetEventHandler::HandleInputEvent(event, &MainFrame());
 }
 
@@ -1159,32 +1110,15 @@ void WebPagePopupImpl::WidgetHostDisconnectedForTesting() {
 }
 
 void WebPagePopupImpl::Close() {
-  if (state_ == State::kPendingClose || state_ == State::kClosed) {
-    return;
-  }
-  // Prevent any queued disconnect notification or pending response callbacks
-  // from firing once close starts.
-  popup_widget_host_.reset();
-  if (defer_close_count_ > 0) {
-    state_ = State::kPendingClose;
-    return;
-  }
-  FinishClose();
-}
-
-void WebPagePopupImpl::FinishClose() {
-  DCHECK_NE(state_, State::kClosed);
-  state_ = State::kClosed;
-  scoped_refptr<WebPagePopupImpl> protector(this);
-
   // If the popup is closed from the renderer via Cancel(), then ClosePopup()
   // has already run on another stack, and destroyed |page_|. If the popup is
   // closed from the browser via IPC to RenderWidget, then we come here first
   // and want to synchronously Cancel() immediately.
   if (page_) {
-    // `state_` is already kClosed, which also informs ClosePopup() that it is
-    // being run synchronously from inside FinishClose().
-    // This should end up running ClosePopup() through the PopupClient.
+    // We set |closing_| here to inform ClosePopup() that it is being run
+    // synchronously from inside Close().
+    closing_ = true;
+    // This should end up running ClosePopup() though the PopupClient.
     Cancel();
     // Cancel() may have synchronously triggered ClosePopup() and destroyed
     // page_.
@@ -1195,9 +1129,7 @@ void WebPagePopupImpl::FinishClose() {
       }
       DestroyPage();
       if (opener_web_view_) {
-        if (opener_web_view_->GetPagePopup() == this) {
-          opener_web_view_->CleanupPagePopup();
-        }
+        opener_web_view_->CleanupPagePopup();
         opener_web_view_ = nullptr;
       }
     }
@@ -1214,33 +1146,31 @@ void WebPagePopupImpl::FinishClose() {
 }
 
 void WebPagePopupImpl::ClosePopup() {
-  ScopedDeferClose defer_close(this);
-
   // There's always a |page_| when we get here because if we Close() this object
   // due to ClosePopupWidgetSoon(), it will see the |page_| destroyed and not
   // run this method again. And the renderer does not close the same popup more
   // than once.
   DCHECK(page_);
-  if (!page_) {
-    return;
-  }
 
   // If the popup is closed from the renderer via Cancel(), then we want to
   // initiate closing immediately here, but send a request for completing the
   // close process through the browser via PopupWidgetHost::RequestClosePopup(),
   // which will disconnect the channel come back to this class to
-  // WidgetHostDisconnected(). If |state_| is already kPendingClose or kClosed,
-  // then the browser initiated the close on its own, via WidgetHostDisconnected
-  // IPC, so we do not need to request the browser to close the widget.
-  if (state_ == State::kOpen) {
+  // WidgetHostDisconnected(). If |closing_| is already true, then the browser
+  // initiated the close on its own, via WidgetHostDisconnected IPC, which means
+  // ClosePopup() is being run inside the same stack, and does not need to
+  // request the browser to close the widget.
+  const bool running_inside_close = closing_;
+  if (!running_inside_close) {
     // Bounce through the browser to get it to close the RenderWidget, which
     // will Close() this object too. Only if we're not currently already
     // responding to the browser closing us though. We don't need to do a post
     // task like WebViewImpl::CloseWindowSoon does because we shouldn't be
     // executing javascript influencing this popup widget.
     popup_widget_host_->RequestClosePopup();
-    state_ = State::kClosing;
   }
+
+  closing_ = true;
 
   {
     // This function can be called in EventDispatchForbiddenScope for the main
@@ -1262,9 +1192,7 @@ void WebPagePopupImpl::ClosePopup() {
   // lifetime of this object since it owns a reference, but it should only be
   // to call HasSamePopupClient().
   if (opener_web_view_) {
-    if (opener_web_view_->GetPagePopup() == this) {
-      opener_web_view_->CleanupPagePopup();
-    }
+    opener_web_view_->CleanupPagePopup();
     opener_web_view_ = nullptr;
   }
 }
@@ -1349,7 +1277,7 @@ Element& WebPagePopupImpl::OwnerElement() {
 
 // WebPagePopup ----------------------------------------------------------------
 
-scoped_refptr<WebPagePopupImpl> WebPagePopupImpl::Create(
+WebPagePopupImpl* WebPagePopupImpl::Create(
     CrossVariantMojoAssociatedRemote<mojom::blink::PopupWidgetHostInterfaceBase>
         popup_widget_host,
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
@@ -1359,23 +1287,18 @@ scoped_refptr<WebPagePopupImpl> WebPagePopupImpl::Create(
     WebViewImpl* opener_webview,
     AgentGroupScheduler& agent_group_scheduler,
     const display::ScreenInfos& screen_infos,
-    PagePopupClient* popup_client,
-    const gfx::RectF& popup_owner_client_rect) {
+    PagePopupClient* popup_client) {
   // A WebPagePopupImpl instance usually has two references.
   //  - One owned by the instance itself. It represents the visible widget.
-  //  - One owned by a WebViewImpl. It's released when the WebViewImpl asks the
+  //  - One owned by a WebViewImpl. It's released when the WebViewImpl ask the
   //    WebPagePopupImpl to close.
   // We need them because the closing operation is asynchronous and the widget
   // can be closed while the WebViewImpl is unaware of it.
-  auto popup = base::AdoptRef(new WebPagePopupImpl(opener_webview, popup_client,
-                                                   popup_owner_client_rect));
+  auto popup = base::AdoptRef(new WebPagePopupImpl(
+      std::move(popup_widget_host), std::move(widget_host), std::move(widget),
+      opener_webview, agent_group_scheduler, screen_infos, popup_client));
   popup->AddRef();
-  if (!popup->Initialize(std::move(popup_widget_host), std::move(widget_host),
-                         std::move(widget), agent_group_scheduler,
-                         screen_infos)) {
-    return nullptr;
-  }
-  return popup;
+  return popup.get();
 }
 
 }  // namespace blink

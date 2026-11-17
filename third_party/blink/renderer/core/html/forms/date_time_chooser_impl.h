@@ -70,7 +70,6 @@ class CORE_EXPORT DateTimeChooserImpl final : public DateTimeChooser,
   void SetValueAndClosePopup(int, const String&, bool) override;
   void SetValue(const String&) override;
   void CancelPopup() override;
-  bool HasOwnerElement() const override;
   Element& OwnerElement() override;
   ChromeClient& GetChromeClient() override;
   void DidClosePopup() override;
