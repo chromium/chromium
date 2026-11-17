@@ -1376,7 +1376,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     reason = ChangeProfileReason::kSwitchAccountsFromWidget;
   }
 
-  // TODO(crbug.com/462018636): Refactor to use AuthenticationFlow.
   [changeProfileHandler
       changeProfile:*profileName
            forScene:self.sceneState
