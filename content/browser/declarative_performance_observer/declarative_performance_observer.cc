@@ -28,6 +28,66 @@ namespace content {
 namespace {
 constexpr char kDeclarativePerformanceObserverReportType[] =
     "performance-observer";
+
+base::DictValue BuildNavigationEntry(const GURL& sanitized_url,
+                                     NavigationHandle* navigation_handle) {
+  base::DictValue entry;
+  entry.Set("name", sanitized_url.spec());
+  entry.Set("entryType", "navigation");
+  entry.Set("startTime", 0.0);
+
+  const base::TimeTicks navigation_start = navigation_handle->NavigationStart();
+  const NavigationHandleTiming& timing =
+      navigation_handle->GetNavigationHandleTiming();
+
+  auto to_relative_ms = [&](base::TimeTicks t) {
+    return t.is_null() ? 0.0 : (t - navigation_start).InMillisecondsF();
+  };
+
+  entry.Set("responseStart", to_relative_ms(timing.final_response_start_time));
+  entry.Set("requestStart", to_relative_ms(timing.final_request_start_time));
+  entry.Set("connectStart",
+            to_relative_ms(timing.final_request_connect_start_time));
+  entry.Set("connectEnd",
+            to_relative_ms(timing.final_request_connect_end_time));
+  entry.Set("domainLookupStart",
+            to_relative_ms(timing.final_request_domain_lookup_start_time));
+  entry.Set("domainLookupEnd",
+            to_relative_ms(timing.final_request_domain_lookup_end_time));
+  entry.Set("secureConnectionStart",
+            to_relative_ms(timing.final_request_ssl_start_time));
+  entry.Set("activationStart", 0.0);
+
+  std::string delivery_type = "";
+  if (navigation_handle->WasResponseCached()) {
+    delivery_type = "cache";
+  } else if (navigation_handle->IsPrerenderedPageActivation()) {
+    delivery_type = "navigational-prefetch";
+  }
+  entry.Set("deliveryType", delivery_type);
+
+  return entry;
+}
+
+base::DictValue BuildVisibilityStateEntry(bool is_visible,
+                                          double start_time = 0.0) {
+  base::DictValue entry;
+  entry.Set("name", is_visible ? "visible" : "hidden");
+  entry.Set("entryType", "visibility-state");
+  entry.Set("startTime", start_time);
+  entry.Set("duration", 0.0);
+  return entry;
+}
+
+base::DictValue BuildSessionEndEntry(base::TimeTicks navigation_start) {
+  base::DictValue entry;
+  entry.Set("name", "session-end-event");
+  entry.Set("entryType", "session-end");
+  base::TimeDelta relative_time = base::TimeTicks::Now() - navigation_start;
+  entry.Set("startTime", relative_time.InMillisecondsF());
+  entry.Set("duration", 0.0);
+  return entry;
+}
 }  // namespace
 
 DeclarativePerformanceObserver::DeclarativePerformanceObserver(
@@ -66,52 +126,12 @@ DeclarativePerformanceObserver::DeclarativePerformanceObserver(
       web_contents && web_contents->GetVisibility() == Visibility::VISIBLE;
 
   if (enabled_types_.Has(network::mojom::PerformanceEntryType::kNavigation)) {
-    base::DictValue entry;
-    entry.Set("name", committed_url_.spec());
-    entry.Set("entryType", "navigation");
-    entry.Set("startTime", 0.0);
-
-    const NavigationHandleTiming& timing =
-        navigation_handle->GetNavigationHandleTiming();
-
-    auto to_relative_ms = [&](base::TimeTicks t) {
-      return t.is_null() ? 0.0 : (t - navigation_start_).InMillisecondsF();
-    };
-
-    entry.Set("responseStart",
-              to_relative_ms(timing.final_response_start_time));
-    entry.Set("requestStart", to_relative_ms(timing.final_request_start_time));
-    entry.Set("connectStart",
-              to_relative_ms(timing.final_request_connect_start_time));
-    entry.Set("connectEnd",
-              to_relative_ms(timing.final_request_connect_end_time));
-    entry.Set("domainLookupStart",
-              to_relative_ms(timing.final_request_domain_lookup_start_time));
-    entry.Set("domainLookupEnd",
-              to_relative_ms(timing.final_request_domain_lookup_end_time));
-    entry.Set("secureConnectionStart",
-              to_relative_ms(timing.final_request_ssl_start_time));
-    entry.Set("activationStart", 0.0);
-
-    std::string delivery_type = "";
-    if (navigation_handle->WasResponseCached()) {
-      delivery_type = "cache";
-    } else if (navigation_handle->IsPrerenderedPageActivation()) {
-      delivery_type = "navigational-prefetch";
-    }
-    entry.Set("deliveryType", delivery_type);
-
-    AddEntryToBuffer(std::move(entry));
+    AddEntryToBuffer(BuildNavigationEntry(committed_url_, navigation_handle));
   }
 
   if (enabled_types_.Has(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
-    base::DictValue entry;
-    entry.Set("name", started_in_foreground_ ? "visible" : "hidden");
-    entry.Set("entryType", "visibility-state");
-    entry.Set("startTime", 0.0);
-    entry.Set("duration", 0.0);
-    AddEntryToBuffer(std::move(entry));
+    AddEntryToBuffer(BuildVisibilityStateEntry(started_in_foreground_));
   }
 
   // The storage partition associated with the RenderFrameHost is guaranteed to
@@ -175,12 +195,7 @@ void DeclarativePerformanceObserver::OnDidFinishNavigation(
 
   if (enabled_types_.Has(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
-    base::DictValue visibility_entry;
-    visibility_entry.Set("name", "visible");
-    visibility_entry.Set("entryType", "visibility-state");
-    visibility_entry.Set("startTime", 0.0);
-    visibility_entry.Set("duration", 0.0);
-    AddEntryToBuffer(std::move(visibility_entry));
+    AddEntryToBuffer(BuildVisibilityStateEntry(/*is_visible=*/true));
   }
 }
 
@@ -225,13 +240,9 @@ void DeclarativePerformanceObserver::OnVisibilityChanged(
   }
   if (enabled_types_.Has(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
-    base::DictValue entry;
-    entry.Set("name", visibility == Visibility::HIDDEN ? "hidden" : "visible");
-    entry.Set("entryType", "visibility-state");
     base::TimeDelta relative_time = base::TimeTicks::Now() - navigation_start_;
-    entry.Set("startTime", relative_time.InMillisecondsF());
-    entry.Set("duration", 0.0);
-    AddEntryToBuffer(std::move(entry));
+    AddEntryToBuffer(BuildVisibilityStateEntry(
+        visibility != Visibility::HIDDEN, relative_time.InMillisecondsF()));
   }
   if (visibility == Visibility::HIDDEN) {
     // Backgrounded pages may be discarded or terminated without running unload;
@@ -299,13 +310,7 @@ void DeclarativePerformanceObserver::AppendSessionEndEntry() {
   if (enabled_types_.Has(
           network::mojom::PerformanceEntryType::kVisibilityState) ||
       enabled_types_.Has(network::mojom::PerformanceEntryType::kNavigation)) {
-    base::DictValue entry;
-    entry.Set("name", "session-end-event");
-    entry.Set("entryType", "session-end");
-    base::TimeDelta relative_time = base::TimeTicks::Now() - navigation_start_;
-    entry.Set("startTime", relative_time.InMillisecondsF());
-    entry.Set("duration", 0.0);
-    AddEntryToBuffer(std::move(entry));
+    AddEntryToBuffer(BuildSessionEndEntry(navigation_start_));
   }
 }
 
