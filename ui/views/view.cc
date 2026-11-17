@@ -2376,14 +2376,17 @@ bool View::HandleAccessibleAction(const ui::AXActionData& action_data) {
       break;
     case ax::mojom::Action::kDoDefault: {
       const gfx::Point center = GetLocalBounds().CenterPoint();
+      ViewTracker tracker(this);
       ui::MouseEvent press(ui::EventType::kMousePressed, center, center,
                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                            ui::EF_LEFT_MOUSE_BUTTON);
       OnEvent(&press);
-      ui::MouseEvent release(ui::EventType::kMouseReleased, center, center,
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                             ui::EF_LEFT_MOUSE_BUTTON);
-      OnEvent(&release);
+      if (tracker.view()) {
+        ui::MouseEvent release(ui::EventType::kMouseReleased, center, center,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+        OnEvent(&release);
+      }
       return true;
     }
     case ax::mojom::Action::kFocus:

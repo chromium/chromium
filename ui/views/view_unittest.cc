@@ -23,6 +23,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,6 +36,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -1800,6 +1802,95 @@ TEST_F(ViewTest, DeleteOnPressed) {
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   root->OnMousePressed(pressed);
+  EXPECT_TRUE(v1->children().empty());
+}
+
+// Confirm that HandleAccessibleAction(kDoDefault) dispatches press and release
+// when the view remains alive, and safely skips release if the view is deleted
+// directly or via a focus observer while processing the press event.
+TEST_F(ViewTest, HandleAccessibleActionDoDefault) {
+  auto view1 = std::make_unique<TestView>();
+  view1->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
+
+  auto view2 = std::make_unique<TestView>();
+  view2->SetBoundsRect(gfx::Rect(100, 100, 100, 100));
+
+  view1->Reset();
+  view2->Reset();
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  params.bounds = gfx::Rect(50, 50, 650, 650);
+  widget->Init(std::move(params));
+  View* root = widget->GetRootView();
+
+  TestView* v1 = root->AddChildView(std::move(view1));
+  TestView* v2 = v1->AddChildView(std::move(view2));
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDoDefault;
+
+  // Normal press + release dispatch.
+  EXPECT_TRUE(v2->HandleAccessibleAction(action_data));
+  EXPECT_EQ(v2->last_mouse_event_type_, ui::EventType::kMouseReleased);
+  EXPECT_EQ(v2->location_, gfx::Point(50, 50));
+  ASSERT_FALSE(v1->children().empty());
+
+  // Direct deletion in OnMousePressed.
+  v2->Reset();
+  v2->delete_on_pressed_ = true;
+  EXPECT_TRUE(v2->HandleAccessibleAction(action_data));
+  EXPECT_TRUE(v1->children().empty());
+
+  // Focus-observer deletion in OnMousePressed (matching
+  // InactiveGlicViewContainer -> RequestFocus() -> OnViewFocused() ->
+  // RemoveAllChildViews()).
+  class FocusOnMousePressedView : public View {
+   public:
+    FocusOnMousePressedView() { SetFocusBehavior(FocusBehavior::ALWAYS); }
+    bool OnMousePressed(const ui::MouseEvent& event) override {
+      RequestFocus();
+      return true;
+    }
+  };
+
+  class RemoveChildrenOnFocusObserver : public ViewObserver {
+   public:
+    explicit RemoveChildrenOnFocusObserver(View* parent) : parent_(parent) {}
+
+    void Observe(View* view) { observation_.Observe(view); }
+    bool focus_observed() const { return focus_observed_; }
+
+    void OnViewFocused(View* observed_view) override {
+      focus_observed_ = true;
+      parent_->RemoveAllChildViews();
+    }
+
+    void OnViewIsDeleting(View* observed_view) override {
+      observation_.Reset();
+    }
+
+   private:
+    raw_ptr<View> parent_;
+    bool focus_observed_ = false;
+    base::ScopedObservation<View, ViewObserver> observation_{this};
+  };
+
+  widget->widget_delegate()->SetCanActivate(true);
+  widget->Show();
+  widget->Activate();
+  ASSERT_TRUE(widget->IsActive());
+
+  View* focus_view =
+      v1->AddChildView<View>(std::make_unique<FocusOnMousePressedView>());
+  focus_view->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+
+  RemoveChildrenOnFocusObserver focus_observer(v1);
+  focus_observer.Observe(focus_view);
+
+  EXPECT_TRUE(focus_view->HandleAccessibleAction(action_data));
+  EXPECT_TRUE(focus_observer.focus_observed());
   EXPECT_TRUE(v1->children().empty());
 }
 
