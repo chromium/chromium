@@ -439,6 +439,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       mojom::ActionResultCode::kFormFillingDialogError,
       /*requires_page_stabilization=*/false, "Error message",
       /*script_tool_response=*/nullptr,
+      /*execute_js_response=*/nullptr,
       /*execution_end_time=*/now, mojom::ScreenshotPolicy::kRequested,
       mojom::PageContentExtractionPolicy::kRequested,
       /*attempt_login_status=*/std::nullopt);

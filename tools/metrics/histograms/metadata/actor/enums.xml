@@ -187,6 +187,10 @@ chromium-metrics-reviews@google.com.
   <int value="2200" label="GeminiPanelServiceUnavailable"/>
   <int value="2201" label="GeminiPanelInvokeFailed"/>
   <int value="2202" label="GeminiPanelNotInTab"/>
+  <int value="2300" label="ExecuteJsScriptFailed"/>
+  <int value="2301" label="ExecuteJsTimeout"/>
+  <int value="2302" label="ExecuteJsNavigated"/>
+  <int value="2303" label="ExecuteJsTargetNotMainFrame"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/actor/public/mojom/actor_types.mojom:ActionResultCode) -->
