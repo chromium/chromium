@@ -41,7 +41,9 @@ FlingCurve::FlingCurve(const gfx::Vector2dF& velocity,
       previous_timestamp_(start_timestamp_),
       time_offset_(0),
       position_offset_(0) {
-  CHECK(!velocity.IsZero(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585910791): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!velocity.IsZero());
   float max_start_velocity = std::max(fabs(velocity.x()), fabs(velocity.y()));
   if (max_start_velocity > GetVelocityAtTime(0))
     max_start_velocity = GetVelocityAtTime(0);
