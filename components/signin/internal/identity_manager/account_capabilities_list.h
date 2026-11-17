@@ -165,6 +165,10 @@ ACCOUNT_CAPABILITY(kIsSubjectToUniversalOptOutCapabilityName,
                    IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME,
                    "accountcapabilities/gmydemrnmnqxa")
 
+ACCOUNT_CAPABILITY(kIsTrustedVaultPassphraseEligibleCapabilityName,
+                   IS_TRUSTED_VAULT_PASSPHRASE_ELIGIBLE_CAPABILITY_NAME,
+                   "accountcapabilities/gq4delldmfya")
+
 #if BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kMustFetchAppleAgeRangeInChromeCapabilityName,
                    MUST_FETCH_APPLE_AGE_RANGE_IN_CHROME_CAPABILITY_NAME,

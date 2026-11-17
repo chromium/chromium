@@ -172,6 +172,9 @@ class AccountCapabilities {
   // Whether the user is subject to Universal Opt-Out.
   signin::Tribool is_subject_to_universal_opt_out() const;
 
+  // Whether the account is eligible for a Trusted Vault passphrase.
+  signin::Tribool is_trusted_vault_passphrase_eligible() const;
+
 #if BUILDFLAG(IS_IOS)
   // Whether the client must fetch Apple's age range in Chrome.
   signin::Tribool must_fetch_apple_age_range_in_chrome() const;

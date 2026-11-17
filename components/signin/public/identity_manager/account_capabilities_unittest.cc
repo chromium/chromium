@@ -462,6 +462,21 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToUniversalOptOut) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, IsTrustedVaultPassphraseEligible) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.is_trusted_vault_passphrase_eligible(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_is_trusted_vault_passphrase_eligible(true);
+  EXPECT_EQ(capabilities.is_trusted_vault_passphrase_eligible(),
+            signin::Tribool::kTrue);
+
+  mutator.set_is_trusted_vault_passphrase_eligible(false);
+  EXPECT_EQ(capabilities.is_trusted_vault_passphrase_eligible(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest,
        MustShowEquallyWeightedButtonsForPrivatePassesInAutofill) {
   AccountCapabilities capabilities;

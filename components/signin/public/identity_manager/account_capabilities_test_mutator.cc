@@ -201,6 +201,13 @@ void AccountCapabilitiesTestMutator::set_is_subject_to_universal_opt_out(
       value;
 }
 
+void AccountCapabilitiesTestMutator::set_is_trusted_vault_passphrase_eligible(
+    bool value) {
+  capabilities_
+      ->capabilities_map_[kIsTrustedVaultPassphraseEligibleCapabilityName] =
+      value;
+}
+
 #if BUILDFLAG(IS_IOS)
 void AccountCapabilitiesTestMutator::set_must_fetch_apple_age_range_in_chrome(
     bool value) {

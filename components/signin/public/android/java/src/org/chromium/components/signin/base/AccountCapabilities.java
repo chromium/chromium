@@ -209,6 +209,14 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return isTrustedVaultPassphraseEligible capability value.
+     */
+    public @Tribool int isTrustedVaultPassphraseEligible() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_TRUSTED_VAULT_PASSPHRASE_ELIGIBLE_CAPABILITY_NAME);
+    }
+
+    /**
      * @return mustShowEquallyWeightedButtonsForPrivatePassesInAutofill capability value.
      */
     public @Tribool int mustShowEquallyWeightedButtonsForPrivatePassesInAutofill() {

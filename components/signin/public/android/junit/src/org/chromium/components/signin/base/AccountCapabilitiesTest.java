@@ -76,6 +76,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.isSubjectToParentalControlsViaBundle();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_UNIVERSAL_OPT_OUT_CAPABILITY_NAME:
                 return capabilities.isSubjectToUniversalOptOut();
+            case AccountCapabilitiesConstants.IS_TRUSTED_VAULT_PASSPHRASE_ELIGIBLE_CAPABILITY_NAME:
+                return capabilities.isTrustedVaultPassphraseEligible();
             case AccountCapabilitiesConstants
                     .MUST_SHOW_EQUALLY_WEIGHTED_BUTTONS_FOR_PRIVATE_PASSES_IN_AUTOFILL_CAPABILITY_NAME:
                 return capabilities.mustShowEquallyWeightedButtonsForPrivatePassesInAutofill();

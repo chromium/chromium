@@ -73,6 +73,7 @@ class AccountCapabilitiesTestMutator {
   void set_is_subject_to_parental_controls(bool value);
   void set_is_subject_to_parental_controls_via_bundle(bool value);
   void set_is_subject_to_universal_opt_out(bool value);
+  void set_is_trusted_vault_passphrase_eligible(bool value);
 #if BUILDFLAG(IS_IOS)
   void set_must_fetch_apple_age_range_in_chrome(bool value);
 #endif
