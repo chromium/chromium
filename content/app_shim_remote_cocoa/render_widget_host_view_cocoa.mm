@@ -6,13 +6,16 @@
 
 #include <AppKit/AppKit.h>
 #include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
+#include <CoreGraphics/CoreGraphics.h>
 #include <unistd.h>
 
 #include <algorithm>
 #include <limits>
+#include <map>
 #include <optional>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #import "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
@@ -55,6 +58,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -155,6 +159,22 @@ NSEvent* CreateContextMenuKeyDownEvent(NSEvent* source_event) {
                            keyCode:kVK_ContextualMenu];
 }
 
+NSEvent* CreateKeyUpEvent(NSEvent* key_down_event, NSWindow* window) {
+  return [NSEvent keyEventWithType:NSEventTypeKeyUp
+                          location:key_down_event.locationInWindow
+                     modifierFlags:key_down_event.modifierFlags
+                         timestamp:ui::EventTimeStampToSeconds(
+                                       ui::EventTimeForNow())
+                      windowNumber:window ? window.windowNumber
+                                          : key_down_event.windowNumber
+                           context:nil
+                        characters:key_down_event.characters ?: @""
+       charactersIgnoringModifiers:key_down_event.charactersIgnoringModifiers
+                                       ?: @""
+                         isARepeat:NO
+                           keyCode:key_down_event.keyCode];
+}
+
 // Extract underline information from an attributed string. Inspired by
 // `extractUnderlines` in
 // https://github.com/WebKit/WebKit/blob/main/Source/WebKitLegacy/mac/WebView/WebHTMLView.mm
@@ -217,6 +237,7 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)windowChangedGlobalFrame:(NSNotification*)notification;
 - (void)windowDidBecomeKey:(NSNotification*)notification;
 - (void)windowDidResignKey:(NSNotification*)notification;
+- (void)windowDidTransitionFullScreen:(NSNotification*)notification;
 - (void)sendViewBoundsInWindowToHost;
 - (void)requestTextSubstitutions;
 - (void)didGetRect:(const std::optional<gfx::Rect>&)rect
@@ -378,10 +399,11 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
   bool _isStylusEnteringProximity;
   blink::WebPointerProperties::PointerType _pointerType;
 
-  // The set of key codes from key down events that we haven't seen the matching
-  // key up events yet.
-  // Used for filtering out non-matching NSEventTypeKeyUp events.
-  std::set<unsigned short> _unmatchedKeyDownCodes;
+  // Maps key codes from key down events that have not yet seen a matching
+  // key up event to the originating NSEvent. Used to filter out non-matching
+  // NSEventTypeKeyUp events and to synthesize missing key up events if keys
+  // are released during a macOS fullscreen transition.
+  std::map<unsigned short, NSEvent*> _unmatchedKeyDownEvents;
 
   // The filter used to guide touch events towards a horizontal or vertical
   // orientation.
@@ -425,6 +447,7 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
 @synthesize textInputType = _textInputType;
 @synthesize textInputFlags = _textInputFlags;
 @synthesize spellCheckerForTesting = _spellCheckerForTesting;
+@synthesize isKeyDownForTesting = _isKeyDownForTesting;
 
 // Static storage for the class property deferredResignKeyWindow
 static NSWindow* __weak _deferredResignKeyWindow;
@@ -977,6 +1000,7 @@ static NSWindow* __weak _deferredResignKeyWindow;
   _dummyHostHelper = std::make_unique<DummyHostHelper>();
   _host = _dummyHost.get();
   _hostHelper = _dummyHostHelper.get();
+  _unmatchedKeyDownEvents.clear();
 
   // |responderDelegate_| may attempt to access the RenderWidgetHostViewMac
   // through its internal pointers, so detach it here.
@@ -1591,9 +1615,10 @@ static NSWindow* __weak _deferredResignKeyWindow;
   // omnibox (https://crbug.com/338736) or from closing another window
   // (https://crbug.com/155492).
   if (eventType == NSEventTypeKeyUp) {
-    auto numErased = _unmatchedKeyDownCodes.erase(keyCode);
-    if (numErased < 1)
+    auto numErased = _unmatchedKeyDownEvents.erase([theEvent keyCode]);
+    if (numErased < 1) {
       return;
+    }
   }
 
   // Tell the host that we are beginning a keyboard event. This ensures that
@@ -1618,8 +1643,6 @@ static NSWindow* __weak _deferredResignKeyWindow;
     _host->EndKeyboardEvent();
     return;
   }
-
-  _unmatchedKeyDownCodes.insert(keyCode);
 
   NS_VALID_UNTIL_END_OF_SCOPE RenderWidgetHostViewCocoa* keepSelfAlive = self;
 
@@ -1722,6 +1745,7 @@ static NSWindow* __weak _deferredResignKeyWindow;
   }
 
   _currentKeyDownCode.reset();
+  _unmatchedKeyDownEvents[[theEvent keyCode]] = theEvent;
 
   // Indicates if we should send the key event and corresponding editor commands
   // after processing the input method result.
@@ -1849,7 +1873,8 @@ static NSWindow* __weak _deferredResignKeyWindow;
 }
 
 - (BOOL)suppressNextKeyUpForTesting:(int)keyCode {
-  return _unmatchedKeyDownCodes.count(keyCode) == 0;
+  return !_unmatchedKeyDownEvents.contains(
+      static_cast<unsigned short>(keyCode));
 }
 
 - (void)forceTouchEvent:(NSEvent*)theEvent {
@@ -2012,6 +2037,12 @@ static NSWindow* __weak _deferredResignKeyWindow;
     [notificationCenter removeObserver:self
                                   name:NSWindowDidResignKeyNotification
                                 object:oldKeyTrackingWindow];
+    [notificationCenter removeObserver:self
+                                  name:NSWindowDidEnterFullScreenNotification
+                                object:oldKeyTrackingWindow];
+    [notificationCenter removeObserver:self
+                                  name:NSWindowDidExitFullScreenNotification
+                                object:oldKeyTrackingWindow];
   }
 
   NSWindow* newKeyTrackingWindow =
@@ -2059,6 +2090,14 @@ static NSWindow* __weak _deferredResignKeyWindow;
     [notificationCenter addObserver:self
                            selector:@selector(windowDidResignKey:)
                                name:NSWindowDidResignKeyNotification
+                             object:newKeyTrackingWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(windowDidTransitionFullScreen:)
+                               name:NSWindowDidEnterFullScreenNotification
+                             object:newKeyTrackingWindow];
+    [notificationCenter addObserver:self
+                           selector:@selector(windowDidTransitionFullScreen:)
+                               name:NSWindowDidExitFullScreenNotification
                              object:newKeyTrackingWindow];
   }
 
@@ -2184,6 +2223,47 @@ static NSWindow* __weak _deferredResignKeyWindow;
           features::kCancelCompositionWhenWindowLosesFocus)) {
     // Cancel any ongoing composition when the window loses focus.
     [self cancelComposition];
+  }
+}
+
+- (BOOL)isKeyDown:(unsigned short)keyCode {
+  if (_isKeyDownForTesting) {
+    return _isKeyDownForTesting(keyCode);
+  }
+  return CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,
+                               keyCode);
+}
+
+// Synthesize missing keyUp events for keys that were released while macOS was
+// animating a fullscreen Space transition, during which WindowServer/AppKit
+// does not deliver NSEventTypeKeyUp to the transitioning window. See
+// https://crbug.com/582864500.
+- (void)windowDidTransitionFullScreen:(NSNotification*)notification {
+  DCHECK([self keyTrackingWindow]);
+  DCHECK_EQ([self keyTrackingWindow], [notification object]);
+  if (_unmatchedKeyDownEvents.empty() || [self hostIsDisconnected]) {
+    return;
+  }
+
+  std::vector<NSEvent*> releasedKeyDownEvents;
+  for (const auto& [keyCode, keyDownEvent] : _unmatchedKeyDownEvents) {
+    if (![self isKeyDown:keyCode]) {
+      releasedKeyDownEvents.push_back(keyDownEvent);
+    }
+  }
+
+  if (releasedKeyDownEvents.empty()) {
+    return;
+  }
+
+  NS_VALID_UNTIL_END_OF_SCOPE RenderWidgetHostViewCocoa* keepSelfAlive = self;
+  for (NSEvent* keyDownEvent : releasedKeyDownEvents) {
+    if ([self hostIsDisconnected]) {
+      break;
+    }
+    if (NSEvent* keyUpEvent = CreateKeyUpEvent(keyDownEvent, [self window])) {
+      [self keyEvent:keyUpEvent wasKeyEquivalent:NO];
+    }
   }
 }
 

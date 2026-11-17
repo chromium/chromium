@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 
+#include <Carbon/Carbon.h>
 #include <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 #import <objc/runtime.h>
@@ -83,6 +84,9 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_features.h"
 #include "ui/events/blink/web_input_event_traits.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -849,6 +853,119 @@ TEST_F(RenderWidgetHostViewMacTest, InvalidKeyCode) {
                    0xFF, 0, NSEventTypeFlagsChanged, 0)];
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0U, host_->GetAndResetDispatchedMessages().size());
+}
+
+// Regression test for https://crbug.com/582864500: when a key (such as Escape)
+// is released during a macOS fullscreen Space transition, AppKit swallows the
+// NSEventTypeKeyUp event. Verify that a balancing KeyUp is synthesized once
+// NSWindowDidExitFullScreenNotification fires, and any late duplicate KeyUp is
+// suppressed.
+TEST_F(RenderWidgetHostViewMacTest,
+       SynthesizesMissingKeyUpAfterExitFullScreen) {
+  rwhv_cocoa_.isKeyDownForTesting = ^(unsigned short key_code) {
+    return NO;
+  };
+  host_->GetAndResetDispatchedMessages();
+
+  [rwhv_cocoa_ keyEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                            window_, /*keyDown=*/true, ui::VKEY_ESCAPE, 0)];
+  base::RunLoop().RunUntilIdle();
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  EXPECT_THAT(GetMessageNames(events), ::testing::HasSubstr("RawKeyDown"));
+  EXPECT_FALSE([rwhv_cocoa_ suppressNextKeyUpForTesting:kVK_Escape]);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidExitFullScreenNotification
+                    object:window_];
+  base::RunLoop().RunUntilIdle();
+  events = host_->GetAndResetDispatchedMessages();
+  ASSERT_EQ("KeyUp", GetMessageNames(events));
+  ASSERT_TRUE(events[0]->ToEvent());
+
+  const auto& key_up = static_cast<const blink::WebKeyboardEvent&>(
+      events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(ui::VKEY_ESCAPE, key_up.windows_key_code);
+  EXPECT_EQ(kVK_Escape, key_up.native_key_code);
+  EXPECT_EQ(static_cast<int>(ui::DomCode::ESCAPE), key_up.dom_code);
+  EXPECT_EQ(ui::DomKey::ESCAPE, key_up.dom_key);
+  EXPECT_TRUE([rwhv_cocoa_ suppressNextKeyUpForTesting:kVK_Escape]);
+
+  // A subsequent NSEventTypeKeyUp for Escape must be ignored as unmatched.
+  [rwhv_cocoa_ keyEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                            window_, /*keyDown=*/false, ui::VKEY_ESCAPE, 0)];
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(host_->GetAndResetDispatchedMessages().empty());
+}
+
+// Verify that if a key is still held down when a fullscreen transition
+// finishes, no premature KeyUp is synthesized and the real KeyUp is still
+// delivered when the user eventually releases the key.
+TEST_F(RenderWidgetHostViewMacTest,
+       DoesNotSynthesizeKeyUpWhenKeyRemainsPressedAfterFullScreenTransition) {
+  rwhv_cocoa_.isKeyDownForTesting = ^(unsigned short key_code) {
+    return YES;
+  };
+  host_->GetAndResetDispatchedMessages();
+
+  [rwhv_cocoa_ keyEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                            window_, /*keyDown=*/true, ui::VKEY_ESCAPE, 0)];
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(host_->GetAndResetDispatchedMessages().empty());
+  EXPECT_FALSE([rwhv_cocoa_ suppressNextKeyUpForTesting:kVK_Escape]);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidExitFullScreenNotification
+                    object:window_];
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(host_->GetAndResetDispatchedMessages().empty());
+  EXPECT_FALSE([rwhv_cocoa_ suppressNextKeyUpForTesting:kVK_Escape]);
+
+  // Releasing the key after the transition delivers KeyUp normally.
+  [rwhv_cocoa_ keyEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                            window_, /*keyDown=*/false, ui::VKEY_ESCAPE, 0)];
+  base::RunLoop().RunUntilIdle();
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  EXPECT_EQ("KeyUp", GetMessageNames(events));
+  EXPECT_TRUE([rwhv_cocoa_ suppressNextKeyUpForTesting:kVK_Escape]);
+}
+
+// Verify that NSWindowDidEnterFullScreenNotification also synthesizes KeyUp
+// only for keys that were released during the transition while preserving keys
+// that remain pressed.
+TEST_F(RenderWidgetHostViewMacTest,
+       SynthesizesMissingKeyUpAfterEnterFullScreen) {
+  rwhv_cocoa_.isKeyDownForTesting = ^(unsigned short key_code) {
+    return key_code == kVK_ANSI_A ? YES : NO;
+  };
+  host_->GetAndResetDispatchedMessages();
+
+  [rwhv_cocoa_ keyEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                            window_, /*keyDown=*/true, ui::VKEY_A, 0)];
+  [rwhv_cocoa_ keyEvent:cocoa_test_event_utils::SynthesizeKeyEvent(
+                            window_, /*keyDown=*/true, ui::VKEY_F, 0)];
+  base::RunLoop().RunUntilIdle();
+  host_->GetAndResetDispatchedMessages();
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidEnterFullScreenNotification
+                    object:window_];
+  base::RunLoop().RunUntilIdle();
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  ASSERT_EQ("KeyUp", GetMessageNames(events));
+  ASSERT_TRUE(events[0]->ToEvent());
+
+  const auto& key_up = static_cast<const blink::WebKeyboardEvent&>(
+      events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(ui::VKEY_F, key_up.windows_key_code);
+  EXPECT_EQ(kVK_ANSI_F, key_up.native_key_code);
+  EXPECT_EQ(static_cast<int>(ui::DomCode::US_F), key_up.dom_code);
+  EXPECT_EQ(ui::DomKey::FromCharacter('f'), key_up.dom_key);
+
+  EXPECT_TRUE([rwhv_cocoa_ suppressNextKeyUpForTesting:kVK_ANSI_F]);
+  EXPECT_FALSE([rwhv_cocoa_ suppressNextKeyUpForTesting:kVK_ANSI_A]);
 }
 
 TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
