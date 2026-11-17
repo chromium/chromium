@@ -314,8 +314,17 @@ extension ObjectGroup {
 ///
 /// Generators
 ///
-/// Names of every ObjectGroup registered by this profile.
+/// Names of the ObjectGroups whose `addListener` method registers a listener
+/// on a CallbackRouter.
+private let mojoCallbackReceiverGroups: Set<String> = [
+]
+
+/// Names of the ObjectGroups registered by this profile that the Mojo
+/// generators operate on. The CallbackReceivers are left out: their
+/// `addListener` calls are left to the router listener generators, which build
+/// proper listeners.
 private let mojoTargetGroups = Set(mojoObjectGroups.map { $0.name })
+    .subtracting(mojoCallbackReceiverGroups)
 
 private func isTargetObject(type: ILType) -> Bool {
     guard type.Is(.object()), let group = type.group else { return false }
@@ -345,13 +354,8 @@ private func findTargetVariable(
 /// method calls, generating any arguments that are not available.
 private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     b in
-    // `addListener` calls are left to the router listener generators, which
-    // build proper listeners.
-    //
     // If we can't find a Mojo object in scope, create the Primary remote
-    guard let obj = findTargetVariable(
-        b, where: { !$0.methods.subtracting(["addListener"]).isEmpty }
-    ) else {
+    guard let obj = findTargetVariable(b, where: { !$0.methods.isEmpty }) else {
         let getRemoteFunc = b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote")
         b.callFunction(getRemoteFunc, withArgs: [])
         return
