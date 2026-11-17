@@ -88,7 +88,6 @@ class TestComposeboxWebUIController : public TestMojoWebUIController {
     source->AddBoolean("composeboxShowContextMenu", true);
     source->AddBoolean("composeboxShowContextMenuDescription", false);
     source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
-    source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
     source->AddBoolean("composeboxContextMenuEnableTabDeselection", false);
     source->AddBoolean("composeboxContextMenuTooltipsEnabled", false);
     source->AddBoolean("contextMenuAnimationLimitingEnabled", true);

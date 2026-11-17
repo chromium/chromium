@@ -78,7 +78,6 @@ suite('ContextualActionMenu', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
-      composeboxContextMenuEnableMultiTabSelection: true,
       composeboxFileMaxCount: 10,
       composeboxShowContextMenuTabPreviews: true,
       ShowContextMenuHeaders: true,
@@ -2688,9 +2687,6 @@ suite('ContextualActionMenu', () => {
   test(
       'Menu stays open after tab selection in Side Panel with multi-tab selection',
       async () => {
-        loadTimeData.overrideValues({
-          composeboxContextMenuEnableMultiTabSelection: true,
-        });
         actionMenu.remove();
         actionMenu =
             document.createElement('cr-composebox-contextual-action-menu');
@@ -2732,7 +2728,6 @@ suite('ContextualActionMenu', () => {
           title: 'Tab 1',
         });
         loadTimeData.overrideValues({
-          composeboxContextMenuEnableMultiTabSelection: true,
           keepMenuOpenOnTabSelectForRealbox: false,
         });
         actionMenu.remove();
@@ -2773,7 +2768,6 @@ suite('ContextualActionMenu', () => {
         });
         loadTimeData.overrideValues({
           contextManagementInComposeboxEnabled: false,
-          composeboxContextMenuEnableMultiTabSelection: true,
         });
         actionMenu.remove();
         actionMenu =
@@ -2825,7 +2819,6 @@ suite('ContextualActionMenu', () => {
         overrides: Partial<ContextualActionMenuElement> = {}) {
       loadTimeData.overrideValues({
         composeboxSingleTabMenuItemEnabled: enabled,
-        composeboxContextMenuEnableMultiTabSelection: true,
       });
       actionMenu.remove();
       actionMenu =

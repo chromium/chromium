@@ -334,8 +334,6 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean(
       "caretAnimationEnabled",
       base::FeatureList::IsEnabled(omnibox::kOmniboxAnimatedCaret));
-  source->AddBoolean("composeboxContextMenuEnableMultiTabSelection",
-                     omnibox::kContextMenuEnableMultiTabSelection.Get());
   source->AddBoolean("composeboxShowContextMenu",
                      omnibox::kShowContextMenu.Get());
   source->AddBoolean(

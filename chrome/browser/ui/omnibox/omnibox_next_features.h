@@ -111,8 +111,6 @@ extern const base::FeatureParam<bool>
 
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
 extern const base::FeatureParam<std::string> kConfigParam;
-// Whether to enable multi-tab selection in the context menu.
-extern const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection;
 // The maximum number of tab suggestions to show in the composebox context menu.
 extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
 // Whether to show image suggestions under the composebox.

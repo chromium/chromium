@@ -58,9 +58,7 @@ class ContextualTasksNtpRealboxContextManagementInteractiveUiTest
     enabled_features.push_back({omnibox::kTabFaviconChipsToCoins, {}});
     // The realbox-next + composebox surface under test.
     enabled_features.push_back({ntp_realbox::kNtpRealboxNext, {}});
-    enabled_features.push_back(
-        {ntp_composebox::kNtpComposebox,
-         {{ntp_composebox::kContextMenuEnableMultiTabSelection.name, "true"}}});
+    enabled_features.push_back({ntp_composebox::kNtpComposebox, {}});
     enabled_features.push_back({omnibox::kAimEnabled, {}});
     // Lets `IsNtpComposeboxEnabled()` pass without a content-sharing pref.
     enabled_features.push_back({omnibox::kAimUsePecApi, {}});

@@ -25,10 +25,8 @@ export function getHtml(this: ContextualActionMenuElement) {
                 </h4>
               ` : ''}
               <button id="singleTabItem" class="dropdown-item"
-                  role="${this.enableMultiTabSelection_ ?
-                      'menuitemcheckbox' : 'menuitem'}"
-                  aria-checked="${this.enableMultiTabSelection_ &&
-                      this.isTabSelected_(this.singleTab_!)}"
+                  role="menuitemcheckbox"
+                  aria-checked="${this.isTabSelected_(this.singleTab_!)}"
                   title="${this.singleTab_!.title}"
                   data-index="${this.singleTabIndex_}"
                   aria-label="
@@ -41,8 +39,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                     .isSubmitted="${this.isTabSelected_(this.singleTab_!)}">
                 </cr-composebox-tab-favicon>
                 <span class="tab-title">${this.singleTab_!.title}</span>
-                ${(this.enableMultiTabSelection_ &&
-                    this.isTabSelected_(this.singleTab_!)) ? html`
+                ${this.isTabSelected_(this.singleTab_!) ? html`
                   <cr-icon class="share-tabs-check" icon="cr:check">
                     </cr-icon>
                 ` : ''}
@@ -94,10 +91,8 @@ export function getHtml(this: ContextualActionMenuElement) {
             ${this.tabSuggestions.map((tab, index) => html`
               <div class="suggestion-container" role="presentation">
                 <button class="dropdown-item"
-                    role="${this.enableMultiTabSelection_ ? 'menuitemcheckbox'
-                      : 'menuitem'}"
-                    aria-checked="${this.enableMultiTabSelection_ &&
-                      this.isTabSelected_(tab)}"
+                    role="menuitemcheckbox"
+                    aria-checked="${this.isTabSelected_(tab)}"
                     title="${tab.title}" data-index="${index}"
                     aria-label="
                       ${this.getInputTypeLabel_(InputType.kBrowserTab)}
@@ -110,18 +105,16 @@ export function getHtml(this: ContextualActionMenuElement) {
                        .isSubmitted="${this.isTabSelected_(tab)}">
                   </cr-composebox-tab-favicon>
                   <span class="tab-title">${tab.title}</span>
-                  ${this.enableMultiTabSelection_ ? html`
-                    ${(this.isTabSelected_(tab)) ? html`
-                      <cr-icon class="multi-tab-icon"
-                          icon="composebox:check-circle-filled"
-                          id="multi-tab-check">
-                      </cr-icon>
-                    ` : html`
-                      <cr-icon class="multi-tab-icon"
-                          icon="composebox:add-circle" id="multi-tab-add">
-                      </cr-icon>
-                    `}
-                  ` : ''}
+                  ${this.isTabSelected_(tab) ? html`
+                    <cr-icon class="multi-tab-icon"
+                        icon="composebox:check-circle-filled"
+                        id="multi-tab-check">
+                    </cr-icon>
+                  ` : html`
+                    <cr-icon class="multi-tab-icon"
+                        icon="composebox:add-circle" id="multi-tab-add">
+                    </cr-icon>
+                  `}
                 </button>
                 ${this.shouldShowTabPreview_() ? html`
                   <img class="tab-preview" .src="${this.tabPreviewUrl_}">
@@ -255,10 +248,8 @@ export function getHtml(this: ContextualActionMenuElement) {
           ${this.tabSuggestions.map((tab, index) => html`
             <div class="suggestion-container" role="presentation">
               <button class="dropdown-item"
-                  role="${this.enableMultiTabSelection_ ?
-                      'menuitemcheckbox' : 'menuitem'}"
-                  aria-checked="${this.enableMultiTabSelection_ &&
-                      this.isTabSelected_(tab)}"
+                  role="menuitemcheckbox"
+                  aria-checked="${this.isTabSelected_(tab)}"
                   title="${tab.title}" data-index="${index}"
                   aria-label="
                     ${this.getInputTypeLabel_(InputType.kBrowserTab)}
@@ -271,8 +262,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                   .isSubmitted="${this.isTabSelected_(tab)}">
               </cr-composebox-tab-favicon>
               <span class="tab-title">${tab.title}</span>
-              ${(this.enableMultiTabSelection_ &&
-                  this.isTabSelected_(tab)) ? html`
+              ${this.isTabSelected_(tab) ? html`
                 <cr-icon class="share-tabs-check" icon="cr:check">
                   </cr-icon>
               ` : ''}

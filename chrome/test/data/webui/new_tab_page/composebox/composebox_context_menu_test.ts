@@ -545,7 +545,6 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       loadTimeData.overrideValues({
         contextManagementInComposeboxEnabled: true,
         keepMenuOpenOnTabSelectForRealbox: true,
-        composeboxContextMenuEnableMultiTabSelection: true,
       });
       const sampleTabs = [{
         tabId: 1,
@@ -650,7 +649,6 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           loadTimeData.overrideValues({
             contextManagementInComposeboxEnabled: true,
             keepMenuOpenOnTabSelectForRealbox: true,
-            composeboxContextMenuEnableMultiTabSelection: true,
           });
 
           const sampleTabs = [{

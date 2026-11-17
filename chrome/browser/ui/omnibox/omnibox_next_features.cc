@@ -544,10 +544,6 @@ CreateQueryControllerConfigParams() {
 
 const base::FeatureParam<std::string>
     kConfigParam(&internal::kWebUIOmniboxAimPopup, "Omnibox_ConfigParam", "");
-const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
-    &internal::kWebUIOmniboxAimPopup,
-    "Omnibox_ContextMenuEnableMultiTabSelection",
-    true);
 const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ContextMenuMaxTabSuggestions",

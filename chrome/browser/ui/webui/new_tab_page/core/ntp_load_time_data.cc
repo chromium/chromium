@@ -663,8 +663,6 @@ base::DictValue BuildLoadTimeData(Profile* profile,
   dict.Set("composeboxShowContextMenu", ntp_composebox::kShowContextMenu.Get());
   dict.Set("composeboxShowContextMenuTabPreviews",
            ntp_composebox::kShowContextMenuTabPreviews.Get());
-  dict.Set("composeboxContextMenuEnableMultiTabSelection",
-           ntp_composebox::kContextMenuEnableMultiTabSelection.Get());
   dict.Set("composeboxSkillsEnabled",
            base::FeatureList::IsEnabled(omnibox::kComposeboxSkillsNtp));
   dict.Set(

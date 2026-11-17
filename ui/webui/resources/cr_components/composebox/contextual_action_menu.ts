@@ -116,10 +116,6 @@ export class ContextualActionMenuElement extends
       inputState: {type: Object},
       smartTabSharingActive: {type: Boolean},
       smartTabSharingVisible: {type: Boolean},
-      enableMultiTabSelection_: {
-        reflect: true,
-        type: Boolean,
-      },
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
       showContextMenuHeaders_: {type: Boolean},
@@ -175,8 +171,6 @@ export class ContextualActionMenuElement extends
     this.fire('share-tabs-flyout-open-changed', {open});
   }
 
-  protected accessor enableMultiTabSelection_: boolean =
-      loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
   protected accessor tabPreviewUrl_: string = '';
   private accessor tabPreviewsEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuTabPreviews');
@@ -835,16 +829,13 @@ export class ContextualActionMenuElement extends
       return true;
     }
 
-    if (this.enableMultiTabSelection_) {
-      const totalSelected = this.nonTabFileNum + this.selectedTabIds.size +
-          (this.contextManagementInComposeboxEnabled ?
-               (this.aimThreadRestoredTabs || []).length :
-               0);
-      const limitReached = totalSelected >= this.getMaxTotalInputs_();
-      // Disable unselected tabs only when the total selected count reaches the limit.
-      return limitReached;
-    }
-    return false; // Default: Do not disable tabs if not in the multi-select limit scenario.
+    const totalSelected = this.nonTabFileNum + this.selectedTabIds.size +
+        (this.contextManagementInComposeboxEnabled ?
+             (this.aimThreadRestoredTabs || []).length :
+             0);
+    // Disable unselected tabs only when the total selected count reaches the
+    // limit.
+    return totalSelected >= this.getMaxTotalInputs_();
   }
 
   protected getSelectedTabs_(): TabInfo[] {
@@ -939,10 +930,9 @@ export class ContextualActionMenuElement extends
          []).some(restoredTab => restoredTab.tabId === tabInfo.tabId);
     if (this.isTabSelected_(tabInfo.tabId)) {
       // Allow deselecting the tab if the explicit tab deselection feature is
-      // enabled. If disabled, we only allow deselecting newly-added tabs
-      // (non-restored) when multi-tab selection is enabled.
-      if (this.enableTabDeselection_ ||
-          (this.enableMultiTabSelection_ && !isRestored)) {
+      // enabled. If disabled, only newly-added (non-restored) tabs can be
+      // deselected.
+      if (this.enableTabDeselection_ || !isRestored) {
         if (singleTabType) {
           recordSingleTabMenuItemAction(
               singleTabType === SingleTabType.CURRENT_TAB ?
@@ -985,8 +975,7 @@ export class ContextualActionMenuElement extends
   }
 
   protected maybeCloseMenuBasedOnEntrypoint_() {
-    if (!this.enableMultiTabSelection_ ||
-        (this.closeMenuOnSelect && this.metricsSource_ === 'NewTabPage') ||
+    if ((this.closeMenuOnSelect && this.metricsSource_ === 'NewTabPage') ||
         this.metricsSource_ === 'Omnibox' || this.unboundedMenuEnabled ||
         this.metricsSource_ === 'OmniboxEverywhere') {
       this.$.menu.close();

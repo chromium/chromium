@@ -635,7 +635,6 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   AddContextMenuItemEligibilityLoadTimeData(dict, profile);
   dict.Set("composeboxShowChip", false);
   dict.Set("composeboxShowContextMenuTabPreviews", false);
-  dict.Set("composeboxContextMenuEnableMultiTabSelection", true);
   dict.Set("composeboxContextMenuEnableTabDeselection",
            omnibox::IsTabDeselectionInComposeboxEnabled());
   dict.Set("composeboxContextMenuTooltipsEnabled",

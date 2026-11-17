@@ -201,11 +201,6 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     "NtpComposeboxContextMenuMaxTabSuggestions",
     3);
 
-const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
-    &kNtpComposebox,
-    "NtpComposeboxContextMenuEnableMultiTabSelection",
-    true);
-
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;

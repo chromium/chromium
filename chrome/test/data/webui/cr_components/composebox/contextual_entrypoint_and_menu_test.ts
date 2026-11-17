@@ -39,7 +39,6 @@ suite('ContextualEntrypointAndMenu', () => {
   setup(async () => {
     MojoPluralStringProxy.setInstance(new TestPluralStringProxy());
     loadTimeData.overrideValues({
-      composeboxContextMenuEnableMultiTabSelection: true,
       contextualMenuUsePecApi: true,
       composeboxShowContextMenuDescription: true,
     });
@@ -210,20 +209,6 @@ suite('ContextualEntrypointAndMenu', () => {
     assertTrue(!!(await closeEventPromise));
     assertFalse(entrypointButton.classList.contains('menu-open'));
   });
-
-  test(
-      'context menu does not open if multi-tab selection is disabled',
-      async () => {
-        loadTimeData.overrideValues({
-          composeboxContextMenuEnableMultiTabSelection: false,
-        });
-        await createComponent();
-
-        entrypointAndMenu.openMenuForMultiSelection();
-        await microtasksFinished();
-
-        assertFalse(entrypointAndMenu.$.menu.open);
-      });
 
   test('DisableAutoRepositionForwardsToInnerMenu', async () => {
     entrypointAndMenu.disableAutoReposition = true;

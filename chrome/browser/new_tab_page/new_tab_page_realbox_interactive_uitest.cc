@@ -337,11 +337,8 @@ class NtpRealboxUiTestBase
                                   base::FieldTrialParams());
 
     if (compose_button_enabled) {
-      base::FieldTrialParams composebox_params;
-      composebox_params[ntp_composebox::kContextMenuEnableMultiTabSelection
-                            .name] = "true";
       enabled_features.emplace_back(ntp_composebox::kNtpComposebox,
-                                    composebox_params);
+                                    base::FieldTrialParams());
     }
 
     return enabled_features;

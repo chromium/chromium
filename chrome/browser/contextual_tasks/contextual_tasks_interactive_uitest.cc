@@ -2323,18 +2323,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
       ForceClickAddContextEntrypoint(kSidePanelWebContentsId),
       ForceClickMenuButton(kSidePanelWebContentsId, 0),
 
-      // Verify the dropdown menu has enableMultiTabSelection_ set to true.
-      CheckJsResult(
-          kSidePanelWebContentsId,
-          "() => { "
-          "const app = document.querySelector('contextual-tasks-app');"
-          "const cb = "
-          "app?.shadowRoot?.querySelector('#composebox')?.shadowRoot?."
-          "querySelector('#composebox');"
-          "const entry = cb?.shadowRoot?.querySelector('#contextEntrypoint'); "
-          "const m = entry?.shadowRoot?.querySelector('#menu'); "
-          "return m?.enableMultiTabSelection_ === true; }"),
-
       // Verify the composebox files list successfully drops to 0.
       CheckJsResult(
           kSidePanelWebContentsId,

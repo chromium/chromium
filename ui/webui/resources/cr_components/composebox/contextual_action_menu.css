@@ -200,12 +200,11 @@ composebox-favicon-group {
   margin-inline-start: auto;
 }
 
-:host([enable-multi-tab-selection_]) .main-menu-card .dropdown-item {
+.main-menu-card .dropdown-item {
   width: 320px;
 }
 
-:host([context-management-enabled][enable-multi-tab-selection_])
-  .main-menu-card .dropdown-item {
+:host([context-management-enabled]) .main-menu-card .dropdown-item {
   width: 240px;
 }
 
