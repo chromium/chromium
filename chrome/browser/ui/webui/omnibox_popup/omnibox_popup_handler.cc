@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_placeholder_util.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_dogfood_feedback.h"
@@ -379,8 +380,27 @@ void OmniboxPopupHandler::NotifyDefaultSearchProviderChanged() {
       web_contents_ &&
       color_utils::IsDark(web_contents_->GetColorProvider().GetColor(
           kColorOmniboxIconBackground));
-  page_->SetDefaultSearchProvider(GetDefaultSearchProviderIcon(
-      template_url_service_observation_.GetSource(), is_dark_mode));
+  const TemplateURLService* template_url_service =
+      template_url_service_observation_.GetSource();
+  const TemplateURL* default_provider =
+      template_url_service ? template_url_service->GetDefaultSearchProvider()
+                           : nullptr;
+  auto placeholder_type = omnibox_popup::mojom::PlaceholderType::kNone;
+  std::string search_engine_name;
+  if (default_provider) {
+    // Use the user profile, since the popup can be in TopChromeWebUIProfile,
+    // which is shared by the windows of all profiles.
+    Profile* profile =
+        web_contents_ ? webui::GetUserProfile(web_contents_) : nullptr;
+    placeholder_type =
+        omnibox::ShouldUseAskPlaceholderText(profile, template_url_service)
+            ? omnibox_popup::mojom::PlaceholderType::kAskOrTypeUrl
+            : omnibox_popup::mojom::PlaceholderType::kSearchOrTypeUrl;
+    search_engine_name = base::UTF16ToUTF8(default_provider->short_name());
+  }
+  page_->SetDefaultSearchProvider(
+      GetDefaultSearchProviderIcon(template_url_service, is_dark_mode),
+      placeholder_type, search_engine_name);
 }
 
 void OmniboxPopupHandler::LogEscapeAction(

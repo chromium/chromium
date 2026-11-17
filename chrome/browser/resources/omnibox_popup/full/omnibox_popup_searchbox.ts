@@ -29,7 +29,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface, SelectionDirection, SelectionStep, UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
-import {browserProxyFactory, MatchesUpdate, OmniboxEscapeAction} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup.mojom-webui.js';
+import {browserProxyFactory, MatchesUpdate, OmniboxEscapeAction, PlaceholderType} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup.mojom-webui.js';
 import type {OmniboxInputState, PageCallbackRouter as PopupPageCallbackRouter, PageHandlerInterface as PopupPageHandlerInterface} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup.mojom-webui.js';
 import type {OmniboxPopupContextualEntrypointElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint.js';
 import type {OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint_button.js';
@@ -133,6 +133,19 @@ export class OmniboxPopupSearchboxElement extends
         reflect: true,
       },
       searchboxIcon_: {type: String},
+      /**
+       * The default search engine placeholder text, e.g. "Ask Google or type a
+       * URL", which the Views omnibox shows while it is empty and blurred.
+       */
+      dsePlaceholderText_: {type: String},
+      /**
+       * Whether the AIM button has DOM focus, e.g. after tabbing to it from the
+       * empty input. The input shows `dsePlaceholderText_` only then, like the
+       * Views omnibox does when the AIM button takes focus. Otherwise the
+       * placeholder stays empty, so it doesn't flicker on tab switches
+       * (b/504669677).
+       */
+      aimButtonFocused_: {type: Boolean},
       searchboxVoiceSearchEnabled_: {
         type: Boolean,
         reflect: true,
@@ -256,6 +269,8 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('omniboxDogfoodFeedbackEnabled');
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
+  protected accessor dsePlaceholderText_: string = '';
+  protected accessor aimButtonFocused_: boolean = false;
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
@@ -467,8 +482,11 @@ export class OmniboxPopupSearchboxElement extends
       this.popupCallbackRouter_.clearPopup.addListener(
           this.onClearPopup_.bind(this)),
       this.popupCallbackRouter_.setDefaultSearchProvider.addListener(
-          (defaultIconPath: string) => {
+          (defaultIconPath: string, placeholderType: PlaceholderType,
+           searchEngineName: string) => {
             this.searchboxIcon_ = defaultIconPath;
+            this.dsePlaceholderText_ = this.computeDsePlaceholderText_(
+                placeholderType, searchEngineName);
           }),
     ];
     this.eventTracker_.add(
@@ -1740,6 +1758,10 @@ export class OmniboxPopupSearchboxElement extends
     this.lastSelectedMatch_ = null;
     this.$.input.setInputText('');
     this.getInputElement().blur();
+    // Hiding the popup leaves DOM focus on the AIM button without firing
+    // `focusout`, so reset its focus state, or a reshown popup would show the
+    // placeholder.
+    this.aimButtonFocused_ = false;
     this.clearAutocompleteMatches();
     await this.updateComplete;
   }
@@ -1900,6 +1922,31 @@ export class OmniboxPopupSearchboxElement extends
 
   protected onInputFocusin_() {
     this.searchboxPageHandler_.onFocusChanged(true);
+  }
+
+  protected onComposeButtonFocusin_() {
+    this.aimButtonFocused_ = true;
+  }
+
+  protected onComposeButtonFocusout_() {
+    this.aimButtonFocused_ = false;
+  }
+
+  protected computeInputPlaceholderText_(): string {
+    return this.aimButtonFocused_ ? this.dsePlaceholderText_ : '';
+  }
+
+  private computeDsePlaceholderText_(
+      placeholderType: PlaceholderType, searchEngineName: string): string {
+    switch (placeholderType) {
+      case PlaceholderType.kSearchOrTypeUrl:
+        return this.i18n('omniboxSearchOrTypeUrlPlaceholder', searchEngineName);
+      case PlaceholderType.kAskOrTypeUrl:
+        return this.i18n('omniboxAskOrTypeUrlPlaceholder', searchEngineName);
+      case PlaceholderType.kNone:
+      default:
+        return '';
+    }
   }
 
   /**

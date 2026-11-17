@@ -115,7 +115,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
-  // Notifies the WebUI of the current DSE icon.
+  // Notifies the WebUI of the current DSE icon and placeholder type.
   void NotifyDefaultSearchProviderChanged();
 
   const gfx::Range& latest_selection() const { return latest_selection_; }

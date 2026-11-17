@@ -10,8 +10,18 @@
 #include <string_view>
 
 class LocationBar;
+class Profile;
+class TemplateURLService;
 
 namespace omnibox {
+
+// Returns true if the default search engine placeholder should be the
+// "Ask <search engine> or type a URL" variant rather than "Search <search
+// engine> or type a URL", i.e. when the AIM popup is enabled for `profile` and
+// Google is the default search engine.
+bool ShouldUseAskPlaceholderText(
+    Profile* profile,
+    const TemplateURLService* template_url_service);
 
 // Given a `location_bar`, computes the appropriate placeholder text
 // for it into `out_placeholder_text. If a special text should be used for

@@ -174,7 +174,12 @@ class MockOmniboxPopupPage : public omnibox_popup::mojom::Page {
       (override));
   MOCK_METHOD(void, ClearAutocompleteMatches, (), (override));
   MOCK_METHOD(void, ClearPopup, (ClearPopupCallback callback), (override));
-  MOCK_METHOD(void, SetDefaultSearchProvider, (const std::string&), (override));
+  MOCK_METHOD(void,
+              SetDefaultSearchProvider,
+              (const std::string& default_icon_path,
+               omnibox_popup::mojom::PlaceholderType placeholder_type,
+               const std::string& search_engine_name),
+              (override));
   MOCK_METHOD(void,
               FocusSearchWithDefaultSearchEngineKeywordMode,
               (),

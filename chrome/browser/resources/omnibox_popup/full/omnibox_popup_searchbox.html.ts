@@ -12,7 +12,8 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
     @keydown="${this.onInputWrapperKeydown}">
   <cr-searchbox-input id="input" exportparts="searchbox-input, mirror"
       url-emphasis-enabled ?dropdown-is-visible="${this.dropdownIsVisible}"
-      ?multi-line-enabled="${this.multiLineEnabled}" placeholder-text=""
+      ?multi-line-enabled="${this.multiLineEnabled}"
+      placeholder-text="${this.computeInputPlaceholderText_()}"
       searchbox-aria-description="${this.searchboxAriaDescription}"
       searchbox-icon="${this.searchboxIcon_}"
       .selectedMatch="${this.computeSelectedMatchForInput_()}"
@@ -68,6 +69,8 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
         compose-icon="${this.aimButtonConfig_.icon}"
         ?has-virtual-focus="${this.isAiModeVirtualFocused()}"
         ?dropdown-is-visible="${this.dropdownIsVisible}"
+        @focusin="${this.onComposeButtonFocusin_}"
+        @focusout="${this.onComposeButtonFocusout_}"
         @compose-click="${this.onComposeClick_}">
     </cr-searchbox-compose-button>
   </cr-searchbox-input>
