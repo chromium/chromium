@@ -4077,8 +4077,11 @@ TEST_P(PdfViewWebPluginInkTest, DrawText) {
       .alignment = TextAlignment::kLeft,
       .orientation = 0,
       .viewport_orientation = PageOrientation::kOriginal,
-      .is_bold = true,
-      .is_italic = false,
+      .styles =
+          {
+              .is_bold = true,
+              .is_italic = false,
+          },
       .text = "Hello",
   };
   plugin_->ink_module_client_for_testing()->DrawText(

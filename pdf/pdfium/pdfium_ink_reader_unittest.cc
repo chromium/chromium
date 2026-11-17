@@ -99,10 +99,13 @@ TEST_P(PDFiumInkReaderTest, BasicTextAnnotation) {
           .alignment = TextAlignment::kLeft,
           .orientation = 0,
           .viewport_orientation = PageOrientation::kOriginal,
-          .is_bold = true,
-          .is_italic = false,
-          .is_strikethrough = false,
-          .is_underline = false,
+          .styles =
+              {
+                  .is_bold = true,
+                  .is_italic = false,
+                  .is_strikethrough = false,
+                  .is_underline = false,
+              },
           .text = "Hello\n!",
       }));
 
@@ -143,10 +146,13 @@ TEST_P(PDFiumInkReaderTest, LineDecorationTextAnnotation) {
           .alignment = TextAlignment::kLeft,
           .orientation = 0,
           .viewport_orientation = PageOrientation::kOriginal,
-          .is_bold = true,
-          .is_italic = false,
-          .is_strikethrough = true,
-          .is_underline = true,
+          .styles =
+              {
+                  .is_bold = true,
+                  .is_italic = false,
+                  .is_strikethrough = true,
+                  .is_underline = true,
+              },
           .text = "Hello\n!",
       }));
 
@@ -210,10 +216,13 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
           .alignment = TextAlignment::kLeft,
           .orientation = 0,
           .viewport_orientation = PageOrientation::kOriginal,
-          .is_bold = true,
-          .is_italic = false,
-          .is_strikethrough = false,
-          .is_underline = false,
+          .styles =
+              {
+                  .is_bold = true,
+                  .is_italic = false,
+                  .is_strikethrough = false,
+                  .is_underline = false,
+              },
           .text = "Hello",
       }));
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&
@@ -235,10 +244,13 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
           .alignment = TextAlignment::kLeft,
           .orientation = 0,
           .viewport_orientation = PageOrientation::kOriginal,
-          .is_bold = false,
-          .is_italic = true,
-          .is_strikethrough = false,
-          .is_underline = false,
+          .styles =
+              {
+                  .is_bold = false,
+                  .is_italic = true,
+                  .is_strikethrough = false,
+                  .is_underline = false,
+              },
           .text = "World",
       }));
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&

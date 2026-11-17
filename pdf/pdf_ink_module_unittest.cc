@@ -812,10 +812,13 @@ class PdfInkModuleTextTest : public testing::Test {
                        .alignment = TextAlignment::kCenter,
                        .orientation = 1,
                        .viewport_orientation = PageOrientation::kOriginal,
-                       .is_bold = true,
-                       .is_italic = true,
-                       .is_strikethrough = true,
-                       .is_underline = true,
+                       .styles =
+                           {
+                               .is_bold = true,
+                               .is_italic = true,
+                               .is_strikethrough = true,
+                               .is_underline = true,
+                           },
                        .text = kOriginalText,
                    });
     test_box.ink_loaded_text_id = kLoadedTextId;

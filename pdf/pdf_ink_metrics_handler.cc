@@ -252,13 +252,14 @@ void ReportTextAnnotationMetrics(const InkTextBoxAttributes& attributes) {
   base::UmaHistogramEnumeration("PDF.Ink2TextAnnotationAlignment",
                                 attributes.alignment);
 
-  base::UmaHistogramBoolean("PDF.Ink2TextAnnotationBold", attributes.is_bold);
+  base::UmaHistogramBoolean("PDF.Ink2TextAnnotationBold",
+                            attributes.styles.is_bold);
   base::UmaHistogramBoolean("PDF.Ink2TextAnnotationItalic",
-                            attributes.is_italic);
+                            attributes.styles.is_italic);
   base::UmaHistogramBoolean("PDF.Ink2TextAnnotationStrikethrough",
-                            attributes.is_strikethrough);
+                            attributes.styles.is_strikethrough);
   base::UmaHistogramBoolean("PDF.Ink2TextAnnotationUnderline",
-                            attributes.is_underline);
+                            attributes.styles.is_underline);
 
   CHECK_EQ(attributes.css_font_size, std::trunc(attributes.css_font_size));
   int size = static_cast<int>(attributes.css_font_size);

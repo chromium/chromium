@@ -3852,8 +3852,11 @@ class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
         .alignment = TextAlignment::kLeft,
         .orientation = 0,
         .viewport_orientation = PageOrientation::kOriginal,
-        .is_bold = false,
-        .is_italic = false,
+        .styles =
+            {
+                .is_bold = false,
+                .is_italic = false,
+            },
         .text = "Hello!",
     };
   }
@@ -4056,8 +4059,11 @@ TEST_P(PDFiumEngineInkDrawTextTest, StrokeTextStrokeOverlap) {
       .alignment = TextAlignment::kLeft,
       .orientation = 0,
       .viewport_orientation = PageOrientation::kOriginal,
-      .is_bold = false,
-      .is_italic = false,
+      .styles =
+          {
+              .is_bold = false,
+              .is_italic = false,
+          },
       .text = kTextToDraw,
   };
   engine->DrawText(kPageIndex, InkTextId(0),
@@ -4694,7 +4700,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
 
   // Draw some text with two runs to force multiple text objects.
   InkTextBoxAttributes attribute = SampleInkTextBoxAttributes();
-  attribute.is_bold = true;
+  attribute.styles.is_bold = true;
   attribute.text = kExpectedText;
   engine->set_next_textbox_id_for_testing(1);
   engine->DrawText(
@@ -5326,9 +5332,9 @@ class PDFiumEngineInkDrawTextLineDecorationTest
     attributes.css_font_size = font_size;
     attributes.orientation = orientation;
     if (is_strikethrough) {
-      attributes.is_strikethrough = true;
+      attributes.styles.is_strikethrough = true;
     } else {
-      attributes.is_underline = true;
+      attributes.styles.is_underline = true;
     }
 
     DrawSingleTextLine(engine.get(), kPageIndex, attributes);
@@ -5487,7 +5493,7 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
   DrawTextData text_data = GetGlyphsForText("Hello!", /*font_size=*/10.0f);
 
   InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
-  attributes.is_strikethrough = true;
+  attributes.styles.is_strikethrough = true;
 
   // 1 line with text, 1 line without text.
   std::vector<InkTextLine> lines;
@@ -5522,7 +5528,7 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
 
   DrawTextData text_data = GetGlyphsForText("?", /*font_size=*/10.0f);
   InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
-  attributes.is_strikethrough = true;
+  attributes.styles.is_strikethrough = true;
 
   int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
   engine->DrawText(
@@ -5575,7 +5581,7 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest, UnderlineEmptyLineSkipped) {
   DrawTextData text_data = GetGlyphsForText("Hello!", /*font_size=*/10.0f);
 
   InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
-  attributes.is_underline = true;
+  attributes.styles.is_underline = true;
 
   // 1 line with text, 1 line without text.
   std::vector<InkTextLine> lines;
@@ -5610,7 +5616,7 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
 
   DrawTextData text_data = GetGlyphsForText("?", /*font_size=*/10.0f);
   InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
-  attributes.is_underline = true;
+  attributes.styles.is_underline = true;
 
   int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
   engine->DrawText(
@@ -5646,8 +5652,8 @@ TEST_P(PDFiumEngineInkDrawTextLineDecorationTest,
   attributes.rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f);
   attributes.css_font_size = kFontSize;
   attributes.orientation = 0;
-  attributes.is_strikethrough = true;
-  attributes.is_underline = true;
+  attributes.styles.is_strikethrough = true;
+  attributes.styles.is_underline = true;
 
   engine->DrawText(
       kPageIndex, InkTextId(0),

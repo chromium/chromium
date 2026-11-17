@@ -54,6 +54,15 @@ enum class TextAlignment {
 std::string TextTypefaceToString(TextTypeface typeface);
 std::string TextAlignmentToString(TextAlignment alignment);
 
+struct TextStyles {
+  bool operator==(const TextStyles& other) const = default;
+
+  bool is_bold = false;
+  bool is_italic = false;
+  bool is_strikethrough = false;
+  bool is_underline = false;
+};
+
 struct InkTextBoxAttributes {
   bool operator==(const InkTextBoxAttributes& other) const = default;
 
@@ -69,10 +78,7 @@ struct InkTextBoxAttributes {
   // The orientation of the viewport (in 90 degree clockwise rotations) when the
   // text annotation was committed.
   PageOrientation viewport_orientation;
-  bool is_bold;
-  bool is_italic;
-  bool is_strikethrough;
-  bool is_underline;
+  TextStyles styles;
   std::string text;
 };
 

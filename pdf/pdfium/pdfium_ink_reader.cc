@@ -288,10 +288,13 @@ std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
       .alignment = static_cast<TextAlignment>(alignment.value()),
       .orientation = orientation.value(),
       .viewport_orientation = PageOrientation::kOriginal,
-      .is_bold = is_bold,
-      .is_italic = is_italic,
-      .is_strikethrough = is_strikethrough,
-      .is_underline = is_underline,
+      .styles =
+          {
+              .is_bold = is_bold,
+              .is_italic = is_italic,
+              .is_strikethrough = is_strikethrough,
+              .is_underline = is_underline,
+          },
       .text = base::UTF16ToUTF8(text.value()),
   };
 }

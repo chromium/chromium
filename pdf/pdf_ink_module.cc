@@ -125,12 +125,6 @@ PdfInkBrush CreateDefaultPenBrush() {
 }
 
 InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
-  const base::DictValue& text_box_rect = *data.FindDict("textBoxRect");
-  gfx::RectF textbox(text_box_rect.FindDouble("locationX").value(),
-                     text_box_rect.FindDouble("locationY").value(),
-                     text_box_rect.FindDouble("width").value(),
-                     text_box_rect.FindDouble("height").value());
-
   const base::DictValue& text_attributes = *data.FindDict("textAttributes");
   const float css_font_size = text_attributes.FindDouble("size").value();
 
@@ -164,27 +158,18 @@ InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
       PageOrientationFromClockwiseRotationSteps(
           data.FindInt("viewportOrientation").value());
 
-  const base::DictValue& styles = *text_attributes.FindDict("styles");
-  bool is_bold = styles.FindBool("bold").value();
-  bool is_italic = styles.FindBool("italic").value();
-  bool is_strikethrough = styles.FindBool("strikethrough").value();
-  bool is_underline = styles.FindBool("underline").value();
-
   const std::string& text = *data.FindString("text");
   CHECK(!text.empty());
 
   return InkTextBoxAttributes{
-      .rect = textbox,
+      .rect = GetRectFromDict(*data.FindDict("textBoxRect")),
       .color = GetColorFromDict(text_attributes),
       .css_font_size = css_font_size,
       .typeface = typeface,
       .alignment = alignment,
       .orientation = orientation,
       .viewport_orientation = viewport_orientation,
-      .is_bold = is_bold,
-      .is_italic = is_italic,
-      .is_strikethrough = is_strikethrough,
-      .is_underline = is_underline,
+      .styles = GetStylesFromDict(*text_attributes.FindDict("styles")),
       .text = text,
   };
 }
@@ -1428,19 +1413,7 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
               .Set("color", SkColorToDict(item.attributes.color))
               .Set("alignment",
                    TextAlignmentToString(item.attributes.alignment))
-              .Set("styles",
-                   base::DictValue()
-                       .Set("bold", item.attributes.is_bold)
-                       .Set("italic", item.attributes.is_italic)
-                       .Set("strikethrough", item.attributes.is_strikethrough)
-                       .Set("underline", item.attributes.is_underline));
-
-      const gfx::RectF& rect = item.attributes.rect;
-      auto textbox_rect = base::DictValue()
-                              .Set("height", static_cast<double>(rect.height()))
-                              .Set("locationX", static_cast<double>(rect.x()))
-                              .Set("locationY", static_cast<double>(rect.y()))
-                              .Set("width", static_cast<double>(rect.width()));
+              .Set("styles", StylesToDict(item.attributes.styles));
 
       annotations.Append(
           base::DictValue()
@@ -1450,7 +1423,7 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
               .Set("pdfZoom", 1.0)
               .Set("text", item.attributes.text)
               .Set("textAttributes", std::move(text_attributes))
-              .Set("textBoxRect", std::move(textbox_rect))
+              .Set("textBoxRect", RectToDict(item.attributes.rect))
               .Set("textOrientation", item.attributes.orientation)
               .Set("viewportOrientation",
                    GetClockwiseRotationSteps(
