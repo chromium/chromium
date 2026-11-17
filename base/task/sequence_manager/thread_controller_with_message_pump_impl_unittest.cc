@@ -258,6 +258,7 @@ class ThreadControllerWithMessagePumpTestBase : public testing::Test {
 
   void SetUp() override {
     ThreadControllerPowerMonitor::OverrideUsePowerMonitorForTesting(true);
+    ThreadControllerWithMessagePumpImpl::ResetFeaturesForTesting();
   }
 
   void TearDown() override {

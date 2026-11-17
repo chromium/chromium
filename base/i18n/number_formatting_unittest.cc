@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
+#include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/simple_thread.h"
@@ -48,11 +49,15 @@ class ScopedI18nOptimizationsFeature {
     features_.InitWithFeatureState(features::kI18nOptimizations, enable);
     features::Init();
     sequence_manager::internal::ThreadControllerPowerMonitor::ResetForTesting();
+    sequence_manager::internal::ThreadControllerWithMessagePumpImpl::
+        ResetFeaturesForTesting();
   }
   ~ScopedI18nOptimizationsFeature() {
     features_.Reset();
     features::Init();
     sequence_manager::internal::ThreadControllerPowerMonitor::ResetForTesting();
+    sequence_manager::internal::ThreadControllerWithMessagePumpImpl::
+        ResetFeaturesForTesting();
   }
 
  private:
