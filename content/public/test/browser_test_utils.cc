@@ -18,6 +18,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -36,6 +37,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
@@ -134,6 +136,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -935,13 +938,28 @@ void CrashTab(WebContents* web_contents) {
 }
 
 void SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
-    WebContents* web_contents) {
-  RenderProcessHost* rph = web_contents->GetPrimaryMainFrame()->GetProcess();
+    WebContents* web_contents,
+    bool wait_for_js_call_stack) {
+  RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  RenderProcessHost* rph = rfh->GetProcess();
   RenderProcessHostWatcher watcher(
       rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
-  SimulateUnresponsiveRenderer(
-      web_contents, web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  if (wait_for_js_call_stack) {
+    CHECK(base::FeatureList::IsEnabled(
+        blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports));
+    CHECK(web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
+    CHECK(rph->GetUnresponsiveDocumentJavascriptCallStack().empty());
+  }
+
+  SimulateUnresponsiveRenderer(web_contents, rfh->GetRenderWidgetHost());
+
+  if (wait_for_js_call_stack) {
+    EXPECT_TRUE(base::test::RunUntil([&] {
+      return !rph->GetUnresponsiveDocumentJavascriptCallStack().empty();
+    })) << "Timed out waiting for the renderer to return a JavaScript call "
+           "stack";
+  }
 
   EXPECT_TRUE(rph->Shutdown(RESULT_CODE_HUNG));
   watcher.Wait();

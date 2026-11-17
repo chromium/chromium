@@ -2404,7 +2404,8 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   ExecuteInfiniteLoopScriptAsync(frame);
 
   ASSERT_TRUE(console_observer.Wait());
-  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
+      contents, /*wait_for_js_call_stack=*/GetParam());
 
   upload_response()->WaitForRequest();
   base::ListValue response =
@@ -2429,8 +2430,8 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   EXPECT_EQ(*url, main_url.spec());
   ASSERT_NE(reason, nullptr);
   EXPECT_EQ(*reason, "unresponsive");
-  // TODO(crbug.com/407473725): Improve JS call stack collection test coverage.
-  if (GetParam() && call_stack) {
+  if (GetParam()) {
+    ASSERT_NE(call_stack, nullptr);
     EXPECT_TRUE(call_stack->find("infiniteLoop") != std::string::npos);
   } else {
     EXPECT_EQ(call_stack, nullptr);
@@ -2520,7 +2521,8 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
 
   ASSERT_TRUE(console_observer.Wait());
 
-  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
+      contents, /*wait_for_js_call_stack=*/GetParam());
 
   upload_response()->WaitForRequest();
   base::ListValue response =
@@ -2545,8 +2547,8 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   EXPECT_EQ(*url, main_url.spec());
   ASSERT_NE(reason, nullptr);
   EXPECT_EQ(*reason, "unresponsive");
-  // TODO(crbug.com/407473725): Improve JS call stack collection test coverage.
-  if (GetParam() && call_stack) {
+  if (GetParam()) {
+    ASSERT_NE(call_stack, nullptr);
     EXPECT_EQ(
         *call_stack,
         "Website owner has not opted in for JS call stacks in crash reports.");
@@ -2581,7 +2583,8 @@ IN_PROC_BROWSER_TEST_P(
   ExecuteInfiniteLoopScriptAsync(subframe);
   ASSERT_TRUE(console_observer.Wait());
 
-  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
+      contents, /*wait_for_js_call_stack=*/GetParam());
 
   base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
   ASSERT_EQ(reports.size(), 2u);
@@ -2602,7 +2605,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(*main_reason, "unresponsive");
 
   const std::string* main_call_stack = main_body->FindString("stack");
-  if (GetParam() && main_call_stack) {
+  if (GetParam()) {
+    ASSERT_NE(main_call_stack, nullptr);
     EXPECT_EQ(*main_call_stack, "Unable to collect JS call stack.");
   } else {
     EXPECT_EQ(main_call_stack, nullptr);
@@ -2624,7 +2628,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(*iframe_reason, "unresponsive");
 
   const std::string* iframe_call_stack = iframe_body->FindString("stack");
-  if (GetParam() && iframe_call_stack) {
+  if (GetParam()) {
+    ASSERT_NE(iframe_call_stack, nullptr);
     EXPECT_TRUE(iframe_call_stack->find("infiniteLoop") != std::string::npos);
   } else {
     EXPECT_EQ(iframe_call_stack, nullptr);
@@ -2656,7 +2661,8 @@ IN_PROC_BROWSER_TEST_P(
   ExecuteInfiniteLoopScriptAsync(subframe);
   ASSERT_TRUE(console_observer.Wait());
 
-  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
+      contents, /*wait_for_js_call_stack=*/GetParam());
 
   base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
   ASSERT_EQ(reports.size(), 2u);
@@ -2677,7 +2683,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(*main_reason, "unresponsive");
 
   const std::string* main_call_stack = main_body->FindString("stack");
-  if (GetParam() && main_call_stack) {
+  if (GetParam()) {
+    ASSERT_NE(main_call_stack, nullptr);
     EXPECT_EQ(*main_call_stack, "Unable to collect JS call stack.");
   } else {
     EXPECT_EQ(main_call_stack, nullptr);
@@ -2700,7 +2707,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(*iframe_reason, "unresponsive");
 
   const std::string* iframe_call_stack = iframe_body->FindString("stack");
-  if (GetParam() && iframe_call_stack) {
+  if (GetParam()) {
+    ASSERT_NE(iframe_call_stack, nullptr);
     EXPECT_EQ(
         *iframe_call_stack,
         "Website owner has not opted in for JS call stacks in crash reports.");

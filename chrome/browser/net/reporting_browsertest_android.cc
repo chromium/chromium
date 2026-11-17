@@ -265,7 +265,8 @@ IN_PROC_BROWSER_TEST_P(
   ExecuteInfiniteLoopScriptAsync(frame);
   ASSERT_TRUE(console_observer.Wait());
 
-  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
+  content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
+      contents, /*wait_for_js_call_stack=*/true);
 
   upload_response()->WaitForRequest();
   base::ListValue response =
@@ -292,14 +293,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_NE(reason, nullptr);
   EXPECT_EQ(*reason, "unresponsive");
 
-  // SimulateUnresponsivePrimaryMainFrameAndWaitForExit() immediately calls
-  // Shutdown(RESULT_CODE_HUNG) after requesting the JS call stack via an
-  // async Mojo IPC InterruptJavaScriptIsolateAndCollectCallStack(), so
-  // call_stack is only populated if the IPC reply arrives before the process
-  // exits, causing a race. See crbug.com/407473725.
-  if (call_stack) {
-    EXPECT_TRUE(call_stack->find("infiniteLoop") != std::string::npos);
-  }
+  ASSERT_NE(call_stack, nullptr);
+  EXPECT_TRUE(call_stack->find("infiniteLoop") != std::string::npos);
 }
 
 // Verify that an out-of-memory kill on a foreground Android page sets

@@ -338,10 +338,15 @@ void OverrideLastCommittedOrigin(RenderFrameHost* render_frame_host,
 // Causes the specified web_contents to crash. Blocks until it is crashed.
 void CrashTab(WebContents* web_contents);
 
-// Causes the specified web_contents to crash after hanging. Blocks until it is
-// crashed.
+// Simulates an unresponsive renderer for the primary main frame of
+// `web_contents`, then terminates the renderer with `RESULT_CODE_HUNG` and
+// waits for primary main frame exit. If `wait_for_js_call_stack` is true, waits
+// for the renderer's unresponsive JavaScript call stack IPC before terminating
+// the process. This requires the feature to be enabled, JavaScript to be
+// actively executing, and the page to be HTTP or HTTPS.
 void SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
-    WebContents* web_contents);
+    WebContents* web_contents,
+    bool wait_for_js_call_stack = false);
 
 // Causes the specified web_contents to crash due to out-of-memory. Blocks until
 // it is crashed.
