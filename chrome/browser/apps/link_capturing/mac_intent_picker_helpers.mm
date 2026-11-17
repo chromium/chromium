@@ -12,6 +12,7 @@
 #include "base/mac/launch_application.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "net/base/apple/url_conversions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
@@ -44,6 +45,17 @@ NSImage* CreateRedIconForTesting() {
 MacAppInfo AppInfoForAppUrl(NSURL* app_url,
                             const std::vector<int>& icon_sizes) {
   CHECK(!icon_sizes.empty());
+  // `SFUniversalLink.applicationURL` returns the `NSURL` owned by
+  // LaunchServices's internal cached `FSNode`. Calling
+  // `-[NSURL getResourceValue:forKey:error:]` directly on that shared `NSURL`
+  // acquires its per-URL `__FileCache` lock first and the `LSRecord` lock
+  // second (`-[LSBundleRecord developerType]`), which deadlocks (AB/BA) with
+  // concurrent LaunchServices calls (`-[LSRecord compatibilityObject]` ->
+  // `_LSBundleCopyOrCheckNode`) that acquire the `LSRecord` lock first and the
+  // cached `FSNode`'s `__FileCache` lock second. Construct a fresh `NSURL` from
+  // `app_url.path` so `getResourceValue:forKey:error:` uses an unshared
+  // `__FileCache` instance. See https://crbug.com/568014499.
+  app_url = [NSURL fileURLWithPath:app_url.path];
   NSString* app_name = nil;
   if (![app_url getResourceValue:&app_name
                           forKey:NSURLLocalizedNameKey
@@ -88,6 +100,8 @@ MacAppInfo AppInfoForAppUrl(NSURL* app_url,
 
 std::optional<MacAppInfo> FindMacAppForUrl(const GURL& url,
                                            const std::vector<int>& icon_sizes) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   if (UseFakeAppForTesting()) {
     std::string fake_app = FakeAppForTesting();  // IN-TEST
     if (fake_app.empty()) {
