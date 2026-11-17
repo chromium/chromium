@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_coordinator.h"
 
+#import "base/check_op.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/not_fatal_until.h"
@@ -34,6 +35,9 @@
 
   // The mode of the prompt.
   AgeMismatchPromptMode _mode;
+
+  // Coordinator for the "Learn more" page, while it's shown.
+  AgeMismatchLearnMoreCoordinator* _learnMoreCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -69,6 +73,7 @@
 
 - (void)stop {
   [super stop];
+  [self stopLearnMoreCoordinator];
   [_mediator disconnect];
   _mediator = nil;
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
@@ -99,21 +104,32 @@
         base::NotFatalUntil::M153);
   base::RecordAction(
       base::UserMetricsAction(kAgeMismatchSignoutLearnMoreAction));
-  AgeMismatchLearnMoreCoordinator* coordinator =
-      [[AgeMismatchLearnMoreCoordinator alloc]
-          initWithBaseViewController:_viewController
-                             browser:self.browser];
-  coordinator.delegate = self;
-  [self.childCoordinators addObject:coordinator];
-  [coordinator start];
+  if (_learnMoreCoordinator) {
+    // Already shown.
+    return;
+  }
+  _learnMoreCoordinator = [[AgeMismatchLearnMoreCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser];
+  _learnMoreCoordinator.delegate = self;
+  [_learnMoreCoordinator start];
 }
 
 #pragma mark - AgeMismatchLearnMoreCoordinatorDelegate
 
 - (void)ageMismatchLearnMoreCoordinatorWantsToBeStopped:
     (AgeMismatchLearnMoreCoordinator*)coordinator {
-  [coordinator stop];
-  [self.childCoordinators removeObject:coordinator];
+  CHECK_EQ(_learnMoreCoordinator, coordinator);
+  [self stopLearnMoreCoordinator];
+}
+
+#pragma mark - Private
+
+// Stops and releases the "Learn more" coordinator, if it's shown.
+- (void)stopLearnMoreCoordinator {
+  [_learnMoreCoordinator stop];
+  _learnMoreCoordinator.delegate = nil;
+  _learnMoreCoordinator = nil;
 }
 
 @end

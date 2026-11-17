@@ -7,12 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-@class ChromeCoordinator;
 @class SceneState;
 class Browser;
 class ProfileIOS;
-
-typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
 
 // Base class for coordinators that manage a UI feature scoped to a Browser.
 // Subclasses must set up their UI and dependencies in `-start` and tear them
@@ -27,16 +24,6 @@ NS_SWIFT_UI_ACTOR
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Legacy array of child coordinators. Prefer storing child coordinators in
-// explicit, typed instance variables or properties instead.
-@property(strong, nonatomic, readonly)
-    MutableCoordinatorArray* childCoordinators;
-
-// Legacy convenience property returning `childCoordinators.lastObject` by
-// default. Avoid using in new code.
-@property(strong, nonatomic, readonly)
-    ChromeCoordinator* activeChildCoordinator;
 
 // The view controller this coordinator was initialized with.
 @property(weak, nonatomic, readonly) UIViewController* baseViewController;

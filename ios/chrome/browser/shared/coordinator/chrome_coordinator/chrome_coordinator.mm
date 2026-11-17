@@ -19,19 +19,12 @@
   CHECK(browser);
   if ((self = [super init])) {
     _baseViewController = viewController;
-    _childCoordinators = [MutableCoordinatorArray array];
     _browser = browser->AsWeakPtr();
   }
   return self;
 }
 
 #pragma mark - Accessors
-
-- (ChromeCoordinator*)activeChildCoordinator {
-  // By default the active child is the one most recently added to the child
-  // array, but subclasses can override this.
-  return self.childCoordinators.lastObject;
-}
 
 - (Browser*)browser {
   // `_browser` is only nullptr if the Browser was destroyed before this

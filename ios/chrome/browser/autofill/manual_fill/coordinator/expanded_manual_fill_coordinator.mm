@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/autofill/manual_fill/coordinator/address_coordinator.h"
 #import "ios/chrome/browser/autofill/manual_fill/coordinator/card_coordinator.h"
+#import "ios/chrome/browser/autofill/manual_fill/coordinator/fallback_coordinator.h"
 #import "ios/chrome/browser/autofill/manual_fill/coordinator/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/expanded_manual_fill_view_controller.h"
@@ -42,6 +43,10 @@ using manual_fill::ManualFillDataType;
 
   // Used to show the manual fill passwords menu.
   ManualFillPasswordCoordinator* _manualFillPasswordCoordinator;
+
+  // The coordinator whose view is currently shown as the expanded view
+  // controller's child, if any.
+  FallbackCoordinator* _displayedCoordinator;
 
   // Button used to anchor the popover presentation.
   __weak UIButton* _sourceButton;
@@ -169,17 +174,16 @@ using manual_fill::ManualFillDataType;
 
 - (void)passwordsFetched {
   // If a user has already switched to another menu while the passwords were
-  // being fetched, resulting in a different child coordinator being added here,
-  // no need to add the manual fill password coordinator as a child here
-  // anymore.
-  if ([self.childCoordinators count] != 0) {
+  // being fetched, resulting in a different coordinator being displayed here,
+  // no need to display the manual fill password coordinator anymore.
+  if (_displayedCoordinator) {
     return;
   }
 
   self.expandedManualFillViewController.childViewController =
       _manualFillPasswordCoordinator.viewController;
 
-  [self.childCoordinators addObject:_manualFillPasswordCoordinator];
+  _displayedCoordinator = _manualFillPasswordCoordinator;
 }
 
 #pragma mark - UIPopoverPresentationControllerDelegate
@@ -201,17 +205,17 @@ using manual_fill::ManualFillDataType;
 
 #pragma mark - Private
 
-// Stops and deletes all active child coordinators.
+// Stops and deletes the displayed coordinator and the password coordinator.
 - (void)stopChildCoordinators {
   // Explicitly stop and nil out _manualFillPasswordCoordinator so it is cleaned
   // up even if passwordsFetched has not completed yet.
   [_manualFillPasswordCoordinator stop];
   _manualFillPasswordCoordinator = nil;
 
-  for (ChromeCoordinator* coordinator in self.childCoordinators) {
-    [coordinator stop];
-  }
-  [self.childCoordinators removeAllObjects];
+  // `_displayedCoordinator` may be the password coordinator stopped above;
+  // stopping it twice is harmless.
+  [_displayedCoordinator stop];
+  _displayedCoordinator = nil;
 }
 
 // Shows the right manual filling options depending on `dataType`.
@@ -251,8 +255,8 @@ using manual_fill::ManualFillDataType;
   _manualFillPasswordCoordinator.delegate = self.delegate;
   _manualFillPasswordCoordinator.consumer = self;
 
-  // Note: The ManualFillPasswordCoordinator object will be added as a child
-  // coordinator to this coordinator in the `passwordsFetched` function,
+  // Note: The ManualFillPasswordCoordinator object will become the displayed
+  // coordinator in the `passwordsFetched` function,
   // which will be called only once passwords are fetched, to avoid showing a
   // visible flicker where an empty passwords list appears briefly between the
   // previous menu and the final passwords menu, where all available passwords
@@ -274,7 +278,7 @@ using manual_fill::ManualFillDataType;
   self.expandedManualFillViewController.childViewController =
       cardCoordinator.viewController;
 
-  [self.childCoordinators addObject:cardCoordinator];
+  _displayedCoordinator = cardCoordinator;
 }
 
 // Shows the address manual filling options.
@@ -292,7 +296,7 @@ using manual_fill::ManualFillDataType;
   self.expandedManualFillViewController.childViewController =
       addressCoordinator.viewController;
 
-  [self.childCoordinators addObject:addressCoordinator];
+  _displayedCoordinator = addressCoordinator;
 }
 
 @end

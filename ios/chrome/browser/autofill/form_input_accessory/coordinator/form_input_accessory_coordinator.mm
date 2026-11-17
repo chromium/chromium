@@ -230,6 +230,11 @@ void UndoInSessionSuppressedEntity(
   // Modal alert.
   AlertCoordinator* _alertCoordinator;
 
+  // Expanded manual fill coordinators, most recently started last. There can
+  // be more than one while a dismissed popover finishes animating out.
+  NSMutableArray<ExpandedManualFillCoordinator*>*
+      _expandedManualFillCoordinators;
+
   // The navigation controller presenting the Autofill AI sources bottom sheet.
   UINavigationController* _sourcesNavigationController;
 }
@@ -238,6 +243,7 @@ void UndoInSessionSuppressedEntity(
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    _expandedManualFillCoordinators = [NSMutableArray array];
     CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:self
                              forProtocol:@protocol(SecurityAlertCommands)];
@@ -361,16 +367,17 @@ void UndoInSessionSuppressedEntity(
 
   [self stopManualFillAllPasswordCoordinator];
 
-  [self dismissAlertCoordinator];
   [self dismissSourcesSheetAnimated:NO];
 }
 
 - (void)stopChildren {
   _formInputAccessoryMediator.formInputInteractionDelegate = nil;
-  for (ChromeCoordinator* coordinator in self.childCoordinators) {
+  for (ExpandedManualFillCoordinator* coordinator in
+           _expandedManualFillCoordinators) {
     [coordinator stop];
   }
-  [self.childCoordinators removeAllObjects];
+  [_expandedManualFillCoordinators removeAllObjects];
+  [self dismissAlertCoordinator];
 }
 
 // Starts the expanded manual fill coordinator and displays its view controller.
@@ -408,7 +415,7 @@ void UndoInSessionSuppressedEntity(
     [_formInputAccessoryMediator reloadFirstResponderInputViews];
   }
 
-  [self.childCoordinators addObject:expandedManualFillCoordinator];
+  [_expandedManualFillCoordinators addObject:expandedManualFillCoordinator];
 }
 
 #pragma mark - FormInputAccessoryMediatorHandler
@@ -891,9 +898,9 @@ void UndoInSessionSuppressedEntity(
   // If a new coordinator has already been started before the previous popover
   // finished its dismissal animation, only stop and remove the dismissed
   // coordinator rather than resetting the newly started one.
-  if (self.childCoordinators.lastObject != coordinator) {
+  if (_expandedManualFillCoordinators.lastObject != coordinator) {
     [coordinator stop];
-    [self.childCoordinators removeObject:coordinator];
+    [_expandedManualFillCoordinators removeObject:coordinator];
     return;
   }
   [self reset];
@@ -968,7 +975,6 @@ void UndoInSessionSuppressedEntity(
 
 - (void)dismissAlertCoordinator {
   [_alertCoordinator stop];
-  [self.childCoordinators removeObject:_alertCoordinator];
   _alertCoordinator = nil;
 }
 
@@ -1009,7 +1015,6 @@ void UndoInSessionSuppressedEntity(
                          browser:self.browser
                            title:title
                          message:message];
-  [self.childCoordinators addObject:_alertCoordinator];
 
   __weak __typeof__(self) weakSelf = self;
 
@@ -1115,12 +1120,13 @@ void UndoInSessionSuppressedEntity(
   NSString* message = l10n_util::GetNSStringF(
       IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
 
+  // Stop any previous alert before replacing it.
+  [self dismissAlertCoordinator];
   _alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                            title:title
                          message:message];
-  [self.childCoordinators addObject:_alertCoordinator];
 
   __weak __typeof__(self) weakSelf = self;
 
