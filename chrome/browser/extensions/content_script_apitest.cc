@@ -412,8 +412,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
                        NoInjectionIntoPrivilegedWebContents) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("content_scripts/privileged_web_contents")));
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("content_scripts/privileged_web_contents"));
+  ASSERT_TRUE(extension);
 
   const GURL url = embedded_test_server()->GetURL("/title1.html");
 
@@ -421,9 +422,11 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   content::WebContents* ordinary = GetActiveWebContents();
   ASSERT_TRUE(NavigateToURL(ordinary, url));
   EXPECT_EQ("INJECTED", content::EvalJs(ordinary, "document.title"));
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *ordinary->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 
   // Privileged WebContents at the same URL: the content script is not injected,
-  // so the title is unchanged.
+  // so the title is unchanged and ScriptInjectionTracker does not record it.
   content::WebContents::CreateParams params(profile());
   content::WebContents::PrivilegedParams privileged_params;
   privileged_params.feature_id = 42;
@@ -432,6 +435,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
       content::WebContents::Create(params);
   ASSERT_TRUE(content::NavigateToURL(privileged.get(), url));
   EXPECT_NE("INJECTED", content::EvalJs(privileged.get(), "document.title"));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *privileged->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 }
 
 // Tests that content scripts detaching its Window during evaluation shouldn't

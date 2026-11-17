@@ -276,6 +276,13 @@ GURL GetEffectiveDocumentURL(
 // Returns whether the extension's scripts can run on `frame`.
 bool CanExtensionScriptsAffectFrame(content::RenderFrameHost& frame,
                                     const Extension& extension) {
+  // User and content scripts are never delivered to privileged processes (see
+  // `UserScriptLoader::SendUpdate`), so `ScriptInjectionTracker` must not
+  // record script execution or grant extension-script `URLLoaderFactory` access
+  // on privileged processes.
+  if (frame.GetProcess()->IsPrivileged()) {
+    return false;
+  }
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Most extension's scripts won't run on webviews. The only ones that may are
   // those from extensions that can execute script everywhere.
