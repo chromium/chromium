@@ -213,32 +213,36 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
                        testOptInAccepted) {
   PrefService* prefs = GetProfile()->GetPrefs();
 
-  // Mock Affiliation Service.
-  EXPECT_CALL(GetMockAffiliationService(), GetPSLExtensions(_))
-      .WillOnce(
+  // Stubs rather than expectations, since Autofill also queries the
+  // affiliation service when its Gmail OTP integration is enabled.
+  ON_CALL(GetMockAffiliationService(), GetPSLExtensions(_))
+      .WillByDefault(
           [](base::OnceCallback<void(std::vector<std::string>)> callback) {
             std::move(callback).Run({});
           });
-  EXPECT_CALL(GetMockAffiliationService(), GetGroupingInfo(_, _))
-      .WillOnce([](std::vector<affiliations::FacetURI> facets,
-                   affiliations::AffiliationService::GroupsCallback callback) {
-        std::vector<affiliations::GroupedFacets> groups;
-        for (const auto& facet : facets) {
-          affiliations::GroupedFacets group;
-          group.facets.push_back(affiliations::Facet{facet});
-          groups.push_back(group);
-        }
-        std::move(callback).Run(groups);
-      });
-  EXPECT_CALL(GetMockAffiliationService(), GetAffiliationsAndBranding(_, _))
-      .WillOnce([](const affiliations::FacetURI& facet_uri,
-                   affiliations::AffiliationService::ResultCallback callback) {
-        affiliations::AffiliatedFacets affiliated_facets;
-        affiliated_facets.push_back(affiliations::Facet{
-            affiliations::FacetURI::FromCanonicalSpec("https://example.com")});
-        affiliated_facets.push_back(affiliations::Facet{facet_uri});
-        std::move(callback).Run(affiliated_facets, /*success=*/true);
-      });
+  ON_CALL(GetMockAffiliationService(), GetGroupingInfo(_, _))
+      .WillByDefault(
+          [](std::vector<affiliations::FacetURI> facets,
+             affiliations::AffiliationService::GroupsCallback callback) {
+            std::vector<affiliations::GroupedFacets> groups;
+            for (const auto& facet : facets) {
+              affiliations::GroupedFacets group;
+              group.facets.push_back(affiliations::Facet{facet});
+              groups.push_back(group);
+            }
+            std::move(callback).Run(groups);
+          });
+  ON_CALL(GetMockAffiliationService(), GetAffiliationsAndBranding(_, _))
+      .WillByDefault(
+          [](const affiliations::FacetURI& facet_uri,
+             affiliations::AffiliationService::ResultCallback callback) {
+            affiliations::AffiliatedFacets affiliated_facets;
+            affiliated_facets.push_back(
+                affiliations::Facet{affiliations::FacetURI::FromCanonicalSpec(
+                    "https://example.com")});
+            affiliated_facets.push_back(affiliations::Facet{facet_uri});
+            std::move(callback).Run(affiliated_facets, /*success=*/true);
+          });
 
   // Fake OTP Backend to succeed via cached token.
   GetFakeGmailOtpBackend().ProcessCallbacks(one_time_tokens::OneTimeToken(
@@ -269,9 +273,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicActorAttemptOtpFillingBrowserTest,
                        testOptInAcceptedButRetrievalFails) {
-  GetFakeGmailOtpBackend().ProcessCallbacks(
-      base::unexpected(one_time_tokens::OneTimeTokenRetrievalError::
-                           kGmailOtpBackendServerError));
+  // Unlike `ProcessCallbacks()`, this also reaches the actor if Autofill
+  // subscribed to the backend first.
+  GetFakeGmailOtpBackend().SetErrorForNewSubscriptions(
+      one_time_tokens::OneTimeTokenRetrievalError::kGmailOtpBackendServerError);
   SetupTestAndSubmitOtpField();
 
   // TS performs actions, accepts dialog, performActions fails with retrieval

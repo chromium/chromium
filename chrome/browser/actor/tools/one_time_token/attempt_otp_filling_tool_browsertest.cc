@@ -179,8 +179,10 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
           one_time_tokens::OneTimeTokenType::kGmail, *otp,
           base::TimeTicks::Now(), sender));
     } else {
-      GetFakeGmailOtpBackend().ProcessCallbacks(base::unexpected(
-          one_time_tokens::OneTimeTokenRetrievalError::kUnknown));
+      // Unlike `ProcessCallbacks()`, this also reaches the tool if Autofill
+      // subscribed to the backend first.
+      GetFakeGmailOtpBackend().SetErrorForNewSubscriptions(
+          one_time_tokens::OneTimeTokenRetrievalError::kUnknown);
     }
   }
 
@@ -620,7 +622,11 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
   ExpectErrorResult(result, mojom::ActionResultCode::kOtpGmailConsentRequired);
-  EXPECT_EQ(GetFakeGmailOtpBackend().num_callbacks(), 0u);
+  // Checks the tool's journal rather than the backend's subscriber count,
+  // which also includes Autofill's subscription.
+  EXPECT_THAT(JournalEntries(),
+              testing::Not(testing::Contains(
+                  testing::HasSubstr("Calling RetrieveOtp"))));
 }
 
 // Tests verifying if the OTP filling attempt is part of an ongoing actor login

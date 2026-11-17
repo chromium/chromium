@@ -52,6 +52,14 @@ class FakeGmailOtpBackend : public GmailOtpBackend {
   void ProcessCallbacks(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
+  // Makes every subsequent `Subscribe()` call receive `error`, as if each fetch
+  // started by a new subscription failed. Unlike an error passed to
+  // `ProcessCallbacks()` while there are no subscribers, `error` is not
+  // consumed by the first subscriber, so it also reaches clients that subscribe
+  // after another client (e.g. Autofill) did. `std::nullopt` stops this.
+  void SetErrorForNewSubscriptions(
+      std::optional<OneTimeTokenRetrievalError> error);
+
   void SetHasPendingRequests(bool has_pending_requests);
   void SetUserDataProcessingConsentStates(
       std::optional<UserDataProcessingConsentStates> states);
@@ -105,6 +113,7 @@ class FakeGmailOtpBackend : public GmailOtpBackend {
   std::vector<OneTimeTokenBackendNotification> incoming_notifications_;
   std::optional<UserDataProcessingConsentStates> consent_states_;
   std::optional<OneTimeTokenRetrievalError> pending_error_;
+  std::optional<OneTimeTokenRetrievalError> error_for_new_subscriptions_;
   OneTimeTokenLogSink log_sink_;
   bool has_pending_requests_ = false;
 };

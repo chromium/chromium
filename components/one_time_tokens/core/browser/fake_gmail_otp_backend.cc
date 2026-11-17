@@ -31,11 +31,12 @@ ExpiringSubscription FakeGmailOtpBackend::Subscribe(
     base::Time expiration,
     Callback callback,
     base::OnceClosure expiration_callback) {
-  if (pending_error_.has_value()) {
-    OneTimeTokenRetrievalError error = *pending_error_;
-    pending_error_.reset();
+  std::optional<OneTimeTokenRetrievalError> error =
+      pending_error_.has_value() ? std::exchange(pending_error_, std::nullopt)
+                                 : error_for_new_subscriptions_;
+  if (error.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(callback, base::unexpected(error)));
+        FROM_HERE, base::BindOnce(callback, base::unexpected(*error)));
   }
   return subscription_manager_.Subscribe(expiration, std::move(callback),
                                          std::move(expiration_callback));
@@ -83,6 +84,11 @@ void FakeGmailOtpBackend::ProcessCallbacks(
     pending_error_ = reply.error();
   }
   subscription_manager_.Notify(reply);
+}
+
+void FakeGmailOtpBackend::SetErrorForNewSubscriptions(
+    std::optional<OneTimeTokenRetrievalError> error) {
+  error_for_new_subscriptions_ = error;
 }
 
 void FakeGmailOtpBackend::SetHasPendingRequests(bool has_pending_requests) {
