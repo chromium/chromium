@@ -625,6 +625,11 @@ PaintResult PaintLayerPainter::PaintTransitionPseudos(
   if (!pseudo_layout_object) {
     return kFullyPainted;
   }
+  // Like PaintChildren(), don't paint children of a display-locked scope.
+  // PrePaint skips them, so their paint properties and layer flags are stale.
+  if (object.ChildPaintBlockedByDisplayLock()) {
+    return kFullyPainted;
+  }
   auto* transition = ViewTransitionUtils::GetTransition(*element);
   if (!transition || transition->IsCapturing()) {
     // Don't paint the pseudos during the capture phase. This avoids scaling

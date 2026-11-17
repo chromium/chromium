@@ -276,6 +276,48 @@ class ViewTransitionTest : public testing::Test,
     return std::nullopt;
   }
 
+  // Whether `element` painted its background in the last paint.
+  bool PaintedBackground(const Element& element) {
+    const LayoutObject* object = element.GetLayoutObject();
+    if (!object) {
+      ADD_FAILURE() << "No layout object";
+      return false;
+    }
+    for (const DisplayItem& item :
+         GetLocalFrameView()->GetPaintArtifact().GetDisplayItemList()) {
+      if (item.ClientId() == object->Id() &&
+          item.GetType() == DisplayItem::kBoxDecorationBackground) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Starts a view transition scoped to `scope_element`, whose update callback
+  // removes #part, and advances it to the animation phase.
+  DOMViewTransition* StartScopedTransitionRemovingPart(Element& scope_element) {
+    ScriptState* script_state = GetScriptState();
+    ScriptState::Scope scope(script_state);
+    auto remove_part = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+      static_cast<Document*>(info.DataV2().As<v8::External>()->Value(
+                                 gin::kViewTransitionTestDocumentTag))
+          ->getElementById(AtomicString("part"))
+          ->remove();
+    };
+    auto* callback = V8ViewTransitionCallback::Create(
+        v8::Function::New(
+            script_state->GetContext(), remove_part,
+            v8::External::New(script_state->GetIsolate(), &GetDocument(),
+                              gin::kViewTransitionTestDocumentTag))
+            .ToLocalChecked());
+    auto* transition = ScopedViewTransition::startViewTransition(
+        script_state, scope_element, callback, ASSERT_NO_EXCEPTION);
+    UpdateAllLifecyclePhasesAndFinishDirectives();
+    test::RunPendingTasks();
+    UpdateAllLifecyclePhasesAndFinishDirectives();
+    return transition;
+  }
+
  protected:
   test::TaskEnvironment task_environment;
 
@@ -2897,6 +2939,76 @@ TEST_P(ViewTransitionTest,
   test::RunPendingTasks();
   EXPECT_TRUE(data.ran);
   EXPECT_FALSE(data.ran_during_lifecycle);
+}
+
+// #scope gets a scoped transition whose ::view-transition-image-pair(part)
+// paints a background. The image-pair's opacity gives it an effect node, which
+// carries drawable canvas subtree state. Old/new are hidden, as foreign layers
+// are not allowed in drawable canvas subtrees.
+constexpr char kScopedTransitionStyle[] = R"HTML(
+  <style>
+    @keyframes hold { from { opacity: 1; } to { opacity: 1; } }
+    #scope, #part { width: 100px; height: 100px; }
+    #scope { contain: strict; view-transition-name: none; }
+    #part { view-transition-name: part; }
+    #scope::view-transition-group(part) { animation: hold 300s; }
+    #scope::view-transition-image-pair(part) {
+      background: blue;
+      opacity: 0.99;
+    }
+    #scope::view-transition-old(*), #scope::view-transition-new(*) {
+      display: none;
+    }
+  </style>
+)HTML";
+
+// The ::view-transition subtree of a display-locked scope must not be painted.
+TEST_P(ViewTransitionTest,
+       ContentVisibilityHiddenOnScopeSuppressesPseudoPaint) {
+  SetHtmlInnerHTML(String(kScopedTransitionStyle) +
+                   R"HTML(<div id="scope"><div id="part"></div></div>)HTML");
+  Element* scope = GetDocument().getElementById(AtomicString("scope"));
+  auto* transition = StartScopedTransitionRemovingPart(*scope);
+  Element* pair = scope->GetStyledPseudoElement(
+      kPseudoIdViewTransitionImagePair, AtomicString("part"));
+  ASSERT_TRUE(pair);
+  EXPECT_TRUE(PaintedBackground(*pair));
+
+  scope->SetInlineStyleProperty(CSSPropertyID::kContentVisibility, "hidden");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetState(transition), State::kAnimating);
+  EXPECT_FALSE(PaintedBackground(*pair));
+
+  scope->SetInlineStyleProperty(CSSPropertyID::kContentVisibility, "visible");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(PaintedBackground(*pair));
+}
+
+// Same as above, for a scope that stops being drawable while locked, leaving
+// stale drawable canvas subtree state on the pseudo subtree.
+TEST_P(ViewTransitionTest, ScopedViewTransitionDisplayLockedInDrawableCanvas) {
+  SetHtmlInnerHTML(String(kScopedTransitionStyle) + R"HTML(
+    <canvas content="drawable">
+      <div id="wrap"><div id="scope"><div id="part"></div></div></div>
+    </canvas>
+  )HTML");
+  Element* wrap = GetDocument().getElementById(AtomicString("wrap"));
+  Element* scope = GetDocument().getElementById(AtomicString("scope"));
+  // Start the transition before #wrap is drawable.
+  auto* transition = StartScopedTransitionRemovingPart(*scope);
+  Element* pair = scope->GetStyledPseudoElement(
+      kPseudoIdViewTransitionImagePair, AtomicString("part"));
+  ASSERT_TRUE(pair);
+
+  wrap->setAttribute(html_names::kDrawableAttr, g_empty_atom);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(PaintedBackground(*pair));
+
+  scope->SetInlineStyleProperty(CSSPropertyID::kContentVisibility, "hidden");
+  wrap->removeAttribute(html_names::kDrawableAttr);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(GetState(transition), State::kAnimating);
+  EXPECT_FALSE(PaintedBackground(*pair));
 }
 
 }  // namespace blink
