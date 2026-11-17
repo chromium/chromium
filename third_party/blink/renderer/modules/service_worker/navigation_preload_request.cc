@@ -98,13 +98,10 @@ void NavigationPreloadRequest::OnReceiveRedirect(
   *response_ = WebURLResponse::Create(url_, *response_head,
                                       false /* report_security_info */,
                                       -1 /* request_id */);
-  owner_->OnNavigationPreloadResponse(fetch_event_id_, std::move(response_),
-                                      mojo::ScopedDataPipeConsumerHandle());
   // This will delete |this|.
-  owner_->OnNavigationPreloadComplete(
-      fetch_event_id_, response_head->response_start,
-      response_head->encoded_data_length, 0 /* encoded_body_length */,
-      0 /* decoded_body_length */);
+  ReportResponseAndCompleteToOwner(
+      response_head->response_start, response_head->encoded_data_length,
+      0 /* encoded_body_length */, 0 /* decoded_body_length */);
 }
 
 void NavigationPreloadRequest::OnUploadProgress(
@@ -146,18 +143,11 @@ void NavigationPreloadRequest::OnComplete(
     return;
   }
 
-  if (response_) {
-    // When the response body from the server is empty, OnComplete() is called
-    // without OnStartLoadingResponseBody().
-    DCHECK(!body_.is_valid());
-    owner_->OnNavigationPreloadResponse(fetch_event_id_, std::move(response_),
-                                        mojo::ScopedDataPipeConsumerHandle());
-  }
   // This will delete |this|.
-  owner_->OnNavigationPreloadComplete(fetch_event_id_, status.completion_time,
-                                      status.encoded_data_length.InBytes(),
-                                      status.encoded_body_length.InBytes(),
-                                      status.decoded_body_length.InBytes());
+  ReportResponseAndCompleteToOwner(
+      status.completion_time, status.encoded_data_length.InBytes(),
+      status.encoded_body_length.InBytes(),
+      status.decoded_body_length.InBytes());
 }
 
 void NavigationPreloadRequest::MaybeReportResponseToOwner() {
@@ -165,6 +155,31 @@ void NavigationPreloadRequest::MaybeReportResponseToOwner() {
     return;
   owner_->OnNavigationPreloadResponse(fetch_event_id_, std::move(response_),
                                       std::move(body_));
+}
+
+void NavigationPreloadRequest::ReportResponseAndCompleteToOwner(
+    base::TimeTicks completion_time,
+    int64_t encoded_data_length,
+    int64_t encoded_body_length,
+    int64_t decoded_body_length) {
+  if (response_) {
+    // For a redirect, or when the response body from the server is empty,
+    // OnNavigationPreloadResponse() was not called in OnReceiveResponse().
+    DCHECK(!body_.is_valid());
+    base::WeakPtr<NavigationPreloadRequest> weak_this =
+        weak_factory_.GetWeakPtr();
+    // OnNavigationPreloadResponse() resolves a promise, which may synchronously
+    // run script and destroy |this|.
+    owner_->OnNavigationPreloadResponse(fetch_event_id_, std::move(response_),
+                                        mojo::ScopedDataPipeConsumerHandle());
+    if (!weak_this) {
+      return;
+    }
+  }
+  // This will delete |this|.
+  owner_->OnNavigationPreloadComplete(fetch_event_id_, completion_time,
+                                      encoded_data_length, encoded_body_length,
+                                      decoded_body_length);
 }
 
 void NavigationPreloadRequest::ReportErrorToOwner(

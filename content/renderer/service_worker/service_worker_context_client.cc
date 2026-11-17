@@ -489,7 +489,11 @@ void ServiceWorkerContextClient::OnNavigationPreloadError(
               perfetto::Flow::ProcessScoped(fetch_event_id,
                                             kServiceWorkerContextClientScope));
   proxy_->OnNavigationPreloadError(fetch_event_id, std::move(error));
-  context_->preload_requests.Remove(fetch_event_id);
+  // |context_| may be reset if the worker context is destroyed while paused
+  // during OnNavigationPreloadError().
+  if (context_) {
+    context_->preload_requests.Remove(fetch_event_id);
+  }
 }
 
 void ServiceWorkerContextClient::OnNavigationPreloadComplete(
@@ -508,7 +512,11 @@ void ServiceWorkerContextClient::OnNavigationPreloadComplete(
   proxy_->OnNavigationPreloadComplete(fetch_event_id, completion_time,
                                       encoded_data_length, encoded_body_length,
                                       decoded_body_length);
-  context_->preload_requests.Remove(fetch_event_id);
+  // |context_| may be reset if the worker context is destroyed while paused
+  // during OnNavigationPreloadComplete().
+  if (context_) {
+    context_->preload_requests.Remove(fetch_event_id);
+  }
 }
 
 void ServiceWorkerContextClient::SendWorkerStarted(
