@@ -3629,7 +3629,7 @@
       "tranbaoduy@google.com",
       "essential-inputs-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "enable-android-spellcheck-native-ui",
@@ -3639,7 +3639,7 @@
       "tranbaoduy@google.com",
       "essential-inputs-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "enable-android-split-view",
