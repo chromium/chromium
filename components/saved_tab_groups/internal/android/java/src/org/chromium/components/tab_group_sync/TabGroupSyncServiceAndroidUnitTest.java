@@ -57,6 +57,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
     private void setUpTestObserver(TabGroupSyncService service) {
         mService = service;
         Assert.assertNotNull(mService);
+        Assert.assertFalse(mService.isInitialized());
         mObserver = mock(TabGroupSyncService.Observer.class);
         mService.addObserver(mObserver);
     }
@@ -64,6 +65,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
     @CalledByNative
     public void testOnInitialized() throws TimeoutException {
         verify(mObserver).onInitialized();
+        Assert.assertTrue(mService.isInitialized());
     }
 
     @CalledByNative

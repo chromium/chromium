@@ -37,6 +37,11 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void removeObserver(Observer observer) {}
 
     @Override
+    public boolean isInitialized() {
+        return true;
+    }
+
+    @Override
     public void addGroup(SavedTabGroup savedTabGroup) {
         mTabGroups.add(savedTabGroup);
     }

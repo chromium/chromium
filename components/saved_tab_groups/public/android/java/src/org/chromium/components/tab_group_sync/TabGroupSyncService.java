@@ -106,6 +106,12 @@ public interface TabGroupSyncService {
     void removeObserver(Observer observer);
 
     /**
+     * Returns whether the service has finished initializing. Observers added after this returns
+     * true receive {@link Observer#onInitialized()} right away.
+     */
+    boolean isInitialized();
+
+    /**
      * Adds a given {@link SavedTabGroup} to the service.
      *
      * @param savedTabGroup The {@link SavedTabGroup} to be added to the service.

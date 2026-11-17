@@ -56,6 +56,11 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
+    public boolean isInitialized() {
+        return mInitialized;
+    }
+
+    @Override
     public void addGroup(SavedTabGroup savedTabGroup) {
         if (mNativePtr == 0) return;
         assert savedTabGroup != null;
