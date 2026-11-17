@@ -8595,9 +8595,10 @@ GraphBuilderTflite::SerializeSubGraphReshapeConcat(
 
 auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
     -> base::expected<OperatorOffset, std::string> {
+  const mojom::Operand& a_operand = GetOperand(matmul.a_operand_id);
+  const mojom::Operand& b_operand = GetOperand(matmul.b_operand_id);
   CHECK(context_properties_.data_type_limits.matmul_input.SupportsAll(
-      {GetOperand(matmul.a_operand_id).descriptor,
-       GetOperand(matmul.b_operand_id).descriptor}));
+      {a_operand.descriptor, b_operand.descriptor}));
   ASSIGN_OR_RETURN(const TensorInfo& a_tensor_info,
                    SerializeInputTensorInfo(matmul.a_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& b_tensor_info,
@@ -8605,7 +8606,70 @@ auto GraphBuilderTflite::SerializeMatmul(const mojom::Matmul& matmul)
   ASSIGN_OR_RETURN(const TensorInfo output_tensor_info,
                    SerializeOutputTensorInfo(matmul.output_operand_id));
 
-  return SerializeMatmulOperation(a_tensor_info.index, b_tensor_info.index,
+  TensorIndex a_tensor_index = a_tensor_info.index;
+  TensorIndex b_tensor_index = b_tensor_info.index;
+  if (context_device_ == mojom::Device::kGpu &&
+      output_tensor_info.dimensions.size() <= kMaxBHWCRank) {
+    // The LiteRT ML Drift GPU delegate's `BATCH_MATMUL` operation flattens
+    // leading dimensions into a single batch axis without numpy-style batch
+    // broadcasting (taking the output batch count solely from `a`) and maps
+    // lower-rank tensors into BHWC with `dims[0]` in `B`, which can cause
+    // out-of-bounds GPU shader reads when inputs have mismatched ranks or
+    // broadcastable batch dimensions of extent 1.
+    // TODO(crbug.com/541102407): File an upstream issue with ML Drift to
+    // support batch broadcasting in `BATCH_MATMUL` and remove this broadcast
+    // handling once fixed.
+    CHECK_GE(a_tensor_info.dimensions.size(), 2u);
+    CHECK_GE(b_tensor_info.dimensions.size(), 2u);
+    CHECK_GE(output_tensor_info.dimensions.size(), 2u);
+
+    std::vector<int32_t> target_a_dimensions(output_tensor_info.dimensions);
+    base::span(target_a_dimensions)
+        .last(2u)
+        .copy_from(base::span(a_tensor_info.dimensions).last(2u));
+    if (a_tensor_info.dimensions != target_a_dimensions &&
+        CanBroadcastToAsReshapeAndTile(a_tensor_info.dimensions,
+                                       target_a_dimensions)) {
+      ASSIGN_OR_RETURN(a_tensor_index,
+                       SerializeTemporaryTensorWithByteSizeCheck(
+                           target_a_dimensions, a_tensor_info.data_type));
+      ASSIGN_OR_RETURN(
+          const OperatorOffset broadcast_a_op,
+          SerializeBroadcastToAsReshapeAndTile(
+              a_tensor_info.index, a_tensor_info.dimensions,
+              a_tensor_info.data_type, target_a_dimensions, a_tensor_index));
+      operators_.emplace_back(broadcast_a_op);
+    }
+
+    // When `a` is a runtime tensor and `b` is a 2D constant tensor, ML Drift
+    // lowers `BATCH_MATMUL` to `FullyConnected`, which natively applies the 2D
+    // weights across all batch dimensions of `a`. Skip broadcasting `b` to
+    // preserve that fast path and avoid tiling constant weights.
+    const bool is_constant_2d_rhs =
+        a_operand.kind != mojom::Operand::Kind::kConstant &&
+        b_operand.kind == mojom::Operand::Kind::kConstant &&
+        b_tensor_info.dimensions.size() == 2;
+    std::vector<int32_t> target_b_dimensions(output_tensor_info.dimensions);
+    base::span(target_b_dimensions)
+        .last(2u)
+        .copy_from(base::span(b_tensor_info.dimensions).last(2u));
+    if (!is_constant_2d_rhs &&
+        b_tensor_info.dimensions != target_b_dimensions &&
+        CanBroadcastToAsReshapeAndTile(b_tensor_info.dimensions,
+                                       target_b_dimensions)) {
+      ASSIGN_OR_RETURN(b_tensor_index,
+                       SerializeTemporaryTensorWithByteSizeCheck(
+                           target_b_dimensions, b_tensor_info.data_type));
+      ASSIGN_OR_RETURN(
+          const OperatorOffset broadcast_b_op,
+          SerializeBroadcastToAsReshapeAndTile(
+              b_tensor_info.index, b_tensor_info.dimensions,
+              b_tensor_info.data_type, target_b_dimensions, b_tensor_index));
+      operators_.emplace_back(broadcast_b_op);
+    }
+  }
+
+  return SerializeMatmulOperation(a_tensor_index, b_tensor_index,
                                   output_tensor_info.index);
 }
 

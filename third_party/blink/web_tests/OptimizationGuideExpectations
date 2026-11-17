@@ -17,7 +17,6 @@ crbug.com/489392109 virtual/webnn-service-with-gpu/external/wpt/webnn/conformanc
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/averagePool2d.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/erf.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/exp.https.any.html?gpu [ Failure ]
-virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/matmul.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pow.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_l2.https.any.html?gpu [ Failure ]
 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reshape.https.any.html?gpu [ Failure ]
