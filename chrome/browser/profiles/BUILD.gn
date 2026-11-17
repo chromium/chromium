@@ -803,6 +803,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/history_clusters",
     "//chrome/browser/language",
     "//chrome/browser/language_detection",
+    "//chrome/browser/launchpad",
     "//chrome/browser/loader",
     "//chrome/browser/login_detection",
     "//chrome/browser/lookalikes",

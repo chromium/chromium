@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("launchpad") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "launchpad_service.cc",
+    "launchpad_service.h",
+    "launchpad_service_factory.cc",
+    "launchpad_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "launchpad_service_factory_unittest.cc" ]
+  deps = [
+    ":launchpad",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -2561,6 +2561,7 @@ test("unit_tests") {
     "//chrome/browser/idle:unit_tests",
     "//chrome/browser/infobars:unit_tests",
     "//chrome/browser/language:unit_tests",
+    "//chrome/browser/launchpad:unit_tests",
     "//chrome/browser/loader:unit_tests",
     "//chrome/browser/login_detection:unit_tests",
     "//chrome/browser/lookalikes:unit_tests",

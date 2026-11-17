@@ -125,6 +125,7 @@
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/language_detection/language_detection_model_service_factory.h"
+#include "chrome/browser/launchpad/launchpad_service_factory.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_tracker_factory.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
@@ -1110,6 +1111,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   LanguageDetectionModelServiceFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
+  LaunchpadServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   LensKeyedServiceFactory::GetInstance();
 #endif
