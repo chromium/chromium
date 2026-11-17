@@ -203,6 +203,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
 - (void)presentViewControllerInSidePanel:(UIViewController*)viewController
                                 animated:(BOOL)animated
                               completion:(ProceduralBlock)completion {
+  [self removeSidePanelIfPresent];
   _sidePanel = [[LensOverlayPanel alloc] initWithContent:viewController
                                             insetContent:YES];
   _sidePanel.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -306,9 +307,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   [self.selectionViewController setOcclusionInsets:UIEdgeInsetsZero
                                         reposition:YES
                                           animated:animated];
-  [_sidePanel removeFromParentViewController];
-  [_sidePanel.view removeFromSuperview];
-  _sidePanel = nil;
+  [self removeSidePanelIfPresent];
 }
 
 // Called after the side panel gets dismissed.
@@ -365,6 +364,14 @@ const CGFloat kSelectionUICornerRadius = 13.0;
 }
 
 #pragma mark - Private
+
+// Removes the side panel.
+- (void)removeSidePanelIfPresent {
+  [_sidePanel removeFromParentViewController];
+  [_sidePanel.view removeFromSuperview];
+  _sidePanel = nil;
+}
+
 - (CACornerMask)selectionUICornerMask {
   if (base::i18n::IsRTL()) {
     return kCALayerMinXMinYCorner | kCALayerMinXMaxYCorner;
