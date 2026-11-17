@@ -61,11 +61,13 @@ class OsFeedbackScreenshotManager {
   ~OsFeedbackScreenshotManager();
   friend struct base::DefaultSingletonTraits<OsFeedbackScreenshotManager>;
 
+  void OnDlpRestrictionChecked(bool proceed);
   void OnAllScreenshotsTaken(
-      ScreenshotCallback callback,
       std::vector<scoped_refptr<base::RefCountedMemory>> all_data);
+  void FinishTakeScreenshot(bool status);
 
   scoped_refptr<base::RefCountedMemory> screenshot_png_data_;
+  std::vector<ScreenshotCallback> pending_callbacks_;
   base::WeakPtrFactory<OsFeedbackScreenshotManager> weak_ptr_factory_{this};
 };
 
