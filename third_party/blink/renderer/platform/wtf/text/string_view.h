@@ -155,18 +155,18 @@ class WTF_EXPORT StringView {
 
   // From a literal string or LChar buffer:
   explicit StringView(base::span<const LChar> chars)
-      : impl_(StringImpl::empty_),
+      : impl_(const_cast<StringImpl*>(&StringImpl::g_global_empty)),
         bytes_(chars.data()),
         length_(base::checked_cast<size_type>(chars.size())) {}
   // NOLINTNEXTLINE(google-explicit-constructor)
   StringView(const char* chars)
-      : impl_(StringImpl::empty_),
+      : impl_(const_cast<StringImpl*>(&StringImpl::g_global_empty)),
         bytes_(chars),
         length_(chars ? base::checked_cast<size_type>(strlen(chars)) : 0) {}
 
   // From a wide literal string or UChar buffer.
   explicit StringView(base::span<const UChar> chars)
-      : impl_(StringImpl::empty16_bit_),
+      : impl_(const_cast<StringImpl*>(&StringImpl::g_global_empty16_bit)),
         bytes_(chars.data()),
         length_(base::checked_cast<size_type>(chars.size())) {}
   template <size_t kLength>
@@ -518,7 +518,8 @@ inline StringView::StringView(StringImpl& impl,
 inline void StringView::Clear() {
   length_ = 0;
   bytes_ = nullptr;
-  impl_ = StringImpl::empty_;  // mark as 8 bit.
+  // Mark as 8 bit.
+  impl_ = const_cast<StringImpl*>(&StringImpl::g_global_empty);
 }
 
 inline void StringView::Set(const StringImpl& impl, size_type offset) {
