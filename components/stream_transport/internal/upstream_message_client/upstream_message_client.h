@@ -23,18 +23,20 @@
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
+class GoogleServiceAuthError;
+
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace signin {
+struct AccessTokenInfo;
 class IdentityManager;
 }  // namespace signin
-
-namespace endpoint_fetcher {
-class EndpointFetcher;
-struct EndpointResponse;
-}  // namespace endpoint_fetcher
 
 namespace browser_actuator {
 class ActuatorUpstreamMessage;
@@ -43,7 +45,7 @@ class ActuatorUpstreamMessage;
 namespace stream_transport {
 
 // Encapsulates the network logic to send upstream actuator messages to
-// OnePlatform via standard HTTPS POST requests (EndpointFetcher).
+// OnePlatform via authenticated HTTPS POST requests (`SimpleURLLoader`).
 class UpstreamMessageClient {
  public:
   using SendCompleteCallback =
@@ -79,19 +81,23 @@ class UpstreamMessageClient {
   size_t GetPendingRequestsCountForTesting() const;
 
  private:
-  void OnMessageSent(
-      endpoint_fetcher::EndpointFetcher* fetcher,
-      UpstreamRequestLog metrics_log,
-      SendCompleteCallback callback,
-      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+  struct PendingRequest;
+
+  void StartAccessTokenFetch(PendingRequest* pending);
+  void OnAccessTokenFetched(PendingRequest* pending,
+                            GoogleServiceAuthError error,
+                            signin::AccessTokenInfo access_token_info);
+  void OnSimpleLoaderComplete(PendingRequest* pending,
+                              scoped_refptr<net::HttpResponseHeaders> headers);
+  void CompleteRequest(PendingRequest* pending,
+                       std::optional<int> http_status_code);
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const GURL endpoint_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
-  base::flat_map<endpoint_fetcher::EndpointFetcher*,
-                 std::unique_ptr<endpoint_fetcher::EndpointFetcher>>
+  base::flat_map<PendingRequest*, std::unique_ptr<PendingRequest>>
       pending_requests_;
 
   SEQUENCE_CHECKER(sequence_checker_);

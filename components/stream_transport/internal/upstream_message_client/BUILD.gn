@@ -17,12 +17,12 @@ source_set("upstream_message_client") {
   ]
 
   deps = [
-    "//components/endpoint_fetcher",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/stream_transport/internal:features",
     "//components/stream_transport/internal:metrics_utils",
     "//components/stream_transport/internal/proto",
+    "//google_apis",
     "//services/network/public/mojom",
   ]
 }
@@ -36,10 +36,13 @@ source_set("unit_tests") {
     ":upstream_message_client",
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/stream_transport/internal:features",
     "//components/stream_transport/internal/proto",
     "//components/stream_transport/public",
+    "//google_apis",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

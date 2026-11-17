@@ -6,21 +6,33 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/stream_transport/internal/features.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/public/common.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -33,7 +45,9 @@ namespace {
 
 constexpr char kEndpoint[] = "https://example.com/v1/send";
 
-class BrowserActuatorUpstreamMessageClientTest : public testing::Test {
+class BrowserActuatorUpstreamMessageClientTest
+    : public testing::Test,
+      public signin::IdentityManager::DiagnosticsObserver {
  protected:
   BrowserActuatorUpstreamMessageClientTest()
       : identity_test_env_(&test_url_loader_factory_) {
@@ -46,14 +60,26 @@ class BrowserActuatorUpstreamMessageClientTest : public testing::Test {
           requests_.push_back(request);
         }));
 
+    identity_test_env_.identity_manager()->AddDiagnosticsObserver(this);
     identity_test_env_.MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
+  ~BrowserActuatorUpstreamMessageClientTest() override {
+    identity_test_env_.identity_manager()->RemoveDiagnosticsObserver(this);
+  }
+
+  // signin::IdentityManager::DiagnosticsObserver:
+  void OnAccessTokenRemovedFromCache(const CoreAccountId& account_id,
+                                     const signin::ScopeSet& scopes) override {
+    removed_token_account_ids_.push_back(account_id);
+  }
+
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::vector<network::ResourceRequest> requests_;
+  std::vector<CoreAccountId> removed_token_account_ids_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
@@ -84,6 +110,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   EXPECT_EQ(kEndpoint, request.url.spec());
   EXPECT_EQ("POST", request.method);
   EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
+  EXPECT_FALSE(request.headers.HasHeader("X-Developer-Key"));
 
   browser_actuator::SendSessionMessageRequest request_proto;
   ASSERT_TRUE(request_proto.ParseFromString(network::GetUploadData(request)));
@@ -309,6 +336,32 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageHttpError) {
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       FailsWhenNetworkErrorOccursAfterReceivingHttpOkHeaders) {
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(
+      GURL(kEndpoint), network::CreateURLResponseHead(net::HTTP_OK),
+      /*content=*/"",
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET),
+      network::TestURLLoaderFactory::Redirects(),
+      network::TestURLLoaderFactory::kSendHeadersOnNetworkError);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<bool, int> future;
+  client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
+                             /*responding_to_sequence_number=*/std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(-1, future.Get<1>());
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
        DestructionCancelsInFlightRequest) {
   base::HistogramTester histogram_tester;
   auto client = std::make_unique<UpstreamMessageClient>(
@@ -444,6 +497,218 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   EXPECT_TRUE(
       base::test::RunUntil([this]() { return requests_.size() == 3u; }));
 }
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       RetriesOnceOnHttpUnauthorizedWithRefreshedToken) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<bool, int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "stale_token", base::Time::Now() + base::Hours(1));
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return requests_.size() == 1u; }));
+  EXPECT_EQ("Bearer stale_token", requests_[0].headers.GetHeader(
+                                      net::HttpRequestHeaders::kAuthorization));
+
+  // Respond with HTTP 401 to the first attempt.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kEndpoint, "Unauthorized", net::HTTP_UNAUTHORIZED);
+  EXPECT_EQ(1u, removed_token_account_ids_.size());
+
+  // Client invalidates cached token and fetches a fresh token once.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "fresh_token", base::Time::Now() + base::Hours(1));
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return requests_.size() == 2u; }));
+  EXPECT_EQ("Bearer fresh_token", requests_[1].headers.GetHeader(
+                                      net::HttpRequestHeaders::kAuthorization));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(kEndpoint, "OK",
+                                                             net::HTTP_OK);
+
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       StopsAfterSingleRetryOnRepeatedHttpUnauthorized) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<bool, int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "first_token", base::Time::Now() + base::Hours(1));
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return requests_.size() == 1u; }));
+  EXPECT_EQ("Bearer first_token", requests_[0].headers.GetHeader(
+                                      net::HttpRequestHeaders::kAuthorization));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kEndpoint, "Unauthorized", net::HTTP_UNAUTHORIZED);
+  EXPECT_EQ(1u, removed_token_account_ids_.size());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "second_token", base::Time::Now() + base::Hours(1));
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return requests_.size() == 2u; }));
+  EXPECT_EQ(
+      "Bearer second_token",
+      requests_[1].headers.GetHeader(net::HttpRequestHeaders::kAuthorization));
+
+  // Second 401 terminates without another retry and evicts the second token.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kEndpoint, "Unauthorized", net::HTTP_UNAUTHORIZED);
+
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(net::HTTP_UNAUTHORIZED, future.Get<1>());
+  EXPECT_EQ(2u, requests_.size());
+  EXPECT_EQ(2u, removed_token_account_ids_.size());
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       FailsWhenAccessTokenFetchFails) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kBrowserActuatorProtoStreamTransport,
+      {{kMaxPendingUpstreamRequests.name, "1"}});
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<bool, int> future1;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future1.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromServiceError(""));
+
+  EXPECT_FALSE(future1.Get<0>());
+  EXPECT_EQ(-1, future1.Get<1>());
+  EXPECT_TRUE(requests_.empty());
+
+  // Verify the failed request was removed from `pending_requests_` so the
+  // single-request capacity slot is free for subsequent calls.
+  test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
+  base::test::TestFuture<bool, int> future2;
+  client.SendUpstreamMessage("session_1", 2, std::nullopt,
+                             PayloadType::kControl, command,
+                             future2.GetCallback());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "valid_token", base::Time::Now() + base::Hours(1));
+
+  EXPECT_TRUE(future2.Get<0>());
+  EXPECT_EQ(net::HTTP_OK, future2.Get<1>());
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       DoesNotRetryHttpUnauthorizedAfterPrimaryAccountSwitch) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+  const CoreAccountId initial_account_id =
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin);
+
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<bool, int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "account1_token", base::Time::Now() + base::Hours(1));
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return requests_.size() == 1u; }));
+
+  // Switch primary account while the initial HTTP request is in flight.
+  const AccountInfo new_account =
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "other@example.com", signin::ConsentLevel::kSignin);
+  ASSERT_NE(initial_account_id, new_account.GetAccountId());
+
+  // Respond with HTTP 401: the client must evict the token under the issuing
+  // account and complete immediately without retrying under the new account.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kEndpoint, "Unauthorized", net::HTTP_UNAUTHORIZED);
+
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(net::HTTP_UNAUTHORIZED, future.Get<1>());
+  EXPECT_EQ(1u, requests_.size());
+  ASSERT_EQ(1u, removed_token_account_ids_.size());
+  EXPECT_EQ(initial_account_id, removed_token_account_ids_[0]);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       DoesNotRetryHttpUnauthorizedAfterSignOut) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+  const CoreAccountId initial_account_id =
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin);
+
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<bool, int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "account1_token", base::Time::Now() + base::Hours(1));
+  ASSERT_TRUE(
+      base::test::RunUntil([this]() { return requests_.size() == 1u; }));
+
+  // Sign out while the initial HTTP request is in flight.
+  identity_test_env_.ClearPrimaryAccount();
+
+  // Respond with HTTP 401: the client must evict the token under the issuing
+  // account and complete immediately without hanging in `kWaitUntilAvailable`.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kEndpoint, "Unauthorized", net::HTTP_UNAUTHORIZED);
+
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(net::HTTP_UNAUTHORIZED, future.Get<1>());
+  EXPECT_EQ(1u, requests_.size());
+  ASSERT_EQ(1u, removed_token_account_ids_.size());
+  EXPECT_EQ(initial_account_id, removed_token_account_ids_[0]);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace stream_transport

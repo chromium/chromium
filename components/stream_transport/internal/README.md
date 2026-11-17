@@ -185,7 +185,7 @@ it purely through `//components/stream_transport/public/proto_stream`
 - **`UpstreamMessageClient`** (`upstream_message_client/`):
   Assembles `ActuatorUpstreamMessage` envelopes and sends
   `SendSessionMessageRequest` protos over authenticated unary HTTPS `POST`
-  requests via `endpoint_fetcher::EndpointFetcher`, enforcing a bounded
+  requests via `network::SimpleURLLoader`, enforcing a bounded
   in-flight request cap and supporting `CancelPendingRequests()` on sign-out or
   primary-account change.
 
