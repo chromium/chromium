@@ -175,6 +175,33 @@ static base::span<gfx::PointF> ConvertPathPoints(
   return base::span(dst).first(src.size());
 }
 
+std::optional<SkRRect> Path::MaybeConvertToSkRRect() const {
+  const SkPath sk_path = GetSkPath();
+  if (sk_path.isInverseFillType()) {
+    return std::nullopt;
+  }
+  SkRect rect;
+  if (sk_path.isRect(&rect)) {
+    return SkRRect::MakeRect(rect);
+  }
+  SkRRect rrect;
+  if (sk_path.isRRect(&rrect)) {
+    return rrect;
+  }
+  if (sk_path.isOval(&rect)) {
+    return SkRRect::MakeOval(rect);
+  }
+  return std::nullopt;
+}
+
+std::optional<FloatRoundedRect> Path::MaybeConvertToFloatRoundedRect() const {
+  std::optional<SkRRect> rrect = MaybeConvertToSkRRect();
+  if (!rrect.has_value()) {
+    return std::nullopt;
+  }
+  return FloatRoundedRect(rrect.value());
+}
+
 void Path::Apply(base::FunctionRef<void(const PathElement&)> function) const {
   SkPath::RawIter iter(path_);
   std::array<SkPoint, 4> pts;

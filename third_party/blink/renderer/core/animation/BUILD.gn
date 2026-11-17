@@ -51,6 +51,8 @@ blink_core_sources("animation") {
     "compositor_animation_curve.h",
     "compositor_animations.cc",
     "compositor_animations.h",
+    "compositor_clip_path_value.cc",
+    "compositor_clip_path_value.h",
     "css/compositor_keyframe_color.h",
     "css/compositor_keyframe_double.h",
     "css/compositor_keyframe_filter_operations.h",

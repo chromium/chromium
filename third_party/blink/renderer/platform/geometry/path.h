@@ -138,6 +138,9 @@ class PLATFORM_EXPORT Path {
 
   const SkPath& GetSkPath() const { return path_; }
 
+  std::optional<SkRRect> MaybeConvertToSkRRect() const;
+  std::optional<FloatRoundedRect> MaybeConvertToFloatRoundedRect() const;
+
   void Apply(base::FunctionRef<void(const PathElement&)>) const;
 
   // Utility factories for simple shapes.

@@ -2876,25 +2876,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
     context_.current.clip = properties_->CssClip();
 }
 
-static std::optional<FloatRoundedRect> PathToRRect(const Path& path) {
-  const SkPath sk_path = path.GetSkPath();
-  if (sk_path.isInverseFillType()) {
-    return std::nullopt;
-  }
-  SkRect rect;
-  if (sk_path.isRect(&rect)) {
-    return FloatRoundedRect(gfx::SkRectToRectF(rect));
-  }
-  SkRRect rrect;
-  if (sk_path.isRRect(&rrect)) {
-    return FloatRoundedRect(rrect);
-  }
-  if (sk_path.isOval(&rect)) {
-    return FloatRoundedRect(SkRRect::MakeOval(rect));
-  }
-  return std::nullopt;
-}
-
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
     DCHECK(!precise_clip_path_rect_.has_value());
@@ -2965,7 +2946,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
               CompositingReason::kViewTransitionElementDescendantWithClipPath};
           if (!full_context_.direct_compositing_reasons.HasAny(
                   view_transition_reasons)) {
-            rrect = PathToRRect(*path);
+            rrect = path->MaybeConvertToFloatRoundedRect();
           }
           ClipPaintPropertyNode::State state(
               *context_.current.transform, *precise_clip_path_rect_,

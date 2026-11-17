@@ -14,6 +14,7 @@ blink_core_tests_animation = [
   "animation_utils_test.cc",
   "compositor_animation_curve_test.cc",
   "compositor_animations_test.cc",
+  "compositor_clip_path_value_test.cc",
   "css/css_animations_test.cc",
   "css/css_scroll_timeline_test.cc",
   "css/css_transition_data_test.cc",
