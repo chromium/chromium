@@ -560,12 +560,10 @@ void SyncServiceImpl::TryStart() {
   // encryptor is available. The first call to TryStartImpl() that succeeds
   // will create the engine, and subsequent ones will be no-ops.
   os_crypt_async_->GetInstance(base::BindOnce(&SyncServiceImpl::TryStartImpl,
-                                              weak_factory_.GetWeakPtr(),
-                                              base::TimeTicks::Now()));
+                                              weak_factory_.GetWeakPtr()));
 }
 
 void SyncServiceImpl::TryStartImpl(
-    base::TimeTicks try_start_time,
     scoped_refptr<os_crypt_async::Encryptor> encryptor) {
   base::Time deferral_time;
   std::swap(deferring_first_start_since_, deferral_time);
@@ -575,9 +573,6 @@ void SyncServiceImpl::TryStartImpl(
   }
 
   CHECK(encryptor);
-
-  base::UmaHistogramTimes("Sync.EncryptorReceivedTime",
-                          base::TimeTicks::Now() - try_start_time);
 
   crypto_.SetEncryptor(encryptor);
 

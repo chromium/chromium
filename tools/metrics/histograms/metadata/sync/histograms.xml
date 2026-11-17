@@ -1780,16 +1780,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.EncryptorReceivedTime" units="ms"
-    expires_after="2026-12-27">
-  <owner>mtatarski@google.com</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    The time between SyncServiceImpl::TryStart() being called and the encryptor
-    being received from OSCryptAsync.
-  </summary>
-</histogram>
-
 <histogram name="Sync.EntitySizeOnCommit.Entity.SpecificsOnly{SyncDataType}"
     units="bytes" expires_after="2027-02-07">
   <owner>ankushkush@google.com</owner>
