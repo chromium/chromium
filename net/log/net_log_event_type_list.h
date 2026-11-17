@@ -741,11 +741,13 @@ EVENT_TYPE(SSL_SERVER_HANDSHAKE)
 EVENT_TYPE(SSL_CLIENT_CERT_REQUESTED)
 
 // The SSL stack blocked on a private key operation. The following parameters
-// are attached to the event.
+// are attached to the BEGIN event:
 //   {
 //     "algorithm": <TLS signature algorithm used>,
 //     "provider": <Human-readable name of the crypto provider>,
 //   }
+// On failure, the END event contains "net_error" and, if the provider reported
+// success with a 0-byte signature, "empty_signature": true.
 EVENT_TYPE(SSL_PRIVATE_KEY_OP)
 
 // A client certificate (or none) was provided to the SSL library to be sent
@@ -753,6 +755,10 @@ EVENT_TYPE(SSL_PRIVATE_KEY_OP)
 // The following parameters are attached to the event:
 //   {
 //     "cert_count": <Number of certificates>,
+//     "provider": <Optional; crypto provider name when key had no supported
+//                  signature algorithms>,
+//     "empty_algorithm_preferences": <Optional boolean; true when the private
+//                                     key reported no supported algorithms>,
 //   }
 //   A cert_count of 0 means no client certificate was provided.
 //   A cert_count of -1 means a client certificate was provided but we don't

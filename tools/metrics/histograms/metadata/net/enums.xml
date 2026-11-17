@@ -3871,6 +3871,16 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_shared_cache_index_database.h:SqlSharedCacheIndexDatabaseResult) -->
 
+<!-- LINT.IfChange(SSLClientCertSignResult) -->
+
+<enum name="SSLClientCertSignResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Empty signature"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/socket/ssl_client_socket_impl.h:SSLClientCertSignResult) -->
+
 <!-- LINT.IfChange(SSLConnectJobOutcome) -->
 
 <enum name="SSLConnectJobOutcome">

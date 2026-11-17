@@ -135,6 +135,7 @@
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/ssl/test_ssl_config_service.h"
+#include "net/ssl/test_ssl_private_key.h"
 #include "net/storage_access_api/status.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -9811,10 +9812,19 @@ class SSLClientAuthTestDelegate : public TestDelegate {
 
 class TestSSLPrivateKey : public SSLPrivateKey {
  public:
+  enum class SignMode {
+    kNormal,
+    kFailSigning,
+    kEmptySignature,
+  };
+
   explicit TestSSLPrivateKey(scoped_refptr<SSLPrivateKey> key)
       : key_(std::move(key)) {}
 
-  void set_fail_signing(bool fail_signing) { fail_signing_ = fail_signing; }
+  void set_fail_signing(bool fail_signing) {
+    sign_mode_ = fail_signing ? SignMode::kFailSigning : SignMode::kNormal;
+  }
+  void set_sign_mode(SignMode sign_mode) { sign_mode_ = sign_mode; }
   int sign_count() const { return sign_count_; }
 
   std::string GetProviderName() override { return key_->GetProviderName(); }
@@ -9825,13 +9835,21 @@ class TestSSLPrivateKey : public SSLPrivateKey {
             base::span<const uint8_t> input,
             SignCallback callback) override {
     sign_count_++;
-    if (fail_signing_) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback),
-                                    ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED,
-                                    std::vector<uint8_t>()));
-    } else {
-      key_->Sign(algorithm, input, std::move(callback));
+    switch (sign_mode_) {
+      case SignMode::kNormal:
+        key_->Sign(algorithm, input, std::move(callback));
+        return;
+      case SignMode::kFailSigning:
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback),
+                                      ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED,
+                                      std::vector<uint8_t>()));
+        return;
+      case SignMode::kEmptySignature:
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), OK, std::vector<uint8_t>()));
+        return;
     }
   }
 
@@ -9839,7 +9857,7 @@ class TestSSLPrivateKey : public SSLPrivateKey {
   ~TestSSLPrivateKey() override = default;
 
   scoped_refptr<SSLPrivateKey> key_;
-  bool fail_signing_ = false;
+  SignMode sign_mode_ = SignMode::kNormal;
   int sign_count_ = 0;
 };
 
@@ -10133,6 +10151,168 @@ TEST_F(HTTPSRequestTest, ClientAuthFailSigningRetry) {
     EXPECT_EQ(1, d.on_certificate_requested_count());
     EXPECT_FALSE(d.received_data_before_response());
     EXPECT_EQ(0, d.bytes_received());
+  }
+}
+
+// Test that cached private keys backed by buggy middleware that returns OK with
+// a 0-byte signature are treated as signature failures, evicted from the client
+// auth cache, and retried cleanly rather than transmitting an empty
+// CertificateVerify and failing with a server TLS alert.
+TEST_F(HTTPSRequestTest, ClientAuthEmptySignatureRetry) {
+  std::unique_ptr<FakeClientCertIdentity> identity =
+      FakeClientCertIdentity::CreateFromCertAndKeyFiles(
+          GetTestCertsDirectory(), "client_1.pem", "client_1.pk8");
+  ASSERT_TRUE(identity);
+  scoped_refptr<TestSSLPrivateKey> private_key =
+      base::MakeRefCounted<TestSSLPrivateKey>(identity->ssl_private_key());
+
+  EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::SSLServerConfig ssl_config;
+  ssl_config.client_cert_type =
+      SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+  test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  // Connect with a client certificate to put it in the client auth cache.
+  {
+    SSLClientAuthTestDelegate d;
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
+
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilCertificateRequested();
+    EXPECT_TRUE(r->is_pending());
+    EXPECT_EQ(1, d.on_certificate_requested_count());
+
+    r->ContinueWithCertificate(identity->certificate(), private_key);
+    d.RunUntilComplete();
+
+    EXPECT_EQ(OK, d.request_status());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_EQ(1, private_key->sign_count());
+  }
+
+  // Close all connections and clear the session cache to force a new handshake.
+  default_context()
+      .http_transaction_factory()
+      ->GetSession()
+      ->CloseAllConnections(ERR_FAILED, "Very good reason");
+  default_context()
+      .http_transaction_factory()
+      ->GetSession()
+      ->ClearSSLSessionCache();
+
+  // Cause the cached private key to return OK with an empty signature.
+  // Connecting again should reject the empty signature locally with
+  // ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED, evict the cached entry, and retry via
+  // OnCertificateRequested.
+  private_key->set_sign_mode(TestSSLPrivateKey::SignMode::kEmptySignature);
+
+  {
+    SSLClientAuthTestDelegate d;
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
+
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilCertificateRequested();
+    EXPECT_TRUE(r->is_pending());
+    EXPECT_EQ(2, private_key->sign_count());
+    EXPECT_EQ(1, d.on_certificate_requested_count());
+
+    // Once the middleware recovers, supplying a working key completes the
+    // request.
+    private_key->set_sign_mode(TestSSLPrivateKey::SignMode::kNormal);
+    r->ContinueWithCertificate(identity->certificate(), private_key);
+    d.RunUntilComplete();
+
+    EXPECT_EQ(OK, d.request_status());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_EQ(3, private_key->sign_count());
+  }
+}
+
+// Test that a private key reporting no supported signature algorithms fails
+// with ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS without invoking Sign(), and is
+// evicted from the client auth cache so subsequent requests can recover.
+TEST_F(HTTPSRequestTest, ClientAuthEmptyAlgorithmPreferences) {
+  std::unique_ptr<FakeClientCertIdentity> identity =
+      FakeClientCertIdentity::CreateFromCertAndKeyFiles(
+          GetTestCertsDirectory(), "client_1.pem", "client_1.pk8");
+  ASSERT_TRUE(identity);
+  scoped_refptr<TestSSLPrivateKey> private_key =
+      base::MakeRefCounted<TestSSLPrivateKey>(identity->ssl_private_key());
+
+  EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::SSLServerConfig ssl_config;
+  ssl_config.client_cert_type =
+      SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+  test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  {
+    SSLClientAuthTestDelegate d;
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
+
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilCertificateRequested();
+    EXPECT_TRUE(r->is_pending());
+    EXPECT_EQ(1, d.on_certificate_requested_count());
+
+    r->ContinueWithCertificate(
+        identity->certificate(),
+        WrapSSLPrivateKeyWithPreferences(private_key, {}));
+    d.RunUntilComplete();
+
+    EXPECT_EQ(ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS, d.request_status());
+    EXPECT_EQ(0, d.bytes_received());
+    EXPECT_EQ(0, private_key->sign_count());
+  }
+
+  // Close all connections and clear the session cache to force a new handshake.
+  default_context()
+      .http_transaction_factory()
+      ->GetSession()
+      ->CloseAllConnections(ERR_FAILED, "Very good reason");
+  default_context()
+      .http_transaction_factory()
+      ->GetSession()
+      ->ClearSSLSessionCache();
+
+  // The broken key must have been evicted from SSLClientAuthCache so the next
+  // request prompts OnCertificateRequested again and succeeds once a working
+  // key handle is supplied.
+  {
+    SSLClientAuthTestDelegate d;
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
+
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
+
+    d.RunUntilCertificateRequested();
+    EXPECT_TRUE(r->is_pending());
+    EXPECT_EQ(1, d.on_certificate_requested_count());
+
+    r->ContinueWithCertificate(identity->certificate(), private_key);
+    d.RunUntilComplete();
+
+    EXPECT_EQ(OK, d.request_status());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_EQ(1, private_key->sign_count());
   }
 }
 

@@ -46,6 +46,33 @@ class FailingSSLPlatformKey : public ThreadedSSLPrivateKey::Delegate {
   }
 };
 
+class EmptySignatureSSLPlatformKey : public ThreadedSSLPrivateKey::Delegate {
+ public:
+  EmptySignatureSSLPlatformKey() = default;
+
+  EmptySignatureSSLPlatformKey(const EmptySignatureSSLPlatformKey&) = delete;
+  EmptySignatureSSLPlatformKey& operator=(const EmptySignatureSSLPlatformKey&) =
+      delete;
+
+  ~EmptySignatureSSLPlatformKey() override = default;
+
+  std::string GetProviderName() override {
+    return "EmptySignatureSSLPlatformKey";
+  }
+
+  std::vector<uint16_t> GetAlgorithmPreferences() override {
+    return SSLPrivateKey::DefaultAlgorithmPreferences(EVP_PKEY_RSA,
+                                                      true /* supports PSS */);
+  }
+
+  Error Sign(uint16_t algorithm,
+             base::span<const uint8_t> input,
+             std::vector<uint8_t>* signature) override {
+    signature->clear();
+    return OK;
+  }
+};
+
 class SSLPrivateKeyWithPreferences : public SSLPrivateKey {
  public:
   SSLPrivateKeyWithPreferences(scoped_refptr<SSLPrivateKey> key,
@@ -83,6 +110,12 @@ class SSLPrivateKeyWithPreferences : public SSLPrivateKey {
 scoped_refptr<SSLPrivateKey> CreateFailSigningSSLPrivateKey() {
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
       std::make_unique<FailingSSLPlatformKey>(), GetSSLPlatformKeyTaskRunner());
+}
+
+scoped_refptr<SSLPrivateKey> CreateEmptySignatureSSLPrivateKey() {
+  return base::MakeRefCounted<ThreadedSSLPrivateKey>(
+      std::make_unique<EmptySignatureSSLPlatformKey>(),
+      GetSSLPlatformKeyTaskRunner());
 }
 
 scoped_refptr<SSLPrivateKey> WrapSSLPrivateKeyWithPreferences(

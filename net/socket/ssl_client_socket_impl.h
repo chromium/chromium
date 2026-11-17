@@ -50,6 +50,19 @@ class SSLPrivateKey;
 class SSLKeyLogger;
 class X509Certificate;
 
+// Outcome of a client certificate private key signing operation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SSLClientCertSignResult)
+enum class SSLClientCertSignResult {
+  kSuccess = 0,
+  kFailed = 1,
+  kEmptySignature = 2,
+  kMaxValue = kEmptySignature,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SSLClientCertSignResult)
+
 class NET_EXPORT_PRIVATE SSLClientSocketImpl
     : public SSLClientSocket,
       public SocketBIOAdapter::Delegate {

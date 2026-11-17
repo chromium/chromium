@@ -48,12 +48,16 @@ class NET_EXPORT SSLPrivateKey
   virtual std::string GetProviderName() = 0;
 
   // Returns the algorithms that are supported by the key in decreasing
-  // preference for TLS 1.2 and later.
+  // preference for TLS 1.2 and later. Returning an empty vector indicates that
+  // the key supports no usable TLS signature algorithms and will fail client
+  // authentication with `ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS`.
   virtual std::vector<uint16_t> GetAlgorithmPreferences() = 0;
 
   // Asynchronously signs an `input` with the specified TLS signing algorithm.
   // `input` is an unhashed message to be signed. On completion, it calls
-  // `callback` with the signature or an error code if the operation failed.
+  // `callback` with a non-empty signature on `OK`, or an error code if the
+  // operation failed (returning `OK` with an empty signature is invalid and
+  // treated as `ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED`).
   virtual void Sign(uint16_t algorithm,
                     base::span<const uint8_t> input,
                     SignCallback callback) = 0;

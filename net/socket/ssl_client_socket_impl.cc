@@ -1565,11 +1565,20 @@ int SSLClientSocketImpl::ClientCertRequestCallback(SSL* ssl) {
       return -1;
     }
 
-    std::vector<CRYPTO_BUFFER*> cert_chain =
-        GetCertChainRawVector(*client_cert_);
-
     std::vector<uint16_t> preferences =
         client_private_key_->GetAlgorithmPreferences();
+    base::UmaHistogramBoolean("Net.SSLClientCertSupportedAlgorithmsEmpty",
+                              preferences.empty());
+    if (preferences.empty()) {
+      net_log_.AddEvent(NetLogEventType::SSL_CLIENT_CERT_PROVIDED, [&] {
+        return base::DictValue()
+            .Set("cert_count", 0)
+            .Set("provider", client_private_key_->GetProviderName())
+            .Set("empty_algorithm_preferences", true);
+      });
+      OpenSSLPutNetError(FROM_HERE, ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS);
+      return -1;
+    }
     // If the key supports rsa_pkcs1_sha256, automatically add support for
     // rsa_pkcs1_sha256_legacy, for use with TLS 1.3. We convert here so that
     // not every `SSLPrivateKey` needs to implement it explicitly.
@@ -1577,6 +1586,8 @@ int SSLClientSocketImpl::ClientCertRequestCallback(SSL* ssl) {
       preferences.push_back(SSL_SIGN_RSA_PKCS1_SHA256_LEGACY);
     }
 
+    std::vector<CRYPTO_BUFFER*> cert_chain =
+        GetCertChainRawVector(*client_cert_);
     if (!ConfigureSSLCredential(
             ssl_.get(), ConfigureSSLCredentialParams{
                             .cert_chain = cert_chain,
@@ -1724,7 +1735,31 @@ void SSLClientSocketImpl::OnPrivateKeyComplete(
   DCHECK(signature_.empty());
   DCHECK(client_private_key_);
 
-  net_log_.EndEventWithNetErrorCode(NetLogEventType::SSL_PRIVATE_KEY_OP, error);
+  SSLClientCertSignResult sign_result = SSLClientCertSignResult::kSuccess;
+  if (error != OK) {
+    sign_result = SSLClientCertSignResult::kFailed;
+  } else if (signature.empty()) {
+    // `SSLPrivateKey` may be backed by external OS keystores or third-party
+    // middleware (PKCS#11, CryptoTokenKit, CNG, extensions). Without paying
+    // the cost of verifying the signature against the public key, sanity-check
+    // that the output is at least non-empty so a buggy provider fails fast as
+    // a client-cert error rather than putting an empty CertificateVerify on
+    // the wire.
+    sign_result = SSLClientCertSignResult::kEmptySignature;
+    error = ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
+  }
+  base::UmaHistogramEnumeration("Net.SSLClientCertSignResult", sign_result);
+
+  if (sign_result == SSLClientCertSignResult::kEmptySignature) {
+    net_log_.EndEvent(NetLogEventType::SSL_PRIVATE_KEY_OP, [&] {
+      return base::DictValue()
+          .Set("net_error", error)
+          .Set("empty_signature", true);
+    });
+  } else {
+    net_log_.EndEventWithNetErrorCode(NetLogEventType::SSL_PRIVATE_KEY_OP,
+                                      error);
+  }
 
   signature_result_ = error;
   if (signature_result_ == OK)

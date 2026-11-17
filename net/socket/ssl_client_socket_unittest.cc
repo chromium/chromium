@@ -4670,6 +4670,20 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
           .client_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA256},
           .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
       },
+      {
+          .name = "TLS 1.2 empty client preferences",
+          .version = SSL_PROTOCOL_VERSION_TLS1_2,
+          .server_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA256},
+          .client_prefs = {},
+          .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
+      },
+      {
+          .name = "TLS 1.3 empty client preferences",
+          .version = SSL_PROTOCOL_VERSION_TLS1_3,
+          .server_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA256},
+          .client_prefs = {},
+          .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
+      },
 
       {
           .name = "TLS 1.2 PKCS#1",
@@ -4724,6 +4738,8 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
   };
   for (const auto& test : kTests) {
     SCOPED_TRACE(test.name);
+    log_observer_.Clear();
+    base::HistogramTester histogram_tester;
 
     SSLServerConfig server_config;
     server_config.version_min = test.version;
@@ -4739,13 +4755,34 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
         WrapSSLPrivateKeyWithPreferences(client_key, test.client_prefs));
     int rv;
     ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+    histogram_tester.ExpectUniqueSample(
+        "Net.SSLClientCertSupportedAlgorithmsEmpty", test.client_prefs.empty(),
+        1);
+    auto cert_entries = log_observer_.GetEntriesWithType(
+        NetLogEventType::SSL_CLIENT_CERT_PROVIDED);
+    ASSERT_EQ(1u, cert_entries.size());
+    if (test.client_prefs.empty()) {
+      EXPECT_EQ(0, GetIntegerValueFromParams(cert_entries[0], "cert_count"));
+      EXPECT_EQ(client_key->GetProviderName(),
+                GetStringValueFromParams(cert_entries[0], "provider"));
+      EXPECT_TRUE(GetBooleanValueFromParams(cert_entries[0],
+                                            "empty_algorithm_preferences"));
+    } else {
+      EXPECT_EQ(1, GetIntegerValueFromParams(cert_entries[0], "cert_count"));
+      EXPECT_EQ(std::nullopt,
+                GetOptionalBooleanValueFromParams(
+                    cert_entries[0], "empty_algorithm_preferences"));
+    }
     if (test.error != OK) {
       EXPECT_THAT(rv, IsError(test.error));
+      histogram_tester.ExpectTotalCount("Net.SSLClientCertSignResult", 0);
       continue;
     }
 
     EXPECT_THAT(rv, IsOk());
     EXPECT_TRUE(sock_->IsConnected());
+    histogram_tester.ExpectUniqueSample("Net.SSLClientCertSignResult",
+                                        SSLClientCertSignResult::kSuccess, 1);
 
     // Capture the SSLInfo from the server to get the client's chosen signature
     // algorithm.
@@ -4755,6 +4792,69 @@ TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
     EXPECT_EQ(server_ssl_info->peer_signature_algorithm,
               test.expected_signature_algorithm);
   }
+}
+
+// Test explicit signing failures from SSLPrivateKey::Sign and their UMA metric.
+TEST_P(SSLClientSocketVersionTest, ClientCertSignFailed) {
+  SSLServerConfig server_config = GetServerConfig();
+  server_config.client_cert_type = SSLServerConfig::REQUIRE_CLIENT_CERT;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  scoped_refptr<net::X509Certificate> client_cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "client_1.pem");
+  ASSERT_TRUE(client_cert);
+
+  base::HistogramTester histogram_tester;
+  context_->SetClientCertificate(host_port_pair(), client_cert,
+                                 CreateFailSigningSSLPrivateKey());
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED));
+  histogram_tester.ExpectUniqueSample("Net.SSLClientCertSignResult",
+                                      SSLClientCertSignResult::kFailed, 1);
+
+  auto entries =
+      log_observer_.GetEntriesWithType(NetLogEventType::SSL_PRIVATE_KEY_OP);
+  ASSERT_EQ(2u, entries.size());
+  EXPECT_EQ(NetLogEventPhase::BEGIN, entries[0].phase);
+  EXPECT_EQ(NetLogEventPhase::END, entries[1].phase);
+  EXPECT_EQ(ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED,
+            GetIntegerValueFromParams(entries[1], "net_error"));
+  EXPECT_EQ(std::nullopt,
+            GetOptionalBooleanValueFromParams(entries[1], "empty_signature"));
+}
+
+// Test buggy middleware returning OK with a 0-byte signature and its UMA
+// metric.
+TEST_P(SSLClientSocketVersionTest, ClientCertSignEmptySignature) {
+  SSLServerConfig server_config = GetServerConfig();
+  server_config.client_cert_type = SSLServerConfig::REQUIRE_CLIENT_CERT;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  scoped_refptr<net::X509Certificate> client_cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "client_1.pem");
+  ASSERT_TRUE(client_cert);
+
+  base::HistogramTester histogram_tester;
+  context_->SetClientCertificate(host_port_pair(), client_cert,
+                                 CreateEmptySignatureSSLPrivateKey());
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED));
+  histogram_tester.ExpectUniqueSample("Net.SSLClientCertSignResult",
+                                      SSLClientCertSignResult::kEmptySignature,
+                                      1);
+
+  auto entries =
+      log_observer_.GetEntriesWithType(NetLogEventType::SSL_PRIVATE_KEY_OP);
+  ASSERT_EQ(2u, entries.size());
+  EXPECT_EQ(NetLogEventPhase::BEGIN, entries[0].phase);
+  EXPECT_EQ(NetLogEventPhase::END, entries[1].phase);
+  EXPECT_EQ(ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED,
+            GetIntegerValueFromParams(entries[1], "net_error"));
+  EXPECT_TRUE(GetBooleanValueFromParams(entries[1], "empty_signature"));
 }
 #endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 

@@ -15,6 +15,10 @@ class SSLPrivateKey;
 // Returns a new `SSLPrivateKey` which fails all signing operations.
 scoped_refptr<SSLPrivateKey> CreateFailSigningSSLPrivateKey();
 
+// Returns a new `SSLPrivateKey` whose signing operations succeed with a 0-byte
+// signature, simulating buggy cryptographic middleware.
+scoped_refptr<SSLPrivateKey> CreateEmptySignatureSSLPrivateKey();
+
 // Returns a new `SSLPrivateKey` which behaves like `key`, but overrides the
 // signing preferences.
 scoped_refptr<SSLPrivateKey> WrapSSLPrivateKeyWithPreferences(

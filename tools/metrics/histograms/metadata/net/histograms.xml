@@ -10017,6 +10017,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SSLClientCertSignResult" enum="SSLClientCertSignResult"
+    expires_after="2027-10-30">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
+  <owner>src/net/ssl/OWNERS</owner>
+  <summary>
+    Records the result returned by SSLPrivateKey::Sign when a private key
+    signing operation completes on an active socket during TLS client
+    certificate authentication (not recorded if the socket disconnects while
+    signing is pending), distinguishing normal non-empty signatures, explicit
+    signing errors, and buggy providers that report success with a 0-byte
+    signature.
+  </summary>
+</histogram>
+
+<histogram name="Net.SSLClientCertSupportedAlgorithmsEmpty" enum="BooleanEmpty"
+    expires_after="2027-10-30">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
+  <owner>src/net/ssl/OWNERS</owner>
+  <summary>
+    Recorded each time a TLS server requests a client certificate (during a
+    non-resumption handshake where ECH was not rejected) and a client
+    certificate and private key are configured to be sent. Records whether the
+    private key's list of supported signature algorithms (snapshotted when the
+    SSLPrivateKey handle was constructed) is empty.
+  </summary>
+</histogram>
+
 <histogram name="Net.SSLClientSocketImpl.OnHandshakeIOCompleteDuration"
     units="ms" expires_after="2027-04-18">
   <owner>pasko@chromium.org</owner>
