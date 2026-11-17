@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
+import 'chrome://omnibox-popup.top-chrome/lazy_load.js';
 
 import type {OmniboxFullAppElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

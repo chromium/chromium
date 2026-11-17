@@ -94,9 +94,15 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
         @keyword-click="${this.onKeywordClick}"
         ?hidden="${!this.dropdownIsVisible}">
     </cr-searchbox-dropdown>
-    <omnibox-popup-contextual-entrypoint
-        .dropdownIsVisible="${this.dropdownIsVisible}">
-    </omnibox-popup-contextual-entrypoint>
+    ${this.lazyRender_ ? html`
+      <omnibox-popup-contextual-entrypoint
+          .dropdownIsVisible="${this.dropdownIsVisible}"
+          .isAimPopupEligible="${this.isAimPopupEligible_}"
+          .isContentSharingEnabled="${this.isContentSharingEnabled_}"
+          .isLensSearchEligible="${this.computeIsLensSearchEligible_()}"
+          .isLensIconEligible="${this.computeIsLensIconEligible_()}">
+      </omnibox-popup-contextual-entrypoint>
+    ` : ''}
   </div>
 </div>`;
 }

@@ -138,6 +138,9 @@ export class OmniboxPopupContextualEntrypointElement extends
     ];
 
     const callbackRouter = this.searchboxBrowserProxy_.callbackRouter;
+    // The Full WebUI popup renders this element lazily and mirrors these
+    // pushes in OmniboxPopupSearchboxElement to forward any it missed.
+    // LINT.IfChange(EligibilityListeners)
     this.searchboxListenerIds_ = [
       callbackRouter.updateLensSearchEligibility.addListener(
           (eligible: boolean) => {
@@ -161,6 +164,10 @@ export class OmniboxPopupContextualEntrypointElement extends
                 this.isAimPopupEligible = eligible;
               }));
     }
+    // LINT.ThenChange(
+    //     //chrome/browser/resources/omnibox_popup/full/omnibox_popup_searchbox.ts:EligibilityListeners,
+    //     //chrome/browser/resources/omnibox_popup/full/omnibox_popup_searchbox.ts:EligibilityGating
+    // )
 
     // Fetch the initial input state async, but only apply it if
     // `onInputStateChanged` push updates haven't already populated it. This
@@ -171,6 +178,13 @@ export class OmniboxPopupContextualEntrypointElement extends
         this.inputState = state;
       }
     });
+
+    // The element may connect after the popup has already been shown (e.g.
+    // when lazily rendered), in which case the `onShow` push was missed.
+    if (this.isCurrentTabChipEnabled_ &&
+        document.visibilityState === 'visible') {
+      this.refreshCurrentTabForChip_();
+    }
 
     if (this.isLensIconIphEnabled_) {
       document.addEventListener('visibilitychange', this.onVisibilityChange_);

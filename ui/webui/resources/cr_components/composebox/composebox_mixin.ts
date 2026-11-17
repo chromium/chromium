@@ -35,7 +35,7 @@ import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from './composebox_voice_search.js';
-import {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
+import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -1719,9 +1719,11 @@ export const ComposeboxEmbedderMixin =
           this.shareTabsFlyoutOpen = true;
           await this.updateComplete;
           const entrypointAndMenu = this.getContextEntrypointElement();
-          if (entrypointAndMenu) {
-            (entrypointAndMenu as ContextualEntrypointAndMenuElement)
-                .openMenuForMultiSelection();
+          // Duck-typed rather than `instanceof` so that this module only needs
+          // a type-only import of ContextualEntrypointAndMenuElement.
+          if (entrypointAndMenu &&
+              'openMenuForMultiSelection' in entrypointAndMenu) {
+            entrypointAndMenu.openMenuForMultiSelection();
           }
         }
 
@@ -1778,8 +1780,7 @@ export const ComposeboxEmbedderMixin =
 
         private async openTabPicker() {
           const contextEntrypoint = this.getContextEntrypointElement();
-          if (!(contextEntrypoint instanceof
-                ContextualEntrypointAndMenuElement)) {
+          if (!contextEntrypoint || !('closeMenu' in contextEntrypoint)) {
             return;
           }
           if (!this.inputState) {
@@ -2128,7 +2129,7 @@ export const ComposeboxEmbedderMixin =
 
         closeMenu() {
           const entrypointAndMenu = this.getContextEntrypointElement();
-          if (entrypointAndMenu instanceof ContextualEntrypointAndMenuElement) {
+          if (entrypointAndMenu && 'closeMenu' in entrypointAndMenu) {
             entrypointAndMenu.closeMenu();
           }
         }

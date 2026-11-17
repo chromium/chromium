@@ -14,3 +14,4 @@ export type {OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnib
 export {OmniboxFullAppElement} from './full_app.js';
 export {OmniboxPopupSearchboxElement} from './omnibox_popup_searchbox.js';
 export {TextfieldModel} from './textfield_model.js';
+export {WindowProxy} from './window_proxy.js';

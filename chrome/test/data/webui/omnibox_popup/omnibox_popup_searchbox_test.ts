@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://omnibox-popup.top-chrome/lazy_load.js';
+
 import {isMac} from '//resources/js/platform.js';
-import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, PlaceholderType, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
+import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, PlaceholderType, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode, WindowProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -142,6 +145,7 @@ suite('OmniboxPopupSearchboxTest', function() {
   let handler: TestMock<OmniboxPopupPageHandlerRemote>&
       OmniboxPopupPageHandlerRemote;
   let callbackRouter: OmniboxPopupPageRemote;
+  let windowProxy: TestMock<WindowProxy>&WindowProxy;
 
   suiteSetup(async () => {
     const link = document.createElement('link');
@@ -163,6 +167,10 @@ suite('OmniboxPopupSearchboxTest', function() {
       omniboxSearchOrTypeUrlPlaceholder: 'Search $1 or type a URL',
       omniboxAskOrTypeUrlPlaceholder: 'Ask $1 or type a URL',
     });
+    windowProxy = TestMock.fromClass(WindowProxy);
+    windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
+    windowProxy.setResultFor('ensureLazyLoaded', Promise.resolve());
+    WindowProxy.setInstance(windowProxy);
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
     handler = TestMock.fromClass(OmniboxPopupPageHandlerRemote);
@@ -9191,6 +9199,169 @@ suite('OmniboxPopupSearchboxTest', function() {
       assertTrue(
           boundedShadows.some(s => s.includes('inset')),
           `Expected inset shadow in: ${boundedShadow}`);
+    });
+  });
+
+  suite('LazyLoad', () => {
+    const OVERRIDDEN_KEYS = [
+      'composeboxShowChip',
+      'composeboxShowCurrentTabChip',
+      'searchboxLayoutMode',
+    ];
+    let originalValues: LoadTimeDataRaw = {};
+
+    setup(() => {
+      originalValues = Object.fromEntries(OVERRIDDEN_KEYS.map(
+          key =>
+              [key,
+               loadTimeData.valueExists(key) ? loadTimeData.getValue(key) :
+                                               undefined]));
+    });
+
+    teardown(() => {
+      loadTimeData.overrideValues(originalValues);
+    });
+
+    test('DefersLazyElementsUntilEnsureLazyLoadedResolves', async () => {
+      let resolveLazyRender!: () => void;
+      let resolveLazyLoad!: () => void;
+      windowProxy.reset();
+      windowProxy.setResultFor('waitForLazyRender', new Promise<void>(r => {
+                                 resolveLazyRender = r;
+                               }));
+      windowProxy.setResultFor('ensureLazyLoaded', new Promise<void>(r => {
+                                 resolveLazyLoad = r;
+                               }));
+
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      const lazySearchbox = document.createElement('omnibox-popup-searchbox');
+      document.body.appendChild(lazySearchbox);
+      await microtasksFinished();
+
+      // Eager `#composeButton` is present on initial render, while lazy
+      // `<omnibox-popup-contextual-entrypoint>` is deferred.
+      assertEquals(0, windowProxy.getCallCount('ensureLazyLoaded'));
+      assertTrue(!!$$(lazySearchbox, '#composeButton'));
+      assertFalse(!!$$(lazySearchbox, 'omnibox-popup-contextual-entrypoint'));
+
+      // Resolving `waitForLazyRender()` triggers `ensureLazyLoaded()`, but does
+      // not stamp `<omnibox-popup-contextual-entrypoint>` until
+      // `ensureLazyLoaded()` resolves.
+      resolveLazyRender();
+      await microtasksFinished();
+      assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
+      assertFalse(!!$$(lazySearchbox, 'omnibox-popup-contextual-entrypoint'));
+
+      // Once `ensureLazyLoaded()` resolves, the contextual entrypoint is
+      // stamped into the DOM.
+      resolveLazyLoad();
+      await microtasksFinished();
+      assertTrue(!!$$(lazySearchbox, 'omnibox-popup-contextual-entrypoint'));
+    });
+
+    test('OnShowSkipsIdleWaitForLazyRender', async () => {
+      // `waitForLazyRender()` never resolves, as if the idle callback hasn't
+      // fired yet when the popup is shown.
+      windowProxy.reset();
+      windowProxy.setResultFor(
+          'waitForLazyRender', new Promise<void>(() => {}));
+      windowProxy.setResultFor('ensureLazyLoaded', Promise.resolve());
+
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      const lazySearchbox = document.createElement('omnibox-popup-searchbox');
+      document.body.appendChild(lazySearchbox);
+      await microtasksFinished();
+      assertEquals(0, windowProxy.getCallCount('ensureLazyLoaded'));
+      assertFalse(!!$$(lazySearchbox, 'omnibox-popup-contextual-entrypoint'));
+
+      callbackRouter.onShow();
+      await microtasksFinished();
+      assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
+      assertTrue(!!$$(lazySearchbox, 'omnibox-popup-contextual-entrypoint'));
+    });
+
+    test('PreservesMojoStateReceivedBeforeLazyRender', async () => {
+      let resolveLazyLoad!: () => void;
+      windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
+      windowProxy.setResultFor('ensureLazyLoaded', new Promise<void>(r => {
+                                 resolveLazyLoad = r;
+                               }));
+
+      loadTimeData.overrideValues({
+        composeboxShowCurrentTabChip: false,
+        composeboxShowChip: true,
+        searchboxLayoutMode: 'TallBottomContext',
+      });
+
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      const lazySearchbox = document.createElement('omnibox-popup-searchbox');
+      document.body.appendChild(lazySearchbox);
+
+      // Push AIM eligibility, content sharing policy, and Lens search
+      // eligibility BEFORE `lazy_load.js` has finished loading.
+      testProxy.initVisibilityPrefs();
+      testProxy.page.updateLensSearchEligibility(true);
+      await microtasksFinished();
+
+      assertFalse(!!$$(lazySearchbox, 'omnibox-popup-contextual-entrypoint'));
+
+      // Resolve `ensureLazyLoaded()` and verify
+      // `<omnibox-popup-contextual-entrypoint>` receives the buffered
+      // eligibility state and renders the contextual entrypoint button and
+      // Lens chip.
+      resolveLazyLoad();
+      await microtasksFinished();
+
+      assertTrue(lazySearchbox.dropdownIsVisible);
+      const popupEntrypoint =
+          $$(lazySearchbox, 'omnibox-popup-contextual-entrypoint');
+      assertTrue(!!popupEntrypoint);
+      assertTrue(!!getContextualEntrypointButton(lazySearchbox));
+      assertTrue(isVisible(getLensSearchChip(lazySearchbox)));
+    });
+
+    test('ShowsCurrentTabChipWhenShownBeforeLazyRender', async () => {
+      let resolveLazyLoad!: () => void;
+      windowProxy.setResultFor('ensureLazyLoaded', new Promise<void>(r => {
+                                 resolveLazyLoad = r;
+                               }));
+
+      loadTimeData.overrideValues({
+        composeboxShowCurrentTabChip: true,
+        composeboxShowChip: true,
+        searchboxLayoutMode: 'TallBottomContext',
+      });
+      testProxy.handler.resetResolver('getRecentTabs');
+      testProxy.handler.setPromiseResolveFor<'getRecentTabs'>('getRecentTabs', {
+        tabs: [{
+          tabId: 1,
+          title: 'Current Tab',
+          url: 'https://example.com',
+          showInCurrentTabChip: true,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 100n},
+        }],
+      });
+
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      const lazySearchbox = document.createElement('omnibox-popup-searchbox');
+      document.body.appendChild(lazySearchbox);
+      testProxy.initVisibilityPrefs();
+      testProxy.page.updateLensSearchEligibility(true);
+
+      // The popup is shown BEFORE `lazy_load.js` has finished loading, so
+      // `<omnibox-popup-contextual-entrypoint>` misses the `onShow` push.
+      callbackRouter.onShow();
+      await microtasksFinished();
+      assertFalse(!!$$(lazySearchbox, 'omnibox-popup-contextual-entrypoint'));
+      assertEquals(0, testProxy.handler.getCallCount('getRecentTabs'));
+
+      // Once lazily rendered, the contextual entrypoint fetches the current tab
+      // itself and shows the current tab chip instead of the Lens chip.
+      resolveLazyLoad();
+      await testProxy.handler.whenCalled('getRecentTabs');
+      await microtasksFinished();
+      assertTrue(isVisible(getCurrentTabChip(lazySearchbox)));
     });
   });
 });
