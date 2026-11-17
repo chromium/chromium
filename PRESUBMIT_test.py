@@ -922,7 +922,9 @@ class JSONParsingTest(unittest.TestCase):
             '  "key2": 3  // This is an inline comment.', '}'
         ]
         input_api.files = [MockFile(filename, contents)]
+        original_sys_path = list(sys.path)
         self.assertIsNone(PRESUBMIT._GetJSONParseError(input_api, filename))
+        self.assertEqual(original_sys_path, sys.path)
 
     def testFailure(self):
         input_api = MockInputApi()

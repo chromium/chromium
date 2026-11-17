@@ -5408,12 +5408,17 @@ def CheckUserActionUpdate(input_api, output_api):
 def _ImportJSONCommentEater(input_api):
     import sys
 
-    sys.path = sys.path + [
-        input_api.os_path.join(
-            input_api.PresubmitLocalPath(), 'tools', 'json_comment_eater'
-        )
-    ]
-    import json_comment_eater
+    original_sys_path = sys.path
+    try:
+        sys.path = sys.path + [
+            input_api.os_path.join(
+                input_api.PresubmitLocalPath(), 'tools', 'json_comment_eater'
+            )
+        ]
+        import json_comment_eater
+    finally:
+        # Restore sys.path to what it was before.
+        sys.path = original_sys_path
 
     return json_comment_eater
 
