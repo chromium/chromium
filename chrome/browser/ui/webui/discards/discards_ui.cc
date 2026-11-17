@@ -362,7 +362,10 @@ class DiscardsDetailsProviderImpl
   // This instance is deleted when the supplied pipe is destroyed.
   explicit DiscardsDetailsProviderImpl(
       mojo::PendingReceiver<discards::mojom::DetailsProvider> receiver)
-      : receiver_(this, std::move(receiver)) {}
+      : receiver_(this, std::move(receiver)) {
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &DiscardsDetailsProviderImpl::OnDisconnect, base::Unretained(this)));
+  }
 
   DiscardsDetailsProviderImpl(const DiscardsDetailsProviderImpl&) = delete;
   DiscardsDetailsProviderImpl& operator=(const DiscardsDetailsProviderImpl&) =
@@ -662,6 +665,8 @@ class DiscardsDetailsProviderImpl
   }
 
  private:
+  void OnDisconnect() { GetOwningGraph()->TakeFromGraph(this); }
+
   mojo::Receiver<discards::mojom::DetailsProvider> receiver_;
 
   // Mapping from id to page node.

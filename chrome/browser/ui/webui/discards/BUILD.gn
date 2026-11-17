@@ -62,15 +62,22 @@ if (!is_android || is_desktop_android) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "graph_dump_impl_unittest.cc" ]
+    sources = [
+      "discards_ui_unittest.cc",
+      "graph_dump_impl_unittest.cc",
+    ]
     deps = [
       ":discards",
+      ":mojo_bindings",
       "//base",
       "//base/test:test_support",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/performance_manager",
       "//components/performance_manager/test_support:test_support_common",
+      "//content/public/browser",
       "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
       "//testing/gtest",
     ]
   }
