@@ -32,6 +32,7 @@
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -45,7 +46,11 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/global_privacy_control/global_privacy_control_util.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace content {
 
@@ -1808,6 +1813,135 @@ TEST_P(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
   EXPECT_EQ(
       request->headers.GetHeader(blink::kSecSpeculationTagsHeaderName).value(),
       "null");
+}
+
+TEST_P(PrefetchContainerTest, PrivacyHeaders) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kGlobalPrivacyControlApi,
+       blink::features::kGlobalPrivacyControlAlwaysSample},
+      {});
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://test.com/referrer"));
+
+  // By default, neither Sec-GPC nor DNT is set.
+  {
+    auto request = MakeInitialResourceRequestForPrefetch(
+        *CreateSpeculationRulesPrefetchRequest(GURL("https://test.com"), {}),
+        /*is_decoy=*/false);
+    EXPECT_FALSE(
+        request->headers.HasHeader(blink::kGlobalPrivacyControlHeader));
+    EXPECT_FALSE(request->headers.HasHeader(blink::kDoNotTrackHeader));
+    histogram_tester().ExpectTotalCount(
+        "Network.GlobalPrivacyControlSource.Subsampled", 0);
+  }
+
+  // Enable GPC and DNT in the WebContents's RendererPreferences.
+  web_contents()
+      ->GetMutableRendererPrefs()
+      ->is_global_privacy_control_setting_enabled = true;
+  web_contents()->GetMutableRendererPrefs()->enable_do_not_track = true;
+  {
+    auto request = MakeInitialResourceRequestForPrefetch(
+        *CreateSpeculationRulesPrefetchRequest(GURL("https://test.com"), {}),
+        /*is_decoy=*/false);
+    EXPECT_EQ(request->headers.GetHeader(blink::kGlobalPrivacyControlHeader),
+              std::optional<std::string>("1"));
+    EXPECT_EQ(request->headers.GetHeader(blink::kDoNotTrackHeader),
+              std::optional<std::string>("1"));
+    histogram_tester().ExpectUniqueSample(
+        "Network.GlobalPrivacyControlSource.Subsampled",
+        blink::GPCSignalSourceType::kPrefetch, 1);
+  }
+
+  // Disabling the `kPrefetchPrivacyHeaders` killswitch suppresses the headers.
+  {
+    base::test::ScopedFeatureList disable_killswitch;
+    disable_killswitch.InitAndDisableFeature(features::kPrefetchPrivacyHeaders);
+    auto request = MakeInitialResourceRequestForPrefetch(
+        *CreateSpeculationRulesPrefetchRequest(GURL("https://test.com"), {}),
+        /*is_decoy=*/false);
+    EXPECT_FALSE(
+        request->headers.HasHeader(blink::kGlobalPrivacyControlHeader));
+    EXPECT_FALSE(request->headers.HasHeader(blink::kDoNotTrackHeader));
+  }
+
+  // Reset the WebContents's RendererPreferences so that the following cases
+  // exercise the `UpdateRendererPreferencesForWorkerHelper()` fallback.
+  web_contents()
+      ->GetMutableRendererPrefs()
+      ->is_global_privacy_control_setting_enabled = false;
+  web_contents()->GetMutableRendererPrefs()->enable_do_not_track = false;
+
+  class PrivacyHeadersTestContentBrowserClient
+      : public TestContentBrowserClient {
+   public:
+    PrivacyHeadersTestContentBrowserClient() {
+      old_browser_client_ = SetBrowserClientForTesting(this);
+    }
+    ~PrivacyHeadersTestContentBrowserClient() override {
+      EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
+    }
+
+    void UpdateRendererPreferencesForWorker(
+        BrowserContext* browser_context,
+        blink::RendererPreferences* out_prefs) override {
+      out_prefs->is_global_privacy_control_setting_enabled = true;
+      out_prefs->enable_do_not_track = true;
+    }
+
+   private:
+    raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+  };
+  PrivacyHeadersTestContentBrowserClient test_browser_client;
+
+  // Browser-initiated prefetches without a RenderFrameHost use
+  // `UpdateRendererPreferencesForWorker()`.
+  {
+    auto request = MakeInitialResourceRequestForPrefetch(
+        *CreateBrowserContextPrefetchRequest(GURL("https://test.com")),
+        /*is_decoy=*/false);
+    EXPECT_EQ(request->headers.GetHeader(blink::kGlobalPrivacyControlHeader),
+              std::optional<std::string>("1"));
+    EXPECT_EQ(request->headers.GetHeader(blink::kDoNotTrackHeader),
+              std::optional<std::string>("1"));
+    histogram_tester().ExpectUniqueSample(
+        "Network.GlobalPrivacyControlSource.Subsampled",
+        blink::GPCSignalSourceType::kPrefetch, 2);
+  }
+
+  // Renderer-initiated prefetches whose initiator RenderFrameHost has been
+  // detached also fall back to `UpdateRendererPreferencesForWorker()`.
+  {
+    auto* subframe_rfh = static_cast<RenderFrameHostImpl*>(
+        RenderFrameHostTester::For(main_rfh())->AppendChild("subframe"));
+    auto detached_rfh_prefetch_request =
+        PrefetchRequest::CreateRendererInitiated(
+            *subframe_rfh, subframe_rfh->GetDocumentToken(),
+            GURL("https://test.com"),
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/true,
+                         blink::mojom::SpeculationEagerness::kImmediate),
+            blink::mojom::Referrer(),
+            /*speculation_rules_tags=*/std::nullopt,
+            /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
+            /*prefetch_document_manager=*/nullptr,
+            PreloadPipelineInfo::Create(
+                /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
+    RenderFrameHostTester::For(subframe_rfh)->Detach();
+    ASSERT_FALSE(detached_rfh_prefetch_request->GetRendererInitiatorInfo()
+                     ->GetRenderFrameHost());
+
+    auto request = MakeInitialResourceRequestForPrefetch(
+        *detached_rfh_prefetch_request, /*is_decoy=*/false);
+    EXPECT_EQ(request->headers.GetHeader(blink::kGlobalPrivacyControlHeader),
+              std::optional<std::string>("1"));
+    EXPECT_EQ(request->headers.GetHeader(blink::kDoNotTrackHeader),
+              std::optional<std::string>("1"));
+    histogram_tester().ExpectUniqueSample(
+        "Network.GlobalPrivacyControlSource.Subsampled",
+        blink::GPCSignalSourceType::kPrefetch, 3);
+  }
 }
 
 class TestPrefetchContainerObserver final : public PrefetchContainerObserver {

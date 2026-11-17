@@ -281,6 +281,7 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kPrefetchOffTheMainThreadUpdateMissingHeaderCache;
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kPrefetchOffTheMainThreadCheckWillCreateURLLoaderFactory;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchPrivacyHeaders);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchProxy);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchRequestStatusListenerAsync);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);

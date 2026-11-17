@@ -7,12 +7,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/prefetch_test_util.h"
 #include "content/shell/browser/shell.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/global_privacy_control/global_privacy_control_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -31,6 +34,11 @@ class GlobalPrivacyControlBrowserTest
     scoped_feature_list_.InitWithFeatureState(
         blink::features::kGlobalPrivacyControlForce, GetParam());
     ContentBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void ExpectPageTextEq(const std::string& expected_content) {
@@ -168,6 +176,39 @@ IN_PROC_BROWSER_TEST_P(GlobalPrivacyControlBrowserTest, GPCInSubFrame) {
   EXPECT_EQ(
       GetParam(),
       EvalJs(iframe, "navigator.globalPrivacyControl === true").ExtractBool());
+}
+
+// Checks that the Sec-GPC header is sent on a Speculation Rules prefetch
+// request and preserved when the prefetched response is served to a navigation.
+IN_PROC_BROWSER_TEST_P(GlobalPrivacyControlBrowserTest,
+                       HeaderInSpeculationRulesPrefetch) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  const GURL initial_url =
+      embedded_https_test_server().GetURL("a.com", "/empty.html");
+  const GURL prefetch_url =
+      embedded_https_test_server().GetURL("a.com", "/echoheader?Sec-GPC");
+  ASSERT_TRUE(NavigateToURL(GetWebContents(), initial_url));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  ASSERT_TRUE(
+      ExecJs(GetWebContents()->GetPrimaryMainFrame(), JsReplace(R"(
+                       const script = document.createElement('script');
+                       script.type = 'speculationrules';
+                       script.text = JSON.stringify({
+                         prefetch: [{source: 'list', urls: [$1]}]
+                       });
+                       document.head.appendChild(script);
+                     )",
+                                                                prefetch_url)));
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetWebContents()->GetPrimaryMainFrame()->GetDocumentToken(),
+      prefetch_url);
+
+  ASSERT_TRUE(NavigateToURLFromRenderer(GetWebContents(), prefetch_url));
+  EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  ExpectPageTextEq(GetParam() ? "1" : "None");
+  EXPECT_EQ(GetParam(), GetDOMGlobalPrivacyControlProperty());
 }
 
 // Checks that adding the Sec-GPC header during a navigation leaves a sample in

@@ -22,7 +22,8 @@ enum class GPCSignalSourceType {
   kFrameNavigation = 1,
   kSubresourceFetch = 2,
   kWorkerSubresourceFetch = 3,
-  kMaxValue = kWorkerSubresourceFetch,
+  kPrefetch = 4,
+  kMaxValue = kPrefetch,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:GPCSignalSourceType)
 

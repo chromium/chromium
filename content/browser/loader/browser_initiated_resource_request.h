@@ -17,9 +17,15 @@ namespace content {
 
 class BrowserContext;
 
+enum class BrowserInitiatedRequestSource {
+  kNavigation,
+  kPrefetch,
+  kWorkerScript,
+};
+
 // Sets request headers appropriate for browser-initiated resource requests,
-// i.e., requests for navigations and dedicated/shared/service worker
-// scripts.
+// i.e., requests for navigations, navigational prefetches, and
+// dedicated/shared/service worker scripts.
 // If `should_update_existing_headers` is true, this function may update values
 // that are already set in `headers`.
 // This needs to be called on the UI thread.
@@ -28,7 +34,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
     BrowserContext* browser_context,
     bool should_update_existing_headers,
     const blink::RendererPreferences& renderer_preferences,
-    bool is_for_worker_script);
+    BrowserInitiatedRequestSource request_source);
 
 }  // namespace content
 

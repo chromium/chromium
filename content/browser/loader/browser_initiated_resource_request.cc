@@ -20,7 +20,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
     BrowserContext* browser_context,
     bool should_update_existing_headers,
     const blink::RendererPreferences& renderer_preferences,
-    bool is_for_worker_script) {
+    BrowserInitiatedRequestSource request_source) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
   // Set the DoNotTrack header if appropriate.
@@ -40,9 +40,20 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
       headers->RemoveHeader(blink::kGlobalPrivacyControlHeader);
     }
     headers->SetHeaderIfMissing(blink::kGlobalPrivacyControlHeader, "1");
-    blink::MaybeRecordGlobalPrivacyControlSourceMetric(
-        is_for_worker_script ? blink::GPCSignalSourceType::kWorkerNavigation
-                             : blink::GPCSignalSourceType::kFrameNavigation);
+    switch (request_source) {
+      case BrowserInitiatedRequestSource::kNavigation:
+        blink::MaybeRecordGlobalPrivacyControlSourceMetric(
+            blink::GPCSignalSourceType::kFrameNavigation);
+        break;
+      case BrowserInitiatedRequestSource::kPrefetch:
+        blink::MaybeRecordGlobalPrivacyControlSourceMetric(
+            blink::GPCSignalSourceType::kPrefetch);
+        break;
+      case BrowserInitiatedRequestSource::kWorkerScript:
+        blink::MaybeRecordGlobalPrivacyControlSourceMetric(
+            blink::GPCSignalSourceType::kWorkerNavigation);
+        break;
+    }
   }
 
   // TODO(crbug.com/40833603): WARNING: This bypasses the permissions policy.
@@ -51,7 +62,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
   // Save-Data was previously included in hints for workers, thus we cannot
   // remove it for the time being. If you're reading this, consider building
   // permissions policies for workers and/or deprecating this inclusion.
-  if (is_for_worker_script &&
+  if (request_source == BrowserInitiatedRequestSource::kWorkerScript &&
       GetContentClient()->browser()->IsDataSaverEnabled(browser_context)) {
     if (should_update_existing_headers) {
       headers->RemoveHeader("Save-Data");

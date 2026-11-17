@@ -299,7 +299,7 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
   UpdateAdditionalHeadersForBrowserInitiatedRequest(
       &request.headers, &browser_context,
       /*should_update_existing_headers=*/false, renderer_preferences,
-      /*is_for_worker_script=*/true);
+      BrowserInitiatedRequestSource::kWorkerScript);
 
   // Set the accept header to '*/*'.
   // https://fetch.spec.whatwg.org/#concept-fetch
