@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -135,9 +134,6 @@ const char kOnDeviceAiSettingsDisabledWarning[] =
     "enable \"On-device AI\" in chrome://settings/ai.";
 
 const char kModelVersionParam[] = "model_version";
-
-// Eagerly initializes other downloadable APIs when any session type is created.
-BASE_FEATURE(kBuiltInAIEagerInit, base::FEATURE_ENABLED_BY_DEFAULT);
 
 blink::mojom::ModelAvailabilityCheckResult
 ConvertModelNotSupportedReasonToModelAvailabilityCheckResult(
@@ -1161,10 +1157,6 @@ void AIManager::CreateLanguageModelInternal(
                     std::move(client));
 
   context_bound_object_set_.AddContextBoundObject(std::move(model));
-
-  tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kPromptApi);
-  // Eagerly initialize other features, now that one successfully initialized.
-  MaybeTryEagerInit();
 }
 
 void AIManager::CanCreateSummarizer(
@@ -1335,7 +1327,6 @@ AIManager::CreateSummarizerSessionCallback(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client) {
   optimization_guide::MultimodalMessage initial_request =
       AISummarizer::ToInitialRequest(options);
-  tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kSummarize);
 
   return base::BindOnce(&AIManager::OnSessionCreated<
                             AISummarizer, blink::mojom::AISummarizer,
@@ -1419,8 +1410,6 @@ void AIManager::CreateProofreader(
                          blink::mojom::AIProofreaderCreateOptionsPtr>,
                      weak_factory_.GetWeakPtr(), std::move(options),
                      /*initial_request=*/std::nullopt, std::move(client));
-  tried_init_.insert(
-      optimization_guide::mojom::OnDeviceFeature::kProofreaderApi);
   model_broker_client_->CreateSession(
       optimization_guide::mojom::OnDeviceFeature::kProofreaderApi,
       ::optimization_guide::SessionConfigParams{}, std::move(callback));
@@ -1559,8 +1548,6 @@ void AIManager::CreateWriter(
                                    blink::mojom::AIWriterCreateOptionsPtr>,
       weak_factory_.GetWeakPtr(), std::move(options),
       std::move(initial_request), std::move(client));
-  tried_init_.insert(
-      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
   if (base::FeatureList::IsEnabled(
           optimization_guide::kOptimizationGuideManifestBroker)) {
     model_broker_client_->GetConfig(
@@ -1661,8 +1648,6 @@ void AIManager::CreateRewriter(
                                    blink::mojom::AIRewriterCreateOptionsPtr>,
       weak_factory_.GetWeakPtr(), std::move(options),
       std::move(initial_request), std::move(client));
-  tried_init_.insert(
-      optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi);
   if (base::FeatureList::IsEnabled(
           optimization_guide::kOptimizationGuideManifestBroker)) {
     model_broker_client_->GetConfig(
@@ -1792,9 +1777,6 @@ void AIManager::OnSessionCreated(
     return;
   }
 
-  // Eagerly initialize other features, now that one successfully initialized.
-  MaybeTryEagerInit();
-
   if (initial_request.has_value()) {
     auto initial_request_copy = initial_request.value().Clone();
     session->GetInputSizeInTokens(
@@ -1884,26 +1866,6 @@ void AIManager::OnInitialInputSet(
           context_bound_object_set_, std::move(session), std::move(options),
           pending_remote.InitWithNewPipeAndPassReceiver()));
   client_remote->OnResult(std::move(pending_remote), context_window);
-}
-
-void AIManager::MaybeTryEagerInit() {
-  if (!base::FeatureList::IsEnabled(kBuiltInAIEagerInit)) {
-    return;
-  }
-  // Initialize other features when one is used. This presumes a large common
-  // model download completed with the first feature usage, and other features
-  // just need lightweight configuration downloads to become readily available
-  // for usage on this device.
-  AIContextBoundObjectSet empty(on_device_model::mojom::Priority::kBackground);
-  for (optimization_guide::mojom::OnDeviceFeature feature :
-       {optimization_guide::mojom::OnDeviceFeature::kPromptApi,
-        optimization_guide::mojom::OnDeviceFeature::kSummarize,
-        optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi}) {
-    // TODO(crbug.com/447192715): Gate on runtime determined component size.
-    if (tried_init_.insert(feature).second && model_broker_client_) {
-      model_broker_client_->RequestAssetsFor(feature);
-    }
-  }
 }
 
 template <typename OptionsPtrType>
@@ -2341,10 +2303,6 @@ void AIManager::OnDecisionModelLanguageModelReady(
       std::make_unique<AILanguageModelDecisionModel>(
           context_bound_object_set_, std::move(schema), model_client,
           std::move(receiver), std::move(on_ready)));
-
-  tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kPromptApi);
-  // Eagerly initialize other features, now that one successfully initialized.
-  MaybeTryEagerInit();
 }
 
 void AIManager::CreateEmbeddingGemmaV1DecisionModel(

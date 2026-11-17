@@ -326,9 +326,6 @@ class AIManager : public base::SupportsUserData::Data,
       std::unique_ptr<optimization_guide::OnDeviceSession> session,
       base::expected<size_t, optimization_guide::OnDeviceError> result);
 
-  // Eagerly initializes a broad set of features.
-  void MaybeTryEagerInit();
-
   void MaybeLogMissingOutputLanguageWarning(
       const std::string_view api_name,
       const std::optional<base::flat_set<std::string>>& enabled_languages);
@@ -370,9 +367,6 @@ class AIManager : public base::SupportsUserData::Data,
   // and lock-screen profiles) could use the API to download the model and
   // start the embeddings process.
   bool profile_has_optimization_guide_keyed_service_ = false;
-
-  // Features that have attempted initialization in this session.
-  base::flat_set<optimization_guide::mojom::OnDeviceFeature> tried_init_;
 
   base::WeakPtrFactory<AIManager> weak_factory_{this};
 };
