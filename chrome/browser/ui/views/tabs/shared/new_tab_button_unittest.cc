@@ -27,13 +27,29 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/widget/widget.h"
 
 namespace shared {
 namespace {
+
+class TestCondensedNewTabButton : public NewTabButton {
+ public:
+  using NewTabButton::NewTabButton;
+
+  void set_frame_condensed(bool condensed) { condensed_ = condensed; }
+
+  // NewTabButton:
+  bool IsFrameCondensed() const override { return condensed_; }
+
+ private:
+  bool condensed_ = false;
+};
 
 class NewTabButtonTest : public ChromeViewsTestBase {
  public:
@@ -210,6 +226,49 @@ TEST_F(NewTabButtonTest, MenuModelNewTabItemLabel) {
   ASSERT_TRUE(new_tab_index.has_value());
   EXPECT_EQ(model.GetLabelAt(new_tab_index.value()),
             l10n_util::GetStringUTF16(IDS_NEW_TAB_BUTTON_CXMENU_NEW_TAB));
+}
+
+TEST_F(NewTabButtonTest, OuterInsetsExpandPreferredSize) {
+  constexpr int kButtonSize = 28;
+  button_->SetButtonSize(kButtonSize);
+  EXPECT_EQ(button_->GetPreferredSize(), gfx::Size(kButtonSize, kButtonSize));
+
+  // NewTabButton uses SetButtonSize() rather than SetPreferredSize(), so outer
+  // insets expand its layout height (28 + 6 + 7 = 41).
+  button_->SetOuterInsets(gfx::Insets::TLBR(6, 0, 7, 0));
+  EXPECT_EQ(button_->GetPreferredSize(), gfx::Size(kButtonSize, 41));
+
+  // Without a BrowserView/BrowserFrameView, IsFrameCondensed() returns false,
+  // so top-edge hit-test extension does not apply.
+  button_->SetExtendHitTestToTop(true);
+  button_->SetSize(button_->GetPreferredSize());
+  EXPECT_FALSE(button_->HitTestPoint(gfx::Point(kButtonSize / 2, 0)));
+  EXPECT_TRUE(button_->HitTestPoint(gfx::Point(kButtonSize / 2, 20)));
+}
+
+TEST_F(NewTabButtonTest, ExtendHitTestToTopWhenCondensed) {
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams widget_params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget_params.bounds = gfx::Rect(0, 0, 100, 100);
+  widget_params.context = GetContext();
+  widget->Init(std::move(widget_params));
+
+  constexpr int kButtonSize = 28;
+  auto* button =
+      widget->SetContentsView(std::make_unique<TestCondensedNewTabButton>(
+          mock_browser_window_interface_.get(), kButtonSize, /*icon_size=*/16));
+  button->SetOuterInsets(gfx::Insets::TLBR(6, 0, 7, 0));
+  button->SetExtendHitTestToTop(true);
+  button->SetSize(button->GetPreferredSize());
+
+  button->set_frame_condensed(false);
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(kButtonSize / 2, 0)));
+
+  button->set_frame_condensed(true);
+  EXPECT_TRUE(button->HitTestPoint(gfx::Point(kButtonSize / 2, 0)));
+  EXPECT_FALSE(button->HitTestPoint(gfx::Point(kButtonSize / 2, 38)));
 }
 
 }  // namespace

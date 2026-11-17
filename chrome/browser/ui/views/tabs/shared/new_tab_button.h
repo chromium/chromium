@@ -49,6 +49,9 @@ class NewTabButton : public TabStripFlatEdgeButton,
   // views::Button:
   void NotifyClick(const ui::Event& event) override;
 
+  // TabStripFlatEdgeButton:
+  bool IsFrameCondensed() const override;
+
  private:
   void OnContextMenuClosed();
 
