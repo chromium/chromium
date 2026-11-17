@@ -28,6 +28,7 @@ import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -251,6 +252,7 @@ public class ClientOnReceivedError2Test extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @SkipMutations(reason = "This test depends on AwSettings.setImagesEnabled(true)")
+    @DisabledTest(message = "https://crbug.com/586992151")
     public void testImageSubresource() throws Throwable {
         final String pageHtml =
                 CommonResources.makeHtmlPageFrom("", "<img src='" + BAD_IMAGE_URL + "' />");
