@@ -18,7 +18,7 @@ The specification refers to these as requests with a ["no-cors" request mode](ht
 
 Meanwhile, the ["Spectre" family of attacks](https://chromium.googlesource.com/chromium/src/+/main/docs/security/side-channel-threat-model.md)
 allow a website to read memory within an operating system process.
-(Caveats apply and it's more complicated that that; but that's the gist.)
+(Caveats apply and it's more complicated than that; but that's the gist.)
 
 These, at its extreme, allow a near-complete circumvention of the "same-origin
 policy": By first loading any resource one wishes to read via e.g. an `<img>`
@@ -29,6 +29,10 @@ resource, that the attacker pretended to be an image.) But because the
 "image" has been brought into the renderer process (in order to parse it), and
 because "Spectre" allows access to memory within the process, an attacking
 page might get its contents after all.
+
+CORB/ORB are designed to keep unnecessary data (e.g., cross-origin HTML
+responses that would never successfully load as an image) out of the
+attacker's renderer process.
 
 Additionally, CORB/ORB serve as a "defense in depth" measure: They help
 to improve [isolation](https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md) between origins and thus make it

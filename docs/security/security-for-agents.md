@@ -44,7 +44,8 @@ restricted is documented in
 [`compromised-renderers.md`](compromised-renderers.md).  These restrictions are
 designed to hold even if an attacker can run arbitrary native code in a renderer
 process (after exploiting a separate bug).  For more information about Site
-Isolation please read `//content/SECURITY.md`.
+Isolation please read `//content/SECURITY.md`.  For Opaque Response Blocking
+(ORB) bypasses, please read `//services/network/public/cpp/orb/SECURITY.md`.
 
 Only assume an attacker can compromise a process that loads their content (such
 as a web renderer or `chrome-untrusted://` renderer). Do not assume compromise
