@@ -72,9 +72,6 @@ class GlicWebContentsWarmingPool::Metrics {
 
   void OnReloadAfterExpiry(
       GlicWebContentsWarmingPool::ReloadAfterExpiryStatus status) {
-    // Resolved per call: this pool is built during GlicKeyedService
-    // construction, when GetGlicProviderSpec() still returns the Consumer
-    // fallback (b/574535435).
     metric_reporter_.RecordEnumeration("WarmingPool.ReloadAfterExpiry", status);
   }
 
@@ -95,6 +92,8 @@ class GlicWebContentsWarmingPool::Metrics {
     warmed_container_creation_time_ = base::TimeTicks::Now();
     miss_status_ = WarmingPoolStatus::kCold;
   }
+
+  void OnContainerTaken() { warmed_container_creation_time_.reset(); }
 
   void RecordWarmedContainerFate(WarmedContainerFate fate) {
     metric_reporter_.RecordEnumeration("WarmingPool.WarmedContainerFate", fate);
@@ -127,6 +126,7 @@ class GlicWebContentsWarmingPool::Metrics {
     switch (reason) {
       case ClearReason::kShutdown:
         fate = WarmedContainerFate::kDeletedOnChromeClosed;
+        warmed_container_creation_time_.reset();
         break;
       case ClearReason::kMemoryPressure:
         fate = WarmedContainerFate::kDeletedOnMemoryPressure;
@@ -171,8 +171,9 @@ class GlicWebContentsWarmingPool::Metrics {
   // Reason for a miss if warmed_container_ is not present when taken.
   WarmingPoolStatus miss_status_ = WarmingPoolStatus::kCold;
 
-  // Creation time of the warmed_container_. For misses, this is preserved
-  // from the most recently destroyed container until reported.
+  // Creation time of the pre-warmed container. For misses, this is preserved
+  // from the most recently destroyed unused container until reported. Cleared
+  // when a container is handed out or on shutdown.
   std::optional<base::TimeTicks> warmed_container_creation_time_;
 
   GlicMetricReporter metric_reporter_;
@@ -214,6 +215,7 @@ GlicWebContentsWarmingPool::TakeContainer() {
   EnsurePreload(ContainerCreationReason::kUserTriggeredColdStart);
   std::unique_ptr<GlicWebContentsManager> result = std::move(warmed_container_);
   warmed_container_ = nullptr;
+  metrics_->OnContainerTaken();
   expiry_timer_.Stop();
   if (result) {
     result->SetErrorCallback({});

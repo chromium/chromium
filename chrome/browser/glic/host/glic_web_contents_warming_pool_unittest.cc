@@ -463,6 +463,12 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerBeforeWarmingComplete) {
   histogram_tester.ExpectBucketCount("Glic.Consumer.WarmingPool.HitStatus",
                                      WarmingPoolStatus::kPendingBackfill, 1);
   histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", 0);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.TimeSinceCreatedAtMiss", 0);
 
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   task_environment_.FastForwardBy(features::kGlicWebContentsWarmingDelay.Get() -
@@ -1279,5 +1285,199 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.MemoryPressureRecovery",
                                       MemoryPressureRecoveryStatus::kRecovered,
                                       3);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       TimeSinceCreatedAtMissNotRecordedAfterColdStartMisses) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+
+  // 1st TakeContainer() on an empty pool creates an on-demand container
+  // (kUserTriggeredColdStart) and schedules delayed refill.
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtHit",
+                                    0);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", 0);
+
+  // 2nd TakeContainer() while backfill is still pending must NOT emit a
+  // spurious TimeSinceCreatedAtMiss sample from the already-taken cold-start
+  // container.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  ASSERT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.HitStatus",
+                                     WarmingPoolStatus::kPendingBackfill, 1);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtHit",
+                                    0);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", 0);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.TimeSinceCreatedAtMiss", 0);
+
+  // Cancel the pending refill under critical memory pressure and take again:
+  // still no pre-warmed container ever existed in the pool, so
+  // TimeSinceCreatedAtMiss must remain 0.
+  warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
+  ASSERT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  task_environment_.FastForwardBy(base::Seconds(3));
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.HitStatus",
+                                     WarmingPoolStatus::kMemoryPressure, 1);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", 0);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       TimeSinceCreatedAtMissNotRecordedAfterHitFollowedByPendingBackfill) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // Consume the pre-warmed container (kHit).
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kHit, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Glic.WarmingPool.TimeSinceCreatedAtHit", base::Seconds(3), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtHit", base::Seconds(3), 1);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    0);
+
+  // Take again before delayed refill completes (kPendingBackfill).
+  task_environment_.FastForwardBy(base::Seconds(4));
+  ASSERT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.HitStatus",
+                                     WarmingPoolStatus::kPendingBackfill, 1);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtHit",
+                                    1);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", 0);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.TimeSinceCreatedAtMiss", 0);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       TimeSinceCreatedAtMissRecordedOnExpiryAndNotRepeatedOnBackfillMiss) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kGlicWebContentsWarming,
+                             {{"glic-web-contents-warming-pool-expiry-delay",
+                               "10m"}}}},
+      /*disabled_features=*/{kGlicReloadWebContentsAfterExpiry});
+
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // Let the pre-warmed container expire after 10m, then wait 5s before taking.
+  const base::TimeDelta expected_age = base::Minutes(10) + base::Seconds(5);
+  task_environment_.FastForwardBy(expected_age);
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kExpired, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Glic.WarmingPool.TimeSinceCreatedAtMiss", expected_age, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", expected_age, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.TimeSinceCreatedAtMiss", 0);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtHit",
+                                    0);
+
+  // Taking again while refill is pending must not record a second sample.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  ASSERT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.HitStatus",
+                                     WarmingPoolStatus::kPendingBackfill, 1);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", 1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       TimeSinceCreatedAtMissRecordedOnCrashedContainer) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  auto warmed_contents = warming_pool.GetWarmedWebContents();
+  ASSERT_TRUE(warmed_contents);
+
+  task_environment_.FastForwardBy(base::Seconds(7));
+  content::WebContentsTester::For(warmed_contents->webui_contents)
+      ->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, 0);
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kCrashed, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Glic.WarmingPool.TimeSinceCreatedAtMiss", base::Seconds(9), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", base::Seconds(9), 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.TimeSinceCreatedAtMiss", 0);
+
+  // Subsequent pending-backfill miss must not emit a duplicate sample.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       TimeSinceCreatedAtMissRecordedOnLoadErrorDiscard) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_, enabling_.get(),
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  auto* container = static_cast<FakeWebContentsManager*>(
+      warming_pool.GetWarmedContainerForTesting());
+  ASSERT_TRUE(container);
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+  container->set_should_reload_on_show(true);
+  container->TriggerErrorCallback();
+  task_environment_.FastForwardBy(base::Seconds(3));
+  ASSERT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kLoadError, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Glic.WarmingPool.TimeSinceCreatedAtMiss", base::Seconds(7), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtMiss", base::Seconds(7), 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.TimeSinceCreatedAtMiss", 0);
+
+  // Subsequent pending-backfill miss must not emit a duplicate sample.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtMiss",
+                                    1);
 }
 }  // namespace glic
