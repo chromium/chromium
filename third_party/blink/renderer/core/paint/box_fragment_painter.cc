@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <optional>
 #include <ranges>
 #include <vector>
 
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/outline_utils.h"
@@ -517,6 +519,20 @@ bool ShouldDeferLineBoxHitToBackground(const PhysicalBoxFragment& container,
   }
   return PaintLayerPaintOrderIterator(layer, kNegativeZOrderChildren).Next() !=
          nullptr;
+}
+
+PhysicalRect ApplyContainerFiltersToLineBoxRect(
+    const PhysicalBoxFragment& container,
+    PhysicalRect rect,
+    const PhysicalOffset& item_offset) {
+  DCHECK(RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled());
+  if (const auto* box_model =
+          DynamicTo<LayoutBoxModelObject>(container.GetLayoutObject())) {
+    rect.Move(item_offset);
+    rect = box_model->ApplyFiltersToRect(rect);
+    rect.Move(-item_offset);
+  }
+  return rect;
 }
 
 // Builds the font used by the ad label: `font_size`px regular-weight
@@ -2694,7 +2710,18 @@ bool BoxFragmentPainter::HitTestLineBoxFragment(
     const InlineBackwardCursor& cursor,
     const PhysicalOffset& physical_offset) {
   DCHECK_EQ(cursor.Current()->LineBoxFragment(), &fragment);
+  const ComputedStyle* first_line_style = nullptr;
   PhysicalRect overflow_rect = cursor.Current().InkOverflowRect();
+  if (hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow() &&
+      RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled())
+      [[unlikely]] {
+    first_line_style = fragment.FirstLineBoxDecorationStyle();
+    if (first_line_style) {
+      overflow_rect = ApplyContainerFiltersToLineBoxRect(
+          box_fragment_, overflow_rect,
+          cursor.Current().OffsetInContainerFragment());
+    }
+  }
   overflow_rect.Move(physical_offset);
   if (!hit_test.location.Intersects(overflow_rect))
     return false;
@@ -2729,6 +2756,45 @@ bool BoxFragmentPainter::HitTestLineBoxFragment(
     }
   } else if (hit_test.phase == HitTestPhase::kSelfBlockBackground) {
     return false;
+  }
+
+  if (first_line_style && !box_fragment_.IsHiddenDueToLayout() &&
+      !cursor.Current().IsHiddenDueToLayout() &&
+      IsVisibleToHitTest(*first_line_style,
+                         hit_test.result->GetHitTestRequest())) [[unlikely]] {
+    DCHECK(RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled());
+    // Occlusion hit-testing (`kHitTestVisualOverflow`) must see everything the
+    // line box paints, including `::first-line` backgrounds and box-shadows
+    // that extend outside `fragment.Size()`. Ordinary pointer hit-testing keeps
+    // testing `fragment.Size()` only.
+    if (std::optional<PhysicalRect> first_line_overflow =
+            fragment.FirstLineBoxInkOverflow(*first_line_style)) {
+      const PhysicalOffset item_offset =
+          cursor.Current().OffsetInContainerFragment();
+      PhysicalRect first_line_bounds = ApplyContainerFiltersToLineBoxRect(
+          box_fragment_, *first_line_overflow, item_offset);
+      first_line_bounds.Move(physical_offset);
+      if (hit_test.location.Intersects(first_line_bounds)) {
+        // Painted `::first-line` box decorations draw in
+        // `PaintPhase::kForeground` above `PaintPhase::kFloat` and apply to
+        // block-in-inline wrappers as well, so return directly without yielding
+        // to floating descendants or `IsBlockInInline()`.
+        Node* node = fragment.NodeForHitTest();
+        if (!node) {
+          // An anonymous `LayoutBlockFlow` may inherit `::first-line` style
+          // from its parent block (`FirstLineStyleParentBlock()`). Walk up to
+          // the enclosing DOM node so list-based occlusion callbacks record the
+          // originating element.
+          for (const LayoutObject* parent = fragment.ContainerLayoutObject();
+               parent && !node; parent = parent->Parent()) {
+            node = parent->NodeForHitTest();
+          }
+        }
+        return hit_test.AddNodeToResultWithContentOffset(
+            node, box_fragment_, first_line_bounds,
+            physical_offset - item_offset);
+      }
+    }
   }
 
   if (!IsVisibleToHitTest(box_fragment_, hit_test.result->GetHitTestRequest()))

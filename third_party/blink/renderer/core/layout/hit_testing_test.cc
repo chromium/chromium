@@ -690,4 +690,243 @@ TEST_F(HitTestingTest, FirstLineBoxDecorationOcclusion) {
   EXPECT_EQ(HitTestForOcclusion(*target).InnerNode(), target);
 }
 
+TEST_F(HitTestingTest, FirstLineBoxDecorationVariantsAndEdgeCases) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target-vertical {
+        position: absolute;
+        left: 40px;
+        top: 20px;
+        width: 40px;
+        height: 100px;
+      }
+      #occluder-vertical {
+        position: absolute;
+        writing-mode: vertical-rl;
+        left: 120px;
+        top: 0;
+        height: 200px;
+        line-height: 2px;
+        z-index: 10;
+      }
+      #occluder-vertical::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background: #000000;
+      }
+      #target-ib {
+        position: absolute;
+        left: 280px;
+        top: 20px;
+        width: 60px;
+        height: 20px;
+      }
+      #occluder-ib {
+        display: inline-block;
+        position: absolute;
+        left: 260px;
+        top: 120px;
+        width: 120px;
+        line-height: 2px;
+        z-index: 10;
+      }
+      #occluder-ib::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background: #000000;
+      }
+      #tall-hidden {
+        position: absolute;
+        left: 260px;
+        top: 0;
+        width: 120px;
+        line-height: 160px;
+        visibility: hidden;
+        z-index: 20;
+      }
+      #tall-hidden::first-line {
+        visibility: visible;
+        font-size: 10px;
+        background: #000000;
+      }
+      #target-zero-width {
+        position: absolute;
+        left: 460px;
+        top: 40px;
+        width: 40px;
+        height: 30px;
+      }
+      #occluder-zero-width {
+        position: absolute;
+        left: 440px;
+        top: 100px;
+        width: 0;
+        line-height: 2px;
+        z-index: 10;
+      }
+      #occluder-zero-width::first-line {
+        font-size: 20px;
+        line-height: 2px;
+        box-shadow: 40px -50px 0 40px #000000;
+      }
+      #occluder-with-float {
+        position: absolute;
+        left: 0;
+        top: 320px;
+        width: 180px;
+        line-height: 2px;
+      }
+      #occluder-with-float::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background: #000000;
+      }
+      #float-target {
+        float: left;
+        margin-top: -60px;
+        width: 60px;
+        height: 30px;
+      }
+      #bii-target {
+        position: absolute;
+        left: 220px;
+        top: 260px;
+        width: 60px;
+        height: 30px;
+      }
+      #occluder-bii {
+        position: absolute;
+        left: 200px;
+        top: 320px;
+        width: 150px;
+        line-height: 2px;
+        z-index: 10;
+      }
+      #occluder-bii::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background: #000000;
+      }
+      #anon-target {
+        position: absolute;
+        left: 420px;
+        top: 260px;
+        width: 60px;
+        height: 30px;
+      }
+      #occluder-anon {
+        position: absolute;
+        left: 400px;
+        top: 320px;
+        width: 150px;
+        line-height: 2px;
+        visibility: hidden;
+        z-index: 10;
+      }
+      #occluder-anon::first-line {
+        visibility: visible;
+        font-size: 200px;
+        line-height: 2px;
+        background: #000000;
+      }
+      #filter-target {
+        position: absolute;
+        left: 600px;
+        top: 20px;
+        width: 60px;
+        height: 30px;
+      }
+      #filter-occluder {
+        position: absolute;
+        left: 580px;
+        top: 160px;
+        width: 120px;
+        line-height: 2px;
+        visibility: hidden;
+        filter: drop-shadow(0 -120px 0 #000000);
+        z-index: 10;
+      }
+      #filter-occluder::first-line {
+        visibility: visible;
+        font-size: 40px;
+        line-height: 2px;
+        background: #000000;
+      }
+    </style>
+    <div id="target-vertical"></div>
+    <div id="occluder-vertical"><span style="display:inline-block;width:2px;height:200px"></span></div>
+    <div id="target-ib"></div>
+    <div id="occluder-ib"><span style="display:inline-block;width:120px;height:2px;vertical-align:top"></span></div>
+    <div id="tall-hidden"><span style="display:inline-block;width:120px;height:0;visibility:visible"></span></div>
+    <div id="target-zero-width"></div>
+    <div id="occluder-zero-width"><span style="display:inline-block;width:0;height:2px;vertical-align:top"></span></div>
+    <div id="occluder-with-float"><span style="display:inline-block;width:180px;height:2px;vertical-align:top"></span><div id="float-target"></div></div>
+    <div id="bii-target"></div>
+    <div id="occluder-bii"><span><div style="height:2px"></div></span></div>
+    <div id="anon-target"></div>
+    <div id="occluder-anon"><span style="display:inline-block;width:150px;height:2px;vertical-align:top;visibility:visible"></span><div></div></div>
+    <div id="filter-target"></div>
+    <div id="filter-occluder"><span style="display:inline-block;width:120px;height:2px;vertical-align:top;visibility:visible"></span></div>
+  )HTML");
+
+  // Vertical writing mode.
+  Element* target_vertical = GetElementById("target-vertical");
+  Element* occluder_vertical = GetElementById("occluder-vertical");
+  EXPECT_EQ(HitTestForOcclusion(*target_vertical).InnerNode(),
+            occluder_vertical);
+
+  // Atomic inline (`display: inline-block`) occluder, and negative check that
+  // #tall-hidden's unpainted 160px `visibility: hidden` half-leading at y=25
+  // does not falsely occlude.
+  Element* target_ib = GetElementById("target-ib");
+  Element* occluder_ib = GetElementById("occluder-ib");
+  EXPECT_EQ(HitTestForOcclusion(*target_ib).InnerNode(), occluder_ib);
+
+  occluder_ib->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(HitTestForOcclusion(*target_ib).InnerNode(), target_ib);
+
+  // Zero-width line box with spread `box-shadow` occludes #target-zero-width.
+  Element* target_zero_width = GetElementById("target-zero-width");
+  Element* occluder_zero_width = GetElementById("occluder-zero-width");
+  EXPECT_EQ(HitTestForOcclusion(*target_zero_width).InnerNode(),
+            occluder_zero_width);
+
+  // Painted ::first-line background in PaintPhase::kForeground occludes
+  // floating descendants in PaintPhase::kFloat.
+  Element* occluder_with_float = GetElementById("occluder-with-float");
+  Element* float_target = GetElementById("float-target");
+  EXPECT_EQ(HitTestForOcclusion(*float_target).InnerNode(),
+            occluder_with_float);
+
+  // Block-in-inline first line with ::first-line background occludes targets.
+  Element* bii_target = GetElementById("bii-target");
+  Element* occluder_bii = GetElementById("occluder-bii");
+  EXPECT_EQ(HitTestForOcclusion(*bii_target).InnerNode(), occluder_bii);
+
+  // Anonymous LayoutBlockFlow inheriting parent ::first-line resolves its
+  // enclosing element node for occlusion and list-based occlusion callbacks.
+  Element* anon_target = GetElementById("anon-target");
+  Element* occluder_anon = GetElementById("occluder-anon");
+  EXPECT_EQ(HitTestForOcclusion(*anon_target).InnerNode(), occluder_anon);
+  auto* stopper = MakeGarbageCollected<HitNodeCallbackStopper>(occluder_anon);
+  HitNodeCb hit_node_cb;
+  EXPECT_CALL(hit_node_cb, Run(_, _, _, _))
+      .WillRepeatedly(
+          testing::Invoke(stopper, &HitNodeCallbackStopper::StopAtNode));
+  HitTestResult list_result =
+      anon_target->GetLayoutObject()->HitTestForOcclusion(
+          VisualRectInDocument(*anon_target->GetLayoutObject()),
+          hit_node_cb.Get());
+  EXPECT_TRUE(stopper->DidStopHitTesting());
+  EXPECT_TRUE(list_result.ListBasedTestResult().Contains(occluder_anon));
+
+  // CSS drop-shadow filter on a `visibility: hidden` container expands visible
+  // ::first-line occlusion bounds.
+  Element* filter_target = GetElementById("filter-target");
+  Element* filter_occluder = GetElementById("filter-occluder");
+  EXPECT_EQ(HitTestForOcclusion(*filter_target).InnerNode(), filter_occluder);
+}
+
 }  // namespace blink
