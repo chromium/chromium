@@ -1457,9 +1457,13 @@ void TextControlElement::ScheduleSelectionchangeEvent() {
   }
 }
 
+void TextControlElement::OpaqueRangeData::Trace(Visitor* visitor) const {
+  visitor->Trace(ranges);
+}
+
 void TextControlElement::Trace(Visitor* visitor) const {
   visitor->Trace(inner_editor_);
-  visitor->Trace(opaque_ranges_);
+  visitor->Trace(opaque_range_data_);
   HTMLFormControlElementWithState::Trace(visitor);
 }
 
@@ -1481,8 +1485,8 @@ TextOverflowData TextControlElement::ValueForTextOverflow() const {
 }
 
 void TextControlElement::DisconnectAllOpaqueRanges() {
-  while (!opaque_ranges_.empty()) {
-    opaque_ranges_.back()->disconnect();
+  while (HasOpaqueRanges()) {
+    opaque_range_data_->ranges.back()->disconnect();
   }
 }
 
@@ -1495,13 +1499,20 @@ void TextControlElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void TextControlElement::RegisterOpaqueRange(OpaqueRange* range) {
-  opaque_ranges_.push_back(range);
+  if (!opaque_range_data_) {
+    opaque_range_data_ = MakeGarbageCollected<OpaqueRangeData>();
+  }
+  opaque_range_data_->ranges.push_back(range);
 }
 
 void TextControlElement::UnregisterOpaqueRange(OpaqueRange* range) {
-  auto iter = std::ranges::find(opaque_ranges_, range);
-  if (iter != opaque_ranges_.end()) {
-    opaque_ranges_.erase(iter);
+  if (!opaque_range_data_) {
+    return;
+  }
+  auto& ranges = opaque_range_data_->ranges;
+  auto iter = std::ranges::find(ranges, range);
+  if (iter != ranges.end()) {
+    ranges.erase(iter);
   }
 }
 
@@ -1532,10 +1543,10 @@ void TextControlElement::NotifyOpaqueRangesOfTextChange(
     unsigned deleted_count,
     unsigned inserted_count) const {
   DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled(GetExecutionContext()));
-  if (opaque_ranges_.empty()) {
+  if (!HasOpaqueRanges()) {
     return;
   }
-  for (const auto& range : opaque_ranges_) {
+  for (const auto& range : opaque_range_data_->ranges) {
     range->UpdateOffsetsForTextChange(change_offset, deleted_count,
                                       inserted_count);
   }
@@ -1543,29 +1554,34 @@ void TextControlElement::NotifyOpaqueRangesOfTextChange(
 
 void TextControlElement::CaptureOpaqueRangePreEdit() {
   DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled(GetExecutionContext()));
-  if (opaque_ranges_.empty()) {
+  if (!HasOpaqueRanges()) {
     return;
   }
   const String old_value = InnerEditorValue();
   const unsigned old_length = old_value.length();
-  pending_user_edit_.emplace(
+  opaque_range_data_->pending_user_edit.emplace(
       PendingUserEditSnapshot{old_value, std::min(selectionStart(), old_length),
                               std::min(selectionEnd(), old_length)});
 }
 
 void TextControlElement::CommitOpaqueRangeEdit() {
   DCHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled(GetExecutionContext()));
-  if (opaque_ranges_.empty() || !pending_user_edit_) {
-    pending_user_edit_.reset();
+  if (!opaque_range_data_) {
+    // No range was ever registered, so there is no pending edit to reset.
+    return;
+  }
+  auto& pending_user_edit = opaque_range_data_->pending_user_edit;
+  if (opaque_range_data_->ranges.empty() || !pending_user_edit) {
+    pending_user_edit.reset();
     return;
   }
 
   // After observable value mutation and before 'input' listeners, compute and
   // apply a selection-bounded single replace using the pre-edit baseline.
-  ApplyOpaqueRangeUpdate(pending_user_edit_->old_value,
-                         pending_user_edit_->selection_start,
-                         pending_user_edit_->selection_end);
-  pending_user_edit_.reset();
+  ApplyOpaqueRangeUpdate(pending_user_edit->old_value,
+                         pending_user_edit->selection_start,
+                         pending_user_edit->selection_end);
+  pending_user_edit.reset();
 }
 
 void TextControlElement::ApplyOpaqueRangeUpdate(const String& old_value,
@@ -1622,12 +1638,12 @@ void TextControlElement::CommitProgrammaticOpaqueRangeEdit(
     unsigned old_sel_start,
     unsigned old_sel_end) {
   if (!RuntimeEnabledFeatures::OpaqueRangeEnabled(GetExecutionContext()) ||
-      opaque_ranges_.empty()) {
+      !HasOpaqueRanges()) {
     return;
   }
   // Clear any pending user pre-edit snapshot to avoid applying a user-driven
   // diff after a programmatic value change.
-  pending_user_edit_.reset();
+  opaque_range_data_->pending_user_edit.reset();
 
   ApplyOpaqueRangeUpdate(old_value, old_sel_start, old_sel_end);
 }

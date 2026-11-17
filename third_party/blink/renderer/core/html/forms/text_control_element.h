@@ -357,6 +357,10 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // for suggested values too.
   bool PlaceholderShouldBeVisible() const;
 
+  bool HasOpaqueRanges() const {
+    return opaque_range_data_ && !opaque_range_data_->ranges.empty();
+  }
+
   // Notify observers of a single replace in this element’s value at
   // `change_offset`: removed `deleted_count` and added `inserted_count`
   // characters.
@@ -373,6 +377,30 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // creating a number of TreeScope data structures to track elements by ID.
   Member<TextControlInnerEditorElement> inner_editor_;
 
+  // Snapshot taken at 'beforeinput' retained until the first observable change.
+  // Selection defines the edit region; that change is treated as one replace
+  // of the region (e.g. replacing "abc" with "xyz") rather than multiple
+  // small diffs, so ranges update consistently.
+  struct PendingUserEditSnapshot {
+    String old_value;
+    unsigned selection_start = 0;
+    unsigned selection_end = 0;
+  };
+
+  struct OpaqueRangeData final : GarbageCollected<OpaqueRangeData> {
+    void Trace(Visitor* visitor) const;
+
+    // Holds OpaqueRange instances that observe this text control.
+    HeapVector<Member<OpaqueRange>> ranges;
+    // Holds a pending user edit captured at 'beforeinput' until the first
+    // observable value mutation occurs.
+    std::optional<PendingUserEditSnapshot> pending_user_edit;
+  };
+
+  // OpaqueRange state. Null until the first OpaqueRange is registered, since
+  // most text controls never have one.
+  Member<OpaqueRangeData> opaque_range_data_;
+
   // In value_before_first_user_edit_, we distinguish a null String and
   // zero-length String. Null String means the field doesn't have any data yet,
   // and zero-length String is a valid data.
@@ -384,23 +412,6 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // previewing a value to be filled before getting explicit user consent for
   // filling.
   String suggested_value_;
-
-  // Snapshot taken at 'beforeinput' retained until the first observable change.
-  // Selection defines the edit region; that change is treated as one replace
-  // of the region (e.g. replacing "abc" with "xyz") rather than multiple
-  // small diffs, so ranges update consistently.
-  struct PendingUserEditSnapshot {
-    String old_value;
-    unsigned selection_start = 0;
-    unsigned selection_end = 0;
-  };
-
-  // Holds a pending user edit captured at 'beforeinput' until the first
-  // observable value mutation occurs.
-  std::optional<PendingUserEditSnapshot> pending_user_edit_;
-
-  // Holds OpaqueRange instances that observe this text control.
-  HeapVector<Member<OpaqueRange>> opaque_ranges_;
 
   unsigned cached_selection_start_;
   unsigned cached_selection_end_;

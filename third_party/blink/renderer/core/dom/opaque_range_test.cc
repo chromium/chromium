@@ -147,9 +147,9 @@ TEST_F(OpaqueRangeTest, RemovalClearsOpaqueRanges) {
       To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
   OpaqueRange::Create(GetDocument(), textarea, 0, 3);
   OpaqueRange::Create(GetDocument(), textarea, 2, 5);
-  EXPECT_EQ(textarea->opaque_ranges_.size(), 2u);
+  EXPECT_EQ(textarea->opaque_range_data_->ranges.size(), 2u);
   textarea->remove();
-  EXPECT_TRUE(textarea->opaque_ranges_.empty());
+  EXPECT_FALSE(textarea->HasOpaqueRanges());
 }
 
 TEST_F(OpaqueRangeTest, UseCounterFiresForTextarea) {
