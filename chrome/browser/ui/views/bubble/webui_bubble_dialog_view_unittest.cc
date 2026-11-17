@@ -14,9 +14,11 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/hit_test.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/bubble/bubble_anchor.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -271,6 +273,24 @@ TEST_P(WebUIBubbleDialogViewTest, DraggableBubbleRetainsBoundsWhenVisible) {
       bubble_widget()->GetWindowBoundsInScreen();
   EXPECT_EQ(new_bounds_pre_resize.origin(), new_bounds_post_resize.origin());
   EXPECT_NE(initial_bounds.size(), new_bounds_post_resize.size());
+}
+
+TEST_P(WebUIBubbleDialogViewTest, GetDialogPositionUsesWidgetCoordinates) {
+  bubble_dialog_view()->GetBubbleFrameView()->SetContentMargins(
+      gfx::Insets::TLBR(16, 12, 8, 8));
+  bubble_dialog_view()->ResizeDueToAutoResize(nullptr, {400, 300});
+  views::test::RunScheduledLayout(bubble_widget());
+
+  const gfx::Rect bounds = bubble_dialog_view()->ConvertRectToWidget(
+      bubble_dialog_view()->GetLocalBounds());
+  ASSERT_GT(bounds.x(), 0);
+  ASSERT_GT(bounds.y(), 0);
+
+  constexpr gfx::Size kDialogSize(200, 100);
+  EXPECT_EQ(gfx::Point(bounds.x() + (bounds.width() - kDialogSize.width()) / 2,
+                       bounds.y()),
+            bubble_dialog_view()->GetDialogPosition(kDialogSize));
+  EXPECT_EQ(bounds.size(), bubble_dialog_view()->GetMaximumDialogSize());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

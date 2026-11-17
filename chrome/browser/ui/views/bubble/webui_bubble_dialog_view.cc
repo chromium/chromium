@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "build/build_config.h"
@@ -236,12 +237,15 @@ gfx::NativeView WebUIBubbleDialogView::GetHostView() const {
 }
 
 gfx::Point WebUIBubbleDialogView::GetDialogPosition(const gfx::Size& size) {
-  return gfx::Point(std::max(0, (width() - size.width()) / 2), 0);
+  gfx::Point position(std::max(0, (width() - size.width()) / 2), 0);
+  if (GetWidget()) {
+    views::View::ConvertPointToWidget(this, &position);
+  }
+  return position;
 }
 
 gfx::Size WebUIBubbleDialogView::GetMaximumDialogSize() {
-  return GetWidget() ? GetWidget()->GetWindowBoundsInScreen().size()
-                     : gfx::Size();
+  return GetWidget() ? size() : gfx::Size();
 }
 
 void WebUIBubbleDialogView::AddObserver(
