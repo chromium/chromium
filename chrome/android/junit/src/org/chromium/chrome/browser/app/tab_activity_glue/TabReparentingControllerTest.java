@@ -244,7 +244,9 @@ public class TabReparentingControllerTest {
         mController.prepareTabsForReparenting();
 
         mRealAsyncTabParamsManager.add(
-                1, new TabReparentingParams(mForegroundTab, /* finalizeCallback= */ null));
+                1,
+                new TabReparentingParams(
+                        mForegroundTab, /* sourceSelector= */ null, /* finalizeCallback= */ null));
 
         verify(mTabModelSelector).detachTabForReparenting(mForegroundTab);
         verify(mDestroyTabPersistentStoreRunnable, never()).run();

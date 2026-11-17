@@ -131,7 +131,10 @@ public class ReparentingTabGroupTask {
         mOriginalWindow = groupedTabs.get(0).getWindowAndroidChecked();
         for (Tab tab : groupedTabs) {
             AsyncTabParamsManagerSingleton.getInstance()
-                    .add(tab.getId(), new TabReparentingParams(tab, finalizeCallback));
+                    .add(
+                            tab.getId(),
+                            new TabReparentingParams(
+                                    tab, /* sourceSelector= */ null, finalizeCallback));
             ReparentingTask.from(tab).detach();
         }
 

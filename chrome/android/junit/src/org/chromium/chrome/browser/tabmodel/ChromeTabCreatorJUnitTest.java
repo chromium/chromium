@@ -307,7 +307,8 @@ public class ChromeTabCreatorJUnitTest {
 
         boolean[] finalizeRan = new boolean[1];
         TabReparentingParams params =
-                new TabReparentingParams(mockTab, () -> finalizeRan[0] = true);
+                new TabReparentingParams(
+                        mockTab, /* sourceSelector= */ null, () -> finalizeRan[0] = true);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
         doAnswer(
@@ -352,7 +353,9 @@ public class ChromeTabCreatorJUnitTest {
 
         int tabId = 321;
         Tab mockTab = mock(Tab.class);
-        TabReparentingParams params = new TabReparentingParams(mockTab, null);
+        TabReparentingParams params =
+                new TabReparentingParams(
+                        mockTab, /* sourceSelector= */ null, /* finalizeCallback= */ null);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
         Intent intent = new Intent();
@@ -390,7 +393,9 @@ public class ChromeTabCreatorJUnitTest {
 
         int tabId = 654;
         Tab mockTab = mock(Tab.class);
-        TabReparentingParams params = new TabReparentingParams(mockTab, null);
+        TabReparentingParams params =
+                new TabReparentingParams(
+                        mockTab, /* sourceSelector= */ null, /* finalizeCallback= */ null);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
         assertNull(redirectTabCreator.createFrozenTab(/* state= */ null, tabId, /* index= */ 0));
@@ -446,7 +451,9 @@ public class ChromeTabCreatorJUnitTest {
         when(mockTab.getUrl()).thenReturn(GURL.emptyGURL());
         when(mockTab.getUserDataHost()).thenReturn(new UserDataHost());
 
-        TabReparentingParams params = new TabReparentingParams(mockTab, null);
+        TabReparentingParams params =
+                new TabReparentingParams(
+                        mockTab, /* sourceSelector= */ null, /* finalizeCallback= */ null);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
         Intent intent = new Intent();

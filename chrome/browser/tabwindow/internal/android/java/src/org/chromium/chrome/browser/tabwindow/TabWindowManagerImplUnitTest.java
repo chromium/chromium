@@ -589,7 +589,10 @@ public class TabWindowManagerImplUnitTest {
         mAsyncTabParamsManager.getAsyncTabParams().clear();
         final @TabId int asyncTabId = 123;
         final TabReparentingParams placeholderParams =
-                new TabReparentingParams(new MockTab(0, mProfile), null);
+                new TabReparentingParams(
+                        new MockTab(0, mProfile),
+                        /* sourceSelector= */ null,
+                        /* finalizeCallback= */ null);
         assertNull(mSubject.getTabById(asyncTabId));
         mAsyncTabParamsManager.add(asyncTabId, placeholderParams);
         try {
@@ -643,7 +646,10 @@ public class TabWindowManagerImplUnitTest {
         mAsyncTabParamsManager.getAsyncTabParams().clear();
         final @TabId int asyncTabId = 123;
         final TabReparentingParams placeholderParams =
-                new TabReparentingParams(new MockTab(0, mProfile), null);
+                new TabReparentingParams(
+                        new MockTab(0, mProfile),
+                        /* sourceSelector= */ null,
+                        /* finalizeCallback= */ null);
         assertNull(mSubject.getTabById(asyncTabId));
         mAsyncTabParamsManager.add(asyncTabId, placeholderParams);
         try {

@@ -402,7 +402,12 @@ public class TabPersistentStoreUnitTest {
         TabState expectedTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(1, expectedTabState);
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(1, new TabReparentingParams(tabToReparent, /* finalizeCallback= */ null));
+                .add(
+                        1,
+                        new TabReparentingParams(
+                                tabToReparent,
+                                /* sourceSelector= */ null,
+                                /* finalizeCallback= */ null));
         when(mNormalTabCreator.isReparenting(1)).thenReturn(true);
         when(mNormalTabCreator.createFrozenTab(eq(expectedTabState), eq(1), eq(0)))
                 .thenReturn(tabToReparent);
@@ -487,7 +492,12 @@ public class TabPersistentStoreUnitTest {
         TabState expectedTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(1, expectedTabState);
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(1, new TabReparentingParams(tabToReparent, /* finalizeCallback= */ null));
+                .add(
+                        1,
+                        new TabReparentingParams(
+                                tabToReparent,
+                                /* sourceSelector= */ null,
+                                /* finalizeCallback= */ null));
         when(mIncognitoTabCreator.isReparenting(1)).thenReturn(true);
         mPersistentStore =
                 new TabPersistentStoreImpl(

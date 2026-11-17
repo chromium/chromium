@@ -121,7 +121,10 @@ public class ReparentingTabsTask {
 
         for (Tab tab : mTabs) {
             AsyncTabParamsManagerSingleton.getInstance()
-                    .add(tab.getId(), new TabReparentingParams(tab, finalizeCallback));
+                    .add(
+                            tab.getId(),
+                            new TabReparentingParams(
+                                    tab, /* sourceSelector= */ null, finalizeCallback));
             ReparentingTask.from(tab).detach();
         }
 

@@ -151,7 +151,10 @@ public class ReparentingTask implements UserData {
         IntentHandler.setTabId(intent, mTab.getId());
         IntentHandler.setPinnedState(intent, mTab.getIsPinned());
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(mTab.getId(), new TabReparentingParams(mTab, finalizeCallback));
+                .add(
+                        mTab.getId(),
+                        new TabReparentingParams(
+                                mTab, /* sourceSelector= */ null, finalizeCallback));
 
         detach();
     }

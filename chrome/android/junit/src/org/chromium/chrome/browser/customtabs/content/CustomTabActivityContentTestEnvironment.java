@@ -294,7 +294,10 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         Tab tab = prepareTab();
         when(tab.getId()).thenReturn(tabId);
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(tabId, new TabReparentingParams(tab, null));
+                .add(
+                        tabId,
+                        new TabReparentingParams(
+                                tab, /* sourceSelector= */ null, /* finalizeCallback= */ null));
         IntentHandler.setTabId(mIntent, tabId);
         IntentUtils.setForceIsTrustedIntentForTesting(true);
         return tab;
@@ -307,7 +310,10 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
      */
     public void addTabAwaitingReparenting(Tab tab) {
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(tab.getId(), new TabReparentingParams(tab, null));
+                .add(
+                        tab.getId(),
+                        new TabReparentingParams(
+                                tab, /* sourceSelector= */ null, /* finalizeCallback= */ null));
     }
 
     /** Makes {@code getOffTheRecordProfile(false)} return the off-the-record profile. */

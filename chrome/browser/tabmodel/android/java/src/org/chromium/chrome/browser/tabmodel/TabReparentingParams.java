@@ -21,14 +21,14 @@ public class TabReparentingParams implements AsyncTabParams {
     private final @Nullable WeakReference<TabModelSelector> mSourceSelector;
     private final @Nullable Runnable mFinalizeCallback;
 
-    /** Basic constructor for {@link TabReparentingParams}. */
-    public TabReparentingParams(Tab tabToReparent, @Nullable Runnable finalizeCallback) {
-        this(tabToReparent, /* sourceSelector= */ null, finalizeCallback);
-    }
-
     /**
-     * Constructor for {@link TabReparentingParams} when detaching from a source {@link
-     * TabModelSelector} is deferred until reparenting finishes or the params are destroyed.
+     * @param tabToReparent The tab being moved to another activity.
+     * @param sourceSelector The {@link TabModelSelector} the tab is still attached to. Non-null
+     *     only when that selector is in reparenting mode (activity recreation; see {@link
+     *     TabModelSelector#isReparentingInProgress()}), where removing the tab from its model is
+     *     deferred until reparenting finishes or these params are destroyed. Null in all other
+     *     cases, where the selector removes the tab from its model as soon as it is detached.
+     * @param finalizeCallback Run once reparenting has finished. Null if there is nothing to do.
      */
     public TabReparentingParams(
             Tab tabToReparent,

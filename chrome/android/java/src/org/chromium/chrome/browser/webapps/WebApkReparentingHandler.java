@@ -189,7 +189,10 @@ public class WebApkReparentingHandler {
         }
 
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(tabId, new TabReparentingParams(tab, null));
+                .add(
+                        tabId,
+                        new TabReparentingParams(
+                                tab, /* sourceSelector= */ null, /* finalizeCallback= */ null));
 
         // Detach tab from old window
         ReparentingTask.from(tab).detach();
