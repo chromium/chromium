@@ -180,7 +180,11 @@ bool ShouldFail(const std::map<base::FilePath, MigrationUploadError> errors,
 }
 
 // Checks if the destination cloud provider is enabled.
-bool IsMigrationMisconfigured(Profile* profile, MigrationDestination provider) {
+bool IsMigrationMisconfigured(const user_manager::User& user,
+                              MigrationDestination provider) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
+  CHECK(profile);
   switch (provider) {
     case MigrationDestination::kNotSpecified:
       NOTREACHED();
@@ -200,18 +204,18 @@ bool IsMigrationMisconfigured(Profile* profile, MigrationDestination provider) {
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
     PrefService* local_state,
-    content::BrowserContext* context,
-    PrefService* profile_prefs)
+    user_manager::User* user,
+    PrefService* pref_service,
+    std::unique_ptr<MigrationCoordinator> coordinator,
+    MigrationNotificationManager* notification_manager)
     : LocalUserFilesPolicyObserver(local_state),
-      context_(context),
-      profile_prefs_(CHECK_DEREF(profile_prefs)),
-      coordinator_(std::make_unique<MigrationCoordinator>(
-          Profile::FromBrowserContext(context))),
+      user_(CHECK_DEREF(user)),
+      profile_prefs_(CHECK_DEREF(pref_service)),
+      notification_manager_(notification_manager),
+      coordinator_(std::move(coordinator)),
       scheduling_timer_(std::make_unique<base::WallClockTimer>()) {
   CHECK(base::FeatureList::IsEnabled(ash::features::kSkyVaultV2));
-
-  notification_manager_ =
-      MigrationNotificationManagerFactory::GetForBrowserContext(context);
+  CHECK(coordinator_);
   if (!notification_manager_) {
     CHECK_IS_TEST();
   }
@@ -277,9 +281,6 @@ void LocalFilesMigrationManager::OnPrefsInitialized(bool success) {
 }
 
 void LocalFilesMigrationManager::InitializeFromPrefs() {
-  Profile* profile = Profile::FromBrowserContext(context_);
-  user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_));
   state_ = static_cast<State>(
       profile_prefs_->GetInteger(ash::prefs::kSkyVaultMigrationState));
 
@@ -325,7 +326,7 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
           base::BindOnce(&IsMyFilesEmpty,
-                         file_manager::util::GetMyFilesFolder(user)),
+                         file_manager::util::GetMyFilesFolder(*user_)),
           base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
                          weak_factory_.GetWeakPtr()));
     }
@@ -334,7 +335,7 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
   // Migration is enabled.
   SkyVaultMigrationEnabledHistogram(migration_destination_, true);
 
-  if (IsMigrationMisconfigured(profile, migration_destination_)) {
+  if (IsMigrationMisconfigured(*user_, migration_destination_)) {
     CHECK(IsCloudDestination(migration_destination_));
     LOG(WARNING) << "Local files migration policy is set to use "
                  << (migration_destination_ ==
@@ -356,7 +357,7 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&IsMyFilesEmpty,
-                     file_manager::util::GetMyFilesFolder(user)),
+                     file_manager::util::GetMyFilesFolder(*user_)),
       base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
                      weak_factory_.GetWeakPtr()));
 }
@@ -372,9 +373,6 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     // No change.
     return;
   }
-
-  user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_));
 
   LocalStorageHistograms(*profile_prefs_, local_user_files_allowed_);
 
@@ -393,7 +391,7 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE, {base::MayBlock()},
           base::BindOnce(&IsMyFilesEmpty,
-                         file_manager::util::GetMyFilesFolder(user)),
+                         file_manager::util::GetMyFilesFolder(*user_)),
           base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
                          weak_factory_.GetWeakPtr()));
     }
@@ -422,10 +420,7 @@ void LocalFilesMigrationManager::OnMigrationStopped(bool log_file_deleted) {
     return;
   }
 
-  Profile* profile = Profile::FromBrowserContext(context_);
-  user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_));
-  if (IsMigrationMisconfigured(profile, migration_destination_)) {
+  if (IsMigrationMisconfigured(*user_, migration_destination_)) {
     CHECK(IsCloudDestination(migration_destination_),
           base::NotFatalUntil::M160);
     LOG(WARNING) << "Local files migration policy is set to use "
@@ -446,7 +441,7 @@ void LocalFilesMigrationManager::OnMigrationStopped(bool log_file_deleted) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&IsMyFilesEmpty,
-                     file_manager::util::GetMyFilesFolder(user)),
+                     file_manager::util::GetMyFilesFolder(*user_)),
       base::BindOnce(&LocalFilesMigrationManager::OnMyFilesChecked,
                      weak_factory_.GetWeakPtr()));
 }
@@ -639,13 +634,10 @@ void LocalFilesMigrationManager::GetPathsToUpload() {
     return;
   }
 
-  user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_));
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetMyFilesContents,
-                     file_manager::util::GetMyFilesFolder(user)),
+                     file_manager::util::GetMyFilesFolder(*user_)),
       base::BindOnce(&LocalFilesMigrationManager::StartMigration,
                      weak_factory_.GetWeakPtr()));
   notification_manager_->ShowMigrationProgressNotification(
@@ -830,11 +822,9 @@ void LocalFilesMigrationManager::OnCleanupDone(
 }
 
 void LocalFilesMigrationManager::SetLocalUserFilesWriteEnabled(bool enabled) {
-  const user_manager::User* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_);
   user_data_auth::SetUserDataStorageWriteEnabledRequest request;
   *request.mutable_account_id() =
-      cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId());
+      cryptohome::CreateAccountIdentifierFromAccountId(user_->GetAccountId());
   request.set_enabled(enabled);
   ash::UserDataAuthClient::Get()->SetUserDataStorageWriteEnabled(
       request,
@@ -946,7 +936,9 @@ LocalFilesMigrationManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  if (!ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context)) {
+  user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  if (!user) {
     // Not a rare edge case: this factory is also invoked for the
     // sign-in/lock-screen profile (see WithAshInternals() above), which
     // by design never has a user -- on every boot, not just for ad-hoc
@@ -956,12 +948,15 @@ LocalFilesMigrationManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  Profile* profile = Profile::FromBrowserContext(context);
+
   // NOTE: Allow g_browser_process here as this class is initialized lazily with
   // base::NoDestructor.
   std::unique_ptr<LocalFilesMigrationManager> instance =
       std::make_unique<LocalFilesMigrationManager>(
-          g_browser_process->local_state(), context,
-          Profile::FromBrowserContext(context)->GetPrefs());
+          g_browser_process->local_state(), user, profile->GetPrefs(),
+          std::make_unique<MigrationCoordinator>(profile),
+          MigrationNotificationManagerFactory::GetForBrowserContext(context));
   instance->Initialize();
   return instance;
 }
