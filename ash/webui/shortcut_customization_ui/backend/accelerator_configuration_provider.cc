@@ -30,6 +30,7 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -64,9 +65,6 @@ using ::ash::shortcut_customization::mojom::SimpleAccelerator;
 using ::ash::shortcut_customization::mojom::SimpleAcceleratorPtr;
 using ::ash::shortcut_customization::mojom::UserAction;
 using mojom::AcceleratorConfigResult;
-using HiddenAcceleratorMap =
-    std::map<AcceleratorActionId, std::vector<ui::Accelerator>>;
-using ReservedAcceleratorMap = std::map<ui::Accelerator, int>;
 
 constexpr size_t kMaxAcceleratorsAllowed = 5;
 
@@ -80,40 +78,51 @@ constexpr char kRemoveDefaultAcceleratorHistogramName[] =
 // Raw accelerator data may result in the same shortcut being displayed multiple
 // times in the frontend. GetHiddenAcceleratorMap() is used to collect such
 // accelerators and hide them from display.
-const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
-  static const auto kHiddenAcceleratorMap =
-      base::NoDestructor<HiddenAcceleratorMap>({
-          {AcceleratorAction::kToggleAppList,
-           {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
-                            ui::Accelerator::KeyState::PRESSED),
-            ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
-                            ui::Accelerator::KeyState::RELEASED),
-            ui::Accelerator(ui::VKEY_RWIN, ui::EF_NONE,
-                            ui::Accelerator::KeyState::RELEASED),
-            ui::Accelerator(ui::VKEY_RWIN, ui::EF_SHIFT_DOWN,
-                            ui::Accelerator::KeyState::RELEASED)}},
-          {AcceleratorAction::kToggleCapsLock,
-           {ui::Accelerator(ui::VKEY_RWIN, ui::EF_ALT_DOWN,
-                            ui::Accelerator::KeyState::RELEASED),
-            ui::Accelerator(ui::VKEY_MENU, ui::EF_COMMAND_DOWN,
-                            ui::Accelerator::KeyState::RELEASED)}},
-          {AcceleratorAction::kShowShortcutViewer,
-           {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
-                            ui::Accelerator::KeyState::PRESSED)}},
-          {AcceleratorAction::kToggleFullscreen,
-           {ui::Accelerator(ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
-                            ui::Accelerator::KeyState::PRESSED)}},
-          {AcceleratorAction::kSwitchToLastUsedIme,
-           {ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
-                            ui::Accelerator::KeyState::RELEASED)}},
-          {AcceleratorAction::kMediaPause,
-           {ui::Accelerator(ui::VKEY_PAUSE, ui::EF_NONE,
-                            ui::Accelerator::KeyState::PRESSED)}},
-          {AcceleratorAction::kMediaPlay,
-           {ui::Accelerator(ui::VKEY_PLAY, ui::EF_NONE,
-                            ui::Accelerator::KeyState::PRESSED)}},
-      });
-  return *kHiddenAcceleratorMap;
+const auto& GetHiddenAcceleratorMap() {
+  static constexpr ui::Accelerator kToggleAppListHiddenAccelerators[] = {
+      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
+                      ui::Accelerator::KeyState::PRESSED),
+      ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+                      ui::Accelerator::KeyState::RELEASED),
+      ui::Accelerator(ui::VKEY_RWIN, ui::EF_NONE,
+                      ui::Accelerator::KeyState::RELEASED),
+      ui::Accelerator(ui::VKEY_RWIN, ui::EF_SHIFT_DOWN,
+                      ui::Accelerator::KeyState::RELEASED)};
+  static constexpr ui::Accelerator kToggleCapsLockHiddenAccelerators[] = {
+      ui::Accelerator(ui::VKEY_RWIN, ui::EF_ALT_DOWN,
+                      ui::Accelerator::KeyState::RELEASED),
+      ui::Accelerator(ui::VKEY_MENU, ui::EF_COMMAND_DOWN,
+                      ui::Accelerator::KeyState::RELEASED)};
+  static constexpr ui::Accelerator kShowShortcutViewerHiddenAccelerators[] = {
+      ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
+                      ui::Accelerator::KeyState::PRESSED)};
+  static constexpr ui::Accelerator kToggleFullscreenHiddenAccelerators[] = {
+      ui::Accelerator(ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
+                      ui::Accelerator::KeyState::PRESSED)};
+  static constexpr ui::Accelerator kSwitchToLastUsedImeHiddenAccelerators[] = {
+      ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+                      ui::Accelerator::KeyState::RELEASED)};
+  static constexpr ui::Accelerator kMediaPauseHiddenAccelerators[] = {
+      ui::Accelerator(ui::VKEY_PAUSE, ui::EF_NONE,
+                      ui::Accelerator::KeyState::PRESSED)};
+  static constexpr ui::Accelerator kMediaPlayHiddenAccelerators[] = {
+      ui::Accelerator(ui::VKEY_PLAY, ui::EF_NONE,
+                      ui::Accelerator::KeyState::PRESSED)};
+
+  static constexpr auto kHiddenAcceleratorMap = base::MakeFixedFlatMap<
+      AcceleratorActionId, base::span<const ui::Accelerator>>({
+      {AcceleratorAction::kToggleAppList, kToggleAppListHiddenAccelerators},
+      {AcceleratorAction::kToggleCapsLock, kToggleCapsLockHiddenAccelerators},
+      {AcceleratorAction::kShowShortcutViewer,
+       kShowShortcutViewerHiddenAccelerators},
+      {AcceleratorAction::kToggleFullscreen,
+       kToggleFullscreenHiddenAccelerators},
+      {AcceleratorAction::kSwitchToLastUsedIme,
+       kSwitchToLastUsedImeHiddenAccelerators},
+      {AcceleratorAction::kMediaPause, kMediaPauseHiddenAccelerators},
+      {AcceleratorAction::kMediaPlay, kMediaPlayHiddenAccelerators},
+  });
+  return kHiddenAcceleratorMap;
 }
 
 constexpr int kCustomizationModifierMask =
@@ -233,7 +242,7 @@ bool IsAcceleratorHidden(AcceleratorActionId action_id,
                          const ui::Accelerator& accelerator) {
   const auto& iter = GetHiddenAcceleratorMap().find(action_id);
   if (iter != GetHiddenAcceleratorMap().end()) {
-    const std::vector<ui::Accelerator>& hidden_accelerators = iter->second;
+    const base::span<const ui::Accelerator> hidden_accelerators = iter->second;
     if (std::ranges::contains(hidden_accelerators, accelerator)) {
       return true;
     }
@@ -261,15 +270,6 @@ bool IsAcceleratorHidden(AcceleratorActionId action_id,
       ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(
           accelerator.key_code(), keycode_entry->dom_code) != ui::DomCode::NONE;
   return !current_layout_vkey_is_remapped && us_layout_vkey_is_remapped;
-}
-
-std::optional<std::u16string> GetReservedAcceleratorName(
-    ui::Accelerator accelerator) {
-  const auto iter = GetReservedAcceleratorsMap().find(accelerator);
-  if (iter == GetReservedAcceleratorsMap().end()) {
-    return std::nullopt;
-  }
-  return l10n_util::GetStringUTF16(iter->second);
 }
 
 mojom::StandardAcceleratorPropertiesPtr CreateStandardAcceleratorProps(

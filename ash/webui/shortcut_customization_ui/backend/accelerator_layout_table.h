@@ -37,7 +37,7 @@
 //    4.    Add a new entry to `kAcceleratorLayouts` below. The ordering of the
 //          accelerators is reflected in the app, so place the accelerator where
 //          it would most logically fit.
-//    5.    Add a new entry to `acceleratorLayoutMap` in
+//    5.    Add a new entry to `kAcceleratorLayoutMap` in
 //          `accelerator_layout_table.cc`.
 //
 //   [1]: An "ambient" accelerator is a non-modifiable miscellaneous accelerator
@@ -223,17 +223,12 @@ struct NonConfigurableAcceleratorDetails {
 using NonConfigurableActionsMap =
     std::map<NonConfigurableActions, NonConfigurableAcceleratorDetails>;
 
-using AcceleratorLayoutMap = std::map<uint32_t, AcceleratorLayoutDetails>;
-
-using ReservedAcceleratorsMap = std::map<ui::Accelerator, uint32_t>;
-
 const NonConfigurableActionsMap& GetNonConfigurableActionsMap();
 
-const AcceleratorLayoutMap& GetAcceleratorLayoutMap();
-
-const ReservedAcceleratorsMap& GetReservedAcceleratorsMap();
-
 std::optional<AcceleratorLayoutDetails> GetAcceleratorLayout(uint32_t id);
+
+std::optional<std::u16string> GetReservedAcceleratorName(
+    ui::Accelerator accelerator);
 
 // A fixed set of accelerators that should not have a layout. This is used for
 // integrity check to make sure when a new accelerator is added, either it has
@@ -278,7 +273,7 @@ constexpr auto kAshAcceleratorsWithoutLayout =
 // The following is an ordered list of accelerator layouts sorted by category
 // and how they are represented in the app. If adding a new action, please
 // ensure that the position is correct and the corresponding layout detail is
-// represented in `acceleratorLayoutMap` in the .cc file.
+// represented in `kAcceleratorLayoutMap` in the .cc file.
 inline constexpr uint32_t kAcceleratorLayouts[] = {
     // General
     // General > Controls
