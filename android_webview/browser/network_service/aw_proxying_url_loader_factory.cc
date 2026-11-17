@@ -1262,15 +1262,15 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
       request.request_initiator->scheme() != url::kContentScheme &&
       request.request_initiator->scheme() != url::kFileScheme) {
     if (request.url.SchemeIs(url::kContentScheme)) {
-      if (recorded_content_access_destinations_.insert(request.destination)
-              .second) {
+      if (!recorded_content_access_destinations_.Has(request.destination)) {
+        recorded_content_access_destinations_.Put(request.destination);
         base::UmaHistogramEnumeration(
             "Android.WebView.LoadDataWithBaseUrl.ContentAccessDestination",
             request.destination);
       }
     } else if (request.url.SchemeIsFile()) {
-      if (recorded_file_access_destinations_.insert(request.destination)
-              .second) {
+      if (!recorded_file_access_destinations_.Has(request.destination)) {
+        recorded_file_access_destinations_.Put(request.destination);
         base::UmaHistogramEnumeration(
             "Android.WebView.LoadDataWithBaseUrl.FileAccessDestination",
             request.destination);

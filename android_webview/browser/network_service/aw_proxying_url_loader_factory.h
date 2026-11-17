@@ -11,7 +11,6 @@
 #include "android_webview/browser/http_headers/aw_header_interceptor_store.h"
 #include "android_webview/browser/http_headers/aw_origin_matched_header.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -218,10 +218,8 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // We record UMA when a non-local (so not file:// or content://) URL loads a
   // local resource. We only want to record once per destination type for a
   // given load. These sets track which ones have already been recorded.
-  base::flat_set<network::mojom::RequestDestination>
-      recorded_file_access_destinations_;
-  base::flat_set<network::mojom::RequestDestination>
-      recorded_content_access_destinations_;
+  network::RequestDestinationSet recorded_file_access_destinations_;
+  network::RequestDestinationSet recorded_content_access_destinations_;
 
   base::WeakPtrFactory<AwProxyingURLLoaderFactory> weak_factory_{this};
 };
