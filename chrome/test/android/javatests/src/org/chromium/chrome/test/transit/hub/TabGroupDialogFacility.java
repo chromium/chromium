@@ -137,8 +137,7 @@ public class TabGroupDialogFacility<
     public TabGroupDialogFacility<HostStationT> inputName(String newTabGroupName) {
         return titleInputElement
                 .performViewActionTo(replaceText(newTabGroupName))
-                .exitFacilityAnd()
-                .enterFacility(
+                .replaceFacility(
                         new TabGroupDialogFacility<>(
                                 mTabIdsInGroup, newTabGroupName, mSelectedColor));
     }

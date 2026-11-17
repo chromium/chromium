@@ -599,8 +599,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 dialogFacility
                         .positiveButtonElement
                         .clickTo()
-                        .exitFacilityAnd()
-                        .enterFacility(new UndoSnackbarFacility<>("tabs closed"));
+                        .replaceFacility(new UndoSnackbarFacility<>("tabs closed"));
 
         // Assert: The side panel is closed in the 0-tab GTS state.
         waitForContainerViewClose(coordinator);
@@ -652,8 +651,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 dialogFacility
                         .positiveButtonElement
                         .clickTo()
-                        .exitFacilityAnd()
-                        .enterFacility(new UndoSnackbarFacility<>("tabs closed"));
+                        .replaceFacility(new UndoSnackbarFacility<>("tabs closed"));
 
         // Assert: The side panel is closed in the 0-tab GTS state.
         waitForContainerViewClose(coordinator);

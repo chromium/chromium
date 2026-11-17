@@ -94,8 +94,7 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
                                     .getFakeSuggestions()
                                     .simulateAutocompleteSuggestion(profile, mText, autocompleted);
                         })
-                .exitFacilityAnd()
-                .enterFacility(
+                .replaceFacility(
                         new OmniboxSuggestionsFacility(mOmniboxFacility, mText + autocompleted));
     }
 
@@ -110,8 +109,7 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
         return mOmniboxFacility
                 .deleteButtonElement
                 .clickTo()
-                .exitFacilityAnd(this)
-                .enterFacility(new OmniboxEnteredTextFacility(mOmniboxFacility, ""));
+                .reach(replacedBy(new OmniboxEnteredTextFacility(mOmniboxFacility, "")));
     }
 
     /** Closes the keyboard and presses Back to exit the Omnibox facility. */

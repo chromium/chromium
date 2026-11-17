@@ -357,6 +357,20 @@ public class TripBuilder {
     }
 
     /**
+     * Execute the transition synchronously, replacing the context Facility with |next|.
+     *
+     * <p>The context Facility is the one that owns the Element or offers the Trigger, e.g. {@code
+     * doneButtonElement.clickTo().replaceFacility(new ResultsFacility())}. Elsewhere, use {@code
+     * reach(facility.replacedBy(next))}.
+     *
+     * @return |next|, entered.
+     * @see Facility#replacedBy(Facility)
+     */
+    public <FacilityT extends Facility<?>> FacilityT replaceFacility(FacilityT next) {
+        return exitFacilityAnd().enterFacility(next);
+    }
+
+    /**
      * Execute the transition synchronously, making the state changes in |outcome|.
      *
      * <p>Joins this TripBuilder's Trigger and options with the state changes of an {@link Outcome}

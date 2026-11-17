@@ -34,8 +34,7 @@ public class NotificationsTestUtils {
             case TipsNotificationsFeatureType.QUICK_DELETE:
                 return settingsButtonElement
                         .clickTo()
-                        .exitFacilityAnd()
-                        .enterFacility(new QuickDeleteDialogFacility());
+                        .replaceFacility(new QuickDeleteDialogFacility());
             case TipsNotificationsFeatureType.GOOGLE_LENS:
                 LensController lensController = (LensController) extraArgs[0];
                 ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
@@ -56,8 +55,7 @@ public class NotificationsTestUtils {
             case TipsNotificationsFeatureType.SIGNIN:
                 return settingsButtonElement
                         .clickTo()
-                        .exitFacilityAnd()
-                        .enterFacility(new SigninBottomSheetFacility<>());
+                        .replaceFacility(new SigninBottomSheetFacility<>());
             case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:
                 return settingsButtonElement
                         .clickTo()

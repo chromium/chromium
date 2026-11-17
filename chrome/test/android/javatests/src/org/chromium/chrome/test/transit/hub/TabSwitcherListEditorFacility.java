@@ -100,8 +100,7 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
         List<Integer> newTabIdsSelected = new ArrayList<>(mTabIdsSelected);
         newTabIdsSelected.add(tabId);
         return clickTabAtCardIndexTo(index)
-                .exitFacilityAnd()
-                .enterFacility(
+                .replaceFacility(
                         new TabSwitcherListEditorFacility<>(newTabIdsSelected, mTabGroupsSelected));
     }
 
@@ -111,8 +110,7 @@ public class TabSwitcherListEditorFacility<HostStationT extends TabSwitcherStati
         List<List<Integer>> newTabGroupsSelected = new ArrayList<>(mTabGroupsSelected);
         newTabGroupsSelected.add(tabIds);
         return clickTabAtCardIndexTo(index)
-                .exitFacilityAnd()
-                .enterFacility(
+                .replaceFacility(
                         new TabSwitcherListEditorFacility<>(mTabIdsSelected, newTabGroupsSelected));
     }
 

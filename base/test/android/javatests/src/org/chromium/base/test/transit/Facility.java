@@ -82,6 +82,18 @@ public class Facility<HostStationT extends Station<?>> extends ConditionalState 
         return mHostStation;
     }
 
+    /**
+     * Outcome: this Facility is replaced by |next| in a single Transition.
+     *
+     * <p>When the Trigger comes from this Facility, e.g. one of its Elements, {@link
+     * TripBuilder#replaceFacility(Facility)} is shorter. Use this Outcome when another Facility
+     * offers the Trigger, more state changes are needed, or a method offers the replacement for
+     * callers to reach, e.g. {@code trip.reach(dialog.replacedBy(sheet).and(softKeyboard))}.
+     */
+    public <F extends Facility<? super HostStationT>> Outcome<F> replacedBy(F next) {
+        return Outcome.enter(next).andExit(this);
+    }
+
     @Override
     public String getName() {
         return String.format(

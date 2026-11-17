@@ -58,15 +58,12 @@ public class TipsPromoDetailsPageBottomSheetFacility<
     public TipsPromoMainPageBottomSheetFacility<HostStationT> clickBackButton() {
         return backButtonElement
                 .clickTo()
-                .exitFacilityAnd()
-                .enterFacility(new TipsPromoMainPageBottomSheetFacility<>());
+                .replaceFacility(new TipsPromoMainPageBottomSheetFacility<>());
     }
 
     /** Use the system backpress to navigate back to the main page. */
     public TipsPromoMainPageBottomSheetFacility<HostStationT> pressBack() {
-        return pressBackTo()
-                .exitFacilityAnd()
-                .enterFacility(new TipsPromoMainPageBottomSheetFacility<>());
+        return pressBackTo().replaceFacility(new TipsPromoMainPageBottomSheetFacility<>());
     }
 
     /** Performs the positive button click action for a given feature type. */

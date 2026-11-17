@@ -154,7 +154,7 @@ public class Outcome<R extends @Nullable Object> {
      * lambda, or when the Trigger is passed in by a caller:
      *
      * <pre>{@code
-     * return swapFor(new SuggestionsFacility()).after(runTo(() -> {
+     * return replacedBy(new SuggestionsFacility()).after(runTo(() -> {
      *     ...
      * }));
      * }</pre>

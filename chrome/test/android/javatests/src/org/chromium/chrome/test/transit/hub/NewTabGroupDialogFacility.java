@@ -179,8 +179,7 @@ public class NewTabGroupDialogFacility<
 
         return titleInputElement
                 .performViewActionTo(replaceText(newTabGroupName))
-                .exitFacilityAnd()
-                .enterFacility(
+                .replaceFacility(
                         new NewTabGroupDialogFacility<>(
                                 mTabIdsToGroup, newTabGroupName, mSelectedColor, mSoftKeyboard));
     }
@@ -192,8 +191,7 @@ public class NewTabGroupDialogFacility<
         ensureSoftKeyboardClosed();
         return colorElements[newColor]
                 .clickTo()
-                .exitFacilityAnd()
-                .enterFacility(
+                .replaceFacility(
                         new NewTabGroupDialogFacility<>(
                                 mTabIdsToGroup, mTitle, newColor, mSoftKeyboard));
     }
@@ -201,19 +199,7 @@ public class NewTabGroupDialogFacility<
     /** Press "Done" to confirm the tab group name and color. */
     public TabSwitcherGroupCardFacility pressDone() {
         ensureSoftKeyboardClosed();
-
-        // The reason we can pass an expected card index is because the tab group has already been
-        // created.
-        TabModel currentModel = mHostStation.getTabModel();
-        int expectedCardIndex =
-                runOnUiThreadBlocking(
-                        () -> TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup));
-        return doneButtonElement
-                .clickTo()
-                .exitFacilityAnd()
-                .enterFacility(
-                        new TabSwitcherGroupCardFacility(
-                                expectedCardIndex, mTabIdsToGroup, mTitle));
+        return doneButtonElement.clickTo().replaceFacility(createGroupCard());
     }
 
     /**
@@ -227,8 +213,7 @@ public class NewTabGroupDialogFacility<
         // created.
         return doneButtonElement
                 .clickTo()
-                .exitFacilityAnd()
-                .enterFacility(new TabGroupDialogFacility<>(mTabIdsToGroup));
+                .replaceFacility(new TabGroupDialogFacility<>(mTabIdsToGroup));
     }
 
     /**
@@ -246,9 +231,8 @@ public class NewTabGroupDialogFacility<
 
         return doneButtonElement
                 .clickTo()
-                .exitFacilityAnd()
                 .withPossiblyAlreadyFulfilled()
-                .enterFacility(
+                .replaceFacility(
                         new NewTabGroupDialogFacility<>(
                                 mTabIdsToGroup, mTitle, mSelectedColor, mSoftKeyboard));
     }
@@ -256,18 +240,18 @@ public class NewTabGroupDialogFacility<
     /** Press the system backpress to confirm the tab group name and color. */
     public TabSwitcherGroupCardFacility pressBack() {
         ensureSoftKeyboardClosed();
+        return pressBackTo().replaceFacility(createGroupCard());
+    }
 
+    /** The card of the group created, shown once the dialog closes. */
+    private TabSwitcherGroupCardFacility createGroupCard() {
         // The reason we can pass an expected card index is because the tab group has already been
         // created.
         TabModel currentModel = mHostStation.getTabModel();
         int expectedCardIndex =
                 runOnUiThreadBlocking(
                         () -> TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup));
-        return pressBackTo()
-                .exitFacilityAnd()
-                .enterFacility(
-                        new TabSwitcherGroupCardFacility(
-                                expectedCardIndex, mTabIdsToGroup, mTitle));
+        return new TabSwitcherGroupCardFacility(expectedCardIndex, mTabIdsToGroup, mTitle);
     }
 
     private void ensureSoftKeyboardClosed() {

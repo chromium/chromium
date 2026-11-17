@@ -55,8 +55,7 @@ public class TipsPromoMainPageBottomSheetFacility<
             @Nullable List<Integer> detailPageStepsRes) {
         return detailsButtonElement
                 .clickTo()
-                .exitFacilityAnd()
-                .enterFacility(new TipsPromoDetailsPageBottomSheetFacility<>(detailPageStepsRes));
+                .replaceFacility(new TipsPromoDetailsPageBottomSheetFacility<>(detailPageStepsRes));
     }
 
     /**

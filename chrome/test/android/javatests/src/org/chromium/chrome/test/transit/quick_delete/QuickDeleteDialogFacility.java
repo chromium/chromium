@@ -100,8 +100,7 @@ public class QuickDeleteDialogFacility extends ModalDialogFacility {
         final int positionToSet = getSpinnerPositionForTimePeriod(timePeriod, options);
 
         return runOnUiThreadTo(() -> spinnerElement.value().setSelection(positionToSet))
-                .exitFacilityAnd()
-                .enterFacility(new QuickDeleteDialogFacility(timePeriod));
+                .replaceFacility(new QuickDeleteDialogFacility(timePeriod));
     }
 
     private static int getSpinnerPositionForTimePeriod(

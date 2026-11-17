@@ -97,9 +97,7 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
                 new NewTabGroupDialogFacility<>(mListEditor.getAllTabIdsSelected(), softKeyboard);
         return mAddTabsToNewGroupMenuItem
                 .scrollToAndSelectTo()
-                .exitFacilityAnd(mListEditor)
-                .enterFacilityAnd(softKeyboard)
-                .enterFacility(dialog);
+                .reach(mListEditor.replacedBy(dialog).and(softKeyboard));
     }
 
     /**
@@ -117,10 +115,10 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
                         () -> new ArrayList<>(tabModel.getAllTabGroupIds()));
         return mAddTabsToGroupMenuItem
                 .scrollToAndSelectTo()
-                .exitFacilityAnd(mListEditor)
-                .enterFacility(
-                        new TabGroupListBottomSheetFacility<>(
-                                allTabGroupIds, isNewTabGroupRowVisible));
+                .reach(
+                        mListEditor.replacedBy(
+                                new TabGroupListBottomSheetFacility<>(
+                                        allTabGroupIds, isNewTabGroupRowVisible)));
     }
 
     /**

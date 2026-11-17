@@ -82,11 +82,7 @@ public class TabGroupListBottomSheetFacility<
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         NewTabGroupDialogFacility<HostStationT> newTabGroupDialog =
                 new NewTabGroupDialogFacility<>(softKeyboard);
-        return newTabGroupRow
-                .clickTo()
-                .exitFacilityAnd()
-                .enterFacilityAnd(softKeyboard)
-                .enterFacility(newTabGroupDialog);
+        return newTabGroupRow.clickTo().reach(replacedBy(newTabGroupDialog).and(softKeyboard));
     }
 
     /**
