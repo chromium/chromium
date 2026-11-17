@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
@@ -29,10 +28,7 @@ CustomPassphraseBootstrapToken::FromEncryptedPref(
   }
 
   std::string decrypted_key;
-  bool decryption_result = encryptor.DecryptString(decoded_key, &decrypted_key);
-  base::UmaHistogramBoolean("Sync.BootstrapTokenDecryptionResult",
-                            decryption_result);
-  if (!decryption_result) {
+  if (!encryptor.DecryptString(decoded_key, &decrypted_key)) {
     return CustomPassphraseBootstrapToken();
   }
 
@@ -87,11 +83,7 @@ std::string CustomPassphraseBootstrapToken::ToEncryptedPref(
   }
 
   std::string encrypted_key;
-  bool encryption_result =
-      encryptor.EncryptString(serialized_key, &encrypted_key);
-  base::UmaHistogramBoolean("Sync.BootstrapTokenEncryptionResult",
-                            encryption_result);
-  if (!encryption_result) {
+  if (!encryptor.EncryptString(serialized_key, &encrypted_key)) {
     return std::string();
   }
 

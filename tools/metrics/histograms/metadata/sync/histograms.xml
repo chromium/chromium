@@ -603,26 +603,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.BootstrapTokenDecryptionResult" enum="BooleanSuccess"
-    expires_after="2026-12-27">
-  <owner>mtatarski@google.com</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Records the success or failure of decrypting the sync bootstrap token. This
-    token is used to decrypt sync data when a custom passphrase is set.
-  </summary>
-</histogram>
-
-<histogram name="Sync.BootstrapTokenEncryptionResult" enum="BooleanSuccess"
-    expires_after="2026-12-27">
-  <owner>mtatarski@google.com</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Records the success or failure of encrypting the sync bootstrap token. This
-    token is used to decrypt sync data when a custom passphrase is set.
-  </summary>
-</histogram>
-
 <histogram name="Sync.ClearMetadataWhileStopped{ClearTime}"
     enum="SyncDataTypes" expires_after="2027-04-13">
   <owner>ankushkush@google.com</owner>
@@ -2152,26 +2132,6 @@ chromium-metrics-reviews@google.com.
     ModelLoadManager::LoadModels(), before the timeout. This type is ignored and
     the rest of types which have loaded are marked ready for configuration. This
     type would ultimately be stopped once gets out of MODEL_STARTING state.
-  </summary>
-</histogram>
-
-<histogram name="Sync.NigoriStorageDecryptionResult" enum="BooleanSuccess"
-    expires_after="2026-12-27">
-  <owner>mtatarski@google.com</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Records the success or failure of decrypting the Nigori local data from
-    disk. This data contains sync's encryption keys.
-  </summary>
-</histogram>
-
-<histogram name="Sync.NigoriStorageEncryptionResult" enum="BooleanSuccess"
-    expires_after="2026-12-27">
-  <owner>mtatarski@google.com</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    Records the success or failure of encrypting the Nigori local data to disk.
-    This data contains sync's encryption keys.
   </summary>
 </histogram>
 

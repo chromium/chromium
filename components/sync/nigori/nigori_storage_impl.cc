@@ -10,7 +10,6 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 
@@ -39,9 +38,6 @@ void NigoriStorageImpl::StoreData(const sync_pb::NigoriLocalData& data) {
   bool encryption_success =
       encryptor_->EncryptString(serialized_data, &encrypted_data);
 
-  base::UmaHistogramBoolean("Sync.NigoriStorageEncryptionResult",
-                            encryption_success);
-
   if (!encryption_success) {
     DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
     return;
@@ -69,9 +65,6 @@ std::optional<sync_pb::NigoriLocalData> NigoriStorageImpl::RestoreData() {
   CHECK(encryptor_);
   bool decryption_success =
       encryptor_->DecryptString(encrypted_data, &serialized_data);
-
-  base::UmaHistogramBoolean("Sync.NigoriStorageDecryptionResult",
-                            decryption_success);
 
   if (!decryption_success) {
     DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
