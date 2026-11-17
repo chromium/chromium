@@ -60,10 +60,14 @@ class FeatureShowcaseDefaultBrowserHandlerTest : public testing::Test {
 TEST_F(FeatureShowcaseDefaultBrowserHandlerTest,
        SetAsDefaultBrowserLogsMetrics) {
   base::HistogramTester histogram_tester;
-  CreateHandler();
+  shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
+
+  base::RunLoop run_loop;
+  CreateHandlerForTesting(run_loop.QuitClosure());
 
   handler_remote_->SetAsDefaultBrowser();
   handler_remote_.FlushForTesting();
+  run_loop.Run();
 
   histogram_tester.ExpectBucketCount("ProfilePicker.FirstRun.DefaultBrowser",
                                      DefaultBrowserChoice::kClickSetAsDefault,
