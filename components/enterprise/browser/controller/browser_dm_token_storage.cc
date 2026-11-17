@@ -103,6 +103,16 @@ std::string BrowserDMTokenStorage::RetrieveEnrollmentToken() {
   return enrollment_token_;
 }
 
+void BrowserDMTokenStorage::RefreshEnrollmentToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Force `InitIfNeeded()` to read the enrollment token again by marking it as
+  // skipped, which takes its retry path. If the storage isn't initialized yet,
+  // `InitIfNeeded()` initializes everything instead.
+  is_init_enrollment_token_skipped_ = true;
+  InitIfNeeded();
+}
+
 void BrowserDMTokenStorage::StoreDMToken(const std::string& dm_token,
                                          StoreCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

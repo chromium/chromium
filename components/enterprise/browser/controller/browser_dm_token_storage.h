@@ -80,6 +80,12 @@ class BrowserDMTokenStorage {
   std::string RetrieveClientId();
   // Returns the enrollment token, or an empty string if there is none.
   std::string RetrieveEnrollmentToken();
+  // Reads the enrollment token again and caches the result in place of the
+  // previous one, even if it's empty, so call this only once the token is
+  // available. On Android, the token comes from app restrictions, which can
+  // reach the `PolicyService` after the storage was initialized. On Linux and
+  // Mac, it may read a file, which would block the UI thread.
+  void RefreshEnrollmentToken();
   // Asynchronously stores |dm_token| and calls |callback| with a boolean to
   // indicate success or failure. It is an error to attempt concurrent store
   // operations.

@@ -112,6 +112,37 @@ TEST_F(BrowserDMTokenStorageTest, RetrieveEnrollmentToken) {
   EXPECT_EQ(kEnrollmentToken1, storage_.RetrieveEnrollmentToken());
 }
 
+TEST_F(BrowserDMTokenStorageTest, RefreshEnrollmentToken) {
+  EXPECT_EQ(kEnrollmentToken1, storage_.RetrieveEnrollmentToken());
+  EXPECT_EQ(kClientId1, storage_.RetrieveClientId());
+  EXPECT_EQ(kDMToken1, storage_.RetrieveDMToken().value());
+
+  storage_.SetEnrollmentToken(kEnrollmentToken2);
+  storage_.SetClientId(kClientId2);
+  storage_.SetDMToken(kDMToken2);
+  storage_.RefreshEnrollmentToken();
+  // The refreshed value is cached like the original one.
+  storage_.SetEnrollmentToken(kEnrollmentToken1);
+
+  // Only the enrollment token was read from the system again, when it was
+  // refreshed.
+  EXPECT_EQ(kEnrollmentToken2, storage_.RetrieveEnrollmentToken());
+  EXPECT_EQ(kClientId1, storage_.RetrieveClientId());
+  EXPECT_EQ(kDMToken1, storage_.RetrieveDMToken().value());
+}
+
+TEST_F(BrowserDMTokenStorageTest, RefreshEnrollmentTokenBeforeInitialization) {
+  storage_.RefreshEnrollmentToken();
+  storage_.SetEnrollmentToken(kEnrollmentToken2);
+  storage_.SetClientId(kClientId2);
+  storage_.SetDMToken(kDMToken2);
+
+  // The refresh initialized the storage, which read all the values.
+  EXPECT_EQ(kEnrollmentToken1, storage_.RetrieveEnrollmentToken());
+  EXPECT_EQ(kClientId1, storage_.RetrieveClientId());
+  EXPECT_EQ(kDMToken1, storage_.RetrieveDMToken().value());
+}
+
 TEST_P(BrowserDMTokenStorageStoreAndRetrieveTest, StoreDMToken) {
   storage_.SetDMToken(GetParam().dm_token_to_store);
   DMToken dm_token = storage_.RetrieveDMToken();

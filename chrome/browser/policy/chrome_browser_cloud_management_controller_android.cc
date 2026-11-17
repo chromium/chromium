@@ -21,6 +21,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/client_data_delegate_android.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/dm_server_client.h"
@@ -92,6 +93,12 @@ void DeferredInitializationRunner::OnProviderUpdatePropagated(
   }
 
   policy_service->RemoveProviderUpdateObserver(this);
+
+  // `BrowserDMTokenStorage` cached the enrollment token, at the latest when
+  // `ReadyToInit()` checked for a DM token, before the platform policies
+  // carrying it reached the `PolicyService`. Have it read the token again so
+  // that the deferred initialization doesn't use the stale value.
+  BrowserDMTokenStorage::Get()->RefreshEnrollmentToken();
   std::move(callback_).Run();
 }
 
