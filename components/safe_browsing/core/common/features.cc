@@ -216,7 +216,7 @@ constexpr base::FeatureParam<int> kClientSideDetectionRetryLimitTime{
     /*default_value=*/15};
 
 BASE_FEATURE(kClientSideDetectionScamDetectionRequestWithUrl,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionScamScore, base::FEATURE_ENABLED_BY_DEFAULT);
 

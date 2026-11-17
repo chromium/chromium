@@ -5645,26 +5645,6 @@
             ]
         }
     ],
-    "ClientSideDetectionScamDetectionRequestWithUrl": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionScamDetectionRequestWithUrl"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionSecondForceRequestWithDelay": [
         {
             "platforms": [
