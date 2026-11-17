@@ -1,9 +1,9 @@
 Name: Tink C++
 Short Name: tink-cc
 URL: https://github.com/tink-crypto/tink-cc
-Version: 2.9.2
-Date: 2026-11-10
-Revision: 113291f16bfd99127332ece4928878cff70e940e
+Version: N/A
+Date: 2026-11-17
+Revision: 73af50b8dfc50ea44ea56103e927067f4153a157
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
