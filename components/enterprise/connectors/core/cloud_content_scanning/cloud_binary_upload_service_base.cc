@@ -58,6 +58,7 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
             "The downloaded file and metadata about how the user came to "
             "download that file (including URLs)."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://safebrowsing.google.com/safebrowsing/uploads/"
           internal {
             contacts {
               owners: "//chrome/browser/safe_browsing/cloud_content_scanning/OWNERS"
@@ -105,6 +106,7 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
             "data or printed data. Also includes an access token (enterprise "
             "only)."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://safebrowsing.google.com/safebrowsing/uploads/"
           internal {
             contacts {
               owners: "//chrome/browser/safe_browsing/cloud_content_scanning/OWNERS"
