@@ -35,7 +35,7 @@ class RequestDesktopSiteWebContentsObserverAndroid
       RequestDesktopSiteWebContentsObserverAndroid>;
 
   // Determines if desktop mode should be allowed based on external display
-  // conditions and OEM allowlist.
+  // conditions.
   bool ShouldAllowOnExternalDisplay(bool is_global_setting);
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   raw_ptr<PrefService> pref_service_;

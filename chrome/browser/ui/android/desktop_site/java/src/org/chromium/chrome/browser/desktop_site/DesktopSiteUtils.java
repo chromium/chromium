@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.desktop_site;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
 
@@ -17,12 +16,9 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.SysUtils;
-import org.chromium.base.TriState;
-import org.chromium.base.TriStateUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -41,10 +37,7 @@ import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 /** Utility class for desktop sites. */
 @NullMarked
@@ -52,7 +45,6 @@ public class DesktopSiteUtils {
     private static final String SITE_WILDCARD = "*";
     // Global defaults experiment constants.
     private static @Nullable DisplayMetrics sDisplayMetrics;
-    @VisibleForTesting static @TriState int sDesktopUAAllowedOnExternalDisplayForOem;
 
     static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 10.0;
     static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP = 600;
@@ -332,28 +324,8 @@ public class DesktopSiteUtils {
         // Do not enable on displays smaller than threshold.
         DisplayAndroid currentDisplay = DisplayAndroid.getNonMultiDisplay(context);
         double displaySizeInInches = DisplayUtil.getDisplaySizeInInches(currentDisplay);
-        if (displaySizeInInches < DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES) {
-            return false;
-        }
-
-        // Do not enable on OEMs not allowlisted.
-        if (!ChromeFeatureList.sDesktopUAOnConnectedDisplay.isEnabled()) {
-            return false;
-        }
-        if (sDesktopUAAllowedOnExternalDisplayForOem == TriState.NOT_SET) {
-            Set<String> allowlist = new HashSet<>();
-            String allowlistStr =
-                    ChromeFeatureList.sDesktopUAAllowedOnExternalDisplayForOem.getValue();
-            if (!TextUtils.isEmpty(allowlistStr)) {
-                Collections.addAll(allowlist, allowlistStr.split(","));
-            }
-            sDesktopUAAllowedOnExternalDisplayForOem =
-                    TriStateUtils.from(
-                            allowlist.isEmpty()
-                                    || allowlist.contains(
-                                            Build.MANUFACTURER.toLowerCase(Locale.US)));
-        }
-        return sDesktopUAAllowedOnExternalDisplayForOem == TriState.TRUE;
+        return displaySizeInInches
+                >= DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES;
     }
 
     /** Check if Request Desktop Site ContentSettings is global setting. */

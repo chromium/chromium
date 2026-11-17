@@ -10596,13 +10596,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"desktop-ua-on-connected-display",
-     flag_descriptions::kDesktopUAOnConnectedDisplayName,
-     flag_descriptions::kDesktopUAOnConnectedDisplayDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDesktopUAOnConnectedDisplay)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"contextual-cueing", flag_descriptions::kContextualCueingName,
      flag_descriptions::kContextualCueingDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(glic::kContextualCueing,

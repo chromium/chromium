@@ -2981,11 +2981,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "desktop-ua-on-connected-display",
-    "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 152
-  },
-  {
     "name": "device-posture",
     "owners": [ "alexis.menard@intel.com" ],
     "expiry_milestone": 140

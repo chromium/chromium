@@ -622,12 +622,6 @@ inline constexpr char kDeprecateUnloadDescription[] =
     "explicitly disabled by Permissions-Policy, even during the gradual "
     "rollout of their deprecation.";
 
-inline constexpr char kDesktopUAOnConnectedDisplayName[] =
-    "Request Desktop User-Agent on external displays. Android only.";
-inline constexpr char kDesktopUAOnConnectedDisplayDescription[] =
-    "When enabled, this feature will request a desktop user agent on external "
-    "displays.";
-
 inline constexpr char kTabFaviconChipsToCoinsName[] =
     "Tab favicon chips to coins";
 inline constexpr char kTabFaviconChipsToCoinsDescription[] =

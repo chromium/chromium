@@ -598,7 +598,6 @@ public abstract class ChromeFeatureList {
             "DesktopAndroidTWADisclosuresHelpLink";
     public static final String DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME =
             "DesktopAndroidWebAppHeaderAppName";
-    public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DEVICE_REAUTH_REFACTOR = "DeviceReauthRefactor";
     public static final String DISABLE_GRID_TAB_SWITCHER = "DisableGridTabSwitcher";
@@ -1235,11 +1234,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES_HELP_LINK, true);
     public static final CachedFlag sDesktopAndroidWebAppHeaderAppName =
             newCachedFlag(DESKTOP_ANDROID_WEB_APP_HEADER_APP_NAME, true);
-    public static final CachedFlag sDesktopUAOnConnectedDisplay =
-            newCachedFlag(
-                    DESKTOP_UA_ON_CONNECTED_DISPLAY,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDisablePartnerHomepageAndroid =
             newCachedFlag(
                     DISABLE_PARTNER_HOMEPAGE_ANDROID,
@@ -1649,7 +1643,6 @@ public abstract class ChromeFeatureList {
                     sDesktopAndroidTWADisclosures,
                     sDesktopAndroidTWADisclosuresHelpLink,
                     sDesktopAndroidWebAppHeaderAppName,
-                    sDesktopUAOnConnectedDisplay,
                     sDisablePartnerHomepageAndroid,
                     sDocumentPictureInPictureAPI,
                     sEdgeToEdgeAutomotive,
@@ -2237,10 +2230,6 @@ public abstract class ChromeFeatureList {
                             "manufacturer_exclude_list",
                             "xiaomi");
 
-    public static final StringCachedFeatureParam sDesktopUAAllowedOnExternalDisplayForOem =
-            newStringCachedFeatureParam(
-                    DESKTOP_UA_ON_CONNECTED_DISPLAY, "ext_display_desktop_ua_oem_allowlist", "");
-
     public static final BooleanCachedFeatureParam
             sDisablePartnerHomepageAndroidApplyToAllCountries =
                     newBooleanCachedFeatureParam(
@@ -2611,7 +2600,6 @@ public abstract class ChromeFeatureList {
                     sClankOmniboxMinimizationSuppressPullToRefreshReveal,
                     sClankStartupLatencyInjectionAmountMs,
                     sDefaultBrowserPromoEntryPointShowAppMenu,
-                    sDesktopUAAllowedOnExternalDisplayForOem,
                     sDisablePartnerHomepageAndroidApplyToAllCountries,
                     sDisablePartnerHomepageAndroidForZeroTabs,
                     sEdgeToEdgeTabletInvisibleBottomChinMinWidth,
