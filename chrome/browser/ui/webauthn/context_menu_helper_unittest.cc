@@ -7,6 +7,8 @@
 #include <cstdint>
 
 #include "base/test/task_environment.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -30,6 +32,8 @@
 #include "url/gurl.h"
 
 namespace {
+using SecurityKeyOrHybridFlowAvailable =
+    ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable;
 using webauthn::IsPasskeyFromAnotherDeviceContextMenuEnabled;
 
 constexpr uint64_t kFormRendererId = 1;
@@ -89,6 +93,11 @@ class ContextMenuHelperWithAfTest : public ContextMenuHelperBaseTest {
     return autofill_driver()->GetAutofillManager();
   }
 
+  ChromeWebAuthnCredentialsDelegate* credentials_delegate() {
+    return ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+        ->GetDelegateForFrame(main_rfh());
+  }
+
  private:
   autofill::test::AutofillUnitTestEnvironment test_environment_;
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
@@ -145,7 +154,50 @@ TEST_F(
       form.fields().at(0).renderer_id().value()));
 }
 
-// TODO(crbug.com/41496601): Add more test cases after making
-// ChromeWebAuthnCredentialsDelegateFactory testable.
+TEST_F(
+    ContextMenuHelperWithAfTest,
+    IsPasskeyFromAnotherDeviceContextMenuEnabled_WebauthnFieldWithConditionalRequest) {
+  auto form = CreateFormWithSingleField(/*is_webauthn=*/true);
+  NotifyFormManagerAndWait(form);
+  ChromeWebAuthnCredentialsDelegate* delegate = credentials_delegate();
+  ASSERT_TRUE(delegate);
+  delegate->OnCredentialsReceived(/*credentials=*/{},
+                                  SecurityKeyOrHybridFlowAvailable(true));
+
+  EXPECT_TRUE(IsPasskeyFromAnotherDeviceContextMenuEnabled(
+      main_rfh(), form.renderer_id().value(),
+      form.fields().at(0).renderer_id().value()));
+}
+
+TEST_F(
+    ContextMenuHelperWithAfTest,
+    IsPasskeyFromAnotherDeviceContextMenuEnabled_WebauthnFieldButNoSecurityKeyOrHybridFlow) {
+  auto form = CreateFormWithSingleField(/*is_webauthn=*/true);
+  NotifyFormManagerAndWait(form);
+  ChromeWebAuthnCredentialsDelegate* delegate = credentials_delegate();
+  ASSERT_TRUE(delegate);
+  delegate->OnCredentialsReceived(/*credentials=*/{},
+                                  SecurityKeyOrHybridFlowAvailable(false));
+
+  EXPECT_FALSE(IsPasskeyFromAnotherDeviceContextMenuEnabled(
+      main_rfh(), form.renderer_id().value(),
+      form.fields().at(0).renderer_id().value()));
+}
+
+TEST_F(
+    ContextMenuHelperWithAfTest,
+    IsPasskeyFromAnotherDeviceContextMenuEnabled_WebauthnFieldButRequestAborted) {
+  auto form = CreateFormWithSingleField(/*is_webauthn=*/true);
+  NotifyFormManagerAndWait(form);
+  ChromeWebAuthnCredentialsDelegate* delegate = credentials_delegate();
+  ASSERT_TRUE(delegate);
+  delegate->OnCredentialsReceived(/*credentials=*/{},
+                                  SecurityKeyOrHybridFlowAvailable(true));
+  delegate->NotifyWebAuthnRequestAborted();
+
+  EXPECT_FALSE(IsPasskeyFromAnotherDeviceContextMenuEnabled(
+      main_rfh(), form.renderer_id().value(),
+      form.fields().at(0).renderer_id().value()));
+}
 
 }  // namespace
