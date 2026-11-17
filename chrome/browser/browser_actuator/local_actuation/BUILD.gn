@@ -11,3 +11,30 @@ source_set("names") {
 
   public_deps = [ "//chrome/common:version_header" ]
 }
+
+# Computes the launchd bootstrap name of the local-actuation Mach service. A
+# separate target lets `profile_registry` use the name without depending on
+# the Mach server.
+source_set("service_name") {
+  sources = [
+    "local_actuation_service_name.h",
+    "local_actuation_service_name.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "local_actuation_service_name_unittest.cc" ]
+
+  deps = [
+    ":service_name",
+    "//base",
+    "//testing/gtest",
+  ]
+}
