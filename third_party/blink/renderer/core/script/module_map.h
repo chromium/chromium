@@ -12,6 +12,10 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 
+namespace v8 {
+enum class ModuleImportPhase;
+}  // namespace v8
+
 namespace blink {
 
 class Modulator;
@@ -76,6 +80,10 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   // currently mapped to `key`.
   // https://html.spec.whatwg.org/C/#fetch-a-single-module-script
   void RemoveEntry(const Key& key, Entry* entry_to_remove);
+
+  void DispatchFinishedNotificationAsync(SingleModuleClient*,
+                                         ModuleScript*,
+                                         v8::ModuleImportPhase) const;
 
   // A module map is a map of absolute URLs to map entry.
   MapImpl map_;

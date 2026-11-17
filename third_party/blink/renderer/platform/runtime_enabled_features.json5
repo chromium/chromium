@@ -4649,6 +4649,14 @@
       name: "ModuleMapDoNotCacheFailedFetch",
       status: "stable",
     },
+    // Checks that an existing module map entry's integrity metadata matches
+    // the consumer's integrity metadata before reusing the entry.
+    // https://github.com/whatwg/html/pull/12922
+    // https://crbug.com/502822515 https://crbug.com/556858866
+    {
+      name: "ModuleMapMatchIntegrity",
+      status: "stable",
+    },
     // ModulePreloadReferrer enables modulepreload to send proper referrer
     // headers as specified in the HTML spec.
     // https://crbug.com/441933555
