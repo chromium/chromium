@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
@@ -458,6 +459,156 @@ IN_PROC_BROWSER_TEST_P(SecurityReportingBrowserTest, SecurityReportOnly) {
   EXPECT_FALSE(user_profile_info.has_certificates_were_truncated());
   EXPECT_EQ(user_profile_info.certificates_size(), 0);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Tests that conflicting, superseded, and merged policies report
+// `conflict_type` accurately in profile security signal reports, including when
+// machine policy values are masked on unaffiliated profiles.
+IN_PROC_BROWSER_TEST_P(SecurityReportingBrowserTest,
+                       SecurityReportPolicyConflicts) {
+  clear_challenge_requests_count();
+  SetFakeCookieValue();
+
+  if (is_device_managed()) {
+    base::flat_map<std::string, std::optional<base::Value>> machine_policies;
+    machine_policies.insert(
+        {policy::key::kSavingBrowserHistoryDisabled, base::Value(true)});
+    machine_policies.insert(
+        {policy::key::kBookmarkBarEnabled, base::Value(true)});
+    machine_policies.insert({policy::key::kPolicyListMultipleSourceMergeList,
+                             base::Value(base::ListValue().Append(
+                                 policy::key::kPopupsAllowedForUrls))});
+    machine_policies.insert(
+        {policy::key::kCloudUserPolicyMerge, base::Value(true)});
+    machine_policies.insert(
+        {policy::key::kPopupsAllowedForUrls,
+         base::Value(base::ListValue().Append("https://a.example.com"))});
+    management_mixin()->SetCloudMachinePolicies(std::move(machine_policies));
+  }
+
+  base::test::TestFuture<CapturedProfileReportRequest> test_future;
+  pending_capture_ =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         test_future.GetCallback());
+
+  base::flat_map<std::string, std::optional<base::Value>> user_policies;
+  user_policies.insert(
+      {policy::key::kUserSecuritySignalsReporting, base::Value(true)});
+  user_policies.insert(
+      {policy::key::kSavingBrowserHistoryDisabled, base::Value(true)});
+  user_policies.insert({policy::key::kBookmarkBarEnabled, base::Value(false)});
+  user_policies.insert(
+      {policy::key::kPopupsAllowedForUrls,
+       base::Value(base::ListValue().Append("https://b.example.com"))});
+  management_mixin()->SetCloudUserPolicies(std::move(user_policies));
+
+  CapturedProfileReportRequest captured_request = test_future.Get();
+  VerifyRequest(captured_request,
+                em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
+
+  if (!are_policies_enabled()) {
+    return;
+  }
+
+  ASSERT_TRUE(captured_request.request);
+  ASSERT_TRUE(captured_request.request->has_chrome_profile_report_request());
+  const auto& profile_report =
+      captured_request.request->chrome_profile_report_request();
+  ASSERT_TRUE(profile_report.has_browser_report());
+  ASSERT_EQ(1,
+            profile_report.browser_report().chrome_user_profile_infos_size());
+  const auto& chrome_policies = profile_report.browser_report()
+                                    .chrome_user_profile_infos(0)
+                                    .chrome_policies();
+
+  auto find_policy =
+      [&chrome_policies](std::string_view name) -> const em::Policy* {
+    for (const auto& policy : chrome_policies) {
+      if (policy.name() == name) {
+        return &policy;
+      }
+    }
+    return nullptr;
+  };
+
+  const em::Policy* saving_history_policy =
+      find_policy(policy::key::kSavingBrowserHistoryDisabled);
+  const em::Policy* bookmark_bar_policy =
+      find_policy(policy::key::kBookmarkBarEnabled);
+  const em::Policy* popups_policy =
+      find_policy(policy::key::kPopupsAllowedForUrls);
+  ASSERT_NE(saving_history_policy, nullptr);
+  ASSERT_NE(bookmark_bar_policy, nullptr);
+  ASSERT_NE(popups_policy, nullptr);
+  EXPECT_FALSE(saving_history_policy->has_conflict_type());
+  EXPECT_FALSE(bookmark_bar_policy->has_conflict_type());
+  EXPECT_FALSE(popups_policy->has_conflict_type());
+
+  if (is_device_managed()) {
+    const std::string expected_machine_value =
+        is_affiliated() ? "true" : "\"********\"";
+    EXPECT_EQ(saving_history_policy->scope(),
+              em::Policy_PolicyScope_SCOPE_MACHINE);
+    EXPECT_EQ(saving_history_policy->value(), expected_machine_value);
+    ASSERT_EQ(saving_history_policy->conflicts_size(), 1);
+    EXPECT_EQ(saving_history_policy->conflicts(0).scope(),
+              em::Policy_PolicyScope_SCOPE_USER);
+    EXPECT_EQ(saving_history_policy->conflicts(0).source(),
+              em::Policy_PolicySource_SOURCE_CLOUD);
+    EXPECT_EQ(saving_history_policy->conflicts(0).conflict_type(),
+              em::Policy_ConflictType_SUPERSEDED);
+
+    EXPECT_EQ(bookmark_bar_policy->scope(),
+              em::Policy_PolicyScope_SCOPE_MACHINE);
+    EXPECT_EQ(bookmark_bar_policy->value(), expected_machine_value);
+    ASSERT_EQ(bookmark_bar_policy->conflicts_size(), 1);
+    EXPECT_EQ(bookmark_bar_policy->conflicts(0).scope(),
+              em::Policy_PolicyScope_SCOPE_USER);
+    EXPECT_EQ(bookmark_bar_policy->conflicts(0).source(),
+              em::Policy_PolicySource_SOURCE_CLOUD);
+    EXPECT_EQ(bookmark_bar_policy->conflicts(0).conflict_type(),
+              em::Policy_ConflictType_CONFLICT);
+
+    if (is_affiliated()) {
+      EXPECT_EQ(popups_policy->source(), em::Policy_PolicySource_SOURCE_MERGED);
+      EXPECT_EQ(popups_policy->value(),
+                "[\"https://a.example.com\",\"https://b.example.com\"]");
+      ASSERT_EQ(popups_policy->conflicts_size(), 2);
+      EXPECT_EQ(popups_policy->conflicts(0).scope(),
+                em::Policy_PolicyScope_SCOPE_USER);
+      EXPECT_EQ(popups_policy->conflicts(0).source(),
+                em::Policy_PolicySource_SOURCE_CLOUD);
+      EXPECT_EQ(popups_policy->conflicts(0).conflict_type(),
+                em::Policy_ConflictType_MERGED);
+      EXPECT_EQ(popups_policy->conflicts(1).scope(),
+                em::Policy_PolicyScope_SCOPE_MACHINE);
+      EXPECT_EQ(popups_policy->conflicts(1).source(),
+                em::Policy_PolicySource_SOURCE_CLOUD);
+      EXPECT_EQ(popups_policy->conflicts(1).conflict_type(),
+                em::Policy_ConflictType_MERGED);
+    } else {
+      EXPECT_EQ(popups_policy->scope(), em::Policy_PolicyScope_SCOPE_MACHINE);
+      EXPECT_EQ(popups_policy->source(), em::Policy_PolicySource_SOURCE_CLOUD);
+      EXPECT_EQ(popups_policy->value(), "\"********\"");
+      ASSERT_EQ(popups_policy->conflicts_size(), 1);
+      EXPECT_EQ(popups_policy->conflicts(0).scope(),
+                em::Policy_PolicyScope_SCOPE_USER);
+      EXPECT_EQ(popups_policy->conflicts(0).source(),
+                em::Policy_PolicySource_SOURCE_CLOUD);
+      EXPECT_EQ(popups_policy->conflicts(0).conflict_type(),
+                em::Policy_ConflictType_CONFLICT);
+    }
+  } else {
+    EXPECT_EQ(saving_history_policy->scope(),
+              em::Policy_PolicyScope_SCOPE_USER);
+    EXPECT_EQ(saving_history_policy->conflicts_size(), 0);
+    EXPECT_EQ(bookmark_bar_policy->scope(), em::Policy_PolicyScope_SCOPE_USER);
+    EXPECT_EQ(bookmark_bar_policy->conflicts_size(), 0);
+    EXPECT_EQ(popups_policy->scope(), em::Policy_PolicyScope_SCOPE_USER);
+    EXPECT_EQ(popups_policy->conflicts_size(), 0);
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Tests that when SecuritySignalsClientCertificatesSelectors policy and

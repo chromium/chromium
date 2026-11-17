@@ -461,16 +461,21 @@ base::DictValue PolicyConversionsClient::GetPolicyValue(
       base::DictValue conflicted_policy_value =
           GetPolicyValue(policy_name, conflict.entry(), deprecated_policies,
                          future_policies, errors, known_policy_schemas);
+      if (!convert_types_enabled_) {
+        conflicted_policy_value.Set("conflictType",
+                                    static_cast<int>(conflict.conflict_type()));
+      }
       switch (conflict.conflict_type()) {
         case PolicyMap::ConflictType::Supersede:
           supersede_values.Append(std::move(conflicted_policy_value));
           has_supersede_values = true;
           break;
         case PolicyMap::ConflictType::Override:
+        case PolicyMap::ConflictType::Merged:
           override_values.Append(std::move(conflicted_policy_value));
           has_override_values = true;
           break;
-        default:
+        case PolicyMap::ConflictType::None:
           break;
       }
     }
@@ -567,9 +572,10 @@ mojom::PolicyPtr PolicyConversionsClient::GetPolicyMojo(
         result->superseded.push_back(std::move(mojo_conflict));
         break;
       case PolicyMap::ConflictType::Override:
+      case PolicyMap::ConflictType::Merged:
         result->conflicts.push_back(std::move(mojo_conflict));
         break;
-      default:
+      case PolicyMap::ConflictType::None:
         break;
     }
   }

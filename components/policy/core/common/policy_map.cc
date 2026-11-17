@@ -117,6 +117,15 @@ bool AllowAllPolicies(PolicyMap::const_reference unused) {
   return true;
 }
 
+PolicyMap::ConflictType GetValueConflictType(const PolicyMap::Entry& a,
+                                             const PolicyMap::Entry& b) {
+  const bool same_value = (!a.value_unsafe() && !b.value_unsafe()) ||
+                          (a.value_unsafe() && b.value_unsafe() &&
+                           *a.value_unsafe() == *b.value_unsafe());
+  return same_value ? PolicyMap::ConflictType::Supersede
+                    : PolicyMap::ConflictType::Override;
+}
+
 }  // namespace
 
 PolicyMap::Entry::Entry() = default;
@@ -152,7 +161,8 @@ PolicyMap::Entry PolicyMap::Entry::DeepCopy() const {
   copy.is_default_value_ = is_default_value_;
   copy.conflicts.reserve(conflicts.size());
   for (const auto& conflict : conflicts) {
-    copy.AddConflictingPolicy(conflict.entry().DeepCopy());
+    copy.conflicts.emplace_back(conflict.conflict_type(),
+                                conflict.entry().DeepCopy());
   }
   return copy;
 }
@@ -221,16 +231,16 @@ void PolicyMap::Entry::ClearMessage(MessageType type, int message_id) {
 }
 
 void PolicyMap::Entry::AddConflictingPolicy(Entry&& conflict) {
-  // Move all of the newly conflicting Entries conflicts into this Entry.
-  std::move(conflict.conflicts.begin(), conflict.conflicts.end(),
-            std::back_inserter(conflicts));
+  // Move all of the newly conflicting Entry's conflicts into this Entry,
+  // recomputing each ConflictType against this Entry's value.
+  conflicts.reserve(conflicts.size() + conflict.conflicts.size() + 1);
+  for (EntryConflict& nested_conflict : conflict.conflicts) {
+    nested_conflict.SetConflictType(
+        GetValueConflictType(*this, nested_conflict.entry()));
+    conflicts.push_back(std::move(nested_conflict));
+  }
 
-  bool is_value_equal = (!this->value_unsafe() && !conflict.value_unsafe()) ||
-                        (this->value_unsafe() && conflict.value_unsafe() &&
-                         *this->value_unsafe() == *conflict.value_unsafe());
-
-  ConflictType type =
-      is_value_equal ? ConflictType::Supersede : ConflictType::Override;
+  ConflictType type = GetValueConflictType(*this, conflict);
 
   // Clean up conflict Entry to ensure there's no duplication since entire Entry
   // is moved and treated as a freshly constructed Entry.
