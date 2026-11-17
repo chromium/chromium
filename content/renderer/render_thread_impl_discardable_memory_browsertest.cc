@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -53,7 +54,7 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
-      size_t size) {
+      base::ByteSize size) {
     std::unique_ptr<base::DiscardableMemory> rv;
     PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
       rv =
@@ -64,7 +65,7 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
 
   std::unique_ptr<base::DiscardableMemory>
   AllocateLockedDiscardableMemoryWithRetryOrDie(
-      size_t size,
+      base::ByteSize size,
       base::OnceClosure on_no_memory) {
     std::unique_ptr<base::DiscardableMemory> rv;
     PostTaskToInProcessRendererAndWait(base::BindLambdaForTesting([&] {
@@ -96,7 +97,7 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                        MAYBE_LockDiscardableMemory) {
-  const size_t kSize = 1024 * 1024;  // 1MiB.
+  constexpr base::ByteSize kSize = base::MiB(1);
 
   std::unique_ptr<base::DiscardableMemory> memory =
       AllocateLockedDiscardableMemory(kSize);
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                        // TODO(crbug.com/40681859): Re-enable this test
                        DISABLED_DiscardableMemoryAddressSpace) {
-  const size_t kLargeSize = 4 * 1024 * 1024;   // 4MiB.
+  constexpr base::ByteSize kLargeSize = base::MiB(4);
   const size_t kNumberOfInstances = 1024 + 1;  // >4GiB total.
 
   std::vector<std::unique_ptr<base::DiscardableMemory>> instances;
@@ -143,19 +144,20 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 // TODO(crbug.com/362120461): Flaky on many builders.
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                        DISABLED_ReleaseFreeDiscardableMemory_Explicitly) {
-  const size_t kSize = 1024 * 1024;  // 1MiB.
+  constexpr base::ByteSize kSize = base::MiB(1);
 
   std::unique_ptr<base::DiscardableMemory> memory =
       AllocateLockedDiscardableMemory(kSize);
 
   EXPECT_TRUE(memory);
-  EXPECT_GE(discardable_memory_allocator()->GetBytesAllocated(), kSize);
+  EXPECT_GE(discardable_memory_allocator()->GetAllocatedSize(), kSize);
 
   memory.reset();
-  EXPECT_EQ(discardable_memory_allocator()->GetBytesAllocated(), 0U);
+  EXPECT_EQ(discardable_memory_allocator()->GetAllocatedSize(),
+            base::ByteSize(0));
 
   EXPECT_GE(discardable_memory::DiscardableSharedMemoryManager::Get()
-                ->GetBytesAllocated(),
+                ->GetAllocatedSize(),
             kSize);
 
   static_cast<discardable_memory::ClientDiscardableSharedMemoryManager*>(
@@ -166,25 +168,26 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   // within a shorter time than the RunLoop timeout.
   EXPECT_TRUE(base::test::RunUntil([]() {
     return discardable_memory::DiscardableSharedMemoryManager::Get()
-               ->GetBytesAllocated() == 0;
+               ->GetAllocatedSize() == base::ByteSize(0);
   }));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
                        ReleaseFreeDiscardableMemory_ByCriticalPressure) {
-  const size_t kSize = 1024 * 1024;  // 1MiB.
+  constexpr base::ByteSize kSize = base::MiB(1);
 
   std::unique_ptr<base::DiscardableMemory> memory =
       AllocateLockedDiscardableMemory(kSize);
 
   EXPECT_TRUE(memory);
-  EXPECT_GE(discardable_memory_allocator()->GetBytesAllocated(), kSize);
+  EXPECT_GE(discardable_memory_allocator()->GetAllocatedSize(), kSize);
 
   memory.reset();
-  EXPECT_EQ(discardable_memory_allocator()->GetBytesAllocated(), 0U);
+  EXPECT_EQ(discardable_memory_allocator()->GetAllocatedSize(),
+            base::ByteSize(0));
 
   EXPECT_GE(discardable_memory::DiscardableSharedMemoryManager::Get()
-                ->GetBytesAllocated(),
+                ->GetAllocatedSize(),
             kSize);
 
   // Call ClientDiscardableSharedMemoryManager::ReleaseFreeMemory through a
@@ -196,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 
   EXPECT_TRUE(base::test::RunUntil([]() {
     return discardable_memory::DiscardableSharedMemoryManager::Get()
-               ->GetBytesAllocated() == 0u;
+               ->GetAllocatedSize() == base::ByteSize(0);
   }));
 }
 
@@ -213,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
       static_cast<discardable_memory::ClientDiscardableSharedMemoryManager*>(
           discardable_memory_allocator());
   constexpr size_t kMaxRegions = 10;
-  constexpr size_t kRegionSize = 4 * 1024 * 1024;
+  constexpr base::ByteSize kRegionSize = base::MiB(4);
 
   allocator->SetBytesAllocatedLimitForTesting(kMaxRegions * kRegionSize);
 
@@ -232,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   // crashed.
   EXPECT_TRUE(all_memory.empty());
 
-  allocator->SetBytesAllocatedLimitForTesting(0);
+  allocator->SetBytesAllocatedLimitForTesting(base::ByteSize(0));
 }
 
 }  // namespace
