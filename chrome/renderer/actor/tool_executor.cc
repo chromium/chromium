@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/drag_and_release_tool.h"
+#include "chrome/renderer/actor/execute_js_tool.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
 #include "chrome/renderer/actor/no_op_tool.h"
@@ -142,6 +143,13 @@ mojom::InitializeToolResultPtr ToolExecutor::InitializeToolImpl(
           journal_.get(), std::move(invocation->target),
           std::move(invocation->observed_target),
           std::move(invocation->action->get_script_tool()));
+      break;
+    }
+    case actor::mojom::ToolAction::Tag::kExecuteJs: {
+      tool_ = std::make_unique<ExecuteJsTool>(
+          frame_.get(), invocation->task_id, *journal_,
+          std::move(invocation->target), std::move(invocation->observed_target),
+          std::move(invocation->action->get_execute_js()));
       break;
     }
     case actor::mojom::ToolAction::Tag::kScrollTo: {
