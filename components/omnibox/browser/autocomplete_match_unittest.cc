@@ -1524,3 +1524,28 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
 #endif
   }
 }
+
+TEST_F(AutocompleteMatchTest, ACMatchKeyHash) {
+  using Key = ACMatchKey<std::string, AutocompleteMatchDedupeType, std::string>;
+  using KeyHash =
+      ACMatchKeyHash<std::string, AutocompleteMatchDedupeType, std::string>;
+
+  KeyHash hasher;
+  const Key base_key{"https://example.com/",
+                     AutocompleteMatchDedupeType::kNormal, "template_a"};
+  const Key same_key{"https://example.com/",
+                     AutocompleteMatchDedupeType::kNormal, "template_a"};
+  const Key diff_url{"https://other.example.com/",
+                     AutocompleteMatchDedupeType::kNormal, "template_a"};
+  const Key diff_type{"https://example.com/",
+                      AutocompleteMatchDedupeType::kCalculator, "template_a"};
+  const Key diff_template{"https://example.com/",
+                          AutocompleteMatchDedupeType::kNormal, "template_b"};
+
+  const size_t base_hash = hasher(base_key);
+  EXPECT_NE(base_hash, 0u);
+  EXPECT_EQ(base_hash, hasher(same_key));
+  EXPECT_NE(base_hash, hasher(diff_url));
+  EXPECT_NE(base_hash, hasher(diff_type));
+  EXPECT_NE(base_hash, hasher(diff_template));
+}

@@ -81,7 +81,7 @@ struct IntPairHash<std::pair<Type1, Type2>> {
 
 // Combine the hash `seed` with the computed hash of `value`.
 template <typename T>
-size_t HashCombine(size_t seed, const T& value) {
+[[nodiscard]] size_t HashCombine(size_t seed, const T& value) {
   size_t hash;
   if constexpr (sizeof(size_t) == 8) {
     hash = HashInts64(seed, std::hash<T>()(value));
@@ -94,7 +94,9 @@ size_t HashCombine(size_t seed, const T& value) {
 
 // Computes the combination of hashes for `values`.
 template <typename T, typename... V>
-size_t HashCombine(size_t seed, const T& first, const V&... values) {
+[[nodiscard]] size_t HashCombine(size_t seed,
+                                 const T& first,
+                                 const V&... values) {
   size_t hash = HashCombine(seed, first);
   return HashCombine(hash, values...);
 }

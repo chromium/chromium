@@ -227,12 +227,10 @@ int GetOrderForActionType(scoped_refptr<OmniboxAction> action) {
 template <typename... Args>
 size_t ACMatchKeyHash<Args...>::operator()(
     const ACMatchKey<Args...>& key) const {
-  size_t seed = 0;
   // Compute a hash by applying `HashCombine` to each element of the "key"
   // tuple.
-  std::apply(
-      [&seed](auto&&... args) { ((base::HashCombine(seed, args)), ...); }, key);
-  return seed;
+  return std::apply(
+      [](const auto&... args) { return base::HashCombine(0u, args...); }, key);
 }
 
 // This trick allows implementing `ACMatchKeyHash` in the implementation file.
