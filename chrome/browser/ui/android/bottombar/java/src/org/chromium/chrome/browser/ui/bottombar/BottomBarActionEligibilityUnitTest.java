@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -43,7 +45,6 @@ public class BottomBarActionEligibilityUnitTest {
     public void setUp() {
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(null);
     }
 
@@ -100,15 +101,25 @@ public class BottomBarActionEligibilityUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testShouldShowBottomBarGlicSetting_ToggleParamTrue_GlicCandidate() {
-        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
         assertTrue(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
+        verify(mGlicEnablingJniMock, never()).shouldShowSettingsPage(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testShouldShowBottomBarGlicSetting_GlicCandidateButIneligible_ReturnsFalse() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
+        assertFalse(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testShouldShowBottomBarGlicSetting_DefaultBaseline() {
-        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
         assertTrue(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
     }
@@ -116,7 +127,7 @@ public class BottomBarActionEligibilityUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testShouldShowBottomBarGlicSetting_NoCachedCandidate_ReturnsFalse() {
-        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         // Candidate not resolved yet (null).
         assertFalse(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
     }
@@ -124,7 +135,7 @@ public class BottomBarActionEligibilityUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testShouldShowBottomBarGlicSetting_ActionNoneCandidate_ReturnsFalse() {
-        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(
                 BottomBarActionEligibility.ACTION_NONE);
         assertFalse(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
@@ -134,22 +145,34 @@ public class BottomBarActionEligibilityUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testShouldShowBottomBarGlicSetting_DisabledByPolicy_ReturnsTrue() {
         when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(
                 BottomBarActionEligibility.ACTION_NONE);
         assertTrue(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
+    public void testShouldShowBottomBarGlicSetting_DisabledByPolicyNotOptedIn_ReturnsFalse() {
+        when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(false);
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(
+                BottomBarActionEligibility.ACTION_NONE);
+        assertFalse(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false")
     public void testShouldShowBottomBarGlicSetting_DisabledByPolicy_ToggleParamFalse() {
         when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
         assertFalse(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false")
     public void testShouldShowBottomBarGlicSetting_ToggleParamFalse() {
-        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
         assertFalse(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
     }
@@ -160,7 +183,7 @@ public class BottomBarActionEligibilityUnitTest {
         Profile incognitoProfile = org.mockito.Mockito.mock(Profile.class);
         when(incognitoProfile.isOffTheRecord()).thenReturn(true);
         when(incognitoProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mGlicEnablingJniMock.shouldShowSettingsPage(eq(mProfile))).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(eq(mProfile))).thenReturn(true);
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
 
         assertTrue(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(incognitoProfile));

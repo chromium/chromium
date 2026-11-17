@@ -36,9 +36,10 @@ public class BottomBarActionEligibility {
     /**
      * Returns whether the GLIC bottom bar setting toggle should be shown for the given profile.
      *
-     * <p>The toggle is shown if candidate resolution has already resolved GLIC as the candidate
-     * extra action for the bottom bar, or if enterprise policy disables GLIC so the toggle can be
-     * shown in its disabled state. Otherwise, returns false.
+     * <p>The toggle is shown if candidate resolution has resolved GLIC as the candidate extra
+     * action and GLIC is enabled for the profile (even if the user has not completed FRE), or if
+     * enterprise policy disables GLIC for a profile that should still show GLIC settings so the
+     * toggle can be shown in its disabled state. Otherwise, returns false.
      *
      * @param profile The current user profile.
      * @return True if the setting toggle should be shown.
@@ -50,10 +51,11 @@ public class BottomBarActionEligibility {
         Profile originalProfile = profile.getOriginalProfile();
         boolean isGlicCandidate =
                 sCachedCandidateExtraAction != null && sCachedCandidateExtraAction == ActionId.GLIC;
-        if (!isGlicCandidate && !GlicEnabling.isDisabledByPolicy(originalProfile)) {
-            return false;
+        if (isGlicCandidate && GlicEnabling.isEnabledForProfile(originalProfile)) {
+            return true;
         }
-        return GlicEnabling.shouldShowSettingsPage(originalProfile);
+        return GlicEnabling.isDisabledByPolicy(originalProfile)
+                && GlicEnabling.shouldShowSettingsPage(originalProfile);
     }
 
     /**
