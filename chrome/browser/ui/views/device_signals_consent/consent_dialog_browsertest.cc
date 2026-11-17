@@ -10,6 +10,8 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,6 +22,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -100,9 +103,13 @@ IN_PROC_BROWSER_TEST_F(ConsentDialogUiTest, MAYBE_GetConsentDialogBodyTest) {
 
   // Simulate a supervised profile.
   TestingProfile::Builder builder_supervised;
-  builder_supervised.SetIsSupervisedProfile();
+  builder_supervised.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories());
   std::unique_ptr<TestingProfile> profile_supervised =
       builder_supervised.Build();
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      IdentityManagerFactory::GetForProfile(profile_supervised.get()));
 
   EXPECT_EQ(GetExpectedBodyText(), GetDialogBodyTextFromProfile(profile.get()));
   EXPECT_EQ(GetExpectedBodyText("example.com"),

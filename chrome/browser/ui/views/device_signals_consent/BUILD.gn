@@ -48,6 +48,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       ":device_signals_consent",
       "//chrome/test:test_support",
       "//chrome/test/base:testing_browser_process",
+      "//components/supervised_user/core/browser:test_support",
       "//content/test:test_support",
       "//testing/gtest",
     ]
