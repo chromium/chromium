@@ -20,11 +20,12 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/extensions/tab_helper.h",
-  "+chrome/browser/media/webrtc",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/browser/ui/webui/metrics_handler.h",
   "+chrome/grit",
+
+  "+components/webrtc/media_capture_dispatcher.h",
 ]
 
 specific_include_rules = {
