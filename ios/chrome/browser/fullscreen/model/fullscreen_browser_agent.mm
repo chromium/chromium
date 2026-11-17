@@ -202,9 +202,11 @@ void FullscreenBrowserAgent::EnterFullscreen(
     PassKey pass_key,
     FullscreenModeTransitionTrigger trigger,
     bool animated) {
-  base::UmaHistogramEnumeration(kEnterFullscreenModeTransitionTriggerHistogram,
-                                trigger);
+  // Only record the transition trigger and timing if toolbars are not already
+  // fully collapsed.
   if (top_progress_ > 0.0 || bottom_progress_ > 0.0) {
+    base::UmaHistogramEnumeration(
+        kEnterFullscreenModeTransitionTriggerHistogram, trigger);
     RecordEnterFullscreenTiming();
   }
   UpdateProgressAndBroadcast(FullscreenTransition::kEnterFullscreen, trigger,
@@ -215,12 +217,19 @@ void FullscreenBrowserAgent::ExitFullscreen(
     PassKey pass_key,
     FullscreenModeTransitionTrigger trigger,
     bool animated) {
-  base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
-                                trigger);
+  // Only record the transition trigger if toolbars were at least partially
+  // collapsed; `ExitFullscreen` is also called on routine lifecycle events
+  // (e.g. navigation, tab switch, or app backgrounding) when toolbars are
+  // already expanded.
+  const bool was_collapsed = top_progress_ < 1.0 || bottom_progress_ < 1.0;
+  if (was_collapsed) {
+    base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
+                                  trigger);
+  }
   if (trigger == FullscreenModeTransitionTrigger::kForcedByCode) {
     time_entered_fullscreen_ = std::nullopt;
     time_exited_fullscreen_ = base::TimeTicks::Now();
-  } else if (top_progress_ < 1.0 || bottom_progress_ < 1.0) {
+  } else if (was_collapsed) {
     RecordExitFullscreenTiming();
   }
   UpdateProgressAndBroadcast(FullscreenTransition::kExitFullscreen, trigger,

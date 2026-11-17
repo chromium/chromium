@@ -321,15 +321,20 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   _responses["/tallpage"] =
       base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
 
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
   GURL URL = self.testServer->GetURL("/tallpage");
   [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
-  // Set up the histogram tester after initial page load so that only the
-  // fullscreen transitions triggered by user scrolls are observed.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  // Navigating while toolbars are already expanded should not record a spurious
+  // exit transition.
+  NSError* initialExitError = [MetricsAppInterface
+      expectTotalCount:0
+          forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
+  GREYAssertNil(initialExitError, @"Histogram error: %@", initialExitError);
 
   // Simulate a user scroll down.
   HideToolbarUsingUI();
