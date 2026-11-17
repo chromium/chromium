@@ -6,15 +6,20 @@
 #define TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_DIFF_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 namespace caspian {
+std::string ComputeUnifiedDiff(std::string_view symbol_name,
+                               std::string_view before_text,
+                               std::string_view after_text);
+
 DeltaSizeInfo Diff(const SizeInfo* before,
                    const SizeInfo* after,
                    const std::vector<std::string>* removed_sources,
                    const std::vector<std::string>* added_sources);
-}
+}  // namespace caspian
 
 #endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_DIFF_H_

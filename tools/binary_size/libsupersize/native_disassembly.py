@@ -233,58 +233,30 @@ def Disassemble(
     proc.kill()
 
 
-def _ResolveElfPath(elf_path):
-  if os.path.exists(elf_path):
-    return elf_path
-  logging.warning('%s does not exist.', elf_path)
-  return None
+def _ResolveOutputDirectory(size_info, output_directory):
+  if output_directory is None:
+    rel_out_dir = size_info.build_config.get(models.BUILD_CONFIG_OUT_DIRECTORY)
+    if rel_out_dir:
+      candidate = path_util.FromToolsSrcRoot(rel_out_dir)
+      if os.path.isdir(candidate):
+        output_directory = candidate
+  return output_directory
 
 
-def _AddUnifiedDiff(
-  top_changed_symbols,
-  before_path_resolver,
-  after_path_resolver,
-  delta_size_info,
-  normalize=False,
-):
-  for symbol in top_changed_symbols:
-    before = None
-    before_symbol = symbol.before_symbol
-    after = None
-    after_symbol = symbol.after_symbol
-
-    if after_symbol:
-      elf_name = after_symbol.container.metadata['elf_file_name']
-      elf_path = _ResolveElfPath(after_path_resolver(elf_name))
-      if elf_path:
-        out_directory = delta_size_info.after.build_config.get('out_directory')
-        if out_directory and not os.path.exists(out_directory):
-          out_directory = None
-        with Disassemble(after_symbol, out_directory, elf_path) as lines:
-          after = list(lines) if lines else None
-
-    if before_symbol:
-      elf_name = before_symbol.container.metadata['elf_file_name']
-      elf_path = _ResolveElfPath(before_path_resolver(elf_name))
-      if elf_path:
-        # The source tree will have changed due to building "after", so it's
-        # better to not include source lines than to include incorrect ones.
-        out_directory = None
-        with Disassemble(before_symbol, out_directory, elf_path) as lines:
-          before = list(lines) if lines else None
-
-    if after is None and before is None:
-      continue
-
-    logging.info('Creating unified diff')
-    if normalize:
-      after = after and _NormalizeLines(after)
-      before = before and _NormalizeLines(before)
-
-    target_symbol = after_symbol or before_symbol
-    target_symbol.disassembly = disassembly_util.CreateUnifiedDiff(
-      symbol.full_name, before or [], after or []
-    )
+def _DisassembleSymbol(symbol, path_resolver, out_directory, normalize=True):
+  """Disassembles |symbol| from its ELF binary and sets |symbol.disassembly|."""
+  if not symbol:
+    return
+  elf_path = str(path_resolver(symbol.container.metadata['elf_file_name']))
+  if not os.path.exists(elf_path):
+    logging.warning('%s does not exist.', elf_path)
+    return
+  with Disassemble(symbol, out_directory, elf_path) as lines:
+    disasm_lines = list(lines)
+  if disasm_lines and normalize:
+    disasm_lines = _NormalizeLines(disasm_lines)
+  if disasm_lines:
+    symbol.disassembly = ''.join(disasm_lines)
 
 
 def _GetTopChangedSymbols(delta_size_info, changed_files=None):
@@ -302,9 +274,10 @@ def _GetTopChangedSymbols(delta_size_info, changed_files=None):
     if abs(symbol.size_without_padding) < 10:
       return False
     # Giant symbols also rarely add value.
-    if symbol.after_symbol and symbol.after_symbol.size > 10000:
+    max_size = disassembly_util.MAX_DISASSEMBLED_SYMBOL_SIZE
+    if symbol.after_symbol and symbol.after_symbol.size > max_size:
       return False
-    if symbol.before_symbol and symbol.before_symbol.size > 10000:
+    if symbol.before_symbol and symbol.before_symbol.size > max_size:
       return False
     return True
 
@@ -316,12 +289,13 @@ def AddDisassembly(
   delta_size_info,
   before_path_resolver,
   after_path_resolver,
-  normalize=False,
+  normalize=True,
   changed_files=None,
+  output_directory=None,
 ):
-  """Adds disassembly diffs to top changed native symbols.
+  """Adds disassembly to top changed native symbols.
 
-  Adds the unified diff on the "before" and "after" disassembly to the
+  Adds the normalized "before" and "after" disassembly to the
   top 10 changed native symbols.
 
   Args:
@@ -329,16 +303,37 @@ def AddDisassembly(
     before_path_resolver: Callable to compute paths for "before" artifacts.
     after_path_resolver: Callable to compute paths for "after" artifacts.
     normalize: Whether to normalize the disassembly.
+    output_directory: Optional path to the "after" build output directory.
   """
   logging.debug('Computing top changed symbols')
   top_changed_symbols = _GetTopChangedSymbols(
     delta_size_info, changed_files=changed_files
   )
   logging.debug('Adding disassembly to top 10 changed native symbols')
-  _AddUnifiedDiff(
-    top_changed_symbols,
-    before_path_resolver,
-    after_path_resolver,
-    delta_size_info,
-    normalize=normalize,
+  out_directory = _ResolveOutputDirectory(
+    delta_size_info.after, output_directory
   )
+  for symbol in top_changed_symbols:
+    _DisassembleSymbol(
+      symbol.after_symbol, after_path_resolver, out_directory, normalize
+    )
+    # The source tree will have changed due to building "after", so it's
+    # better to not include source lines than to include incorrect ones.
+    _DisassembleSymbol(
+      symbol.before_symbol, before_path_resolver, None, normalize
+    )
+
+
+def AddSizeInfoDisassembly(size_info, path_resolver, output_directory=None):
+  """Adds disassembly to top 10 largest .text symbols in |size_info|."""
+  top_symbols = disassembly_util.GetTopSizeInfoSymbols(
+    size_info,
+    lambda s: (
+      s.address > 0
+      and s.section_name.endswith('.text')
+      and bool(s.container.metadata.get('elf_file_name'))
+    ),
+  )
+  out_directory = _ResolveOutputDirectory(size_info, output_directory)
+  for symbol in top_symbols:
+    _DisassembleSymbol(symbol, path_resolver, out_directory)

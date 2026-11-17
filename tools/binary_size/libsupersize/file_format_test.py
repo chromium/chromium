@@ -3,8 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 import gzip
 import io
+import os
+import pathlib
+import tempfile
 import unittest
 from unittest import mock
 
@@ -13,6 +17,8 @@ import diff
 import file_format
 import file_format_v2
 import models
+import native_disassembly
+import path_util
 import readelf
 
 
@@ -528,6 +534,88 @@ class FileFormatTest(unittest.TestCase):
     self.assertIn(
       '0 changed (~)', '\n'.join(describe.GenerateLines(reloc_delta))
     )
+
+  def testPathResolverAndAddSizeInfoDisassembly(self):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+      sub_dir = pathlib.Path(tmp_dir) / 'sub'
+      sub_dir.mkdir()
+      elf_file = sub_dir / 'libtest.so'
+      elf_file.write_bytes(b'\x7fELF')
+
+      resolver = path_util.PathResolver(tmp_dir)
+      self.assertEqual(elf_file, resolver('sub/libtest.so'))
+
+      root_elf = pathlib.Path(tmp_dir) / 'libroot.so'
+      root_elf.write_bytes(b'\x7fELF')
+      self.assertEqual(root_elf, resolver('nested/dir/libroot.so'))
+
+      with self.assertRaises(FileNotFoundError):
+        resolver('missing.so')
+
+      c_no_elf = models.Container(
+        name='NoElf.apk',
+        metadata={},
+        section_sizes={'.text': 100},
+        metrics_by_file={},
+      )
+      c_with_elf = models.Container(
+        name='WithElf.apk',
+        metadata={'elf_file_name': 'sub/libtest.so'},
+        section_sizes={'.text': 100},
+        metrics_by_file={},
+      )
+      models.BaseContainer.AssignShortNames([c_no_elf, c_with_elf])
+      s_skip = _MakeSymbol(c_no_elf, '.text', 0x1000, 500, 'skip::Func()')
+      s_keep = _MakeSymbol(c_with_elf, '.text', 0x2000, 100, 'keep::Func()')
+      size_info = models.SizeInfo({}, [c_no_elf, c_with_elf], [s_skip, s_keep])
+
+      seen_out_dirs = []
+
+      @contextlib.contextmanager
+      def fake_disassemble(sym, out_dir, elf_path):
+        seen_out_dirs.append(out_dir)
+        yield [f'disasm {sym.full_name} from {os.path.basename(elf_path)}\n']
+
+      with mock.patch.object(
+        native_disassembly, 'Disassemble', side_effect=fake_disassemble
+      ):
+        native_disassembly.AddSizeInfoDisassembly(
+          size_info, resolver, output_directory=str(sub_dir)
+        )
+      self.assertEqual([str(sub_dir)], seen_out_dirs)
+      self.assertEqual('', s_skip.disassembly)
+      self.assertEqual(
+        'disasm keep::Func() from libtest.so\n', s_keep.disassembly
+      )
+
+      # Verify build_config['out_directory'] resolves relative to tools src root
+      # rather than CWD, and --no-output-directory (None) stays None.
+      fake_src = pathlib.Path(tmp_dir) / 'fake_src'
+      real_out = fake_src / 'out' / 'Real'
+      real_out.mkdir(parents=True)
+      decoy_cwd = pathlib.Path(tmp_dir) / 'decoy_cwd'
+      (decoy_cwd / 'out' / 'Decoy').mkdir(parents=True)
+      with (
+        contextlib.chdir(decoy_cwd),
+        mock.patch.object(path_util, '_TOOLS_SRC_ROOT', str(fake_src)),
+      ):
+        size_info_decoy = models.SizeInfo(
+          {models.BUILD_CONFIG_OUT_DIRECTORY: 'out/Decoy'},
+          [c_with_elf],
+          [s_keep],
+        )
+        self.assertIsNone(
+          native_disassembly._ResolveOutputDirectory(size_info_decoy, None)
+        )
+        size_info_real = models.SizeInfo(
+          {models.BUILD_CONFIG_OUT_DIRECTORY: 'out/Real'},
+          [c_with_elf],
+          [s_keep],
+        )
+        self.assertEqual(
+          os.path.relpath(real_out, decoy_cwd),
+          native_disassembly._ResolveOutputDirectory(size_info_real, None),
+        )
 
 
 if __name__ == '__main__':

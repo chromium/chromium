@@ -511,15 +511,35 @@ TEST_F(DiffTest, TestManySymbolsDeriveNamesOnThreads) {
   EXPECT_EQ("ns::Func1", after->raw_symbols[1].Name());
 }
 
-TEST_F(DiffTest, TestDiffRelocations) {
+TEST_F(DiffTest, TestComputeUnifiedDiff) {
+  EXPECT_EQ("", ComputeUnifiedDiff("foo()", "a\nb\n", "a\nb\n"));
+  std::string diff = ComputeUnifiedDiff("foo()", "line1\nline2\nline3\n",
+                                        "line1\nline2_mod\nline3\nline4\n");
+  EXPECT_TRUE(diff.contains("--- a/foo()\n+++ b/foo()\n"));
+  EXPECT_TRUE(diff.contains("-line2\n+line2_mod\n"));
+  EXPECT_TRUE(diff.contains("+line4\n"));
+}
+
+TEST_F(DiffTest, TestDiffDisassemblyAndRelocations) {
+  size_info1_->owned_strings.push_back("mov eax, 1\nret");
+  size_info2_->owned_strings.push_back("mov eax, 2\nret");
+  size_info1_->raw_symbols[1].disassembly_ = &size_info1_->owned_strings.back();
+  size_info2_->raw_symbols[1].disassembly_ = &size_info2_->owned_strings.back();
+
   // Symbol 2 has identical size, but relocation_count_ changed -> kChanged.
   size_info1_->raw_symbols[2].relocation_count_ = 1;
   size_info2_->raw_symbols[2].relocation_count_ = 3;
 
   DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
                             &removed_sources_, &added_sources_);
+  bool found_dis = false;
   bool found_reloc = false;
   for (const DeltaSymbol& sym : diff.delta_symbols) {
+    if (sym.FullName() == ".Lfoo") {
+      found_dis = true;
+      ASSERT_NE(nullptr, sym.Disassembly());
+      EXPECT_TRUE(sym.Disassembly()->contains("-mov eax, 1\n+mov eax, 2\n"));
+    }
     if (sym.Before() == &size_info1_->raw_symbols[2]) {
       found_reloc = true;
       EXPECT_EQ(DiffStatus::kChanged, sym.GetDiffStatus());
@@ -527,7 +547,67 @@ TEST_F(DiffTest, TestDiffRelocations) {
       EXPECT_FLOAT_EQ(2.0f, sym.RelocationPss());
     }
   }
+  EXPECT_TRUE(found_dis);
   EXPECT_TRUE(found_reloc);
+}
+
+TEST_F(DiffTest, TestComputeUnifiedDiffHunksAndPureAddDelete) {
+  std::string pure_add = ComputeUnifiedDiff("add()", "", "line1\nline2\n");
+  EXPECT_TRUE(pure_add.contains("@@ -0,0 +1,2 @@\n+line1\n+line2\n"));
+
+  std::string pure_del = ComputeUnifiedDiff("del()", "line1\nline2\n", "");
+  EXPECT_TRUE(pure_del.contains("@@ -1,2 +0,0 @@\n-line1\n-line2\n"));
+
+  // 6 unchanged lines (<= 2 * kContext = 6) merge into a single hunk.
+  std::string merged =
+      ComputeUnifiedDiff("merge()", "a\nc1\nc2\nc3\nc4\nc5\nc6\nb\n",
+                         "a_mod\nc1\nc2\nc3\nc4\nc5\nc6\nb_mod\n");
+  size_t first_hunk = merged.find("@@ ");
+  ASSERT_NE(std::string::npos, first_hunk);
+  EXPECT_EQ(std::string::npos, merged.find("@@ ", first_hunk + 3));
+
+  // 8 unchanged lines (> 2 * kContext = 6) split into two hunks.
+  std::string split =
+      ComputeUnifiedDiff("split()", "a\nc1\nc2\nc3\nc4\nc5\nc6\nc7\nc8\nb\n",
+                         "a_mod\nc1\nc2\nc3\nc4\nc5\nc6\nc7\nc8\nb_mod\n");
+  size_t split_hunk1 = split.find("@@ ");
+  ASSERT_NE(std::string::npos, split_hunk1);
+  EXPECT_NE(std::string::npos, split.find("@@ ", split_hunk1 + 3));
+  EXPECT_TRUE(split.contains("@@ -1,4 +1,4 @@\n-a\n+a_mod\n c1\n c2\n c3\n"));
+  EXPECT_TRUE(split.contains("@@ -7,4 +7,4 @@\n c6\n c7\n c8\n-b\n+b_mod\n"));
+}
+
+TEST_F(DiffTest, TestDiffOneSidedIdenticalAndLegacyDisassembly) {
+  // Symbol 0: identical before/after disassembly -> empty unified diff string.
+  size_info1_->owned_strings.push_back("nop\nret\n");
+  size_info2_->owned_strings.push_back("nop\nret\n");
+  size_info1_->raw_symbols[0].disassembly_ = &size_info1_->owned_strings.back();
+  size_info2_->raw_symbols[0].disassembly_ = &size_info2_->owned_strings.back();
+
+  // Symbol 1: matched symbol with disassembly on only one side -> empty diff
+  // string (not a bogus all-deleted diff).
+  size_info1_->owned_strings.push_back("push rbp\nret\n");
+  size_info1_->raw_symbols[1].disassembly_ = &size_info1_->owned_strings.back();
+
+  // Symbol 2: legacy "--- " unified diff passthrough on after symbol.
+  size_info2_->owned_strings.push_back("--- a/sym\n+++ b/sym\n@@ -1 +1 @@\n");
+  size_info2_->raw_symbols[2].disassembly_ = &size_info2_->owned_strings.back();
+
+  DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
+                            &removed_sources_, &added_sources_);
+  for (const DeltaSymbol& sym : diff.delta_symbols) {
+    if (sym.Before() == &size_info1_->raw_symbols[0]) {
+      ASSERT_NE(nullptr, sym.Disassembly());
+      EXPECT_EQ("", *sym.Disassembly());
+    } else if (sym.Before() == &size_info1_->raw_symbols[1]) {
+      ASSERT_NE(nullptr, sym.After());
+      ASSERT_NE(nullptr, sym.Disassembly());
+      EXPECT_EQ("", *sym.Disassembly());
+    } else if (sym.After() == &size_info2_->raw_symbols[2]) {
+      ASSERT_NE(nullptr, sym.Disassembly());
+      EXPECT_EQ("--- a/sym\n+++ b/sym\n@@ -1 +1 @@\n", *sym.Disassembly());
+    }
+  }
 }
 
 }  // namespace

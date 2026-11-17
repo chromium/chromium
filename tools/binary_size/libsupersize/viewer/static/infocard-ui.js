@@ -55,27 +55,76 @@ const displayInfocard = (() => {
 
     /**
      * Displays the disassembly overlay.
-     * @param {string} disassembly
+     * @param {!TreeNode} node
      */
-    _showDisassemblyOverlay(disassembly) {
+    _showDisassemblyOverlay(node) {
       const divModal = g_el.divDisassemblyModal;
       const divCode = divModal.querySelector('.div-code');
+      const tabsContainer = /** @type {!HTMLElement} */ (
+          divModal.querySelector('.disassembly-tabs'));
+      const tabButtons = /** @type {!NodeListOf<!HTMLButtonElement>} */ (
+          divModal.querySelectorAll('.disassembly-tab'));
       const linkDownload = /** @type {!HTMLAnchorElement} */ (
           divModal.querySelector('.link-download'));
       const btnClose = /** @type {!HTMLButtonElement} */ (
           divModal.querySelector('.btn-close'));
-      const diffHtml = Diff2Html.html(disassembly, {
-        drawFileList: false,
-        matching: 'lines',
-        outputFormat: 'side-by-side',
-      });
-      divCode.innerHTML = diffHtml;
+
+      const hasBeforeOrAfter =
+          Boolean(node.beforeDisassembly || node.afterDisassembly);
+      tabsContainer.style.display = hasBeforeOrAfter ? '' : 'none';
+
+      const modeText = {
+        diff: node.disassembly || '',
+        before: node.beforeDisassembly || '',
+        after: node.afterDisassembly || '',
+      };
+      if (node.beforeDisassembly && node.afterDisassembly && !modeText.diff) {
+        modeText.diff = '(No differences in normalized disassembly)';
+      }
+
+      let objectUrl = '';
+      const renderMode = (mode) => {
+        for (const btn of tabButtons) {
+          btn.classList.toggle('active', btn.dataset['mode'] === mode);
+        }
+        const text = modeText[mode];
+        if (text.startsWith('--- ')) {
+          const diffHtml = Diff2Html.html(text, {
+            drawFileList: false,
+            matching: 'lines',
+            outputFormat: 'side-by-side',
+          });
+          divCode.innerHTML = diffHtml;
+        } else {
+          dom.replace(divCode, dom.textElement('pre', text, 'disassembly-raw'));
+        }
+        if (objectUrl) {
+          URL.revokeObjectURL(objectUrl);
+        }
+        const blob = new Blob([text], {type: 'text/plain'});
+        objectUrl = URL.createObjectURL(blob);
+        linkDownload.href = objectUrl;
+        linkDownload.download =
+            hasBeforeOrAfter ? `disassembly_${mode}.txt` : 'disassembly.txt';
+      };
+
+      for (const btn of tabButtons) {
+        const btnMode = btn.dataset['mode'];
+        btn.disabled = !modeText[btnMode];
+        btn.onclick = () => {
+          renderMode(btnMode);
+        };
+      }
+
+      const initialMode =
+          modeText.diff ? 'diff' : (node.afterDisassembly ? 'after' : 'before');
+      renderMode(initialMode);
       divModal.style.display = '';
-      const blob = new Blob([disassembly], {type: 'text/plain'});
-      const objectUrl = URL.createObjectURL(blob);
-      linkDownload.href = objectUrl;
       btnClose.onclick = () => {
-        URL.revokeObjectURL(objectUrl);
+        if (objectUrl) {
+          URL.revokeObjectURL(objectUrl);
+          objectUrl = '';
+        }
         divModal.style.display = 'none';
       };
     }
@@ -144,13 +193,14 @@ const displayInfocard = (() => {
         add_field('Object Path: ', node.objPath || '(No path)');
         add_field('Component: ', node.component || '(No component)');
         add_field('Full Name: ', node.fullName || '');
-        if (node.disassembly && node.disassembly !== '') {
-          const eltAnchor = document.createElement('a')
-          eltAnchor.appendChild(document.createTextNode('Show Disassembly'))
+        if (node.disassembly || node.beforeDisassembly ||
+            node.afterDisassembly) {
+          const eltAnchor = document.createElement('a');
+          eltAnchor.appendChild(document.createTextNode('Show Disassembly'));
           eltAnchor.href = '#';
           eltAnchor.addEventListener('click', (e) => {
             e.preventDefault();
-            this._showDisassemblyOverlay(node.disassembly)
+            this._showDisassemblyOverlay(node);
           });
           add_field('Disassembly: ', eltAnchor);
         }

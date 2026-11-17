@@ -256,22 +256,26 @@ class DexDisassemblyTest(unittest.TestCase):
     def dummy_path_resolver(path):
       return path
 
-    # Call AddDisassembly with normalize=True
+    # Call AddDisassembly with normalize=True (default)
     dex_disassembly.AddDisassembly(
       mock_delta_size_info,
       dummy_path_resolver,
       dummy_path_resolver,
-      normalize=True,
     )
 
-    # Since they are normalized, they should be identical.
-    self.assertEqual('', mock_after_symbol.disassembly)
+    # Since they are normalized, before and after should be identical.
+    self.assertEqual(
+      mock_before_symbol.disassembly, mock_after_symbol.disassembly
+    )
+    self.assertIn('Goto                <target>', mock_after_symbol.disassembly)
+    self.assertNotIn('0x00', mock_after_symbol.disassembly)
 
-    # Call AddDisassembly with normalize=False (default)
+    # Call AddDisassembly with normalize=False
     mock_disassembler_cls.side_effect = [
       mock_after_disassembler,
       mock_before_disassembler,
     ]
+    mock_before_symbol.disassembly = None
     mock_after_symbol.disassembly = None
 
     dex_disassembly.AddDisassembly(
@@ -281,18 +285,20 @@ class DexDisassemblyTest(unittest.TestCase):
       normalize=False,
     )
 
-    # Without normalization, they should differ, so diff should NOT be empty.
-    self.assertNotEqual('', mock_after_symbol.disassembly)
-    self.assertIn(
-      '-    0:   0x02: Goto                0x05 (+3)',
-      mock_after_symbol.disassembly,
+    # Without normalization, they should retain raw offsets and differ.
+    self.assertNotEqual(
+      mock_before_symbol.disassembly, mock_after_symbol.disassembly
     )
     self.assertIn(
-      '+    0:   0x00: Goto                0x03 (+3)',
+      '    0:   0x02: Goto                0x05 (+3)',
+      mock_before_symbol.disassembly,
+    )
+    self.assertIn(
+      '    0:   0x00: Goto                0x03 (+3)',
       mock_after_symbol.disassembly,
     )
-    self.assertIn('-      [0x02 .. 0x05[', mock_after_symbol.disassembly)
-    self.assertIn('+      [0x00 .. 0x03[', mock_after_symbol.disassembly)
+    self.assertIn('      [0x02 .. 0x05[', mock_before_symbol.disassembly)
+    self.assertIn('      [0x00 .. 0x03[', mock_after_symbol.disassembly)
 
   def testNormalizeLines(self):
     lines = [
@@ -350,6 +356,55 @@ class DexDisassemblyTest(unittest.TestCase):
         ],
         dex_disassembly.BuildDisassembleCmd(),
       )
+
+  @staticmethod
+  def _MakeMockDexSymbol(full_name, size, container):
+    """Creates a mock .dex.method Symbol for AddSizeInfoDisassembly tests."""
+    sym = mock.MagicMock()
+    sym.name = '<init>'
+    sym.full_name = full_name
+    sym.section_name = '.dex.method'
+    sym.size_without_padding = size
+    sym.aliases = None
+    sym.container = container
+    sym.disassembly = None
+    return sym
+
+  @mock.patch('dex_disassembly._CachedApkDisassembler')
+  def testAddSizeInfoDisassembly(self, mock_disassembler_cls):
+    class_obj_map = copy.deepcopy(self.class_obj_map)
+    target_name = (
+      'org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory'
+      '$$Lambda$5#<init>(): void'
+    )
+    mock_disassembler = mock.MagicMock()
+    mock_disassembler.GetForApkAndSplit.return_value = class_obj_map
+    mock_disassembler_cls.return_value = mock_disassembler
+
+    mapped_container = mock.MagicMock()
+    mapped_container.metadata = {
+      'proguard_mapping_file_name': 'mapping.txt',
+      'apk_file_name': 'app.apk',
+    }
+    unmapped_container = mock.MagicMock()
+    unmapped_container.metadata = {'apk_file_name': 'app.apk'}
+
+    sym_valid = self._MakeMockDexSymbol(target_name, 200, mapped_container)
+    sym_alias2 = self._MakeMockDexSymbol(target_name, 300, mapped_container)
+    sym_valid.aliases = [sym_valid, sym_alias2]
+    sym_alias2.aliases = sym_valid.aliases
+    sym_unmapped = self._MakeMockDexSymbol(target_name, 500, unmapped_container)
+    sym_huge = self._MakeMockDexSymbol(target_name, 10001, mapped_container)
+
+    size_info = mock.MagicMock()
+    size_info.raw_symbols = [sym_unmapped, sym_huge, sym_alias2, sym_valid]
+    dex_disassembly.AddSizeInfoDisassembly(size_info, lambda path: path)
+
+    self.assertIsNotNone(sym_valid.disassembly)
+    self.assertIn('InvokeDirect', sym_valid.disassembly)
+    self.assertIsNone(sym_alias2.disassembly)
+    self.assertIsNone(sym_unmapped.disassembly)
+    self.assertIsNone(sym_huge.disassembly)
 
 
 if __name__ == '__main__':

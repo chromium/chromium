@@ -273,7 +273,7 @@ const char* DeltaSymbol::Component() const {
 }
 
 std::string* DeltaSymbol::Disassembly() const {
-  return (after_ ? after_ : before_)->Disassembly();
+  return disassembly_;
 }
 
 float DeltaSymbol::Pss() const {
@@ -343,7 +343,8 @@ std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
 }
 
 BaseSizeInfo::BaseSizeInfo() = default;
-BaseSizeInfo::BaseSizeInfo(const BaseSizeInfo&) = default;
+BaseSizeInfo::BaseSizeInfo(BaseSizeInfo&&) = default;
+BaseSizeInfo& BaseSizeInfo::operator=(BaseSizeInfo&&) = default;
 BaseSizeInfo::~BaseSizeInfo() = default;
 
 SectionId BaseSizeInfo::ShortSectionName(const char* section_name) {
@@ -422,8 +423,8 @@ DeltaSizeInfo::DeltaSizeInfo(const SizeInfo* before_in,
       added_sources(added_sources_in) {}
 
 DeltaSizeInfo::~DeltaSizeInfo() = default;
-DeltaSizeInfo::DeltaSizeInfo(const DeltaSizeInfo&) = default;
-DeltaSizeInfo& DeltaSizeInfo::operator=(const DeltaSizeInfo&) = default;
+DeltaSizeInfo::DeltaSizeInfo(DeltaSizeInfo&&) = default;
+DeltaSizeInfo& DeltaSizeInfo::operator=(DeltaSizeInfo&&) = default;
 
 bool DeltaSizeInfo::IsSparse() const {
   return before->IsSparse() && after->IsSparse();
@@ -443,16 +444,26 @@ void TreeNode::WriteIntoJson(
     (*out)["fullName"] = std::string(symbol->FullName());
     if (opts.diff_mode) {
       const auto* delta_sym = static_cast<const DeltaSymbol*>(symbol);
-      if (delta_sym->Before() && delta_sym->Before()->NumAliases() > 1) {
-        (*out)["beforeNumAliases"] = delta_sym->Before()->NumAliases();
+      if (delta_sym->Before()) {
+        if (delta_sym->Before()->NumAliases() > 1) {
+          (*out)["beforeNumAliases"] = delta_sym->Before()->NumAliases();
+        }
+        const std::string* before_dis = delta_sym->Before()->Disassembly();
+        if (before_dis && !IsUnifiedDiff(*before_dis)) {
+          (*out)["beforeDisassembly"] = *before_dis;
+        }
       }
-      if (delta_sym->After() && delta_sym->After()->NumAliases() > 1) {
-        (*out)["afterNumAliases"] = delta_sym->After()->NumAliases();
+      if (delta_sym->After()) {
+        if (delta_sym->After()->NumAliases() > 1) {
+          (*out)["afterNumAliases"] = delta_sym->After()->NumAliases();
+        }
+        const std::string* after_dis = delta_sym->After()->Disassembly();
+        if (after_dis && !IsUnifiedDiff(*after_dis)) {
+          (*out)["afterDisassembly"] = *after_dis;
+        }
       }
-    } else {
-      if (symbol->NumAliases() > 1) {
-        (*out)["numAliases"] = symbol->NumAliases();
-      }
+    } else if (symbol->NumAliases() > 1) {
+      (*out)["numAliases"] = symbol->NumAliases();
     }
     if (symbol->ObjectPath()) {
       (*out)["objPath"] = symbol->ObjectPath();

@@ -17,29 +17,29 @@
 #include "tools/binary_size/libsupersize/viewer/caspian/file_format.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
-void ParseSizeInfoFromFile(const char* filename, caspian::SizeInfo* info) {
-  std::ifstream ifs(filename, std::ifstream::in);
+namespace {
+std::string ReadFile(const char* filename) {
+  std::ifstream ifs(filename, std::ifstream::in | std::ifstream::binary);
   if (!ifs.good()) {
     std::cerr << "Unable to open file: " << filename << std::endl;
     exit(1);
   }
-  std::string compressed((std::istreambuf_iterator<char>(ifs)),
-                         std::istreambuf_iterator<char>());
+  return std::string((std::istreambuf_iterator<char>(ifs)),
+                     std::istreambuf_iterator<char>());
+}
+}  // namespace
+
+void ParseSizeInfoFromFile(const char* filename, caspian::SizeInfo* info) {
+  std::string compressed = ReadFile(filename);
   caspian::ParseSizeInfo(compressed.data(), compressed.size(), info);
 }
 
 void ParseDiffSizeInfoFromFile(const char* filename,
                                caspian::SizeInfo* before,
                                caspian::SizeInfo* after) {
-  std::ifstream ifs(filename, std::ifstream::in);
-  if (!ifs.good()) {
-    std::cerr << "Unable to open file: " << filename << std::endl;
-    exit(1);
-  }
   std::vector<std::string> removed_sources;
   std::vector<std::string> added_sources;
-  std::string compressed((std::istreambuf_iterator<char>(ifs)),
-                         std::istreambuf_iterator<char>());
+  std::string compressed = ReadFile(filename);
   caspian::ParseDiffSizeInfo(&compressed[0], compressed.size(), before, after,
                              &removed_sources, &added_sources);
   if (removed_sources.size()) {
@@ -90,16 +90,29 @@ void ValidateDiff(const char* filename) {
 }
 
 void ShowDisassembly(const char* filename) {
-  caspian::SizeInfo before;
-  caspian::SizeInfo after;
-  ParseDiffSizeInfoFromFile(filename, &before, &after);
-
-  for (const auto& sym : after.raw_symbols) {
-    if (sym.disassembly_ != nullptr) {
-      std::cout << "Symbol Name: " << sym.full_name_ << std::endl;
-      std::cout << "Disassembly:" << std::endl
-                << *sym.disassembly_ << std::endl;
+  std::string data = ReadFile(filename);
+  auto print_disassembly = [](const auto& symbols) {
+    for (const auto& sym : symbols) {
+      if (sym.Disassembly() != nullptr && !sym.Disassembly()->empty()) {
+        std::cout << "Symbol Name: " << sym.FullName() << std::endl;
+        std::cout << "Disassembly:" << std::endl
+                  << *sym.Disassembly() << std::endl;
+      }
     }
+  };
+  if (caspian::IsDiffSizeInfo(data.data(), data.size())) {
+    caspian::SizeInfo before;
+    caspian::SizeInfo after;
+    std::vector<std::string> removed_sources;
+    std::vector<std::string> added_sources;
+    caspian::ParseDiffSizeInfo(data.data(), data.size(), &before, &after,
+                               &removed_sources, &added_sources);
+    caspian::DeltaSizeInfo diff = Diff(&before, &after, nullptr, nullptr);
+    print_disassembly(diff.delta_symbols);
+  } else {
+    caspian::SizeInfo info;
+    caspian::ParseSizeInfo(data.data(), data.size(), &info);
+    print_disassembly(info.raw_symbols);
   }
 }
 
@@ -110,7 +123,8 @@ void PrintUsageAndExit() {
   std::cerr << "  caspian_cli validate <.size file>" << std::endl;
   std::cerr << "  caspian_cli validatediff <.sizediff file>" << std::endl;
   std::cerr << "  caspian_cli diff <before_file> <after_file>" << std::endl;
-  std::cerr << "  caspian_cli showdisassembly <.sizediff file>" << std::endl;
+  std::cerr << "  caspian_cli showdisassembly <.size or .sizediff file>"
+            << std::endl;
   exit(1);
 }
 

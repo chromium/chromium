@@ -797,9 +797,14 @@ found in the LICENSE file.
   <!-- Modal To Display Disassembly-->
   <div id="div-disassembly-modal" class="modal" style="display:none">
     <div class="modal-content">
+      <div class="disassembly-tabs" style="display:none">
+        <button type="button" class="text-button disassembly-tab" data-mode="diff">Diff</button>
+        <button type="button" class="text-button disassembly-tab" data-mode="before">Before</button>
+        <button type="button" class="text-button disassembly-tab" data-mode="after">After</button>
+      </div>
       <div class="div-code">Sample</div>
       <div style="margin-top: 10px">
-        <a title="Download unified diff" class="link-download" href="#"
+        <a title="Download disassembly" class="link-download" href="#"
            download="disassembly.txt">
            Download
         </a>

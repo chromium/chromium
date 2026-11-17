@@ -2,10 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import collections
-import difflib
 import math
-import models
+
+DISASSEMBLED_SYMBOL_QUOTA = 10
+MAX_DISASSEMBLED_SYMBOL_SIZE = 10000
+
+
+def GetTopSizeInfoSymbols(size_info, filter_fn):
+  """Returns top |DISASSEMBLED_SYMBOL_QUOTA| symbols matching |filter_fn|."""
+  candidates = [
+    s
+    for s in size_info.raw_symbols
+    if not s.name.startswith('*')
+    and 0 < s.size_without_padding <= MAX_DISASSEMBLED_SYMBOL_SIZE
+    and (not s.aliases or s is s.aliases[0])
+    and filter_fn(s)
+  ]
+  candidates.sort(key=lambda s: s.size_without_padding, reverse=True)
+  return candidates[:DISASSEMBLED_SYMBOL_QUOTA]
 
 
 def _SelectEvenlySpaced(lst, n):
@@ -71,11 +85,3 @@ def SampleSymbols(candidates, changed_files=None):
       contributed_files.add(best.source_path)
 
   return sorted(selected, key=lambda s: abs(s.size), reverse=True)
-
-
-def CreateUnifiedDiff(name, before, after):
-  """Helper to create a unified diff between before and after disassembly."""
-  unified_diff = difflib.unified_diff(
-    before, after, fromfile='before/' + name, tofile='after/' + name, n=10
-  )
-  return ''.join(unified_diff)

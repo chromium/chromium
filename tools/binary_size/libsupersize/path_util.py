@@ -7,6 +7,7 @@
 import abc
 import logging
 import os
+import pathlib
 import sys
 
 _STATUS_DETECTED = 1
@@ -234,3 +235,30 @@ def GetChromeR8Path():
   return os.path.abspath(
     FromToolsSrcRoot('third_party', 'r8', 'cipd', 'bin', 'chrome_r8')
   )
+
+
+class PathResolver:
+  """Resolves build artifact subpaths recorded in `.size` metadata.
+
+  Calling an instance checks `<parent_path>/<subpath>` first, falling back to
+  `<parent_path>/<basename>` for flat archive directories, and raises
+  `FileNotFoundError` if neither exists.
+  """
+
+  def __init__(self, parent_path):
+    self._parent_path = pathlib.Path(parent_path)
+
+  def __call__(self, subpath):
+    # Use dict to de-dupe while keeping order.
+    candidates = list(
+      {
+        self._parent_path / subpath: 0,
+        self._parent_path / pathlib.PosixPath(subpath).name: 0,
+      }
+    )
+    for p in candidates:
+      if p.exists():
+        return p
+    raise FileNotFoundError(
+      'Paths do not exist: ' + ', '.join(str(t) for t in candidates)
+    )

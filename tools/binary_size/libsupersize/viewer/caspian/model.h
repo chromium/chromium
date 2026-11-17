@@ -59,6 +59,10 @@ enum class DiffStatus : uint8_t {
   kRemoved = 3,
 };
 
+inline bool IsUnifiedDiff(std::string_view text) {
+  return text.starts_with("--- ");
+}
+
 class SymbolFlag {
  public:
   static const int32_t kAnonymous = 1;
@@ -280,6 +284,8 @@ class DeltaSymbol : public BaseSymbol {
   const Symbol* Before() const { return before_; }
   const Symbol* After() const { return after_; }
 
+  std::string* disassembly_ = nullptr;
+
  private:
   const Symbol* before_ = nullptr;
   const Symbol* after_ = nullptr;
@@ -289,7 +295,10 @@ std::ostream& operator<<(std::ostream& os, const Symbol& sym);
 
 struct BaseSizeInfo {
   BaseSizeInfo();
-  BaseSizeInfo(const BaseSizeInfo&);
+  BaseSizeInfo(const BaseSizeInfo&) = delete;
+  BaseSizeInfo& operator=(const BaseSizeInfo&) = delete;
+  BaseSizeInfo(BaseSizeInfo&&);
+  BaseSizeInfo& operator=(BaseSizeInfo&&);
   virtual ~BaseSizeInfo();
   virtual bool IsSparse() const = 0;
 
@@ -346,8 +355,10 @@ struct DeltaSizeInfo : BaseSizeInfo {
                 const std::vector<std::string>* removed_sources_in,
                 const std::vector<std::string>* added_sources_in);
   ~DeltaSizeInfo() override;
-  DeltaSizeInfo(const DeltaSizeInfo&);
-  DeltaSizeInfo& operator=(const DeltaSizeInfo&);
+  DeltaSizeInfo(const DeltaSizeInfo&) = delete;
+  DeltaSizeInfo& operator=(const DeltaSizeInfo&) = delete;
+  DeltaSizeInfo(DeltaSizeInfo&&);
+  DeltaSizeInfo& operator=(DeltaSizeInfo&&);
   bool IsSparse() const override;
 
   using Results = std::array<int32_t, 4>;

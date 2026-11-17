@@ -364,3 +364,23 @@ ul {
   overflow: auto;
   position: relative;
 }
+
+#div-disassembly-modal .disassembly-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+#div-disassembly-modal .disassembly-tab.active {
+  background-color: #1a73e8;
+  color: #fff;
+}
+
+#div-disassembly-modal .disassembly-raw {
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+  padding: 12px;
+  white-space: pre;
+}

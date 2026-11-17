@@ -21,12 +21,14 @@ import archive_util
 import data_quality
 import describe
 import dex
+import dex_disassembly
 import dir_metadata
 import file_format
 import function_signature
 import json_config_parser
 import models
 import native
+import native_disassembly
 import pakfile
 import parallel
 import path_util
@@ -674,6 +676,11 @@ def AddArguments(parser):
     '--title', help='Value for the "title" build_config entry.'
   )
   parser.add_argument('--url', help='Value for the "url" build_config entry.')
+  parser.add_argument(
+    '--save-disassembly',
+    action='store_true',
+    help='Save normalized disassembly for top 10 largest symbols.',
+  )
   parser.add_argument(
     '--format-v2',
     action='store_true',
@@ -1420,6 +1427,18 @@ def Run(top_args, on_config_error):
     )
     size_info = CreateSizeInfo(
       container_specs, build_config, json_config, apk_file_manager
+    )
+
+  if top_args.save_disassembly:
+    input_dir = (
+      top_args.output_directory
+      or os.path.dirname(_IdentifyInputFile(top_args, on_config_error))
+      or '.'
+    )
+    resolver = path_util.PathResolver(input_dir)
+    dex_disassembly.AddSizeInfoDisassembly(size_info, resolver)
+    native_disassembly.AddSizeInfoDisassembly(
+      size_info, resolver, output_directory=top_args.output_directory
     )
 
   if logging.getLogger().isEnabledFor(logging.DEBUG):

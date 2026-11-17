@@ -11,6 +11,7 @@
 #include <deque>
 #include <functional>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -363,6 +364,204 @@ class DiffHelper {
 
 namespace caspian {
 
+namespace {
+std::vector<std::string_view> SplitLines(std::string_view text) {
+  std::vector<std::string_view> lines;
+  size_t start = 0;
+  while (start < text.size()) {
+    size_t end = text.find('\n', start);
+    if (end == std::string_view::npos) {
+      lines.push_back(text.substr(start));
+      break;
+    }
+    lines.push_back(text.substr(start, end - start));
+    start = end + 1;
+  }
+  return lines;
+}
+
+// Computes a line-level edit script (' ' = keep, '-' = delete from |a|,
+// '+' = insert from |b|) using Myers' O(ND) diff algorithm after stripping
+// common prefix and suffix lines. Edit distance is capped at |kMaxD| to bound
+// O(D^2) time and trace memory on large rewrites, falling back to deleting the
+// middle of |a| and inserting the middle of |b|.
+std::string ComputeMyersOps(const std::vector<std::string_view>& a,
+                            const std::vector<std::string_view>& b) {
+  size_t prefix = 0;
+  while (prefix < a.size() && prefix < b.size() && a[prefix] == b[prefix]) {
+    ++prefix;
+  }
+  size_t suffix = 0;
+  while (prefix + suffix < a.size() && prefix + suffix < b.size() &&
+         a[a.size() - 1 - suffix] == b[b.size() - 1 - suffix]) {
+    ++suffix;
+  }
+
+  std::string ops(prefix, ' ');
+  size_t n = a.size() - prefix - suffix;
+  size_t m = b.size() - prefix - suffix;
+
+  int found_d = -1;
+  if (n > 0 && m > 0) {
+    constexpr int kMaxD = 1024;
+    int max_d = static_cast<int>(std::min<size_t>(n + m, kMaxD));
+    int offset = max_d;
+    std::vector<int> v(2 * max_d + 1, 0);
+    std::vector<std::vector<int>> trace;
+    trace.reserve(max_d + 1);
+
+    for (int d = 0; d <= max_d; ++d) {
+      trace.push_back(v);
+      for (int k = -d; k <= d; k += 2) {
+        int x = 0;
+        if (k == -d || (k != d && v[k - 1 + offset] < v[k + 1 + offset])) {
+          x = v[k + 1 + offset];
+        } else {
+          x = v[k - 1 + offset] + 1;
+        }
+        int y = x - k;
+        while (x < static_cast<int>(n) && y < static_cast<int>(m) &&
+               a[prefix + x] == b[prefix + y]) {
+          ++x;
+          ++y;
+        }
+        v[k + offset] = x;
+        if (x >= static_cast<int>(n) && y >= static_cast<int>(m)) {
+          found_d = d;
+          break;
+        }
+      }
+      if (found_d >= 0) {
+        break;
+      }
+    }
+
+    if (found_d >= 0) {
+      std::string mid_ops;
+      int x = static_cast<int>(n);
+      int y = static_cast<int>(m);
+      for (int d = found_d; d > 0; --d) {
+        const std::vector<int>& prev_v = trace[d];
+        int k = x - y;
+        int prev_k = 0;
+        if (k == -d ||
+            (k != d && prev_v[k - 1 + offset] < prev_v[k + 1 + offset])) {
+          prev_k = k + 1;
+        } else {
+          prev_k = k - 1;
+        }
+        int prev_x = prev_v[prev_k + offset];
+        int prev_y = prev_x - prev_k;
+        while (x > prev_x && y > prev_y) {
+          --x;
+          --y;
+          mid_ops.push_back(' ');
+        }
+        if (x == prev_x) {
+          --y;
+          mid_ops.push_back('+');
+        } else {
+          --x;
+          mid_ops.push_back('-');
+        }
+      }
+      ops.append(mid_ops.rbegin(), mid_ops.rend());
+    }
+  }
+
+  if (found_d < 0) {
+    ops.append(n, '-');
+    ops.append(m, '+');
+  }
+  ops.append(suffix, ' ');
+  return ops;
+}
+}  // namespace
+
+// Formats a unified diff with 3 lines of context between |before_text| and
+// |after_text|, or returns an empty string if their lines are identical.
+std::string ComputeUnifiedDiff(std::string_view symbol_name,
+                               std::string_view before_text,
+                               std::string_view after_text) {
+  std::vector<std::string_view> a = SplitLines(before_text);
+  std::vector<std::string_view> b = SplitLines(after_text);
+  if (a == b) {
+    return "";
+  }
+  std::string ops = ComputeMyersOps(a, b);
+  constexpr size_t kContext = 3;
+
+  std::ostringstream oss;
+  oss << "--- a/" << symbol_name << "\n";
+  oss << "+++ b/" << symbol_name << "\n";
+
+  size_t i = 0;
+  size_t a_pos = 0;
+  size_t b_pos = 0;
+  while (i < ops.size()) {
+    if (ops[i] == ' ') {
+      ++i;
+      ++a_pos;
+      ++b_pos;
+      continue;
+    }
+    size_t back = std::min(i, kContext);
+    size_t start = i - back;
+    size_t a_start = a_pos - back;
+    size_t b_start = b_pos - back;
+    size_t end = i;
+    while (end < ops.size()) {
+      if (ops[end] != ' ') {
+        ++end;
+        continue;
+      }
+      size_t eq_run = 0;
+      while (end + eq_run < ops.size() && ops[end + eq_run] == ' ') {
+        ++eq_run;
+      }
+      if (end + eq_run < ops.size() && eq_run <= 2 * kContext) {
+        end += eq_run;
+      } else {
+        end += std::min(kContext, eq_run);
+        break;
+      }
+    }
+
+    size_t a_count = 0;
+    size_t b_count = 0;
+    for (size_t idx = start; idx < end; ++idx) {
+      if (ops[idx] != '+') {
+        ++a_count;
+      }
+      if (ops[idx] != '-') {
+        ++b_count;
+      }
+    }
+    size_t a_line = (a_count == 0) ? a_start : (a_start + 1);
+    size_t b_line = (b_count == 0) ? b_start : (b_start + 1);
+    oss << "@@ -" << a_line << "," << a_count << " +" << b_line << ","
+        << b_count << " @@\n";
+
+    a_pos = a_start;
+    b_pos = b_start;
+    for (size_t idx = start; idx < end; ++idx) {
+      char op = ops[idx];
+      oss << op;
+      if (op == '+') {
+        oss << b[b_pos++];
+      } else if (op == '-') {
+        oss << a[a_pos++];
+      } else {
+        oss << a[a_pos++];
+        ++b_pos;
+      }
+      oss << "\n";
+    }
+    i = end;
+  }
+  return oss.str();
+}
+
 // See docs/diffs.md for diffing algorithm.
 DeltaSizeInfo Diff(const SizeInfo* before,
                    const SizeInfo* after,
@@ -506,6 +705,31 @@ DeltaSizeInfo Diff(const SizeInfo* before,
         ret.delta_symbols.emplace_back(nullptr, &abs_sym);
       }
     }
+  }
+
+  for (DeltaSymbol& delta_sym : ret.delta_symbols) {
+    std::string* before_dis =
+        delta_sym.Before() ? delta_sym.Before()->Disassembly() : nullptr;
+    std::string* after_dis =
+        delta_sym.After() ? delta_sym.After()->Disassembly() : nullptr;
+    if (!before_dis && !after_dis) {
+      continue;
+    }
+    std::string* primary_dis = after_dis ? after_dis : before_dis;
+    if (IsUnifiedDiff(*primary_dis)) {
+      delta_sym.disassembly_ = primary_dis;
+      continue;
+    }
+    std::string diff_str;
+    if ((before_dis && after_dis) || !delta_sym.Before() ||
+        !delta_sym.After()) {
+      diff_str = ComputeUnifiedDiff(
+          delta_sym.FullName(),
+          before_dis ? std::string_view(*before_dis) : std::string_view(),
+          after_dis ? std::string_view(*after_dis) : std::string_view());
+    }
+    ret.owned_strings.push_back(std::move(diff_str));
+    delta_sym.disassembly_ = &ret.owned_strings.back();
   }
   return ret;
 }

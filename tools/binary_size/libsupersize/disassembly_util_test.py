@@ -115,15 +115,6 @@ class DisassemblyUtilTest(unittest.TestCase):
     )
     self.assertGreater(len(selected_empty_file), 0)
 
-  def testCreateUnifiedDiff(self):
-    before = ['line1\n', 'line2\n']
-    after = ['line1\n', 'line3\n']
-    diff = disassembly_util.CreateUnifiedDiff('test_symbol', before, after)
-    self.assertIn('--- before/test_symbol', diff)
-    self.assertIn('+++ after/test_symbol', diff)
-    self.assertIn('-line2', diff)
-    self.assertIn('+line3', diff)
-
 
 if __name__ == '__main__':
   unittest.main()
