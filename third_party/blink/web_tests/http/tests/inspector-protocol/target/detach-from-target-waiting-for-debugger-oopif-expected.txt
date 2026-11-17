@@ -1,0 +1,5 @@
+Tests that an out-of-process iframe that waits for the debugger is resumed when the session is detached from it.
+Attached to iframe, waitingForDebugger=true
+Detached
+Iframe loaded
+

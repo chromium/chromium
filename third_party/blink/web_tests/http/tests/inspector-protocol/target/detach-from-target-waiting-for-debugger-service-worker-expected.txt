@@ -1,0 +1,5 @@
+Tests that a service worker that waits for the debugger is resumed when the session is detached from it.
+Attached to service_worker, waitingForDebugger=true
+Detached
+Service worker activated
+

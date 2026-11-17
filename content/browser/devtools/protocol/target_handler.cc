@@ -538,6 +538,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   }
 
   void Detach(bool host_closed) {
+    ResumeIfThrottled();
     handler_->frontend_->DetachedFromTarget(id_, agent_host_->GetId());
     if (flatten_protocol_) {
       handler_->root_session_->DetachChildSession(id_);

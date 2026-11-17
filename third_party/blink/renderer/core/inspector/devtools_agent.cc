@@ -300,13 +300,14 @@ void DevToolsAgent::AttachDevToolsSession(
     bool session_waits_for_debugger) {
   TRACE_EVENT0("devtools", "Agent::AttachDevToolsSession");
   if (associated_receiver_.is_bound()) {
-    // Discard `session_waits_for_debugger` for regular pages, this is rather
-    // handled by the navigation throttles machinery on the browser side.
+    // Most of the waiting for regular pages is handled by the navigation
+    // throttles machinery on the browser side. A window.open() popup is
+    // paused in the renderer, so make sure it can be resumed.
     AttachDevToolsSessionImpl(
         std::move(host), std::move(session_receiver),
         std::move(io_session_receiver), std::move(reattach_session_state),
         client_expects_binary_responses, client_is_trusted, session_id,
-        /* session_waits_for_debugger */ false);
+        session_waits_for_debugger);
   } else {
     io_agent_->AttachDevToolsSession(
         std::move(host), std::move(session_receiver),

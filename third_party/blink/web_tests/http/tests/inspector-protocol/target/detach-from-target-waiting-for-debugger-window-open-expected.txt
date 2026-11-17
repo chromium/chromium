@@ -1,0 +1,6 @@
+Tests that a window.open() target that waits for the debugger is resumed, together with its opener, when the session is detached from it.
+Attached to page, waitingForDebugger=true
+Detached
+Opener resumed
+Popup loaded
+

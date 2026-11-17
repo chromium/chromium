@@ -516,6 +516,10 @@ ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
   return client_security_state_->cross_origin_embedder_policy;
 }
 
+bool ServiceWorkerDevToolsAgentHost::should_pause_on_start() {
+  return should_pause_on_start_ && IsAttached();
+}
+
 void ServiceWorkerDevToolsAgentHost::set_should_pause_on_start(
     bool should_pause_on_start) {
   should_pause_on_start_ = should_pause_on_start;

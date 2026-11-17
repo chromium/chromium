@@ -128,7 +128,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
     return context_wrapper_.get();
   }
 
-  bool should_pause_on_start() { return should_pause_on_start_; }
+  bool should_pause_on_start();
   void set_should_pause_on_start(bool should_pause_on_start);
 
  private:
