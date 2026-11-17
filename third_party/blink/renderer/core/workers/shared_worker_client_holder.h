@@ -43,14 +43,12 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_unique_receiver_set.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
-class Document;
 class MessagePortChannel;
 class KURL;
 class SharedWorker;
@@ -92,11 +90,6 @@ class CORE_EXPORT SharedWorkerClientHolder final
   void Trace(Visitor* visitor) const override;
 
  private:
-  // Tracks the active Document to detect when LocalDOMWindow is reused across a
-  // same-origin initial empty document navigation. Because the browser-side
-  // SharedWorkerConnectorImpl is a DocumentService destroyed on cross-document
-  // commit, `connector_` must be rebound whenever the active Document changes.
-  WeakMember<Document> document_;
   HeapMojoRemote<mojom::blink::SharedWorkerConnector> connector_;
   HeapMojoUniqueReceiverSet<mojom::blink::SharedWorkerClient> client_receivers_;
 

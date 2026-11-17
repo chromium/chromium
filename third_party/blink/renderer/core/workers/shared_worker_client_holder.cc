@@ -46,7 +46,6 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_shared_worker.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -77,7 +76,6 @@ SharedWorkerClientHolder* SharedWorkerClientHolder::From(
 
 SharedWorkerClientHolder::SharedWorkerClientHolder(LocalDOMWindow& window)
     : Supplement(window),
-      document_(window.document()),
       connector_(&window),
       client_receivers_(&window),
       task_runner_(window.GetTaskRunner(blink::TaskType::kDOMManipulation)) {
@@ -132,14 +130,6 @@ void SharedWorkerClientHolder::Connect(
           *worker->GetExecutionContext()),
       same_site_cookies, extended_lifetime, permissions_policy);
 
-  if (!connector_override &&
-      (!connector_.is_bound() || !connector_.is_connected() ||
-       document_ != GetSupplementable()->document())) {
-    document_ = GetSupplementable()->document();
-    connector_.reset();
-    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
-        connector_.BindNewPipeAndPassReceiver(task_runner_));
-  }
   const HeapMojoRemote<mojom::blink::SharedWorkerConnector>& connector =
       connector_override ? *connector_override : connector_;
   connector->Connect(
@@ -151,7 +141,6 @@ void SharedWorkerClientHolder::Connect(
 }
 
 void SharedWorkerClientHolder::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(connector_);
   visitor->Trace(client_receivers_);
   Supplement<LocalDOMWindow>::Trace(visitor);

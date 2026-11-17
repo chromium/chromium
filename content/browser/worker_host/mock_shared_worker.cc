@@ -4,7 +4,6 @@
 
 #include "content/browser/worker_host/mock_shared_worker.h"
 
-#include "base/functional/bind.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -197,10 +196,7 @@ MockSharedWorkerClient::~MockSharedWorkerClient() = default;
 
 void MockSharedWorkerClient::Bind(
     mojo::PendingReceiver<blink::mojom::SharedWorkerClient> receiver) {
-  is_disconnected_ = false;
   receiver_.Bind(std::move(receiver));
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &MockSharedWorkerClient::OnDisconnect, base::Unretained(this)));
 }
 
 void MockSharedWorkerClient::Close() {
@@ -298,10 +294,6 @@ void MockSharedWorkerClient::OnReportException(
   if (on_report_exception_callback_) {
     std::move(on_report_exception_callback_).Run();
   }
-}
-
-void MockSharedWorkerClient::OnDisconnect() {
-  is_disconnected_ = true;
 }
 
 }  // namespace content
