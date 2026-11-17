@@ -8,17 +8,23 @@ import android.os.Looper;
 
 import org.robolectric.Shadows;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
+import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.JavaUtils;
 import org.chromium.base.task.PostTask;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Chrome utilities for Robolectric tests. */
 public class RobolectricUtil {
+    private static final PrintStream DISCARD_STREAM =
+            new PrintStream(OutputStream.nullOutputStream());
+
     private RobolectricUtil() {}
 
     /** Returns the executor used by PostTask for background tasks. */
@@ -157,5 +163,18 @@ public class RobolectricUtil {
 
         PostTask.setPrenativeThreadPoolExecutorForTesting(null);
         PostTask.setPrenativeThreadPoolDelayedExecutorForTesting(null);
+    }
+
+    /**
+     * Stops {@link ShadowLog} from printing logs for the rest of the current test. Logs are still
+     * captured for {@link ShadowLog#getLogs()}. Use this instead of setting {@link
+     * ShadowLog#stream} to null, which can crash another thread that is logging at the same time.
+     *
+     * <p>Callers do not need to undo this, so it does not register a {@code ResettersForTesting}
+     * reset. {@link BaseRobolectricTestRule} calls this after every test and sets {@link
+     * ShadowLog#stream} back to {@code System.out} before the next one.
+     */
+    public static void disableShadowLogPrinting() {
+        ShadowLog.stream = DISCARD_STREAM;
     }
 }

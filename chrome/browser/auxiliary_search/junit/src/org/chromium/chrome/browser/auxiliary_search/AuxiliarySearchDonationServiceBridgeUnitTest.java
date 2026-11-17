@@ -312,7 +312,7 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                 .thenReturn(Futures.immediateFuture(null))
                 .thenReturn(Futures.immediateFailedFuture(new RuntimeException("IPC error")));
         // Suppress log spam in tests.
-        ShadowLog.stream = null;
+        RobolectricUtil.disableShadowLogPrinting();
         var bridge =
                 new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -335,7 +335,7 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
         when(mMockFactory.createSearchSessionAsync(anyString()))
                 .thenReturn(Futures.immediateFailedFuture(new RuntimeException("Session error")));
         // Suppress log spam in tests.
-        ShadowLog.stream = null;
+        RobolectricUtil.disableShadowLogPrinting();
         var bridge =
                 new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -472,7 +472,7 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
         when(mMockSession.putAsync(any()))
                 .thenReturn(Futures.immediateFailedFuture(new RuntimeException("IPC error")));
         // Suppress log spam in tests.
-        ShadowLog.stream = null;
+        RobolectricUtil.disableShadowLogPrinting();
         var bridge =
                 new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -498,7 +498,7 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
         when(mMockFactory.createSearchSessionAsync(anyString()))
                 .thenReturn(Futures.immediateFailedFuture(new RuntimeException("Session error")));
         // Suppress log spam in tests.
-        ShadowLog.stream = null;
+        RobolectricUtil.disableShadowLogPrinting();
         var bridge =
                 new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -524,7 +524,7 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                 .thenReturn(
                         Futures.immediateFailedFuture(new RuntimeException("Schema update error")));
         // Suppress log spam in tests.
-        ShadowLog.stream = null;
+        RobolectricUtil.disableShadowLogPrinting();
         var bridge =
                 new AuxiliarySearchDonationServiceBridge(/* isBrowsingDataDonationEnabled= */ true);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -547,7 +547,7 @@ public class AuxiliarySearchDonationServiceBridgeUnitTest {
                 .thenReturn(Futures.immediateFuture(mMockSession));
         when(mMockSession.setSchemaAsync(any())).thenReturn(Futures.immediateFuture(null));
         // Suppress log spam in tests.
-        ShadowLog.stream = null;
+        RobolectricUtil.disableShadowLogPrinting();
         AppSearchBatchResult<String, Void> failedBatchResult =
                 new AppSearchBatchResult.Builder<String, Void>()
                         .setFailure(TEST_ID, AppSearchResult.RESULT_INTERNAL_ERROR, "Disk full")
