@@ -298,6 +298,8 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsToUntrusted) {
                   drive_picker_host::mojom::DrivePickerResultHandler>,
               drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
             EXPECT_EQ(keys->oauth_token, kAccessToken);
+            EXPECT_FALSE(keys->is_glic);
+            EXPECT_FALSE(keys->app_id.empty());
             run_loop.Quit();
           });
   controller.TriggerDrivePickerHost(std::move(request));
@@ -306,6 +308,102 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsToUntrusted) {
       kAccessToken, base::Time::Now() + base::Hours(1));
 
   run_loop.Run();
+}
+
+TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsGlic) {
+  feature_list_.InitAndEnableFeature(features::kGlicDrivePicker);
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  MockResultHandler result_handler;
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      result_handler.BindAndGetRemote());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_))
+      .WillOnce(
+          [&run_loop](
+              mojo::PendingRemote<
+                  drive_picker_host::mojom::DrivePickerResultHandler>,
+              drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
+            EXPECT_EQ(keys->oauth_token, kAccessToken);
+            EXPECT_TRUE(keys->is_glic);
+            EXPECT_TRUE(keys->app_id.empty());
+            run_loop.Quit();
+          });
+  controller.TriggerDrivePickerHost(std::move(request));
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Now() + base::Hours(1));
+
+  run_loop.Run();
+}
+
+TEST_F(DrivePickerHostUITest,
+       ConcurrentRequestWhileTokenFetchInFlightPreservesIsGlic) {
+  feature_list_.InitAndEnableFeature(features::kGlicDrivePicker);
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  MockResultHandler glic_result_handler;
+  auto glic_request =
+      std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+          drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+          glic_result_handler.BindAndGetRemote());
+  glic_request->set_style(
+      drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  controller.TriggerDrivePickerHost(std::move(glic_request));
+
+  // While the first request's token fetch is in flight, a second non-Glic
+  // request arrives and is rejected with kTokenFetchFailure without clobbering
+  // the in-flight Glic request's `is_glic` state.
+  MockResultHandler second_result_handler;
+  base::RunLoop second_error_loop;
+  EXPECT_CALL(
+      second_result_handler,
+      OnError(drive_picker_host::mojom::DrivePickerError::kTokenFetchFailure))
+      .WillOnce([&second_error_loop]() { second_error_loop.Quit(); });
+  auto second_request =
+      std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+          drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+          second_result_handler.BindAndGetRemote());
+  controller.TriggerDrivePickerHost(std::move(second_request));
+  second_error_loop.Run();
+
+  base::RunLoop show_loop;
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_))
+      .WillOnce(
+          [&show_loop](
+              mojo::PendingRemote<
+                  drive_picker_host::mojom::DrivePickerResultHandler>,
+              drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
+            EXPECT_EQ(keys->oauth_token, kAccessToken);
+            EXPECT_TRUE(keys->is_glic);
+            EXPECT_TRUE(keys->app_id.empty());
+            show_loop.Quit();
+          });
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Now() + base::Hours(1));
+  show_loop.Run();
 }
 
 TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostQueuesUntilBridgeBound) {
@@ -340,6 +438,48 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostQueuesUntilBridgeBound) {
                   drive_picker_host::mojom::DrivePickerResultHandler>,
               drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
             EXPECT_EQ(keys->oauth_token, kAccessToken);
+            EXPECT_FALSE(keys->is_glic);
+            EXPECT_FALSE(keys->app_id.empty());
+            run_loop.Quit();
+          });
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kAccessToken, base::Time::Now() + base::Hours(1));
+
+  run_loop.Run();
+}
+
+TEST_F(DrivePickerHostUITest,
+       TriggerDrivePickerHostQueuesGlicUntilBridgeBound) {
+  feature_list_.InitAndEnableFeature(features::kGlicDrivePicker);
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+
+  content::TestWebUI test_web_ui;
+  test_web_ui.set_web_contents(web_contents());
+  DrivePickerHostUI controller(&test_web_ui);
+
+  MockResultHandler result_handler;
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      result_handler.BindAndGetRemote());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  controller.TriggerDrivePickerHost(std::move(request));
+
+  MockDrivePickerBridge mock_bridge;
+  controller.SetBridge(mock_bridge.BindAndGetRemote());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_))
+      .WillOnce(
+          [&run_loop](
+              mojo::PendingRemote<
+                  drive_picker_host::mojom::DrivePickerResultHandler>,
+              drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
+            EXPECT_EQ(keys->oauth_token, kAccessToken);
+            EXPECT_TRUE(keys->is_glic);
+            EXPECT_TRUE(keys->app_id.empty());
             run_loop.Quit();
           });
 

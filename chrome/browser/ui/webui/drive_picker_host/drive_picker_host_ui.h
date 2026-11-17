@@ -148,13 +148,15 @@ class DrivePickerHostUI
   void OnAccessTokenFetched(
       mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
           result_handler,
+      bool is_glic,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
   // Initiates the OAuth token fetch and subsequent picker display.
   void FetchTokenAndShowPicker(
       mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-          result_handler);
+          result_handler,
+      bool is_glic);
 
   // Constructs the ConsentKit URL and initiates the consent flow.
   void ShowConsentKitDialog(

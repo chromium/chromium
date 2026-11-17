@@ -59,6 +59,16 @@ DrivePickerUntrustedHostUI::DrivePickerUntrustedHostUI(content::WebUI* web_ui)
   source->AddLocalizedString("driveDisclaimerTryAgain",
                              IDS_NTP_DRIVE_DISCLAIMER_TRY_AGAIN);
   source->AddLocalizedString("cancel", IDS_CANCEL);
+  source->AddLocalizedString("glicDrivePickerRecentTabLabel",
+                             IDS_GLIC_DRIVE_PICKER_RECENT_TAB_LABEL);
+  source->AddLocalizedString("glicDrivePickerMyDriveTabLabel",
+                             IDS_GLIC_DRIVE_PICKER_MY_DRIVE_TAB_LABEL);
+  source->AddLocalizedString("glicDrivePickerSharedDrivesTabLabel",
+                             IDS_GLIC_DRIVE_PICKER_SHARED_DRIVES_TAB_LABEL);
+  source->AddLocalizedString("glicDrivePickerSharedWithMeTabLabel",
+                             IDS_GLIC_DRIVE_PICKER_SHARED_WITH_ME_TAB_LABEL);
+  source->AddLocalizedString("glicDrivePickerStarredTabLabel",
+                             IDS_GLIC_DRIVE_PICKER_STARRED_TAB_LABEL);
   source->UseStringsJs();
 
   source->AddFrameAncestor(GURL(chrome::kChromeUIDrivePickerHostURL));

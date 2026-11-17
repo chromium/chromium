@@ -12,6 +12,55 @@
         height: 100%;
         overflow: hidden;
       }
+
+      /* Glic-only: `google.picker.Picker` wraps the `docs.google.com/picker`
+       * iframe inside a Closure `goog.ui.Dialog` meant for in-page web modals,
+       * injecting a host-page scrim/mask (`.picker-dialog-bg`), outer dialog
+       * border/shadow (`.picker-dialog`), and fallback title bar/buttons.
+       * Because Chrome already hosts this page inside a native Views modal
+       * `Widget` (`DrivePickerHostView`), hide Closure's outer modal chrome so
+       * the inner picker iframe fills the WebView edge-to-edge. */
+      body.glic-picker .picker-dialog-bg,
+      body.glic-picker .picker-dialog-title,
+      body.glic-picker .picker-dialog-title-close,
+      body.glic-picker .picker-dialog-buttons {
+        display: none !important;
+      }
+
+      body.glic-picker .picker-dialog {
+        background: transparent !important;
+        border: none !important;
+        bottom: 0 !important;
+        box-shadow: none !important;
+        height: 100vh !important;
+        left: 0 !important;
+        margin: 0 !important;
+        outline: none !important;
+        padding: 0 !important;
+        position: fixed !important;
+        right: 0 !important;
+        top: 0 !important;
+        width: 100vw !important;
+      }
+
+      body.glic-picker .picker-dialog-content {
+        border: none !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+
+      body.glic-picker .picker-frame,
+      body.glic-picker .picker-dialog-frame,
+      body.glic-picker iframe {
+        border: none !important;
+        display: block !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
     </style>
   </head>
   <body>

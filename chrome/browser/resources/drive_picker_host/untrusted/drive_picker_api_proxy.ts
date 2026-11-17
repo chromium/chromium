@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome-untrusted://resources/js/assert.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome-untrusted://resources/js/promise_resolver.js';
 import {getTrustedScriptURL} from 'chrome-untrusted://resources/js/static_types.js';
 
@@ -27,6 +28,7 @@ export interface Gapi {
 export interface GooglePicker {
   DocsView: {new(viewId: string): GooglePickerView};
   PickerBuilder: {new(): GooglePickerBuilder};
+  DocsViewMode: {GRID: string, LIST: string};
   ViewId: {DOCS: string};
   Feature: {MULTISELECT_ENABLED: string};
   Action: {PICKED: string, CANCEL: string};
@@ -47,6 +49,12 @@ export interface GooglePicker {
 
 export interface GooglePickerView {
   setMimeTypes(mimeTypes: string): GooglePickerView;
+  setIncludeFolders(include: boolean): GooglePickerView;
+  setOwnedByMe(ownedByMe: boolean): GooglePickerView;
+  setEnableDrives(enable: boolean): GooglePickerView;
+  setStarred(starred: boolean): GooglePickerView;
+  setMode(mode: string): GooglePickerView;
+  setLabel(label: string): GooglePickerView;
 }
 
 export interface GooglePickerBuilder {
@@ -56,6 +64,7 @@ export interface GooglePickerBuilder {
   setAppId(appId: string): GooglePickerBuilder;
   setOrigin(origin: string): GooglePickerBuilder;
   setSize(width: number, height: number): GooglePickerBuilder;
+  setMaxItems(max: number): GooglePickerBuilder;
   enableFeature(feature: string): GooglePickerBuilder;
   setCallback(callback: (data: GooglePickerResponse) => void):
       GooglePickerBuilder;
@@ -71,8 +80,9 @@ export interface GooglePickerResponse {
 }
 
 export interface DrivePickerApiProxy {
-  showPicker(oauthToken: string, apiKey: string, appId: string):
-      Promise<SanitizedDriveFile[]|'CANCEL'>;
+  showPicker(
+      oauthToken: string, apiKey: string, appId: string,
+      isGlic?: boolean): Promise<SanitizedDriveFile[]|'CANCEL'>;
 }
 
 export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
@@ -128,8 +138,9 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
     return this.gapiLoadResolver_.promise;
   }
 
-  async showPicker(oauthToken: string, apiKey: string, appId: string):
-      Promise<SanitizedDriveFile[]|'CANCEL'> {
+  async showPicker(
+      oauthToken: string, apiKey: string, appId: string,
+      isGlic = false): Promise<SanitizedDriveFile[]|'CANCEL'> {
     if (this.pickerActive_) {
       throw DrivePickerError.kAlreadyActive;
     }
@@ -143,13 +154,45 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
     return new Promise((resolve, reject) => {
       this.pickerActive_ = true;
 
-      const view = new google.picker.DocsView(google.picker.ViewId.DOCS);
+      const docsView = () =>
+          new google.picker.DocsView(google.picker.ViewId.DOCS);
+      const builder = new google.picker.PickerBuilder();
+      if (isGlic) {
+        // Each labeled view becomes a tab: Recent, My Drive, Shared drives,
+        // Shared with me and Starred, matching Gemini's Drive picker.
+        builder
+            .addView(
+                docsView()
+                    .setMode(google.picker.DocsViewMode.LIST)
+                    .setLabel(loadTimeData.getString(
+                        'glicDrivePickerRecentTabLabel')))
+            .addView(
+                docsView().setIncludeFolders(true).setOwnedByMe(true).setLabel(
+                    loadTimeData.getString('glicDrivePickerMyDriveTabLabel')))
+            .addView(
+                docsView()
+                    .setIncludeFolders(true)
+                    .setEnableDrives(true)
+                    .setLabel(loadTimeData.getString(
+                        'glicDrivePickerSharedDrivesTabLabel')))
+            .addView(
+                docsView().setIncludeFolders(true).setOwnedByMe(false).setLabel(
+                    loadTimeData.getString(
+                        'glicDrivePickerSharedWithMeTabLabel')))
+            .addView(
+                docsView().setIncludeFolders(true).setStarred(true).setLabel(
+                    loadTimeData.getString('glicDrivePickerStarredTabLabel')))
+            .setMaxItems(10);
+      } else {
+        builder.addView(docsView());
+      }
+      builder.setOAuthToken(oauthToken).setDeveloperKey(apiKey);
+      // When invoked from Glic, appId is empty so setAppId is skipped.
+      if (appId) {
+        builder.setAppId(appId);
+      }
       const picker =
-          new google.picker.PickerBuilder()
-              .addView(view)
-              .setOAuthToken(oauthToken)
-              .setDeveloperKey(apiKey)
-              .setAppId(appId)
+          builder
               // The origin is set to chrome://drive-picker-host to
               // match the trusted host's origin. This is required for
               // Drive Picker to appear since untrusted content is
@@ -169,7 +212,7 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
                 if (action === google.picker.Action.PICKED) {
                   this.pickerActive_ = false;
                   try {
-                    resolve(this.handleSelection_(data));
+                    resolve(this.handleSelection_(data, isGlic));
                   } catch (e) {
                     reject(e);
                   }
@@ -180,9 +223,10 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
     });
   }
 
-  private handleSelection_(data: GooglePickerResponse): SanitizedDriveFile[] {
+  private handleSelection_(data: GooglePickerResponse, isGlic: boolean):
+      SanitizedDriveFile[] {
     const documents = data[google.picker.Response.DOCUMENTS];
-    if (!Array.isArray(documents)) {
+    if (!Array.isArray(documents) || documents.length === 0) {
       throw DrivePickerError.kInvalidResponse;
     }
 
@@ -206,6 +250,7 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
       google.picker.Type.VIDEO,
     ]);
 
+    let lastError: DrivePickerError = DrivePickerError.kInvalidResponse;
     for (const doc of documents) {
       try {
         const docObj = doc as Record<string, unknown>;
@@ -225,11 +270,23 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
       } catch (e) {
         if (e instanceof Error) {
           const errorCode = Number(e.message);
-          throw this.mapSanitizationError_(errorCode);
+          lastError = this.mapSanitizationError_(errorCode);
         } else {
-          throw DrivePickerError.kInvalidResponse;
+          lastError = DrivePickerError.kInvalidResponse;
+        }
+        // Non-Glic callers fail fast on the first invalid item. Glic matches
+        // gemini.google.com's OnePick behavior (and C++
+        // `GlicWebClientHandler::OnSelection`), continuing past individual
+        // failures in a multi-select batch and only throwing `lastError` below
+        // if every selected item failed (`sanitizedFiles.length === 0`).
+        if (!isGlic) {
+          throw lastError;
         }
       }
+    }
+
+    if (sanitizedFiles.length === 0) {
+      throw lastError;
     }
 
     return sanitizedFiles;

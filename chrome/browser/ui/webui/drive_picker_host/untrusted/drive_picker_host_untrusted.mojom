@@ -50,15 +50,20 @@ interface Page {
 // Called from TS side of chrome-untrusted://drive-picker (Renderer -> Browser).
 interface PageHandlerFactory {
   // Creates a Page handler for the given Page.
-  CreatePageHandler(pending_remote<Page> page,
-                    pending_receiver<PageHandler> handler);
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
 };
 
 // Keys for the Drive Picker selection UI.
 struct DrivePickerKeys {
   string oauth_token;
   string api_key;
+  // Cloud project number passed to `PickerBuilder.setAppId()`. Empty when
+  // `is_glic` is true so `setAppId()` is skipped.
   string app_id;
+  // Whether the picker was invoked from Glic (enables the 5-tab Glic layout,
+  // 10-item selection cap, and full-bleed styling).
+  bool is_glic = false;
 };
 
 // Interface for communication from the trusted host to the

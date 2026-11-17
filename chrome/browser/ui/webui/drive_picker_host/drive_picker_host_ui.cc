@@ -204,7 +204,10 @@ void DrivePickerHostUI::TriggerDrivePickerHost(
       untrusted_bridge_remote_.is_connected()) {
     if (request->type() ==
         drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi) {
-      FetchTokenAndShowPicker(request->TakeResultHandler());
+      FetchTokenAndShowPicker(
+          request->TakeResultHandler(),
+          request->style() ==
+              drive_picker_host::DrivePickerHostRequest::Style::kGlic);
     } else if (request->type() == drive_picker_host::DrivePickerHostRequest::
                                       RequestType::kConsentDialog) {
       ShowConsentKitDialog(request->TakeResultHandler());
@@ -246,20 +249,14 @@ void DrivePickerHostUI::SetBridge(
       weak_ptr_factory_.GetWeakPtr()));
 
   if (pending_request_) {
-    if (pending_request_->type() ==
-        drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi) {
-      FetchTokenAndShowPicker(pending_request_->TakeResultHandler());
-    } else if (pending_request_->type() ==
-               drive_picker_host::DrivePickerHostRequest::RequestType::
-                   kConsentDialog) {
-      ShowConsentKitDialog(pending_request_->TakeResultHandler());
-    }
+    TriggerDrivePickerHost(std::move(pending_request_));
   }
 }
 
 void DrivePickerHostUI::FetchTokenAndShowPicker(
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-        result_handler) {
+        result_handler,
+    bool is_glic) {
   VLOG(1) << "[DrivePickerHostUI] FetchTokenAndShowPicker called";
   Profile* profile = Profile::FromWebUI(web_ui());
   signin::IdentityManager* identity_manager =
@@ -283,7 +280,7 @@ void DrivePickerHostUI::FetchTokenAndShowPicker(
           signin::OAuthConsumerId::kDrivePickerHost, identity_manager,
           base::BindOnce(&DrivePickerHostUI::OnAccessTokenFetched,
                          weak_ptr_factory_.GetWeakPtr(),
-                         std::move(result_handler)),
+                         std::move(result_handler), is_glic),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
           signin::ConsentLevel::kSignin);
 }
@@ -291,6 +288,7 @@ void DrivePickerHostUI::FetchTokenAndShowPicker(
 void DrivePickerHostUI::OnAccessTokenFetched(
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
         result_handler,
+    bool is_glic,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   VLOG(1) << "[DrivePickerHostUI] OnAccessTokenFetched completed. ErrorState: "
@@ -311,8 +309,15 @@ void DrivePickerHostUI::OnAccessTokenFetched(
         drive_picker_host_untrusted::mojom::DrivePickerKeys::New();
     keys->oauth_token = access_token_info.token;
     keys->api_key = google_apis::GetAPIKey();
-    keys->app_id = ExtractProjectNumber(
-        google_apis::GetOAuth2ClientID(google_apis::OAuth2Client::CLIENT_MAIN));
+    // Omit `setAppId` when invoked from Glic so the Picker API does not record
+    // a redundant per-file `drive.file` ACL grant to Chrome's OAuth project
+    // (Gemini's backend fetches the file content server-side using its own
+    // authority).
+    keys->app_id = is_glic
+                       ? std::string()
+                       : ExtractProjectNumber(google_apis::GetOAuth2ClientID(
+                             google_apis::OAuth2Client::CLIENT_MAIN));
+    keys->is_glic = is_glic;
 
     untrusted_bridge_remote_->ShowDrivePicker(std::move(result_handler),
                                               std::move(keys));
@@ -485,7 +490,7 @@ void DrivePickerHostUI::OnConsentVerified(
   }
 
   // Transition straight to the Drive Picker UI.
-  FetchTokenAndShowPicker(consent_result_handler_.Unbind());
+  FetchTokenAndShowPicker(consent_result_handler_.Unbind(), /*is_glic=*/false);
 }
 
 drive_picker::DriveDisclaimerController*

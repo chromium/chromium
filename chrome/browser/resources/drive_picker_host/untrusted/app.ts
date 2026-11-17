@@ -13,7 +13,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {DrivePickerApiProxyImpl} from './drive_picker_api_proxy.js';
 import {browserProxyFactory} from './drive_picker_host_untrusted.mojom-webui.js';
-import type {BrowserProxy} from './drive_picker_host_untrusted.mojom-webui.js';
+import type {BrowserProxy, DrivePickerKeys} from './drive_picker_host_untrusted.mojom-webui.js';
 import {DrivePickerError} from './drive_picker_result_handler.mojom-webui.js';
 import type {DriveFile, DrivePickerResultHandlerRemote} from './drive_picker_result_handler.mojom-webui.js';
 
@@ -62,8 +62,7 @@ export class DrivePickerHostUntrustedAppElement extends
     super.connectedCallback();
     this.listenerIds_ = [
       this.browserProxy_.callbackRouter.showDrivePicker.addListener(
-          (handler: DrivePickerResultHandlerRemote,
-           keys: {oauthToken: string, apiKey: string, appId: string}) =>
+          (handler: DrivePickerResultHandlerRemote, keys: DrivePickerKeys) =>
               this.showDrivePicker_(handler, keys)),
       this.browserProxy_.callbackRouter.loadConsentKitUrl.addListener(
           (url: string) => this.loadConsentKitUrl_(url)),
@@ -85,9 +84,13 @@ export class DrivePickerHostUntrustedAppElement extends
   }
 
   private async showDrivePicker_(
-      resultHandler: DrivePickerResultHandlerRemote,
-      keys: {oauthToken: string, apiKey: string, appId: string}) {
+      resultHandler: DrivePickerResultHandlerRemote, keys: DrivePickerKeys) {
+    if (this.resultHandler_) {
+      resultHandler.onError(DrivePickerError.kAlreadyActive);
+      return;
+    }
     this.resultHandler_ = resultHandler;
+    document.body.classList.toggle('glic-picker', keys.isGlic);
 
     const container = this.shadowRoot.querySelector('#picker-container');
     if (container) {
@@ -96,7 +99,7 @@ export class DrivePickerHostUntrustedAppElement extends
 
     try {
       const result = await this.drivePickerApiProxy_.showPicker(
-          keys.oauthToken, keys.apiKey, keys.appId);
+          keys.oauthToken, keys.apiKey, keys.appId, keys.isGlic);
 
       if (!this.resultHandler_) {
         return;
