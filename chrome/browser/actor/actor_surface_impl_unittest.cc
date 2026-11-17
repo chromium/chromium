@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_impl.h"
 
 #include <memory>
 
 #include "chrome/browser/actor/actor_metrics.h"
-#include "chrome/browser/actor/actor_surface_impl.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -24,7 +24,7 @@ namespace {
 
 using ::testing::Return;
 
-class ActorSurfaceTest : public ChromeRenderViewHostTestHarness {
+class ActorSurfaceImplTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -35,7 +35,7 @@ class ActorSurfaceTest : public ChromeRenderViewHostTestHarness {
   tabs::MockTabInterface mock_tab_;
 };
 
-TEST_F(ActorSurfaceTest, NullAndUnknownHandleReturnNull) {
+TEST_F(ActorSurfaceImplTest, NullAndUnknownHandleReturnNull) {
   EXPECT_TRUE(ActorSurfaceHandle().is_null());
   EXPECT_TRUE(ActorSurfaceHandle::Null().is_null());
   EXPECT_EQ(ActorSurfaceHandle::Null().raw_value(), 0);
@@ -43,7 +43,7 @@ TEST_F(ActorSurfaceTest, NullAndUnknownHandleReturnNull) {
   EXPECT_EQ(ActorSurfaceHandle::CreateForTesting().Get(), nullptr);
 }
 
-TEST_F(ActorSurfaceTest, TabBacked) {
+TEST_F(ActorSurfaceImplTest, TabBacked) {
   const ActorSurfaceHandle actor_surface_handle =
       ActorSurfaceHandle::CreateForTesting();
   auto surface = std::make_unique<ActorSurfaceImpl>(actor_surface_handle,
@@ -59,7 +59,7 @@ TEST_F(ActorSurfaceTest, TabBacked) {
   EXPECT_EQ(actor_surface_handle.Get(), nullptr);
 }
 
-TEST_F(ActorSurfaceTest, HeadlessBacked) {
+TEST_F(ActorSurfaceImplTest, HeadlessBacked) {
   const ActorSurfaceHandle actor_surface_handle =
       ActorSurfaceHandle::CreateForTesting();
   auto surface =
@@ -77,7 +77,7 @@ TEST_F(ActorSurfaceTest, HeadlessBacked) {
 
 // A headless page has no TabFeatures, so the surface attaches the autofill and
 // password manager clients that actor tools depend on.
-TEST_F(ActorSurfaceTest, HeadlessAttachesToolHelpers) {
+TEST_F(ActorSurfaceImplTest, HeadlessAttachesToolHelpers) {
   ASSERT_FALSE(
       autofill::ContentAutofillClient::FromWebContents(web_contents()));
   ASSERT_FALSE(ChromePasswordManagerClient::FromWebContents(web_contents()));
@@ -94,7 +94,7 @@ TEST_F(ActorSurfaceTest, HeadlessAttachesToolHelpers) {
 
 // A tab's WebContents can be swapped out, e.g. on discard. The surface must
 // follow the tab rather than hold on to the original WebContents.
-TEST_F(ActorSurfaceTest, WebContentsFollowsTabSwap) {
+TEST_F(ActorSurfaceImplTest, WebContentsFollowsTabSwap) {
   ActorSurfaceImpl surface(ActorSurfaceHandle::CreateForTesting(),
                            mock_tab_.GetHandle());
   ASSERT_EQ(surface.GetWebContents(), web_contents());
@@ -105,7 +105,7 @@ TEST_F(ActorSurfaceTest, WebContentsFollowsTabSwap) {
   EXPECT_EQ(surface.GetWebContents(), swapped.get());
 }
 
-TEST_F(ActorSurfaceTest, TabBackedOwnsActorTabData) {
+TEST_F(ActorSurfaceImplTest, TabBackedOwnsActorTabData) {
   const ActorSurfaceHandle actor_surface_handle =
       ActorSurfaceHandle::CreateForTesting();
   auto surface = std::make_unique<ActorSurfaceImpl>(actor_surface_handle,
@@ -118,7 +118,7 @@ TEST_F(ActorSurfaceTest, TabBackedOwnsActorTabData) {
   EXPECT_EQ(ActorTabData::From(actor_surface_handle), nullptr);
 }
 
-TEST_F(ActorSurfaceTest, HeadlessBackedOwnsActorTabData) {
+TEST_F(ActorSurfaceImplTest, HeadlessBackedOwnsActorTabData) {
   const ActorSurfaceHandle actor_surface_handle =
       ActorSurfaceHandle::CreateForTesting();
   ActorSurfaceImpl surface(actor_surface_handle, web_contents());
