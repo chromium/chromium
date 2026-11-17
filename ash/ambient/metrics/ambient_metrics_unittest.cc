@@ -81,13 +81,11 @@ class AmbientMetricsVideoTest : public ::testing::Test {
 
   void RecordAmbientModeVideoSmoothness(const AmbientUiSettings& ui_settings) {
     ::ash::ambient::RecordAmbientModeVideoSmoothness(&view_, ui_settings);
-    task_environment_.RunUntilIdle();
   }
 
   void RecordAmbientModeVideoSessionStatus(
       const AmbientUiSettings& ui_settings) {
     ::ash::ambient::RecordAmbientModeVideoSessionStatus(&view_, ui_settings);
-    task_environment_.RunUntilIdle();
   }
 
   base::test::TaskEnvironment task_environment_;
