@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_test_util.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -384,9 +385,18 @@ FakeGaia::Configuration::~Configuration() = default;
 
 FakeGaia::MultiloginCall::MultiloginCall() = default;
 
-FakeGaia::MultiloginCall::~MultiloginCall() = default;
-
 FakeGaia::MultiloginCall::MultiloginCall(const MultiloginCall& other) = default;
+
+FakeGaia::MultiloginCall& FakeGaia::MultiloginCall::operator=(
+    const MultiloginCall& other) = default;
+
+FakeGaia::MultiloginCall::MultiloginCall(MultiloginCall&& other) noexcept =
+    default;
+
+FakeGaia::MultiloginCall& FakeGaia::MultiloginCall::operator=(
+    MultiloginCall&& other) noexcept = default;
+
+FakeGaia::MultiloginCall::~MultiloginCall() = default;
 
 void FakeGaia::Configuration::Update(const Configuration& update) {
   // This lambda uses a pointer to data member to merge attributes.
@@ -1165,7 +1175,7 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
     return;
   }
 
-  const std::optional<gaia::MultiOAuthHeader> multi_oauth_header =
+  std::optional<gaia::MultiOAuthHeader> multi_oauth_header =
       GetMultiOAuthHeader(request);
   const MultiloginAction action = GetMultiloginAction(multi_oauth_header);
   switch (action) {
@@ -1201,7 +1211,18 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
   }
 
   MultiloginCall call;
-  call.header = multi_oauth_header;
+  if (multi_oauth_header.has_value()) {
+    std::vector<gaia::MultiloginAccountAuthCredentials>& account_requests =
+        call.account_requests.emplace();
+    account_requests.reserve(multi_oauth_header->account_requests_size());
+    for (gaia::MultiOAuthHeader::AccountRequest& request_proto :
+         *multi_oauth_header->mutable_account_requests()) {
+      account_requests.emplace_back(
+          GaiaId(std::move(*request_proto.mutable_gaia_id())),
+          std::move(*request_proto.mutable_token()),
+          std::move(*request_proto.mutable_token_binding_assertion()));
+    }
+  }
   call.action = action;
   multilogin_calls_.push(std::move(call));
 }

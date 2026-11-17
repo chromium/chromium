@@ -9,12 +9,13 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
-#include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
 #include "net/http/http_status_code.h"
@@ -132,9 +133,9 @@ class FakeGaia {
     std::vector<std::vector<uint8_t>> trusted_public_keys;
   };
 
-  // Represents a single OAuthMultilogin call. It contains the
-  // `gaia::MultiOAuthHeader` sent by the client (if any) and the action the
-  // server took in response to the request.
+  // Represents a single OAuthMultilogin call. It contains the account requests
+  // from the "MultiOAuth" Authorization header sent by the client (if any) and
+  // the action the server took in response to the request.
   //
   // Only successful calls are recorded (see `MultiloginAction` for the
   // list of possible actions).
@@ -149,9 +150,13 @@ class FakeGaia {
 
     MultiloginCall();
     MultiloginCall(const MultiloginCall& other);
+    MultiloginCall& operator=(const MultiloginCall& other);
+    MultiloginCall(MultiloginCall&& other) noexcept;
+    MultiloginCall& operator=(MultiloginCall&& other) noexcept;
     ~MultiloginCall();
 
-    std::optional<gaia::MultiOAuthHeader> header;
+    std::optional<std::vector<gaia::MultiloginAccountAuthCredentials>>
+        account_requests;
     Action action;
   };
 

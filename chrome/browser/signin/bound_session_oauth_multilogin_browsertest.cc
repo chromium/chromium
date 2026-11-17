@@ -39,7 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/sign.h"
-#include "google_apis/gaia/bound_oauth_token.pb.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -485,11 +485,10 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
             FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
 
   // Verify that the challenge was signed correctly.
-  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
-  ASSERT_TRUE(header.has_value());
-  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  ASSERT_TRUE(second_call.account_requests.has_value());
+  ASSERT_THAT(*second_call.account_requests, SizeIs(1));
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      header->account_requests().at(0).token_binding_assertion(),
+      second_call.account_requests->at(0).token_binding_assertion,
       *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 
@@ -566,11 +565,10 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
             FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
 
   // Verify that the challenge was signed correctly.
-  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
-  ASSERT_TRUE(header.has_value());
-  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  ASSERT_TRUE(second_call.account_requests.has_value());
+  ASSERT_THAT(*second_call.account_requests, SizeIs(1));
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      header->account_requests().at(0).token_binding_assertion(),
+      second_call.account_requests->at(0).token_binding_assertion,
       *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 
@@ -808,11 +806,10 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginSecondaryPartitionTest,
   ASSERT_EQ(second_call.action,
             FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
 
-  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
-  ASSERT_TRUE(header.has_value());
-  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  ASSERT_TRUE(second_call.account_requests.has_value());
+  ASSERT_THAT(*second_call.account_requests, SizeIs(1));
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      header->account_requests().at(0).token_binding_assertion(),
+      second_call.account_requests->at(0).token_binding_assertion,
       *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 }
@@ -1110,11 +1107,10 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
             FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
 
   // Verify that the challenge was signed correctly.
-  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
-  ASSERT_TRUE(header.has_value());
-  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  ASSERT_TRUE(second_call.account_requests.has_value());
+  ASSERT_THAT(*second_call.account_requests, SizeIs(1));
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      header->account_requests().at(0).token_binding_assertion(),
+      second_call.account_requests->at(0).token_binding_assertion,
       *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 
@@ -1209,11 +1205,10 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
             FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
 
   // Verify that the challenge was signed correctly.
-  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
-  ASSERT_TRUE(header.has_value());
-  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  ASSERT_TRUE(second_call.account_requests.has_value());
+  ASSERT_THAT(*second_call.account_requests, SizeIs(1));
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      header->account_requests().at(0).token_binding_assertion(),
+      second_call.account_requests->at(0).token_binding_assertion,
       *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 
@@ -1465,11 +1460,10 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
             FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
 
   // Verify that the challenge was signed correctly.
-  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
-  ASSERT_TRUE(header.has_value());
-  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  ASSERT_TRUE(second_call.account_requests.has_value());
+  ASSERT_THAT(*second_call.account_requests, SizeIs(1));
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      header->account_requests().at(0).token_binding_assertion(),
+      second_call.account_requests->at(0).token_binding_assertion,
       *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 
@@ -1569,11 +1563,10 @@ IN_PROC_BROWSER_TEST_F(
             FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
 
   // Verify that the challenge was signed correctly.
-  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
-  ASSERT_TRUE(header.has_value());
-  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  ASSERT_TRUE(second_call.account_requests.has_value());
+  ASSERT_THAT(*second_call.account_requests, SizeIs(1));
   EXPECT_TRUE(signin::VerifyJwtSignature(
-      header->account_requests().at(0).token_binding_assertion(),
+      second_call.account_requests->at(0).token_binding_assertion,
       *unexportable_key_service().GetAlgorithm(key_id),
       *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
 

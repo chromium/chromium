@@ -211,6 +211,7 @@ component("google_apis") {
 }
 
 proto_library("proto") {
+  visibility = [ ":*" ]
   sources = [
     "gaia/bound_oauth_token.proto",
     "gaia/list_accounts_response.proto",
@@ -238,7 +239,6 @@ static_library("test_support") {
 
   public_deps = [
     ":google_apis",
-    ":proto",
     "//base",
     "//base/test:test_support",
     "//net:test_support",
@@ -247,8 +247,10 @@ static_library("test_support") {
     "//services/network/public/cpp",
   ]
 
+  deps = [ ":proto" ]
+
   if (is_android) {
-    deps = [ "gaia/android:jni_headers" ]
+    deps += [ "gaia/android:jni_headers" ]
   }
 }
 
