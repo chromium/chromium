@@ -33,6 +33,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityInterface;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -108,6 +109,15 @@ public class SettingsSearchCoordinatorTest {
                 });
 
         resultDisplayHelper.waitForCallback(callCount);
+
+        // In single-column mode, SlidingPaneLayout intercepts taps on the detail pane until it has
+        // fully slid open, which would swallow clicks on the search results.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    MultiColumnSettings multiColumnSettings =
+                            (MultiColumnSettings) getSettingsActivity().getMultiColumnSettings();
+                    return multiColumnSettings.isLayoutOpen();
+                });
     }
 
     @Test
