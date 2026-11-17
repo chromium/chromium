@@ -16462,7 +16462,7 @@
             ]
         }
     ],
-    "PrewarmZeroSuggestTrigger": [
+    "PrewarmPageLoadAndTabSwitchAfterPaintTrigger": [
         {
             "platforms": [
                 "android",
@@ -16474,10 +16474,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WithDisableOnStartup",
+                    "name": "Enabled",
                     "enable_features": [
-                        "PrewarmDisableOnStartup",
-                        "PrewarmZeroSuggestTrigger"
+                        "PrewarmPageLoadAndTabSwitchAfterPaintTrigger"
                     ]
                 }
             ]
