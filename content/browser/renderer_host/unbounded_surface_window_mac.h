@@ -17,14 +17,6 @@
 #include "ui/display/display.h"
 #include "ui/gfx/display_color_spaces.h"
 
-#ifdef __OBJC__
-@class NSWindow;
-@class NSEvent;
-#else
-class NSWindow;
-class NSEvent;
-#endif
-
 namespace ui {
 class Cursor;
 class LayerSurface;
@@ -98,6 +90,9 @@ class CONTENT_EXPORT UnboundedSurfaceWindowMac
   void TeardownAndDestroy() override;
 
  private:
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
+
   struct DisplayInfo {
     float scale_factor = 1.0f;
     gfx::DisplayColorSpaces display_color_spaces;
@@ -110,13 +105,6 @@ class CONTENT_EXPORT UnboundedSurfaceWindowMac
 
   viz::FrameSinkId frame_sink_id_;
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
-#ifdef __OBJC__
-  NSWindow* __strong window_ = nil;
-  id __strong local_event_monitor_ = nil;
-#else
-  raw_ptr<void> window_ = nullptr;
-  raw_ptr<void> local_event_monitor_ = nullptr;
-#endif
 
   std::unique_ptr<ui::RecyclableCompositorMac> recyclable_compositor_;
   std::unique_ptr<ui::LayerSurface> root_layer_;

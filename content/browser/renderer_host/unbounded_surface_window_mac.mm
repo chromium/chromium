@@ -357,12 +357,18 @@ bool ShouldDismissForLocalEvent(NSEvent* event,
 
 }  // namespace
 
+struct UnboundedSurfaceWindowMac::ObjCStorage {
+  NSWindow* __strong window = nil;
+  id __strong local_event_monitor = nil;
+};
+
 UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
     RenderWidgetHostViewMac* parent_view,
     const gfx::Rect& bounds_in_screen,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view)
     : UnboundedSurfaceWindow(parent_view ? parent_view->GetWeakPtr() : nullptr,
                              std::move(subframe_view)),
+      objc_storage_(std::make_unique<ObjCStorage>()),
       frame_sink_id_(content::AllocateFrameSinkId()) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kUnboundedElement),
         base::NotFatalUntil::M152);
@@ -370,11 +376,11 @@ UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
 }
 
 bool UnboundedSurfaceWindowMac::IsValid() const {
-  return window_ != nil;
+  return objc_storage_->window != nil;
 }
 
 gfx::NativeWindow UnboundedSurfaceWindowMac::GetNativeWindow() const {
-  return gfx::NativeWindow(window_);
+  return gfx::NativeWindow(objc_storage_->window);
 }
 
 UnboundedSurfaceWindowMac::~UnboundedSurfaceWindowMac() {
@@ -392,21 +398,21 @@ UnboundedSurfaceWindowMac::~UnboundedSurfaceWindowMac() {
   display_ca_layer_tree_.reset();
   root_layer_.reset();
 
-  if (local_event_monitor_) {
-    [NSEvent removeMonitor:local_event_monitor_];
-    local_event_monitor_ = nil;
+  if (objc_storage_->local_event_monitor) {
+    [NSEvent removeMonitor:objc_storage_->local_event_monitor];
+    objc_storage_->local_event_monitor = nil;
   }
 
-  if (window_) {
-    UnboundedNSView* view =
-        base::apple::ObjCCast<UnboundedNSView>([window_ contentView]);
+  if (objc_storage_->window) {
+    UnboundedNSView* view = base::apple::ObjCCast<UnboundedNSView>(
+        [objc_storage_->window contentView]);
     [view clearOwner];
-    if (NSWindow* parent = [window_ parentWindow]) {
-      [parent removeChildWindow:window_];
+    if (NSWindow* parent = [objc_storage_->window parentWindow]) {
+      [parent removeChildWindow:objc_storage_->window];
     }
-    [window_ orderOut:nil];
-    [window_ close];
-    window_ = nil;
+    [objc_storage_->window orderOut:nil];
+    [objc_storage_->window close];
+    objc_storage_->window = nil;
   }
   GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_, this, {});
 }
@@ -437,16 +443,16 @@ UnboundedSurfaceWindowMac::GetDisplayInfo() const {
 void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
   NSRect ns_rect = gfx::ScreenRectToNSRect(bounds_in_screen);
 
-  window_ =
+  objc_storage_->window =
       [[UnboundedNSWindow alloc] initWithContentRect:ns_rect
                                            styleMask:NSWindowStyleMaskBorderless
                                              backing:NSBackingStoreBuffered
                                                defer:NO];
-  [window_ setReleasedWhenClosed:NO];
-  [window_ setBackgroundColor:[NSColor clearColor]];
-  [window_ setOpaque:NO];
-  [window_ setLevel:NSFloatingWindowLevel];
-  [window_ setAcceptsMouseMovedEvents:YES];
+  [objc_storage_->window setReleasedWhenClosed:NO];
+  [objc_storage_->window setBackgroundColor:[NSColor clearColor]];
+  [objc_storage_->window setOpaque:NO];
+  [objc_storage_->window setLevel:NSFloatingWindowLevel];
+  [objc_storage_->window setAcceptsMouseMovedEvents:YES];
 
   auto* parent_view_mac =
       static_cast<RenderWidgetHostViewMac*>(parent_view_.get());
@@ -473,7 +479,7 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
 
   [content_view setLayer:background_layer];
   [content_view setWantsLayer:YES];
-  [window_ setContentView:content_view];
+  [objc_storage_->window setContentView:content_view];
 
   GetHostFrameSinkManager()->RegisterFrameSinkId(
       frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
@@ -520,11 +526,12 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
 
   if (owner_cocoa_view) {
     if (NSWindow* parent_window = [owner_cocoa_view window]) {
-      [parent_window addChildWindow:window_ ordered:NSWindowAbove];
-      [window_ setLevel:[parent_window level] + 1];
+      [parent_window addChildWindow:objc_storage_->window
+                            ordered:NSWindowAbove];
+      [objc_storage_->window setLevel:[parent_window level] + 1];
     }
   }
-  [window_ orderFront:nil];
+  [objc_storage_->window orderFront:nil];
   // Dismiss when clicking anywhere in the application outside `window_` (such
   // as the browser tab strip, toolbar, or another web contents) that does not
   // route through the owning `RenderWidgetHostImpl`, or when pressing a key
@@ -548,7 +555,7 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
     }
     return event;
   };
-  local_event_monitor_ =
+  objc_storage_->local_event_monitor =
       [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskLeftMouseDown |
                                                      NSEventMaskRightMouseDown |
                                                      NSEventMaskOtherMouseDown |
@@ -557,15 +564,16 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
 }
 
 void UnboundedSurfaceWindowMac::SetBounds(const gfx::Rect& bounds_in_screen) {
-  if (window_) {
+  if (objc_storage_->window) {
     NSRect ns_rect = gfx::ScreenRectToNSRect(bounds_in_screen);
-    const bool frame_changed = !NSEqualRects([window_ frame], ns_rect);
-    [window_ setFrame:ns_rect display:YES];
-    [window_.contentView
+    const bool frame_changed =
+        !NSEqualRects([objc_storage_->window frame], ns_rect);
+    [objc_storage_->window setFrame:ns_rect display:YES];
+    [objc_storage_->window.contentView
         setFrame:NSMakeRect(0, 0, ns_rect.size.width, ns_rect.size.height)];
     if (frame_changed) {
-      UnboundedNSView* view =
-          base::apple::ObjCCast<UnboundedNSView>([window_ contentView]);
+      UnboundedNSView* view = base::apple::ObjCCast<UnboundedNSView>(
+          [objc_storage_->window contentView]);
       [view updatePointerInsideFromMouseLocation];
     }
     local_surface_id_allocator_.GenerateId();
@@ -612,10 +620,10 @@ void UnboundedSurfaceWindowMac::GetCompositorFrameSink(
 }
 
 gfx::Rect UnboundedSurfaceWindowMac::GetBounds() const {
-  if (!window_) {
+  if (!objc_storage_->window) {
     return gfx::Rect();
   }
-  return gfx::ScreenRectFromNSRect([window_ frame]);
+  return gfx::ScreenRectFromNSRect([objc_storage_->window frame]);
 }
 
 void UnboundedSurfaceWindowMac::CopyFromSurface(
@@ -667,13 +675,13 @@ void UnboundedSurfaceWindowMac::EnsureSurfaceSynchronizedForWebTest() {
 }
 
 void UnboundedSurfaceWindowMac::RouteMouseEvent(NSEvent* ns_event) {
-  RouteMouseEvent(
-      input::WebMouseEventBuilder::Build(ns_event, window_.contentView));
+  RouteMouseEvent(input::WebMouseEventBuilder::Build(
+      ns_event, objc_storage_->window.contentView));
 }
 
 void UnboundedSurfaceWindowMac::RouteWheelEvent(NSEvent* ns_event) {
-  blink::WebMouseWheelEvent web_event =
-      input::WebMouseWheelEventBuilder::Build(ns_event, window_.contentView);
+  blink::WebMouseWheelEvent web_event = input::WebMouseWheelEventBuilder::Build(
+      ns_event, objc_storage_->window.contentView);
   RenderWidgetHostViewBase* target_view = GetTargetView();
   if (!target_view || !target_view->host()) {
     return;
@@ -685,11 +693,11 @@ void UnboundedSurfaceWindowMac::RouteWheelEvent(NSEvent* ns_event) {
 }
 
 void UnboundedSurfaceWindowMac::DisplayCursor(const ui::Cursor& cursor) {
-  if (!window_) {
+  if (!objc_storage_->window) {
     return;
   }
-  UnboundedNSView* view =
-      base::apple::ObjCCast<UnboundedNSView>([window_ contentView]);
+  UnboundedNSView* view = base::apple::ObjCCast<UnboundedNSView>(
+      [objc_storage_->window contentView]);
   [view updateCursor:ui::GetNativeCursor(cursor)];
 }
 
