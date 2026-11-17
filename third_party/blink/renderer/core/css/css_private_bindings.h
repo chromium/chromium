@@ -35,29 +35,12 @@ class CSSPrivateBindings final : public GarbageCollected<CSSPrivateBindings> {
     return parent_ ? parent_->Lookup(name) : g_null_atom;
   }
 
-  // Private initializers only see names declared for their enclosing style
-  // rule.
-  const CSSPrivateBindings* ForPrivateDeclarations() const {
-    if (!parent_) {
-      return this;
-    }
-    if (!private_declaration_scope_) {
-      private_declaration_scope_ =
-          MakeGarbageCollected<CSSPrivateBindings>(nullptr, own_bindings_);
-    }
-    return private_declaration_scope_.Get();
-  }
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(parent_);
-    visitor->Trace(private_declaration_scope_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(parent_); }
 
  private:
   // The enclosing scope, or null for the outermost scope.
   Member<const CSSPrivateBindings> parent_;
   PrivateNameMap own_bindings_;
-  mutable Member<const CSSPrivateBindings> private_declaration_scope_;
 };
 
 }  // namespace blink

@@ -145,8 +145,8 @@ TEST(RuleSetTest, CSSPrivateBindingsForPrivateDeclarations) {
 
   EXPECT_FALSE(PrivateNameFor(rule_set, style_rule, "--x").IsNull());
   EXPECT_FALSE(PrivateNameFor(rule_set, style_rule, "--y").IsNull());
-  // Private declarations only see the names declared for their own style rule.
-  EXPECT_TRUE(PrivateNameFor(rule_set, declarations, "--x").IsNull());
+  EXPECT_EQ(PrivateNameFor(rule_set, style_rule, "--x"),
+            PrivateNameFor(rule_set, declarations, "--x"));
   EXPECT_EQ(PrivateNameFor(rule_set, style_rule, "--y"),
             PrivateNameFor(rule_set, declarations, "--y"));
 }

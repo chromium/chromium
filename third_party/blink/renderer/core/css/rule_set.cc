@@ -1123,10 +1123,6 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
             AddStyleRule(declarations, parent_rule, medium, mixins,
                          add_rule_flags, apply_mixins_stack, container_queries,
                          cascade_layer, style_scope);
-            if (private_scope_) {
-              private_bindings_.Set(declarations,
-                                    private_scope_->ForPrivateDeclarations());
-            }
           }
         }
         continue;
