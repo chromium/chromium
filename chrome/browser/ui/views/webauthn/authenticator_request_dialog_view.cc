@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "chrome/browser/ui/views/webauthn/authenticator_gpm_account_info_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/pin_options_button.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
@@ -28,18 +27,25 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -47,6 +53,48 @@
 namespace {
 // View ID used to find the spinner container added to the accept button.
 constexpr int kAcceptButtonSpinnerContainerId = 1327;
+
+// Layout constants for the GPM account info footnote view.
+constexpr int kAccountInfoBetweenChildSpacing = 12;
+constexpr int kAccountInfoHorizontalInset = 16;
+constexpr int kAccountInfoVerticalInset = 12;
+
+// Creates the footnote view shown in the dialog for GPM passkey PIN steps. It
+// consists of the profile picture, display name and email of the account.
+std::unique_ptr<views::View> CreateGpmAccountInfoView(
+    AuthenticatorGpmPinSheetModelBase* sheet_model) {
+  auto account_info = std::make_unique<views::BoxLayoutView>();
+  account_info->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  account_info->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+  account_info->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  account_info->SetInsideBorderInsets(
+      gfx::Insets::VH(kAccountInfoVerticalInset, kAccountInfoHorizontalInset));
+  account_info->SetBetweenChildSpacing(kAccountInfoBetweenChildSpacing);
+
+  auto image_view = std::make_unique<views::ImageView>();
+  image_view->SetImage(
+      ui::ImageModel::FromImage(sheet_model->GetGpmAccountImage()));
+  account_info->AddChildView(std::move(image_view));
+
+  auto label_column = std::make_unique<views::BoxLayoutView>();
+  label_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  label_column->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  label_column->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+
+  label_column->AddChildView(std::make_unique<views::Label>(
+      sheet_model->GetGpmAccountName(), views::style::CONTEXT_LABEL,
+      views::style::STYLE_BODY_4_BOLD));
+  auto* email_label = label_column->AddChildView(
+      std::make_unique<views::Label>(sheet_model->GetGpmAccountEmail()));
+  email_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_EMAIL);
+  account_info->AddChildView(std::move(label_column));
+
+  return account_info;
+}
 }  // namespace
 
 using Step = AuthenticatorRequestDialogModel::Step;
@@ -251,10 +299,8 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
         model_->step() == Step::kGPMChangeArbitraryPin ||
         model_->step() == Step::kGPMEnterPin ||
         model_->step() == Step::kGPMEnterArbitraryPin) {
-      frame_view->SetFootnoteView(
-          std::make_unique<AuthenticatorGpmAccountInfoView>(
-              static_cast<AuthenticatorGpmPinSheetModelBase*>(
-                  sheet_->model())));
+      frame_view->SetFootnoteView(CreateGpmAccountInfoView(
+          static_cast<AuthenticatorGpmPinSheetModelBase*>(sheet_->model())));
     } else {
       frame_view->SetFootnoteView(nullptr);
     }
