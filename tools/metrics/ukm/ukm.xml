@@ -6543,7 +6543,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.UseCounter">
-  <owner>chasej@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
   <summary>
     Collects data for a subset of UseCounter features where UMA UseCounter data
     shows a behaviour that is rare but too common to blindly change. This metric
@@ -6982,8 +6983,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ChromeOS.WebsiteUsageTime">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+  <owner>nrapolu@google.com</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     Records the amount of time that the focused and activated website was
     accessed in last two hours on Chrome OS. This is logged each two hours, and
@@ -7046,8 +7047,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ChromeOSApp.InputEvent">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+  <owner>nrapolu@google.com</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     Records each two hours in Chrome OS to log the input events happened on the
     app window. This is logged only when the user allows app syncing or allows
@@ -7090,8 +7091,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ChromeOSApp.InstalledApp">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+  <owner>nrapolu@google.com</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     Records the installed app in Chrome OS, only when the user allows app
     syncing or allows sync of everything, and the user does not set up a sync
@@ -7161,8 +7162,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ChromeOSApp.Launch">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+  <owner>nrapolu@google.com</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     Records a launched app in Chrome OS, only when the user allows app syncing
     or allows sync of everything, and the user does not set up a sync
@@ -7208,8 +7209,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ChromeOSApp.UninstallApp">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+  <owner>nrapolu@google.com</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     Records the uninstalled app in Chrome OS, only when the user allows app
     syncing or allows sync of everything, and the user does not set up a sync
@@ -7255,8 +7256,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ChromeOSApp.UsageTime">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+  <owner>nrapolu@google.com</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     Records the amount of time that the app was used in the last two hours on
     Chrome OS, only when the user allows app syncing or allows sync of
@@ -7303,8 +7304,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ChromeOSApp.UsageTimeReusedSourceId">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+  <owner>nrapolu@google.com</owner>
+  <owner>troywang@google.com</owner>
   <summary>
     Records the amount of time that the app were used in the last two hours on
     Chrome OS, only when the user allows app syncing or allows sync of
@@ -9337,8 +9338,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Extensions.WebRequest.KeepaliveRequestFinished">
-  <owner>yhirano@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>andreaorru@chromium.org</owner>
   <summary>
     Whether and how keepalive requests are blocked. Recorded when a keepalive
     request finishes.
@@ -14355,7 +14356,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MediaRouter.TabMirroringStarted">
-  <owner>takumif@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Recorded whenever user starts a tab mirroring session via Media Router.
@@ -15051,8 +15053,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MobileFriendliness" singular="True">
-  <owner>kumagi@google.com</owner>
-  <owner>gaul@google.com</owner>
+  <owner>pdr@chromium.org</owner>
+  <owner>ikilpatrick@chromium.org</owner>
   <metric name="AllowUserZoom" enum="Boolean">
     <summary>
       Whether the page allows the user to zoom in/out.
@@ -15088,8 +15090,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MobileFriendliness.TappedBadTargets">
-  <owner>kumagi@google.com</owner>
-  <owner>gaul@google.com</owner>
+  <owner>pdr@chromium.org</owner>
+  <owner>ikilpatrick@chromium.org</owner>
   <metric name="CloseDisplayEdge" enum="Boolean">
     <summary>
       The distance from the center position of tapped target to display's edge
@@ -15134,7 +15136,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MobileMenu.FindInPage">
-  <owner>frechette@chromium.org</owner>
+  <owner>clhager@google.com</owner>
+  <owner>twellington@chromium.org</owner>
   <summary>
     User pressed 'Find in page' in the app menu.
   </summary>
@@ -18831,8 +18834,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PasswordManager.ChangeSubmission" singular="True">
-  <owner>fiorellab@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
   <summary>
     Metrics related to password change submission flow. Recorded when password
     are saved by password change submission trajectory.
@@ -18979,8 +18982,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PasswordManager.PasswordChangeSubmissionOutcome" singular="True">
-  <owner>fiorellab@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
   <summary>
     Metrics reported after the change password form submission in the password
     change flow.
@@ -23135,7 +23138,7 @@ be describing additional metrics about the same event.
 
 <event name="SmartCharging">
   <owner>thanhdng@chromium.org</owner>
-  <owner>jiameng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     Records user activities that are related to charging such as battery
     percentage, time, device type, etc.
@@ -23850,7 +23853,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="TabManager.TabLifetime" singular="True">
-  <owner>chrisha@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <owner>pmonette@chromium.org</owner>
   <summary>
     Collected when a tab is closed, at most once per source.
   </summary>
@@ -23993,7 +23997,7 @@ be describing additional metrics about the same event.
 
 <event name="ThirdPartyCookies.CookieControlsActivated">
   <owner>sauski@google.com</owner>
-  <owner>kmg@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
   <summary>
     Recorded each time User Bypass is activated to bypass 3PC blocking and
     re-enable 3PC for the page. Only applicable if the user is blocking 3PC by
@@ -24629,7 +24633,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="UserActivity">
-  <owner>jiameng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
   <summary>
     Collects user activity events after staying idle for a short period of time.
   </summary>
@@ -24838,7 +24843,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="UserActivityId">
-  <owner>jiameng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
   <summary>
     Records an activity that happened while a page was open.
   </summary>
