@@ -15,9 +15,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#include "base/feature_list.h"
+#include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/incognito/android/incognito_utils_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/tabs/public/tab_interface.h"
@@ -140,14 +141,6 @@ content::BrowserContext* DevToolsBrowserContextManager::CreateBrowserContext() {
   // The two lines are matched in `StopObservingProfileIfAny()`.
   profile_observation_.AddObservation(otr_profile);
   otr_profiles_[context_id] = otr_profile;
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kEnforceIncognitoIsolation)) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    otr_tab_models_[context_id].Reset(
-        Java_DevToolsBrowserContextTabModel_create(env, otr_profile));
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   return otr_profile;
 }
 
@@ -157,17 +150,48 @@ tabs::TabInterface* DevToolsBrowserContextManager::CreateTabForBrowserContext(
     std::unique_ptr<content::WebContents> web_contents) {
   CHECK(otr_profile);
   CHECK(web_contents);
-  auto it = otr_tab_models_.find(otr_profile->UniqueId());
-  if (it == otr_tab_models_.end() || it->second.is_null()) {
+  CHECK(chrome::android::ShouldOpenIncognitoAsWindow());
+  CHECK(chrome::android::IsJavaDrivenFeatureEnabled(
+      chrome::android::kEnforceIncognitoIsolation));
+  const std::string context_id = otr_profile->UniqueId();
+  if (!otr_profiles_.contains(context_id)) {
     return nullptr;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  TabAndroid* new_tab = Java_DevToolsBrowserContextTabModel_createTab(
-      env, it->second, web_contents.get());
-  if (new_tab) {
-    // Java assumes ownership of the WebContents on successful Tab creation.
-    web_contents.release();
+  base::android::ScopedJavaLocalRef<jobject> tab_model_ref;
+  bool created = false;
+  if (auto it = otr_tab_models_.find(context_id); it != otr_tab_models_.end()) {
+    tab_model_ref.Reset(it->second);
+  } else {
+    // Lazily create the offscreen OTR TabModel on first tab creation so an
+    // empty BrowserContext does not register an OTR TabModel in TabModelList.
+    tab_model_ref =
+        Java_DevToolsBrowserContextTabModel_create(env, otr_profile);
+    if (!otr_profiles_.contains(context_id)) {
+      Java_DevToolsBrowserContextTabModel_destroy(env, tab_model_ref);
+      return nullptr;
+    }
+    otr_tab_models_.emplace(
+        context_id,
+        base::android::ScopedJavaGlobalRef<jobject>(env, tab_model_ref));
+    created = true;
   }
+  TabAndroid* new_tab = Java_DevToolsBrowserContextTabModel_createTab(
+      env, tab_model_ref, web_contents.get());
+  if (!new_tab) {
+    if (created) {
+      if (auto it = otr_tab_models_.find(context_id);
+          it != otr_tab_models_.end()) {
+        base::android::ScopedJavaGlobalRef<jobject> tab_model =
+            std::move(it->second);
+        otr_tab_models_.erase(it);
+        Java_DevToolsBrowserContextTabModel_destroy(env, tab_model);
+      }
+    }
+    return nullptr;
+  }
+  // Java assumes ownership of the WebContents on successful Tab creation.
+  web_contents.release();
   return new_tab;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -206,9 +230,12 @@ void DevToolsBrowserContextManager::DisposeBrowserContext(
 
   Profile* profile = it->second;
 #if BUILDFLAG(IS_ANDROID)
-  CloseAndroidTabsForProfile(profile);
+  base::WeakPtr<Profile> weak_profile = profile->GetWeakPtr();
   StopObservingProfileIfAny(profile);
-  DestroyOTRProfileWhenAppropriate(profile->GetWeakPtr());
+  if (weak_profile) {
+    CloseAndroidTabsForProfile(weak_profile.get());
+  }
+  DestroyOTRProfileWhenAppropriate(std::move(weak_profile));
   std::move(callback).Run(true, "");
   return;
 #else
@@ -243,6 +270,7 @@ void DevToolsBrowserContextManager::DisposeBrowserContext(
 
 void DevToolsBrowserContextManager::OnProfileWillBeDestroyed(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
+  StopObservingProfileIfAny(profile);
   CloseAndroidTabsForProfile(profile);
 #else
   // This is likely happening during shutdown. We'll immediately
@@ -254,9 +282,9 @@ void DevToolsBrowserContextManager::OnProfileWillBeDestroyed(Profile* profile) {
         }
         return true;
       });
-#endif  // BUILDFLAG(IS_ANDROID)
 
   StopObservingProfileIfAny(profile);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void DevToolsBrowserContextManager::OnBrowserClosed(
@@ -305,11 +333,13 @@ void DevToolsBrowserContextManager::StopObservingProfileIfAny(
 #if BUILDFLAG(IS_ANDROID)
   auto tab_model_it = otr_tab_models_.find(context_id);
   if (tab_model_it != otr_tab_models_.end()) {
-    JNIEnv* env = base::android::AttachCurrentThread();
     base::android::ScopedJavaGlobalRef<jobject> tab_model =
         std::move(tab_model_it->second);
     otr_tab_models_.erase(tab_model_it);
-    Java_DevToolsBrowserContextTabModel_destroy(env, tab_model);
+    if (!tab_model.is_null()) {
+      JNIEnv* env = base::android::AttachCurrentThread();
+      Java_DevToolsBrowserContextTabModel_destroy(env, tab_model);
+    }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

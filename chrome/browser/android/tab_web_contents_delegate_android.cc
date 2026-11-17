@@ -30,6 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
+#include "chrome/browser/android/devtools_manager_delegate_android.h"
 #include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
@@ -556,6 +557,10 @@ content::WebContents* TabWebContentsDelegateAndroid::CreateCustomWebContents(
 
 content::JavaScriptDialogManager*
 TabWebContentsDelegateAndroid::GetJavaScriptDialogManager(WebContents* source) {
+  if (TabAndroid* tab = TabAndroid::FromWebContents(source);
+      tab && tab->IsOffscreenRendering()) {
+    return nullptr;
+  }
   return javascript_dialogs::TabModalDialogManager::FromWebContents(source);
 }
 
@@ -751,6 +756,11 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
   // When handled is |true|, ownership has been passed to java, which in turn
   // creates a new TabAndroid instance to own the WebContents.
   if (handled) {
+    if (source &&
+        DevToolsManagerDelegateAndroid::IsCreatedByDevTools(*source) &&
+        !DevToolsManagerDelegateAndroid::IsCreatedByDevTools(*new_contents)) {
+      DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*new_contents);
+    }
     if (disposition == ui::mojom::WindowOpenDisposition::kNewPictureInPicture) {
       // For Document PiP, immediately enter PiP mode on the native side so that
       // we start observing the opener for navigations immediately.

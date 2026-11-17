@@ -261,13 +261,20 @@ void DevToolsManagerDelegateAndroid::DisposeBrowserContext(
 }
 
 bool DevToolsManagerDelegateAndroid::IsCreatedByDevTools(
-    const WebContents& web_contents) {
-  return !!web_contents.GetUserData(kCreatedByDevTools);
+    WebContents& web_contents) {
+  if (web_contents.GetUserData(kCreatedByDevTools)) {
+    return true;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  return profile && profile->IsOffTheRecord() &&
+         profile->GetOTRProfileID().IsDevTools();
 }
 
 void DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(
     WebContents& web_contents) {
-  CHECK(!IsCreatedByDevTools(web_contents), base::NotFatalUntil::M161);
+  CHECK(!web_contents.GetUserData(kCreatedByDevTools),
+        base::NotFatalUntil::M161);
   web_contents.SetUserData(kCreatedByDevTools,
                            std::make_unique<base::SupportsUserData::Data>());
 }

@@ -27,7 +27,7 @@ class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
   ~DevToolsManagerDelegateAndroid() override;
 
   static void MarkCreatedByDevTools(content::WebContents& web_contents);
-  static bool IsCreatedByDevTools(const content::WebContents& web_contents);
+  static bool IsCreatedByDevTools(content::WebContents& web_contents);
 
  private:
   // content::DevToolsManagerDelegate implementation.

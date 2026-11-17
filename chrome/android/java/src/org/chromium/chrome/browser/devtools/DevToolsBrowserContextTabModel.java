@@ -4,22 +4,22 @@
 
 package org.chromium.chrome.browser.devtools;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Process;
+import android.content.Intent;
+import android.util.DisplayMetrics;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.background_tabs.OffscreenRenderingManager;
 import org.chromium.chrome.browser.app.tabmodel.HeadlessBrowserControlsStateProvider;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,24 +50,23 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
-import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Owns a headless {@link TabModelSelectorImpl} for a disposable DevTools off-the-record {@link
+ * Owns an offscreen {@link TabModelSelectorImpl} for a disposable DevTools off-the-record {@link
  * Profile} created via {@code Target.createBrowserContext}, keeping DevTools OTR targets isolated
  * from UI browser windows' {@link TabModel}s.
  */
+// TODO(crbug.com/586667896): Rename (e.g., to OffscreenOtrTabModelOrchestrator), move to
+// org.chromium.chrome.browser.app.tabmodel, and expand isolated OTR target test coverage.
 @NullMarked
 class DevToolsBrowserContextTabModel {
-    private final WindowAndroid mWindowAndroid;
     private final TabContentManager mTabContentManager;
     private final TabModelSelectorImpl mTabModelSelector;
     private final DevToolsTabCreator mIncognitoTabCreator;
@@ -81,12 +80,9 @@ class DevToolsBrowserContextTabModel {
         assert otrProfile.isOffTheRecord();
 
         Context context = ContextUtils.getApplicationContext();
-        mWindowAndroid = createHeadlessWindowAndroid(context);
         DevToolsTabCreator regularTabCreator =
-                new DevToolsTabCreator(
-                        otrProfile.getOriginalProfile(), mWindowAndroid, /* incognito= */ false);
-        mIncognitoTabCreator =
-                new DevToolsTabCreator(otrProfile, mWindowAndroid, /* incognito= */ true);
+                new DevToolsTabCreator(otrProfile.getOriginalProfile(), /* incognito= */ false);
+        mIncognitoTabCreator = new DevToolsTabCreator(otrProfile, /* incognito= */ true);
         TabCreatorManager tabCreatorManager =
                 incognito -> incognito ? mIncognitoTabCreator : regularTabCreator;
 
@@ -119,8 +115,20 @@ class DevToolsBrowserContextTabModel {
                         /* startIncognito= */ true,
                         SupportedProfileType.OFF_THE_RECORD) {
                     @Override
+                    protected boolean shouldActivateModelOnInit() {
+                        // Keep IsActiveModel() false so callers scanning TabModelList do not treat
+                        // this offscreen model as an active foreground TabModel.
+                        return false;
+                    }
+
+                    @Override
+                    public void selectModel(boolean incognito) {
+                        // Intentional noop so adding tabs does not activate the offscreen model.
+                    }
+
+                    @Override
                     public void requestToShowTab(@Nullable Tab tab, @TabSelectionType int type) {
-                        // Intentional noop for headless DevTools browser contexts.
+                        // Intentional noop for offscreen DevTools browser contexts.
                     }
                 };
 
@@ -149,73 +157,37 @@ class DevToolsBrowserContextTabModel {
 
     @CalledByNative
     void destroy() {
+        mIncognitoTabCreator.destroy();
         TabModel incognitoModel = mTabModelSelector.getModel(/* incognito= */ true);
         incognitoModel
                 .getTabRemover()
-                .closeTabs(
-                        TabClosureParams.closeAllTabs().allowUndo(false).build(),
-                        /* allowDialog= */ false);
+                .forceCloseTabs(
+                        TabClosureParams.closeAllTabs()
+                                .allowUndo(false)
+                                .allowUnloadHandlers(false)
+                                .build());
         mTabModelSelector.destroy();
         mTabContentManager.destroy();
-        mWindowAndroid.destroy();
-    }
-
-    private static WindowAndroid createHeadlessWindowAndroid(Context context) {
-        WindowAndroid windowAndroid =
-                new WindowAndroid(context, /* occlusionTrackingAllowed= */ false);
-        windowAndroid.setAndroidPermissionDelegate(
-                new AndroidPermissionDelegate() {
-                    @Override
-                    public boolean hasPermission(String permission) {
-                        return ApiCompatibilityUtils.checkPermission(
-                                        context, permission, Process.myPid(), Process.myUid())
-                                == PackageManager.PERMISSION_GRANTED;
-                    }
-
-                    @Override
-                    public boolean canRequestPermission(String permission) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isPermissionRevokedByPolicy(String permission) {
-                        return context.getPackageManager()
-                                .isPermissionRevokedByPolicy(permission, context.getPackageName());
-                    }
-
-                    @Override
-                    public void requestPermissions(
-                            String[] permissions, PermissionCallback callback) {
-                        int[] grantResults = new int[permissions.length];
-                        Arrays.fill(grantResults, PackageManager.PERMISSION_DENIED);
-                        callback.onRequestPermissionsResult(permissions, grantResults);
-                    }
-
-                    @Override
-                    public boolean handlePermissionResult(
-                            int requestCode, String[] permissions, int[] grantResults) {
-                        return false;
-                    }
-                });
-        return windowAndroid;
     }
 
     private static class DevToolsTabCreator implements TabCreator, TabCreator.NeedsTabModel {
         private final Profile mProfile;
-        private final WindowAndroid mWindowAndroid;
         private final boolean mIncognito;
         private final TabDelegateFactory mTabDelegateFactory;
         private @Nullable TabModel mTabModel;
 
-        DevToolsTabCreator(Profile profile, WindowAndroid windowAndroid, boolean incognito) {
+        DevToolsTabCreator(Profile profile, boolean incognito) {
             mProfile = profile;
-            mWindowAndroid = windowAndroid;
             mIncognito = incognito;
             mTabDelegateFactory = new DevToolsTabDelegateFactory(this);
         }
 
         @Nullable TabModel getTabModel() {
             return mTabModel;
+        }
+
+        void destroy() {
+            mTabModel = null;
         }
 
         @Override
@@ -247,13 +219,16 @@ class DevToolsBrowserContextTabModel {
                 int position) {
             if (!mIncognito || mTabModel == null) return null;
 
+            WindowAndroid windowAndroid =
+                    OffscreenRenderingManager.getInstance().getOffscreenWindow();
             Tab tab =
                     TabBuilder.createLiveTab(mProfile, /* initiallyHidden= */ false)
                             .setParent(parent)
-                            .setWindow(mWindowAndroid)
+                            .setWindow(windowAndroid)
                             .setLaunchType(type)
                             .setDelegateFactory(mTabDelegateFactory)
                             .build();
+            startOffscreenRendering(tab);
             tab.loadUrl(loadUrlParams);
             mTabModel.addTab(tab, position, type, TabCreationState.LIVE_IN_FOREGROUND);
             return tab;
@@ -278,7 +253,14 @@ class DevToolsBrowserContextTabModel {
                 int index,
                 CompletableFuture<Boolean> addTabToModel) {
             if (!mIncognito || mTabModel == null) return null;
+            // Check synchronous rejection before TabBuilder.build() takes native ownership of
+            // webContents via TabAndroid::InitWebContents(), avoiding a double-free in C++ callers.
+            if (addTabToModel.isDone() && !addTabToModel.join()) {
+                return null;
+            }
 
+            WindowAndroid windowAndroid =
+                    OffscreenRenderingManager.getInstance().getOffscreenWindow();
             Tab tab;
             @TabCreationState int creationState;
             if (webContents.getMainFrame() == null
@@ -286,11 +268,10 @@ class DevToolsBrowserContextTabModel {
                 tab =
                         TabBuilder.createLazyTabWithWebContents(mProfile)
                                 .setParent(parent)
-                                .setWindow(mWindowAndroid)
+                                .setWindow(windowAndroid)
                                 .setLaunchType(type)
                                 .setWebContents(webContents)
                                 .setDelegateFactory(mTabDelegateFactory)
-                                .setInitiallyHidden(false)
                                 .setInitialPinState(shouldPin)
                                 .build();
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
@@ -298,7 +279,7 @@ class DevToolsBrowserContextTabModel {
                 tab =
                         TabBuilder.createLiveTab(mProfile, /* initiallyHidden= */ false)
                                 .setParent(parent)
-                                .setWindow(mWindowAndroid)
+                                .setWindow(windowAndroid)
                                 .setLaunchType(type)
                                 .setWebContents(webContents)
                                 .setDelegateFactory(mTabDelegateFactory)
@@ -306,14 +287,21 @@ class DevToolsBrowserContextTabModel {
                                 .build();
                 creationState = TabCreationState.LIVE_IN_FOREGROUND;
             }
+            startOffscreenRendering(tab);
 
-            addTabToModel.thenAccept(
-                    shouldAdd -> {
-                        if (shouldAdd) {
-                            assumeNonNull(mTabModel);
-                            mTabModel.addTab(tab, index, type, creationState);
-                        }
-                    });
+            if (addTabToModel.isDone()) {
+                mTabModel.addTab(tab, index, type, creationState);
+            } else {
+                addTabToModel.thenAccept(
+                        shouldAdd -> {
+                            ThreadUtils.assertOnUiThread();
+                            if (shouldAdd && mTabModel != null) {
+                                mTabModel.addTab(tab, index, type, creationState);
+                            } else {
+                                tab.destroy();
+                            }
+                        });
+            }
             return tab;
         }
 
@@ -331,6 +319,14 @@ class DevToolsBrowserContextTabModel {
         public @Nullable TabDelegateFactory createDefaultTabDelegateFactory() {
             return mTabDelegateFactory;
         }
+
+        private static void startOffscreenRendering(Tab tab) {
+            DisplayMetrics displayMetrics =
+                    ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
+            int width = Math.max(1, displayMetrics.widthPixels);
+            int height = Math.max(1, displayMetrics.heightPixels);
+            OffscreenRenderingManager.getInstance().startOffscreenRendering(tab, width, height);
+        }
     }
 
     private static class DevToolsTabDelegateFactory implements TabDelegateFactory {
@@ -346,8 +342,15 @@ class DevToolsBrowserContextTabModel {
         }
 
         @Override
-        public @Nullable ExternalNavigationHandler createExternalNavigationHandler(Tab tab) {
-            return null;
+        public ExternalNavigationHandler createExternalNavigationHandler(Tab tab) {
+            return new ExternalNavigationHandler(
+                    new ExternalNavigationDelegateImpl(tab) {
+                        @Override
+                        public boolean shouldDisableExternalIntentRequestsForUrl(
+                                ExternalNavigationParams params, Intent intent) {
+                            return true;
+                        }
+                    });
         }
 
         @Override

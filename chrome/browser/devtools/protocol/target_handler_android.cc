@@ -7,13 +7,14 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
+#include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
+#include "chrome/browser/incognito/android/incognito_utils_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -90,21 +91,25 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
   }
 
   const bool enforce_incognito_isolation =
-      base::FeatureList::IsEnabled(chrome::android::kEnforceIncognitoIsolation);
+      chrome::android::ShouldOpenIncognitoAsWindow() &&
+      chrome::android::IsJavaDrivenFeatureEnabled(
+          chrome::android::kEnforceIncognitoIsolation);
 
   Profile* const default_profile = Profile::FromBrowserContext(
       DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext());
   TabModel* tab_model = nullptr;
   if (default_profile) {
-    TabModelList::ForEach(default_profile, [&tab_model](TabModel* model) {
-      if (model->GetTabModelType() != TabModel::TabModelType::kStandard) {
+    TabModelList::ForEach(default_profile, [enforce_incognito_isolation,
+                                            &tab_model](TabModel* model) {
+      if (model->GetTabModelType() != TabModel::TabModelType::kStandard ||
+          model->IsEmptyRegularModelForEphemeralOrIncognitoCct()) {
         return true;
       }
       if (model->activity_type() == chrome::android::ActivityType::kTabbed) {
         tab_model = model;
         return false;
       }
-      if (!tab_model) {
+      if (!enforce_incognito_isolation && !tab_model) {
         tab_model = model;
       }
       return true;
@@ -132,11 +137,15 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
 
   Profile* profile = default_profile;
   if (browser_context_id.has_value()) {
-    profile = DevToolsBrowserContextManager::GetInstance().GetProfileById(
-        *browser_context_id);
-    if (!profile) {
-      return protocol::Response::ServerError(
-          "Failed to find browser context with id " + *browser_context_id);
+    if (*browser_context_id == default_profile->UniqueId()) {
+      profile = default_profile;
+    } else {
+      profile = DevToolsBrowserContextManager::GetInstance().GetProfileById(
+          *browser_context_id);
+      if (!profile) {
+        return protocol::Response::ServerError(
+            "Failed to find browser context with id " + *browser_context_id);
+      }
     }
   }
 
@@ -148,7 +157,9 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
   WebContents* web_contents = owned_web_contents.get();
   DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
 
-  if (enforce_incognito_isolation && profile != default_profile) {
+  bool needs_load_url = true;
+  if (enforce_incognito_isolation && profile != default_profile &&
+      profile->IsOffTheRecord()) {
     tabs::TabInterface* new_tab =
         DevToolsBrowserContextManager::GetInstance().CreateTabForBrowserContext(
             profile, std::move(owned_web_contents));
@@ -156,8 +167,6 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
       return protocol::Response::ServerError("Could not create a Tab");
     }
     web_contents = new_tab->GetContents();
-    content::NavigationController::LoadURLParams load_params(gurl);
-    web_contents->GetController().LoadURLWithParams(load_params);
   } else if ((new_window.value_or(false) ||
               (enforce_incognito_isolation && !tab_model)) &&
              profile == default_profile) {
@@ -182,10 +191,6 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
       TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
       CHECK(tab);
       tab->SetWindowSessionID(browser_window->GetSessionID());
-
-      content::NavigationController::LoadURLParams load_params(gurl);
-      load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
-      web_contents->GetController().LoadURLWithParams(load_params);
     } else if (tab_model) {
       // Preserve the established target-creation behavior when Android cannot
       // create a separate browser window. The failed call destroyed its
@@ -196,11 +201,14 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
         return protocol::Response::ServerError("Could not create a Tab");
       }
       DevToolsManagerDelegateAndroid::MarkCreatedByDevTools(*web_contents);
+      needs_load_url = false;
     } else {
       return protocol::Response::ServerError("Could not create a Tab");
     }
   } else {
-    CHECK(tab_model);
+    if (!tab_model) {
+      return protocol::Response::ServerError("Could not find TabModelList");
+    }
     // Insert the pre-created WebContents into the regular TabModel.
     tabs::TabInterface* new_tab = tab_model->CreateTab(
         /*parent=*/nullptr, std::move(owned_web_contents),
@@ -210,7 +218,11 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
       return protocol::Response::ServerError("Could not create a Tab");
     }
     web_contents = new_tab->GetContents();
+  }
+
+  if (needs_load_url) {
     content::NavigationController::LoadURLParams load_params(gurl);
+    load_params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
     web_contents->GetController().LoadURLWithParams(load_params);
   }
 

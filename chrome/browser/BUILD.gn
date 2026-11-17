@@ -1481,7 +1481,6 @@ source_set("core") {
       "composeplate/android/composeplate_utils.cc",
       "icon_loader_android.cc",
       "incognito/android/incognito_utils_android.cc",
-      "incognito/android/incognito_utils_android.h",
       "memory_details_android.cc",
       "platform_util_android.cc",
       "shell_integration_android.cc",
@@ -2224,6 +2223,7 @@ source_set("browser") {
   public_deps = [
     ":browser_features",
     ":buildflags",
+    ":primitives",
     "//chrome/browser/accessibility/accessibility_prefs",
     "//chrome/browser/browsing_data",
     "//chrome/browser/download",
@@ -4668,6 +4668,9 @@ source_set("primitives") {
     "command_updater.h",
     "platform_util.h",
   ]
+  if (is_android) {
+    sources += [ "incognito/android/incognito_utils_android.h" ]
+  }
   public_deps = [
     "//base",
     "//build/config/linux/dbus:buildflags",

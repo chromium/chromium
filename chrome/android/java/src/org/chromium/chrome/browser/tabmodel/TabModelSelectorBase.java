@@ -110,9 +110,16 @@ public abstract class TabModelSelectorBase
 
         mIncognitoTabModel.addIncognitoObserver(this);
 
-        incognitoModel.setActive(mStartIncognito);
-        normalModel.setActive(!mStartIncognito);
+        if (shouldActivateModelOnInit()) {
+            incognitoModel.setActive(mStartIncognito);
+            normalModel.setActive(!mStartIncognito);
+        }
         mTabModelSupplier.set(mTabModelInternals.get(activeModelIndex));
+    }
+
+    /** Returns whether {@link #initialize} should mark the starting {@link TabModel} active. */
+    protected boolean shouldActivateModelOnInit() {
+        return true;
     }
 
     /**

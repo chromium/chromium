@@ -155,6 +155,11 @@ public class FeatureOverrides {
             mFeatureFlags.put(featureName, testValue);
         }
 
+        /** Remove an override for a feature flag. */
+        void removeFeatureFlagOverride(String featureName) {
+            mFeatureFlags.remove(featureName);
+        }
+
         /** Add an override for a field trial parameter. */
         void addFieldTrialParamOverride(String featureName, String paramName, String testValue) {
             Map<String, String> featureParams = mFieldTrialParams.get(featureName);
@@ -293,6 +298,21 @@ public class FeatureOverrides {
     /** Override a feature flag for testing. */
     public static void overrideFlag(String featureName, boolean testValue) {
         newBuilder().flag(featureName, testValue).apply();
+    }
+
+    /**
+     * Remove a single Java feature flag override, leaving other feature flag and field trial
+     * parameter overrides intact.
+     */
+    public static void removeFlagOverride(String featureName) {
+        TestValues currentValues = sTestFeatures;
+        if (currentValues == null || !currentValues.hasFlagOverride(featureName)) {
+            return;
+        }
+        TestValues newTestValues = new TestValues();
+        newTestValues.merge(currentValues, /* replace= */ true);
+        newTestValues.removeFeatureFlagOverride(featureName);
+        overwriteTestValues(newTestValues.isEmpty() ? null : newTestValues);
     }
 
     /** Override a boolean feature param for testing. */

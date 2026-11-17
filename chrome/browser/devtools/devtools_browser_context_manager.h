@@ -21,7 +21,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace content {
 class WebContents;
@@ -78,7 +77,7 @@ class DevToolsBrowserContextManager : public BrowserCollectionObserver,
       browser_collection_observation_{this};
   base::flat_map<std::string, raw_ptr<Profile, CtnExperimental>> otr_profiles_;
 #if BUILDFLAG(IS_ANDROID)
-  absl::flat_hash_map<std::string, base::android::ScopedJavaGlobalRef<jobject>>
+  base::flat_map<std::string, base::android::ScopedJavaGlobalRef<jobject>>
       otr_tab_models_;
 #endif  // BUILDFLAG(IS_ANDROID)
   base::flat_map<std::string, content::DevToolsManagerDelegate::DisposeCallback>

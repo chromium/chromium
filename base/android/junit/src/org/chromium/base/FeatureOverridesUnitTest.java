@@ -156,4 +156,20 @@ public class FeatureOverridesUnitTest {
         Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
         Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_B));
     }
+
+    @Test
+    @EnableFeatures({FEATURE_B})
+    public void test_removeFlagOverride_preservesOtherOverrides() {
+        FeatureOverrides.overrideFlag(FEATURE_A, true);
+        FeatureOverrides.overrideParam(FEATURE_A, FEATURE_A_PARAM_1, "paramValue1");
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_A));
+
+        FeatureOverrides.removeFlagOverride(FEATURE_A);
+
+        Assert.assertFalse(FeatureOverrides.hasTestFeature(FEATURE_A));
+        Assert.assertEquals(true, FeatureOverrides.getTestValueForFeatureStrict(FEATURE_B));
+        Assert.assertEquals(
+                "paramValue1",
+                FeatureOverrides.getTestValueForFieldTrialParam(FEATURE_A, FEATURE_A_PARAM_1));
+    }
 }

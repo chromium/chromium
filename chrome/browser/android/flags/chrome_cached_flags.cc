@@ -17,6 +17,32 @@ bool IsJavaDrivenFeatureEnabled(const base::Feature& feature) {
   return Java_ChromeCachedFlags_isEnabled(env, feature.name);
 }
 
+ScopedJavaDrivenFeatureForTesting::ScopedJavaDrivenFeatureForTesting(
+    const base::Feature& feature,
+    bool enabled)
+    : feature_(feature) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  if (Java_ChromeCachedFlags_hasOverrideForTesting(  // IN-TEST
+          env, feature.name)) {
+    previous_override_ =
+        Java_ChromeCachedFlags_getOverrideForTesting(  // IN-TEST
+            env, feature.name);
+  }
+  Java_ChromeCachedFlags_setOverrideForTesting(  // IN-TEST
+      env, feature.name, enabled);
+}
+
+ScopedJavaDrivenFeatureForTesting::~ScopedJavaDrivenFeatureForTesting() {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  if (previous_override_.has_value()) {
+    Java_ChromeCachedFlags_setOverrideForTesting(  // IN-TEST
+        env, feature_->name, *previous_override_);
+  } else {
+    Java_ChromeCachedFlags_removeOverrideForTesting(  // IN-TEST
+        env, feature_->name);
+  }
+}
+
 }  // namespace chrome::android
 
 DEFINE_JNI(ChromeCachedFlags)

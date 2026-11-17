@@ -10,9 +10,11 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JniType;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -211,5 +213,27 @@ public class ChromeCachedFlags {
         assert cachedFlag != null;
 
         return cachedFlag.isEnabled();
+    }
+
+    @CalledByNativeForTesting
+    static boolean hasOverrideForTesting(@JniType("std::string") String featureName) {
+        return FeatureOverrides.hasTestFeature(featureName);
+    }
+
+    @CalledByNativeForTesting
+    static boolean getOverrideForTesting(@JniType("std::string") String featureName) {
+        Boolean value = FeatureOverrides.getTestValueForFeature(featureName);
+        assert value != null;
+        return value;
+    }
+
+    @CalledByNativeForTesting
+    static void setOverrideForTesting(@JniType("std::string") String featureName, boolean enabled) {
+        FeatureOverrides.overrideFlag(featureName, enabled);
+    }
+
+    @CalledByNativeForTesting
+    static void removeOverrideForTesting(@JniType("std::string") String featureName) {
+        FeatureOverrides.removeFlagOverride(featureName);
     }
 }
