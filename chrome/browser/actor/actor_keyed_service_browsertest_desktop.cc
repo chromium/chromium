@@ -7,6 +7,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_browsertest.h"
@@ -18,9 +19,12 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/headless_web_contents_manager.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -29,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
@@ -190,6 +195,76 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   ASSERT_TRUE(handle.Get());
   EXPECT_FALSE(handle.Get()->IsTab());
   EXPECT_EQ(incognito->GetTabStripModel()->count(), tab_count);
+}
+
+// Base for tests of what a task is told when its headless surface is promoted.
+// Records, in order, the tabs the task tells its UI about.
+class ActorKeyedServicePromotionTaskBrowserTest
+    : public ActorKeyedServiceBrowserTest {
+ protected:
+  // Creates a task that uses a new headless surface, and returns the task.
+  ActorTask* CreateTaskOnHeadlessSurface() {
+    headless_.emplace(actor_keyed_service()->CreateHeadlessActorSurface());
+    handle_ = headless_->actor_surface_handle();
+    auto ui = std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
+    ON_CALL(*ui, OnActorTaskAsyncChange)
+        .WillByDefault([this](const auto& change, auto callback) {
+          ui_added_tabs_.GetCallback().Run(
+              std::get<ui::UiEventDispatcher::AddTab>(change).handle);
+          std::move(callback).Run(MakeOkResult());
+        });
+    ActorTask* task = actor_keyed_service()->GetTask(
+        actor_keyed_service()->CreateTaskForTesting(
+            std::move(ui), TestTaskSourceInfo(), NoEnterprisePolicyChecker(),
+            /*options=*/nullptr, /*delegate=*/nullptr));
+    base::test::TestFuture<mojom::ActionResultPtr> added;
+    task->AddActorSurface(handle_, /*stop_task_on_detach=*/true,
+                          added.GetCallback());
+    ExpectOkResult(added);
+    // Adding a headless surface doesn't tell the UI, so the first tab the UI
+    // hears about is the promoted one.
+    return task;
+  }
+
+  std::optional<ScopedHeadlessActorSurface> headless_;
+  ActorSurfaceHandle handle_;
+  base::test::RepeatingTestFuture<tabs::TabHandle> ui_added_tabs_;
+};
+
+// A task acting on a promoted surface gets its tab-only setup: the UI is told
+// about the new tab.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServicePromotionTaskBrowserTest,
+                       TellsActingTaskAboutTab) {
+  ActorTask* task = CreateTaskOnHeadlessSurface();
+  ASSERT_TRUE(task);
+  ASSERT_TRUE(task->IsActingOnActorSurface(handle_));
+
+  tabs::TabInterface* tab = actor_keyed_service()->PromoteHeadlessActorSurface(
+      *headless_, *browser());
+
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(ui_added_tabs_.Take(), tab->GetHandle());
+  EXPECT_TRUE(task->IsActingOnActorSurface(handle_));
+}
+
+// A task that is paused when its surface is promoted, for example because the
+// user took over, is still told about the tab, and acts on it once resumed.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServicePromotionTaskBrowserTest,
+                       TellsPausedTaskAboutTab) {
+  ActorTask* task = CreateTaskOnHeadlessSurface();
+  ASSERT_TRUE(task);
+  task->Pause(/*from_actor=*/false);
+  ASSERT_TRUE(task->IsUnderUserControl());
+
+  tabs::TabInterface* tab = actor_keyed_service()->PromoteHeadlessActorSurface(
+      *headless_, *browser());
+
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(ui_added_tabs_.Take(), tab->GetHandle());
+  EXPECT_FALSE(task->IsActingOnActorSurface(handle_));
+
+  task->Resume();
+  EXPECT_TRUE(task->IsActingOnActorSurface(handle_));
 }
 
 // Promotion fails without side effects for a window that isn't a normal tabbed

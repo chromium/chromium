@@ -698,14 +698,7 @@ void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
   // TODO(b/567721071): UI actually cares about visible tabs - determine how UI
   // events should be sent when in headless.
   if (actor_surface->IsTab()) {
-    // Notify the UI of the new tab.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ui::UiEventDispatcher::OnActorTaskAsyncChange,
-            ui_weak_ptr_factory_.GetWeakPtr(),
-            ui::UiEventDispatcher::AddTab{.task_id = id_, .handle = tab_handle},
-            std::move(callback)));
+    NotifyUiOfAddedTab(tab_handle, std::move(callback));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
@@ -717,6 +710,43 @@ void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
         FROM_HERE, base::BindOnce(&ActorTaskDelegate::OnTabAddedToTask,
                                   delegate_, id_, tab_handle));
   }
+}
+
+void ActorTask::OnActorSurfacePromoted(
+    ActorSurfaceHandle actor_surface_handle) {
+  ActorControlledTabState* state =
+      base::FindPtrOrNull(controlled_tabs_, actor_surface_handle);
+  if (!state) {
+    return;
+  }
+  ActorSurface* actor_surface = actor_surface_handle.Get();
+  CHECK(actor_surface && actor_surface->IsTab());
+  tabs::TabInterface* tab = actor_surface->GetTabHandle()->Get();
+  CHECK(tab);
+  const tabs::TabHandle tab_handle = tab->GetHandle();
+  journal_->Log(
+      GURL(), id(), "ActorTask::OnActorSurfacePromoted",
+      JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
+
+  // Outside actor control, `DidTabEnterActorControl()` does this on resume.
+  if (IsActingOnActorSurface(actor_surface_handle)) {
+    ObserveTabDiscard(*state, *tab);
+  }
+  NotifyUiOfAddedTab(tab_handle, base::DoNothing());
+  // The delegate already got `OnTabAddedToTask()` when the surface was added,
+  // and hears about the new visible tab through
+  // `OnTaskTabsVisibilityChanged()`.
+  RecomputeHasVisibleTab();
+}
+
+void ActorTask::NotifyUiOfAddedTab(tabs::TabHandle tab_handle,
+                                   AddTabCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ui::UiEventDispatcher::OnActorTaskAsyncChange,
+                                ui_weak_ptr_factory_.GetWeakPtr(),
+                                ui::UiEventDispatcher::AddTab{
+                                    .task_id = id_, .handle = tab_handle},
+                                std::move(callback)));
 }
 
 // TODO(crbug.com/450524344): Add a test for this. Note that at this point the
@@ -986,14 +1016,19 @@ void ActorTask::DidTabEnterActorControl(
 
   // Only tabs discard their contents.
   if (tab) {
-    // TODO(crbug.com/450524344): Add a test for discarded content.
-    state->content_discarded_subscription =
-        tab->RegisterWillDiscardContents(base::BindRepeating(
-            &ActorTask::HandleDiscardContents, weak_ptr_factory_.GetWeakPtr()));
+    ObserveTabDiscard(*state, *tab);
   }
   DidContentsEnterActorControl(state, contents);
 
   RecomputeHasVisibleTab();
+}
+
+void ActorTask::ObserveTabDiscard(ActorControlledTabState& state,
+                                  tabs::TabInterface& tab) {
+  // TODO(crbug.com/450524344): Add a test for discarded content.
+  state.content_discarded_subscription =
+      tab.RegisterWillDiscardContents(base::BindRepeating(
+          &ActorTask::HandleDiscardContents, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ActorTask::DidContentsEnterActorControl(

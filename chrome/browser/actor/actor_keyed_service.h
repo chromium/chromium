@@ -130,6 +130,11 @@ class ActorKeyedService : public KeyedService,
   std::vector<TaskId> FindTaskIdsInActive(
       base::FunctionRef<bool(const ActorTask&)> predicate) const;
 
+  // Returns the IDs of active tasks that use `actor_surface_handle` or last
+  // acted on it.
+  std::vector<TaskId> FindActiveTaskIdsForActorSurface(
+      ActorSurfaceHandle actor_surface_handle) const;
+
   // Stop and clear all active tasks for testing only.
   void ResetForTesting();
 

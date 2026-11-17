@@ -367,6 +367,14 @@ class ActorTask : public base::SupportsUserData {
   // the surface was added with `stop_task_on_detach`.
   void OnActorSurfaceWillDetach(ActorSurfaceHandle actor_surface_handle);
 
+  // Called when a headless surface in this task's set has become a tab
+  // (`ActorKeyedService::PromoteHeadlessActorSurface()`). Runs the tab-only
+  // setup that `AddActorSurface()` skips for a headless surface: tells the UI
+  // about the tab, even while the task is paused, recomputes tab visibility,
+  // and, while under actor control, follows the tab's contents across
+  // discards. Does nothing if the surface isn't in the set.
+  void OnActorSurfacePromoted(ActorSurfaceHandle actor_surface_handle);
+
   const std::string& step_progress() const { return step_progress_; }
   void SetStepProgress(std::string step_progress);
   // Sends UiEventDispatcher::ActRequested, which tells ActorUiStateManager
@@ -410,6 +418,14 @@ class ActorTask : public base::SupportsUserData {
   void DidTabEnterActorControl(ActorSurfaceHandle actor_surface_handle);
   void DidContentsEnterActorControl(ActorControlledTabState* state,
                                     content::WebContents* contents);
+
+  // Makes `state` follow `tab`'s contents when the tab discards them.
+  void ObserveTabDiscard(ActorControlledTabState& state,
+                         tabs::TabInterface& tab);
+
+  // Tells the UI that `tab_handle` was added to this task. `callback` runs once
+  // the UI is done.
+  void NotifyUiOfAddedTab(tabs::TabHandle tab_handle, AddTabCallback callback);
 
   // Transitions the tab from being actor controlled back to user being able to
   // interact with in.

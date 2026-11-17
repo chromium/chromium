@@ -289,12 +289,7 @@ void ActorKeyedService::DestroyHeadlessActorSurface(
 
   // Tell tasks first, while the surface and its page are still alive. This may
   // stop tasks.
-  std::vector<TaskId> tasks_to_notify =
-      FindTaskIdsInActive([actor_surface_handle](const ActorTask& task) {
-        return task.HasActorSurface(actor_surface_handle) ||
-               task.GetLastActedActorSurfaces().contains(actor_surface_handle);
-      });
-  for (TaskId id : tasks_to_notify) {
+  for (TaskId id : FindActiveTaskIdsForActorSurface(actor_surface_handle)) {
     if (ActorTask* task = GetTask(id)) {
       task->OnActorSurfaceWillDetach(actor_surface_handle);
     }
@@ -352,8 +347,13 @@ tabs::TabInterface* ActorKeyedService::PromoteHeadlessActorSurface(
   // Creating the tab ran ActorSurfaceTabHelper -> OnTabCreated(), which
   // switched this surface, with its handle, to the tab.
   CHECK_EQ(surface_registry_->GetForTab(tab->GetHandle()), actor_surface);
-  // TODO(crbug.com/584309016): Tell tasks acting on the surface that it is now
-  // a tab.
+  // Tasks using the surface skipped their tab-only setup while it was
+  // headless; run it now.
+  for (TaskId id : FindActiveTaskIdsForActorSurface(handle)) {
+    if (ActorTask* task = GetTask(id)) {
+      task->OnActorSurfacePromoted(handle);
+    }
+  }
   // Selects the tab in `window`, but doesn't bring `window` to the front.
   tab_list->ActivateTab(tab->GetHandle());
   return tab;
@@ -1209,6 +1209,14 @@ std::vector<TaskId> ActorKeyedService::FindTaskIdsInActive(
     }
   }
   return result;
+}
+
+std::vector<TaskId> ActorKeyedService::FindActiveTaskIdsForActorSurface(
+    ActorSurfaceHandle actor_surface_handle) const {
+  return FindTaskIdsInActive([actor_surface_handle](const ActorTask& task) {
+    return task.HasActorSurface(actor_surface_handle) ||
+           task.GetLastActedActorSurfaces().contains(actor_surface_handle);
+  });
 }
 
 void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,

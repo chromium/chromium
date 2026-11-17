@@ -92,7 +92,9 @@ stay alive until their owner destroys them.
 `ActorTabData` when its page moves, and ownership of the page moves with it:
 * `ActorKeyedService::PromoteHeadlessActorSurface()` takes the page from its
   `ScopedHeadlessActorSurface` and puts it into a new tab; the tab strip owns it
-  from then on.
+  from then on. Each task using the surface is then told through
+  `ActorTask::OnActorSurfacePromoted()`, which runs the tab-only setup the task
+  skipped while the page was headless.
 * `ActorKeyedService::DemoteTabToHeadlessActorSurface()` takes a tab's page
   out of the tab strip, closing the tab, and returns a
   `ScopedHeadlessActorSurface` that the caller owns, as if it had created the
