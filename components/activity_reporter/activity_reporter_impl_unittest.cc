@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/activity_reporter/activity_reporter_impl.h"
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,10 +18,12 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/activity_reporter/activity_reporter_for_testing.h"
+#include "components/activity_reporter/buildflags.h"
 #include "components/activity_reporter/constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -38,6 +42,8 @@ namespace activity_reporter {
 namespace {
 
 using ::testing::_;
+
+using CrxComponents = std::vector<std::optional<update_client::CrxComponent>>;
 
 // Stands in for the prefs that the real update client writes during an update
 // check; the mock writes nothing, so tests dirty this pref to have something
@@ -96,13 +102,13 @@ class MockUpdateClient : public update_client::UpdateClient {
 
 std::unique_ptr<ActivityReporter> CreateReporterForPrefs(
     PrefService* pref_service) {
-  return CreateActivityReporter(
+  return CreateActivityReporterImpl(
       base::BindRepeating([](PrefService* prefs) { return prefs; },
                           pref_service),
-      nullptr,
+      /*network_fetcher_factory=*/nullptr,
       base::BindRepeating([] { return version_info::Channel::UNKNOWN; }),
       base::BindRepeating([] { return std::string("TEST"); }),
-      base::DoNothing(), false);
+      base::DoNothing(), /*per_user_install=*/false);
 }
 
 }  // namespace
@@ -153,7 +159,7 @@ class ActivityReporterImplTest : public testing::Test {
           base::DoNothing());
 };
 
-TEST_F(ActivityReporterImplTest, ReportActive_Throttling) {
+TEST_F(ActivityReporterImplTest, ReportActiveThrottles) {
   int call_count = 0;
   EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _))
       .Times(2)
@@ -182,7 +188,8 @@ TEST_F(ActivityReporterImplTest, ReportActive_Throttling) {
   EXPECT_EQ(call_count, 2);
 }
 
-TEST_F(ActivityReporterImplTest, ReportActive_ComponentData) {
+TEST_F(ActivityReporterImplTest, ReportActiveSendsComponentData) {
+  base::test::TestFuture<const CrxComponents&> components_future;
   EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _))
       .WillOnce(
           [&](const std::string& id,
@@ -192,18 +199,18 @@ TEST_F(ActivityReporterImplTest, ReportActive_ComponentData) {
             EXPECT_EQ(id, kChromeActivityId);
             std::move(crx_data_callback)
                 .Run({std::string{kChromeActivityId}},
-                     base::BindOnce(
-                         [](const std::vector<std::optional<
-                                update_client::CrxComponent>>& components) {
-                           ASSERT_EQ(components.size(), 1u);
-                           ASSERT_TRUE(components[0].has_value());
-                           EXPECT_EQ(components[0]->app_id, kChromeActivityId);
-                           EXPECT_EQ(components[0]->brand, "TEST");
-                           EXPECT_EQ(components[0]->channel, "unknown");
-                           EXPECT_FALSE(components[0]->updates_enabled);
-                         }));
+                     components_future.GetCallback());
           });
   activity_reporter_->ReportActive();
+
+  ASSERT_TRUE(components_future.IsReady());
+  const CrxComponents& components = components_future.Get();
+  ASSERT_EQ(components.size(), 1u);
+  ASSERT_TRUE(components[0].has_value());
+  EXPECT_EQ(components[0]->app_id, kChromeActivityId);
+  EXPECT_EQ(components[0]->brand, "TEST");
+  EXPECT_EQ(components[0]->channel, "unknown");
+  EXPECT_FALSE(components[0]->updates_enabled);
 }
 
 TEST_F(ActivityReporterImplTest, ReportActiveCommitsPendingWrite) {
@@ -375,6 +382,31 @@ TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateInvalid) {
   histogram_tester.ExpectUniqueSample(
       "ActivityReporter.InitialDateLastActiveState",
       InitialDateLastActiveState::kInvalid, 1);
+}
+
+TEST(ActivityReporterFactoryTest, CreatesRealReporterOnlyWithReportActivity) {
+  base::test::TaskEnvironment task_environment;
+  TestingPrefServiceSimple pref_service;
+  update_client::RegisterPrefs(pref_service.registry());
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ActivityReporter> reporter = CreateActivityReporter(
+      base::BindRepeating([](PrefService* prefs) { return prefs; },
+                          &pref_service),
+      /*network_fetcher_factory=*/nullptr,
+      base::BindRepeating([] { return version_info::Channel::UNKNOWN; }),
+      base::BindRepeating([] { return std::string("TEST"); }),
+      base::DoNothing(), /*per_user_install=*/false);
+  ASSERT_TRUE(reporter);
+  reporter.reset();
+  // Only the real reporter records `ActivityReporter.IncompleteReports` when
+  // destroyed.
+#if BUILDFLAG(REPORT_ACTIVITY)
+  histogram_tester.ExpectUniqueSample("ActivityReporter.IncompleteReports", 0,
+                                      1);
+#else
+  histogram_tester.ExpectTotalCount("ActivityReporter.IncompleteReports", 0);
+#endif
 }
 
 }  // namespace activity_reporter

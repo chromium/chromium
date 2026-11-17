@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/activity_reporter/activity_reporter_impl.h"
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -77,22 +79,22 @@ class ActivityReporterImpl final : public ActivityReporter {
         brand_provider_(std::move(brand_provider)) {
     scoped_refptr<ActivityReporterConfigurator> configurator =
         base::MakeRefCounted<ActivityReporterConfigurator>(
-            std::move(pref_service_provider), network_fetcher_factory,
-            std::move(channel_provider), per_user_install);
+            std::move(pref_service_provider),
+            std::move(network_fetcher_factory), std::move(channel_provider),
+            per_user_install);
     update_client::PersistedData* data = configurator->GetPersistedData();
-    if (data) {
-      const int dla = data->GetDateLastActive(std::string(kChromeActivityId));
-      base::UmaHistogramEnumeration(
-          "ActivityReporter.InitialDateLastActiveState", ToState(dla));
-      if (dla == update_client::kDateUnknown) {
-        // Unlike the daynum written after an update check, this write is not
-        // explicitly committed: if it is lost, the next launch re-derives it
-        // from the unknown state and sends the same first-time ping.
-        data->SetDateLastActive(std::string(kChromeActivityId),
-                                update_client::kDateFirstTime);
-      }
+    const int dla = data->GetDateLastActive(std::string(kChromeActivityId));
+    base::UmaHistogramEnumeration("ActivityReporter.InitialDateLastActiveState",
+                                  ToState(dla));
+    if (dla == update_client::kDateUnknown) {
+      // The pref store's scheduled write, or `OnCheckForUpdateComplete()` if
+      // it runs first, commits this write. If it is lost before then, the next
+      // launch finds the date unknown again and sends the same first-time ping.
+      data->SetDateLastActive(std::string(kChromeActivityId),
+                              update_client::kDateFirstTime);
     }
-    update_client_ = update_client::UpdateClientFactory(configurator);
+    update_client_ =
+        update_client::UpdateClientFactory(std::move(configurator));
   }
 
   ActivityReporterImpl(
@@ -102,7 +104,7 @@ class ActivityReporterImpl final : public ActivityReporter {
       base::RepeatingCallback<std::string()> brand_provider,
       base::RepeatingClosure updater_active_callback)
       : pref_service_provider_(std::move(pref_service_provider)),
-        update_client_(update_client),
+        update_client_(std::move(update_client)),
         updater_active_callback_(std::move(updater_active_callback)),
         channel_provider_(std::move(channel_provider)),
         brand_provider_(std::move(brand_provider)) {}
@@ -193,8 +195,7 @@ class ActivityReporterImpl final : public ActivityReporter {
 
 }  // namespace
 
-// Must be called on a SequencedTaskRunner.
-std::unique_ptr<ActivityReporter> CreateActivityReporter(
+std::unique_ptr<ActivityReporter> CreateActivityReporterImpl(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
     scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
     base::RepeatingCallback<version_info::Channel()> channel_provider,
@@ -202,7 +203,7 @@ std::unique_ptr<ActivityReporter> CreateActivityReporter(
     base::RepeatingClosure updater_active_callback,
     bool per_user_install) {
   return std::make_unique<ActivityReporterImpl>(
-      std::move(pref_service_provider), network_fetcher_factory,
+      std::move(pref_service_provider), std::move(network_fetcher_factory),
       std::move(channel_provider), std::move(brand_provider),
       std::move(updater_active_callback), per_user_install);
 }
@@ -214,7 +215,7 @@ std::unique_ptr<ActivityReporter> CreateActivityReporterForTesting(
     base::RepeatingCallback<std::string()> brand_provider,
     base::RepeatingClosure updater_active_callback) {
   return std::make_unique<ActivityReporterImpl>(
-      std::move(pref_service_provider), update_client,
+      std::move(pref_service_provider), std::move(update_client),
       std::move(channel_provider), std::move(brand_provider),
       std::move(updater_active_callback));
 }

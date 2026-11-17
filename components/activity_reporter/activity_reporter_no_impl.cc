@@ -25,7 +25,6 @@ class ActivityReporterNoImpl final : public ActivityReporter {
 
 }  // namespace
 
-// Must be called on a SequencedTaskRunner.
 std::unique_ptr<ActivityReporter> CreateActivityReporterDisabled() {
   return std::make_unique<ActivityReporterNoImpl>();
 }

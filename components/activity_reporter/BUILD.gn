@@ -17,47 +17,75 @@ use_activity_reporter_internal_constants =
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "REPORT_ACTIVITY=$report_activity",
     "USE_LEGACY_ACTIVE_DEFINITION=$use_legacy_active_definition",
     "USE_ACTIVITY_REPORTER_INTERNAL_CONSTANTS=$use_activity_reporter_internal_constants",
   ]
 }
 
 source_set("activity_reporter") {
-  public = [ "activity_reporter.h" ]
+  public_deps = [ ":interface" ]
 
   deps = [
-    ":buildflags",
     "//base",
-    "//components/prefs",
     "//components/update_client",
   ]
 
   sources = [ "activity_reporter_no_impl.cc" ]
 
   if (report_activity) {
-    sources += [
-      "activity_reporter_for_testing.h",
-      "activity_reporter_impl.cc",
-      "configurator.cc",
-      "configurator.h",
-      "constants.h",
-    ]
-    deps += [
-      "//base/version_info",
-      "//components/policy/core/common",
-      "//ui/base",
-      "//url",
-    ]
-
-    if (use_activity_reporter_internal_constants) {
-      sources += [ "internal/constants.h" ]
-    }
-
-    if (is_win) {
-      deps += [ ":vm_detection" ]
-    }
+    sources += [ "activity_reporter_enabled.cc" ]
+    deps += [ ":impl" ]
   } else {
     sources += [ "activity_reporter_disabled.cc" ]
+  }
+}
+
+# Lets `:impl` use the interface without depending on `:activity_reporter`,
+# which depends on `:impl`.
+source_set("interface") {
+  visibility = [ ":*" ]
+  public = [ "activity_reporter.h" ]
+  public_deps = [ "//base" ]
+}
+
+# Not gated on `report_activity`, so that its tests also run in unbranded
+# builds. Only builds with `report_activity` link it into the browser.
+source_set("impl") {
+  visibility = [
+    ":activity_reporter",
+    ":unit_tests",
+  ]
+
+  public = [ "activity_reporter_impl.h" ]
+
+  sources = [
+    "activity_reporter_for_testing.h",
+    "activity_reporter_impl.cc",
+    "configurator.cc",
+    "configurator.h",
+    "constants.h",
+  ]
+
+  public_deps = [ ":interface" ]
+
+  deps = [
+    ":buildflags",
+    "//base",
+    "//base/version_info",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/update_client",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (use_activity_reporter_internal_constants) {
+    sources += [ "internal/constants.h" ]
+  }
+
+  if (is_win) {
+    deps += [ ":vm_detection" ]
   }
 
   friend = [ ":unit_tests" ]
@@ -68,7 +96,7 @@ if (is_win) {
   # `report_activity`, so that its tests also run in unbranded builds.
   source_set("vm_detection") {
     visibility = [
-      ":activity_reporter",
+      ":impl",
       ":unit_tests",
     ]
     public = [ "virtual_machine_win.h" ]
@@ -92,10 +120,13 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (report_activity) {
+  # The reporter doesn't run on Fuchsia, so these tests don't either.
+  if (!is_fuchsia) {
     sources += [ "activity_reporter_impl_unittest.cc" ]
     deps += [
       ":activity_reporter",
+      ":buildflags",
+      ":impl",
       "//components/prefs:test_support",
       "//components/update_client",
       "//testing/gmock",

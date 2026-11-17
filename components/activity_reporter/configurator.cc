@@ -90,7 +90,7 @@ ActivityReporterConfigurator::ActivityReporterConfigurator(
       persisted_data_(update_client::CreatePersistedData(
           std::move(pref_service_provider),
           std::make_unique<ActivityService>())),
-      network_fetcher_factory_(network_fetcher_factory),
+      network_fetcher_factory_(std::move(network_fetcher_factory)),
       channel_provider_(std::move(channel_provider)),
       per_user_install_(per_user_install) {}
 

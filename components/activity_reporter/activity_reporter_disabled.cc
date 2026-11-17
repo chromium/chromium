@@ -13,7 +13,6 @@
 
 namespace activity_reporter {
 
-// Must be called on a SequencedTaskRunner.
 std::unique_ptr<ActivityReporter> CreateActivityReporter(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
     scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
