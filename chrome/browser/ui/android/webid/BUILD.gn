@@ -72,3 +72,18 @@ source_set("webid") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "account_selection_view_android_unittest.cc" ]
+  deps = [
+    ":webid",
+    "//base",
+    "//content/public/browser",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//third_party/jni_zero",
+    "//ui/gfx",
+    "//url",
+  ]
+}

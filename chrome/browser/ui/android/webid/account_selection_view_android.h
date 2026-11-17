@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_ANDROID_WEBID_ACCOUNT_SELECTION_VIEW_ANDROID_H_
 
 #include <string>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom-shared.h"
@@ -78,6 +80,13 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   void OnNativeAppResult(const std::string& token);
   void OnNativeAppError(const std::string& code, const GURL& url);
   void OnNativeAppLoginFinished();
+
+  static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
+  ConvertToJavaIdentityProvidersListForTesting(
+      const std::vector<IdentityProviderDataPtr>& identity_providers,
+      const base::flat_map<IdentityProviderDataPtr,
+                           jni_zero::ScopedJavaLocalRef<jobject>>&
+          identity_providers_map);
 
  private:
   base::android::ScopedJavaLocalRef<jobject>

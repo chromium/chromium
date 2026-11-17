@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
@@ -162,18 +163,31 @@ ConvertToJavaIdentityProviderDataMap(
   return map;
 }
 
+// Returns the Java `IdentityProviderData` objects in the order of
+// `identity_providers`, which is the order of the providers in the
+// `navigator.credentials.get()` call. Iterating `identity_providers_map`
+// directly would order them by pointer address instead.
 std::vector<ScopedJavaLocalRef<jobject>> ConvertToJavaIdentityProvidersList(
+    const std::vector<IdentityProviderDataPtr>& identity_providers,
     const base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>&
         identity_providers_map) {
-  std::vector<ScopedJavaLocalRef<jobject>> array;
-  array.reserve(identity_providers_map.size());
-  for (const auto& iter : identity_providers_map) {
-    array.push_back(iter.second);
-  }
-  return array;
+  return base::ToVector(identity_providers,
+                        [&](const IdentityProviderDataPtr& identity_provider) {
+                          return identity_providers_map.at(identity_provider);
+                        });
 }
 
 }  // namespace
+
+// static
+std::vector<ScopedJavaLocalRef<jobject>>
+AccountSelectionViewAndroid::ConvertToJavaIdentityProvidersListForTesting(
+    const std::vector<IdentityProviderDataPtr>& identity_providers,
+    const base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>&
+        identity_providers_map) {
+  return ConvertToJavaIdentityProvidersList(identity_providers,
+                                            identity_providers_map);
+}
 
 AccountSelectionViewAndroid::AccountSelectionViewAndroid(
     AccountSelectionView::Delegate* delegate)
@@ -225,7 +239,7 @@ bool AccountSelectionViewAndroid::Show(
                             device_scale_factor);
 
   std::vector<ScopedJavaLocalRef<jobject>> identity_providers_list =
-      ConvertToJavaIdentityProvidersList(identity_providers_map);
+      ConvertToJavaIdentityProvidersList(idp_list, identity_providers_map);
 
   return Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
