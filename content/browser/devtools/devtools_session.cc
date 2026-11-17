@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_view_util.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
-#include "third_party/blink/public/common/devtools/devtools_interrupt_methods.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
@@ -28,6 +28,25 @@
 
 namespace content {
 namespace {
+
+bool ShouldSendOnIO(std::string_view method) {
+  static constexpr auto kEntries = base::MakeFixedFlatSet<std::string_view>({
+      "Debugger.getPossibleBreakpoints",
+      "Debugger.getScriptSource",
+      "Debugger.getStackTrace",
+      "Debugger.pause",
+      "Debugger.removeBreakpoint",
+      "Debugger.resume",
+      "Debugger.setBreakpoint",
+      "Debugger.setBreakpointByUrl",
+      "Debugger.setBreakpointsActive",
+      "Emulation.setScriptExecutionDisabled",
+      "Page.crash",
+      "Performance.getMetrics",
+      "Runtime.terminateExecution",
+  });
+  return kEntries.contains(method);
+}
 
 // During navigation, we only suspend the main-thread messages. The IO thread
 // messages should go through so that the renderer can be woken up
@@ -46,7 +65,7 @@ namespace {
 // To give the renderer a chance to wake up, we always forward the messages
 // for the IO thread to the renderer.
 bool ShouldSuspendDuringNavigation(crdtp::span<uint8_t> method) {
-  return !blink::ShouldInterruptForMethod(base::as_string_view(method));
+  return !ShouldSendOnIO(base::as_string_view(method));
 }
 
 // Async control commands (such as CSS.enable) are idempotent and can
@@ -132,12 +151,14 @@ DevToolsSession::~DevToolsSession() {
     --g_root_session_count;
     CHECK_GE(g_root_session_count, 0);
   }
-  if (proxy_delegate_)
+  if (proxy_delegate_) {
     proxy_delegate_->Detach(this);
+  }
   // It is Ok for session to be deleted without the dispose -
   // it can be kicked out by an extension connect / disconnect.
-  if (dispatcher_)
+  if (dispatcher_) {
     Dispose();
+  }
 }
 
 void DevToolsSession::SetAgentHost(DevToolsAgentHostImpl* agent_host) {
@@ -156,8 +177,9 @@ bool DevToolsSession::IsWaitingForDebuggerOnStart() const {
 
 void DevToolsSession::Dispose() {
   dispatcher_.reset();
-  for (auto& pair : handlers_)
+  for (auto& pair : handlers_) {
     pair.second->Disable();
+  }
   // Destroy handlers in reverse order: `handlers_` is sorted by domain name,
   // and `PageHandler` holds `raw_ptr`s to `BrowserHandler` and
   // `EmulationHandler`, which sort before "Page".
@@ -256,8 +278,9 @@ void DevToolsSession::AttachToAgent(blink::mojom::DevToolsAgent* agent,
   // - cross-process navigation in the main frame
   // Therefore, we re-send outstanding messages to the new host.
   for (const PendingMessage& message : pending_messages_) {
-    if (waiting_for_response_.count(message.call_id))
+    if (waiting_for_response_.count(message.call_id)) {
       DispatchToAgent(message);
+    }
   }
 }
 
@@ -476,7 +499,7 @@ void DevToolsSession::DispatchToAgent(const PendingMessage& message) {
   DCHECK(!browser_only_);
   // We send all messages on the IO channel for workers so that messages like
   // Debugger.pause don't get stuck behind other blocking messages.
-  if (blink::ShouldInterruptForMethod(message.method) || use_io_session_) {
+  if (ShouldSendOnIO(message.method) || use_io_session_) {
     if (io_session_) {
       TRACE_EVENT("devtools", "DevToolsSession::DispatchToAgent on IO",
                   perfetto::Flow::ProcessScoped(message.call_id), "method",
@@ -508,8 +531,9 @@ void DevToolsSession::ResumeSendingMessagesToAgent() {
   for (auto it = pending_messages_.begin(); it != pending_messages_.end();
        ++it) {
     const PendingMessage& message = *it;
-    if (waiting_for_response_.count(message.call_id))
+    if (waiting_for_response_.count(message.call_id)) {
       continue;
+    }
     DispatchToAgent(message);
     waiting_for_response_[message.call_id] = it;
   }
@@ -608,8 +632,9 @@ void DevToolsSession::DispatchProtocolResponse(
   auto it = waiting_for_response_.find(call_id);
   // TODO(johannes): Consider shutting down renderer instead of just
   // dropping the message. See shutdownForBadMessage().
-  if (it == waiting_for_response_.end())
+  if (it == waiting_for_response_.end()) {
     return;
+  }
   pending_messages_.erase(it->second);
   waiting_for_response_.erase(it);
   DispatchProtocolResponseOrNotification(client_, agent_host_,
@@ -658,8 +683,9 @@ void DevToolsSession::ConnectionClosed() {
 
 void DevToolsSession::ApplySessionStateUpdates(
     blink::mojom::RendererOriginatingSessionStatePtr updates) {
-  if (!updates)
+  if (!updates) {
     return;
+  }
   if (!session_state_cookie_->renderer_originating_session_state) {
     session_state_cookie_->renderer_originating_session_state =
         blink::mojom::RendererOriginatingSessionState::New();
@@ -688,8 +714,9 @@ DevToolsSession* DevToolsSession::AttachChildSession(
   session->SetRuntimeResumeCallback(std::move(resume_callback));
   DevToolsSession* session_ptr = session.get();
   // If attach did not succeed, |session| is already destroyed.
-  if (!agent_host->AttachInternal(std::move(session)))
+  if (!agent_host->AttachInternal(std::move(session))) {
     return nullptr;
+  }
   child_sessions_[session_id] = session_ptr;
   for (auto& observer : child_observers_) {
     observer.SessionAttached(*session_ptr);
@@ -715,8 +742,6 @@ void DevToolsSession::AddObserver(ChildObserver* obs) {
 void DevToolsSession::RemoveObserver(ChildObserver* obs) {
   child_observers_.RemoveObserver(obs);
 }
-
-
 
 void DevToolsSession::PrepareForReload(std::string script_to_evaluate_on_load) {
   session_state_cookie_->browser_originating_session_state
@@ -757,7 +782,8 @@ DevToolsSession::MaybeGetDurableMessageCollector() {
              : nullptr;
 }
 
-DevToolsSession* DevToolsSession::GetSessionById(const std::string& session_id) {
+DevToolsSession* DevToolsSession::GetSessionById(
+    const std::string& session_id) {
   auto it = child_sessions_.find(session_id);
   return it == child_sessions_.end() ? nullptr : it->second.get();
 }
