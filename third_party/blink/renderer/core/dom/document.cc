@@ -3779,6 +3779,9 @@ bool Document::InitiateStyleOrLayoutDependentLoadForPrint() {
     GetStyleEngine().UpdateViewportSize();
     UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
+    if (RuntimeEnabledFeatures::HTMLPlugInDeferStyleRecalcImageLoadEnabled()) {
+      return fetcher_->BlockingRequestCount() > 0 || IsDelayingLoadEvent();
+    }
     return fetcher_->BlockingRequestCount() > 0;
   }
 
