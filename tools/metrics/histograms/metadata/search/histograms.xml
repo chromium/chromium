@@ -1537,7 +1537,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
-    enum="OmniboxSearchEngineType" expires_after="2026-11-29">
+    enum="OmniboxSearchEngineType" expires_after="2027-05-29">
   <owner>gambard@chromium.org</owner>
   <summary>
     When an iOS user changes the default search engine in chrome Settings,
