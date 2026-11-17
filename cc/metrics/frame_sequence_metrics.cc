@@ -290,6 +290,7 @@ void FrameSequenceMetrics::ReportMetrics() {
     CustomReportData custom_data;
     custom_data.frames_dropped_v3 = v3_.frames_dropped;
     custom_data.frames_expected_v3 = v3_.frames_expected;
+    custom_data.jank_count_v3 = v3_.jank_count;
     custom_data.janks = std::move(v3_.janks);
 
     std::move(custom_reporter_).Run(std::move(custom_data));
@@ -559,6 +560,21 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
 
 void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
                                           const FrameInfo& frame_info) {
+  const viz::BeginFrameId& last_id = v3_.last_begin_frame_args.frame_id;
+  if (last_id.IsSequenceValid() &&
+      (args.frame_id.source_id != last_id.source_id ||
+       args.frame_id.sequence_number >
+           last_id.sequence_number + args.frames_throttled_since_last + 1)) {
+    // Frame production was paused (or > kMaxNoUpdateFrameCount frames were
+    // skipped without backfill), so no kNoUpdateDesired frames were emitted for
+    // the idle interval. Mark the idle threshold reached so CalculateJankV3()
+    // ignores the gap on resume without discarding `last_presented_frame`
+    // needed by checkerboarding and trace termination.
+    v3_.last_frame_delta = base::TimeDelta();
+    v3_.no_update_duration = base::TimeDelta();
+    v3_.no_update_count = kMaxNoUpdateFrameCount;
+  }
+
   const auto effective_thread = GetEffectiveThread();
   const auto last_presented_termination_time =
       v3_.last_presented_frame.GetTerminationTimeForThread(effective_thread);
