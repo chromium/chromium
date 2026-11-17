@@ -7,9 +7,9 @@
 
 #include <sys/types.h>
 
-#include "reference_drivers/file_descriptor.h"
-
 #include <string_view>
+
+#include "reference_drivers/file_descriptor.h"
 
 namespace ipcz::test {
 
@@ -22,12 +22,6 @@ class TestChildLauncher {
 
   // Must be called early in process startup with inputs from main().
   static void Initialize(int argc, char** argv);
-
-  // Called by standalone ipcz_tests main() to run a TestNode body within a
-  // child process. Must be called after Initialize(). Returns true if and only
-  // if the calling process was launched as a test child process and has
-  // appropriate command line arguments to initialize a TestNode.
-  static bool RunTestChild(int& exit_code);
 
   // Extracts a FileDescriptor passed on the command line to this (child)
   // process.

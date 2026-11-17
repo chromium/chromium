@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "test/test_child_launcher.h"
+
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -9,25 +11,21 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/compiler_specific.h"
 #include "reference_drivers/handle_eintr.h"
 #include "test/multinode_test.h"
-#include "test/test_child_launcher.h"
-#include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "third_party/abseil-cpp/absl/strings/numbers.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "util/safe_math.h"
 
 namespace ipcz::test {
 
 namespace {
-
-// NOTE: This switch name must be identical to Chromium's kTestChildProcess
-// switch in //base/base_switches.h in order for these tests to work properly as
-// part of any base::TestSuite based unit tests.
-constexpr std::string_view kTestChildProcess = "test-child-process";
 
 // Used to tell a forked child process which open file descriptor corresponds to
 // its ipcz driver's SocketTransport.
@@ -39,11 +37,6 @@ ArgList& GetArgList() {
   return *list;
 }
 
-std::string& GetTestNodeName() {
-  static std::string* name = new std::string();
-  return *name;
-}
-
 reference_drivers::FileDescriptor& GetSocketFd() {
   static reference_drivers::FileDescriptor* descriptor =
       new reference_drivers::FileDescriptor();
@@ -52,7 +45,7 @@ reference_drivers::FileDescriptor& GetSocketFd() {
 
 template <typename ValueType>
 std::string MakeSwitch(std::string_view name, ValueType value) {
-  return absl::StrCat("--", name.data(), "=", value);
+  return absl::StrCat("--", name, "=", value);
 }
 
 // Produces an argv-style data representation of a vector of strings.
@@ -84,9 +77,8 @@ void TestChildLauncher::Initialize(int argc, char** argv) {
   // only two switches we'll ever care about.
 
   const std::string kTestChildSwitchPrefix =
-      absl::StrCat("--", kTestChildProcess.data(), "=");
-  const std::string kSocketFdSwitchPrefix =
-      absl::StrCat("--", kSocketFd.data(), "=");
+      absl::StrCat("--", switches::kTestChildProcess, "=");
+  const std::string kSocketFdSwitchPrefix = absl::StrCat("--", kSocketFd, "=");
 
   // We stash a complete copy of the command line in GetArgList(), modulo the
   // switches above which are specific to a single child process. This copy is
@@ -96,33 +88,17 @@ void TestChildLauncher::Initialize(int argc, char** argv) {
   for (int i = 0; i < argc; ++i) {
     std::string_view value(UNSAFE_TODO(argv[i]));
     if (value.rfind(kTestChildSwitchPrefix) != std::string::npos) {
-      GetTestNodeName() = value.substr(kTestChildSwitchPrefix.size());
+      // Handled by base::TestSuite::Run(); omit from stashed child args.
     } else if (value.rfind(kSocketFdSwitchPrefix) != std::string::npos) {
       int fd;
-      const bool ok = absl::SimpleAtoi(
-          value.substr(kSocketFdSwitchPrefix.size()).data(), &fd);
+      const bool ok =
+          absl::SimpleAtoi(value.substr(kSocketFdSwitchPrefix.size()), &fd);
       ABSL_HARDENING_ASSERT(ok);
       GetSocketFd() = reference_drivers::FileDescriptor(fd);
     } else {
       args[i] = value;
     }
   }
-}
-
-// static
-bool TestChildLauncher::RunTestChild(int& exit_code) {
-  if (GetTestNodeName().empty()) {
-    return false;
-  }
-
-  // Run the function emitted by named test node's MUTLTIPROCESS_TEST_MAIN()
-  // invocation. Note that this only occurs in upstream ipcz_tests. If these
-  // tests are run as part of a base::TestSuite in the Chromium repository,
-  // the TestSuite itself is responsible for invoking this function in child
-  // processes. See base::TestSuite::Run() for that.
-  exit_code =
-      multi_process_function_list::InvokeChildProcessTest(GetTestNodeName());
-  return true;
 }
 
 // static
@@ -166,7 +142,7 @@ pid_t TestChildLauncher::Launch(std::string_view node_name,
   std::string test_main_name =
       absl::StrCat(node_name.data(), "/", internal::kMultiprocessTestDriverName,
                    "_", feature_set);
-  child_args.push_back(MakeSwitch(kTestChildProcess, test_main_name));
+  child_args.push_back(MakeSwitch(switches::kTestChildProcess, test_main_name));
   child_args.push_back(MakeSwitch(kSocketFd, socket.release()));
 
   std::vector<char*> child_argv = MakeExecArgv(child_args);

@@ -8,9 +8,10 @@ Security Critical: Yes
 Shipped: yes
 
 Description:
-The //third_party/ipcz directory in the Chromium tree is the source-of-truth
-for this library. Patches here can here go through the same code review process
-as any other upstream Chromium CL.
+Ipcz is the IPC routing and data transfer library integrated into Mojo Core
+(//mojo/core). Historically, the library supported standalone build and was
+placed in //third_party/ipcz. Currently it depends directly on //base. Changes
+go through the standard Chromium code review process.
 
-See README.md for an overview of what ipcz is.
+See README.md for an overview of ipcz.
 
