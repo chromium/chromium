@@ -77,6 +77,10 @@
   width: 240px;
 }
 
+:host([small-chips-enabled]) .action-chips-wrapper {
+  max-width: none;
+}
+
 :host([small-chips-enabled]) .action-chips-container {
   row-gap: 8px;
 }
@@ -265,7 +269,7 @@
 
 /* Responsive container widths and reserved min-heights. Breakpoints are
  * measured against the NTP's main column (the rhsWrapper query container
- * declared on #rhsWrapper in app.css) instead of the window, so the chips
+ * declared on #rhsWrapper in app.css) instead of the window, so standard chips
  * keep their side margins when the column is narrower than the window (e.g.
  * when the LHS panel is shown).
  * - Standard chips: height 56px, gap 14px, margin-bottom 40px.
