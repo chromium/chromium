@@ -538,10 +538,60 @@ struct GapDecorationValueResolver {
   wtf_size_t paint_order_gap_index = 0;
 };
 
+void PaintGapSegments(const GapEndpointContext& context,
+                      const GapGeometry& gap_geometry,
+                      wtf_size_t gap_index,
+                      const GapDecoration& decoration,
+                      const Vector<GapIntersection>& intersections,
+                      RuleBreak rule_break,
+                      const WritingModeConverter& converter,
+                      const PhysicalOffset& paint_offset,
+                      BoxSide box_side,
+                      const AutoDarkMode& auto_dark_mode,
+                      GraphicsContext& graphics_context) {
+  const LayoutUnit center =
+      gap_geometry.GetGapCenterOffset(context.track_direction, gap_index);
+  const wtf_size_t intersection_count = intersections.size();
+  CHECK_GE(intersection_count, 2u);
+
+  const wtf_size_t last_intersection_index = intersection_count - 1;
+  wtf_size_t start = 0;
+  while (start < last_intersection_index) {
+    wtf_size_t end = start;
+    AdjustIntersectionIndexPair(
+        context.track_direction, start, end, intersection_count, gap_index,
+        rule_break, context.rule_visibility, gap_geometry, intersections);
+    if (start >= end) {
+      // Break because there's no gap segment to paint.
+      break;
+    }
+
+    const LayoutUnit decoration_start_offset =
+        ComputeEndpointOffset(context, gap_geometry, gap_index, start,
+                              intersections, SegmentEndpoint::kStart);
+    const LayoutUnit decoration_end_offset =
+        ComputeEndpointOffset(context, gap_geometry, gap_index, end,
+                              intersections, SegmentEndpoint::kEnd);
+
+    // Compute the secondary axis values using the intersection offsets.
+    const LayoutUnit secondary_start =
+        intersections[start].GetOffset() + decoration_start_offset;
+    const LayoutUnit secondary_size = intersections[end].GetOffset() -
+                                      secondary_start - decoration_end_offset;
+
+    const PhysicalRect gap_rect =
+        GapSegmentRect(context.track_direction, converter, paint_offset, center,
+                       decoration.thickness, secondary_start, secondary_size);
+    BoxBorderPainter::DrawBoxSide(
+        graphics_context, ToPixelSnappedRect(gap_rect), box_side,
+        decoration.color, decoration.style, auto_dark_mode);
+
+    start = end;
+  }
+}
+
 }  // namespace
 
-// TODO(javiercon): Consider refactoring the Paint method to improve
-// modularity by ensuring each method handles a single responsibility.
 void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
                                   const PaintInfo& paint_info,
                                   const PhysicalRect& paint_rect,
@@ -588,50 +638,13 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
         gap_index, box_fragment_, style, gap_geometry, track_direction,
         needs_stitched_gap_index, gap_slot_count);
 
-    const LayoutUnit center =
-        gap_geometry.GetGapCenterOffset(track_direction, gap_index);
-
     gap_geometry.GenerateIntersectionListForGap(
         track_direction, gap_index, decoration_resolver.cross_gap_owner_index,
         context.rule_visibility, intersections);
 
-    const wtf_size_t intersection_count = intersections.size();
-    CHECK_GE(intersection_count, 2u);
-
-    const wtf_size_t last_intersection_index = intersection_count - 1;
-    wtf_size_t start = 0;
-    while (start < last_intersection_index) {
-      wtf_size_t end = start;
-      AdjustIntersectionIndexPair(
-          track_direction, start, end, intersection_count, gap_index,
-          rule_break, context.rule_visibility, gap_geometry, intersections);
-      if (start >= end) {
-        // Break because there's no gap segment to paint.
-        break;
-      }
-
-      const LayoutUnit decoration_start_offset =
-          ComputeEndpointOffset(context, gap_geometry, gap_index, start,
-                                intersections, SegmentEndpoint::kStart);
-      const LayoutUnit decoration_end_offset =
-          ComputeEndpointOffset(context, gap_geometry, gap_index, end,
-                                intersections, SegmentEndpoint::kEnd);
-
-      // Compute the secondary axis values using the intersection offsets.
-      const LayoutUnit secondary_start =
-          intersections[start].GetOffset() + decoration_start_offset;
-      const LayoutUnit secondary_size = intersections[end].GetOffset() -
-                                        secondary_start - decoration_end_offset;
-
-      const PhysicalRect gap_rect =
-          GapSegmentRect(track_direction, converter, paint_rect.offset, center,
-                         decoration.thickness, secondary_start, secondary_size);
-      BoxBorderPainter::DrawBoxSide(
-          paint_info.context, ToPixelSnappedRect(gap_rect), box_side,
-          decoration.color, decoration.style, auto_dark_mode);
-
-      start = end;
-    }
+    PaintGapSegments(context, gap_geometry, gap_index, decoration,
+                     intersections, rule_break, converter, paint_rect.offset,
+                     box_side, auto_dark_mode, paint_info.context);
   }
 }
 
