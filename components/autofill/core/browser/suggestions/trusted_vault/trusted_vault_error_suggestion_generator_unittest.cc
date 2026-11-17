@@ -71,8 +71,9 @@ class TrustedVaultErrorSuggestionGeneratorTest
 TEST_F(TrustedVaultErrorSuggestionGeneratorTest,
        FetchCreatesValidSuggestionForGenerate) {
   Suggestion suggestion(SuggestionType::kPendingStateTrustedVaultError);
-  EXPECT_CALL(password_delegate(), GetTrustedVaultUnlockSuggestion)
-      .WillRepeatedly(Return(suggestion));
+  EXPECT_CALL(password_delegate(),
+              GetTrustedVaultUnlockSuggestion(field().global_id()))
+      .WillOnce(Return(suggestion));
 
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb, Run(Pair(SuggestionDataSource::kTrustedVaultError,
@@ -84,8 +85,9 @@ TEST_F(TrustedVaultErrorSuggestionGeneratorTest,
 
 TEST_F(TrustedVaultErrorSuggestionGeneratorTest,
        FetchReturnsEmptyWhenNoSuggestionAvailable) {
-  EXPECT_CALL(password_delegate(), GetTrustedVaultUnlockSuggestion)
-      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(password_delegate(),
+              GetTrustedVaultUnlockSuggestion(field().global_id()))
+      .WillOnce(Return(std::nullopt));
 
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb,

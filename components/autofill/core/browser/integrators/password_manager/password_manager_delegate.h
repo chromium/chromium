@@ -11,10 +11,9 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
-
-struct Suggestion;
 
 // This delegate is queried for PWM suggestions for a given field. It injects
 // Password Manager logic into `AutofillManager::OnAskForForValuesToFill`.
@@ -52,9 +51,11 @@ class PasswordManagerDelegate {
   // Called when a popup containing an inline QR code suggestion is shown.
   virtual void OnWebauthnInlineQrCodeSuggestionShown() = 0;
 
-  // Returns a suggestion to resolve Trusted Vault key retrieval error.
+  // Returns a suggestion to resolve a Trusted Vault key retrieval error if
+  // `field_id` is the username field of a parsed sign-in form.
   // Returns `std::nullopt` if the suggestion is not available.
-  virtual std::optional<Suggestion> GetTrustedVaultUnlockSuggestion() const = 0;
+  virtual std::optional<Suggestion> GetTrustedVaultUnlockSuggestion(
+      const FieldGlobalId& field_id) const = 0;
 };
 
 }  // namespace autofill

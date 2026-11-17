@@ -77,8 +77,8 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   std::optional<autofill::Suggestion> GetWebauthnInlineQrCodeSuggestion()
       const override;
   void OnWebauthnInlineQrCodeSuggestionShown() override;
-  std::optional<autofill::Suggestion> GetTrustedVaultUnlockSuggestion()
-      const override;
+  std::optional<autofill::Suggestion> GetTrustedVaultUnlockSuggestion(
+      const autofill::FieldGlobalId& field_id) const override;
 
   // AutofillSuggestionDelegate implementation.
   void OnSuggestionsShown(base::span<const autofill::Suggestion> suggestions,

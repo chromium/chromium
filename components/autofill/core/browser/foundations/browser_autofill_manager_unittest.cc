@@ -1789,8 +1789,9 @@ TEST_P(BrowserAutofillManagerTrustedVaultTest,
   FormData form = CreateTestHybridSignUpFormData();
   FormsSeen({form});
 
-  ON_CALL(password_delegate(), GetTrustedVaultUnlockSuggestion)
-      .WillByDefault(
+  EXPECT_CALL(password_delegate(),
+              GetTrustedVaultUnlockSuggestion(form.fields()[0].global_id()))
+      .WillOnce(
           Return(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
 
   OnAskForValuesToFill(form, form.fields()[0]);
@@ -1833,7 +1834,8 @@ TEST_P(BrowserAutofillManagerTrustedVaultTest,
              SingleFieldFillRouter::OnSuggestionsReturnedCallback callback) {
             std::move(callback).Run(field.global_id(), {});
           });
-  EXPECT_CALL(password_delegate(), GetTrustedVaultUnlockSuggestion)
+  EXPECT_CALL(password_delegate(),
+              GetTrustedVaultUnlockSuggestion(form.fields()[0].global_id()))
       .WillOnce(
           Return(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
 

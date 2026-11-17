@@ -1596,13 +1596,14 @@ BrowserAutofillManager::CreateTrustedVaultUnlockSuggestionsForMerge(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return {};
 #else
-  PasswordManagerDelegate* password_delegate =
+  const PasswordManagerDelegate* password_delegate =
       client().GetPasswordManagerDelegate(field.global_id());
   if (!password_delegate) {
     return {};
   }
   if (std::optional<Suggestion> unlock_suggestion =
-          password_delegate->GetTrustedVaultUnlockSuggestion()) {
+          password_delegate->GetTrustedVaultUnlockSuggestion(
+              field.global_id())) {
     return {*std::move(unlock_suggestion)};
   }
   return {};

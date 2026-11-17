@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -31,19 +33,18 @@ void TrustedVaultErrorSuggestionGenerator::GenerateSuggestions(
     AutofillClient& client,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  std::move(callback).Run(
-      {SuggestionDataSource::kTrustedVaultError, {}});
+  std::move(callback).Run({SuggestionDataSource::kTrustedVaultError, {}});
 #else
   const PasswordManagerDelegate* password_delegate =
       client.GetPasswordManagerDelegate(trigger_field.global_id());
   if (!password_delegate) {
-    std::move(callback).Run(
-        {SuggestionDataSource::kTrustedVaultError, {}});
+    std::move(callback).Run({SuggestionDataSource::kTrustedVaultError, {}});
     return;
   }
   std::vector<Suggestion> suggestions;
   if (std::optional<Suggestion> unlock_suggestion =
-          password_delegate->GetTrustedVaultUnlockSuggestion()) {
+          password_delegate->GetTrustedVaultUnlockSuggestion(
+              trigger_field.global_id())) {
     suggestions.push_back(*std::move(unlock_suggestion));
   }
   std::move(callback).Run(

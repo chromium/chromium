@@ -275,7 +275,8 @@ void PasswordAutofillManager::OnWebauthnInlineQrCodeSuggestionShown() {
 }
 
 std::optional<autofill::Suggestion>
-PasswordAutofillManager::GetTrustedVaultUnlockSuggestion() const {
+PasswordAutofillManager::GetTrustedVaultUnlockSuggestion(
+    const autofill::FieldGlobalId& /*field_id*/) const {
   return std::nullopt;
 }
 
