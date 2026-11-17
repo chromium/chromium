@@ -41,4 +41,17 @@ void LogGetDetailsForUpdateCardRequestResultAndLatency(
       latency);
 }
 
+void LogUpdateCardRequestResultAndLatency(
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
+    base::TimeDelta latency) {
+  base::UmaHistogramEnumeration(
+      "Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Result",
+      GetPaymentsRpcResultMetric(result));
+  base::UmaHistogramMediumTimes(
+      base::StrCat(
+          {"Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Latency",
+           PaymentsRpcResultToMetricsSuffix(result)}),
+      latency);
+}
+
 }  // namespace autofill::autofill_metrics

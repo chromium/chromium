@@ -8097,6 +8097,65 @@ TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
       1);
 }
 
+// Tests that the UpdateCard request result and latency are logged when the
+// request succeeds.
+TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
+       Metrics_UpdateCardRequest_Success) {
+  ExpectPreflightResult(PaymentsRpcResult::kSuccess);
+  SetPromptDecision(SaveCardOfferUserDecision::kAccepted);
+  ExpectUpdateCardResult(PaymentsRpcResult::kSuccess);
+
+  base::HistogramTester histogram_tester;
+  credit_card_save_manager().AttemptToOfferCardholderNameUpdate(
+      test::GetMaskedServerCard());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Result",
+      autofill_metrics::PaymentsRpcResultMetric::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Latency.Success", 1);
+}
+
+// Tests that the UpdateCard request result and latency are logged when the
+// request fails.
+TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
+       Metrics_UpdateCardRequest_Failure) {
+  ExpectPreflightResult(PaymentsRpcResult::kSuccess);
+  SetPromptDecision(SaveCardOfferUserDecision::kAccepted);
+  ExpectUpdateCardResult(PaymentsRpcResult::kTryAgainFailure);
+
+  base::HistogramTester histogram_tester;
+  credit_card_save_manager().AttemptToOfferCardholderNameUpdate(
+      test::GetMaskedServerCard());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Result",
+      autofill_metrics::PaymentsRpcResultMetric::kFailure, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Latency.Failure", 1);
+}
+
+// Tests that the UpdateCard request result and latency are logged when the
+// request times out.
+TEST_F(CreditCardSaveManagerCardholderNameUpdateTest,
+       Metrics_UpdateCardRequest_Timeout) {
+  ExpectPreflightResult(PaymentsRpcResult::kSuccess);
+  SetPromptDecision(SaveCardOfferUserDecision::kAccepted);
+  ExpectUpdateCardResult(PaymentsRpcResult::kClientSideTimeout);
+
+  base::HistogramTester histogram_tester;
+  credit_card_save_manager().AttemptToOfferCardholderNameUpdate(
+      test::GetMaskedServerCard());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Result",
+      autofill_metrics::PaymentsRpcResultMetric::kTimeout, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.CardholderNameUpdateFlow.UpdateCardRequest."
+      "Latency.ClientSideTimeout",
+      1);
+}
+
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that `AttemptToOfferCardholderNameUpdate` returns false and does not

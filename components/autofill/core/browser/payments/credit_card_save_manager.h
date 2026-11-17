@@ -340,6 +340,7 @@ class CreditCardSaveManager {
   // completes.
   void OnDidUpdateCard(
       int64_t instrument_id,
+      base::TimeTicks request_timestamp,
       payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

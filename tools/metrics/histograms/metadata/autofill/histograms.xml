@@ -4086,6 +4086,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Latency.{Result}"
+    units="ms" expires_after="2027-04-30">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the latency of the UpdateCard request, which is sent after the user
+    accepts the prompt to save a cardholder name to a server card that has no
+    cardholder name. The timer starts when the request is sent and stops when
+    the response is received. Broken down by the result of the request.
+  </summary>
+  <token key="Result" variants="Autofill.PaymentsRpcResult"/>
+</histogram>
+
+<histogram name="Autofill.CardholderNameUpdateFlow.UpdateCardRequest.Result"
+    enum="AutofillPaymentsRpcResultMetric" expires_after="2027-04-30">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the UpdateCard request succeeded, failed or timed out. The
+    request is sent after the user accepts the prompt to save a cardholder name
+    to a server card that has no cardholder name. Logged when the request
+    completes.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CardInfoRetrievalEnrolled.Result"
     enum="CardInfoRetrievalEnrolledUnmaskResult" expires_after="2027-04-30">
   <owner>jialihuang@google.com</owner>

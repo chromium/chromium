@@ -30,6 +30,11 @@ void LogGetDetailsForUpdateCardRequestResultAndLatency(
     payments::PaymentsAutofillClient::PaymentsRpcResult result,
     base::TimeDelta latency);
 
+// Logs the result and the latency of the UpdateCard request.
+void LogUpdateCardRequestResultAndLatency(
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
+    base::TimeDelta latency);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARDHOLDER_NAME_UPDATE_FLOW_METRICS_H_

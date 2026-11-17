@@ -1688,11 +1688,15 @@ void CreditCardSaveManager::SendUpdateCardRequest() {
       update_card_request_details_,
       base::BindOnce(&CreditCardSaveManager::OnDidUpdateCard,
                      weak_ptr_factory_.GetWeakPtr(),
-                     update_card_request_details_.instrument_id));
+                     update_card_request_details_.instrument_id,
+                     base::TimeTicks::Now()));
 }
 
 void CreditCardSaveManager::OnDidUpdateCard(int64_t instrument_id,
+                                            base::TimeTicks request_timestamp,
                                             PaymentsRpcResult result) {
+  autofill_metrics::LogUpdateCardRequestResultAndLatency(
+      result, base::TimeTicks::Now() - request_timestamp);
   if (result != PaymentsRpcResult::kSuccess) {
     if (auto* cardholder_name_fix_flow_strike_db =
             GetCardholderNameFixFlowStrikeDatabase()) {
