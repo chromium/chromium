@@ -85,14 +85,6 @@ class Host : public GlicSharingManagerProvider {
 
     // Called when the microphone status changes in the web client.
     virtual void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) = 0;
-
-    // Returns true if the embedder currently holds focus that should be
-    // preserved across `Host::Reload()`.
-    virtual bool ShouldRestoreFocusAfterReload();
-
-    // Restores focus onto replacement contents (or parks focus on the panel
-    // container while loading) after `Host::Reload()` completes `Awaken()`.
-    virtual void RestoreFocusAfterReload();
   };
 
   // Functions that are on either GlicInstance or GlidKeyedService.

@@ -79,12 +79,6 @@ void Host::EmbedderDelegate::SetDragResizeEnabled(bool enabled) {}
 
 void Host::EmbedderDelegate::SetMinimumWidgetSize(const gfx::Size& size) {}
 
-bool Host::EmbedderDelegate::ShouldRestoreFocusAfterReload() {
-  return false;
-}
-
-void Host::EmbedderDelegate::RestoreFocusAfterReload() {}
-
 bool EmptyEmbedderDelegate::IsShowing() const {
   return true;
 }
@@ -222,14 +216,9 @@ void Host::Reload() {
     return;
   }
 
-  const bool restore_focus =
-      delegate_ && delegate_->ShouldRestoreFocusAfterReload();
   UnsetWebClient();
   Hibernate();
   Awaken();
-  if (restore_focus && delegate_) {
-    delegate_->RestoreFocusAfterReload();
-  }
 }
 
 void Host::Awaken() {

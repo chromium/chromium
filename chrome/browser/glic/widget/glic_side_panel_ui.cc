@@ -234,17 +234,6 @@ void GlicSidePanelUi::ClosePanel() {
   Close(CloseOptions());
 }
 
-bool GlicSidePanelUi::ShouldRestoreFocusAfterReload() {
-  return HasFocus();
-}
-
-void GlicSidePanelUi::RestoreFocusAfterReload() {
-  if (glic_view_) {
-    // Focus synchronously rather than posting Focus()'s 50ms delayed task.
-    glic_view_->RequestFocus();
-  }
-}
-
 void GlicSidePanelUi::ContentsCreated() {
   if (glic_view_) {
     glic_view_->SetShowingLoadingPlaceholder(

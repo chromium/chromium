@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.glic;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.view.View;
-import android.view.ViewGroup;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -17,17 +15,13 @@ import org.jni_zero.JniType;
 import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Java wrapper for C++ GlicTestEnvironment. */
 @JNINamespace("glic")
-@NullMarked
 public class GlicTestEnvironmentAndroid {
-    private static final String EXTERNAL_FOCUS_PROBE_TAG = "glic_external_focus_probe";
-
     private final JniRawPtr<NativeGlicTestEnvironmentAndroid> mNativeGlicTestEnvironmentAndroid;
 
     public GlicTestEnvironmentAndroid() {
@@ -48,29 +42,6 @@ public class GlicTestEnvironmentAndroid {
                 orientation == 0
                         ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                         : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    }
-
-    @CalledByNative
-    public static boolean focusExternalAndroidView(
-            @JniType("content::WebContents*") @Nullable WebContents webContents) {
-        if (webContents == null) return false;
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return false;
-        var weakActivity = window.getActivity();
-        if (weakActivity == null) return false;
-        Activity activity = weakActivity.get();
-        if (activity == null) return false;
-        ViewGroup content = activity.findViewById(android.R.id.content);
-        if (content == null) return false;
-        View probe = content.findViewWithTag(EXTERNAL_FOCUS_PROBE_TAG);
-        if (probe == null) {
-            probe = new View(activity);
-            probe.setTag(EXTERNAL_FOCUS_PROBE_TAG);
-            probe.setFocusable(true);
-            probe.setFocusableInTouchMode(true);
-            content.addView(probe, new ViewGroup.LayoutParams(1, 1));
-        }
-        return probe.requestFocus() && probe.hasFocus();
     }
 
     public void destroy() {

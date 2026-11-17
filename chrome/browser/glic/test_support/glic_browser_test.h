@@ -99,7 +99,6 @@ namespace glic {
 #if BUILDFLAG(IS_ANDROID)
 void SetActivityOrientationForTesting(content::WebContents* web_contents,
                                       int orientation);
-bool FocusExternalAndroidViewForTesting(content::WebContents* web_contents);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
