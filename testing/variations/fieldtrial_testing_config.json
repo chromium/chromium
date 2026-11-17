@@ -20358,7 +20358,7 @@
             ]
         }
     ],
-    "UseWebUiNtp3PDSE": [
+    "UseWebUiNtp3PDseAndroid": [
         {
             "platforms": [
                 "android_desktop"
