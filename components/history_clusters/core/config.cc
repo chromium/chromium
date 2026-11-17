@@ -135,13 +135,6 @@ Config::Config() {
             number_interesting_visits_filter_threshold);
   }
 
-  // The `kHistoryClustersVisitDeduping` feature and child params.
-  {
-    use_host_for_visit_deduping = GetFieldTrialParamByFeatureAsBool(
-        internal::kHistoryClustersVisitDeduping, "use_host_for_visit_deduping",
-        use_host_for_visit_deduping);
-  }
-
   // The `kHistoryClustersNavigationContextClustering` feature and child params.
   {
     use_navigation_context_clusters = base::FeatureList::IsEnabled(

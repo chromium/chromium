@@ -168,8 +168,6 @@ struct Config {
   // on the zero state UI).
   size_t number_interesting_visits_filter_threshold = 1;
 
-  // The `kHistoryClustersVisitDeduping` feature and child params.
-
   // Use host instead of heavily-stripped URL as URL for deduping.
   bool use_host_for_visit_deduping = true;
 

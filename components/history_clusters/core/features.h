@@ -40,9 +40,6 @@ BASE_DECLARE_FEATURE(kUserVisibleDebug);
 // Enables the history clusters internals page.
 BASE_DECLARE_FEATURE(kHistoryClustersInternalsPage);
 
-// Enables experimentation for how to dedupe visits in clusters.
-BASE_DECLARE_FEATURE(kHistoryClustersVisitDeduping);
-
 // Enables context clustering to be performed at navigation time rather than in
 // batches.
 BASE_DECLARE_FEATURE(kHistoryClustersNavigationContextClustering);

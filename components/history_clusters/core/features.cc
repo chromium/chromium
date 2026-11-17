@@ -32,8 +32,6 @@ BASE_FEATURE(kUserVisibleDebug,
 
 BASE_FEATURE(kHistoryClustersInternalsPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistoryClustersVisitDeduping, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHistoryClustersNavigationContextClustering,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
