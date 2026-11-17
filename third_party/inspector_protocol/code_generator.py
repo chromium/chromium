@@ -5,6 +5,7 @@
 
 import os
 import os.path
+import posixpath
 import sys
 import argparse
 import collections
@@ -121,7 +122,7 @@ def read_config():
         ".lib.export_macro": "",
         ".lib.export_header": False,
         ".crdtp": False,
-        ".crdtp.dir": os.path.join(inspector_protocol_dir, "crdtp"),
+        ".crdtp.dir": posixpath.join(inspector_protocol_dir, "crdtp"),
         ".crdtp.namespace": "crdtp",
     }
     for key_value in config_values:

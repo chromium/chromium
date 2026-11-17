@@ -323,12 +323,19 @@ CRDTP_EXPORT Status AppendString8EntryToCBORMap(span<uint8_t> string8_key,
 // complex values. If the key is not found, or if it is found more than once,
 // or if it contains nested maps/arrays, returns an empty span.
 // Explicitly rejects duplicate keys and non-STRING8 values.
+// |string8_key| should be ASCII. Decoders do not agree on the keys and values
+// below, so each of them makes the result an empty span:
+// - a STRING16 key with the same characters as |string8_key|;
+// - a top-level STRING8 key that is not well-formed UTF8;
+// - a value for |string8_key| that is not well-formed UTF8.
 CRDTP_EXPORT span<uint8_t> GetString8ValueFromMap(span<uint8_t> message,
                                                   span<uint8_t> string8_key);
 // Safely checks if |key| exists in the top-level of a CBOR encoded map wrapped
 // in an envelope. Shallow parser that skips nested structures.
 // |key| should be ASCII. Supports STRING8 and STRING16 keys.
 // Returns true as soon as the key is found at the top level.
+// Also returns true for a top-level STRING8 key that is not well-formed UTF8,
+// because a decoder that drops the ill-formed bytes can read it as |key|.
 CRDTP_EXPORT bool HasKeyInMap(span<uint8_t> message, span<uint8_t> key);
 
 namespace internals {  // Exposed only for writing tests.
