@@ -71,6 +71,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // which is not available in WebView.
   aw_feature_overrides.DisableFeature(blink::features::kLanguageDetectionAPI);
 
+  // DISABLED_INCOMPATIBLE: The Translator API depends on Chrome's on-device
+  // translation backend and its language pack delivery, which are not
+  // available in WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kTranslationAPI);
+
   // DISABLED_TEMPORARY: crbug.com/445202443. There are some test cases
   // need to be fixed before enabling this feature flag for android.
   aw_feature_overrides.DisableFeature(
