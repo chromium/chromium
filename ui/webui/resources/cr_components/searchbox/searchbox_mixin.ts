@@ -436,17 +436,29 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       e.preventDefault();
     }
 
-    openCtrlEnterMatch(matchIndex: number) {
+    openCtrlEnterMatch(matchIndex: number, e: KeyboardEvent) {
       const match = matchIndex >= 0 && this.result?.matches ?
           this.result.matches[matchIndex] :
           null;
-      this.pageHandler().openPopupSelectionWithDisposition(
+      // Forward the modifiers so the browser computes the window open
+      // disposition.
+      this.pageHandler().openPopupSelection(
           this.result?.sequenceId ?? 0, {
             line: matchIndex,
             state: SelectionLineState.kCtrlEnter,
             actionIndex: 0,
           },
-          1);
+          {
+            altKey: e.altKey,
+            ctrlKey: e.ctrlKey,
+            metaKey: e.metaKey,
+            shiftKey: e.shiftKey,
+          });
+      if (this.isBackgroundTabNavigation(e)) {
+        // Keep the input as is when the navigation opens in a background tab,
+        // like `navigateToMatch()`.
+        return;
+      }
       if (match) {
         this.getInputElement().setInput({
           text: match.fillIntoEdit,
@@ -714,13 +726,15 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.compositionCommitQueryId_ = null;
 
       // Pressing another key with Ctrl consumes it, so a following Enter
-      // doesn't trigger Ctrl+Enter.
+      // doesn't trigger Ctrl+Enter. Other modifier keys (e.g. the 'Shift' of
+      // 'Ctrl+Shift+Enter') don't consume it.
       if (this.shouldAppendDotComOnCtrlEnter()) {
         if (e.key === 'Control') {
           if (this.controlKeyState === ControlKeyState.UP) {
             this.controlKeyState = ControlKeyState.DOWN;
           }
-        } else if (e.ctrlKey && e.key !== 'Enter') {
+        } else if (
+            e.ctrlKey && e.key !== 'Enter' && !MODIFIER_KEYS.includes(e.key)) {
           if (this.controlKeyState === ControlKeyState.DOWN) {
             this.controlKeyState = ControlKeyState.DOWN_AND_CONSUMED;
           }
@@ -1000,23 +1014,24 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // Ctrl+Enter only adds 'www.' and '.com' if Ctrl was pressed while the
       // searchbox had focus and wasn't used for another key. E.g. not if Ctrl
       // was held to focus the searchbox with Ctrl+L from the page, which the
-      // searchbox doesn't see.
-      const isPureCtrlEnter = this.shouldAppendDotComOnCtrlEnter() &&
-          !this.inKeywordMode && e.ctrlKey && !e.shiftKey && !e.altKey &&
-          !e.metaKey && this.controlKeyState === ControlKeyState.DOWN;
+      // searchbox doesn't see. Other modifiers (Shift, Alt, Meta) don't prevent
+      // it; they only change the window open disposition.
+      const isCtrlEnter = this.shouldAppendDotComOnCtrlEnter() &&
+          !this.inKeywordMode && e.ctrlKey &&
+          this.controlKeyState === ControlKeyState.DOWN;
 
       e.preventDefault();
       if (this.handleVirtualFocusEnter(e)) {
         return;
       }
       const resultsPending = this.areResultsPending_();
-      if (isPureCtrlEnter) {
+      if (isCtrlEnter) {
         // Ctrl+Enter adds 'www.' and '.com' to the previewed match or the
         // input, but not to the default match. If new results are pending, the
         // preview is stale, so use the input.
         const usePreview = !resultsPending &&
             this.isMatchPreview_(this.selectedMatch, this.matchIndex);
-        this.openCtrlEnterMatch(usePreview ? this.matchIndex : -1);
+        this.openCtrlEnterMatch(usePreview ? this.matchIndex : -1, e);
       } else if (!resultsPending) {
         // If no new query's `results` are pending (though new async results for
         // the current query may be pending), navigate.
@@ -1466,7 +1481,7 @@ export interface SearchboxMixinInterface extends
   onMatchFocusin(e: CustomEvent<number>): void;
   onKeywordClick(e: Event): void;
   openContextMenu(): void;
-  openCtrlEnterMatch(matchIndex: number): void;
+  openCtrlEnterMatch(matchIndex: number, e: KeyboardEvent): void;
   onSearchboxInputTextUpdated(e: CustomEvent<{
     value: string,
     isComposing: boolean,

@@ -436,8 +436,8 @@ export class OmniboxEverywhereOmniboxElement extends
     this.setInputText('');
   }
 
-  override openCtrlEnterMatch(matchIndex: number) {
-    super.openCtrlEnterMatch(matchIndex);
+  override openCtrlEnterMatch(matchIndex: number, e: KeyboardEvent) {
+    super.openCtrlEnterMatch(matchIndex, e);
     this.setInputText('');
   }
 

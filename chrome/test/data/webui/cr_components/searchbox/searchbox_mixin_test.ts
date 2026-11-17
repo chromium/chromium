@@ -650,11 +650,96 @@ suite('SearchboxMixinTest', () => {
     assertTrue(enterEvent.defaultPrevented);
     await microtasksFinished();
 
-    const args =
-        await testProxy.handler.whenCalled('openPopupSelectionWithDisposition');
+    const args = await testProxy.handler.whenCalled('openPopupSelection');
     // The default match isn't previewed, so Ctrl+Enter uses the input.
     assertEquals(-1, args.selection.line);
     assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
+  });
+
+  test('pressing Ctrl+Enter with modifiers forwards them', async () => {
+    element.shouldAppendDotCom = true;
+    const mockInput = element.getInputElement();
+    const modifierCombos: Array<Partial<KeyboardEventInit>> = [
+      {shiftKey: true},
+      {altKey: true},
+      {altKey: true, shiftKey: true},
+      {metaKey: true},
+      {metaKey: true, shiftKey: true},
+    ];
+    for (const modifiers of modifierCombos) {
+      testProxy.handler.reset();
+      await simulateUserTextInput(mockInput, 'hello');
+      element.onAutocompleteResultChanged(createAutocompleteResult({
+        queryId: element.activeQueryId,
+        input: 'hello',
+        matches: [
+          createSearchMatch(
+              {allowedToBeDefaultMatch: true, fillIntoEdit: 'hello'}),
+          createUrlMatch(),
+        ],
+      }));
+      await microtasksFinished();
+      assertTrue(element.dropdownIsVisible);
+
+      mockInput.inputElement.dispatchEvent(
+          createKeyboardEvent('Control', {ctrlKey: true}));
+      const enterEvent =
+          createKeyboardEvent('Enter', {ctrlKey: true, ...modifiers});
+      mockInput.inputElement.dispatchEvent(enterEvent);
+      assertTrue(enterEvent.defaultPrevented);
+      await microtasksFinished();
+
+      // The other modifiers don't prevent adding 'www.' and '.com'; they're
+      // forwarded to compute the disposition.
+      assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+      assertEquals(1, testProxy.handler.getCallCount('openPopupSelection'));
+      const args = testProxy.handler.getArgs('openPopupSelection')[0];
+      assertEquals(-1, args.selection.line);
+      assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
+      assertTrue(args.modifiers.ctrlKey);
+      assertEquals(!!modifiers.altKey, args.modifiers.altKey);
+      assertEquals(!!modifiers.metaKey, args.modifiers.metaKey);
+      assertEquals(!!modifiers.shiftKey, args.modifiers.shiftKey);
+    }
+  });
+
+  test('pressing modifier keys with Ctrl does not consume Ctrl', async () => {
+    element.shouldAppendDotCom = true;
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, 'hello');
+    element.onAutocompleteResultChanged(createAutocompleteResult({
+      queryId: element.activeQueryId,
+      input: 'hello',
+      matches: [
+        createSearchMatch(
+            {allowedToBeDefaultMatch: true, fillIntoEdit: 'hello'}),
+        createUrlMatch(),
+      ],
+    }));
+    await microtasksFinished();
+    assertTrue(element.dropdownIsVisible);
+
+    // Press Ctrl, then Shift and Alt while holding Ctrl, then Enter, like a
+    // user pressing Ctrl+Alt+Shift+Enter.
+    mockInput.inputElement.dispatchEvent(
+        createKeyboardEvent('Control', {ctrlKey: true}));
+    mockInput.inputElement.dispatchEvent(
+        createKeyboardEvent('Shift', {ctrlKey: true, shiftKey: true}));
+    mockInput.inputElement.dispatchEvent(createKeyboardEvent(
+        'Alt', {ctrlKey: true, shiftKey: true, altKey: true}));
+    await microtasksFinished();
+    const enterEvent = createKeyboardEvent(
+        'Enter', {ctrlKey: true, shiftKey: true, altKey: true});
+    mockInput.inputElement.dispatchEvent(enterEvent);
+    assertTrue(enterEvent.defaultPrevented);
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+    const args = await testProxy.handler.whenCalled('openPopupSelection');
+    assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
+    assertTrue(args.modifiers.ctrlKey);
+    assertTrue(args.modifiers.shiftKey);
+    assertTrue(args.modifiers.altKey);
   });
 
   test('pressing Ctrl+Enter on input too quickly', async () => {
@@ -688,10 +773,8 @@ suite('SearchboxMixinTest', () => {
 
     // Opens the input with '.com' appended right away, instead of the stale
     // preview, or waiting for the matches to open the default match.
-    assertEquals(
-        1, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
-    const args =
-        testProxy.handler.getArgs('openPopupSelectionWithDisposition')[0];
+    assertEquals(1, testProxy.handler.getCallCount('openPopupSelection'));
+    const args = testProxy.handler.getArgs('openPopupSelection')[0];
     assertEquals(-1, args.selection.line);
     assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
 
@@ -740,8 +823,6 @@ suite('SearchboxMixinTest', () => {
     await microtasksFinished();
 
     assertEquals(0, testProxy.handler.getCallCount('openPopupSelection'));
-    assertEquals(
-        0, testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
     const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
     assertEquals(0, args.line);
     assertEquals(matches[0]!.destinationUrl, args.url);
@@ -771,10 +852,7 @@ suite('SearchboxMixinTest', () => {
         assertTrue(enterEvent.defaultPrevented);
         await microtasksFinished();
 
-        assertEquals(
-            0,
-            testProxy.handler.getCallCount(
-                'openPopupSelectionWithDisposition'));
+        assertEquals(0, testProxy.handler.getCallCount('openPopupSelection'));
         const args =
             await testProxy.handler.whenCalled('openAutocompleteMatch');
         assertEquals(0, args.line);
@@ -3694,8 +3772,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
     await microtasksFinished();
 
     assertTrue(ctrlEnterEvent.defaultPrevented);
-    const args =
-        await testProxy.handler.whenCalled('openPopupSelectionWithDisposition');
+    const args = await testProxy.handler.whenCalled('openPopupSelection');
     assertEquals(0, args.selection.line);
     assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
   });
@@ -4698,7 +4775,8 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       ],
     }));
 
-    element.openCtrlEnterMatch(0);
+    element.openCtrlEnterMatch(
+        0, createKeyboardEvent('Enter', {ctrlKey: true}));
     assertFalse(element.keywordModeManager.isInKeywordMode);
   });
 

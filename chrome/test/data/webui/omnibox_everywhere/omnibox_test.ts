@@ -339,7 +339,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     }));
     await microtasksFinished();
 
-    omnibox.openCtrlEnterMatch(0);
+    omnibox.openCtrlEnterMatch(
+        0, new KeyboardEvent('keydown', {key: 'Enter', ctrlKey: true}));
     await microtasksFinished();
 
     assertEquals('', omnibox.$.input.inputElement.value);
