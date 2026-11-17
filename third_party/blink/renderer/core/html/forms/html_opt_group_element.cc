@@ -238,7 +238,7 @@ void HTMLOptGroupElement::ManuallyAssignSlots() {
       continue;
     opt_group_nodes.push_back(child);
   }
-  opt_group_slot_->Assign(opt_group_nodes);
+  opt_group_slot_->SetManuallyAssignedNodesForRecalc(opt_group_nodes);
 }
 
 void HTMLOptGroupElement::UpdateGroupLabel() {

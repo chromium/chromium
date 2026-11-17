@@ -86,13 +86,7 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   const HeapVector<Member<Node>> FlattenedAssignedNodes();
 
   void WillRecalcAssignedNodes() { ClearAssignedNodes(); }
-  void DidRecalcAssignedNodes(bool display_locked_subtree) {
-    UpdateFlatTreeNodeDataForAssignedNodes();
-    RecalcFlatTreeChildren();
-    if (display_locked_subtree) {
-      MarkAssignedNodesForDisplayLockDetachCheck();
-    }
-  }
+  void DidRecalcAssignedNodes(bool display_locked_subtree);
 
   void AttachLayoutTreeForSlotChildren(AttachContext&);
   void DetachLayoutTree(bool performing_reattach) final;
@@ -141,6 +135,14 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   void Assign(const HeapVector<Member<Node>>& nodes);
   void Assign(Node* node);
 
+  // For user-agent manual slotting only, from the host's
+  // ManuallyAssignSlots() during slot assignment recalc. Unlike Assign(), this
+  // only updates the manually assigned nodes: it does not dirty slot
+  // assignment (see rule R4 in slot_assignment.h) or signal a slot change.
+  // The :has-slotted invalidation is applied by DidRecalcAssignedNodes().
+  void SetManuallyAssignedNodesForRecalc(const HeapVector<Member<Node>>& nodes);
+  void SetManuallyAssignedNodesForRecalc(Node* node);
+
   const HeapLinkedHashSet<WeakMember<Node>>& ManuallyAssignedNodes() const {
     return manually_assigned_nodes_;
   }
@@ -187,6 +189,11 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   bool flat_tree_children_are_fallback_ = true;
 
   bool slotchange_event_enqueued_ = false;
+
+  // Set by SetManuallyAssignedNodesForRecalc() when the manually assigned
+  // nodes change, and cleared by DidRecalcAssignedNodes() after it
+  // invalidates :has-slotted.
+  bool has_slotted_invalidation_pending_ = false;
 
   // Imperative Shadow DOM distribution API.
   HeapLinkedHashSet<WeakMember<Node>> manually_assigned_nodes_;

@@ -205,10 +205,10 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
 
   // A slottable's manual slot assignment on Node (`ManuallyAssignedSlot()`)
   // tracks imperative author slot assignment via `HTMLSlotElement.assign()`.
-  // User-agent shadow roots (`<details>`, `<select>`, `<optgroup>`) also use
-  // `Assign()` during `ManuallyAssignSlots()` inside `RecalcAssignment()`,
-  // which must not overwrite or clear an author `<slot>`'s manual assignment
-  // for a node, or dirty another shadow root mid-recalc.
+  // User-agent shadow roots (`<details>`, `<select>`, `<optgroup>`) use
+  // `SetManuallyAssignedNodesForRecalc()` during `ManuallyAssignSlots()`
+  // instead. If `Assign()` is called on a user-agent slot, it must not
+  // overwrite or clear an author `<slot>`'s manual assignment for a node.
   const bool is_user_agent_slot = IsInUserAgentShadowRoot();
 
   bool updated = false;
@@ -285,6 +285,51 @@ void HTMLSlotElement::Assign(Node* node) {
     nodes.push_back(node);
   }
   Assign(nodes);
+}
+
+void HTMLSlotElement::SetManuallyAssignedNodesForRecalc(
+    const HeapVector<Member<Node>>& nodes) {
+  DCHECK(IsInUserAgentShadowRoot());
+  DCHECK(ContainingShadowRoot()->IsManualSlotting());
+  HeapLinkedHashSet<WeakMember<Node>> new_nodes;
+  for (Node* node : nodes) {
+    new_nodes.insert(node);
+  }
+  bool changed = new_nodes.size() != manually_assigned_nodes_.size();
+  if (!changed) {
+    for (auto it1 = new_nodes.begin(), it2 = manually_assigned_nodes_.begin();
+         it1 != new_nodes.end(); ++it1, ++it2) {
+      if (!(*it1 == *it2)) {
+        changed = true;
+        break;
+      }
+    }
+  }
+  if (!changed) {
+    return;
+  }
+  manually_assigned_nodes_.Swap(new_nodes);
+  has_slotted_invalidation_pending_ = true;
+}
+
+void HTMLSlotElement::SetManuallyAssignedNodesForRecalc(Node* node) {
+  VectorOf<Node> nodes;
+  if (node) {
+    nodes.push_back(node);
+  }
+  SetManuallyAssignedNodesForRecalc(nodes);
+}
+
+void HTMLSlotElement::DidRecalcAssignedNodes(bool display_locked_subtree) {
+  if (has_slotted_invalidation_pending_) {
+    has_slotted_invalidation_pending_ = false;
+    PseudoStateChanged(CSSSelector::kPseudoHasSlotted);
+  }
+  UpdateFlatTreeNodeDataForAssignedNodes();
+  RecalcFlatTreeChildren();
+  if (display_locked_subtree) {
+    MarkAssignedNodesForDisplayLockDetachCheck();
+  }
 }
 
 void HTMLSlotElement::AppendAssignedNode(Node& host_child) {

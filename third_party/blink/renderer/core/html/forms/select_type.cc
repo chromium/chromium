@@ -698,11 +698,13 @@ void MenuListSelectType::ManuallyAssignSlots() {
     select_->last_on_change_option_->UpdateMutationObserver(
         /*in_style_recalc=*/true);
   }
-  button_slot_->Assign(first_button);
-  popover_options_slot_->Assign(all_children_except_first_button);
+  button_slot_->SetManuallyAssignedNodesForRecalc(first_button);
+  popover_options_slot_->SetManuallyAssignedNodesForRecalc(
+      all_children_except_first_button);
   if (popover_input_slot_) {
     CHECK(RuntimeEnabledFeatures::FilterableSelectEnabled());
-    popover_input_slot_->Assign(children_with_descendant_input);
+    popover_input_slot_->SetManuallyAssignedNodesForRecalc(
+        children_with_descendant_input);
   }
 }
 
@@ -1968,10 +1970,11 @@ void ListBoxSelectType::ManuallyAssignSlots() {
     }
   }
   CHECK(option_slot_);
-  option_slot_->Assign(option_nodes);
+  option_slot_->SetManuallyAssignedNodesForRecalc(option_nodes);
   if (input_slot_) {
     CHECK(RuntimeEnabledFeatures::FilterableSelectEnabled());
-    input_slot_->Assign(children_with_descendant_input);
+    input_slot_->SetManuallyAssignedNodesForRecalc(
+        children_with_descendant_input);
   }
 }
 
