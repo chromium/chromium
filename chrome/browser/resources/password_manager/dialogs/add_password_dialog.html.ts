@@ -25,16 +25,14 @@ export function getHtml(this: AddPasswordDialogElement) {
     </select>
     <cr-input id="websiteInput" label="$i18n{websiteLabel}" autofocus required
         placeholder="example.com" .value="${this.website_}"
-        @value-changed="${this.onWebsiteValueChanged_}"
         ?invalid="${this.isWebsiteInputInvalid_()}"
         ?show-error-message="${this.showWebsiteError_()}"
         error-message="${this.websiteErrorMessage_ || ''}" spellcheck="false"
         @input="${this.onWebsiteInput_}" @blur="${this.onWebsiteInputBlur_}">
     </cr-input>
     <cr-input id="usernameInput" label="$i18n{usernameLabel}"
-        .value="${this.username_}"
-        @value-changed="${this.onUsernameValueChanged_}" spellcheck="false"
-        ?invalid="${this.doesUsernameExistAlready_()}"
+        .value="${this.username_}" @input="${this.onUsernameInput_}"
+        spellcheck="false" ?invalid="${this.doesUsernameExistAlready_()}"
         error-message="${this.usernameErrorMessage_ || ''}">
     </cr-input>
     <a id="viewExistingPasswordLink" is="action-link" href="/"
@@ -45,7 +43,6 @@ export function getHtml(this: AddPasswordDialogElement) {
     </a>
     <cr-input id="passwordInput" label="$i18n{passwordLabel}"
         type="${this.getPasswordInputType()}" .value="${this.password_}"
-        @value-changed="${this.onPasswordValueChanged_}"
         ?invalid="${this.isPasswordInvalid_}"
         @blur="${this.onPasswordInputBlur_}" @input="${this.onPasswordInput_}"
         required class="password-input" spellcheck="false">
@@ -60,9 +57,8 @@ export function getHtml(this: AddPasswordDialogElement) {
     </div>
     <div class="divider"></div>
     <cr-textarea label="$i18n{noteLabel}" id="noteInput" .value="${this.note_}"
-        @value-changed="${this.onNoteValueChanged_}"
-        ?invalid="${this.isNoteInputInvalid_()}" autogrow
-        first-footer="${this.getFirstNoteFooter_()}"
+        @input="${this.onNoteInput_}" ?invalid="${this.isNoteInputInvalid_()}"
+        autogrow first-footer="${this.getFirstNoteFooter_()}"
         second-footer="${this.getSecondNoteFooter_()}">
     </cr-textarea>
   </div>

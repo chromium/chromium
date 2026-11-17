@@ -4,7 +4,6 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import type {AddPasswordDialogElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PASSWORD_NOTE_MAX_CHARACTER_COUNT, PasswordManagerImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -30,11 +29,12 @@ suite('AddPasswordDialogTest', function() {
     return microtasksFinished();
   });
 
-  async function enterWebsite(
-      dialog: AddPasswordDialogElement, website: string) {
-    dialog.$.websiteInput.value = website;
-    await microtasksFinished();
-    dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
+  async function setValue(
+      element: {$: {input: HTMLInputElement|HTMLTextAreaElement}},
+      value: string) {
+    element.$.input.value = value;
+    element.$.input.dispatchEvent(
+        new InputEvent('input', {bubbles: true, composed: true}));
     await microtasksFinished();
   }
 
@@ -47,14 +47,14 @@ suite('AddPasswordDialogTest', function() {
 
     // Make url invalid
     passwordManager.setGetDomainInfoResponse(null);
-    await enterWebsite(dialog, 'invalid');
+    await setValue(dialog.$.websiteInput, 'invalid');
     assertTrue(dialog.$.websiteInput.invalid);
     assertEquals(
         dialog.i18n('notValidWebsite'), dialog.$.websiteInput.errorMessage);
 
     // Now make URL valid again
     passwordManager.setGetDomainInfoResponse(createDomainInfo('example'));
-    await enterWebsite(dialog, 'example');
+    await setValue(dialog.$.websiteInput, 'example');
     assertFalse(dialog.$.websiteInput.invalid);
     assertDeepEquals(
         ['invalid', 'example'], passwordManager.getArgs('getDomainInfo'));
@@ -82,13 +82,12 @@ suite('AddPasswordDialogTest', function() {
 
     // Enter website for which user has a saved password.
     passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
-    await enterWebsite(dialog, 'example.com');
+    await setValue(dialog.$.websiteInput, 'example.com');
     assertFalse(dialog.$.usernameInput.invalid);
     assertTrue(dialog.$.viewExistingPasswordLink.hidden);
 
     // Update username to the same value and observe error.
-    dialog.$.usernameInput.value = 'test';
-    await microtasksFinished();
+    await setValue(dialog.$.usernameInput, 'test');
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'example.com'),
@@ -96,15 +95,14 @@ suite('AddPasswordDialogTest', function() {
     assertFalse(dialog.$.viewExistingPasswordLink.hidden);
 
     // Update username and observe no error.
-    dialog.$.usernameInput.value = 'test2';
-    await microtasksFinished();
+    await setValue(dialog.$.usernameInput, 'test2');
     assertFalse(dialog.$.usernameInput.invalid);
     assertTrue(dialog.$.viewExistingPasswordLink.hidden);
 
     // Update website input to match a second existing password and observe
     // error again.
     passwordManager.setGetDomainInfoResponse(createDomainInfo('example2.com'));
-    await enterWebsite(dialog, 'example2.com');
+    await setValue(dialog.$.websiteInput, 'example2.com');
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'example2.com'),
@@ -123,16 +121,15 @@ suite('AddPasswordDialogTest', function() {
         document.body.appendChild(dialog);
         await microtasksFinished();
 
-        dialog.$.usernameInput.value = 'test';
-        await microtasksFinished();
+        await setValue(dialog.$.usernameInput, 'test');
         passwordManager.setGetDomainInfoResponse(
             createDomainInfo('example.com'));
-        await enterWebsite(dialog, 'example.com');
+        await setValue(dialog.$.websiteInput, 'example.com');
         assertTrue(dialog.$.usernameInput.invalid);
         assertFalse(dialog.$.viewExistingPasswordLink.hidden);
 
         passwordManager.setGetDomainInfoResponse(null);
-        await enterWebsite(dialog, 'invalid');
+        await setValue(dialog.$.websiteInput, 'invalid');
 
         assertTrue(dialog.$.websiteInput.invalid);
         assertFalse(dialog.$.usernameInput.invalid);
@@ -173,15 +170,13 @@ suite('AddPasswordDialogTest', function() {
     assertFalse(dialog.$.noteInput.invalid);
 
     // Make note 899 characters long.
-    dialog.$.noteInput.value = '.'.repeat(899);
-    await microtasksFinished();
+    await setValue(dialog.$.noteInput, '.'.repeat(899));
     assertFalse(dialog.$.noteInput.invalid);
     assertEquals('', dialog.$.noteInput.firstFooter);
     assertEquals('', dialog.$.noteInput.secondFooter);
 
     // After 900 characters there are footers.
-    dialog.$.noteInput.value = '.'.repeat(900);
-    await microtasksFinished();
+    await setValue(dialog.$.noteInput, '.'.repeat(900));
     assertFalse(dialog.$.noteInput.invalid);
     assertEquals(
         dialog.i18n(
@@ -196,9 +191,8 @@ suite('AddPasswordDialogTest', function() {
 
     // After PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1 characters note is no longer
     // valid.
-    dialog.$.noteInput.value =
-        '.'.repeat(PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1);
-    await microtasksFinished();
+    await setValue(
+        dialog.$.noteInput, '.'.repeat(PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1));
     assertTrue(dialog.$.noteInput.invalid);
     assertEquals(
         dialog.i18n(
@@ -220,11 +214,10 @@ suite('AddPasswordDialogTest', function() {
     assertFalse(isVisible(dialog.$.storePicker));
 
     passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
-    await enterWebsite(dialog, 'example.com');
-    dialog.$.usernameInput.value = 'test';
-    dialog.$.passwordInput.value = 'lastPass';
-    dialog.$.noteInput.value = 'secret note.';
-    await microtasksFinished();
+    await setValue(dialog.$.websiteInput, 'example.com');
+    await setValue(dialog.$.usernameInput, 'test');
+    await setValue(dialog.$.passwordInput, 'lastPass');
+    await setValue(dialog.$.noteInput, 'secret note.');
 
     assertFalse(dialog.$.addButton.disabled);
     dialog.$.addButton.click();
@@ -256,9 +249,8 @@ suite('AddPasswordDialogTest', function() {
     assertFalse(isVisible(dialog.$.storePicker));
 
     passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
-    await enterWebsite(dialog, 'www.example.com');
-    dialog.$.usernameInput.value = 'test';
-    await microtasksFinished();
+    await setValue(dialog.$.websiteInput, 'www.example.com');
+    await setValue(dialog.$.usernameInput, 'test');
 
     assertTrue(dialog.$.usernameInput.invalid);
     assertFalse(dialog.$.viewExistingPasswordLink.hidden);
@@ -312,11 +304,10 @@ suite('AddPasswordDialogTest', function() {
         chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
 
     passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
-    await enterWebsite(dialog, 'example.com');
-    dialog.$.usernameInput.value = 'test';
-    dialog.$.passwordInput.value = 'lastPass';
-    dialog.$.noteInput.value = 'secret note.';
-    await microtasksFinished();
+    await setValue(dialog.$.websiteInput, 'example.com');
+    await setValue(dialog.$.usernameInput, 'test');
+    await setValue(dialog.$.passwordInput, 'lastPass');
+    await setValue(dialog.$.noteInput, 'secret note.');
 
     assertFalse(dialog.$.addButton.disabled);
     dialog.$.addButton.click();
@@ -344,11 +335,10 @@ suite('AddPasswordDialogTest', function() {
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
 
     passwordManager.setGetDomainInfoResponse(createDomainInfo('example.com'));
-    await enterWebsite(dialog, 'example.com');
-    dialog.$.usernameInput.value = 'test';
-    dialog.$.passwordInput.value = 'lastPass';
-    dialog.$.noteInput.value = 'secret note.';
-    await microtasksFinished();
+    await setValue(dialog.$.websiteInput, 'example.com');
+    await setValue(dialog.$.usernameInput, 'test');
+    await setValue(dialog.$.passwordInput, 'lastPass');
+    await setValue(dialog.$.noteInput, 'secret note.');
 
     assertFalse(dialog.$.addButton.disabled);
     dialog.$.addButton.click();
@@ -380,7 +370,7 @@ suite('AddPasswordDialogTest', function() {
 
     // Enter a website without a TLD and lose focus.
     passwordManager.setGetDomainInfoResponse(createDomainInfo('example'));
-    await enterWebsite(dialog, 'example');
+    await setValue(dialog.$.websiteInput, 'example');
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
     await microtasksFinished();
 
@@ -401,6 +391,21 @@ suite('AddPasswordDialogTest', function() {
     dialog.$.passwordInput.dispatchEvent(new CustomEvent('blur'));
     await microtasksFinished();
 
+    assertTrue(dialog.$.passwordInput.invalid);
+  });
+
+  test('password invalid state updates on input', async function() {
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await microtasksFinished();
+    dialog.$.passwordInput.dispatchEvent(new CustomEvent('blur'));
+    await microtasksFinished();
+    assertTrue(dialog.$.passwordInput.invalid);
+
+    await setValue(dialog.$.passwordInput, 'a');
+    assertFalse(dialog.$.passwordInput.invalid);
+
+    await setValue(dialog.$.passwordInput, '');
     assertTrue(dialog.$.passwordInput.invalid);
   });
 });

@@ -235,22 +235,6 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     }
   }
 
-  protected onWebsiteValueChanged_(e: CustomEvent<{value: string}>) {
-    this.website_ = e.detail.value;
-  }
-
-  protected onUsernameValueChanged_(e: CustomEvent<{value: string}>) {
-    this.username_ = e.detail.value;
-  }
-
-  protected onPasswordValueChanged_(e: CustomEvent<{value: string}>) {
-    this.password_ = e.detail.value;
-  }
-
-  protected onNoteValueChanged_(e: CustomEvent<{value: string}>) {
-    this.note_ = e.detail.value;
-  }
-
   protected onCancelClick_() {
     this.closeDialog_();
   }
@@ -265,6 +249,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
    * Helper function that checks whether the entered url is valid.
    */
   protected onWebsiteInput_() {
+    this.website_ = this.$.websiteInput.value;
     if (this.website_.length === 0) {
       this.websiteErrorMessage_ = null;
       return;
@@ -295,6 +280,10 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return !!this.websiteErrorMessage_ && this.websiteErrorMessage_.length > 0;
   }
 
+  protected onUsernameInput_() {
+    this.username_ = this.$.usernameInput.value;
+  }
+
   private computeUsernameErrorMessage_(): string|null {
     const signonRealm = this.domainInfo_?.signonRealm;
     if (!signonRealm) {
@@ -314,11 +303,16 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   protected onPasswordInput_() {
+    this.password_ = this.$.passwordInput.value;
     this.isPasswordInvalid_ = this.password_.length === 0;
   }
 
   protected onPasswordInputBlur_() {
-    this.onPasswordInput_();
+    this.isPasswordInvalid_ = this.password_.length === 0;
+  }
+
+  protected onNoteInput_() {
+    this.note_ = this.$.noteInput.value;
   }
 
   protected isNoteInputInvalid_(): boolean {
