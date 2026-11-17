@@ -414,8 +414,8 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     return;
   }
 
-  // In the edge case we were between owners when a response error happened,
-  // fallback was deferred until here.
+  // In the edge case we were between owners when a response error or redirect
+  // happened, fallback was deferred until here.
   if (is_scheduled_to_fallback_) {
     Fallback();
   }
@@ -527,14 +527,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   // whether we still have a parent pointer.
   if (!can_be_served) {
     if (!streaming_prefetch_request_) {
-      // SetUpForwardingClient() needs to be called before fallback.
-      if (is_activated_) {
-        Fallback();
-      } else {
-        // Wait until SetUpForwardingClient() is called.
-        CHECK(!is_scheduled_to_fallback_);
-        is_scheduled_to_fallback_ = true;
-      }
+      StartOrScheduleFallback();
       return;
     }
     CHECK(streaming_prefetch_request_, base::NotFatalUntil::M163);
@@ -590,10 +583,9 @@ void StreamingSearchPrefetchURLLoader::OnReceiveRedirect(
   if (streaming_prefetch_request_) {
     streaming_prefetch_request_->ErrorEncountered();
     // Do nothing after this point, as `this` might be deleted.
-  } else {
-    forwarding_result_ = ForwardingResult::kFailed;
-    PostTaskToReleaseOwnership();
+    return;
   }
+  StartOrScheduleFallback();
 }
 
 void StreamingSearchPrefetchURLLoader::OnUploadProgress(
@@ -876,6 +868,24 @@ void StreamingSearchPrefetchURLLoader::PostTaskToReleaseOwnership() {
   // To avoid UAF bugs, post a separate task to delete this object.
   base::SequencedTaskRunner::GetCurrentDefault()->ReleaseSoon(
       FROM_HERE, std::move(self_pointer_));
+}
+
+void StreamingSearchPrefetchURLLoader::StartOrScheduleFallback() {
+  CHECK(!streaming_prefetch_request_);
+
+  // SetUpForwardingClient() needs to be called before fallback.
+  if (is_activated_) {
+    Fallback();
+    return;
+  }
+
+  // Abort the prefetch loader now so no further callbacks or disconnect
+  // notifications arrive before SetUpForwardingClient() runs.
+  network_url_loader_.reset();
+  url_loader_receiver_.reset();
+  // Wait until SetUpForwardingClient() is called.
+  CHECK(!is_scheduled_to_fallback_);
+  is_scheduled_to_fallback_ = true;
 }
 
 void StreamingSearchPrefetchURLLoader::Fallback() {
