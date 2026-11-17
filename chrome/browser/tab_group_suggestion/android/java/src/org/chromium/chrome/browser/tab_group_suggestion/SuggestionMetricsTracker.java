@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab_group_suggestion;
 import android.os.SystemClock;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -16,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService.GroupCreationSource;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class SuggestionMetricsTracker implements Destroyable {
         public long totalTimeSpentMs;
     }
 
-    private final Map<Token, @GroupCreationSource Integer> mGroupIdToSuggestionType =
+    private final Map<TabGroupId, @GroupCreationSource Integer> mGroupIdToSuggestionType =
             new HashMap<>();
     private final Map<@GroupCreationSource Integer, GroupTypeMetricsCounts>
             mSuggestionTypeToCounts = new HashMap<>();
@@ -62,7 +62,7 @@ public class SuggestionMetricsTracker implements Destroyable {
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
 
     private long mCurrentTabForegroundTime;
-    private @Nullable Token mCurrentTabGroupId;
+    private @Nullable TabGroupId mCurrentTabGroupId;
 
     /**
      * @param tabModelSelector The {@link TabModelSelector} to observe for tab changes.
@@ -109,7 +109,7 @@ public class SuggestionMetricsTracker implements Destroyable {
      * @param groupId The tab group ID of the suggested tab group.
      */
     /*package*/ void onSuggestionAccepted(
-            @GroupCreationSource Integer suggestionType, Token groupId) {
+            @GroupCreationSource Integer suggestionType, TabGroupId groupId) {
         mGroupIdToSuggestionType.put(groupId, suggestionType);
         GroupTypeMetricsCounts counts = mSuggestionTypeToCounts.get(suggestionType);
         assert counts != null;
@@ -123,7 +123,7 @@ public class SuggestionMetricsTracker implements Destroyable {
         if (tab == null) return;
 
         @GroupCreationSource int creationSource;
-        Token groupId = tab.getTabGroupId();
+        TabGroupId groupId = TabGroupId.fromOptionalToken(tab.getTabGroupId());
         if (groupId == null) {
             return;
         } else if (mGroupIdToSuggestionType.containsKey(groupId)) {
@@ -146,11 +146,11 @@ public class SuggestionMetricsTracker implements Destroyable {
 
     private void updateTimeSpent(long currentTimeMs) {
         long previousTabForegroundTime = mCurrentTabForegroundTime;
-        Token previousTabGroupId = mCurrentTabGroupId;
+        TabGroupId previousTabGroupId = mCurrentTabGroupId;
 
         mCurrentTabForegroundTime = currentTimeMs;
         Tab tab = mCurrentTabSupplier.get();
-        mCurrentTabGroupId = tab != null ? tab.getTabGroupId() : null;
+        mCurrentTabGroupId = tab != null ? TabGroupId.fromOptionalToken(tab.getTabGroupId()) : null;
 
         if (previousTabGroupId == null || previousTabForegroundTime == 0) return;
 

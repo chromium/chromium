@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestions;
@@ -257,7 +258,9 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
         assertEquals(UserResponse.ACCEPTED, responseMetadata.getUserResponse());
         verify(mSuggestionMetricsService)
                 .onSuggestionAccepted(
-                        eq(WINDOW_ID), eq(GroupCreationSource.CPA_SUGGESTION), eq(tabGroupId));
+                        eq(WINDOW_ID),
+                        eq(GroupCreationSource.CPA_SUGGESTION),
+                        eq(TabGroupId.fromRawToken(tabGroupId)));
     }
 
     @Test

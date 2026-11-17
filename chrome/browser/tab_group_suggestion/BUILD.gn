@@ -48,6 +48,7 @@ if (is_android) {
       "//chrome/browser/tabwindow:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/embedder_support/android:util_java",
+      "//components/tab_groups:tab_groups_java",
       "//components/visited_url_ranking/public:public_java",
       "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -79,6 +80,7 @@ if (is_android) {
       "//chrome/browser/ui/android/toolbar:java",
       "//chrome/browser/ui/android/toolbar:optional_button_java",
       "//chrome/browser/user_education:java",
+      "//components/tab_groups:tab_groups_java",
       "//components/visited_url_ranking/public:public_java",
       "//ui/android:ui_java",
     ]
@@ -131,6 +133,7 @@ if (is_android) {
       "//chrome/browser/tabwindow:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/embedder_support/android:util_java",
+      "//components/tab_groups:tab_groups_java",
       "//components/visited_url_ranking/public:public_java",
       "//content/public/android:content_java",
       "//third_party/junit",

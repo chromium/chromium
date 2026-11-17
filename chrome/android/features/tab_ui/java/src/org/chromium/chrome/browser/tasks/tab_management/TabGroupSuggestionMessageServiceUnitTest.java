@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupSuggestionMessag
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupSuggestionMessageService.TabGroupSuggestionMessageData;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
@@ -237,7 +238,8 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                         tabs, mTab1, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabGroupSuggestionMessageService).dismissMessage(any());
         verify(mSuggestionMetricsService)
-                .onSuggestionAccepted(1, GroupCreationSource.GTS_SUGGESTION, tabGroupId);
+                .onSuggestionAccepted(
+                        1, GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(tabGroupId));
     }
 
     @Test

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionPr
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -209,7 +210,8 @@ public class TabGroupSuggestionMessageService
             assert metricsService != null;
 
             @WindowId int windowId = mTabWindowManager.findWindowIdForTabGroup(tab.getTabGroupId());
-            metricsService.onSuggestionAccepted(windowId, GTS_SUGGESTION, tab.getTabGroupId());
+            metricsService.onSuggestionAccepted(
+                    windowId, GTS_SUGGESTION, TabGroupId.fromRawToken(tab.getTabGroupId()));
         }
 
         dismissMessage(CallbackUtils.emptyRunnable());

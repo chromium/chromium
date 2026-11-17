@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService.GroupCreationSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_groups.TabGroupId;
 
 /** Unit tests for {@link SuggestionMetricsService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -108,7 +109,9 @@ public class SuggestionMetricsServiceUnitTest {
                         .build();
 
         mSuggestionMetricsService.onSuggestionAccepted(
-                WINDOW_ID, GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                WINDOW_ID,
+                GroupCreationSource.GTS_SUGGESTION,
+                TabGroupId.fromRawToken(mGtsGroupId));
         selectTab(mTab1);
 
         onStop();
@@ -118,7 +121,9 @@ public class SuggestionMetricsServiceUnitTest {
     @Test
     public void testLifecycle_onStartWithNative() {
         mSuggestionMetricsService.onSuggestionAccepted(
-                WINDOW_ID, GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                WINDOW_ID,
+                GroupCreationSource.GTS_SUGGESTION,
+                TabGroupId.fromRawToken(mGtsGroupId));
         selectTab(mTab1);
 
         HistogramWatcher watcher =
@@ -135,7 +140,9 @@ public class SuggestionMetricsServiceUnitTest {
     @Test
     public void testLifecycle_onStopWithNative() {
         mSuggestionMetricsService.onSuggestionAccepted(
-                WINDOW_ID, GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                WINDOW_ID,
+                GroupCreationSource.GTS_SUGGESTION,
+                TabGroupId.fromRawToken(mGtsGroupId));
         selectTab(mTab1);
 
         HistogramWatcher watcher1 =
@@ -172,6 +179,8 @@ public class SuggestionMetricsServiceUnitTest {
     @Test(expected = AssertionError.class)
     public void testOnSuggestionAccepted_uninitializedWindow() {
         mSuggestionMetricsService.onSuggestionAccepted(
-                WINDOW_ID + 1, GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                WINDOW_ID + 1,
+                GroupCreationSource.GTS_SUGGESTION,
+                TabGroupId.fromRawToken(mGtsGroupId));
     }
 }

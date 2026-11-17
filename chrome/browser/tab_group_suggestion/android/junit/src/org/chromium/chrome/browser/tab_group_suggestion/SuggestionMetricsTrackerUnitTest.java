@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService.GroupCreationSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.concurrent.TimeUnit;
 
@@ -74,7 +75,7 @@ public class SuggestionMetricsTrackerUnitTest {
                         .expectIntRecord(PER_GROUP_SWITCHES_HISTOGRAM_PREFIX + "GTS", 2)
                         .build();
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(mGtsGroupId));
         selectTab(mTab1);
         selectTab(mTab1);
 
@@ -90,7 +91,7 @@ public class SuggestionMetricsTrackerUnitTest {
                         .expectIntRecord(PER_GROUP_SWITCHES_HISTOGRAM_PREFIX + "CPA", 3)
                         .build();
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.CPA_SUGGESTION, mCpaGroupId);
+                GroupCreationSource.CPA_SUGGESTION, TabGroupId.fromRawToken(mCpaGroupId));
         selectTab(mTab2);
         selectTab(mTab2);
         selectTab(mTab2);
@@ -126,9 +127,9 @@ public class SuggestionMetricsTrackerUnitTest {
                         .build();
 
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(mGtsGroupId));
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.CPA_SUGGESTION, mCpaGroupId);
+                GroupCreationSource.CPA_SUGGESTION, TabGroupId.fromRawToken(mCpaGroupId));
 
         selectTab(mTab1); // GTS
         selectTab(mTab2); // CPA
@@ -166,7 +167,7 @@ public class SuggestionMetricsTrackerUnitTest {
                         .expectIntRecord(PER_GROUP_SWITCHES_HISTOGRAM_PREFIX + "GTS", 1)
                         .build();
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(mGtsGroupId));
         selectTab(mTab1);
 
         mSuggestionMetricsTracker.recordMetrics();
@@ -189,7 +190,7 @@ public class SuggestionMetricsTrackerUnitTest {
                         .expectNoRecords(PER_GROUP_SWITCHES_HISTOGRAM_PREFIX + "GTS")
                         .build();
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(mGtsGroupId));
         selectTab(mTab1);
 
         mSuggestionMetricsTracker.reset();
@@ -227,9 +228,9 @@ public class SuggestionMetricsTrackerUnitTest {
                         .build();
 
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(mGtsGroupId));
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.CPA_SUGGESTION, mCpaGroupId);
+                GroupCreationSource.CPA_SUGGESTION, TabGroupId.fromRawToken(mCpaGroupId));
 
         selectTab(mTab1); // GTS
         ShadowSystemClock.advanceBy(gtsTime1, TimeUnit.MILLISECONDS);
@@ -264,9 +265,9 @@ public class SuggestionMetricsTrackerUnitTest {
                         .build();
 
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(mGtsGroupId));
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.CPA_SUGGESTION, mCpaGroupId);
+                GroupCreationSource.CPA_SUGGESTION, TabGroupId.fromRawToken(mCpaGroupId));
 
         selectTab(mTab1); // GTS
         ShadowSystemClock.advanceBy(gtsTime, TimeUnit.MILLISECONDS);
@@ -291,7 +292,7 @@ public class SuggestionMetricsTrackerUnitTest {
                         .build();
 
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(mGtsGroupId));
 
         selectTab(mTab1); // GTS
         ShadowSystemClock.advanceBy(gtsTime, TimeUnit.MILLISECONDS);
@@ -316,7 +317,7 @@ public class SuggestionMetricsTrackerUnitTest {
                         .build();
 
         mSuggestionMetricsTracker.onSuggestionAccepted(
-                GroupCreationSource.GTS_SUGGESTION, mGtsGroupId);
+                GroupCreationSource.GTS_SUGGESTION, TabGroupId.fromRawToken(mGtsGroupId));
 
         selectTab(mTabWithNoGroup); // Unknown
         ShadowSystemClock.advanceBy(noGroupTime, TimeUnit.MILLISECONDS);

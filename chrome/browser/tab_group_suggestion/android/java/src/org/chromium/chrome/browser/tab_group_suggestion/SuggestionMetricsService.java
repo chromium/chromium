@@ -13,12 +13,12 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.WindowId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -149,7 +149,9 @@ public class SuggestionMetricsService {
      * @param groupId The tab group ID of the suggested tab group.
      */
     public void onSuggestionAccepted(
-            @WindowId int windowId, @GroupCreationSource Integer suggestionType, Token groupId) {
+            @WindowId int windowId,
+            @GroupCreationSource Integer suggestionType,
+            TabGroupId groupId) {
         SuggestionMetricsLifecycleManager observer = mLifecycleObservers.get(windowId);
         assert observer != null;
 

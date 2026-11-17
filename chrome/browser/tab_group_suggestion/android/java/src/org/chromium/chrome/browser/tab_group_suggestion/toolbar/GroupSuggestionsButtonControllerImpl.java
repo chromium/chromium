@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.WindowId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestions;
@@ -119,7 +120,9 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
         assert mWindowedSuggestion != null;
 
         metricsService.onSuggestionAccepted(
-                mWindowedSuggestion.windowId, CPA_SUGGESTION, tab.getTabGroupId());
+                mWindowedSuggestion.windowId,
+                CPA_SUGGESTION,
+                TabGroupId.fromRawToken(tab.getTabGroupId()));
 
         clearCachedSuggestion(UserResponse.ACCEPTED);
     }
