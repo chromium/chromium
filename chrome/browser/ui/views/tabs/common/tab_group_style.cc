@@ -9,7 +9,10 @@
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/common/horizontal_tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -157,4 +160,54 @@ int TabGroupStyle::GetUnderlineStrokeThickness() {
 int TabGroupStyle::GetUnderlineStrokeInset() {
   return TabStyle::Get()->GetTabOverlap() - GetTabGroupOverlapAdjustment() +
          GetUnderlineStrokeThickness();
+}
+
+// static
+TabStyle::SeparatorOpacities TabGroupStyle::GetSeparatorOpacities(
+    bool is_collapsed,
+    bool is_dragging,
+    int tab_count,
+    const TabStyleViewDelegate* adjacent_tab) {
+  const float trailing_opacity = GetTrailingSeparatorOpacity(
+      is_collapsed, is_dragging, tab_count, adjacent_tab);
+
+  // Return the opacities in physical order, rather than logical.
+  if (base::i18n::IsRTL()) {
+    return {trailing_opacity, 0.0f};
+  }
+  return {0.0f, trailing_opacity};
+}
+
+// static
+float TabGroupStyle::GetTrailingSeparatorOpacity(
+    bool is_collapsed,
+    bool is_dragging,
+    int tab_count,
+    const TabStyleViewDelegate* adjacent_tab) {
+  if (!is_collapsed || is_dragging) {
+    return 0.0f;
+  }
+
+  // Do not show separators if the tab strip is in a decluttered state.
+  if (features::IsTabStripDeclutterEnabled() &&
+      tab_count >= TabStyle::kTabStripDeclutterMinTabsForSeparatorHide) {
+    return 0.0f;
+  }
+
+  // If the following tab belongs to another group, that group's header sits
+  // between this collapsed header and `adjacent_tab`.
+  if (adjacent_tab && adjacent_tab->GetGroup().has_value()) {
+    adjacent_tab = nullptr;
+  }
+
+  // Do not show when the adjacent tab is displaying a visible shape.
+  if (adjacent_tab &&
+      HorizontalTabStyleViews::HasVisibleBackground(adjacent_tab)) {
+    return 0.0f;
+  }
+
+  // The header has no hover animation of its own, so only the adjacent tab's
+  // hover state is taken into account.
+  return HorizontalTabStyleViews::GetHoverInterpolatedSeparatorOpacity(
+      /*for_layout=*/false, adjacent_tab, /*hover_value=*/0.0f);
 }

@@ -32,6 +32,35 @@ class HorizontalTabStyleViews : public TabStyleViews {
   SkPath GetOverlinePath(float scale) const override;
   const TabStyleViewDelegate* delegate() const override;
 
+  // Gets the bounds for the leading and trailing separators for a tab or group
+  // header with `bounds` in its parent's coordinate space. The bounds are
+  // pixel-aligned in the parent's coordinate space, so that adjacent slots
+  // paint their separators at the same coordinate, and are returned relative to
+  // `bounds.origin()`.
+  static TabStyle::SeparatorBounds GetSeparatorBounds(const gfx::Rect& bounds,
+                                                      float scale,
+                                                      int stroke_thickness);
+
+  // Paints the separators for `view` using `bounds` and `opacities`. `bounds`
+  // is interpreted as in GetSeparatorBounds(), so `canvas` must be in the
+  // coordinate space whose origin is `bounds.origin()`.
+  static void PaintSeparators(gfx::Canvas* canvas,
+                              const views::View* view,
+                              const gfx::Rect& bounds,
+                              const TabStyle::SeparatorOpacities& opacities,
+                              int stroke_thickness);
+
+  // Returns whether `delegate` is in a state that displays a visible tab
+  // background shape.
+  static bool HasVisibleBackground(const TabStyleViewDelegate* delegate);
+
+  // Helper that returns an interpolated opacity if the view (`hover_value`) or
+  // its neighbor `other_tab` is mid-hover-animation.
+  static float GetHoverInterpolatedSeparatorOpacity(
+      bool for_layout,
+      const TabStyleViewDelegate* other_tab,
+      float hover_value);
+
  protected:
   SkPath GetPath(TabStyle::PathType path_type,
                  float scale,
@@ -51,6 +80,7 @@ class HorizontalTabStyleViews : public TabStyleViews {
 
  private:
   // Returns the color for the separator.
+  static SkColor GetTabSeparatorColor(const views::View* view);
   SkColor GetTabSeparatorColor() const;
 
   // Painting helper functions:
@@ -65,9 +95,9 @@ class HorizontalTabStyleViews : public TabStyleViews {
       TabStyle::TabSelectionState selection_state,
       bool has_custom_background) const;
 
-  gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
-                                 float scale,
-                                 int stroke_thickness) const;
+  static gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
+                                        float scale,
+                                        int stroke_thickness);
 
   // Given a tab of width `width`, returns the radius to use for the corners.
   float GetTopCornerRadiusForWidth(int width) const;

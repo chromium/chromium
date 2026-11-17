@@ -464,21 +464,24 @@ TabStyle::TabColors HorizontalTabStyleViews::CalculateTargetColors() const {
       delegate_->GetView()->GetColorProvider());
 }
 
+// static
 TabStyle::SeparatorBounds HorizontalTabStyleViews::GetSeparatorBounds(
-    float scale) const {
-  const gfx::Rect original_bounds = delegate_->GetView()->bounds();
+    const gfx::Rect& original_bounds,
+    float scale,
+    int stroke_thickness) {
   // Factor out the amount of the tab strip that is overlapped by the toolbar.
   const gfx::Rect visible_bounds = gfx::Rect(
       original_bounds.x(), original_bounds.y(), original_bounds.width(),
       original_bounds.height() -
           GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
   const gfx::RectF aligned_bounds =
-      ScaleAndAlignBounds(visible_bounds, scale, GetStrokeThickness());
-  const int corner_radius = tab_style()->GetBottomCornerRadius() * scale;
-  gfx::SizeF separator_size(tab_style()->GetSeparatorSize());
+      ScaleAndAlignBounds(visible_bounds, scale, stroke_thickness);
+  const TabStyle* const tab_style = TabStyle::Get();
+  const int corner_radius = tab_style->GetBottomCornerRadius() * scale;
+  gfx::SizeF separator_size(tab_style->GetSeparatorSize());
   separator_size.Scale(scale);
   gfx::InsetsF separator_margin =
-      gfx::InsetsF(tab_style()->GetSeparatorMargins());
+      gfx::InsetsF(tab_style->GetSeparatorMargins());
   separator_margin.Scale(scale);
 
   TabStyle::SeparatorBounds separator_bounds;
@@ -498,12 +501,18 @@ TabStyle::SeparatorBounds HorizontalTabStyleViews::GetSeparatorBounds(
   separator_bounds.trailing.set_x(aligned_bounds.right() - corner_radius +
                                   separator_margin.left());
 
-  gfx::PointF origin(delegate_->GetView()->bounds().origin());
+  gfx::PointF origin(original_bounds.origin());
   origin.Scale(scale);
   separator_bounds.leading.Offset(-origin.x(), -origin.y());
   separator_bounds.trailing.Offset(-origin.x(), -origin.y());
 
   return separator_bounds;
+}
+
+TabStyle::SeparatorBounds HorizontalTabStyleViews::GetSeparatorBounds(
+    float scale) const {
+  return GetSeparatorBounds(delegate_->GetView()->bounds(), scale,
+                            GetStrokeThickness());
 }
 
 TabStyle::SeparatorOpacities HorizontalTabStyleViews::GetSeparatorOpacities(
@@ -532,6 +541,15 @@ TabStyle::SeparatorOpacities HorizontalTabStyleViews::GetSeparatorOpacities(
   return {leading_opacity, trailing_opacity};
 }
 
+// static
+bool HorizontalTabStyleViews::HasVisibleBackground(
+    const TabStyleViewDelegate* delegate) {
+  return delegate->IsActive() || delegate->IsSelected() ||
+         delegate->IsHovering() ||
+         (delegate->IsPinned() &&
+          tabs::IsNewHorizontalPinnedTabStylingEnabled());
+}
+
 float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
                                                    bool leading) const {
   // Do not show separators if the tab strip is in a decluttered state.
@@ -541,17 +559,9 @@ float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
     return 0.0f;
   }
 
-  const auto has_visible_background =
-      [](const TabStyleViewDelegate* const delegate) {
-        return delegate->IsActive() || delegate->IsSelected() ||
-               delegate->IsHovering() ||
-               (delegate->IsPinned() &&
-                tabs::IsNewHorizontalPinnedTabStylingEnabled());
-      };
-
   // These tab states all have visible backgrounds. Separators must not
   // be shown between tabs if that is the case;
-  if (has_visible_background(delegate_.get())) {
+  if (HasVisibleBackground(delegate_.get())) {
     return 0.0f;
   }
 
@@ -593,14 +603,14 @@ float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
       // Between the pinned and unpinned tab containers when new pinned
       // tab styling is disabled should show leading
       if (!tabs::IsNewHorizontalPinnedTabStylingEnabled() && adjacent_tab &&
-          adjacent_tab->IsPinned() && !has_visible_background(adjacent_tab)) {
+          adjacent_tab->IsPinned() && !HasVisibleBackground(adjacent_tab)) {
         return shown_separator_opacity;
       }
 
       // When the preceding item is a group header, show a leading separator.
       if (adjacent_tab && adjacent_tab->IsGroupCollapsed() &&
           adjacent_tab->GetGroup() != delegate_->GetGroup() &&
-          !has_visible_background(adjacent_tab)) {
+          !HasVisibleBackground(adjacent_tab)) {
         return shown_separator_opacity;
       }
 
@@ -619,7 +629,7 @@ float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
   }
 
   // Do not show when the adjacent tab is displaying a visible shape.
-  if (adjacent_tab && has_visible_background(adjacent_tab)) {
+  if (adjacent_tab && HasVisibleBackground(adjacent_tab)) {
     return 0.0f;
   }
 
@@ -627,9 +637,11 @@ float HorizontalTabStyleViews::GetSeparatorOpacity(bool for_layout,
   return shown_separator_opacity;
 }
 
+// static
 float HorizontalTabStyleViews::GetHoverInterpolatedSeparatorOpacity(
     bool for_layout,
-    const TabStyleViewDelegate* other_tab) const {
+    const TabStyleViewDelegate* other_tab,
+    float hover_value) {
   // Fade out the intervening separator while this tab or an adjacent tab is
   // hovered, which prevents sudden opacity changes when scrubbing the mouse
   // across the tabstrip. If that adjacent tab is active, don't consider its
@@ -642,8 +654,14 @@ float HorizontalTabStyleViews::GetHoverInterpolatedSeparatorOpacity(
         }
         return static_cast<float>(other_tab->GetHoverAnimationValue());
       };
-  const float hover_value = GetHoverAnimationValue();
   return 1.0f - std::max(hover_value, adjacent_hover_value(other_tab));
+}
+
+float HorizontalTabStyleViews::GetHoverInterpolatedSeparatorOpacity(
+    bool for_layout,
+    const TabStyleViewDelegate* other_tab) const {
+  return GetHoverInterpolatedSeparatorOpacity(for_layout, other_tab,
+                                              GetHoverAnimationValue());
 }
 
 bool HorizontalTabStyleViews::IsHovering() const {
@@ -710,16 +728,21 @@ bool HorizontalTabStyleViews::ShouldPaintTabBackgroundColor(
   return delegate_->ShouldPaintTabBackgroundColor();
 }
 
-SkColor HorizontalTabStyleViews::GetTabSeparatorColor() const {
-  const auto* cp = delegate_->GetView()->GetWidget()->GetColorProvider();
+// static
+SkColor HorizontalTabStyleViews::GetTabSeparatorColor(const views::View* view) {
+  const auto* cp = view->GetWidget()->GetColorProvider();
   CHECK(cp, base::NotFatalUntil::M162);
   if (!cp) {
     return gfx::kPlaceholderColor;
   }
 
-  return cp->GetColor(delegate_->GetView()->GetWidget()->ShouldPaintAsActive()
+  return cp->GetColor(view->GetWidget()->ShouldPaintAsActive()
                           ? kColorTabDividerFrameActive
                           : kColorTabDividerFrameInactive);
+}
+
+SkColor HorizontalTabStyleViews::GetTabSeparatorColor() const {
+  return GetTabSeparatorColor(delegate_->GetView());
 }
 
 SkColor HorizontalTabStyleViews::GetCurrentTabBackgroundColor(
@@ -859,8 +882,13 @@ void HorizontalTabStyleViews::PaintBackgroundStroke(
   canvas->DrawPath(outer_path, flags);
 }
 
-void HorizontalTabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
-  const auto separator_opacities = GetSeparatorOpacities(false);
+// static
+void HorizontalTabStyleViews::PaintSeparators(
+    gfx::Canvas* canvas,
+    const views::View* view,
+    const gfx::Rect& bounds,
+    const TabStyle::SeparatorOpacities& separator_opacities,
+    int stroke_thickness) {
   if (!separator_opacities.left && !separator_opacities.right) {
     return;
   }
@@ -868,9 +896,10 @@ void HorizontalTabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
   gfx::ScopedCanvas scoped_canvas(canvas);
   const float scale = canvas->UndoDeviceScaleFactor();
 
-  TabStyle::SeparatorBounds separator_bounds = GetSeparatorBounds(scale);
+  TabStyle::SeparatorBounds separator_bounds =
+      GetSeparatorBounds(bounds, scale, stroke_thickness);
 
-  const SkColor separator_base_color = GetTabSeparatorColor();
+  const SkColor separator_base_color = GetTabSeparatorColor(view);
   const auto separator_color = [separator_base_color](float opacity) {
     return SkColorSetA(separator_base_color,
                        gfx::Tween::IntValueBetween(opacity, SK_AlphaTRANSPARENT,
@@ -882,15 +911,20 @@ void HorizontalTabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
   if (separator_opacities.left > 0) {
     flags.setColor(separator_color(separator_opacities.left));
     canvas->DrawRoundRect(separator_bounds.leading,
-                          tab_style()->GetSeparatorCornerRadius() * scale,
+                          TabStyle::Get()->GetSeparatorCornerRadius() * scale,
                           flags);
   }
   if (separator_opacities.right > 0) {
     flags.setColor(separator_color(separator_opacities.right));
     canvas->DrawRoundRect(separator_bounds.trailing,
-                          tab_style()->GetSeparatorCornerRadius() * scale,
+                          TabStyle::Get()->GetSeparatorCornerRadius() * scale,
                           flags);
   }
+}
+
+void HorizontalTabStyleViews::PaintSeparators(gfx::Canvas* canvas) const {
+  PaintSeparators(canvas, delegate_->GetView(), delegate_->GetView()->bounds(),
+                  GetSeparatorOpacities(false), GetStrokeThickness());
 }
 
 BrowserFrameView* HorizontalTabStyleViews::GetBrowserFrameView() const {
@@ -909,22 +943,22 @@ float HorizontalTabStyleViews::GetTopCornerRadiusForWidth(int width) const {
   return std::clamp<float>(radius, 0, ideal_radius);
 }
 
-gfx::RectF HorizontalTabStyleViews::ScaleAndAlignBounds(
-    const gfx::Rect& bounds,
-    float scale,
-    int stroke_thickness) const {
+// static
+gfx::RectF HorizontalTabStyleViews::ScaleAndAlignBounds(const gfx::Rect& bounds,
+                                                        float scale,
+                                                        int stroke_thickness) {
   // Convert to layout bounds.  We must inset the width such that the right edge
   // of one tab's layout bounds is the same as the left edge of the next tab's;
   // this way the two tabs' separators will be drawn at the same coordinate.
   gfx::RectF aligned_bounds(bounds);
-  const int bottom_corner_radius = tab_style()->GetBottomCornerRadius();
+  const int bottom_corner_radius = TabStyle::Get()->GetBottomCornerRadius();
   // Note: This intentionally doesn't subtract
   // LayoutConstant::kTabstripToolbarOverlap from the bottom inset, because we
   // want to pixel-align the bottom of the stroke, not the bottom of the
   // overlap.
   auto layout_insets = gfx::InsetsF::TLBR(
       stroke_thickness, bottom_corner_radius, stroke_thickness,
-      bottom_corner_radius + tab_style()->GetSeparatorSize().width());
+      bottom_corner_radius + TabStyle::Get()->GetSeparatorSize().width());
   aligned_bounds.Inset(layout_insets);
 
   // Scale layout bounds from DIP to px.

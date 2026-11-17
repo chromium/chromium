@@ -7,10 +7,13 @@
 
 #include <optional>
 
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+
+class TabStyleViewDelegate;
 
 // Default styling of tab groups.
 class TabGroupStyle {
@@ -60,6 +63,29 @@ class TabGroupStyle {
   // Returns how far the group underline is inset from the leading/trailing
   // edges of the group in a horizontal tab strip.
   static int GetUnderlineStrokeInset();
+
+  // Returns the opacities of the separators, in physical order, for a group
+  // header. Group headers never paint a leading separator: the preceding slot
+  // paints it. A trailing separator is only painted while the group is
+  // collapsed, as there is no visible tab in the group that could paint it.
+  // A group in focus mode is always shown expanded, so callers should pass
+  // `is_collapsed` as false for it. `adjacent_tab` is the tab following the
+  // group and is only used when `is_collapsed` is true, so callers may skip
+  // looking it up otherwise.
+  // These rules mirror HorizontalTabStyleViews::GetSeparatorOpacity(), where
+  // tabs paint trailing separators by default; keep both in sync.
+  static TabStyle::SeparatorOpacities GetSeparatorOpacities(
+      bool is_collapsed,
+      bool is_dragging,
+      int tab_count,
+      const TabStyleViewDelegate* adjacent_tab);
+
+ private:
+  static float GetTrailingSeparatorOpacity(
+      bool is_collapsed,
+      bool is_dragging,
+      int tab_count,
+      const TabStyleViewDelegate* adjacent_tab);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_STYLE_H_
