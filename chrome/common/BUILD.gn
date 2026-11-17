@@ -632,7 +632,10 @@ static_library("constants") {
 # require many files from it. This makes linking more efficient.
 static_library("test_support") {
   testonly = true
-  visibility = [ "//chrome/test:*" ]
+  visibility = [
+    "//chrome/common/extensions:unit_tests",
+    "//chrome/test:*",
+  ]
 
   sources = [
     "search/mock_embedded_search_client.cc",
@@ -844,7 +847,8 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [ "chrome_paths_browsertest.cc" ]
     deps = [
-      "//chrome/test:test_support",
+      ":constants",
+      "//chrome/test/base:in_process_browser_test",
       "//content/test:test_support",
       "//testing/gtest",
     ]
@@ -869,10 +873,34 @@ source_set("unit_tests") {
     "webui_util_unittest.cc",
   ]
   deps = [
-    "//chrome/test:test_support",
+    ":chrome_features",
+    ":common_lib",
+    ":constants",
+    ":ini_parser",
+    ":mojo_bindings",
+    ":non_code_constants",
+    "//base",
+    "//base/test:test_support",
+    "//build:buildflag_header_h",
+    "//components/safe_search_api",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/base:signin_switches",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//gpu/config",
+    "//net",
+    "//services/network/public/cpp:cpp_base",
+    "//services/network/public/cpp:http_request_headers_mojom_support",
+    "//services/network/public/cpp:is_potentially_trustworthy",
+    "//services/network/public/mojom:url_loader_base",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//url",
   ]
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common:common_constants" ]
+  }
   if (is_win) {
     sources += [
       "chrome_constants_win_unittest.cc",
@@ -885,6 +913,7 @@ source_set("unit_tests") {
   }
   if (is_chromeos) {
     sources += [ "chrome_constants_ash_unittest.cc" ]
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
   }
   if (enable_pdf) {
     sources += [ "pdf_util_unittest.cc" ]
@@ -892,7 +921,12 @@ source_set("unit_tests") {
   }
   if (!is_android && !is_chromeos) {
     sources += [ "channel_info_unittest.cc" ]
-    deps += [ "//chrome/test/base:chrome_test_scoped_utils" ]
+    deps += [
+      ":channel_info",
+      "//build:branding_buildflags",
+      "//chrome/test/base:chrome_test_scoped_utils",
+      "//components/version_info:channel",
+    ]
   }
   if (enable_widevine_cdm_component && is_linux) {
     sources += [ "media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
