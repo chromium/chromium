@@ -357,11 +357,12 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
     auto& active_restorers = GetActiveSessionRestorers();
     // Only one SessionRestoreImpl should be operating on the profile at the
     // same time.
-    CHECK(std::ranges::find_if(active_restorers,
-                               [profile](SessionRestoreImpl* restorer) {
-                                 return restorer->profile_ == profile;
-                               }) == active_restorers.end(),
-          base::NotFatalUntil::M163);
+    // TODO(crbug.com/585353731): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(std::ranges::find_if(active_restorers,
+                                [profile](SessionRestoreImpl* restorer) {
+                                  return restorer->profile_ == profile;
+                                }) == active_restorers.end());
 
     active_restorers.insert(this);
 
