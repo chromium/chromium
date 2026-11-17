@@ -66,8 +66,13 @@ class GlobalBrowserCollectionTest : public TestBase {
   void ActivateBrowser(BrowserWindowInterface* browser) {
     BrowserEventWaiter browser_activated_waiter(
         BrowserEventWaiter::Event::ACTIVATED, browser);
+
+// TODO(crbug.com/483363917): Enable this on Linux once the
+// BaseWindow::Activate() behaviour is fixed.
+#if !BUILDFLAG(IS_LINUX)
     BrowserEventWaiter browser_deactivated_waiter(
         BrowserEventWaiter::Event::DEACTIVATED, active_browser_);
+#endif  // !BUILDFLAG(IS_LINUX)
 
     browser->GetWindow()->Activate();
     active_browser_ = browser;
@@ -148,12 +153,15 @@ class GlobalBrowserCollectionTest : public TestBase {
 
 // TODO(crbug.com/477251911): Enable this on Android once we implement
 // activation tracking in GlobalBrowserCollection for Android.
-#if BUILDFLAG(IS_ANDROID)
+//
+// TODO(crbug.com/483363917): Enable this on Linux once the
+// BaseWindow::Activate() behaviour is fixed.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestObservationWithSingleProfile \
   DISABLED_TestObservationWithSingleProfile
 #else
 #define MAYBE_TestObservationWithSingleProfile TestObservationWithSingleProfile
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(GlobalBrowserCollectionTest,
                        MAYBE_TestObservationWithSingleProfile) {
   // Observe GlobalBrowserCollection.
@@ -198,13 +206,16 @@ IN_PROC_BROWSER_TEST_F(GlobalBrowserCollectionTest,
 
 // TODO(crbug.com/477251911): Enable this on Android once we implement
 // activation tracking in GlobalBrowserCollection for Android.
-#if BUILDFLAG(IS_ANDROID)
+//
+// TODO(crbug.com/483363917): Enable this on Linux once the
+// BaseWindow::Activate() behaviour is fixed.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MAYBE_TestObservationWithMultipleProfiles \
   DISABLED_TestObservationWithMultipleProfiles
 #else
 #define MAYBE_TestObservationWithMultipleProfiles \
   TestObservationWithMultipleProfiles
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(GlobalBrowserCollectionTest,
                        MAYBE_TestObservationWithMultipleProfiles) {
   // This test is only relevant on platforms that support multi-profile.
