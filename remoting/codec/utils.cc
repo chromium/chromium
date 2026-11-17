@@ -53,6 +53,37 @@ size_t GetMaxParallelWorkers(int64_t yuv_pixels) {
       std::min({cpu_cap, yuv_pixels / kPixelsPerWorker, kMaxWorkers}));
 }
 
+// Appends up to `num_strips` horizontal strips of `rect` with even Y-offsets so
+// parallel workers access disjoint 2x2 subsampled chroma rows.
+void AppendRectStrips(const webrtc::DesktopRect& rect,
+                      int num_strips,
+                      std::vector<webrtc::DesktopRect>& strips) {
+  const int clamped_strips =
+      std::clamp(num_strips, 1, std::max(1, rect.height() / 4));
+  int y0 = rect.top();
+  for (int s = 1; s <= clamped_strips; ++s) {
+    const int y1 =
+        (s == clamped_strips)
+            ? rect.bottom()
+            : rect.top() + RoundToTwosMultiple(static_cast<int>(
+                               (int64_t{rect.height()} * s) / clamped_strips));
+    if (y1 > y0) {
+      strips.push_back(
+          webrtc::DesktopRect::MakeLTRB(rect.left(), y0, rect.right(), y1));
+      y0 = y1;
+    }
+  }
+}
+
+std::vector<webrtc::DesktopRect> SplitRectIntoStrips(
+    const webrtc::DesktopRect& rect,
+    size_t target_strips) {
+  std::vector<webrtc::DesktopRect> strips;
+  strips.reserve(target_strips);
+  AppendRectStrips(rect, static_cast<int>(target_strips), strips);
+  return strips;
+}
+
 // Splits `region` into ~`target_strips` horizontal strips with even Y-offsets
 // so parallel workers write to disjoint 2x2 subsampled I420 chroma rows.
 std::vector<webrtc::DesktopRect> SplitRegionIntoStrips(
@@ -64,24 +95,10 @@ std::vector<webrtc::DesktopRect> SplitRegionIntoStrips(
   for (webrtc::DesktopRegion::Iterator r(region); !r.IsAtEnd(); r.Advance()) {
     const webrtc::DesktopRect& rect = r.rect();
     const int64_t rect_pixels = int64_t{rect.width()} * rect.height();
-    const int num_strips = std::clamp<int>(
-        static_cast<int>((rect_pixels * static_cast<int64_t>(target_strips) +
-                          total_pixels - 1) /
-                         total_pixels),
-        1, std::max(1, rect.height() / 4));
-    int y0 = rect.top();
-    for (int s = 1; s <= num_strips; ++s) {
-      const int y1 =
-          (s == num_strips)
-              ? rect.bottom()
-              : rect.top() + RoundToTwosMultiple(static_cast<int>(
-                                 (int64_t{rect.height()} * s) / num_strips));
-      if (y1 > y0) {
-        strips.push_back(
-            webrtc::DesktopRect::MakeLTRB(rect.left(), y0, rect.right(), y1));
-        y0 = y1;
-      }
-    }
+    const int num_strips = static_cast<int>(
+        (rect_pixels * static_cast<int64_t>(target_strips) + total_pixels - 1) /
+        total_pixels);
+    AppendRectStrips(rect, num_strips, strips);
   }
   return strips;
 }
@@ -215,6 +232,53 @@ void ConvertDesktopFrameRegionToYuv(const webrtc::DesktopFrame& frame,
        r.Advance()) {
     convert_rect(r.rect());
   }
+}
+
+void ConvertDesktopFrameToNv12(const webrtc::DesktopFrame& frame,
+                               base::span<uint8_t> y_data,
+                               int y_stride,
+                               base::span<uint8_t> uv_data,
+                               int uv_stride) {
+  if (frame.size().is_empty()) {
+    return;
+  }
+  CHECK_EQ(frame.pixel_format(), webrtc::FOURCC_ARGB);
+  const int width = frame.size().width();
+  const int height = frame.size().height();
+  const int uv_rows = (height + 1) / 2;
+  const int uv_row_bytes = ((width + 1) / 2) * 2;
+  CHECK_GE(y_stride, width);
+  CHECK_GE(uv_stride, uv_row_bytes);
+  CHECK_GE(y_data.size(), static_cast<size_t>(y_stride) * (height - 1) +
+                              static_cast<size_t>(width));
+  CHECK_GE(uv_data.size(), static_cast<size_t>(uv_stride) * (uv_rows - 1) +
+                               static_cast<size_t>(uv_row_bytes));
+
+  auto convert_strip = [&](const webrtc::DesktopRect& rect) {
+    DCHECK_EQ(rect.left(), 0);
+    DCHECK_EQ(rect.top() % 2, 0);
+    const size_t y_offset = static_cast<size_t>(y_stride) * rect.top();
+    const size_t uv_offset = static_cast<size_t>(uv_stride) * (rect.top() / 2);
+    libyuv::ARGBToNV12(frame.GetFrameDataAtPos(rect.top_left()), frame.stride(),
+                       y_data.subspan(y_offset).data(), y_stride,
+                       uv_data.subspan(uv_offset).data(), uv_stride,
+                       rect.width(), rect.height());
+  };
+
+  const webrtc::DesktopRect full_rect =
+      webrtc::DesktopRect::MakeSize(frame.size());
+  const int64_t pixels = int64_t{width} * height;
+  const size_t max_workers = GetMaxParallelWorkers(pixels);
+  if (max_workers > 1) {
+    const std::vector<webrtc::DesktopRect> strips =
+        SplitRectIntoStrips(full_rect, max_workers * 2);
+    if (strips.size() > 1) {
+      RunStripsInParallel(strips, max_workers, convert_strip);
+      return;
+    }
+  }
+
+  convert_strip(full_rect);
 }
 
 ScopedParallelConversionCpuCapForTesting::

@@ -35,7 +35,7 @@
 #include "media/video/video_encode_accelerator.h"
 #include "remoting/base/constants.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
-#include "third_party/libyuv/include/libyuv/convert_from_argb.h"
+#include "remoting/codec/utils.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -257,13 +257,11 @@ void WebrtcVideoEncoderGpu::Core::Encode(
   previous_timestamp_ = new_timestamp;
 
   // H264 encoder on Windows uses NV12 so convert here.
-  libyuv::ARGBToNV12(frame->data(), frame->stride(),
-                     video_frame->writable_data(VideoFrame::Plane::kY),
-                     video_frame->stride(VideoFrame::Plane::kY),
-                     video_frame->writable_data(VideoFrame::Plane::kUV),
-                     video_frame->stride(VideoFrame::Plane::kUV),
-                     video_frame->visible_rect().width(),
-                     video_frame->visible_rect().height());
+  ConvertDesktopFrameToNv12(
+      *frame, video_frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kY),
+      video_frame->stride(VideoFrame::Plane::kY),
+      video_frame->GetWritableVisiblePlaneData(VideoFrame::Plane::kUV),
+      video_frame->stride(VideoFrame::Plane::kUV));
 
   callbacks_[video_frame->timestamp()] = std::move(done);
 

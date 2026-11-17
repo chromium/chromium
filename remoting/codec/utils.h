@@ -35,9 +35,8 @@ void ConvertDesktopFrameRectToYuv(const webrtc::DesktopFrame& frame,
 webrtc::DesktopRegion GetRowAlignedRegion(const webrtc::DesktopRegion& region,
                                           int frame_width);
 
-// Minimum row-aligned dirty pixel count (~25% of a 1080p frame) required for
-// `ConvertDesktopFrameRegionToYuv()` to parallelize conversion across
-// `base::ThreadPool` via `base::CreateJob()`.
+// Minimum pixel count (~25% of a 1080p frame) required for YUV conversion
+// helpers to parallelize across `base::ThreadPool` via `base::CreateJob()`.
 inline constexpr int64_t kParallelYuvConversionPixelThreshold = 512000;
 
 // Converts each rectangle in `region` (aligned horizontally to SIMD row
@@ -61,6 +60,26 @@ void ConvertDesktopFrameRegionToYuv(const webrtc::DesktopFrame& frame,
                                     int u_stride,
                                     base::span<uint8_t> v_data,
                                     int v_stride);
+
+// Converts an ARGB `frame` into NV12 (`y_data` luma plane and interleaved UV
+// `uv_data` chroma plane). Empty frames (`frame.size().is_empty()`) are a
+// no-op. For non-empty frames, `CHECK`s that `frame.pixel_format()` is
+// `webrtc::FOURCC_ARGB`, `y_stride >= width`, `uv_stride >= 2 * ((width + 1) /
+// 2)`, and each plane span covers at least `stride * (rows - 1) + row_bytes`
+// bytes (so tight visible-plane spans from
+// `media::VideoFrame::GetWritableVisiblePlaneData()` are sufficient).
+//
+// When `frame` covers at least `kParallelYuvConversionPixelThreshold` pixels
+// and multiple CPU workers are available in `base::ThreadPool`, conversion is
+// partitioned across dynamic work-stealing horizontal strips via
+// `base::CreateJob(...).Join()` before returning synchronously; under
+// `ThreadPool` contention, the calling thread drains remaining strips inline
+// without stalling on queued workers.
+void ConvertDesktopFrameToNv12(const webrtc::DesktopFrame& frame,
+                               base::span<uint8_t> y_data,
+                               int y_stride,
+                               base::span<uint8_t> uv_data,
+                               int uv_stride);
 
 // Overrides the `(NumberOfProcessors() + 1) / 2` worker cap in
 // `GetMaxParallelWorkers()` so unit tests exercise the multi-strip

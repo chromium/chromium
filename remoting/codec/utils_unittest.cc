@@ -72,6 +72,12 @@ struct YuvSubsamplingTestParam {
   int uv_divisor;
 };
 
+struct FrameSizeParam {
+  const char* name;
+  int width;
+  int height;
+};
+
 // Populates an ARGB frame with deterministic, spatially varying pixel values.
 void FillPatternFrame(webrtc::DesktopFrame& frame) {
   const int row_bytes =
@@ -623,6 +629,7 @@ TEST(CodecUtilsTest,
   // Intentionally omit `TaskEnvironment` (`ThreadPoolInstance::Get()` is null)
   // to verify callers without an initialized `ThreadPool` fall back cleanly to
   // single-pass conversion above `kParallelYuvConversionPixelThreshold`.
+  ASSERT_FALSE(base::ThreadPoolInstance::Get());
   ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
   constexpr int kWidth = 1024;
   constexpr int kHeight = 512;  // 524,288 pixels >= 512,000.
@@ -648,6 +655,161 @@ TEST(CodecUtilsTest,
   EXPECT_EQ(actual_y, ref_y);
   EXPECT_EQ(actual_u, ref_u);
   EXPECT_EQ(actual_v, ref_v);
+}
+
+TEST(CodecUtilsTest, ConvertDesktopFrameToNv12_EmptyFrameIsNoOp) {
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(0, 0));
+  std::vector<uint8_t> y_plane(16, kSentinel);
+  std::vector<uint8_t> uv_plane(16, kSentinel);
+
+  ConvertDesktopFrameToNv12(frame, y_plane, 16, uv_plane, 16);
+  EXPECT_EQ(y_plane, std::vector<uint8_t>(16, kSentinel));
+  EXPECT_EQ(uv_plane, std::vector<uint8_t>(16, kSentinel));
+}
+
+class ConvertDesktopFrameToNv12BelowThresholdTest
+    : public testing::TestWithParam<FrameSizeParam> {};
+
+TEST_P(ConvertDesktopFrameToNv12BelowThresholdTest,
+       MatchesSinglePassWithPaddedStridesAndTightSpans) {
+  const FrameSizeParam& param = GetParam();
+  const int width = param.width;
+  const int height = param.height;
+  const int uv_rows = (height + 1) / 2;
+  const int uv_row_bytes = ((width + 1) / 2) * 2;
+  // Use distinct padded Y/UV strides and tight visible-plane span bounds
+  // (matching `media::VideoFrame::GetWritableVisiblePlaneData()`, which
+  // excludes trailing stride padding on the final row).
+  constexpr int kYStride = 48;
+  constexpr int kUvStride = 56;
+
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(width, height));
+  FillPatternFrame(frame);
+
+  const size_t tight_y_size =
+      static_cast<size_t>(kYStride) * (height - 1) + width;
+  const size_t tight_uv_size =
+      static_cast<size_t>(kUvStride) * (uv_rows - 1) + uv_row_bytes;
+
+  std::vector<uint8_t> ref_y(tight_y_size, kSentinel);
+  std::vector<uint8_t> ref_uv(tight_uv_size, kSentinel);
+  libyuv::ARGBToNV12(frame.data(), frame.stride(), ref_y.data(), kYStride,
+                     ref_uv.data(), kUvStride, width, height);
+
+  std::vector<uint8_t> actual_y(tight_y_size, kSentinel);
+  std::vector<uint8_t> actual_uv(tight_uv_size, kSentinel);
+  ConvertDesktopFrameToNv12(frame, actual_y, kYStride, actual_uv, kUvStride);
+
+  EXPECT_EQ(actual_y, ref_y);
+  EXPECT_EQ(actual_uv, ref_uv);
+}
+
+constexpr FrameSizeParam kNv12BelowThresholdParams[] = {
+    {"EvenBounds_32x24", 32, 24},
+    {"OddBounds_33x25", 33, 25},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConvertDesktopFrameToNv12BelowThresholdTest,
+    testing::ValuesIn(kNv12BelowThresholdParams),
+    [](const testing::TestParamInfo<FrameSizeParam>& info) {
+      return info.param.name;
+    });
+
+class ConvertDesktopFrameToNv12ParallelTest
+    : public testing::TestWithParam<FrameSizeParam> {};
+
+TEST_P(ConvertDesktopFrameToNv12ParallelTest, ParallelJobMatchesSinglePass) {
+  base::test::TaskEnvironment task_environment;
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
+  const FrameSizeParam& param = GetParam();
+  const int width = param.width;
+  const int height = param.height;
+  const int uv_rows = (height + 1) / 2;
+  const int uv_row_bytes = ((width + 1) / 2) * 2;
+  constexpr int kYStride = 1088;
+  constexpr int kUvStride = 1120;
+
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(width, height));
+  FillPatternFrame(frame);
+
+  const size_t tight_y_size =
+      static_cast<size_t>(kYStride) * (height - 1) + width;
+  const size_t tight_uv_size =
+      static_cast<size_t>(kUvStride) * (uv_rows - 1) + uv_row_bytes;
+
+  std::vector<uint8_t> expected_y(tight_y_size, kSentinel);
+  std::vector<uint8_t> expected_uv(tight_uv_size, kSentinel);
+  libyuv::ARGBToNV12(frame.data(), frame.stride(), expected_y.data(), kYStride,
+                     expected_uv.data(), kUvStride, width, height);
+
+  std::vector<uint8_t> actual_y(tight_y_size, kSentinel);
+  std::vector<uint8_t> actual_uv(tight_uv_size, kSentinel);
+  ConvertDesktopFrameToNv12(frame, actual_y, kYStride, actual_uv, kUvStride);
+
+  EXPECT_EQ(actual_y, expected_y);
+  EXPECT_EQ(actual_uv, expected_uv);
+}
+
+constexpr FrameSizeParam kNv12ParallelParams[] = {
+    {"EvenBounds_1024x542", 1024, 542},
+    {"OddBounds_1025x543", 1025, 543},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConvertDesktopFrameToNv12ParallelTest,
+    testing::ValuesIn(kNv12ParallelParams),
+    [](const testing::TestParamInfo<FrameSizeParam>& info) {
+      return info.param.name;
+    });
+
+TEST(CodecUtilsTest,
+     ConvertDesktopFrameToNv12_CompletesInlineWhenThreadPoolStarved) {
+  ScopedSaturateForegroundThreadPool saturated_pool;
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
+
+  constexpr int kWidth = 1024;
+  constexpr int kHeight = 512;  // 524,288 pixels >= 512,000.
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(kWidth, kHeight));
+  FillPatternFrame(frame);
+
+  std::vector<uint8_t> expected_y(kWidth * kHeight, kSentinel);
+  std::vector<uint8_t> expected_uv(kWidth * (kHeight / 2), kSentinel);
+  libyuv::ARGBToNV12(frame.data(), frame.stride(), expected_y.data(), kWidth,
+                     expected_uv.data(), kWidth, kWidth, kHeight);
+
+  std::vector<uint8_t> actual_y(kWidth * kHeight, kSentinel);
+  std::vector<uint8_t> actual_uv(kWidth * (kHeight / 2), kSentinel);
+  ConvertDesktopFrameToNv12(frame, actual_y, kWidth, actual_uv, kWidth);
+
+  EXPECT_EQ(actual_y, expected_y);
+  EXPECT_EQ(actual_uv, expected_uv);
+}
+
+TEST(CodecUtilsTest,
+     ConvertDesktopFrameToNv12_NoThreadPoolRunsSinglePassAboveThreshold) {
+  // Intentionally omit `TaskEnvironment` (`ThreadPoolInstance::Get()` is null)
+  // to verify callers without an initialized `ThreadPool` fall back cleanly to
+  // single-pass conversion above `kParallelYuvConversionPixelThreshold`.
+  ASSERT_FALSE(base::ThreadPoolInstance::Get());
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
+  constexpr int kWidth = 1024;
+  constexpr int kHeight = 512;  // 524,288 pixels >= 512,000.
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(kWidth, kHeight));
+  FillPatternFrame(frame);
+
+  std::vector<uint8_t> actual_y(kWidth * kHeight, kSentinel);
+  std::vector<uint8_t> actual_uv(kWidth * (kHeight / 2), kSentinel);
+  ConvertDesktopFrameToNv12(frame, actual_y, kWidth, actual_uv, kWidth);
+
+  std::vector<uint8_t> ref_y(kWidth * kHeight, 0);
+  std::vector<uint8_t> ref_uv(kWidth * (kHeight / 2), 0);
+  libyuv::ARGBToNV12(frame.data(), frame.stride(), ref_y.data(), kWidth,
+                     ref_uv.data(), kWidth, kWidth, kHeight);
+  EXPECT_EQ(actual_y, ref_y);
+  EXPECT_EQ(actual_uv, ref_uv);
 }
 
 }  // namespace remoting
