@@ -1484,6 +1484,73 @@ TEST_F(NavigationRequestWithoutSubframeErrorPageIsolationTest,
   }
 }
 
+TEST_F(
+    NavigationRequestWithoutSubframeErrorPageIsolationTest,
+    DontSanitizeRedirectsForCommitErrorPageInCurrentProcessSameOriginNewRFH) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kSanitizeFailedSubframeNavigationUrls, {}},
+       {features::kSanitizeLocationHeadersDuringNavigation, {}},
+       {features::kRenderDocument, {{"level", "all-frames"}}}},
+      /*disabled_features=*/{});
+
+  // Commit an initial page and a same-origin subframe document so that a
+  // subsequent failed navigation under RenderDocument selects a new
+  // RenderFrameHost in `ErrorPageProcess::kCurrentProcess` whose own
+  // `GetLastCommittedOrigin()` is still opaque before commit.
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("https://c.com/"),
+                                                     main_test_rfh());
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+  child_frame = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://c.com/initial"), child_frame));
+  ASSERT_TRUE(child_frame->has_committed_any_navigation());
+
+  const GURL start_url("https://b.com/start?param=1");
+  const GURL final_url("https://c.com/path?param=2");
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(start_url, child_frame);
+  navigation->Start();
+
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 302 Found");
+  headers->SetHeader("Location", "https://c.com/path?param=2");
+  navigation->SetRedirectHeaders(headers);
+
+  navigation->Redirect(final_url);
+  navigation->Fail(net::ERR_BLOCKED_BY_CLIENT);
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  ASSERT_EQ(ErrorPageProcess::kCurrentProcess,
+            request->ComputeErrorPageProcess());
+  ASSERT_NE(child_frame, request->GetRenderFrameHost());
+  ASSERT_EQ(child_frame->GetProcess(),
+            request->GetRenderFrameHost()->GetProcess());
+  ASSERT_TRUE(request->GetRenderFrameHost()->GetLastCommittedOrigin().opaque());
+
+  // Even though the error page commits in a new RenderFrameHost that has not
+  // committed any navigation yet, the frame's current origin in the receiving
+  // process is `https://c.com`, so same-origin redirect URLs and Location
+  // headers should NOT be stripped to origin.
+  EXPECT_EQ(final_url, request->common_params().url);
+  ASSERT_EQ(1u, request->commit_params().redirect_params.size());
+  EXPECT_EQ(final_url,
+            request->commit_params().redirect_params[0]->redirect_info.new_url);
+  ASSERT_EQ(1u, request->commit_params().redirects.size());
+  EXPECT_EQ(GURL("https://b.com/"), request->commit_params().redirects[0]);
+
+  size_t iter = 0;
+  std::optional<std::string_view> location =
+      request->commit_params()
+          .redirect_params[0]
+          ->response_head->headers->EnumerateHeader(&iter, "Location");
+  ASSERT_TRUE(location.has_value());
+  EXPECT_EQ("https://c.com/path?param=2", location.value());
+}
+
 // Test that when a subframe navigation with multiple redirects (same-origin to
 // each other, but cross-origin to the main page) is blocked and commits an
 // error page in the initiator's process, all redirect URLs are reduced to

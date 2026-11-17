@@ -8972,13 +8972,21 @@ void NavigationRequest::SanitizeRedirectsForCommit(
 
   // TODO(crbug.com/40134629): Remove the sanitization once Subframe Error
   // Pages are isolated.
-  const bool should_sanitize_final_url_for_error_page =
-      base::FeatureList::IsEnabled(
+  RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
+  bool should_sanitize_final_url_for_error_page = false;
+  if (base::FeatureList::IsEnabled(
           features::kSanitizeFailedSubframeNavigationUrls) &&
       ComputeErrorPageProcess() == ErrorPageProcess::kCurrentProcess &&
-      !commit_params->redirect_params.empty() &&
-      !url::Origin::Create(common_params->url)
-           .IsSameOriginWith(GetRenderFrameHost()->GetLastCommittedOrigin());
+      !commit_params->redirect_params.empty()) {
+    // With RenderDocument, an error page in `kCurrentProcess` may target a new
+    // speculative RenderFrameHost in `current_rfh`'s process whose own
+    // `GetLastCommittedOrigin()` is still uncommitted (opaque), so check
+    // `current_rfh->GetLastCommittedOrigin()` instead.
+    CHECK_EQ(GetRenderFrameHost()->GetProcess(), current_rfh->GetProcess());
+    should_sanitize_final_url_for_error_page =
+        !url::Origin::Create(common_params->url)
+             .IsSameOriginWith(current_rfh->GetLastCommittedOrigin());
+  }
 
   if (should_sanitize_final_url_for_error_page) {
     common_params->url = common_params->url.DeprecatedGetOriginAsURL();
@@ -9021,12 +9029,11 @@ void NavigationRequest::SanitizeRedirectsForCommit(
     // The expected origin of the process that will host the committed document.
     // We use this to determine if a redirect is cross-origin to the committing
     // process. For successful navigations, we assume the committing process
-    // will match the origin of the destination URL. For error pages that are
-    // allowed to commit in the current process, we use the current origin of
-    // the RenderFrameHost.
+    // will match the origin of the destination URL. For error pages that stay
+    // in `current_rfh`'s process, use `current_rfh`'s committed origin.
     const url::Origin expected_commit_process_origin =
         should_sanitize_final_url_for_error_page
-            ? GetRenderFrameHost()->GetLastCommittedOrigin()
+            ? current_rfh->GetLastCommittedOrigin()
             : url::Origin::Create(common_params->url);
 
     // Sanitize the "Location" headers for redirects that are cross-origin to
