@@ -93,7 +93,7 @@ class CrxUpdateService
  private:
   void Start();
 
-  bool CheckForUpdates(UpdateScheduler::OnFinishedCallback on_finished);
+  void CheckForUpdates();
 
   void OnDemandUpdateInternal(const std::string& id,
                               Priority priority,

@@ -13,11 +13,8 @@ namespace component_updater {
 // Abstract interface for an update task scheduler.
 class UpdateScheduler {
  public:
-  using OnFinishedCallback = base::OnceCallback<void()>;
-  // Type of task to be run by the scheduler. The task can start asynchronous
-  // operations and must call |on_finished| when all operations have completed.
-  using UserTask =
-      base::RepeatingCallback<void(OnFinishedCallback on_finished)>;
+  // Type of task to be run by the scheduler.
+  using UserTask = base::RepeatingClosure;
 
   virtual ~UpdateScheduler() = default;
 

@@ -299,7 +299,7 @@ void ComponentInstallerTest::Schedule(
     base::TimeDelta initial_delay,
     base::TimeDelta delay,
     const UpdateScheduler::UserTask& user_task) {
-  user_task.Run(base::DoNothing());
+  user_task.Run();
 }
 
 }  // namespace

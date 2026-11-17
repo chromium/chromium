@@ -155,11 +155,9 @@ void CrxUpdateService::Start() {
           << "Next update attempt will take place in "
           << config_->NextCheckDelay() << " seconds. ";
 
-  scheduler_->Schedule(
-      config_->InitialDelay(), config_->NextCheckDelay(),
-      base::BindRepeating(
-          base::IgnoreResult(&CrxUpdateService::CheckForUpdates),
-          weak_ptr_factory_.GetWeakPtr()));
+  scheduler_->Schedule(config_->InitialDelay(), config_->NextCheckDelay(),
+                       base::BindRepeating(&CrxUpdateService::CheckForUpdates,
+                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Stops the update loop. In flight operations will be completed.
@@ -457,36 +455,25 @@ bool CrxUpdateService::Cancel(const std::string& id) {
   return update_client_->Cancel(id);
 }
 
-bool CrxUpdateService::CheckForUpdates(
-    UpdateScheduler::OnFinishedCallback on_finished) {
+void CrxUpdateService::CheckForUpdates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.Calls", UPDATE_TYPE_AUTOMATIC,
                             UPDATE_TYPE_COUNT);
 
   if (components_order_.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(on_finished));
-    return true;
+    return;
   }
 
   config_->GetCrxCache()->RemoveIfNot(
       components_order_,
-      base::BindOnce(
-          &UpdateClient::Update, update_client_, components_order_,
-          base::BindOnce(&CrxUpdateService::GetCrxComponents,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::DoNothing(), false,
-          base::BindOnce(&CrxUpdateService::OnUpdateComplete,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         base::BindOnce(
-                             [](UpdateScheduler::OnFinishedCallback on_finished,
-                                update_client::Error /*error*/) {
-                               std::move(on_finished).Run();
-                             },
-                             std::move(on_finished)),
-                         base::TimeTicks::Now())));
-  return true;
+      base::BindOnce(&UpdateClient::Update, update_client_, components_order_,
+                     base::BindOnce(&CrxUpdateService::GetCrxComponents,
+                                    weak_ptr_factory_.GetWeakPtr()),
+                     base::DoNothing(), /*is_foreground=*/false,
+                     base::BindOnce(&CrxUpdateService::OnUpdateComplete,
+                                    weak_ptr_factory_.GetWeakPtr(), Callback(),
+                                    base::TimeTicks::Now())));
 }
 
 bool CrxUpdateService::GetComponentDetails(const std::string& id,

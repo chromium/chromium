@@ -28,6 +28,7 @@
 #include "build/branding_buildflags.h"
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/component_updater/pref_names.h"
+#include "components/component_updater/timer_update_scheduler.h"
 #include "components/component_updater/update_scheduler.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/crx_update_item.h"
@@ -196,23 +197,16 @@ class ComponentUpdaterTest : public testing::Test {
   MockUpdateScheduler& scheduler() { return *scheduler_; }
 
  protected:
-  // `time_source` selects the time source of the task environment; the metered
-  // connection tests use mock time to run the delayed resumption of updates.
-  explicit ComponentUpdaterTest(
-      base::test::TaskEnvironment::TimeSource time_source);
-
   void RunThreads();
   void TriggerUpdateComplete(const std::string& id);
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
-  void RunUpdateTask(const UpdateScheduler::UserTask& user_task);
-  void Schedule(base::TimeDelta initial_delay,
-                base::TimeDelta delay,
-                const UpdateScheduler::UserTask& user_task);
-
-  base::test::TaskEnvironment task_environment_;
+  // With mock time, timers such as the update checks of `timer_scheduler_` fire
+  // as soon as the test is idle, without waiting for their delay.
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::RunLoop runloop_;
 
   std::unique_ptr<TestingPrefServiceSimple> pref_ =
@@ -220,6 +214,10 @@ class ComponentUpdaterTest : public testing::Test {
   scoped_refptr<TestConfigurator> config_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
+  // Runs the update checks scheduled with `scheduler_`, unless a test overrides
+  // the default actions of `scheduler_`. Must outlive `component_updater_`,
+  // whose destructor stops it.
+  TimerUpdateScheduler timer_scheduler_;
   std::unique_ptr<ComponentUpdateService> component_updater_;
   raw_ptr<MockUpdateScheduler> scheduler_;
 };
@@ -262,17 +260,15 @@ std::unique_ptr<ComponentUpdateService> TestComponentUpdateServiceFactory(
       /*update_checks_disabled=*/false);
 }
 
-ComponentUpdaterTest::ComponentUpdaterTest()
-    : ComponentUpdaterTest(base::test::TaskEnvironment::TimeSource::DEFAULT) {}
-
-ComponentUpdaterTest::ComponentUpdaterTest(
-    base::test::TaskEnvironment::TimeSource time_source)
-    : task_environment_(time_source) {
+ComponentUpdaterTest::ComponentUpdaterTest() {
   EXPECT_CALL(update_client(), AddObserver(_));
   auto scheduler = std::make_unique<MockUpdateScheduler>();
   scheduler_ = scheduler.get();
   ON_CALL(*scheduler_, Schedule(_, _, _))
-      .WillByDefault(Invoke(this, &ComponentUpdaterTest::Schedule));
+      .WillByDefault(
+          Invoke(&timer_scheduler_, &TimerUpdateScheduler::Schedule));
+  ON_CALL(*scheduler_, Stop())
+      .WillByDefault(Invoke(&timer_scheduler_, &TimerUpdateScheduler::Stop));
   RegisterComponentUpdateServicePrefs(pref_->registry());
   update_client::RegisterPrefs(pref_->registry());
   config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
@@ -305,29 +301,6 @@ void ComponentUpdaterTest::TriggerUpdateComplete(const std::string& id) {
 
   ASSERT_TRUE(update_callback);
   std::move(update_callback).Run(update_client::Error::NONE);
-}
-
-void ComponentUpdaterTest::RunUpdateTask(
-    const UpdateScheduler::UserTask& user_task) {
-  task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindRepeating(
-                     [](const UpdateScheduler::UserTask& user_task,
-                        ComponentUpdaterTest* test) {
-                       user_task.Run(base::BindOnce(
-                           [](const UpdateScheduler::UserTask& user_task,
-                              ComponentUpdaterTest* test) {
-                             test->RunUpdateTask(user_task);
-                           },
-                           user_task, base::Unretained(test)));
-                     },
-                     user_task, base::Unretained(this)));
-}
-
-void ComponentUpdaterTest::Schedule(
-    base::TimeDelta initial_delay,
-    base::TimeDelta delay,
-    const UpdateScheduler::UserTask& user_task) {
-  RunUpdateTask(user_task);
 }
 
 TEST_F(ComponentUpdaterTest, AddObserver) {
@@ -783,14 +756,8 @@ TEST_F(ComponentUpdaterTest, Cancel) {
 }
 
 // Tests the behavior of the component updater when the cost of the connection
-// changes. The tests run with mock time so that the delayed resumption of the
-// updates deferred by a metered connection is deterministic.
+// changes.
 class ComponentUpdaterMeteredTest : public ComponentUpdaterTest {
- public:
-  ComponentUpdaterMeteredTest()
-      : ComponentUpdaterTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
  protected:
   using ComponentState = ::update_client::ComponentState;
   using ConnectionCost = ::net::NetworkChangeNotifier::ConnectionCost;

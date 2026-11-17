@@ -4,10 +4,6 @@
 
 #include "components/component_updater/timer_update_scheduler.h"
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-
 namespace component_updater {
 
 TimerUpdateScheduler::TimerUpdateScheduler() = default;
@@ -16,11 +12,7 @@ TimerUpdateScheduler::~TimerUpdateScheduler() = default;
 void TimerUpdateScheduler::Schedule(base::TimeDelta initial_delay,
                                     base::TimeDelta delay,
                                     const UserTask& user_task) {
-  timer_.Start(
-      initial_delay, delay,
-      base::BindRepeating(
-          [](const UserTask& user_task) { user_task.Run(base::DoNothing()); },
-          user_task));
+  timer_.Start(initial_delay, delay, user_task);
 }
 
 void TimerUpdateScheduler::Stop() {
