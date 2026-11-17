@@ -1238,6 +1238,7 @@ libfuzzer_linux_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 32,
     clusterfuzz_archive_path = "linux32-release-asan/libfuzzer-linux32-release",
+    clusterfuzz_archive_schema_version = 1,
     console_short_name = "x86",
     execution_timeout = 5 * time.hour,
     gn_extra_configs = [
