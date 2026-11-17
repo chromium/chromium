@@ -8,22 +8,16 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.SystemClock;
-import android.transition.ChangeBounds;
 import android.transition.Transition;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
-import androidx.annotation.StringRes;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -39,13 +33,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
 /**
- * Owns the resize handle for one {@link AnchorSide}, and translates drag gestures on it into {@link
- * SideUiContainer#onResizeLive} and {@link SideUiContainer#onResizeCommitted} calls.
- *
- * <p>The handle is a strip overlaying the inner edge of the anchor container, i.e. the edge facing
- * the web contents. Its width comes from {@link SideUiContainer#getResizeHandleWidthPx}, and it
- * draws a bar at its center, or at {@link SideUiContainer#getResizeHandleBarInsetPx} from the
- * container's inner edge. It also changes the pointer icon on hover.
+ * Owns the {@link SideUiResizeHandleView} for one {@link AnchorSide}, and translates drag gestures
+ * on it into {@link SideUiContainer#onResizeLive} and {@link SideUiContainer#onResizeCommitted}
+ * calls.
  *
  * <p>The handle {@link View} is created lazily the first time the bound container is resizable, and
  * is removed when the container's {@link View} is detached from the anchor container.
@@ -56,9 +46,7 @@ import java.util.Arrays;
  * #canStartResize}. A drag that never does, e.g. a tap or a right-click drag, resizes and commits
  * nothing.
  */
-// The handle is a drag affordance with no click action; accessibility is provided through the
-// handle's content description and dedicated accessibility actions.
-@SuppressLint({"ClickableViewAccessibility", "RtlHardcoded"})
+@SuppressLint("ClickableViewAccessibility")
 @NullMarked
 /* package */ final class SideUiResizeHandler implements View.OnTouchListener {
 
@@ -122,7 +110,7 @@ import java.util.Arrays;
     private final ViewGroup mAnchorContainerParent;
     private final SideUiCoordinator mSideUiCoordinator;
 
-    private @Nullable View mHandleView;
+    private @Nullable SideUiResizeHandleView mHandleView;
 
     /** The raw X coordinate where the in-progress drag started, or null if there isn't one. */
     private @Nullable Float mDragStartRawX;
@@ -183,22 +171,22 @@ import java.util.Arrays;
         }
 
         if (mHandleView == null) {
-            // AnchorSide is physical, so use physical gravities to keep the handle on the inner
-            // edge in RTL.
-            int gravity = mAnchorSide == AnchorSide.LEFT ? Gravity.RIGHT : Gravity.LEFT;
             mHandleView =
-                    createHandleView(
-                            mContext,
-                            mAnchorContainer,
-                            gravity,
-                            mContainer.getResizeHandleWidthPx(),
-                            mContainer.getResizeHandleBarInsetPx(),
-                            mContainer.getResizeHandleContentDescriptionRes(),
-                            /* onTouchListener= */ this);
+                    (SideUiResizeHandleView)
+                            LayoutInflater.from(mContext)
+                                    .inflate(
+                                            R.layout.side_ui_resize_handle,
+                                            mAnchorContainer,
+                                            /* attachToRoot= */ false);
+            mHandleView.initialize(
+                    mAnchorSide,
+                    mContainer.getResizeHandleWidthPx(),
+                    mContainer.getResizeHandleBarInsetPx(),
+                    mContainer.getResizeHandleContentDescriptionRes(),
+                    /* onTouchListener= */ this);
             mAnchorContainer.addView(mHandleView);
         }
 
-        assert mHandleView != null;
         mHandleView.setVisibility(View.VISIBLE);
         // The container's View is added after the handle when the container is (re)attached, so
         // keep the handle on top to make sure it receives touch events.
@@ -219,15 +207,9 @@ import java.util.Arrays;
     /**
      * Returns a {@link Transition} that moves the handle along with the container's inner edge
      * during an animated resize, or null if the handle isn't laid out.
-     *
-     * <p>The anchor container is animated with {@link ChangeBounds}, which lays out its children
-     * only once on transition start, so without this the handle would jump to its final position
-     * right away. An {@link View#INVISIBLE} handle is targeted too, so that it moves from the right
-     * starting position if it is shown by the same update.
      */
     /* package */ @Nullable Transition createResizeTransition() {
-        if (mHandleView == null || mHandleView.getVisibility() == View.GONE) return null;
-        return new ChangeBounds().addTarget(mHandleView);
+        return mHandleView == null ? null : mHandleView.createResizeTransition();
     }
 
     // View.OnTouchListener implementation:
@@ -340,7 +322,8 @@ import java.util.Arrays;
         // Pointer icons are resolved from the view under the pointer. The anchor container parent
         // covers the web contents and falls back to its own icon when no child provides one, so it
         // keeps the resize icon while the drag moves off the handle.
-        mAnchorContainerParent.setPointerIcon(getResizePointerIcon(mContext));
+        mAnchorContainerParent.setPointerIcon(
+                SideUiResizeHandleView.getResizePointerIcon(mContext));
     }
 
     private void clearDragState() {
@@ -371,53 +354,6 @@ import java.util.Arrays;
     // and assert !isDragging() on ACTION_DOWN.
     private static void recordTouchState(@TouchState int state) {
         RecordHistogram.recordEnumeratedHistogram(TOUCH_STATE_HISTOGRAM, state, TouchState.COUNT);
-    }
-
-    private static PointerIcon getResizePointerIcon(Context context) {
-        return PointerIcon.getSystemIcon(context, PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW);
-    }
-
-    /**
-     * Creates the handle {@link View}: a strip with a bar drawn at its center, or at {@code
-     * containerBarInsetPx} from the edge given by {@code gravity}. The caller is responsible for
-     * adding it to {@code parent}.
-     */
-    private static View createHandleView(
-            Context context,
-            ViewGroup parent,
-            int gravity,
-            @Px @Nullable Integer containerHandleWidthPx,
-            @Px @Nullable Integer containerBarInsetPx,
-            @StringRes int contentDescriptionRes,
-            View.OnTouchListener onTouchListener) {
-        View handleView =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.side_ui_resize_handle, parent, /* attachToRoot= */ false);
-        var layoutParams = (FrameLayout.LayoutParams) handleView.getLayoutParams();
-        layoutParams.gravity = gravity;
-        if (containerHandleWidthPx != null) layoutParams.width = containerHandleWidthPx;
-        handleView.setLayoutParams(layoutParams);
-        if (containerBarInsetPx != null) {
-            View barView = handleView.findViewById(R.id.side_ui_resize_handle_bar);
-            var barLayoutParams = (FrameLayout.LayoutParams) barView.getLayoutParams();
-            barLayoutParams.gravity = gravity | Gravity.CENTER_VERTICAL;
-            if (gravity == Gravity.RIGHT) {
-                barLayoutParams.rightMargin = containerBarInsetPx;
-            } else {
-                barLayoutParams.leftMargin = containerBarInsetPx;
-            }
-            barView.setLayoutParams(barLayoutParams);
-        }
-        if (contentDescriptionRes != Resources.ID_NULL) {
-            handleView.setContentDescription(context.getString(contentDescriptionRes));
-        }
-        handleView.setPointerIcon(getResizePointerIcon(context));
-        handleView.setOnTouchListener(onTouchListener);
-        // The handle consumes ACTION_DOWN, but a right-click also sends a separate
-        // ACTION_BUTTON_PRESS generic motion event. Without a context click listener, it falls
-        // through to the container below and opens its context menu.
-        handleView.setOnContextClickListener(v -> true);
-        return handleView;
     }
 
     /* package */ @Nullable View getHandleViewForTesting() {
