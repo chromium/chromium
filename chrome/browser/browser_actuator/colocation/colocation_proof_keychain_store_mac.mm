@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/browser_actuator/local_actuation/local_actuation_names.h"
 #include "chrome/common/chrome_version.h"
 #include "crypto/apple/keychain_v2.h"
 
@@ -19,9 +20,6 @@ using base::apple::CFToNSPtrCast;
 using base::apple::NSToCFPtrCast;
 
 namespace browser_actuator {
-
-const char kColocationProofKeychainAccessGroup[] = MAC_TEAM_IDENTIFIER_STRING
-    "." MAC_BUNDLE_IDENTIFIER_STRING ".local-actuation";
 
 const char kColocationProofKeychainService[] =
     MAC_BUNDLE_IDENTIFIER_STRING ".local-actuation.colocation-proof";
@@ -34,7 +32,7 @@ NSMutableDictionary* ItemQuery(std::string_view client_id) {
   return [NSMutableDictionary dictionaryWithDictionary:@{
     CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassGenericPassword),
     CFToNSPtrCast(kSecAttrAccessGroup) :
-        base::SysUTF8ToNSString(kColocationProofKeychainAccessGroup),
+        base::SysUTF8ToNSString(kLocalActuationKeychainAccessGroup),
     CFToNSPtrCast(kSecAttrService) :
         base::SysUTF8ToNSString(kColocationProofKeychainService),
     CFToNSPtrCast(kSecAttrAccount) : base::SysUTF8ToNSString(client_id),

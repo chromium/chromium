@@ -12,6 +12,7 @@ source_set("colocation") {
 
   deps = [
     "//base",
+    "//chrome/browser/browser_actuator/local_actuation:names",
     "//chrome/common:version_header",
     "//crypto",
   ]
@@ -30,6 +31,7 @@ source_set("unit_tests") {
   deps = [
     ":colocation",
     "//base",
+    "//chrome/browser/browser_actuator/local_actuation:names",
     "//crypto:test_support",
     "//testing/gmock",
     "//testing/gtest",

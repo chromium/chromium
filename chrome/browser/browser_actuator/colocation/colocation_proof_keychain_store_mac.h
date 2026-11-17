@@ -12,13 +12,9 @@
 
 namespace browser_actuator {
 
-// Data Protection Keychain access group that holds co-location proofs. Chrome
-// shares this group with the local apps that read the proof, so it is the
-// same on every channel.
-extern const char kColocationProofKeychainAccessGroup[];
-
 // `kSecAttrService` of every co-location proof item. `kSecAttrAccount` is the
-// profile's sync client ID (`cache_guid`).
+// profile's sync client ID (`cache_guid`). Items live in
+// `kLocalActuationKeychainAccessGroup` (local_actuation_names.h).
 extern const char kColocationProofKeychainService[];
 
 // Stores `proof` (a serialized `google.protobuf.Any`) as the co-location proof

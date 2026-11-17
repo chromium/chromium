@@ -17,6 +17,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/browser/browser_actuator/local_actuation/local_actuation_names.h"
 #include "crypto/apple/fake_keychain_v2.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,7 +70,7 @@ class ColocationProofKeychainStoreTest : public testing::Test {
 
  private:
   crypto::apple::ScopedFakeKeychainV2 fake_keychain_{
-      kColocationProofKeychainAccessGroup};
+      kLocalActuationKeychainAccessGroup};
 };
 
 TEST_F(ColocationProofKeychainStoreTest, WriteStoresProof) {
@@ -140,7 +141,7 @@ TEST_F(ColocationProofKeychainStoreTest, WriteUsesSharedAccessGroup) {
   ASSERT_TRUE(WriteColocationProofToKeychain(kClientId, kProof));
 
   EXPECT_NSEQ(FindItem(kClientId)[CFToNSPtrCast(kSecAttrAccessGroup)],
-              base::SysUTF8ToNSString(kColocationProofKeychainAccessGroup));
+              base::SysUTF8ToNSString(kLocalActuationKeychainAccessGroup));
 }
 
 TEST_F(ColocationProofKeychainStoreTest, WriteUsesDataProtectionKeychain) {

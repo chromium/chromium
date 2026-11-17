@@ -1,0 +1,45 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_mac)
+
+source_set("profile_registry") {
+  sources = [
+    "profile_registry_keychain_store_mac.h",
+    "profile_registry_keychain_store_mac.mm",
+  ]
+
+  public_deps = [ "//chrome/common:version_header" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/browser_actuator/local_actuation:names",
+    "//crypto",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "profile_registry_keychain_store_mac_unittest.mm" ]
+
+  deps = [
+    ":profile_registry",
+    "//base",
+    "//chrome/browser/browser_actuator/local_actuation:names",
+    "//crypto:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}
