@@ -4,15 +4,24 @@
 
 #include "chrome/browser/web_applications/commands/launch_or_reparent_web_contents_into_app_command.h"
 
-#include "base/command_line.h"
+#include <memory>
+#include <optional>
+#include <tuple>
+#include <utility>
+
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace web_app {
 
@@ -82,16 +91,14 @@ void LaunchOrReparentWebContentsIntoAppCommand::StartWithLock(
     }
   }
 
-  // Otherwise launch
+  // Otherwise, launch the newly installed app.
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
-  apps::AppLaunchParams params =
-      WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
-          app_id_, *base::CommandLine::ForCurrentProcess(),
-          /*current_directory=*/base::FilePath(),
-          /*protocol_handler_launch_url=*/std::nullopt,
-          /*file_launch_url=*/std::nullopt, /*launch_files=*/{});
+  apps::AppLaunchParams params(app_id_,
+                               apps::LaunchContainer::kLaunchContainerNone,
+                               ui::mojom::WindowOpenDisposition::kUnknown,
+                               apps::LaunchSource::kFromInstaller);
 
   lock_->ui_manager().LaunchWebApp(
       std::move(params), LaunchWebAppWindowSetting::kOverrideWithWebAppConfig,

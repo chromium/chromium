@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -33,6 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/signing_keys.h"
 #include "components/webapps/common/web_app_id.h"
@@ -385,6 +387,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest,
   // capturing occurs.
   ui_test_utils::BrowserCreatedObserver browser_observer;
 
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(content::ExecJs(GetBrowserTab(), script));
 
   if (expect_new_window) {
@@ -421,6 +425,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest,
                     existing_app_contents, "launchParamsTargetUrls"),
                 testing::ElementsAre(app_start_url(), destination_url));
   }
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -503,6 +511,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
   CreateLinkInTab(existing_app_contents, destination_url, "capture-link");
 
   ui_test_utils::BrowserCreatedObserver browser_observer;
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  base::HistogramTester histogram_tester;
   SimulateClickOnElement(existing_app_contents, "capture-link",
                          blink::WebInputEvent::kShiftKey,
                          blink::WebMouseEvent::Button::kLeft);
@@ -522,6 +532,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
   EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                   new_contents, "launchParamsTargetUrls"),
               testing::ElementsAre(destination_url));
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,

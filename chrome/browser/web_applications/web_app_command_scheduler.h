@@ -420,11 +420,13 @@ class WebAppCommandScheduler {
 
   // Launches the given app to the given url if specified, or the app
   // `start_url` if not. This uses keep-alives to guarantee the
-  // browser and profile stay alive. Will CHECK-fail if `url` is not valid.
+  // browser and profile stay alive. Launch parameters do not inherit the
+  // process command line. Will CHECK-fail if `url` is not valid.
   void LaunchApp(const webapps::AppId& app_id,
                  const std::optional<GURL>& url,
                  LaunchWebAppCallback callback,
-                 std::optional<apps::LaunchSource> launch_source = std::nullopt,
+                 apps::LaunchSource launch_source =
+                     apps::LaunchSource::kFromChromeInternal,
                  const base::Location& location = FROM_HERE);
 
   // Used to launch apps with a custom launch params. This does not respect the

@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -89,11 +91,15 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/jobs/link_capturing.h"
@@ -459,23 +465,16 @@ void WebAppCommandScheduler::LaunchAppFromCommandLine(
             std::move(callback), location);
 }
 
-void WebAppCommandScheduler::LaunchApp(
-    const webapps::AppId& app_id,
-    const std::optional<GURL>& url,
-    LaunchWebAppCallback callback,
-    std::optional<apps::LaunchSource> launch_source,
-    const base::Location& location) {
+void WebAppCommandScheduler::LaunchApp(const webapps::AppId& app_id,
+                                       const std::optional<GURL>& url,
+                                       LaunchWebAppCallback callback,
+                                       apps::LaunchSource launch_source,
+                                       const base::Location& location) {
   CHECK(!url || url->is_valid());
-  apps::AppLaunchParams params =
-      WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
-          app_id, *base::CommandLine::ForCurrentProcess(),
-          /*current_directory=*/base::FilePath(),
-          /*protocol_handler_launch_url=*/std::nullopt,
-          /*file_launch_url=*/std::nullopt, /*launch_files=*/{});
+  apps::AppLaunchParams params(
+      app_id, apps::LaunchContainer::kLaunchContainerNone,
+      ui::mojom::WindowOpenDisposition::kUnknown, launch_source);
   params.override_url = url.value_or(GURL());
-  if (launch_source) {
-    params.launch_source = *launch_source;
-  }
 
   LaunchApp(std::move(params),
             LaunchWebAppWindowSetting::kOverrideWithWebAppConfig,

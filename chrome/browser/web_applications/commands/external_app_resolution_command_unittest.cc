@@ -7,15 +7,19 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <tuple>
+#include <utility>
+#include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -42,8 +46,12 @@
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -56,6 +64,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 using base::BucketsAre;
 using testing::_;
@@ -521,11 +530,28 @@ TEST_F(ExternalAppResolutionCommandTest,
                                      AppRelaunchState::kAppRelaunched))
       .Times(1);
 
+  base::test::ScopedCommandLine scoped_command_line;
+  auto* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(switches::kAppRunOnOsLoginMode, "windowed");
+  command_line->AppendSwitchASCII(switches::kAppLaunchUrlForShortcutsMenuItem,
+                                  "https://foo.example/shortcut");
+  base::test::TestFuture<apps::AppLaunchParams, LaunchWebAppWindowSetting>
+      launch;
+  ui_manager.SetOnLaunchWebAppCallback(launch.GetRepeatingCallback());
+
   auto result = InstallAndWait(options);
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   ASSERT_TRUE(result.app_id.has_value());
   EXPECT_EQ(result.app_id.value(), final_app_id);
+  ASSERT_TRUE(launch.IsReady());
+  const auto& params = launch.Get<apps::AppLaunchParams>();
+  EXPECT_EQ(params.app_id, final_app_id);
+  EXPECT_TRUE(params.command_line.GetSwitches().empty());
+  EXPECT_TRUE(params.override_url.is_empty());
+  EXPECT_EQ(params.launch_source, apps::LaunchSource::kFromChromeInternal);
+  EXPECT_EQ(launch.Get<LaunchWebAppWindowSetting>(),
+            LaunchWebAppWindowSetting::kOverrideWithWebAppConfig);
 
   const WebApp* web_app = registrar().GetAppById(placeholder_app_id);
   ASSERT_FALSE(web_app);

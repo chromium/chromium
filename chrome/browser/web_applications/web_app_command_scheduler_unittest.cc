@@ -4,23 +4,41 @@
 
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 
+#include <memory>
+#include <optional>
+#include <string_view>
+#include <utility>
+
+#include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#endif
 
 namespace web_app {
 namespace {
@@ -81,6 +99,66 @@ TEST_F(WebAppCommandSchedulerTest, PersistFileHandlersUserChoice) {
       "app id", /*allowed=*/true, after_shutdown.GetCallback());
   EXPECT_EQ(fake_provider().command_manager().GetCommandCountForTesting(), 0u);
   ASSERT_TRUE(after_shutdown.Wait());
+}
+
+TEST_F(WebAppCommandSchedulerTest, LaunchAppIgnoresProcessCommandLine) {
+  // The standalone launch checks OS integration before reaching the fake UI.
+  // Use WebAppTest's OS integration override rather than the fake manager's
+  // suppression scope, which makes that check fail.
+  fake_provider().UseRealOsIntegrationManager();
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  const webapps::AppId app_id = test::InstallDummyWebApp(
+      profile(), "Test App", GURL("https://example.com/"));
+  base::test::TestFuture<apps::AppLaunchParams, LaunchWebAppWindowSetting>
+      launch;
+  fake_ui_manager().SetOnLaunchWebAppCallback(launch.GetRepeatingCallback());
+
+  base::test::ScopedCommandLine scoped_command_line;
+  auto* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendArg("https://example.com/process-argument");
+  command_line->AppendSwitchASCII(switches::kAppRunOnOsLoginMode, "windowed");
+  command_line->AppendSwitchASCII(switches::kAppLaunchUrlForShortcutsMenuItem,
+                                  "https://example.com/shortcut");
+#if BUILDFLAG(IS_LINUX)
+  command_line->AppendSwitchASCII(base::nix::kXdgActivationTokenSwitch,
+                                  "process-token");
+  command_line->AppendSwitchASCII(base::nix::kDesktopStartupIdSwitch,
+                                  "legacy-process-token");
+#endif
+  const base::CommandLine original_command_line(*command_line);
+  const std::optional<GURL> launch_urls[] = {GURL("https://example.com/target"),
+                                             std::nullopt};
+  for (const auto& launch_url : launch_urls) {
+    SCOPED_TRACE(launch_url ? launch_url->spec() : "app start URL");
+    for (bool use_default_source : {true, false}) {
+      SCOPED_TRACE(use_default_source ? "default source" : "explicit source");
+      if (use_default_source) {
+        fake_provider().scheduler().LaunchApp(app_id, launch_url,
+                                              base::DoNothing());
+      } else {
+        fake_provider().scheduler().LaunchApp(
+            app_id, launch_url, base::DoNothing(),
+            apps::LaunchSource::kFromNavigationCapturing);
+      }
+      fake_provider().command_manager().AwaitAllCommandsCompleteForTesting();
+      ASSERT_TRUE(launch.IsReady());
+      auto [params, launch_setting] = launch.Take();
+      EXPECT_EQ(params.app_id, app_id);
+      EXPECT_TRUE(params.command_line.GetSwitches().empty());
+      EXPECT_TRUE(params.command_line.GetArgs().empty());
+      EXPECT_EQ(params.override_url, launch_url.value_or(GURL()));
+      EXPECT_EQ(params.launch_source,
+                use_default_source
+                    ? apps::LaunchSource::kFromChromeInternal
+                    : apps::LaunchSource::kFromNavigationCapturing);
+      EXPECT_EQ(params.container, apps::LaunchContainer::kLaunchContainerNone);
+      EXPECT_EQ(params.disposition, ui::mojom::WindowOpenDisposition::kUnknown);
+      EXPECT_EQ(launch_setting,
+                LaunchWebAppWindowSetting::kOverrideWithWebAppConfig);
+    }
+  }
+  EXPECT_EQ(command_line->GetCommandLineString(),
+            original_command_line.GetCommandLineString());
 }
 
 TEST_F(WebAppCommandSchedulerTest, OriginRevalidationWaitsForStartup) {

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/web_applications/commands/launch_or_reparent_web_contents_into_app_command.h"
 
+#include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
@@ -13,8 +15,14 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace web_app {
 namespace {
@@ -64,12 +72,29 @@ TEST_F(LaunchOrReparentWebContentsIntoAppCommandTest, LaunchesWhenOutOfScope) {
   fake_web_contents_manager().SetUrlLoaded(
       web_contents.get(), GURL("https://different-example.com/"));
 
+  base::test::ScopedCommandLine scoped_command_line;
+  auto* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(switches::kAppRunOnOsLoginMode, "windowed");
+  command_line->AppendSwitchASCII(switches::kAppLaunchUrlForShortcutsMenuItem,
+                                  "https://example.com/shortcut");
+  base::test::TestFuture<apps::AppLaunchParams, LaunchWebAppWindowSetting>
+      launch;
+  fake_ui_manager().SetOnLaunchWebAppCallback(launch.GetRepeatingCallback());
+
   base::HistogramTester histogram_tester;
   base::test::TestFuture<LaunchOrReparentResult> future;
   provider().scheduler().LaunchOrReparentWebContentsIntoApp(
       app_id, web_contents->GetWeakPtr(), future.GetCallback());
 
   EXPECT_EQ(LaunchOrReparentResult::kLaunched, future.Get());
+  ASSERT_TRUE(launch.IsReady());
+  const auto& params = launch.Get<apps::AppLaunchParams>();
+  EXPECT_EQ(params.app_id, app_id);
+  EXPECT_TRUE(params.command_line.GetSwitches().empty());
+  EXPECT_TRUE(params.override_url.is_empty());
+  EXPECT_EQ(params.launch_source, apps::LaunchSource::kFromInstaller);
+  EXPECT_EQ(launch.Get<LaunchWebAppWindowSetting>(),
+            LaunchWebAppWindowSetting::kOverrideWithWebAppConfig);
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 
   histogram_tester.ExpectUniqueSample("WebApp.Command.LaunchOrReparentResult",

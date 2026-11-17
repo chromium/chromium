@@ -15,12 +15,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -47,7 +49,10 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/navigation_capturing_log.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -265,7 +270,9 @@ ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
                          base::WeakPtr<content::WebContents>,
                          apps::LaunchContainer>(base::BindOnce(
             &content::WebContents::Close, old_web_contents->GetWeakPtr()));
-    provider.scheduler().LaunchApp(app_id, target_url, std::move(callback));
+    provider.scheduler().LaunchApp(
+        app_id, target_url, std::move(callback),
+        apps::LaunchSource::kFromNavigationCapturing);
     return content::NavigationThrottle::CANCEL;
   } else {
     ReparentToAppBrowser(old_web_contents, app_id, target_display_mode,
@@ -277,15 +284,11 @@ ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
 void LaunchIsolatedWebAppInNewWindow(web_app::WebAppProvider* provider,
                                      const webapps::AppId& app_id,
                                      const GURL& target_url) {
-  apps::AppLaunchParams app_launch_params =
-      web_app::WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
-          app_id, *base::CommandLine::ForCurrentProcess(),
-          /*current_directory=*/base::FilePath(),
-          /*protocol_handler_launch_url=*/std::nullopt,
-          /*file_launch_url=*/std::nullopt, /*launch_files=*/{});
+  apps::AppLaunchParams app_launch_params(
+      app_id, apps::LaunchContainer::kLaunchContainerWindow,
+      ui::mojom::WindowOpenDisposition::kNewWindow,
+      apps::LaunchSource::kFromNavigationCapturing);
   app_launch_params.override_url = target_url;
-  app_launch_params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
-  app_launch_params.container = apps::LaunchContainer::kLaunchContainerWindow;
 
   provider->scheduler().LaunchAppWithCustomParams(std::move(app_launch_params),
                                                   base::DoNothing());

@@ -8,9 +8,9 @@
 #include <optional>
 #include <utility>
 
-#include "base/barrier_closure.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/extend.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/not_fatal_until.h"
@@ -33,8 +33,8 @@
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -45,6 +45,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -54,6 +55,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -713,11 +716,10 @@ void ExternalAppResolutionCommand::OnPlaceholderUninstalledMaybeRelaunch(
       *installed_placeholder_app_id_, app_id_, web_app_info_->title.value(),
       profile_->GetWeakPtr(), AppRelaunchState::kAppAboutToRelaunch);
   provider().ui_manager().LaunchWebApp(
-      WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
-          app_id_, *base::CommandLine::ForCurrentProcess(),
-          /*current_directory=*/base::FilePath(),
-          /*protocol_handler_launch_url=*/std::nullopt,
-          /*file_launch_url=*/std::nullopt, /*launch_files=*/{}),
+      apps::AppLaunchParams(app_id_,
+                            apps::LaunchContainer::kLaunchContainerNone,
+                            ui::mojom::WindowOpenDisposition::kUnknown,
+                            apps::LaunchSource::kFromChromeInternal),
       LaunchWebAppWindowSetting::kOverrideWithWebAppConfig, *profile_,
       base::BindOnce(&ExternalAppResolutionCommand::OnLaunch,
                      weak_ptr_factory_.GetWeakPtr()),

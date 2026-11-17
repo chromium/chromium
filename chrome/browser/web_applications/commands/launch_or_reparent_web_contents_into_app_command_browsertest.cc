@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/launch_or_reparent_web_contents_into_app_command.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -38,6 +40,8 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
 
   ui_test_utils::BrowserCreatedObserver observer;
 
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<LaunchOrReparentResult> future;
   provider().scheduler().LaunchOrReparentWebContentsIntoApp(
       app_id, web_contents->GetWeakPtr(), future.GetCallback());
@@ -54,9 +58,13 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
 
   // Find the new browser and verify it is for the app.
   BrowserWindowInterface* app_browser = observer.Wait();
-  EXPECT_TRUE(app_browser);
+  ASSERT_TRUE(app_browser);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
+  ASSERT_TRUE(content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents()));
+  histogram_tester.ExpectUniqueSample("WebApp.LaunchSource",
+                                      apps::LaunchSource::kFromReparenting, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
@@ -76,6 +84,8 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
 
   ui_test_utils::BrowserCreatedObserver observer;
 
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<LaunchOrReparentResult> future;
   provider().scheduler().LaunchOrReparentWebContentsIntoApp(
       app_id, web_contents->GetWeakPtr(), future.GetCallback());
@@ -92,9 +102,13 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
 
   // Find the new browser and verify it is for the app.
   BrowserWindowInterface* app_browser = observer.Wait();
-  EXPECT_TRUE(app_browser);
+  ASSERT_TRUE(app_browser);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
+  ASSERT_TRUE(content::WaitForLoadStop(
+      app_browser->tab_strip_model()->GetActiveWebContents()));
+  histogram_tester.ExpectUniqueSample("WebApp.LaunchSource",
+                                      apps::LaunchSource::kFromInstaller, 1);
 }
 
 }  // namespace web_app
