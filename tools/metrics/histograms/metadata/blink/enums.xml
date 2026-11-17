@@ -5023,7 +5023,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4399"
       label="V8DocumentPictureInPictureEvent_Window_AttributeGetter"/>
   <int value="4400" label="DocumentPictureInPictureEnterEvent"/>
-  <int value="4401" label="SoftNavigationHeuristics"/>
+  <int value="4401" label="OBSOLETE_SoftNavigationHeuristics"/>
   <int value="4402" label="MathMLMathElement"/>
   <int value="4403" label="MathMLMathElementInDocument"/>
   <int value="4404" label="CSSAtRuleStylistic"/>
@@ -5218,8 +5218,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4574" label="CriticalCHRestartNavigationTiming"/>
   <int value="4575" label="TopLevelDocumentWithEmbeddedCredentials"/>
   <int value="4576" label="V8Navigator_GetInterestGroupAdAuctionData_Method"/>
-  <int value="4577" label="LongAnimationFrameObserver"/>
-  <int value="4578" label="LongAnimationFrameRequested"/>
+  <int value="4577" label="LongAnimationFrameExplicitlyRequested"/>
+  <int value="4578" label="OBSOLETE_LongAnimationFrameRequested"/>
   <int value="4579" label="FedCmLoginHint"/>
   <int value="4580" label="FedCmRpContext"/>
   <int value="4581" label="EventTimingArtificialPointerupOrClick"/>
@@ -6924,6 +6924,58 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6097" label="ViewportFitCoverAndSafeAreaInsetTop"/>
   <int value="6098" label="HTMLInputElementResetIndeterminateCheckbox"/>
   <int value="6099" label="ImportScriptsMimeTypeCheckFailedForExemptScheme"/>
+  <int value="6100" label="BackForwardCacheRestorationEntryEmitted"/>
+  <int value="6101" label="BackForwardCacheRestorationExplicitlyRequested"/>
+  <int value="6102" label="BackForwardCacheRestorationPotentiallyObserved"/>
+  <int value="6103" label="BackForwardCacheRestorationObserved"/>
+  <int value="6104" label="EventTimingEntryEmitted"/>
+  <int value="6105" label="EventTimingPotentiallyObserved"/>
+  <int value="6106" label="EventTimingObserved"/>
+  <int value="6107" label="LongAnimationFrameEntryEmitted"/>
+  <int value="6108" label="LongAnimationFramePotentiallyObserved"/>
+  <int value="6109" label="LongAnimationFrameObserved"/>
+  <int value="6110" label="ElementTimingPotentiallyObserved"/>
+  <int value="6111" label="ElementTimingObserved"/>
+  <int value="6112" label="ContainerTimingPotentiallyObserved"/>
+  <int value="6113" label="PaintTimingEntryEmitted"/>
+  <int value="6114" label="PaintTimingPotentiallyObserved"/>
+  <int value="6115" label="LayoutShiftEntryEmitted"/>
+  <int value="6116" label="LayoutShiftPotentiallyObserved"/>
+  <int value="6117" label="LayoutShiftObserved"/>
+  <int value="6118" label="LargestContentfulPaintEntryEmitted"/>
+  <int value="6119" label="LargestContentfulPaintPotentiallyObserved"/>
+  <int value="6120" label="LargestContentfulPaintObserved"/>
+  <int value="6121" label="InteractionContentfulPaintPotentiallyObserved"/>
+  <int value="6122" label="SoftNavigationPotentiallyObserved"/>
+  <int value="6123" label="ResourceTimingEntryEmitted"/>
+  <int value="6124" label="ResourceTimingPotentiallyObserved"/>
+  <int value="6125" label="ResourceTimingObserved"/>
+  <int value="6126" label="LongTaskEntryEmitted"/>
+  <int value="6127" label="LongTaskPotentiallyObserved"/>
+  <int value="6128" label="LongTaskObserved"/>
+  <int value="6129" label="VisibilityStateEntryEmitted"/>
+  <int value="6130" label="VisibilityStatePotentiallyObserved"/>
+  <int value="6131" label="VisibilityStateObserved"/>
+  <int value="6132" label="EventTimingFirstInputEntryEmitted"/>
+  <int value="6133" label="EventTimingFirstInputPotentiallyObserved"/>
+  <int value="6134" label="EventTimingFirstInputObserved"/>
+  <int value="6135" label="NavigationTimingEntryEmitted"/>
+  <int value="6136" label="NavigationTimingPotentiallyObserved"/>
+  <int value="6137" label="NavigationTimingObserved"/>
+  <int value="6138" label="UserTimingMarkEntryEmitted"/>
+  <int value="6139" label="UserTimingMarkExplicitlyRequested"/>
+  <int value="6140" label="UserTimingMarkPotentiallyObserved"/>
+  <int value="6141" label="UserTimingMarkObserved"/>
+  <int value="6142" label="UserTimingMeasureEntryEmitted"/>
+  <int value="6143" label="UserTimingMeasureExplicitlyRequested"/>
+  <int value="6144" label="UserTimingMeasurePotentiallyObserved"/>
+  <int value="6145" label="UserTimingMeasureObserved"/>
+  <int value="6146" label="ScrollTimingEntryEmitted"/>
+  <int value="6147" label="ScrollTimingExplicitlyRequested"/>
+  <int value="6148" label="ScrollTimingPotentiallyObserved"/>
+  <int value="6149" label="ScrollTimingObserved"/>
+  <int value="6150" label="PerformanceGetEntriesWithoutType"/>
+  <int value="6151" label="PerformanceGetEntriesWithType"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

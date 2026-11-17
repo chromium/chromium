@@ -197,13 +197,8 @@ void NotifyParserResume(Document* document, bool is_resumed_by_user_timing) {
 PerformanceEntryVector MergePerformanceEntryVectors(
     const PerformanceEntryVector& first_entry_vector,
     const PerformanceEntryVector& second_entry_vector,
-    const AtomicString& maybe_name) {
-  PerformanceEntryVector merged_entries;
-  merged_entries.reserve(first_entry_vector.size() +
-                         second_entry_vector.size());
-
-  auto first_it = first_entry_vector.CheckedBegin();
-  auto first_end = first_entry_vector.CheckedEnd();
+    const AtomicString& maybe_name,
+    ExecutionContext* context) {
   auto second_it = second_entry_vector.CheckedBegin();
   auto second_end = second_entry_vector.CheckedEnd();
 
@@ -211,6 +206,23 @@ PerformanceEntryVector MergePerformanceEntryVectors(
   while (second_it != second_end && !CheckName(*second_it, maybe_name)) {
     ++second_it;
   }
+  if (second_it == second_end) {
+    return first_entry_vector;
+  }
+  if (context) {
+    if (const auto* counters = PerformanceEntry::GetUseCountersForType(
+            static_cast<PerformanceEntry::EntryType>(
+                (*second_it)->EntryTypeEnum()))) {
+      UseCounter::Count(context, counters->potentially_observed);
+    }
+  }
+
+  PerformanceEntryVector merged_entries;
+  merged_entries.reserve(first_entry_vector.size() +
+                         second_entry_vector.size());
+
+  auto first_it = first_entry_vector.CheckedBegin();
+  auto first_end = first_entry_vector.CheckedEnd();
 
   auto PushBackSecondIteratorAndAdvance = [&]() {
     DCHECK(CheckName(*second_it, maybe_name));
@@ -359,45 +371,48 @@ PerformanceEntryVector Performance::getEntries() {
 
 PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
     const AtomicString& maybe_name) {
+  ExecutionContext* context = GetExecutionContext();
+  UseCounter::Count(context, WebFeature::kPerformanceGetEntriesWithoutType);
   PerformanceEntryVector entries;
 
   entries = MergePerformanceEntryVectors(entries, resource_timing_buffer_,
-                                         maybe_name);
-  if (first_input_timing_ && CheckName(first_input_timing_, maybe_name)) {
-    InsertEntryIntoSortedBuffer(entries, *first_input_timing_);
+                                         maybe_name, context);
+  if (first_input_timing_) {
+    entries = MergePerformanceEntryVectors(entries, {first_input_timing_},
+                                           maybe_name, context);
   }
   // This extra checking is needed when WorkerPerformance
   // calls this method.
-  if (navigation_timing_ && CheckName(navigation_timing_, maybe_name)) {
-    InsertEntryIntoSortedBuffer(entries, *navigation_timing_);
+  if (navigation_timing_) {
+    entries = MergePerformanceEntryVectors(entries, {navigation_timing_},
+                                           maybe_name, context);
   }
 
-  if (first_paint_timing_ && CheckName(first_paint_timing_, maybe_name)) {
-    InsertEntryIntoSortedBuffer(entries, *first_paint_timing_);
+  if (first_paint_timing_) {
+    entries = MergePerformanceEntryVectors(entries, {first_paint_timing_},
+                                           maybe_name, context);
   }
-  if (first_contentful_paint_timing_ &&
-      CheckName(first_contentful_paint_timing_, maybe_name)) {
-    InsertEntryIntoSortedBuffer(entries, *first_contentful_paint_timing_);
+  if (first_contentful_paint_timing_) {
+    entries = MergePerformanceEntryVectors(
+        entries, {first_contentful_paint_timing_}, maybe_name, context);
   }
 
   entries = MergePerformanceEntryVectors(
-      entries, back_forward_cache_restoration_buffer_, maybe_name);
+      entries, back_forward_cache_restoration_buffer_, maybe_name, context);
 
   if (soft_navigation_buffer_.size()) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kSoftNavigationHeuristics);
     entries = MergePerformanceEntryVectors(entries, soft_navigation_buffer_,
-                                           maybe_name);
+                                           maybe_name, context);
   }
 
   if (long_animation_frame_buffer_.size()) {
     entries = MergePerformanceEntryVectors(
-        entries, long_animation_frame_buffer_, maybe_name);
+        entries, long_animation_frame_buffer_, maybe_name, context);
   }
 
   if (visibility_state_buffer_.size()) {
     entries = MergePerformanceEntryVectors(entries, visibility_state_buffer_,
-                                           maybe_name);
+                                           maybe_name, context);
   }
 
   // `user_timing_` is the largest in size, in order to keep
@@ -409,14 +424,14 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
       // requesting them directly is much more efficient than getting the full
       // lists of marks and measures and then filtering during the merge.
       entries = MergePerformanceEntryVectors(
-          entries, user_timing_->GetMarks(maybe_name), g_null_atom);
+          entries, user_timing_->GetMarks(maybe_name), g_null_atom, context);
       entries = MergePerformanceEntryVectors(
-          entries, user_timing_->GetMeasures(maybe_name), g_null_atom);
+          entries, user_timing_->GetMeasures(maybe_name), g_null_atom, context);
     } else {
       entries = MergePerformanceEntryVectors(entries, user_timing_->GetMarks(),
-                                             g_null_atom);
+                                             g_null_atom, context);
       entries = MergePerformanceEntryVectors(
-          entries, user_timing_->GetMeasures(), g_null_atom);
+          entries, user_timing_->GetMeasures(), g_null_atom, context);
     }
   }
 
@@ -438,6 +453,8 @@ PerformanceEntryVector Performance::getEntriesByType(
 PerformanceEntryVector Performance::GetEntriesByTypeForCurrentFrame(
     const AtomicString& entry_type,
     const AtomicString& maybe_name) {
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kPerformanceGetEntriesWithType);
   PerformanceEntry::EntryType type =
       PerformanceEntry::ToEntryTypeEnum(entry_type);
   if (!PerformanceEntry::IsValidTimelineEntryType(type)) {
@@ -450,7 +467,14 @@ PerformanceEntryVector Performance::GetEntriesByTypeForCurrentFrame(
     }
     return empty_entries;
   }
-  return getEntriesByTypeInternal(type, maybe_name);
+  PerformanceEntryVector entries = getEntriesByTypeInternal(type, maybe_name);
+  if (const auto* counters = PerformanceEntry::GetUseCountersForType(type)) {
+    UseCounter::Count(GetExecutionContext(), counters->explicitly_requested);
+    if (!entries.empty()) {
+      UseCounter::Count(GetExecutionContext(), counters->observed);
+    }
+  }
+  return entries;
 }
 
 PerformanceEntryVector Performance::getEntriesByTypeInternal(
@@ -464,40 +488,28 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
   bool already_filtered_by_name = false;
   switch (type) {
     case PerformanceEntry::kResource:
-      UseCounter::Count(GetExecutionContext(), WebFeature::kResourceTiming);
       entries = &resource_timing_buffer_;
       break;
 
     case PerformanceEntry::kContainer:
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kContainerTimingExplicitlyRequested);
       entries = &container_timing_buffer_;
       break;
 
     case PerformanceEntry::kElement:
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kElementTimingExplicitlyRequested);
       entries = &element_timing_buffer_;
       break;
 
     case PerformanceEntry::kEvent:
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kEventTimingExplicitlyRequested);
       entries = &event_timing_buffer_;
       break;
 
     case PerformanceEntry::kFirstInput:
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kEventTimingExplicitlyRequested);
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kEventTimingFirstInputExplicitlyRequested);
       if (first_input_timing_) {
         entries_storage = {first_input_timing_};
       }
       break;
 
     case PerformanceEntry::kNavigation:
-      UseCounter::Count(GetExecutionContext(), WebFeature::kNavigationTimingL2);
       if (navigation_timing_) {
         entries_storage = {navigation_timing_};
       }
@@ -526,8 +538,6 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kPaint: {
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kPaintTimingRequested);
       // TODO(crbug.com/576982828): Ensure FP and FCP presentation callbacks
       // cannot produce FP.startTime > FCP.startTime, so that returning FP
       // before FCP preserves startTime order.
@@ -576,16 +586,10 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       break;
 
     case PerformanceEntry::kSoftNavigation:
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kSoftNavigationHeuristics);
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kSoftNavigationExplicitlyRequested);
       entries = &soft_navigation_buffer_;
       break;
 
     case PerformanceEntry::kLongAnimationFrame:
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kLongAnimationFrameRequested);
       entries = &long_animation_frame_buffer_;
       break;
 
@@ -1242,34 +1246,20 @@ void Performance::UpdatePerformanceObserverFilterOptions() {
 
 void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
   CHECK(entry.IsReadyForReporting());
-  bool observer_found = false;
+  auto entry_type =
+      static_cast<PerformanceEntry::EntryType>(entry.EntryTypeEnum());
+  if (const auto* counters =
+          PerformanceEntry::GetUseCountersForType(entry_type)) {
+    UseCounter::Count(GetExecutionContext(), counters->emitted);
+  }
+  if (!HasObserverFor(entry_type)) {
+    return;
+  }
   for (auto& observer : observers_) {
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
         observer->CanObserve(entry)) {
       observer->EnqueuePerformanceEntry(entry);
-      observer_found = true;
     }
-  }
-  if (observer_found && entry.EntryTypeEnum() == PerformanceEntry::kPaint) {
-    UseCounter::Count(GetExecutionContext(), WebFeature::kPaintTimingObserved);
-  }
-}
-
-void Performance::NotifyObserversOfContainerEntry(
-    PerformanceEntry& entry) const {
-  CHECK(entry.IsReadyForReporting());
-  bool observer_found = false;
-  CHECK(entry.EntryTypeEnum() == PerformanceEntry::kContainer);
-  for (auto& observer : observers_) {
-    if (observer->FilterOptions() & entry.EntryTypeEnum() &&
-        observer->CanObserve(entry)) {
-      observer->EnqueuePerformanceEntry(entry);
-      observer_found = true;
-    }
-  }
-  if (observer_found) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kContainerTimingObserved);
   }
 }
 

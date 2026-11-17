@@ -235,6 +235,11 @@ void PerformanceObserver::observe(ScriptState* script_state,
         }
       } else {
         entry_types |= entry_type;
+        if (const auto* counters =
+                PerformanceEntry::GetUseCountersForType(entry_type)) {
+          UseCounter::Count(GetExecutionContext(),
+                            counters->explicitly_requested);
+        }
       }
     }
     if (entry_types == PerformanceEntry::kInvalid) {
@@ -276,7 +281,7 @@ void PerformanceObserver::observe(ScriptState* script_state,
     }
     type_ = PerformanceObserverType::kTypeObserver;
     AtomicString entry_type_atomic_string(observer_init->type());
-    PerformanceEntryType entry_type =
+    PerformanceEntry::EntryType entry_type =
         PerformanceEntry::ToEntryTypeEnum(entry_type_atomic_string);
     if (!(supported_types & entry_type)) {
       String message = StrCat({"The entry type '", observer_init->type(),
@@ -289,16 +294,27 @@ void PerformanceObserver::observe(ScriptState* script_state,
       }
       return;
     }
+    const auto* counters = PerformanceEntry::GetUseCountersForType(entry_type);
+    if (counters) {
+      UseCounter::Count(GetExecutionContext(), counters->explicitly_requested);
+    }
     if (entry_type == PerformanceEntry::kScroll) {
       ImportScrollTimingRecords();
     }
     if (observer_init->buffered()) {
       // Append all entries of this type to the current performance_entries_
       // to be returned on the next callback.
-      performance_entries_.append_range(performance_->getBufferedEntriesByType(
-          AtomicString(observer_init->type())));
-      std::sort(performance_entries_.begin(), performance_entries_.end(),
-                PerformanceEntry::StartTimeCompareLessThan);
+      PerformanceEntryVector buffered_entries =
+          performance_->getBufferedEntriesByType(
+              AtomicString(observer_init->type()));
+      if (!buffered_entries.empty()) {
+        if (counters) {
+          UseCounter::Count(GetExecutionContext(), counters->observed);
+        }
+        performance_entries_.append_range(buffered_entries);
+        std::sort(performance_entries_.begin(), performance_entries_.end(),
+                  PerformanceEntry::StartTimeCompareLessThan);
+      }
       is_buffered = true;
     }
     if (entry_type == PerformanceEntry::kEvent &&
@@ -307,45 +323,6 @@ void PerformanceObserver::observe(ScriptState* script_state,
       duration_threshold_ = std::max(16.0, observer_init->durationThreshold());
     }
     filter_options_ |= entry_type;
-  }
-  if (filter_options_ & PerformanceEntry::kLayoutShift) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kLayoutShiftExplicitlyRequested);
-  }
-  if (filter_options_ & PerformanceEntry::kElement) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kElementTimingExplicitlyRequested);
-  }
-  if (filter_options_ & PerformanceEntry::kLargestContentfulPaint) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kLargestContentfulPaintExplicitlyRequested);
-  }
-  if (filter_options_ & PerformanceEntry::kResource) {
-    UseCounter::Count(GetExecutionContext(), WebFeature::kResourceTiming);
-  }
-  if (filter_options_ & PerformanceEntry::kLongTask) {
-    UseCounter::Count(GetExecutionContext(), WebFeature::kLongTaskObserver);
-  }
-  if (filter_options_ & PerformanceEntry::kVisibilityState) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kVisibilityStateObserver);
-  }
-  if (filter_options_ & PerformanceEntry::kLongAnimationFrame) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kLongAnimationFrameObserver);
-  }
-  if (filter_options_ & PerformanceEntry::kContainer) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kContainerTimingExplicitlyRequested);
-  }
-  if (filter_options_ & PerformanceEntry::kSoftNavigation) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kSoftNavigationExplicitlyRequested);
-  }
-  if (filter_options_ & PerformanceEntry::kInteractionContentfulPaint) {
-    UseCounter::Count(
-        GetExecutionContext(),
-        WebFeature::kInteractionContentfulPaintExplicitlyRequested);
   }
 
   requires_dropped_entries_ = true;
@@ -379,6 +356,10 @@ PerformanceEntryVector PerformanceObserver::takeRecords() {
 
 void PerformanceObserver::EnqueuePerformanceEntry(PerformanceEntry& entry) {
   performance_entries_.push_back(&entry);
+  if (const auto* counters = PerformanceEntry::GetUseCountersForType(
+          static_cast<PerformanceEntry::EntryType>(entry.EntryTypeEnum()))) {
+    UseCounter::Count(GetExecutionContext(), counters->observed);
+  }
   if (performance_) {
     performance_->ActivateObserver(*this);
   }

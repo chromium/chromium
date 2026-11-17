@@ -483,6 +483,10 @@ void WindowPerformance::CreateNavigationTimingInstance(
         loader->GetTiming(), std::move(info->timing));
   }
 
+  if (const auto* counters = PerformanceEntry::GetUseCountersForType(
+          PerformanceEntry::kNavigation)) {
+    UseCounter::Count(GetExecutionContext(), counters->emitted);
+  }
   navigation_timing_ = MakeGarbageCollected<PerformanceNavigationTiming>(
       *DomWindow(), std::move(info), time_origin_,
       NavigationId().web_exposed_id);
@@ -1303,11 +1307,11 @@ void WindowPerformance::ReportEventTimingToPerformanceTimeline(
   // event timings for consumers to read.  Window can be re-attached to a frame.
   CHECK(entry && entry->IsReadyForReporting());
 
-  if (HasObserverFor(PerformanceEntry::kEvent)) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kEventTimingExplicitlyRequested);
-    NotifyObserversOfEntry(*entry);
-  }
+  // TODO(crbug.com/546130070): Consider filtering out events < 16ms (the
+  // minimum possible observable durationThreshold) before counting
+  // kEventTimingEntryEmitted. Note that kEventTimingObserved is counted in
+  // PerformanceObserver when an entry passes CanObserve() (or is buffered).
+  NotifyObserversOfEntry(*entry);
 
   // TODO: is 104 a reasonable buffering threshold or should it be
   // relaxed?
@@ -1443,11 +1447,7 @@ void WindowPerformance::AddElementTiming(PerformanceElementTiming* entry) {
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
-  UseCounter::Count(GetExecutionContext(),
-                    WebFeature::kElementTimingEntryEmitted);
-  if (HasObserverFor(PerformanceEntry::kElement)) {
-    NotifyObserversOfEntry(*entry);
-  }
+  NotifyObserversOfEntry(*entry);
   AddToElementTimingBuffer(*entry);
 }
 
@@ -1461,11 +1461,7 @@ void WindowPerformance::AddContainerTiming(PerformanceContainerTiming* entry) {
   TRACE_EVENT2("loading", "PerformanceContainerTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
-  UseCounter::Count(GetExecutionContext(),
-                    WebFeature::kContainerTimingEntryEmitted);
-  if (HasObserverFor(PerformanceEntry::kContainer)) {
-    NotifyObserversOfContainerEntry(*entry);
-  }
+  NotifyObserversOfEntry(*entry);
   AddToContainerTimingBuffer(*entry);
 }
 
@@ -1528,9 +1524,7 @@ void WindowPerformance::AddScrollTiming(base::TimeTicks start_time,
           /*checkerboard_time=*/0.0, exposable_target, DomWindow(),
           NavigationId().web_exposed_id);
 
-  if (HasObserverFor(PerformanceEntry::kScroll)) {
-    NotifyObserversOfEntry(*entry);
-  }
+  NotifyObserversOfEntry(*entry);
   AddToScrollTimingBuffer(*entry);
 }
 
@@ -1551,21 +1545,13 @@ void WindowPerformance::TryReportAsFirstInputTiming(
       PerformanceEventTiming::CreateFirstInputTiming(event_timing_entry);
   CHECK_EQ("first-input", new_first_input_entry->entryType());
 
-  if (HasObserverFor(PerformanceEntry::kFirstInput)) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kEventTimingExplicitlyRequested);
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kEventTimingFirstInputExplicitlyRequested);
-    NotifyObserversOfEntry(*new_first_input_entry);
-  }
+  NotifyObserversOfEntry(*new_first_input_entry);
 
   first_input_timing_ = new_first_input_entry;
 }
 
 void WindowPerformance::AddLayoutShiftEntry(LayoutShift* entry) {
-  if (HasObserverFor(PerformanceEntry::kLayoutShift)) {
-    NotifyObserversOfEntry(*entry);
-  }
+  NotifyObserversOfEntry(*entry);
   AddToLayoutShiftBuffer(*entry);
 }
 
@@ -1576,9 +1562,7 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
       MonotonicTimeToDOMHighResTimeStamp(timestamp), DomWindow(),
       NavigationId().web_exposed_id);
 
-  if (HasObserverFor(PerformanceEntry::kVisibilityState)) {
-    NotifyObserversOfEntry(*entry);
-  }
+  NotifyObserversOfEntry(*entry);
 
   if (visibility_state_buffer_.size() < kDefaultVisibilityStateEntrySize) {
     visibility_state_buffer_.push_back(entry);
@@ -1594,16 +1578,7 @@ PerformanceSoftNavigation* WindowPerformance::AddSoftNavigation(
           MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
           context);
 
-  UseCounter::Count(GetExecutionContext(),
-                    WebFeature::kSoftNavigationEntryEmitted);
-
-  if (HasObserverFor(PerformanceEntry::kSoftNavigation)) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kSoftNavigationHeuristics);
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kSoftNavigationObserved);
-    NotifyObserversOfEntry(*entry);
-  }
+  NotifyObserversOfEntry(*entry);
 
   AddSoftNavigationToPerformanceTimeline(entry);
   return entry;
@@ -1763,9 +1738,7 @@ uint64_t WindowPerformance::interactionCount() const {
 
 void WindowPerformance::OnLargestContentfulPaintUpdated(
     LargestContentfulPaint* entry) {
-  if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint)) {
-    NotifyObserversOfEntry(*entry);
-  }
+  NotifyObserversOfEntry(*entry);
   AddLargestContentfulPaint(entry);
   if (LocalDOMWindow* window = DomWindow()) {
     window->document()->OnLargestContentfulPaintUpdated();
@@ -1794,13 +1767,7 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 
 void WindowPerformance::OnInteractionContentfulPaintUpdated(
     InteractionContentfulPaint* entry) {
-  UseCounter::Count(GetExecutionContext(),
-                    WebFeature::kInteractionContentfulPaintEntryEmitted);
-  if (HasObserverFor(PerformanceEntry::kInteractionContentfulPaint)) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kInteractionContentfulPaintObserved);
-    NotifyObserversOfEntry(*entry);
-  }
+  NotifyObserversOfEntry(*entry);
   AddInteractionContentfulPaint(entry);
 }
 

@@ -101,10 +101,14 @@ using PerformanceEntryDeque = HeapDeque<Member<PerformanceEntry>>;
 // is provided, then items in second_entry_vector will be included in the result
 // only if their names match the given name. It is expected (and DCHECKed) that
 // first_entry_vector has already been filtered by name.
+// If `context` is provided and at least one entry from `second_entry_vector` is
+// merged, records the *PotentiallyObserved UseCounter for that entry's type
+// (`second_entry_vector` is expected to contain entries of a single type).
 CORE_EXPORT PerformanceEntryVector
 MergePerformanceEntryVectors(const PerformanceEntryVector& first_entry_vector,
                              const PerformanceEntryVector& second_entry_vector,
-                             const AtomicString& maybe_name);
+                             const AtomicString& maybe_name,
+                             ExecutionContext* context = nullptr);
 
 class CORE_EXPORT Performance : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
@@ -422,7 +426,6 @@ class CORE_EXPORT Performance : public EventTarget {
   void FireResourceTimingBufferFull(TimerBase*);
 
   void NotifyObserversOfEntry(PerformanceEntry&) const;
-  void NotifyObserversOfContainerEntry(PerformanceEntry&) const;
 
   void DeliverObservationsTimerFired(TimerBase*);
 

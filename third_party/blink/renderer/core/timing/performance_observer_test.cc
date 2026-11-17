@@ -180,29 +180,12 @@ TEST_F(PerformanceObserverTest, ObserveAfterContextDetached) {
 
 TEST_F(PerformanceObserverTest, ObserveEntryTypesUseCounters) {
   ScopedContainerTimingForTest enable_container_timing(true);
+  ScopedScrollPerformanceTimingForTest enable_scroll_timing(true);
 
-  struct TestCase {
-    const char* entry_type;
-    WebFeature expected_feature;
-  };
-
-  static constexpr TestCase kTestCases[] = {
-      {"layout-shift", WebFeature::kLayoutShiftExplicitlyRequested},
-      {"element", WebFeature::kElementTimingExplicitlyRequested},
-      {"largest-contentful-paint",
-       WebFeature::kLargestContentfulPaintExplicitlyRequested},
-      {"resource", WebFeature::kResourceTiming},
-      {"longtask", WebFeature::kLongTaskObserver},
-      {"visibility-state", WebFeature::kVisibilityStateObserver},
-      {"long-animation-frame", WebFeature::kLongAnimationFrameObserver},
-      {"container", WebFeature::kContainerTimingExplicitlyRequested},
-      {"soft-navigation", WebFeature::kSoftNavigationExplicitlyRequested},
-      {"interaction-contentful-paint",
-       WebFeature::kInteractionContentfulPaintExplicitlyRequested},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.entry_type);
+  for (const auto& counters : PerformanceEntry::GetUseCounters()) {
+    const AtomicString& entry_type_str =
+        PerformanceEntry::ToEntryTypeString(counters.entry_type);
+    SCOPED_TRACE(entry_type_str);
 
     // Test with entryTypes argument.
     {
@@ -211,13 +194,16 @@ TEST_F(PerformanceObserverTest, ObserveEntryTypesUseCounters) {
       Initialize(scope.GetScriptState());
 
       EXPECT_FALSE(
-          scope.GetDocument().IsUseCounted(test_case.expected_feature));
+          scope.GetDocument().IsUseCounted(counters.explicitly_requested));
+      EXPECT_FALSE(scope.GetDocument().IsUseCounted(counters.observed));
 
       PerformanceObserverInit* options = PerformanceObserverInit::Create();
-      options->setEntryTypes({test_case.entry_type});
+      options->setEntryTypes({entry_type_str});
       observer_->observe(scope.GetScriptState(), options, exception_state);
 
-      EXPECT_TRUE(scope.GetDocument().IsUseCounted(test_case.expected_feature));
+      EXPECT_TRUE(
+          scope.GetDocument().IsUseCounted(counters.explicitly_requested));
+      EXPECT_FALSE(scope.GetDocument().IsUseCounted(counters.observed));
     }
 
     // Test with type argument.
@@ -227,14 +213,55 @@ TEST_F(PerformanceObserverTest, ObserveEntryTypesUseCounters) {
       Initialize(scope.GetScriptState());
 
       EXPECT_FALSE(
-          scope.GetDocument().IsUseCounted(test_case.expected_feature));
+          scope.GetDocument().IsUseCounted(counters.explicitly_requested));
+      EXPECT_FALSE(scope.GetDocument().IsUseCounted(counters.observed));
 
       PerformanceObserverInit* options = PerformanceObserverInit::Create();
-      options->setType(test_case.entry_type);
+      options->setType(entry_type_str);
       observer_->observe(scope.GetScriptState(), options, exception_state);
 
-      EXPECT_TRUE(scope.GetDocument().IsUseCounted(test_case.expected_feature));
+      EXPECT_TRUE(
+          scope.GetDocument().IsUseCounted(counters.explicitly_requested));
+      EXPECT_FALSE(scope.GetDocument().IsUseCounted(counters.observed));
     }
+  }
+}
+
+TEST_F(PerformanceObserverTest, ObservedUseCounters) {
+  class DummyPerformanceEntry final : public PerformanceEntry {
+   public:
+    explicit DummyPerformanceEntry(EntryType entry_type)
+        : PerformanceEntry(/*duration=*/0.0,
+                           g_empty_atom,
+                           /*start_time=*/0.0,
+                           /*source=*/nullptr,
+                           /*navigation_id=*/0),
+          entry_type_(entry_type) {}
+
+    const AtomicString& entryType() const override {
+      return PerformanceEntry::ToEntryTypeString(entry_type_);
+    }
+    PerformanceEntryType EntryTypeEnum() const override { return entry_type_; }
+
+   private:
+    EntryType entry_type_;
+  };
+
+  for (const auto& counters : PerformanceEntry::GetUseCounters()) {
+    const AtomicString& entry_type_str =
+        PerformanceEntry::ToEntryTypeString(counters.entry_type);
+    SCOPED_TRACE(entry_type_str);
+
+    V8TestingScope scope;
+    Initialize(scope.GetScriptState());
+
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(counters.observed));
+
+    auto* entry =
+        MakeGarbageCollected<DummyPerformanceEntry>(counters.entry_type);
+    observer_->EnqueuePerformanceEntry(*entry);
+
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(counters.observed));
   }
 }
 }  // namespace blink

@@ -32,10 +32,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_ENTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_ENTRY_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -143,8 +145,31 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     return a->startTime() < b->startTime();
   }
 
+  struct EntryTypeUseCounters {
+    EntryType entry_type;
+    WebFeature emitted;
+    WebFeature explicitly_requested;
+    WebFeature potentially_observed;
+    WebFeature observed;
+  };
+
+  // PerformanceEntry UseCounters follow four stages across all entry types:
+  // 1. *EntryEmitted: At least one entry of this type was produced and queued.
+  // 2. *ExplicitlyRequested: The page registered a PerformanceObserver or
+  //    called performance.getEntriesByType() / getEntriesByName(name, type)
+  //    for this type.
+  // 3. *PotentiallyObserved: At least one entry of this type was returned via
+  //    unfiltered performance.getEntries() or
+  //    performance.getEntriesByName(name) (without specifying a type).
+  // 4. *Observed: The page explicitly requested this type AND received at least
+  //    one entry of this type (the overlap of Emitted and ExplicitlyRequested).
+  static base::span<const EntryTypeUseCounters> GetUseCounters();
+  static const EntryTypeUseCounters* GetUseCountersForType(
+      EntryType entry_type);
+
   static PerformanceEntry::EntryType ToEntryTypeEnum(
       const AtomicString& entry_type);
+  static const AtomicString& ToEntryTypeString(EntryType entry_type);
 
   // Entries of the types listed here will be accessible from the
   // PerformanceTimeline or the PerformanceObserver.  Those not listed will

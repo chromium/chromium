@@ -26,10 +26,13 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -54,6 +57,7 @@
 #include "third_party/blink/renderer/core/timing/performance_container_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -185,6 +189,9 @@ class WindowPerformanceTest : public testing::Test,
   void RemoveLongTaskObserver() {
     // simulate with filter options.
     performance_->observer_filter_options_ = PerformanceEntry::kInvalid;
+  }
+  void AddLongAnimationFrameEntry(PerformanceEntry* entry) {
+    performance_->AddLongAnimationFrameEntry(entry);
   }
   void SimulatePaintAndCommit() {
     performance_->OnPaintFinished();
@@ -2020,6 +2027,128 @@ TEST_P(WindowPerformanceTest, InteractionID) {
   CheckEntriesAreReportedToRendererUKM({keydown_entry, keyup_entry,
                                         pointerdown_entry, pointerup_entry,
                                         click_entry});
+}
+
+TEST_P(WindowPerformanceTest, EventTimingUseCounters) {
+  Document& document = page_holder_->GetDocument();
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kEventTimingEntryEmitted));
+  EXPECT_FALSE(
+      document.IsUseCounted(WebFeature::kEventTimingExplicitlyRequested));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kEventTimingObserved));
+
+  // Dispatch an event without an observer: only EntryEmitted is counted.
+  PointerId pointer_id = 1;
+  auto* event1 = CreatePointerEvent(event_type_names::kClick,
+                                    base::TimeTicks::Now(), pointer_id);
+  SimulateEventDispatch(*event1, base::Milliseconds(20));
+  SimulateAllRenderingStages();
+
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kEventTimingEntryEmitted));
+  EXPECT_FALSE(
+      document.IsUseCounted(WebFeature::kEventTimingExplicitlyRequested));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kEventTimingObserved));
+
+  // Register an observer for "event" with durationThreshold 104ms.
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  v8::Local<v8::Function> callback =
+      v8::Function::New(script_state->GetContext(), nullptr).ToLocalChecked();
+  auto* observer = MakeGarbageCollected<PerformanceObserver>(
+      GetWindow(), performance_,
+      V8PerformanceObserverCallback::Create(callback));
+  PerformanceObserverInit* options = PerformanceObserverInit::Create();
+  options->setType("event");
+  options->setDurationThreshold(104);
+  options->setBuffered(false);
+  NonThrowableExceptionState exception_state;
+  observer->observe(script_state, options, exception_state);
+
+  EXPECT_TRUE(
+      document.IsUseCounted(WebFeature::kEventTimingExplicitlyRequested));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kEventTimingObserved));
+
+  // Dispatch a short event (20ms < 104ms threshold): CanObserve() is false,
+  // so kEventTimingObserved should remain false.
+  auto* short_event = CreatePointerEvent(event_type_names::kClick,
+                                         base::TimeTicks::Now(), pointer_id);
+  SimulateEventDispatch(*short_event, base::Milliseconds(20));
+  SimulateAllRenderingStages();
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kEventTimingObserved));
+
+  // Dispatch a long event (120ms >= 104ms threshold): CanObserve() is true,
+  // so kEventTimingObserved becomes true.
+  auto* long_event = CreatePointerEvent(event_type_names::kClick,
+                                        base::TimeTicks::Now(), pointer_id);
+  SimulateEventDispatch(*long_event, base::Milliseconds(120));
+  SimulateAllRenderingStages();
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kEventTimingObserved));
+}
+
+TEST_P(WindowPerformanceTest, LongAnimationFrameUseCounters) {
+  class DummyLongAnimationFrameEntry final : public PerformanceEntry {
+   public:
+    explicit DummyLongAnimationFrameEntry(DOMWindow* source)
+        : PerformanceEntry(/*duration=*/100.0,
+                           performance_entry_names::kLongAnimationFrame,
+                           /*start_time=*/0.0,
+                           source,
+                           /*navigation_id=*/1) {}
+    const AtomicString& entryType() const override {
+      return performance_entry_names::kLongAnimationFrame;
+    }
+    PerformanceEntryType EntryTypeEnum() const override {
+      return PerformanceEntry::kLongAnimationFrame;
+    }
+  };
+
+  Document& document = page_holder_->GetDocument();
+  EXPECT_FALSE(
+      document.IsUseCounted(WebFeature::kLongAnimationFrameEntryEmitted));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kLongAnimationFrameExplicitlyRequested));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kLongAnimationFrameObserved));
+
+  // Emit a LoAF entry before any observer is registered: only EntryEmitted
+  // is counted.
+  AddLongAnimationFrameEntry(
+      MakeGarbageCollected<DummyLongAnimationFrameEntry>(GetWindow()));
+  EXPECT_TRUE(
+      document.IsUseCounted(WebFeature::kLongAnimationFrameEntryEmitted));
+  EXPECT_FALSE(document.IsUseCounted(
+      WebFeature::kLongAnimationFrameExplicitlyRequested));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kLongAnimationFrameObserved));
+
+  // Observe without buffered:true: ExplicitlyRequested is counted, Observed
+  // remains false.
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  v8::Local<v8::Function> callback =
+      v8::Function::New(script_state->GetContext(), nullptr).ToLocalChecked();
+  auto* observer = MakeGarbageCollected<PerformanceObserver>(
+      GetWindow(), performance_,
+      V8PerformanceObserverCallback::Create(callback));
+  PerformanceObserverInit* options = PerformanceObserverInit::Create();
+  options->setType("long-animation-frame");
+  options->setBuffered(false);
+  NonThrowableExceptionState exception_state;
+  observer->observe(script_state, options, exception_state);
+
+  EXPECT_TRUE(document.IsUseCounted(
+      WebFeature::kLongAnimationFrameExplicitlyRequested));
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kLongAnimationFrameObserved));
+
+  // Observe with buffered:true: the buffered LoAF entry is enqueued and
+  // triggers Observed.
+  options->setBuffered(true);
+  observer->observe(script_state, options, exception_state);
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kLongAnimationFrameObserved));
+
+  // Clear Observed and emit a live LoAF entry to verify live notification also
+  // triggers Observed.
+  document.ClearUseCounterForTesting(WebFeature::kLongAnimationFrameObserved);
+  AddLongAnimationFrameEntry(
+      MakeGarbageCollected<DummyLongAnimationFrameEntry>(GetWindow()));
+  EXPECT_TRUE(document.IsUseCounted(WebFeature::kLongAnimationFrameObserved));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, WindowPerformanceTest, ::testing::Bool());

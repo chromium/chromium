@@ -32,6 +32,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -164,6 +165,172 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
     return kScroll;
   }
   return kInvalid;
+}
+
+const AtomicString& PerformanceEntry::ToEntryTypeString(EntryType entry_type) {
+  switch (entry_type) {
+    case kLongTask:
+      return performance_entry_names::kLongtask;
+    case kMark:
+      return performance_entry_names::kMark;
+    case kMeasure:
+      return performance_entry_names::kMeasure;
+    case kResource:
+      return performance_entry_names::kResource;
+    case kNavigation:
+      return performance_entry_names::kNavigation;
+    case kTaskAttribution:
+      return performance_entry_names::kTaskattribution;
+    case kPaint:
+      return performance_entry_names::kPaint;
+    case kEvent:
+      return performance_entry_names::kEvent;
+    case kFirstInput:
+      return performance_entry_names::kFirstInput;
+    case kElement:
+      return performance_entry_names::kElement;
+    case kLayoutShift:
+      return performance_entry_names::kLayoutShift;
+    case kLargestContentfulPaint:
+      return performance_entry_names::kLargestContentfulPaint;
+    case kInteractionContentfulPaint:
+      return performance_entry_names::kInteractionContentfulPaint;
+    case kVisibilityState:
+      return performance_entry_names::kVisibilityState;
+    case kBackForwardCacheRestoration:
+      return performance_entry_names::kBackForwardCacheRestoration;
+    case kSoftNavigation:
+      return performance_entry_names::kSoftNavigation;
+    case kLongAnimationFrame:
+      return performance_entry_names::kLongAnimationFrame;
+    case kContainer:
+      return performance_entry_names::kContainer;
+    case kScroll:
+      return performance_entry_names::kScroll;
+    case kScript:
+    case kMarkConditional:
+    case kMeasureConditional:
+    case kInvalid:
+      return g_empty_atom;
+  }
+}
+
+base::span<const PerformanceEntry::EntryTypeUseCounters>
+PerformanceEntry::GetUseCounters() {
+  static constexpr EntryTypeUseCounters kUseCounters[] = {
+      {kBackForwardCacheRestoration,
+       WebFeature::kBackForwardCacheRestorationEntryEmitted,
+       WebFeature::kBackForwardCacheRestorationExplicitlyRequested,
+       WebFeature::kBackForwardCacheRestorationPotentiallyObserved,
+       WebFeature::kBackForwardCacheRestorationObserved},
+      {kLongAnimationFrame, WebFeature::kLongAnimationFrameEntryEmitted,
+       WebFeature::kLongAnimationFrameExplicitlyRequested,
+       WebFeature::kLongAnimationFramePotentiallyObserved,
+       WebFeature::kLongAnimationFrameObserved},
+      {kElement, WebFeature::kElementTimingEntryEmitted,
+       WebFeature::kElementTimingExplicitlyRequested,
+       WebFeature::kElementTimingPotentiallyObserved,
+       WebFeature::kElementTimingObserved},
+      {kContainer, WebFeature::kContainerTimingEntryEmitted,
+       WebFeature::kContainerTimingExplicitlyRequested,
+       WebFeature::kContainerTimingPotentiallyObserved,
+       WebFeature::kContainerTimingObserved},
+      {kEvent, WebFeature::kEventTimingEntryEmitted,
+       WebFeature::kEventTimingExplicitlyRequested,
+       WebFeature::kEventTimingPotentiallyObserved,
+       WebFeature::kEventTimingObserved},
+      {kFirstInput, WebFeature::kEventTimingFirstInputEntryEmitted,
+       WebFeature::kEventTimingFirstInputExplicitlyRequested,
+       WebFeature::kEventTimingFirstInputPotentiallyObserved,
+       WebFeature::kEventTimingFirstInputObserved},
+      {kSoftNavigation, WebFeature::kSoftNavigationEntryEmitted,
+       WebFeature::kSoftNavigationExplicitlyRequested,
+       WebFeature::kSoftNavigationPotentiallyObserved,
+       WebFeature::kSoftNavigationObserved},
+      {kInteractionContentfulPaint,
+       WebFeature::kInteractionContentfulPaintEntryEmitted,
+       WebFeature::kInteractionContentfulPaintExplicitlyRequested,
+       WebFeature::kInteractionContentfulPaintPotentiallyObserved,
+       WebFeature::kInteractionContentfulPaintObserved},
+      {kLargestContentfulPaint, WebFeature::kLargestContentfulPaintEntryEmitted,
+       WebFeature::kLargestContentfulPaintExplicitlyRequested,
+       WebFeature::kLargestContentfulPaintPotentiallyObserved,
+       WebFeature::kLargestContentfulPaintObserved},
+      {kLayoutShift, WebFeature::kLayoutShiftEntryEmitted,
+       WebFeature::kLayoutShiftExplicitlyRequested,
+       WebFeature::kLayoutShiftPotentiallyObserved,
+       WebFeature::kLayoutShiftObserved},
+      {kLongTask, WebFeature::kLongTaskEntryEmitted,
+       WebFeature::kLongTaskObserver, WebFeature::kLongTaskPotentiallyObserved,
+       WebFeature::kLongTaskObserved},
+      {kPaint, WebFeature::kPaintTimingEntryEmitted,
+       WebFeature::kPaintTimingRequested,
+       WebFeature::kPaintTimingPotentiallyObserved,
+       WebFeature::kPaintTimingObserved},
+      {kNavigation, WebFeature::kNavigationTimingEntryEmitted,
+       WebFeature::kNavigationTimingL2,
+       WebFeature::kNavigationTimingPotentiallyObserved,
+       WebFeature::kNavigationTimingObserved},
+      {kResource, WebFeature::kResourceTimingEntryEmitted,
+       WebFeature::kResourceTiming,
+       WebFeature::kResourceTimingPotentiallyObserved,
+       WebFeature::kResourceTimingObserved},
+      {kVisibilityState, WebFeature::kVisibilityStateEntryEmitted,
+       WebFeature::kVisibilityStateObserver,
+       WebFeature::kVisibilityStatePotentiallyObserved,
+       WebFeature::kVisibilityStateObserved},
+      {kMark, WebFeature::kUserTimingMarkEntryEmitted,
+       WebFeature::kUserTimingMarkExplicitlyRequested,
+       WebFeature::kUserTimingMarkPotentiallyObserved,
+       WebFeature::kUserTimingMarkObserved},
+      {kMeasure, WebFeature::kUserTimingMeasureEntryEmitted,
+       WebFeature::kUserTimingMeasureExplicitlyRequested,
+       WebFeature::kUserTimingMeasurePotentiallyObserved,
+       WebFeature::kUserTimingMeasureObserved},
+      {kScroll, WebFeature::kScrollTimingEntryEmitted,
+       WebFeature::kScrollTimingExplicitlyRequested,
+       WebFeature::kScrollTimingPotentiallyObserved,
+       WebFeature::kScrollTimingObserved},
+  };
+  return kUseCounters;
+}
+
+const PerformanceEntry::EntryTypeUseCounters*
+PerformanceEntry::GetUseCountersForType(EntryType entry_type) {
+  // No `default:` case so that `-Wswitch` enforces at compile time that every
+  // `EntryType` enumerator is explicitly handled here.
+  switch (entry_type) {
+    case kTaskAttribution:
+    case kScript:
+    case kMarkConditional:
+    case kMeasureConditional:
+    case kInvalid:
+      return nullptr;
+    case kBackForwardCacheRestoration:
+    case kLongAnimationFrame:
+    case kElement:
+    case kContainer:
+    case kEvent:
+    case kFirstInput:
+    case kSoftNavigation:
+    case kInteractionContentfulPaint:
+    case kLargestContentfulPaint:
+    case kLayoutShift:
+    case kLongTask:
+    case kPaint:
+    case kNavigation:
+    case kResource:
+    case kVisibilityState:
+    case kMark:
+    case kMeasure:
+    case kScroll:
+      for (const auto& counters : GetUseCounters()) {
+        if (counters.entry_type == entry_type) {
+          return &counters;
+        }
+      }
+      NOTREACHED();
+  }
 }
 
 DOMHighResTimeStamp PerformanceEntry::paintTime() const {

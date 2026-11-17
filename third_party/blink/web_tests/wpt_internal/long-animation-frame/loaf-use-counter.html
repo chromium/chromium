@@ -3,12 +3,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 
-const kLongAnimationFrameObserver = 4577;
-const kLongAnimationFrameRequested = 4578;
+const kLongAnimationFrameExplicitlyRequested = 4577;
 
 function clear() {
-  internals.clearUseCounter(document, kLongAnimationFrameObserver);
-  internals.clearUseCounter(document, kLongAnimationFrameRequested);
+  internals.clearUseCounter(document, kLongAnimationFrameExplicitlyRequested);
 }
 
 promise_test(async () => {
@@ -17,23 +15,20 @@ promise_test(async () => {
   performance.getEntriesByName("long-animation-frame");
   performance.getEntriesByType("longtask");
   new PerformanceObserver(() => {}).observe({entryTypes: ["resource"]});
-  assert_false(internals.isUseCounted(document, kLongAnimationFrameObserver));
-  assert_false(internals.isUseCounted(document, kLongAnimationFrameRequested));
+  assert_false(internals.isUseCounted(document, kLongAnimationFrameExplicitlyRequested));
 }, "UseCounter for LoAF should not be triggered for non-loaf types");
 
 promise_test(async () => {
   clear();
   performance.getEntriesByType("long-animation-frame");
-  assert_false(internals.isUseCounted(document, kLongAnimationFrameObserver));
-  assert_true(internals.isUseCounted(document, kLongAnimationFrameRequested));
-}, "UseCounter for LoAF requested should be triggered at appropriate times");
+  assert_true(internals.isUseCounted(document, kLongAnimationFrameExplicitlyRequested));
+}, "UseCounter for LoAF explicitly requested should be triggered by getEntriesByType");
 
 promise_test(async () => {
   clear();
   new PerformanceObserver(() => {}).observe({type: "long-animation-frame"});
-  assert_true(internals.isUseCounted(document, kLongAnimationFrameObserver));
-  assert_false(internals.isUseCounted(document, kLongAnimationFrameRequested));
-}, "UseCounter for LoAF observer should be triggered at appropriate times");
+  assert_true(internals.isUseCounted(document, kLongAnimationFrameExplicitlyRequested));
+}, "UseCounter for LoAF explicitly requested should be triggered by PerformanceObserver");
 </script>
 <body>
   <div id="log"></div>

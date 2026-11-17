@@ -3674,7 +3674,7 @@ enum WebFeature {
   kV8DocumentPictureInPicture_Window_AttributeGetter = 4398,
   kV8DocumentPictureInPictureEvent_Window_AttributeGetter = 4399,
   kDocumentPictureInPictureEnterEvent = 4400,
-  kSoftNavigationHeuristics = 4401,
+  kOBSOLETE_SoftNavigationHeuristics = 4401,
   kMathMLMathElement = 4402,
   kMathMLMathElementInDocument = 4403,
   kCSSAtRuleStylistic = 4404,
@@ -3857,8 +3857,8 @@ enum WebFeature {
   kCriticalCHRestartNavigationTiming = 4574,
   kTopLevelDocumentWithEmbeddedCredentials = 4575,
   kV8Navigator_GetInterestGroupAdAuctionData_Method = 4576,
-  kLongAnimationFrameObserver = 4577,
-  kLongAnimationFrameRequested = 4578,
+  kLongAnimationFrameExplicitlyRequested = 4577,
+  kOBSOLETE_LongAnimationFrameRequested = 4578,
   // The items above roughly this point are available in the M115 branch.
   kFedCmLoginHint = 4579,
   kFedCmRpContext = 4580,
@@ -5416,6 +5416,90 @@ enum WebFeature {
   kViewportFitCoverAndSafeAreaInsetTop = 6097,
   kHTMLInputElementResetIndeterminateCheckbox = 6098,
   kImportScriptsMimeTypeCheckFailedForExemptScheme = 6099,
+  // PerformanceEntry 4-stage UseCounters (*EntryEmitted, *ExplicitlyRequested,
+  // *PotentiallyObserved, *Observed). Missing entries below already existed
+  // earlier in this enum and are referenced in
+  // PerformanceEntry::GetUseCounters.
+  kBackForwardCacheRestorationEntryEmitted = 6100,
+  kBackForwardCacheRestorationExplicitlyRequested = 6101,
+  kBackForwardCacheRestorationPotentiallyObserved = 6102,
+  kBackForwardCacheRestorationObserved = 6103,
+  // EventTiming: see also kEventTimingExplicitlyRequested = 2487.
+  kEventTimingEntryEmitted = 6104,
+  kEventTimingPotentiallyObserved = 6105,
+  kEventTimingObserved = 6106,
+  // LongAnimationFrame: see also kLongAnimationFrameExplicitlyRequested = 4577.
+  kLongAnimationFrameEntryEmitted = 6107,
+  kLongAnimationFramePotentiallyObserved = 6108,
+  kLongAnimationFrameObserved = 6109,
+  // ElementTiming: see also kElementTimingExplicitlyRequested = 2728,
+  // kElementTimingEntryEmitted = 6016.
+  kElementTimingPotentiallyObserved = 6110,
+  kElementTimingObserved = 6111,
+  // ContainerTiming: see also kContainerTimingEntryEmitted = 6017,
+  // kContainerTimingExplicitlyRequested = 5744, kContainerTimingObserved =
+  // 5745.
+  kContainerTimingPotentiallyObserved = 6112,
+  // PaintTiming: see also kPaintTimingObserved = 2190,
+  // kPaintTimingRequested = 2191.
+  kPaintTimingEntryEmitted = 6113,
+  kPaintTimingPotentiallyObserved = 6114,
+  // LayoutShift: see also kLayoutShiftExplicitlyRequested = 2782.
+  kLayoutShiftEntryEmitted = 6115,
+  kLayoutShiftPotentiallyObserved = 6116,
+  kLayoutShiftObserved = 6117,
+  // LargestContentfulPaint: see also
+  // kLargestContentfulPaintExplicitlyRequested = 2927.
+  kLargestContentfulPaintEntryEmitted = 6118,
+  kLargestContentfulPaintPotentiallyObserved = 6119,
+  kLargestContentfulPaintObserved = 6120,
+  // InteractionContentfulPaint: see also
+  // kInteractionContentfulPaintEntryEmitted = 6012,
+  // kInteractionContentfulPaintExplicitlyRequested = 6013,
+  // kInteractionContentfulPaintObserved = 6014.
+  kInteractionContentfulPaintPotentiallyObserved = 6121,
+  // SoftNavigation: see also kSoftNavigationEntryEmitted = 6009,
+  // kSoftNavigationExplicitlyRequested = 6010, kSoftNavigationObserved = 6011.
+  kSoftNavigationPotentiallyObserved = 6122,
+  // ResourceTiming: see also kResourceTiming = 3350.
+  kResourceTimingEntryEmitted = 6123,
+  kResourceTimingPotentiallyObserved = 6124,
+  kResourceTimingObserved = 6125,
+  // LongTask: see also kLongTaskObserver = 1615.
+  kLongTaskEntryEmitted = 6126,
+  kLongTaskPotentiallyObserved = 6127,
+  kLongTaskObserved = 6128,
+  // VisibilityState: see also kVisibilityStateObserver = 4542.
+  kVisibilityStateEntryEmitted = 6129,
+  kVisibilityStatePotentiallyObserved = 6130,
+  kVisibilityStateObserved = 6131,
+  // FirstInput: see also kEventTimingFirstInputExplicitlyRequested = 3254.
+  kEventTimingFirstInputEntryEmitted = 6132,
+  kEventTimingFirstInputPotentiallyObserved = 6133,
+  kEventTimingFirstInputObserved = 6134,
+  // NavigationTiming: see also kNavigationTimingL2 = 3349.
+  kNavigationTimingEntryEmitted = 6135,
+  kNavigationTimingPotentiallyObserved = 6136,
+  kNavigationTimingObserved = 6137,
+  // UserTiming (mark & measure): see also kUserTiming = 2430,
+  // kUserTimingL3 = 3053 for the performance.mark()/measure() API calls.
+  kUserTimingMarkEntryEmitted = 6138,
+  kUserTimingMarkExplicitlyRequested = 6139,
+  kUserTimingMarkPotentiallyObserved = 6140,
+  kUserTimingMarkObserved = 6141,
+  kUserTimingMeasureEntryEmitted = 6142,
+  kUserTimingMeasureExplicitlyRequested = 6143,
+  kUserTimingMeasurePotentiallyObserved = 6144,
+  kUserTimingMeasureObserved = 6145,
+  // ScrollTiming:
+  kScrollTimingEntryEmitted = 6146,
+  kScrollTimingExplicitlyRequested = 6147,
+  kScrollTimingPotentiallyObserved = 6148,
+  kScrollTimingObserved = 6149,
+  // PerformanceTimeline getEntries*() API calls without vs. with a type filter
+  // (see also kPerformanceTimeline = 2429):
+  kPerformanceGetEntriesWithoutType = 6150,
+  kPerformanceGetEntriesWithType = 6151,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
