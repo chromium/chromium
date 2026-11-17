@@ -57,6 +57,7 @@ public class BottomBarAppMenu extends FrameLayout implements TintObserver {
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         mBrandedColorScheme = brandedColorScheme;
         if (mMenuImageButton != null && tint != null) {

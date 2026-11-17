@@ -143,13 +143,16 @@ public class AppThemeColorProvider extends ThemeColorProvider
         final boolean isInMultiWindowMode =
                 mMultiWindowModeStateDispatcher != null
                         && mMultiWindowModeStateDispatcher.isInMultiWindowMode();
+        final boolean isActivityFocused = !isInMultiWindowMode || mIsTopResumedActivity;
 
         final ColorStateList activityFocusTint =
-                !isInMultiWindowMode
+                isActivityFocused
                         ? iconTint
                         : ThemeColorProvider.calculateActivityFocusTint(
-                                mActivityContext, brandedColorScheme, mIsTopResumedActivity);
-        updateTint(iconTint, activityFocusTint, brandedColorScheme);
+                                mActivityContext, brandedColorScheme, isActivityFocused);
+        final float unfocusedAlpha =
+                ThemeUtils.calculateUnfocusedAlpha(mActivityContext, isActivityFocused);
+        updateTint(iconTint, activityFocusTint, unfocusedAlpha, brandedColorScheme);
     }
 
     @Override

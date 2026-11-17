@@ -429,7 +429,8 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         createMediator();
         ColorStateList focusTint = ColorStateList.valueOf(Color.GREEN);
         @BrandedColorScheme int brandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
-        mMediator.onTintChanged(/* tint= */ null, focusTint, brandedColorScheme);
+        mMediator.onTintChanged(
+                /* tint= */ null, focusTint, /* unfocusedAlpha= */ 1.0f, brandedColorScheme);
 
         assertEquals(
                 focusTint, mModel.get(DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST));

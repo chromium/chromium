@@ -116,6 +116,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         updateTint(activityFocusTint);
     }

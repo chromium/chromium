@@ -230,14 +230,18 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
         BrowserServiceTheme theme = calculateTheme(colorType, tab);
         ColorStateList tint =
                 ThemeUtils.getThemedToolbarIconTint(mContext, theme.brandedColorScheme);
+        boolean isActivityFocused =
+                !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
+                        || mIsTopResumedActivity;
         ColorStateList focusTint =
-                AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager)
-                        ? ThemeColorProvider.calculateActivityFocusTint(
-                                mContext, theme.brandedColorScheme, mIsTopResumedActivity)
-                        : tint;
+                isActivityFocused
+                        ? tint
+                        : ThemeColorProvider.calculateActivityFocusTint(
+                                mContext, theme.brandedColorScheme, isActivityFocused);
+        float unfocusedAlpha = ThemeUtils.calculateUnfocusedAlpha(mContext, isActivityFocused);
 
         updatePrimaryColor(theme.color, /* shouldAnimate= */ false);
-        updateTint(tint, focusTint, theme.brandedColorScheme);
+        updateTint(tint, focusTint, unfocusedAlpha, theme.brandedColorScheme);
     }
 
     private @ColorInt int computeColor(@ThemeColorSource int colorType, @Nullable Tab tab) {

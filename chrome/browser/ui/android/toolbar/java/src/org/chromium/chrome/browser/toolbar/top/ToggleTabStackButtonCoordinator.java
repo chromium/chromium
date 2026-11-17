@@ -295,6 +295,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             ImageViewCompat.setImageTintList(mToggleTabStackButton, activityFocusTint);

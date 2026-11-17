@@ -99,8 +99,9 @@ public class BackButtonCoordinator extends ToolbarChildButton {
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             int brandedColorScheme) {
-        mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+        mMediator.onTintChanged(tint, activityFocusTint, unfocusedAlpha, brandedColorScheme);
     }
 
     @SuppressWarnings("NullAway") // Supplier<@Nullable> - https://crbug.com/455874046

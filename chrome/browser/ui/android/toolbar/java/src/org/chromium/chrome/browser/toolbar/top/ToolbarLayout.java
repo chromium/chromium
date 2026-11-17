@@ -377,6 +377,7 @@ public abstract class ToolbarLayout extends FrameLayout
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {}
 
     @Override

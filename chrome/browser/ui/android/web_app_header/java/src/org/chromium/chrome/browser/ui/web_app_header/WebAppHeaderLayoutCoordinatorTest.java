@@ -1111,7 +1111,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
         createCoordinator();
 
         var tint = mock(ColorStateList.class);
-        mCoordinator.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
+        mCoordinator.onTintChanged(
+                tint, tint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Tint change should be propagated to the toggle button",
                 mCoordinator.getToggleButtonImageTintList(),
@@ -1590,7 +1591,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         ColorStateList tint = ColorStateList.valueOf(Color.RED);
-        mCoordinator.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
+        mCoordinator.onTintChanged(
+                tint, tint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(
                 "Tint change should be propagated to the app name",

@@ -224,7 +224,8 @@ public class DownloadButtonCoordinatorTest {
     public void testOnTintChanged_updatesView() {
         DownloadButtonView view = showAndGetView();
         ColorStateList newTint = ColorStateList.valueOf(Color.RED);
-        mCoordinator.onTintChanged(null, newTint, BrandedColorScheme.APP_DEFAULT);
+        mCoordinator.onTintChanged(
+                null, newTint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.APP_DEFAULT);
         assertTint(newTint, view);
     }
 
@@ -232,14 +233,16 @@ public class DownloadButtonCoordinatorTest {
     public void testActiveState_usesAccentTint() {
         DownloadButtonView view = showAndGetView();
         ColorStateList themeTint = ColorStateList.valueOf(Color.RED);
-        mCoordinator.onTintChanged(null, themeTint, BrandedColorScheme.APP_DEFAULT);
+        mCoordinator.onTintChanged(
+                null, themeTint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.APP_DEFAULT);
 
         mStateSupplier.set(SHOWN_ACTIVE);
         assertTint(colorStateList(R.color.default_icon_color_accent1_tint_list), view);
 
         // A theme change while active must not override the accent.
         ColorStateList otherThemeTint = ColorStateList.valueOf(Color.BLUE);
-        mCoordinator.onTintChanged(null, otherThemeTint, BrandedColorScheme.APP_DEFAULT);
+        mCoordinator.onTintChanged(
+                null, otherThemeTint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.APP_DEFAULT);
         assertTint(colorStateList(R.color.default_icon_color_accent1_tint_list), view);
 
         // Back to inactive restores the latest theme tint.
@@ -251,7 +254,10 @@ public class DownloadButtonCoordinatorTest {
     public void testActiveState_incognitoBranded_usesIncognitoAccent() {
         DownloadButtonView view = showAndGetView();
         mCoordinator.onTintChanged(
-                null, ColorStateList.valueOf(Color.RED), BrandedColorScheme.INCOGNITO);
+                null,
+                ColorStateList.valueOf(Color.RED),
+                /* unfocusedAlpha= */ 1.0f,
+                BrandedColorScheme.INCOGNITO);
         mStateSupplier.set(SHOWN_ACTIVE);
         assertTint(colorStateList(R.color.default_icon_color_blue_light), view);
     }
@@ -412,6 +418,7 @@ public class DownloadButtonCoordinatorTest {
         mCoordinator.onTintChanged(
                 /* tint= */ null,
                 /* activityFocusTint= */ ColorStateList.valueOf(Color.RED),
+                /* unfocusedAlpha= */ 1.0f,
                 BrandedColorScheme.APP_DEFAULT);
         verify(mRing)
                 .setColors(

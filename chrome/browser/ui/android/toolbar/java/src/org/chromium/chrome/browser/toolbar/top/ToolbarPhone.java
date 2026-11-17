@@ -2144,6 +2144,7 @@ public class ToolbarPhone extends ToolbarLayout
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         if (mOptionalButtonCoordinator != null) {
             mOptionalButtonCoordinator.setBrandedColorScheme(brandedColorScheme);

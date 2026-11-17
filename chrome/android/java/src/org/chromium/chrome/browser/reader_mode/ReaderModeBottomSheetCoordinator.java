@@ -93,7 +93,7 @@ public class ReaderModeBottomSheetCoordinator {
         mThemeColorObserver = (_, _) -> updateThemeProperties();
         mThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
 
-        mThemeTintObserver = (_, _, _) -> updateThemeProperties();
+        mThemeTintObserver = (_, _, _, _) -> updateThemeProperties();
         mThemeColorProvider.addTintObserver(mThemeTintObserver);
 
         mBottomSheetContent = new ReaderModeBottomSheetContent(mReaderModeBottomSheetView);

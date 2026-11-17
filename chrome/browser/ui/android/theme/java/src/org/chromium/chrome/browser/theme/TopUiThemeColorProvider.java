@@ -171,7 +171,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
                 calculateBrandedColorScheme(tab.isIncognito(), mIsDefaultColorUsed);
         final ColorStateList iconTint =
                 ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme);
-        updateTint(iconTint, iconTint, brandedColorScheme);
+        updateTint(iconTint, iconTint, /* unfocusedAlpha= */ 1.0f, brandedColorScheme);
     }
 
     private boolean isUsingDefaultColor(Tab tab, @ColorInt int themeColor) {

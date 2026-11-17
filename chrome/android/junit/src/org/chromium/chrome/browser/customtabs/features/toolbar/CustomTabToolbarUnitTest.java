@@ -396,7 +396,8 @@ public class CustomTabToolbarUnitTest {
         var tint =
                 ThemeUtils.getThemedToolbarIconTint(
                         mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME);
-        mToolbar.onTintChanged(tint, tint, BrandedColorScheme.LIGHT_BRANDED_THEME);
+        mToolbar.onTintChanged(
+                tint, tint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
         assertEquals(BrandedColorScheme.LIGHT_BRANDED_THEME, mToolbar.getBrandedColorScheme());
         assertEquals(

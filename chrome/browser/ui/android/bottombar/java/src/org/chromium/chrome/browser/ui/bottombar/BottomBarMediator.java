@@ -510,6 +510,7 @@ public class BottomBarMediator
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         if (mHost != Host.TABBED) return;
         mModel.set(BottomBarProperties.COLOR_SCHEME, brandedColorScheme);

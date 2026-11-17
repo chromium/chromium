@@ -139,6 +139,7 @@ public class BottomUiThemeColorProvider extends ThemeColorProvider
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             int brandedColorScheme) {
         updateColorAndTint(false);
     }
@@ -151,16 +152,25 @@ public class BottomUiThemeColorProvider extends ThemeColorProvider
             // defaults for the current theme. If this assumption doesn't hold,
             // BottomControlsStacker should provide a separate API to return the correct tint.
             ColorStateList tint = getTintForTopAnchoredToolbar();
-            updateTint(tint, tint, getBrandedColorSchemeForTopAnchoredToolbar());
+            updateTint(
+                    tint,
+                    tint,
+                    /* unfocusedAlpha= */ 1.0f,
+                    getBrandedColorSchemeForTopAnchoredToolbar());
         } else if (mControlsPosition == ControlsPosition.TOP) {
             updatePrimaryColor(getColorForTopAnchoredToolbar(), animate);
             ColorStateList tint = getTintForTopAnchoredToolbar();
-            updateTint(tint, tint, getBrandedColorSchemeForTopAnchoredToolbar());
+            updateTint(
+                    tint,
+                    tint,
+                    /* unfocusedAlpha= */ 1.0f,
+                    getBrandedColorSchemeForTopAnchoredToolbar());
         } else {
             updatePrimaryColor(mToolbarThemeColorProvider.getThemeColor(), animate);
             updateTint(
                     mToolbarThemeColorProvider.getTint(),
                     mToolbarThemeColorProvider.getActivityFocusTint(),
+                    mToolbarThemeColorProvider.getUnfocusedAlpha(),
                     mToolbarThemeColorProvider.getBrandedColorScheme());
         }
         if (!mIsBottomBarEnabled) {

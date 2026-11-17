@@ -305,6 +305,7 @@ public class ExtensionsMenuCoordinator
     public void onTintChanged(
             @Nullable ColorStateList tintList,
             @Nullable ColorStateList activityFocusTintList,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mExtensionsMenuButton, activityFocusTintList);
     }

@@ -716,6 +716,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         if (tint == null) return;
         setBrandedColorScheme(brandedColorScheme);

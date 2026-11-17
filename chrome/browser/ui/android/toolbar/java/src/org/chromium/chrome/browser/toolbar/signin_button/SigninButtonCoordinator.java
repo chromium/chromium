@@ -114,8 +114,9 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
-        mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+        mMediator.onTintChanged(tint, activityFocusTint, unfocusedAlpha, brandedColorScheme);
     }
 
     /**

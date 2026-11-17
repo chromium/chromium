@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.util.ValueUtils;
 
 /** Utility methods for theme colors. */
 @NullMarked
@@ -216,6 +217,19 @@ public class ThemeUtils {
                             : R.color.toolbar_icon_unfocused_activity_light_color;
         }
         return colorId;
+    }
+
+    /**
+     * Determines the alpha value based on activity focus state.
+     *
+     * @param context The {@link Context} used to retrieve resources.
+     * @param isActivityFocused Whether the activity is focused.
+     * @return The alpha value that takes the activity focus state into account.
+     */
+    public static float calculateUnfocusedAlpha(Context context, boolean isActivityFocused) {
+        return isActivityFocused
+                ? 1.0f
+                : ValueUtils.getFloat(context.getResources(), R.dimen.default_disabled_alpha);
     }
 
     /**

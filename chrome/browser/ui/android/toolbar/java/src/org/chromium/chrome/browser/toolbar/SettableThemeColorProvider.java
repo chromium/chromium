@@ -33,6 +33,6 @@ class SettableThemeColorProvider extends ThemeColorProvider {
 
     /** Sets the tint to the specified value. */
     public void setTint(@Nullable ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        updateTint(tint, tint, brandedColorScheme);
+        updateTint(tint, tint, /* unfocusedAlpha= */ 1.0f, brandedColorScheme);
     }
 }

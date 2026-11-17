@@ -35,11 +35,16 @@ public abstract class ThemeColorProvider {
          * @param activityFocusTint The tint the observer should use including consideration for
          *     whether the Activity is focused. This should be used for elements that do adjust tint
          *     based on Activity focus.
+         * @param unfocusedAlpha The alpha value the observer should use including consideration for
+         *     whether the Activity is focused. This should be used for full-color icons (e.g.
+         *     extension icons or signed-in avatars) where applying a monochrome tint would
+         *     overwrite their colors.
          * @param brandedColorScheme The {@link BrandedColorScheme} the observer should use.
          */
         void onTintChanged(
                 @Nullable ColorStateList tint,
                 @Nullable ColorStateList activityFocusTint,
+                float unfocusedAlpha,
                 @BrandedColorScheme int brandedColorScheme);
     }
 
@@ -57,6 +62,9 @@ public abstract class ThemeColorProvider {
 
     /** The icon tint for the current theme, that takes the activity focus state into account. */
     private @Nullable ColorStateList mActivityFocusTint;
+
+    /** The alpha for the current theme, that takes the activity focus state into account. */
+    private float mUnfocusedAlpha = 1.0f;
 
     /** List of {@link ThemeColorObserver}s. These are used to broadcast events to listeners. */
     private final ObserverList<ThemeColorObserver> mThemeColorObservers;
@@ -126,6 +134,13 @@ public abstract class ThemeColorProvider {
     }
 
     /**
+     * @return The alpha value that takes the current activity's focus state into account.
+     */
+    public float getUnfocusedAlpha() {
+        return mUnfocusedAlpha;
+    }
+
+    /**
      * @return The current {@link BrandedColorScheme} of this provider.
      */
     public @BrandedColorScheme int getBrandedColorScheme() {
@@ -149,19 +164,22 @@ public abstract class ThemeColorProvider {
     protected void updateTint(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         if (tint == mTint
                 && activityFocusTint == mActivityFocusTint
+                && mUnfocusedAlpha == unfocusedAlpha
                 && mBrandedColorScheme != null
                 && mBrandedColorScheme == brandedColorScheme) {
             return;
         }
         mTint = tint;
         mActivityFocusTint = activityFocusTint;
+        mUnfocusedAlpha = unfocusedAlpha;
         mBrandedColorScheme = brandedColorScheme;
 
         for (TintObserver observer : mTintObservers) {
-            observer.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+            observer.onTintChanged(tint, activityFocusTint, unfocusedAlpha, brandedColorScheme);
         }
     }
 

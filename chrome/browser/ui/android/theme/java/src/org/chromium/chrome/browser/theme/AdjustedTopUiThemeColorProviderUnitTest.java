@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.theme;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -131,14 +132,14 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
         mTabSupplier.set(null);
         clearInvocations(mTintObserver);
         mObserverCaptor.getValue().onCustomBackgroundChanged();
-        verify(mTintObserver, never()).onTintChanged(any(), any(), anyInt());
+        verify(mTintObserver, never()).onTintChanged(any(), any(), anyFloat(), anyInt());
 
         // 2. Tab is not native page.
         when(mTab.isNativePage()).thenReturn(false);
         mTabSupplier.set(mTab);
         clearInvocations(mTintObserver);
         mObserverCaptor.getValue().onCustomBackgroundChanged();
-        verify(mTintObserver, never()).onTintChanged(any(), any(), anyInt());
+        verify(mTintObserver, never()).onTintChanged(any(), any(), anyFloat(), anyInt());
 
         // 3. Tab is native page but doesn't support edge-to-edge.
         when(mTab.isNativePage()).thenReturn(true);
@@ -146,7 +147,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
         mAdjustedTopUiThemeColorProvider.updateColor(mTab, TAB_COLOR, false);
         clearInvocations(mTintObserver);
         mObserverCaptor.getValue().onCustomBackgroundChanged();
-        verify(mTintObserver, never()).onTintChanged(any(), any(), anyInt());
+        verify(mTintObserver, never()).onTintChanged(any(), any(), anyFloat(), anyInt());
     }
 
     @Test
@@ -168,6 +169,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
                 .onTintChanged(
                         tintCaptor.capture(),
                         activityTintCaptor.capture(),
+                        eq(1.0f),
                         eq(adjustedBrandedColorScheme));
         assertEquals(adjustedTint, tintCaptor.getValue());
 
@@ -182,6 +184,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
                 .onTintChanged(
                         tintCaptor.capture(),
                         activityTintCaptor.capture(),
+                        eq(1.0f),
                         eq(BrandedColorScheme.APP_DEFAULT));
         assertEquals(themeColor.getDefaultColor(), tintCaptor.getValue().getDefaultColor());
     }
@@ -202,6 +205,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
                 .onTintChanged(
                         tintCaptor.capture(),
                         activityTintCaptor.capture(),
+                        eq(1.0f),
                         eq(expectedBrandedColorScheme));
         assertEquals(expectedTintColor, tintCaptor.getValue().getDefaultColor());
         assertEquals(expectedTintColor, activityTintCaptor.getValue().getDefaultColor());

@@ -101,7 +101,10 @@ public class HomeButtonCoordinatorTest {
     @Test
     public void testOnTintChanged() {
         mHomeButtonCoordinator.onTintChanged(
-                mColorStateList, mColorStateList, BrandedColorScheme.APP_DEFAULT);
+                mColorStateList,
+                mColorStateList,
+                /* unfocusedAlpha= */ 1.0f,
+                BrandedColorScheme.APP_DEFAULT);
         assertEquals(mColorStateList, mHomeButton.getImageTintList());
     }
 

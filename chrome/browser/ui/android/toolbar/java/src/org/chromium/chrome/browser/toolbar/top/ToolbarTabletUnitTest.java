@@ -822,7 +822,8 @@ public final class ToolbarTabletUnitTest {
                 /* buttonVariant= */ AdaptiveToolbarButtonVariant.NEW_TAB,
                 R.string.adaptive_toolbar_button_preference_new_tab);
         for (TintObserver observer : mTintObservers) {
-            observer.onTintChanged(tint, tint, BrandedColorScheme.APP_DEFAULT);
+            observer.onTintChanged(
+                    tint, tint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.APP_DEFAULT);
         }
 
         // Verify the toolbar icon tints, assuming that the activity is initially focused.
@@ -830,9 +831,14 @@ public final class ToolbarTabletUnitTest {
 
         // Simulate a tint change triggered when the activity loses focus.
         for (TintObserver observer : mTintObservers) {
-            observer.onTintChanged(tint, unfocusedTint, BrandedColorScheme.APP_DEFAULT);
+            observer.onTintChanged(
+                    tint,
+                    unfocusedTint,
+                    /* unfocusedAlpha= */ 0.5f,
+                    BrandedColorScheme.APP_DEFAULT);
         }
-        mToolbarTablet.onTintChanged(tint, unfocusedTint, BrandedColorScheme.APP_DEFAULT);
+        mToolbarTablet.onTintChanged(
+                tint, unfocusedTint, /* unfocusedAlpha= */ 0.5f, BrandedColorScheme.APP_DEFAULT);
 
         // Verify the icon tints for the unfocused activity.
         verifyToolbarIconTints(tint, unfocusedTint);
@@ -1466,14 +1472,22 @@ public final class ToolbarTabletUnitTest {
         assertNotNull("Glic icon should be inflated and non-null.", glicChip);
 
         // Apply focused activity tint first.
-        mToolbarTablet.onTintChanged(focusedTint, focusedTint, BrandedColorScheme.APP_DEFAULT);
+        mToolbarTablet.onTintChanged(
+                focusedTint,
+                focusedTint,
+                /* unfocusedAlpha= */ 1.0f,
+                BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 "Glic action chip should initially have the focused tint.",
                 focusedTint.getDefaultColor(),
                 glicChip.getImageTintList().getDefaultColor());
 
         // 2. Simulate activity losing focus / tint update.
-        mToolbarTablet.onTintChanged(focusedTint, unfocusedTint, BrandedColorScheme.APP_DEFAULT);
+        mToolbarTablet.onTintChanged(
+                focusedTint,
+                unfocusedTint,
+                /* unfocusedAlpha= */ 0.5f,
+                BrandedColorScheme.APP_DEFAULT);
 
         // Verify the Glic action chip receives the unfocused activity tint.
         assertEquals(

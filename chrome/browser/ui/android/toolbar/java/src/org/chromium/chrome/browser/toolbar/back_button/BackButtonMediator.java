@@ -152,6 +152,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         mModel.set(BackButtonProperties.TINT_COLOR_LIST, activityFocusTint);
         updateBackground(brandedColorScheme);

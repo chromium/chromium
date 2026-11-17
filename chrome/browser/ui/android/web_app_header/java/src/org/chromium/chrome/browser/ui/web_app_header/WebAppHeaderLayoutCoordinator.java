@@ -273,6 +273,7 @@ public class WebAppHeaderLayoutCoordinator
         onTintChanged(
                 mThemeColorProvider.getTint(),
                 mThemeColorProvider.getActivityFocusTint(),
+                mThemeColorProvider.getUnfocusedAlpha(),
                 mThemeColorProvider.getBrandedColorScheme());
         mIncognitoStateProvider = new IncognitoStateProvider();
 
@@ -575,6 +576,7 @@ public class WebAppHeaderLayoutCoordinator
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         if (mToggleButtonView != null) {
             mToggleButtonView.setImageTintList(activityFocusTint);

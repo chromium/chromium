@@ -362,7 +362,8 @@ public class BottomBarMediatorUnitTest {
         assertNotNull(mMediator);
         assertEquals(Host.TABBED, mMediator.getHostForTesting());
 
-        mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
+        mMediator.onTintChanged(
+                null, null, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.INCOGNITO);
 
         assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(BottomBarProperties.COLOR_SCHEME));
         verify(mVisibilityDelegate).onBackgroundColorChanged();
@@ -374,7 +375,8 @@ public class BottomBarMediatorUnitTest {
         assertNotNull(mMediator);
 
         // Set initial color scheme to INCOGNITO
-        mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
+        mMediator.onTintChanged(
+                null, null, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.INCOGNITO);
         assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(BottomBarProperties.COLOR_SCHEME));
         verify(mVisibilityDelegate, times(1)).onBackgroundColorChanged();
 
@@ -383,7 +385,8 @@ public class BottomBarMediatorUnitTest {
         assertEquals(Host.HUB, mMediator.getHostForTesting());
 
         // When in Hub, onTintChanged (e.g. fired when closing last incognito tab) should be ignored
-        mMediator.onTintChanged(null, null, BrandedColorScheme.APP_DEFAULT);
+        mMediator.onTintChanged(
+                null, null, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.APP_DEFAULT);
 
         // Color scheme in model should NOT have snapped to APP_DEFAULT
         assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(BottomBarProperties.COLOR_SCHEME));
@@ -396,7 +399,8 @@ public class BottomBarMediatorUnitTest {
         createMediator();
         assertNotNull(mMediator);
 
-        mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
+        mMediator.onTintChanged(
+                null, null, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.INCOGNITO);
         assertEquals(BrandedColorScheme.INCOGNITO, mModel.get(BottomBarProperties.COLOR_SCHEME));
 
         mMediator.setParent(Host.HUB);

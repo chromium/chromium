@@ -108,7 +108,7 @@ public class BottomBarButtonContainer extends FrameLayout
     private void applyColorScheme(
             @Nullable ColorStateList newTint, @Nullable ColorStateList oldTint) {
         if (mTargetView instanceof TintObserver observer && mColorScheme != null) {
-            observer.onTintChanged(newTint, null, mColorScheme);
+            observer.onTintChanged(newTint, null, /* unfocusedAlpha= */ 1.0f, mColorScheme);
         } else if (mTargetView instanceof ImageView imageView) {
             // Only apply the new themed tint if the ImageView is currently using the old
             // themed tint. If the ImageView has a custom tint list (an active override),

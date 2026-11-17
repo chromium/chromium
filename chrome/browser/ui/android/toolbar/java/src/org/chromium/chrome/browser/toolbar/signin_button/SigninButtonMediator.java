@@ -229,6 +229,7 @@ final class SigninButtonMediator
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         boolean isWindowActive = hasActivityFocusTint(tint, activityFocusTint);
         mModel.set(SigninButtonProperties.IS_ENABLED, isWindowActive);

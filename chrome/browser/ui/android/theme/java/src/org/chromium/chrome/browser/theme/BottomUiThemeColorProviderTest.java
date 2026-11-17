@@ -115,7 +115,10 @@ public class BottomUiThemeColorProviderTest {
 
         doReturn(mToolbarTintOtherList).when(mToolbarThemeColorProvider).getTint();
         mColorProvider.onTintChanged(
-                mToolbarTintOtherList, mToolbarTintOtherList, BrandedColorScheme.APP_DEFAULT);
+                mToolbarTintOtherList,
+                mToolbarTintOtherList,
+                /* unfocusedAlpha= */ 1.0f,
+                BrandedColorScheme.APP_DEFAULT);
         assertEquals(mToolbarTintOtherList, mColorProvider.getTint());
 
         doReturn(Color.BLUE).when(mToolbarThemeColorProvider).getThemeColor();
@@ -183,7 +186,10 @@ public class BottomUiThemeColorProviderTest {
 
         mColorProvider.updatePrimaryColor(Color.BLUE, false);
         mColorProvider.updateTint(
-                mToolbarTintOtherList, mToolbarTintOtherList, BrandedColorScheme.INCOGNITO);
+                mToolbarTintOtherList,
+                mToolbarTintOtherList,
+                /* unfocusedAlpha= */ 1.0f,
+                BrandedColorScheme.INCOGNITO);
         verifyNoInteractions(colorObserver, tintObserver);
     }
 }

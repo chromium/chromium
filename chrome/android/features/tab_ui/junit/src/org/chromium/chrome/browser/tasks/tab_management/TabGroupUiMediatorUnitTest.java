@@ -1201,7 +1201,11 @@ public class TabGroupUiMediatorUnitTest {
         verify(mThemeColorProvider).addTintObserver(mTintObserverCaptor.capture());
         mTintObserverCaptor
                 .getValue()
-                .onTintChanged(mTintList2, mTintList2, BrandedColorScheme.APP_DEFAULT);
+                .onTintChanged(
+                        mTintList2,
+                        mTintList2,
+                        /* unfocusedAlpha= */ 1.0f,
+                        BrandedColorScheme.APP_DEFAULT);
         assertEquals(mTintList2, mModel.get(TabGroupUiProperties.TINT));
     }
 }

@@ -83,7 +83,11 @@ public class AdjustedTopUiThemeColorProvider extends TopUiThemeColorProvider {
         // used for icons.
         ColorStateList iconTint =
                 mContext.getColorStateList(R.color.default_icon_color_white_tint_list);
-        updateTint(iconTint, iconTint, BrandedColorScheme.DARK_BRANDED_THEME);
+        updateTint(
+                iconTint,
+                iconTint,
+                /* unfocusedAlpha= */ 1.0f,
+                BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Override

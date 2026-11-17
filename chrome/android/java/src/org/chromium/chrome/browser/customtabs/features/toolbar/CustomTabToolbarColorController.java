@@ -91,6 +91,7 @@ public class CustomTabToolbarColorController
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             int brandedColorScheme) {
         updateTint();
     }
@@ -123,21 +124,15 @@ public class CustomTabToolbarColorController
         @ColorInt int themeColor = resolveThemeColor();
         @BrandedColorScheme int scheme = getColorScheme(themeColor);
         ColorStateList tint = resolveTint(scheme);
-        ColorStateList focusTint = calculateActivityFocusTint(mContext, scheme);
-        mToolbarManager.setShouldUpdateToolbarPrimaryColor(true);
-        mToolbarManager.onTintChanged(tint, focusTint, scheme);
-        mToolbarManager.setShouldUpdateToolbarPrimaryColor(false);
-    }
-
-    private ColorStateList calculateActivityFocusTint(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
-
         // Only consider activity state when in desktop windowing mode.
-        return shouldUseDefaultThemeForWebApp()
-                ? ThemeUtils.getThemedToolbarIconTintForActivityState(
-                        context, brandedColorScheme, mIsTopResumedActivity)
-                : iconTint;
+        boolean isActivityFocused = !shouldUseDefaultThemeForWebApp() || mIsTopResumedActivity;
+        ColorStateList focusTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mContext, scheme, isActivityFocused);
+        float unfocusedAlpha = ThemeUtils.calculateUnfocusedAlpha(mContext, isActivityFocused);
+        mToolbarManager.setShouldUpdateToolbarPrimaryColor(true);
+        mToolbarManager.onTintChanged(tint, focusTint, unfocusedAlpha, scheme);
+        mToolbarManager.setShouldUpdateToolbarPrimaryColor(false);
     }
 
     private @ColorInt int resolveThemeColor() {

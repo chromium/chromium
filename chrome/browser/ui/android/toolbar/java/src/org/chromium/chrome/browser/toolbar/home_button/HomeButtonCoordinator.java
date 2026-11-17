@@ -163,6 +163,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mHomeButton, tint);
     }

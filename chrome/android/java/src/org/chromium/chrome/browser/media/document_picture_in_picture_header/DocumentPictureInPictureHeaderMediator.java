@@ -138,6 +138,7 @@ public class DocumentPictureInPictureHeaderMediator
         onTintChanged(
                 mThemeColorProvider.getTint(),
                 mThemeColorProvider.getActivityFocusTint(),
+                mThemeColorProvider.getUnfocusedAlpha(),
                 mThemeColorProvider.getBrandedColorScheme());
 
         mWebContentsObserver =
@@ -195,6 +196,7 @@ public class DocumentPictureInPictureHeaderMediator
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
         mModel.set(DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST, activityFocusTint);
         mModel.set(

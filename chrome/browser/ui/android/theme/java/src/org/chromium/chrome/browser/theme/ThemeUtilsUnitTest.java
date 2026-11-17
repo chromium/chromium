@@ -156,4 +156,16 @@ public class ThemeUtilsUnitTest {
         int expected = ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false);
         assertEquals(expected, ThemeUtils.getBackgroundColor(tab));
     }
+
+    @Test
+    public void calculateUnfocusedAlpha() {
+        assertEquals(
+                1.0f,
+                ThemeUtils.calculateUnfocusedAlpha(mContext, /* isActivityFocused= */ true),
+                0.001f);
+        assertEquals(
+                0.38f,
+                ThemeUtils.calculateUnfocusedAlpha(mContext, /* isActivityFocused= */ false),
+                0.001f);
+    }
 }

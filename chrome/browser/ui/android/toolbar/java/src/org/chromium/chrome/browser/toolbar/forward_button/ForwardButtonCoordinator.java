@@ -84,6 +84,7 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
         onTintChanged(
                 mTopUiThemeColorProvider.getTint(),
                 mTopUiThemeColorProvider.getActivityFocusTint(),
+                mTopUiThemeColorProvider.getUnfocusedAlpha(),
                 mTopUiThemeColorProvider.getBrandedColorScheme());
         onIncognitoStateChanged(mIncognitoStateProvider.isIncognitoSelected());
 
@@ -102,6 +103,7 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             int brandedColorScheme) {
         if (mImageButton != null) {
             ImageViewCompat.setImageTintList(mImageButton, activityFocusTint);

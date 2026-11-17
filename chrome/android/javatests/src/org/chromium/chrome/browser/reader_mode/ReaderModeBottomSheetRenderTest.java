@@ -156,7 +156,11 @@ public class ReaderModeBottomSheetRenderTest {
                             .onThemeColorChanged(getThemeColor(theme), false);
                     mTintObserverCaptor
                             .getValue()
-                            .onTintChanged(null, null, getBrandedColorScheme(theme));
+                            .onTintChanged(
+                                    null,
+                                    null,
+                                    /* unfocusedAlpha= */ 1.0f,
+                                    getBrandedColorScheme(theme));
                 });
     }
 

@@ -132,7 +132,8 @@ public class ToolbarThemeColorProviderTest {
 
         ColorStateList newTint =
                 mContext.getColorStateList(R.color.default_icon_color_light_tint_list);
-        mToolbarThemeColorProvider.onTintChanged(newTint, newTint, BrandedColorScheme.INCOGNITO);
+        mToolbarThemeColorProvider.onTintChanged(
+                newTint, newTint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.INCOGNITO);
         assertEquals(newTint, mToolbarThemeColorProvider.getTint());
         assertEquals(newTint, mToolbarThemeColorProvider.getActivityFocusTint());
         assertEquals(
@@ -221,7 +222,7 @@ public class ToolbarThemeColorProviderTest {
 
         // Change branded color scheme to LIGHT_BRANDED_THEME but keep target tints identical.
         mToolbarThemeColorProvider.onTintChanged(
-                tint, tint, BrandedColorScheme.LIGHT_BRANDED_THEME);
+                tint, tint, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
         assertEquals(
                 BrandedColorScheme.LIGHT_BRANDED_THEME,

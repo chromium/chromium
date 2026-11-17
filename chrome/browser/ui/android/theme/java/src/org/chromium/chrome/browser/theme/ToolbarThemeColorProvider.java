@@ -109,8 +109,9 @@ public class ToolbarThemeColorProvider extends ThemeColorProvider
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
-        updateTint(tint, activityFocusTint, brandedColorScheme);
+        updateTint(tint, activityFocusTint, unfocusedAlpha, brandedColorScheme);
     }
 
     private void updateActiveProvider(boolean animate) {
@@ -134,6 +135,7 @@ public class ToolbarThemeColorProvider extends ThemeColorProvider
             updateTint(
                     mActiveProvider.getTint(),
                     mActiveProvider.getActivityFocusTint(),
+                    mActiveProvider.getUnfocusedAlpha(),
                     mActiveProvider.getBrandedColorScheme());
         }
     }

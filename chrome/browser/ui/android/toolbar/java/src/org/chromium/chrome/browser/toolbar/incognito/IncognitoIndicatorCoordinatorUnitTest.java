@@ -320,11 +320,11 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         assertEquals(focusedTint, ImageViewCompat.getImageTintList(icon));
         assertEquals(focusedTint, text.getTextColors());
 
-        mCoordinator.onTintChanged(focusedTint, unfocusedTint, BrandedColorScheme.INCOGNITO);
+        mCoordinator.onTintChanged(focusedTint, unfocusedTint, 0.4f, BrandedColorScheme.INCOGNITO);
         assertEquals(unfocusedTint, ImageViewCompat.getImageTintList(icon));
         assertEquals(unfocusedTint, text.getTextColors());
 
-        mCoordinator.onTintChanged(focusedTint, focusedTint, BrandedColorScheme.INCOGNITO);
+        mCoordinator.onTintChanged(focusedTint, focusedTint, 1.0f, BrandedColorScheme.INCOGNITO);
         assertEquals(focusedTint, ImageViewCompat.getImageTintList(icon));
         assertEquals(focusedTint, text.getTextColors());
     }

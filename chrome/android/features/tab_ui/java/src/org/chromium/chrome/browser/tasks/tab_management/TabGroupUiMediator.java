@@ -210,7 +210,8 @@ public class TabGroupUiMediator implements BackPressHandler {
 
         onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
         ColorStateList tintList = mThemeColorProvider.getTint();
-        onTintChanged(tintList, tintList, BrandedColorScheme.APP_DEFAULT);
+        onTintChanged(
+                tintList, tintList, /* unfocusedAlpha= */ 1.0f, BrandedColorScheme.APP_DEFAULT);
         Profile originalProfile = mTabModelSelector.getModel(/* incognito= */ false).getProfile();
         assumeNonNull(originalProfile);
         CollaborationService collaborationService =
@@ -413,6 +414,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
+            float unfocusedAlpha,
             int brandedColorScheme) {
         mModel.set(TINT, mThemeColorProvider.getTint());
     }
