@@ -1,0 +1,81 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {PasswordViewPageInteractions} from '../password_manager_proxy.js';
+
+import type {PasskeyDetailsCardElement} from './passkey_details_card.js';
+
+export function getHtml(this: PasskeyDetailsCardElement) {
+  return html`<!--_html_template_start_-->
+<div class="card" aria-label="${this.getAriaLabelForPasswordCard_()}"
+    role="region">
+  <div class="credential-container">
+    <div class="row-container">
+      <div class="column-container">
+        <credential-field value="${this.passkey.displayName || ''}"
+            placeholder="$i18n{displayNamePlaceholder}" id="displayNameValue"
+            label="$i18n{displayNameLabel}"
+            copy-button-label="$i18n{copyDisplayName}"
+            value-copied-toast-label="$i18n{displayNameCopiedToClipboard}"
+            .interactionId="${PasswordViewPageInteractions
+                                  .PASSKEY_DISPLAY_NAME_COPY_BUTTON_CLICKED}">
+        </credential-field>
+      </div>
+      <div class="column-container">
+        <div id="domainLabel" class="cr-form-field-label">
+          $i18n{sitesLabel}
+        </div>
+        ${this.passkey.affiliatedDomains.map(item => html`
+          <div class="elide-left">
+            <a href="${item.url}" class="site-link" target="_blank">
+              ${item.name}
+            </a>
+          </div>
+        `)}
+      </div>
+    </div>
+    <div class="row-container">
+      <div class="column-container">
+        <credential-field value="${this.passkey.username}"
+            placeholder="$i18n{usernamePlaceholder}" id="usernameValue"
+            label="$i18n{usernameLabel}" copy-button-label="$i18n{copyUsername}"
+            value-copied-toast-label="$i18n{usernameCopiedToClipboard}"
+            .interactionId="${
+                PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED}">
+        </credential-field>
+      </div>
+    </div>
+    <div class="row-container">
+      <cr-icon icon="${this.getPasskeyIcon_()}" id="passkeyIcon"></cr-icon>
+      <div id="infoLabelContent" class="cr-secondary-text"
+          .innerHTML="${this.getInfoLabelText_()}">
+      </div>
+    </div>
+  </div>
+  <div class="button-container">
+    <cr-button id="editButton" class="edit-button" @click="${this.onEditClick_}"
+        aria-label="${this.getAriaLabelForEditButton_()}"
+        ?disabled="${this.passkey.hidden}">
+      $i18n{edit}
+    </cr-button>
+    <cr-button id="deleteButton" @click="${this.onDeleteClick_}"
+        aria-label="${this.getAriaLabelForDeleteButton_()}">
+      $i18n{delete}
+    </cr-button>
+  </div>
+</div>
+${this.showEditPasskeyDialog_ ? html`
+  <edit-passkey-dialog @close="${this.onEditPasskeyDialogClose_}"
+      id="editPasskeyDialog" .passkey="${this.passkey}">
+  </edit-passkey-dialog>
+` : ''}
+${this.showDeletePasskeyDialog_ ? html`
+  <delete-passkey-dialog @close="${this.onDeletePasskeyDialogClose_}"
+      id="deletePasskeyDialog" .passkey="${this.passkey}">
+  </delete-passkey-dialog>
+` : ''}
+<!--_html_template_end_-->`;
+}

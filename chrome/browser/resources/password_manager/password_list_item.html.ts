@@ -1,0 +1,51 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {PasswordListItemElement} from './password_list_item.js';
+
+export function getHtml(this: PasswordListItemElement) {
+  return html`<!--_html_template_start_-->
+<div id="container" class="flex-centered">
+  <!-- TODO(crbug.com/40234318): Support icons for android apps. -->
+  <site-favicon id="favicon" url="${this.item.iconUrl}"
+      domain="${this.item.name}" aria-hidden="true">
+  </site-favicon>
+  <div id="borderPart" class="flex-centered ${this.getElementClass_()}">
+    <div class="label" aria-hidden="true">
+      <searchable-label id="displayedName" title="${this.getTitle_()}"
+          search-term="${this.searchTerm}">
+      </searchable-label>
+      <span id="numberOfAccounts" ?hidden="${!this.showNumberOfAccounts_()}">
+        ${this.numberOfAccounts_}
+      </span>
+    </div>
+
+    <div id="endIcons">
+      <cr-icon-button id="cloudUploadButton"
+          iron-icon="${this.getCloudUploadIcon_()}"
+          ?hidden="${!this.hasUploadablePasswords_()}"
+          @click="${this.onUploadButtonClick_}"
+          aria-label="${this.tooltipText_}">
+      </cr-icon-button>
+      <cr-icon-button id="seePasswordDetails" class="subpage-arrow"
+          aria-label="${this.getAriaLabel_()}">
+      </cr-icon-button>
+    </div>
+  </div>
+</div>
+${this.showMovePasswordDialog_ ? html`
+  <move-passwords-dialog @close="${this.onMovePasswordDialogClose_}"
+      id="movePasswordsDialog" .passwords="${this.getCredentialsOnDevice_()}"
+      url="${this.item.name}"
+      .hasOnlyOneDeviceCredential="${this.hasOnlyOneDeviceCredential_()}">
+  </move-passwords-dialog>
+` : ''}
+
+<cr-tooltip position="top" for="cloudUploadButton" offset="0">
+  ${this.tooltipText_}
+</cr-tooltip>
+<!--_html_template_end_-->`;
+}

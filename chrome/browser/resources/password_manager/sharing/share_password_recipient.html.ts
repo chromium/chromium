@@ -1,0 +1,37 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SharePasswordRecipientElement} from './share_password_recipient.js';
+
+export function getHtml(this: SharePasswordRecipientElement) {
+  return html`<!--_html_template_start_-->
+<div class="content">
+  <div class="flex-centered avatar-checkbox">
+    <cr-checkbox id="checkbox" ?disabled="${this.disabled}"
+        ?checked="${this.selected}"
+        @checked-changed="${this.onCheckboxCheckedChanged_}">
+      ${this.recipient.displayName}, ${this.recipient.email}
+    </cr-checkbox>
+    <img is="cr-auto-img" id="avatar"
+        auto-src="${this.recipient.profileImageUrl}" draggable="false" alt="">
+  </div>
+  <div class="user-data text-elide">
+    <div id="name" class="text-elide">${this.recipient.displayName}</div>
+    <div id="email" class="text-elide">${this.recipient.email}</div>
+  </div>
+</div>
+${this.disabled ? html`
+  <div id="disabled-info" class="flex-centered">
+    <cr-tooltip-icon tooltip-text="$i18n{sharePasswordMemeberUnavailable}"
+        icon-class="cr:info" icon-aria-label="${
+            this.recipient.displayName
+        }, $i18n{sharePasswordMemeberUnavailable}">
+    </cr-tooltip-icon>
+    <span id="notAvailable">$i18n{sharePasswordNotAvailable}</span>
+  </div>
+` : ''}
+<!--_html_template_end_-->`;
+}

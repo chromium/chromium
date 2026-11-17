@@ -91,8 +91,6 @@ export class PasswordManagerToolbarElement extends
   }
 }
 
-export type ToolbarElement = PasswordManagerToolbarElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'password-manager-toolbar': PasswordManagerToolbarElement;

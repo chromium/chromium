@@ -1,0 +1,42 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {TrustedVaultErrorDialogElement} from './trusted_vault_error_dialog.js';
+
+export function getHtml(this: TrustedVaultErrorDialogElement) {
+  return html`<!--_html_template_start_-->
+<cr-dialog id="dialog" show-on-attach @cancel="${this.onDialogCancel_}">
+  <div slot="title">
+<if expr="_google_chrome">
+    <picture>
+      <source srcset="./images/access_on_any_device_promo_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img class="promo-image" src="./images/access_on_any_device_promo.svg"
+          role="presentation" alt="">
+    </picture>
+</if>
+    <div class="cr-title-text title-heading">
+      $i18n{trustedVaultErrorDialogTitle}
+    </div>
+  </div>
+  <div slot="body">
+    <div class="cr-secondary-text body-text">
+      $i18n{trustedVaultErrorDialogDescription}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        @click="${this.onCancelButtonClick_}">
+      $i18n{trustedVaultErrorDialogNotNow}
+    </cr-button>
+    <cr-button id="verifyButton" class="action-button" autofocus
+        @click="${this.onVerifyButtonClick_}">
+      $i18n{trustedVaultErrorDialogContinue}
+    </cr-button>
+  </div>
+</cr-dialog>
+<!--_html_template_end_-->`;
+}

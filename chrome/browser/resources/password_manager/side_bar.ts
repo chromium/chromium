@@ -171,8 +171,6 @@ export class PasswordManagerSideBarElement extends
   }
 }
 
-export type SideBarElement = PasswordManagerSideBarElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'password-manager-side-bar': PasswordManagerSideBarElement;

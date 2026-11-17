@@ -1,0 +1,70 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {PasswordViewPageInteractions} from '../password_manager_proxy.js';
+
+import type {BackupPasswordDetailsCardElement} from './backup_password_details_card.js';
+
+export function getHtml(this: BackupPasswordDetailsCardElement) {
+  return html`<!--_html_template_start_-->
+<div class="card" aria-label="${this.getAriaLabelForBackupPasswordCard_()}"
+    role="region">
+  <div class="credential-container">
+    <div class="row-container">
+      <div class="column-container">
+        <credential-field value="${this.password.username}" id="usernameValue"
+            label="$i18n{usernameLabel}" copy-button-label="$i18n{copyUsername}"
+            value-copied-toast-label="$i18n{usernameCopiedToClipboard}"
+            placeholder="$i18n{emptyUsername}" .interactionId="${
+                PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED}">
+        </credential-field>
+      </div>
+      <div class="column-container">
+        <div id="domainLabel" class="cr-form-field-label">
+          ${this.getDomainLabel_()}
+        </div>
+        ${this.password.affiliatedDomains.map(item => html`
+          <div class="elide-left">
+            <a href="${item.url}" class="site-link" target="_blank">
+              ${item.name}
+            </a>
+          </div>
+        `)}
+      </div>
+    </div>
+    <div class="row-container">
+      <div class="column-container">
+        <cr-input id="passwordValue" label="$i18n{passwordLabel}"
+            .value="${this.password.backupPassword!.value}"
+            class="input-field password-input" role="textbox"
+            type="${this.getPasswordInputType()}" readonly aria-disabled="true">
+          <cr-icon-button id="showPasswordButton"
+              class="${this.getShowHideButtonIconClass()}"
+              title="${this.getShowHideButtonLabel()}"
+              @click="${this.onShowPasswordClick_}" slot="inline-suffix">
+          </cr-icon-button>
+          <cr-icon-button id="copyPasswordButton" class="icon-copy-content"
+              title="$i18n{copyPassword}" @click="${this.onCopyPasswordClick_}"
+              slot="inline-suffix">
+          </cr-icon-button>
+        </cr-input>
+      </div>
+      <div class="column-container">
+        <credential-note note="${this.getNoteValue_()}" id="noteValue"
+            always-expanded>
+        </credential-note>
+      </div>
+    </div>
+  </div>
+  <div class="button-container">
+    <cr-button id="deleteButton" @click="${this.onDeleteClick_}"
+        aria-label="${this.getAriaLabelForDeleteButton_()}">
+      $i18n{deletePassword}
+    </cr-button>
+  </div>
+</div>
+<!--_html_template_end_-->`;
+}

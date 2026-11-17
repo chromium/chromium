@@ -1,0 +1,86 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {PasswordManagerAppElement} from './password_manager_app.js';
+import {Page} from './router.js';
+
+export function getHtml(this: PasswordManagerAppElement) {
+  return html`<!--_html_template_start_-->
+<password-manager-toolbar id="toolbar" ?narrow="${this.narrow_}"
+    .pageName="${this.getPageTitle_()}"
+    @search-enter-click="${this.onSearchEnterClick_}">
+</password-manager-toolbar>
+<div id="container" role="group" class="cr-scrollable">
+  <div id="scrollableShadow" class="cr-scrollable-top-shadow"></div>
+  <password-manager-side-bar id="sidebar" ?hidden="${this.narrow_}">
+  </password-manager-side-bar>
+  <cr-page-selector id="content" attr-for-selected="path"
+      .selected="${this.selectedPage_}" @iron-select="${this.onIronSelect_}">
+    <passwords-section id="passwords" path="passwords"
+        .focusConfig="${this.focusConfig_}" class="cr-centered-card-container"
+        @passwords-moved="${this.onPasswordsMoved_}">
+    </passwords-section>
+    <checkup-section id="checkup" path="checkup"
+        .focusConfig="${this.focusConfig_}" class="cr-centered-card-container">
+    </checkup-section>
+    <settings-section id="settings" path="settings"
+        class="cr-centered-card-container"
+        @passwords-moved="${this.onPasswordsMoved_}">
+    </settings-section>
+    <div id="passwordDetails" path="password-details">
+      ${this.selectedPage_ === Page.PASSWORD_DETAILS ? html`
+        <password-details-section class="cr-centered-card-container"
+            @password-removed="${this.onPasswordRemoved_}"
+            @backup-password-removed="${this.onBackupPasswordRemoved_}"
+            @passkey-removed="${this.onPasskeyRemoved_}"
+            @passwords-moved="${this.onPasswordsMoved_}"
+            @value-copied="${this.onValueCopied_}">
+        </password-details-section>
+      ` : ''}
+    </div>
+    <div id="checkupDetails" path="checkup-details">
+      ${this.selectedPage_ === Page.CHECKUP_DETAILS ? html`
+        <checkup-details-section class="cr-centered-card-container"
+            @password-removed="${this.onPasswordRemoved_}">
+        </checkup-details-section>
+      ` : ''}
+    </div>
+    <div id="passwordChange" path="password-change">
+      ${this.selectedPage_ === Page.PASSWORD_CHANGE ? html`
+        <password-change-details class="cr-centered-card-container">
+        </password-change-details>
+      ` : ''}
+    </div>
+  </cr-page-selector>
+  <!-- An additional child of the flex #container to take up space,
+      aligned with the right-hand child of the flex toolbar. -->
+  <div id="space-holder" ?hidden="${this.narrow_}"></div>
+</div>
+<cr-drawer id="drawer" heading="$i18n{passwordManagerString}"
+    align="$i18n{textdirection}">
+  <div slot="body">
+    <cr-lazy-render-lit id="drawerTemplate"
+        .template="${() => html`
+          <password-manager-side-bar id="drawerSidebar">
+          </password-manager-side-bar>
+        `}">
+    </cr-lazy-render-lit>
+  </div>
+</cr-drawer>
+<cr-toast id="toast" duration="5000">
+  <span id="toast-message">${this.toastMessage_}</span>
+  <cr-button id="undo" aria-label="$i18n{undoDescription}"
+      @click="${this.onUndoButtonClick_}" ?hidden="${!this.showUndo_}">
+    $i18n{undoRemovePassword}
+  </cr-button>
+</cr-toast>
+${this.showTrustedVaultErrorDialog_ ? html`
+  <trusted-vault-error-dialog .source="${this.trustedVaultErrorDialogSource_}"
+      @close="${this.onTrustedVaultErrorDialogClose_}">
+  </trusted-vault-error-dialog>
+` : ''}
+<!--_html_template_end_-->`;
+}
