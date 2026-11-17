@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -56,6 +57,10 @@ class NavigationPreloadRequest final : public WebNavigationPreloadRequest,
 
  private:
   void MaybeReportResponseToOwner();
+  void ReportResponseAndCompleteToOwner(base::TimeTicks completion_time,
+                                        int64_t encoded_data_length,
+                                        int64_t encoded_body_length,
+                                        int64_t decoded_body_length);
   void ReportErrorToOwner(const WebString& message,
                           WebServiceWorkerError::Mode error_mode);
 
@@ -69,6 +74,8 @@ class NavigationPreloadRequest final : public WebNavigationPreloadRequest,
 
   std::unique_ptr<WebURLResponse> response_;
   mojo::ScopedDataPipeConsumerHandle body_;
+
+  base::WeakPtrFactory<NavigationPreloadRequest> weak_factory_{this};
 };
 
 }  // namespace blink

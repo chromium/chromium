@@ -17,9 +17,14 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_response_headers.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -42,6 +47,7 @@
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/web/modules/service_worker/web_navigation_preload_request.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
@@ -488,20 +494,55 @@ class MockServiceWorkerContextClient final
     return base::MakeRefCounted<FakeWebServiceWorkerFetchContext>();
   }
 
+  void SetupNavigationPreload(
+      int fetch_event_id,
+      const WebURL& url,
+      CrossVariantMojoReceiver<network::mojom::URLLoaderClientInterfaceBase>
+          preload_url_loader_client_receiver) override {
+    preload_request_ = WebNavigationPreloadRequest::Create(
+        this, fetch_event_id, url,
+        std::move(preload_url_loader_client_receiver));
+  }
+
   void OnNavigationPreloadResponse(
       int fetch_event_id,
       std::unique_ptr<WebURLResponse> response,
-      mojo::ScopedDataPipeConsumerHandle data_pipe) override {}
+      mojo::ScopedDataPipeConsumerHandle data_pipe) override {
+    ++navigation_preload_response_count_;
+    if (destroy_preload_request_on_response_) {
+      preload_request_.reset();
+    }
+  }
 
   void OnNavigationPreloadComplete(int fetch_event_id,
                                    base::TimeTicks completion_time,
                                    int64_t encoded_data_length,
                                    int64_t encoded_body_length,
-                                   int64_t decoded_body_length) override {}
+                                   int64_t decoded_body_length) override {
+    ++navigation_preload_complete_count_;
+    preload_request_.reset();
+  }
 
   void OnNavigationPreloadError(
       int fetch_event_id,
-      std::unique_ptr<WebServiceWorkerError> error) override {}
+      std::unique_ptr<WebServiceWorkerError> error) override {
+    ++navigation_preload_error_count_;
+    preload_request_.reset();
+  }
+
+  void SetDestroyPreloadRequestOnResponse(bool destroy) {
+    destroy_preload_request_on_response_ = destroy;
+  }
+  bool HasPreloadRequest() const { return preload_request_ != nullptr; }
+  int navigation_preload_response_count() const {
+    return navigation_preload_response_count_;
+  }
+  int navigation_preload_complete_count() const {
+    return navigation_preload_complete_count_;
+  }
+  int navigation_preload_error_count() const {
+    return navigation_preload_error_count_;
+  }
 
   TestDataPipeReader DispatchFetchEventForSubresourceAndCreateReader(
       const std::string& upload_contents,
@@ -574,6 +615,7 @@ class MockServiceWorkerContextClient final
   void WorkerContextDestroyed() override {
     test_data_uploader_.reset();
     controller_service_worker_.reset();
+    preload_request_.reset();
     termination_event_.Signal();
   }
 
@@ -594,6 +636,11 @@ class MockServiceWorkerContextClient final
   mojo::Remote<mojom::blink::ControllerServiceWorker>
       controller_service_worker_;
   std::unique_ptr<TestDataUploader> test_data_uploader_;
+  std::unique_ptr<WebNavigationPreloadRequest> preload_request_;
+  bool destroy_preload_request_on_response_ = false;
+  int navigation_preload_response_count_ = 0;
+  int navigation_preload_complete_count_ = 0;
+  int navigation_preload_error_count_ = 0;
   raw_ptr<WebPolicyContainer> web_policy_container_;
 };
 
@@ -874,6 +921,142 @@ TEST_F(WebEmbeddedWorkerImplTest,
 TEST_F(WebEmbeddedWorkerImplTest,
        RaceNetworkRequestFallbackOnDisconnect_FeatureDisabled) {
   RunRaceNetworkRequestFallbackOnDisconnectTest(/*feature_enabled=*/false);
+}
+
+class NavigationPreloadRequestTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    mock_client_ = std::make_unique<MockServiceWorkerContextClient>();
+    mock_client_->SetupNavigationPreload(
+        /*fetch_event_id=*/1, url_test_helpers::ToKURL(kServer),
+        preload_loader_client_.BindNewPipeAndPassReceiver());
+    ASSERT_TRUE(mock_client_->HasPreloadRequest());
+  }
+
+  network::mojom::URLResponseHeadPtr CreateResponseHead(
+      std::string_view raw_headers) {
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->headers = net::HttpResponseHeaders::TryToCreate(raw_headers);
+    CHECK(response_head->headers);
+    return response_head;
+  }
+
+  net::RedirectInfo CreateRedirectInfo() {
+    net::RedirectInfo redirect_info;
+    redirect_info.status_code = 302;
+    redirect_info.new_url = GURL(kServer + "/redirected");
+    return redirect_info;
+  }
+
+  test::TaskEnvironment task_environment_;
+  std::unique_ptr<MockServiceWorkerContextClient> mock_client_;
+  mojo::Remote<network::mojom::URLLoaderClient> preload_loader_client_;
+};
+
+TEST_F(NavigationPreloadRequestTest,
+       NavigationPreloadRedirectDestroysRequestDuringResponse) {
+  mock_client_->SetDestroyPreloadRequestOnResponse(true);
+
+  preload_loader_client_->OnReceiveRedirect(
+      CreateRedirectInfo(),
+      CreateResponseHead(
+          "HTTP/1.1 302 Found\r\nLocation: https://a.test/redirected\r\n\r\n"));
+  preload_loader_client_.FlushForTesting();
+
+  EXPECT_FALSE(mock_client_->HasPreloadRequest());
+  EXPECT_EQ(1, mock_client_->navigation_preload_response_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_complete_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_error_count());
+}
+
+TEST_F(NavigationPreloadRequestTest,
+       NavigationPreloadRedirectCompletesNormally) {
+  mock_client_->SetDestroyPreloadRequestOnResponse(false);
+
+  preload_loader_client_->OnReceiveRedirect(
+      CreateRedirectInfo(),
+      CreateResponseHead(
+          "HTTP/1.1 302 Found\r\nLocation: https://a.test/redirected\r\n\r\n"));
+  preload_loader_client_.FlushForTesting();
+
+  EXPECT_FALSE(mock_client_->HasPreloadRequest());
+  EXPECT_EQ(1, mock_client_->navigation_preload_response_count());
+  EXPECT_EQ(1, mock_client_->navigation_preload_complete_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_error_count());
+}
+
+TEST_F(NavigationPreloadRequestTest,
+       NavigationPreloadEmptyBodyDestroysRequestDuringResponse) {
+  mock_client_->SetDestroyPreloadRequestOnResponse(true);
+
+  preload_loader_client_->OnReceiveResponse(
+      CreateResponseHead("HTTP/1.1 200 OK\r\n\r\n"),
+      mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
+  preload_loader_client_->OnComplete(
+      network::URLLoaderCompletionStatus(net::OK));
+  preload_loader_client_.FlushForTesting();
+
+  EXPECT_FALSE(mock_client_->HasPreloadRequest());
+  EXPECT_EQ(1, mock_client_->navigation_preload_response_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_complete_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_error_count());
+}
+
+TEST_F(NavigationPreloadRequestTest,
+       NavigationPreloadEmptyBodyCompletesNormally) {
+  mock_client_->SetDestroyPreloadRequestOnResponse(false);
+
+  preload_loader_client_->OnReceiveResponse(
+      CreateResponseHead("HTTP/1.1 200 OK\r\n\r\n"),
+      mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
+  preload_loader_client_->OnComplete(
+      network::URLLoaderCompletionStatus(net::OK));
+  preload_loader_client_.FlushForTesting();
+
+  EXPECT_FALSE(mock_client_->HasPreloadRequest());
+  EXPECT_EQ(1, mock_client_->navigation_preload_response_count());
+  EXPECT_EQ(1, mock_client_->navigation_preload_complete_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_error_count());
+}
+
+TEST_F(NavigationPreloadRequestTest,
+       NavigationPreloadWithBodyDestroysRequestDuringResponse) {
+  mock_client_->SetDestroyPreloadRequestOnResponse(true);
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(16u, producer, consumer));
+
+  preload_loader_client_->OnReceiveResponse(
+      CreateResponseHead("HTTP/1.1 200 OK\r\n\r\n"), std::move(consumer),
+      /*cached_metadata=*/std::nullopt);
+  preload_loader_client_->OnComplete(
+      network::URLLoaderCompletionStatus(net::OK));
+  preload_loader_client_.FlushForTesting();
+
+  EXPECT_FALSE(mock_client_->HasPreloadRequest());
+  EXPECT_EQ(1, mock_client_->navigation_preload_response_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_complete_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_error_count());
+}
+
+TEST_F(NavigationPreloadRequestTest, NavigationPreloadErrorDestroysRequest) {
+  mock_client_->SetDestroyPreloadRequestOnResponse(false);
+
+  preload_loader_client_->OnReceiveResponse(
+      CreateResponseHead("HTTP/1.1 200 OK\r\n\r\n"),
+      mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
+  preload_loader_client_->OnComplete(
+      network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+  preload_loader_client_.FlushForTesting();
+
+  EXPECT_FALSE(mock_client_->HasPreloadRequest());
+  EXPECT_EQ(0, mock_client_->navigation_preload_response_count());
+  EXPECT_EQ(0, mock_client_->navigation_preload_complete_count());
+  EXPECT_EQ(1, mock_client_->navigation_preload_error_count());
 }
 
 }  // namespace blink

@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -74,7 +75,7 @@ class EmbeddedWorkerInstanceClientImpl;
 //
 // Unless otherwise noted (here or in base class documentation), all methods
 // are called on the worker thread.
-class ServiceWorkerContextClient
+class CONTENT_EXPORT ServiceWorkerContextClient
     : public blink::WebServiceWorkerContextClient,
       public service_manager::mojom::InterfaceProvider {
  public:
