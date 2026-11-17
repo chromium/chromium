@@ -33,7 +33,7 @@ export function getHtml(
     <p id="subtitle" class="subtitle">${this.subtitle}</p>
   </div>
   <div class="disclaimer-container">
-    <section class="disclaimer">
+    <section class="card disclaimer">
       <cr-icon class="icon"
           icon="${this.webuiRoundedIconsEnabled_ ?
               'signin:person' :
@@ -42,7 +42,7 @@ export function getHtml(
       <h2>$i18n{profileInformationTitle}</h2>
       <p>$i18n{profileInformationDetails}</p>
     </section>
-    <section class="disclaimer">
+    <section class="card disclaimer">
       <cr-icon class="icon" icon="cr:devices"></cr-icon>
       <h2>$i18n{deviceInformationTitle}</h2>
       <p>$i18n{deviceInformationDetails}</p>

@@ -18,10 +18,6 @@ main {
 }
 
 cr-radio-group {
-  background-color: var(--cr-fallback-color-surface);
-  border: 1px solid var(--cr-fallback-color-surface-variant);
-  border-radius: 24px;
-  box-sizing: border-box;
   width: 500px;
 }
 
@@ -52,11 +48,6 @@ cr-radio-button p {
 }
 
 @media (prefers-color-scheme: dark) {
-  cr-radio-group {
-    background-color: var(--cr-fallback-color-surface2);
-    border: none;
-  }
-
   cr-radio-button + cr-radio-button {
     border-top: 2px solid var(--cr-fallback-color-surface);
   }

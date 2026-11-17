@@ -31,12 +31,12 @@ export function getHtml(this: SignalsDisclaimerRefreshElement) {
   </p>
 </div>
 <div class="disclaimer-container">
-  <section class="disclaimer">
+  <section class="card disclaimer">
     <cr-icon class="icon" icon="signin:account-circle"></cr-icon>
     <h2>$i18n{profileInformationTitle}</h2>
     <p>$i18n{signalsDisclaimerProfileInformationDetails}</p>
   </section>
-  <section class="disclaimer">
+  <section class="card disclaimer">
     <cr-icon class="icon" icon="cr:computer"></cr-icon>
     <h2>$i18n{deviceInformationTitle}</h2>
     <p>$i18n{signalsDisclaimerDeviceInformationDetails}</p>

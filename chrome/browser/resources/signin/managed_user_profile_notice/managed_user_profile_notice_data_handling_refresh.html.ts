@@ -15,7 +15,7 @@ export function getHtml(
   <div class="text-container">
     <h1 class="title" tabindex="-1">${this.title}</h1>
   </div>
-  <cr-radio-group .selected="${this.selectedDataHandling}"
+  <cr-radio-group class="card" .selected="${this.selectedDataHandling}"
       @selected-changed="${this.onSelectedChanged_}">
     <cr-radio-button name="${BrowsingDataHandling.SEPARATE}"
         label="${this.separateDataChoiceTitle}">

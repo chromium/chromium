@@ -15,7 +15,7 @@ export function getHtml(this: ManagedUserProfileNoticeValuePropRefreshElement) {
     <h1 id="title" class="title" tabindex="-1">${this.title}</h1>
     <p class="subtitle">${this.subtitle}</p>
   </div>
-  <div class="account-card">
+  <div class="card account-card">
     <img id="avatar" class="avatar" alt="" src="${this.pictureUrl}">
     <div class="account-info">
       <p class="account-name">${this.accountName}</p>
