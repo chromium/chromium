@@ -1379,8 +1379,9 @@ void NativeWidgetAura::OnScrollEvent(ui::ScrollEvent* event) {
 
 void NativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {
   CHECK(window_, base::NotFatalUntil::M163);
-  CHECK(window_->IsVisible() || event->IsEndingEvent(),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/585977881): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(window_->IsVisible() || event->IsEndingEvent());
   if (delegate_) {
     delegate_->OnGestureEvent(event);
   }
