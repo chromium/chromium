@@ -11,6 +11,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/testing/metrics_consent_override.h"
@@ -252,13 +253,18 @@ class SingleClientDeviceInfoSyncTest
 
   // Injects a test DeviceInfo entity to the fake server with disabled sync
   // standalone invalidations, given |suffix|.
-  void InjectDeviceInfoEntityToServer(int suffix) {
-    InjectDeviceInfoSpecificsToServer(CreateSpecifics(suffix));
+  void InjectDeviceInfoEntityToServer(int suffix,
+                                      int64_t creation_time = 0,
+                                      int64_t last_modified_time = 0) {
+    InjectDeviceInfoSpecificsToServer(CreateSpecifics(suffix), creation_time,
+                                      last_modified_time);
   }
 
   // Injects an arbitrary test DeviceInfo entity to the fake server.
   void InjectDeviceInfoSpecificsToServer(
-      const sync_pb::DeviceInfoSpecifics& device_info_specifics) {
+      const sync_pb::DeviceInfoSpecifics& device_info_specifics,
+      int64_t creation_time = 0,
+      int64_t last_modified_time = 0) {
     sync_pb::EntitySpecifics specifics;
     *specifics.mutable_device_info() = device_info_specifics;
     GetFakeServer()->InjectEntity(
@@ -266,8 +272,7 @@ class SingleClientDeviceInfoSyncTest
             /*non_unique_name=*/"",
             /*client_tag=*/
             syncer::DeviceInfoUtil::SpecificsToTag(specifics.device_info()),
-            specifics,
-            /*creation_time=*/0, /*last_modified_time=*/0));
+            specifics, creation_time, last_modified_time));
   }
 
   StoreType GetStoreType() const {
@@ -1051,9 +1056,16 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
     PRE_ShouldRecordDeviceStatisticsMetricsWithPrimaryAccount) {
-  // Simulate that the primary account has two other devices.
-  InjectDeviceInfoEntityToServer(1);
-  InjectDeviceInfoEntityToServer(2);
+  // Simulate that the primary account has two other active devices. Set
+  // `last_modified_time` in the future so their activity ranges still overlap
+  // the local DeviceInfo entity created during `SetupSync()` (avoiding
+  // deduplication as pre-reset local entities).
+  const base::Time now = base::Time::Now();
+  const int64_t creation_time = syncer::TimeToProtoTime(now);
+  const int64_t last_modified_time =
+      syncer::TimeToProtoTime(now + base::Hours(1));
+  InjectDeviceInfoEntityToServer(1, creation_time, last_modified_time);
+  InjectDeviceInfoEntityToServer(2, creation_time, last_modified_time);
 
   // Sign in, to ensure that during startup of the following test, there is
   // already a primary account.
