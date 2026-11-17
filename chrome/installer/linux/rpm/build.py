@@ -7,7 +7,6 @@ import argparse
 import logging
 import os
 import pathlib
-import re
 import shutil
 import subprocess
 import sys
@@ -15,6 +14,9 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
 import installer
+
+RPM_LEAD_MAGIC = b"\xed\xab\xee\xdb"
+RPM_V4_LEAD_MAJOR = 3
 
 
 def parse_args() -> argparse.Namespace:
@@ -41,21 +43,29 @@ def gen_spec(
 def verify_package(
     config: installer.InstallerConfig, rpm_file: pathlib.Path
 ) -> None:
+    with rpm_file.open("rb") as f:
+        lead = f.read(6)
+    if (
+        len(lead) < 6
+        or lead[:4] != RPM_LEAD_MAGIC
+        or lead[4] != RPM_V4_LEAD_MAJOR
+    ):
+        print(
+            f"Unexpected RPM lead header in {rpm_file}: {lead.hex()} "
+            f"(expected RPM v4 lead magic {RPM_LEAD_MAGIC.hex()} with "
+            f"major {RPM_V4_LEAD_MAJOR})",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     depends = config.rpm_depends
-    version_output = subprocess.check_output(["rpm", "--version"])
-    version_match = re.match(r'.*version ([.\d]*)', str(version_output))
     additional_deps = [
         "/bin/sh",
+        "rpmlib(CompressedFileNames) <= 3.0.4-1",
+        "rpmlib(FileDigests) <= 4.6.0-1",
+        "rpmlib(PayloadFilesHavePrefix) <= 4.0-1",
         "/usr/sbin/update-alternatives",
     ]
-    if version_match and version_match[1] >= '6.0':
-        additional_deps += ['rpmlib(LargeFiles) <= 4.12.0-1']
-    else:
-        additional_deps += [
-            "rpmlib(CompressedFileNames) <= 3.0.4-1",
-            "rpmlib(FileDigests) <= 4.6.0-1",
-            "rpmlib(PayloadFilesHavePrefix) <= 4.0-1",
-        ]
     if config.is_official_build:
         additional_deps.append("rpmlib(PayloadIsXz) <= 5.2-1")
 
@@ -140,12 +150,16 @@ def main() -> None:
         else:
             compression_opt = "_binary_payload w0.gzdio"
 
+        # Pin RPM v4 format so rpm >= 6.0 continues emitting v4 headers and
+        # standard SVR4 cpio payloads instead of v6 stripped cpio (07070X),
+        # which libarchive and rpm-ostree cannot extract (crbug.com/583945825).
         cmd = [
             "rpmbuild",
             "-bb",
             f"--target={args.arch}",
             "--rmspec",
             f"--define=_topdir {rpm_build_dir}",
+            "--define=_rpmformat 4",
             f"--define={compression_opt}",
             "--define=__os_install_post %{nil}",
             "--define=_build_id_links none",
