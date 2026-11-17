@@ -38,6 +38,7 @@ static_library("desks") {
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/browser/ui/waap:window_creation",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",

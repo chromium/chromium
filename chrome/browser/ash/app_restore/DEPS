@@ -55,6 +55,7 @@ specific_include_rules = {
     "+chrome/browser/custom_handlers/protocol_handler_registry_factory.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/create_browser_window.h",
+    "+chrome/browser/ui/waap/window_creation.h",
   ],
 
   "full_restore_app_launch_handler_browsertest\\.cc": [

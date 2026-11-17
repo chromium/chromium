@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/simple_web_view_dialog.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -391,7 +392,8 @@ BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
     BrowserWindowCreateParams create_params(profile,
                                             navigate_params.user_gesture);
     create_params.should_trigger_session_restore = false;
-    navigate_params.browser = CreateBrowserWindow(std::move(create_params));
+    navigate_params.browser = waap::CreateBrowserWindowAndRecordCreationSource(
+        std::move(create_params), waap::NewWindowCreationSource::kNavigation);
   }
 
   Navigate(&navigate_params);

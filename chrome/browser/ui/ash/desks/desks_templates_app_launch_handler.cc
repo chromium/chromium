@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/app_constants/constants.h"
@@ -270,7 +271,9 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
 
       ash::BrowserDelegate* browser =
           ash::BrowserController::GetInstance()->GetDelegate(
-              CreateBrowserWindow(std::move(create_params)));
+              waap::CreateBrowserWindowAndRecordCreationSource(
+                  std::move(create_params),
+                  waap::NewWindowCreationSource::kLaunch));
 
       std::optional<int32_t> active_tab_index =
           browser_extra_info.active_tab_index;

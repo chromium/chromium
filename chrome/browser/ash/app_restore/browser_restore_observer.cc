@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
@@ -158,7 +159,9 @@ void BrowserRestoreObserver::OnSessionRestoreDone(Profile* profile,
   auto create_params =
       BrowserWindowCreateParams(profile, /*user_gesture=*/false);
   BrowserDelegate* browser = BrowserController::GetInstance()->GetDelegate(
-      CreateBrowserWindow(std::move(create_params)));
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(create_params),
+          waap::NewWindowCreationSource::kSessionRestore));
   RestoreUrls(browser);
   browser->Show();
   browser->Activate();

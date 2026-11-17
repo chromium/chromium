@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
@@ -142,7 +143,9 @@ Profile* GetActiveUserProfile() {
   return nullptr;
 }
 
-// Creates a browser on the active desk.
+// Creates an empty browser window (with no initial tabs) on the active desk
+// for `CoralDelegateImpl::MoveTabsInGroupToNewDesk()` to move existing tabs
+// into, matching `chrome::MoveTabsToNewWindow()`.
 ash::BrowserDelegate* CreateBrowser() {
   Profile* active_profile = GetActiveUserProfile();
   if (!active_profile) {
@@ -154,7 +157,9 @@ ash::BrowserDelegate* CreateBrowser() {
                                    /*user_gesture=*/false);
   params.should_trigger_session_restore = false;
   return ash::BrowserController::GetInstance()->GetDelegate(
-      CreateBrowserWindow(std::move(params)));
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params),
+          waap::NewWindowCreationSource::kMoveTabsToNewWindow));
 }
 
 // Finds the first tab with given url on the desk with the given `index` and

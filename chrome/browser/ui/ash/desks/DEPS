@@ -33,6 +33,9 @@ specific_include_rules = {
   "chrome_saved_desk_delegate_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
+  "desks_templates_app_launch_handler\\.cc": [
+    "+chrome/browser/ui/waap/window_creation.h",
+  ],
   "desks_client_browsertest\\.cc": [
     "+chrome/browser/policy/policy_test_utils.h",
     "+chrome/browser/prefs",

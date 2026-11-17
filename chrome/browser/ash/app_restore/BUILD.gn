@@ -94,6 +94,7 @@ static_library("app_restore") {
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/startup:startup_tab",
+    "//chrome/browser/ui/waap:window_creation",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
