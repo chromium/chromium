@@ -788,10 +788,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserFeedbackAllowed,
     prefs::kUserFeedbackAllowed,
     base::Value::Type::BOOLEAN },
-#if !BUILDFLAG(IS_ANDROID)
   { key::kRestrictYouTubeCookiesDeletion,
     prefs::kRestrictYouTubeCookiesDeletion,
     base::Value::Type::BOOLEAN },
+#if !BUILDFLAG(IS_ANDROID)
   { key::kInsecureContentAllowedForUrls,
     prefs::kManagedInsecureContentAllowedForUrls,
     base::Value::Type::LIST },

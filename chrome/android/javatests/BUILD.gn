@@ -1449,6 +1449,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.site_settings") {
     "src/org/chromium/chrome/browser/site_settings/LocationPermissionSubpageSettingsTest.java",
     "src/org/chromium/chrome/browser/site_settings/ManageSpaceActivityTest.java",
     "src/org/chromium/chrome/browser/site_settings/PermissionInfoTest.java",
+    "src/org/chromium/chrome/browser/site_settings/RestrictYouTubeCookiesDeletionPolicyTest.java",
     "src/org/chromium/chrome/browser/site_settings/SingleWebsiteSettingsTest.java",
     "src/org/chromium/chrome/browser/site_settings/SiteSettingsCookiesTest.java",
     "src/org/chromium/chrome/browser/site_settings/SiteSettingsLocationTest.java",

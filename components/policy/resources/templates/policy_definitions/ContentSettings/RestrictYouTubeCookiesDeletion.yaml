@@ -28,5 +28,6 @@ schema:
 supported_on:
 - chrome.*:150-
 - chrome_os:150-
+- android:160-
 tags: []
 type: main
