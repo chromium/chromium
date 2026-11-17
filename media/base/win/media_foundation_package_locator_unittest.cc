@@ -136,6 +136,13 @@ TEST_F(MediaFoundationPackageLocatorTest, AV1) {
 }
 
 TEST_F(MediaFoundationPackageLocatorTest, HEVC) {
+  // Windows 10 < RS3 shipped an inbox HEVC decoder instead of the Store
+  // codec package tested here.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS3) {
+    GTEST_SKIP() << "MediaFoundation HEVC store package requires Windows 10 "
+                    "RS3 or later.";
+  }
+
   AddPackageFamilyName(L"Microsoft.HEVCVideoExtension_8wekyb3d8bbwe");
   AddPackageFamilyName(L"Microsoft.HEVCVideoExtensions_8wekyb3d8bbwe");  // OEM.
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
