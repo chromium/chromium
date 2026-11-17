@@ -21,6 +21,10 @@
 
 class BrowserView;
 
+namespace shared {
+class NewTabButton;
+}
+
 namespace views {
 class ActionViewController;
 class Button;
@@ -159,7 +163,7 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
 
   bool HasLeadingButtons() const;
   TabStripComboButton* combo_button() { return combo_button_; }
-  views::Button* new_tab_button_for_testing() { return new_tab_button_; }
+  views::Button* new_tab_button_for_testing();
 
   // TabStripRegionView:
   gfx::Size GetMinimumSize() const override;
@@ -181,7 +185,7 @@ class HorizontalTabStripRegionViewNew : public BaseTabStripRegionView {
   raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
-  raw_ptr<views::Button> new_tab_button_ = nullptr;
+  raw_ptr<shared::NewTabButton> new_tab_button_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 

@@ -14,13 +14,16 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/horizontal_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
@@ -32,11 +35,15 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/scroll_view.h"
@@ -45,6 +52,7 @@
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1183,4 +1191,132 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
 
   EXPECT_TRUE(region_view->AcceleratorPressed(region_view->home_key()));
   EXPECT_TRUE(tab_search_button()->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       ClickNewTabButtonTopEdgeInFullscreen) {
+  auto get_top_center_in_ncv = [](views::View* button) {
+    const gfx::Rect bounds = button->GetBoundsInScreen();
+    gfx::Point point(bounds.CenterPoint().x(), bounds.y());
+    views::View::ConvertPointFromScreen(button->GetWidget()->non_client_view(),
+                                        &point);
+    return point;
+  };
+  auto get_top_center_in_root = [](views::View* button) {
+    gfx::Point point(button->width() / 2, 0);
+    views::View::ConvertPointToTarget(
+        button, button->GetWidget()->GetRootView(), &point);
+    return point;
+  };
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ImmersiveRevealedLock> revealed_lock;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  RunTestSequence(
+      EnsurePresent(kNewTabButtonElementId),
+#if BUILDFLAG(IS_LINUX)
+      Do([this]() {
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            prefs::kUseCustomChromeFrame, true);
+        views::test::RunScheduledLayout(
+            BrowserView::GetBrowserViewForBrowser(browser()));
+      }),
+#endif
+      // Outside fullscreen/maximized mode, the space directly above the NTB
+      // belongs to the window caption/frame rather than the button.
+      CheckView(kNewTabButtonElementId,
+                [this, &get_top_center_in_ncv,
+                 &get_top_center_in_root](views::View* button) {
+                  BrowserView* const browser_view =
+                      BrowserView::GetBrowserViewForBrowser(browser());
+                  auto* const region_view = horizontal_tab_strip_region_view();
+                  gfx::Point top_center_in_region(button->width() / 2, 0);
+                  views::View::ConvertPointToTarget(button, region_view,
+                                                    &top_center_in_region);
+                  views::Widget* const widget = button->GetWidget();
+                  return !browser_view->browser_widget()
+                              ->GetFrameView()
+                              ->IsFrameCondensed() &&
+                         region_view->IsPositionInWindowCaption(
+                             top_center_in_region) &&
+                         widget->GetRootView()->GetEventHandlerForPoint(
+                             get_top_center_in_root(button)) != button &&
+                         widget->non_client_view()->NonClientHitTest(
+                             get_top_center_in_ncv(button)) != HTCLIENT;
+                }),
+  // Enter fullscreen while keeping browser chrome visible.
+#if BUILDFLAG(IS_CHROMEOS)
+      Do([this, &revealed_lock]() {
+#else
+      Do([this]() {
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        BrowserWindowFullscreenController::From(browser())
+            ->set_should_hide_ui_for_fullscreen_for_testing(false);
+        ui_test_utils::ToggleFullscreenModeAndWait(browser());
+#if BUILDFLAG(IS_CHROMEOS)
+        // On ChromeOS, entering fullscreen starts a slide-out animation for
+        // TopContainerView unless a reveal lock is held.
+        revealed_lock =
+            ImmersiveModeController::From(browser())->GetRevealedLock(
+                ImmersiveModeController::ANIMATE_REVEAL_NO);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        views::test::RunScheduledLayout(
+            BrowserView::GetBrowserViewForBrowser(browser()));
+      }),
+      WaitForShow(kNewTabButtonElementId),
+      CheckView(kNewTabButtonElementId,
+                [this, &get_top_center_in_ncv,
+                 &get_top_center_in_root](views::View* button) {
+                  BrowserView* const browser_view =
+                      BrowserView::GetBrowserViewForBrowser(browser());
+                  auto* const region_view = horizontal_tab_strip_region_view();
+                  gfx::Point top_center_in_region(button->width() / 2, 0);
+                  views::View::ConvertPointToTarget(button, region_view,
+                                                    &top_center_in_region);
+                  views::Widget* const widget = button->GetWidget();
+                  // On macOS immersive fullscreen, the tab strip is hosted in
+                  // a TYPE_POPUP overlay widget that has no NonClientView.
+                  const bool ncv_hit_ok =
+                      !widget->non_client_view() ||
+                      widget->non_client_view()->NonClientHitTest(
+                          get_top_center_in_ncv(button)) == HTCLIENT;
+                  return browser_view->browser_widget()
+                             ->GetFrameView()
+                             ->IsFrameCondensed() &&
+                         !region_view->IsPositionInWindowCaption(
+                             top_center_in_region) &&
+                         widget->GetRootView()->GetEventHandlerForPoint(
+                             get_top_center_in_root(button)) == button &&
+                         ncv_hit_ok;
+                }),
+#if BUILDFLAG(IS_MAC)
+      // In macOS immersive fullscreen, tab_overlay_widget_'s content NSView is
+      // reparented into NSToolbarFullScreenWindow while tab_window_ ignores
+      // mouse events, so InteractiveMouseTestApi targeting
+      // widget->GetNativeWindow() cannot deliver OS clicks to the overlay.
+      // Dispatch through the widget's root view directly at the top center.
+      WithView(kNewTabButtonElementId,
+               [&get_top_center_in_root](views::View* button) {
+                 const gfx::Point point = get_top_center_in_root(button);
+                 ui::MouseEvent press(ui::EventType::kMousePressed, point,
+                                      point, ui::EventTimeForNow(),
+                                      ui::EF_LEFT_MOUSE_BUTTON,
+                                      ui::EF_LEFT_MOUSE_BUTTON);
+                 button->GetWidget()->OnMouseEvent(&press);
+                 ui::MouseEvent release(ui::EventType::kMouseReleased, point,
+                                        point, ui::EventTimeForNow(),
+                                        ui::EF_LEFT_MOUSE_BUTTON,
+                                        ui::EF_LEFT_MOUSE_BUTTON);
+                 button->GetWidget()->OnMouseEvent(&release);
+               }),
+#else
+      MoveMouseTo(kNewTabButtonElementId,
+                  base::BindOnce([](ui::TrackedElement* element) {
+                    const gfx::Rect bounds = element->GetScreenBounds();
+                    return gfx::Point(bounds.CenterPoint().x(), bounds.y());
+                  })),
+      ClickMouse(),
+#endif
+      CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
+                  2));
 }

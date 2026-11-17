@@ -25,13 +25,16 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
@@ -39,9 +42,12 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -526,6 +532,87 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
   base::HistogramTester histogram_tester;
   chrome::AddTabAt(incognito_browser, GURL("about:blank"), -1, true);
   histogram_tester.ExpectUniqueSample("Tab.Count.Incognito", 2, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
+                       ChildrenAreFlushWithTopOfTabStripRegionView) {
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* const region_view = views::AsViewClass<HorizontalTabStripRegionViewNew>(
+      browser_view->tab_strip_view());
+  ASSERT_NE(region_view, nullptr);
+  views::Button* const ntb = new_tab_button();
+  ASSERT_NE(ntb, nullptr);
+
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  views::test::RunScheduledLayout(browser_view);
+
+  gfx::Point tab_strip_origin;
+  views::View::ConvertPointToTarget(region_view->GetTabStripView(), region_view,
+                                    &tab_strip_origin);
+  EXPECT_EQ(0, tab_strip_origin.y());
+
+  gfx::Point new_tab_button_origin;
+  views::View::ConvertPointToTarget(ntb, region_view, &new_tab_button_origin);
+  EXPECT_EQ(0, new_tab_button_origin.y());
+  EXPECT_EQ(region_view->height(), ntb->height());
+  EXPECT_GT(ntb->GetInsets().top(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewUnifiedTest,
+                       NewTabButtonHitTestFittsLaw) {
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* const region_view = views::AsViewClass<HorizontalTabStripRegionViewNew>(
+      browser_view->tab_strip_view());
+  ASSERT_NE(region_view, nullptr);
+  views::Button* const ntb = new_tab_button();
+  ASSERT_NE(ntb, nullptr);
+
+#if BUILDFLAG(IS_LINUX)
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUseCustomChromeFrame,
+                                                  true);
+#endif
+  views::test::RunScheduledLayout(browser_view);
+
+  BrowserFrameView* const frame_view =
+      browser_view->browser_widget()->GetFrameView();
+  ASSERT_NE(frame_view, nullptr);
+  ASSERT_FALSE(frame_view->IsFrameCondensed());
+
+  const gfx::Point top_center(ntb->width() / 2, 0);
+  gfx::Point top_center_in_region = top_center;
+  views::View::ConvertPointToTarget(ntb, region_view, &top_center_in_region);
+
+  const gfx::Point button_center = ntb->GetLocalBounds().CenterPoint();
+  gfx::Point button_center_in_region = button_center;
+  views::View::ConvertPointToTarget(ntb, region_view, &button_center_in_region);
+
+  // When uncondensed, the top outer inset above the visual pill passes
+  // hit-tests through to the window caption while the pill itself is clickable.
+  EXPECT_FALSE(ntb->HitTestPoint(gfx::Point(0, 0)));
+  EXPECT_FALSE(ntb->HitTestPoint(top_center));
+  EXPECT_TRUE(region_view->IsPositionInWindowCaption(top_center_in_region));
+  EXPECT_TRUE(ntb->HitTestPoint(button_center));
+  EXPECT_FALSE(region_view->IsPositionInWindowCaption(button_center_in_region));
+
+  // Enter fullscreen while keeping browser chrome visible so the frame becomes
+  // condensed.
+  BrowserWindowFullscreenController::From(browser())
+      ->set_should_hide_ui_for_fullscreen_for_testing(false);
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  views::test::RunScheduledLayout(browser_view);
+  ASSERT_TRUE(frame_view->IsFrameCondensed());
+
+  // When condensed, the top edge above the button becomes clickable (Fitts'
+  // law), while the bottom outer inset remains excluded.
+  top_center_in_region = top_center;
+  views::View::ConvertPointToTarget(ntb, region_view, &top_center_in_region);
+  EXPECT_TRUE(ntb->HitTestPoint(gfx::Point(0, 0)));
+  EXPECT_TRUE(ntb->HitTestPoint(top_center));
+  EXPECT_TRUE(ntb->HitTestPoint(gfx::Point(ntb->width() - 1, 0)));
+  EXPECT_TRUE(ntb->HitTestPoint(gfx::Point(ntb->width() / 2, 2)));
+  EXPECT_FALSE(region_view->IsPositionInWindowCaption(top_center_in_region));
+  EXPECT_FALSE(
+      ntb->HitTestPoint(gfx::Point(ntb->width() / 2, ntb->height() - 1)));
 }
 
 class HorizontalTabStripRegionViewUnifiedIsolatedTest

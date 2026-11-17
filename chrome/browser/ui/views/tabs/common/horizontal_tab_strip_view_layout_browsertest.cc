@@ -634,7 +634,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
   EXPECT_EQ(region_view->new_tab_button_for_testing()->GetBoundsInScreen().x() -
                 last_tab_visual_right,
             padding);
-  EXPECT_EQ(region_view->new_tab_button_for_testing()->bounds().y(), padding);
+  EXPECT_EQ(region_view->new_tab_button_for_testing()->bounds().y() +
+                region_view->new_tab_button_for_testing()->GetInsets().top(),
+            padding);
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,

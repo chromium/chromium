@@ -764,6 +764,7 @@ HorizontalTabStripRegionViewNew::HorizontalTabStripRegionViewNew(
         kColorTabForegroundInactiveFrameActive);
     new_tab_button->SetForegroundFrameInactiveColorId(
         kColorNewTabButtonCRForegroundFrameInactive);
+    new_tab_button->SetExtendHitTestToTop(true);
     new_tab_button_pressed_subscription_ =
         new_tab_button->RegisterWillInvokeActionCallback(base::BindRepeating(
             &HorizontalTabStripRegionViewNew::RecordNewTabButtonPressed,
@@ -865,6 +866,10 @@ bool HorizontalTabStripRegionViewNew::HasLeadingButtons() const {
   return false;
 }
 
+views::Button* HorizontalTabStripRegionViewNew::new_tab_button_for_testing() {
+  return new_tab_button_;
+}
+
 void HorizontalTabStripRegionViewNew::Layout(PassKey) {
   UpdateTabStripMargin();
   LayoutSuperclass<BaseTabStripRegionView>(this);
@@ -877,12 +882,8 @@ void HorizontalTabStripRegionViewNew::Layout(PassKey) {
     const gfx::Size button_size = new_tab_button_->GetPreferredSize();
     const int x =
         tab_strip_view()->bounds().right() - GetNewTabButtonTrailingOverlap();
-    const int y = GetInsets().top() +
-                  (GetLayoutConstant(LayoutConstant::kTabStripHeight) -
-                   GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap) -
-                   button_size.height()) /
-                      2;
-    new_tab_button_->SetBoundsRect(gfx::Rect(gfx::Point(x, y), button_size));
+    new_tab_button_->SetBoundsRect(
+        gfx::Rect(gfx::Point(x, GetInsets().top()), button_size));
   }
 }
 
@@ -1053,6 +1054,9 @@ void HorizontalTabStripRegionViewNew::UpdateButtonBorders() {
   }
   if (combo_button_) {
     UpdateBorderInsetsIfNeeded(combo_button_, border_insets);
+  }
+  if (new_tab_button_) {
+    new_tab_button_->SetOuterInsets(border_insets);
   }
 }
 
