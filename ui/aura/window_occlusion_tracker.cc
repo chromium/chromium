@@ -885,8 +885,9 @@ void WindowOcclusionTracker::AddObserverToWindowAndDescendants(Window* window) {
     CHECK(window_observations_.IsObservingSource(window),
           base::NotFatalUntil::M163);
   } else {
-    CHECK(!window_observations_.IsObservingSource(window),
-          base::NotFatalUntil::M163);
+    // TODO(crbug.com/586507442): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!window_observations_.IsObservingSource(window));
     window_observations_.AddObservation(window);
   }
   for (Window* child_window : window->children())
