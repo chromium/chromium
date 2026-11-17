@@ -1318,10 +1318,69 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         WebContents mockWebContents = Mockito.mock(WebContents.class);
         Mockito.doReturn(mockWebContents)
                 .when(mBrowserPaymentRequest)
-                .openPaymentHandlerWindow(Mockito.any(), Mockito.anyLong());
+                .openPaymentHandlerWindow(
+                        Mockito.eq(targetUrl), Mockito.anyLong(), Mockito.isNull());
 
         Assert.assertEquals(
                 mockWebContents, PaymentRequestService.openPaymentHandlerWindow(targetUrl));
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testOpenPaymentHandlerWindowWithPreferredHeight() {
+        GURL targetUrl = new GURL("https://alice.example/pay");
+        PaymentRequestService service = defaultBuilder().build();
+        show(service);
+
+        PaymentApp swAppSameOrigin = Mockito.mock(PaymentApp.class);
+        Mockito.doReturn(PaymentAppType.SERVICE_WORKER_APP)
+                .when(swAppSameOrigin)
+                .getPaymentAppType();
+        Mockito.doReturn("https://alice.example/scope").when(swAppSameOrigin).getIdentifier();
+        service.invokePaymentApp(
+                swAppSameOrigin, Mockito.mock(PaymentResponseHelperInterface.class));
+
+        WebContents mockWebContents = Mockito.mock(WebContents.class);
+        Mockito.doReturn(mockWebContents)
+                .when(mBrowserPaymentRequest)
+                .openPaymentHandlerWindow(
+                        Mockito.eq(targetUrl), Mockito.anyLong(), Mockito.eq(400));
+
+        Assert.assertEquals(
+                mockWebContents,
+                PaymentRequestService.openPaymentHandlerWindowWithPreferredHeight(
+                        targetUrl, /* preferredHeightCssPx= */ 400));
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testOpenPaymentHandlerWindowWithoutPreferredHeight_usesDefault() {
+        GURL targetUrl = new GURL("https://alice.example/pay");
+        PaymentRequestService service = defaultBuilder().build();
+        show(service);
+
+        PaymentApp swAppSameOrigin = Mockito.mock(PaymentApp.class);
+        Mockito.doReturn(PaymentAppType.SERVICE_WORKER_APP)
+                .when(swAppSameOrigin)
+                .getPaymentAppType();
+        Mockito.doReturn("https://alice.example/scope").when(swAppSameOrigin).getIdentifier();
+        service.invokePaymentApp(
+                swAppSameOrigin, Mockito.mock(PaymentResponseHelperInterface.class));
+
+        WebContents mockWebContents = Mockito.mock(WebContents.class);
+        Mockito.doReturn(mockWebContents)
+                .when(mBrowserPaymentRequest)
+                .openPaymentHandlerWindow(
+                        Mockito.eq(targetUrl),
+                        Mockito.anyLong(),
+                        Mockito.eq(
+                                PaymentRequestService
+                                        .DEFAULT_PAYMENT_HANDLER_CONTENT_HEIGHT_CSS_PX));
+
+        Assert.assertEquals(
+                mockWebContents,
+                PaymentRequestService.openPaymentHandlerWindowWithPreferredHeight(
+                        targetUrl, /* preferredHeightCssPx= */ null));
     }
 
     @Test

@@ -27,7 +27,10 @@ import org.chromium.content_public.browser.WebContents;
  * The view of the PaymentHandler UI. This view can be divided into the toolbar area and the content
  * area. The content area does not include the toolbar area; it includes the BottomSheet area below
  * the toolbar, which includes the part that extends beneath the screen. The ThinWebView has a fixed
- * height, which is the height of visible content area when the sheet is in full state.
+ * height, which is the height of visible content area when the sheet is in full state. If the sheet
+ * has a preferred height (set by the payment app, or a default height supplied when it did not set
+ * one), the sheet wraps the ThinWebView, which gets that height (clamped by {@link
+ * PaymentHandlerMediator}), and the half state is disabled.
  */
 @NullMarked
 /* package */ class PaymentHandlerView implements BottomSheetContent {
@@ -41,6 +44,7 @@ import org.chromium.content_public.browser.WebContents;
     private final View mThinWebView;
     private final WebContents mWebContents;
     private final int mToolbarHeightPx;
+    private final boolean mHasPreferredHeight;
     private @Nullable Runnable mBackPressCallback;
 
     /**
@@ -50,16 +54,22 @@ import org.chromium.content_public.browser.WebContents;
      * @param webContents The web-content of the payment-handler web-app.
      * @param toolbarView The view of the Payment Handler toolbar.
      * @param thinWebView The view that shows the WebContents of the payment app.
+     * @param inputProtector Protects against unintended user input right after UI is shown.
+     * @param hasPreferredHeight Whether the sheet has a preferred height, i.e., the payment app set
+     *     one or a default height was supplied, in which case the sheet wraps its content and has
+     *     no half state. False for the legacy ServiceTabLauncher path.
      */
     /* package */ PaymentHandlerView(
             Context context,
             WebContents webContents,
             View toolbarView,
             View thinWebView,
-            InputProtector inputProtector) {
+            InputProtector inputProtector,
+            boolean hasPreferredHeight) {
         mWebContents = webContents;
         mToolbarView = toolbarView;
         mThinWebView = thinWebView;
+        mHasPreferredHeight = hasPreferredHeight;
         mToolbarHeightPx =
                 context.getResources().getDimensionPixelSize(R.dimen.sheet_tab_toolbar_height);
         mContentView =
@@ -109,12 +119,14 @@ import org.chromium.content_public.browser.WebContents;
 
     @Override
     public float getFullHeightRatio() {
-        return PaymentHandlerMediator.FULL_HEIGHT_RATIO;
+        return mHasPreferredHeight
+                ? HeightMode.WRAP_CONTENT
+                : PaymentHandlerMediator.FULL_HEIGHT_RATIO;
     }
 
     @Override
     public float getHalfHeightRatio() {
-        return PaymentHandlerMediator.HALF_HEIGHT_RATIO;
+        return mHasPreferredHeight ? HeightMode.DISABLED : PaymentHandlerMediator.HALF_HEIGHT_RATIO;
     }
 
     @Override

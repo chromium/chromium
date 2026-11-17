@@ -161,6 +161,7 @@ public class ExpandablePaymentHandlerTest {
                                 cta.getCurrentWebContents(),
                                 defaultPaymentAppUrl(),
                                 Origin.create(cta.getCurrentWebContents().getLastCommittedUrl()),
+                                /* preferredHeightCssPx= */ null,
                                 defaultUiObserver()));
     }
 
@@ -558,6 +559,7 @@ public class ExpandablePaymentHandlerTest {
                                             mDefaultActivity
                                                     .getCurrentWebContents()
                                                     .getLastCommittedUrl()),
+                                    /* preferredHeightCssPx= */ null,
                                     defaultUiObserver()));
                     // When the return value is null, the caller needs to hide() manually.
                     paymentHandler.hide();
