@@ -797,12 +797,23 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
 void ClientSharedImage::CreateGpuFenceForSyncTokens(
     std::vector<scoped_refptr<ClientSharedImage>> shared_images,
     std::vector<SyncToken> sync_tokens,
-    gles2::GLES2Interface* gl,
+    SharedImageFenceHelper* fence_helper,
     ContextSupport* context_support,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
-  CHECK(gl && context_support);
+  CHECK(fence_helper && context_support);
+  gles2::GLES2Interface* gl = fence_helper->gl();
 
-  WaitSyncTokensInternal(std::move(shared_images), std::move(sync_tokens), gl);
+  WaitSyncTokensInternal(shared_images, std::move(sync_tokens), gl);
+
+  // A writer outside this GPU context leaves a fence on the shared image when
+  // its access ends. Beginning a read access makes this context wait on that
+  // fence, so the fence created below also covers that writer's work.
+  for (const auto& shared_image : shared_images) {
+    SharedImageTexture::ScopedAccess::EndAccess(
+        fence_helper->GetTexture(shared_image)
+            .BeginAccess(SyncToken(), /*readonly=*/true));
+  }
+  fence_helper->DeleteUnusedTextures();
 
   GLuint id = gl->CreateGpuFenceCHROMIUM();
   context_support->GetGpuFence(id, std::move(callback));
@@ -1439,6 +1450,34 @@ SharedImageTexture::BeginAccess(const SyncToken& sync_token, bool readonly) {
 void SharedImageTexture::DidEndAccess(bool readonly) {
   has_active_access_ = false;
   shared_image_->EndAccess(readonly);
+}
+
+SharedImageFenceHelper::SharedImageFenceHelper(gles2::GLES2Interface* gl)
+    : gl_(gl) {
+  CHECK(gl_);
+}
+
+SharedImageFenceHelper::~SharedImageFenceHelper() = default;
+
+SharedImageTexture& SharedImageFenceHelper::GetTexture(
+    const scoped_refptr<ClientSharedImage>& shared_image) {
+  auto it = textures_.find(shared_image);
+  if (it == textures_.end()) {
+    it = textures_.emplace(shared_image, shared_image->CreateGLTexture(gl_))
+             .first;
+  }
+  return *it->second;
+}
+
+void SharedImageFenceHelper::DeleteUnusedTextures() {
+  // Delete the textures before releasing their shared images, which they point
+  // to.
+  for (auto& [shared_image, texture] : textures_) {
+    if (shared_image->HasOneRef()) {
+      texture.reset();
+    }
+  }
+  base::EraseIf(textures_, [](const auto& entry) { return !entry.second; });
 }
 
 RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,

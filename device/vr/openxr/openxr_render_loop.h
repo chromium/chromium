@@ -46,6 +46,10 @@
 #include "base/android/java_handler_thread.h"
 #endif
 
+namespace gpu {
+class SharedImageFenceHelper;
+}  // namespace gpu
+
 namespace gpu::gles2 {
 class GLES2Interface;
 }  // namespace gpu::gles2
@@ -314,6 +318,8 @@ class OpenXrRenderLoop : public XRThread,
 
   scoped_refptr<viz::ContextProvider> context_provider_;
   VizContextProviderFactoryAsync context_provider_factory_async_;
+  // For each WebXR frame's GPU fence, on `context_provider_`'s context.
+  std::unique_ptr<gpu::SharedImageFenceHelper> fence_helper_;
 
   // Whether this context advertises GL_CHROMIUM_gpu_fence (backed by
   // EGL_ANDROID_native_fence_sync). Set once in OnContextProviderCreated();

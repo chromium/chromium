@@ -1017,6 +1017,7 @@ void OpenXrRenderLoop::StopRuntime() {
   // Need to destroy the graphics binding after the OpenXrApiWrapper, which
   // depends on it.
   graphics_binding_.reset();
+  fence_helper_.reset();
   context_provider_.reset();
 }
 
@@ -1081,8 +1082,8 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
   // supports_gpu_fence_ was established once in OnContextProviderCreated().
   if (supports_gpu_fence_) {
     gpu::ClientSharedImage::CreateGpuFenceForSyncTokens(
-        std::move(shared_images), std::move(combined_sync_tokens), gl,
-        context_provider_->ContextSupport(),
+        std::move(shared_images), std::move(combined_sync_tokens),
+        fence_helper_.get(), context_provider_->ContextSupport(),
         base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
                        weak_ptr_factory_.GetWeakPtr(), frame_index, layer_ids));
     return;
@@ -1421,8 +1422,9 @@ void OpenXrRenderLoop::OnContextLostCallback(
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(context_provider_, nullptr);
 
-  // Context providers are required to be released on the context thread they
-  // were bound to.
+  // The textures belong to the lost context. Context providers are required to
+  // be released on the context thread they were bound to.
+  fence_helper_.reset();
   lost_context_provider.reset();
 
   if (graphics_binding_ && graphics_binding_->RequiresSharedImages()) {
@@ -1492,6 +1494,8 @@ void OpenXrRenderLoop::OnContextProviderCreated(
 
   context_provider->AddObserver(this);
   context_provider_ = std::move(context_provider);
+  fence_helper_ = std::make_unique<gpu::SharedImageFenceHelper>(
+      context_provider_->ContextGL());
 
   // GL_CHROMIUM_gpu_fence (EGL_ANDROID_native_fence_sync) is a fixed property
   // of this context, so query it once here. Requesting a fence without it

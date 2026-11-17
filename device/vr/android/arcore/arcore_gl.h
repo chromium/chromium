@@ -42,6 +42,10 @@ class GLContext;
 class GLSurface;
 }  // namespace gl
 
+namespace gpu {
+class SharedImageFenceHelper;
+}  // namespace gpu
+
 namespace ui {
 class WindowAndroid;
 }  // namespace ui
@@ -271,6 +275,10 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // Created on GL thread and should only be accessed on that thread.
   std::unique_ptr<ArCore> arcore_;
   std::unique_ptr<ArImageTransport> ar_image_transport_;
+  // For each reclaimed frame's GPU fence, on `ar_image_transport_`'s context.
+  // Created with the first fence: ArCoreDeviceTest's stub transport never
+  // creates a context.
+  std::unique_ptr<gpu::SharedImageFenceHelper> fence_helper_;
 
   // Where possible, we should use the ArCompositor to integrate with viz,
   // rather than our own custom compositing logic.

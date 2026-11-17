@@ -7,11 +7,13 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2extchromium.h>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/viz/test/test_context_support.h"
+#include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -20,6 +22,7 @@
 #include "gpu/ipc/common/exported_shared_image.mojom.h"
 #include "gpu/ipc/common/exported_shared_image_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/gpu_fence.h"
 
@@ -51,6 +54,39 @@ SharedImageInfo CreateSharedImageInfo(
                          kOpaque_SkAlphaType,
                          usage,
                          "ClientSharedImageTest"};
+}
+
+class MockGLES2Interface : public gles2::GLES2InterfaceStub {
+ public:
+  MOCK_METHOD(void,
+              WaitSyncTokenCHROMIUM,
+              (const GLbyte* sync_token),
+              (override));
+  MOCK_METHOD(GLuint,
+              CreateAndTexStorage2DSharedImageCHROMIUM,
+              (const GLbyte* mailbox),
+              (override));
+  MOCK_METHOD(void,
+              BeginSharedImageAccessDirectCHROMIUM,
+              (GLuint texture, GLenum mode),
+              (override));
+  MOCK_METHOD(void,
+              EndSharedImageAccessDirectCHROMIUM,
+              (GLuint texture),
+              (override));
+  MOCK_METHOD(GLuint, CreateGpuFenceCHROMIUM, (), (override));
+  MOCK_METHOD(void,
+              DeleteTextures,
+              (GLsizei n, const GLuint* textures),
+              (override));
+};
+
+MATCHER_P(IsSyncToken, sync_token, "") {
+  return *reinterpret_cast<const SyncToken*>(arg) == sync_token;
+}
+
+MATCHER_P(IsMailbox, mailbox, "") {
+  return *reinterpret_cast<const Mailbox*>(arg) == mailbox;
 }
 
 }  // namespace
@@ -759,6 +795,118 @@ TEST(ClientSharedImageTest, DestroySharedImage_AutomaticSyncTokenManagement) {
 
   EXPECT_THAT(sii->MostRecentDestroyTokens(),
               testing::UnorderedElementsAre(creation_token, token1));
+}
+
+// A fence created on the GL context alone doesn't cover writes made outside
+// it, e.g. by WebGPU. Check that the fence follows a GL read access to each
+// shared image, which waits on the fence such a writer leaves on the image.
+TEST(ClientSharedImageTest, CreateGpuFenceForSyncTokensWaitsForWrites) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  const SharedImageInfo info = CreateSharedImageInfo(
+      viz::SinglePlaneFormat::kRGBA_8888,
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+  std::vector<scoped_refptr<ClientSharedImage>> shared_images = {
+      sii->CreateSharedImage(info, kNullSurfaceHandle),
+      sii->CreateSharedImage(info, kNullSurfaceHandle)};
+  const SyncToken token(CommandBufferNamespace::GPU_IO,
+                        CommandBufferId::FromUnsafeValue(42),
+                        /*release_count=*/100);
+
+  testing::NiceMock<MockGLES2Interface> gl;
+  viz::TestContextSupport context_support;
+  // Creating and accessing the textures waits on other SyncTokens too.
+  EXPECT_CALL(gl, WaitSyncTokenCHROMIUM(testing::_))
+      .Times(testing::AnyNumber());
+  testing::Sequence sequence;
+  EXPECT_CALL(gl, WaitSyncTokenCHROMIUM(IsSyncToken(token)))
+      .InSequence(sequence);
+  GLuint texture_id = 10;
+  for (const auto& shared_image : shared_images) {
+    ++texture_id;
+    EXPECT_CALL(gl, CreateAndTexStorage2DSharedImageCHROMIUM(
+                        IsMailbox(shared_image->mailbox())))
+        .InSequence(sequence)
+        .WillOnce(testing::Return(texture_id));
+    EXPECT_CALL(gl, BeginSharedImageAccessDirectCHROMIUM(
+                        texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM))
+        .InSequence(sequence);
+    EXPECT_CALL(gl, EndSharedImageAccessDirectCHROMIUM(texture_id))
+        .InSequence(sequence);
+  }
+  EXPECT_CALL(gl, CreateGpuFenceCHROMIUM())
+      .InSequence(sequence)
+      .WillOnce(testing::Return(1));
+
+  SharedImageFenceHelper fence_helper(&gl);
+  ClientSharedImage::CreateGpuFenceForSyncTokens(
+      shared_images, {token}, &fence_helper, &context_support,
+      base::DoNothing());
+}
+
+// The textures that CreateGpuFenceForSyncTokens() accesses are created once per
+// shared image, and deleted once only the helper references the shared image.
+TEST(ClientSharedImageTest, CreateGpuFenceForSyncTokensReusesTextures) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  const SharedImageInfo info = CreateSharedImageInfo(
+      viz::SinglePlaneFormat::kRGBA_8888,
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+  scoped_refptr<ClientSharedImage> image1 =
+      sii->CreateSharedImage(info, kNullSurfaceHandle);
+  scoped_refptr<ClientSharedImage> image2 =
+      sii->CreateSharedImage(info, kNullSurfaceHandle);
+  const Mailbox mailbox1 = image1->mailbox();
+
+  testing::NiceMock<MockGLES2Interface> gl;
+  viz::TestContextSupport context_support;
+  SharedImageFenceHelper fence_helper(&gl);
+  auto create_fence = [&](scoped_refptr<ClientSharedImage> shared_image) {
+    ClientSharedImage::CreateGpuFenceForSyncTokens(
+        {std::move(shared_image)}, {}, &fence_helper, &context_support,
+        base::DoNothing());
+  };
+
+  // Each image gets one texture, however often and in whichever order it is
+  // fenced.
+  EXPECT_CALL(gl, CreateAndTexStorage2DSharedImageCHROMIUM(IsMailbox(mailbox1)))
+      .WillOnce(testing::Return(11));
+  EXPECT_CALL(gl, CreateAndTexStorage2DSharedImageCHROMIUM(
+                      IsMailbox(image2->mailbox())))
+      .WillOnce(testing::Return(12));
+  EXPECT_CALL(gl, BeginSharedImageAccessDirectCHROMIUM(
+                      11, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM))
+      .Times(2);
+  EXPECT_CALL(gl, BeginSharedImageAccessDirectCHROMIUM(
+                      12, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM))
+      .Times(2);
+  EXPECT_CALL(gl, DeleteTextures(testing::_, testing::_)).Times(0);
+  create_fence(image1);
+  create_fence(image2);
+  create_fence(image1);
+  create_fence(image2);
+  testing::Mock::VerifyAndClearExpectations(&gl);
+
+  // Once the owner drops `image1` (e.g. its swapchain was recreated), the next
+  // fence deletes its texture, which releases the shared image, and a new
+  // image gets a new texture.
+  image1.reset();
+  EXPECT_TRUE(sii->CheckSharedImageExists(mailbox1));
+  scoped_refptr<ClientSharedImage> image3 =
+      sii->CreateSharedImage(info, kNullSurfaceHandle);
+  EXPECT_CALL(gl, CreateAndTexStorage2DSharedImageCHROMIUM(
+                      IsMailbox(image3->mailbox())))
+      .WillOnce(testing::Return(13));
+  EXPECT_CALL(gl, DeleteTextures(1, testing::Pointee(11)));
+  create_fence(image3);
+  EXPECT_FALSE(sii->CheckSharedImageExists(mailbox1));
+  testing::Mock::VerifyAndClearExpectations(&gl);
+
+  // Destroying the helper deletes the remaining textures.
+  EXPECT_CALL(gl, DeleteTextures(1, testing::Pointee(12)));
+  EXPECT_CALL(gl, DeleteTextures(1, testing::Pointee(13)));
 }
 
 }  // namespace gpu

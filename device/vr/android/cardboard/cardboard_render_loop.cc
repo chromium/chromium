@@ -18,6 +18,7 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "device/vr/util/transform_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/transform.h"
@@ -240,6 +241,8 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
   }
 
   webxr_->NotifyMailboxBridgeReady();
+  fence_helper_ = std::make_unique<gpu::SharedImageFenceHelper>(
+      cardboard_image_transport_->GetContextProvider()->ContextGL());
 
   // Reset all of our bindings before we assign them.
   CloseBindingsIfOpen();
@@ -307,6 +310,7 @@ void CardboardRenderLoop::CleanUp() {
   // parent.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
+  fence_helper_.reset();
   cardboard_image_transport_->DestroySharedBuffers(webxr_.get());
   cardboard_image_transport_.reset();
   OnBindingDisconnect();
@@ -523,7 +527,7 @@ void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
       cardboard_image_transport_->GetContextProvider();
   gpu::ClientSharedImage::CreateGpuFenceForSyncTokens(
       std::move(shared_images), std::move(combined_sync_tokens),
-      context_provider->ContextGL(), context_provider->ContextSupport(),
+      fence_helper_.get(), context_provider->ContextSupport(),
       base::BindOnce(&CardboardRenderLoop::OnWebXrTokenSignaled, GetWeakPtr()));
 
   if (pending_getframedata_) {

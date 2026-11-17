@@ -81,6 +81,7 @@ class GpuChannelSharedImageInterface;
 class MappableBuffer;
 class InterfaceBase;
 class RasterScopedAccess;
+class SharedImageFenceHelper;
 struct SharedImageInfo;
 class SharedImageInterfaceHolder;
 class SharedImageTexture;
@@ -285,10 +286,21 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   static scoped_refptr<ClientSharedImage> ImportUnowned(
       ExportedSharedImage exported_shared_image);
 
+  // Waits on `sync_tokens` (or, when the UseAutomaticSyncTokenManagement
+  // feature is enabled, on the SyncTokens tracked for `shared_images`) on
+  // `fence_helper`'s GLES2Interface, then provides `callback` with a GPU fence
+  // that signals once the GPU has finished all writes to `shared_images`
+  // ordered before those SyncTokens, from any API. This includes writes made
+  // outside the GLES2Interface's GPU context (e.g. by WebGPU), which a fence
+  // created on that context alone wouldn't cover, so a reader that waits on the
+  // fence can read the shared images directly, without a SharedImage access of
+  // its own. Each shared image must have SHARED_IMAGE_USAGE_GLES2_READ. Pass
+  // the same `fence_helper` for every frame, so that each shared image's GL
+  // texture is created only once.
   static void CreateGpuFenceForSyncTokens(
       std::vector<scoped_refptr<ClientSharedImage>> shared_images,
       std::vector<SyncToken> sync_tokens,
-      gles2::GLES2Interface* gl,
+      SharedImageFenceHelper* fence_helper,
       ContextSupport* context_support,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback);
 
@@ -756,6 +768,38 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageTexture {
   const raw_ptr<gpu::ClientSharedImage> shared_image_;
   unsigned int id_ = 0;
   bool has_active_access_ = false;
+};
+
+// The state that ClientSharedImage::CreateGpuFenceForSyncTokens() keeps across
+// frames for one GLES2Interface: a SharedImageTexture for each shared image it
+// fences, so that shared images fenced every frame (e.g. WebXR swapchain
+// images) get their texture, and its service-side representation, only once.
+// Holds a reference to each shared image until nothing else references it.
+// Must be destroyed before `gl`; when its context is lost, destroy the helper
+// along with the context.
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageFenceHelper {
+ public:
+  explicit SharedImageFenceHelper(gles2::GLES2Interface* gl);
+  SharedImageFenceHelper(const SharedImageFenceHelper&) = delete;
+  SharedImageFenceHelper& operator=(const SharedImageFenceHelper&) = delete;
+  ~SharedImageFenceHelper();
+
+ private:
+  friend class ClientSharedImage;
+
+  gles2::GLES2Interface* gl() const { return gl_; }
+
+  // Returns the texture for `shared_image`, creating it on first use.
+  SharedImageTexture& GetTexture(
+      const scoped_refptr<ClientSharedImage>& shared_image);
+
+  // Deletes the textures of shared images that only this helper references.
+  void DeleteUnusedTextures();
+
+  const raw_ptr<gles2::GLES2Interface> gl_;
+  base::flat_map<scoped_refptr<ClientSharedImage>,
+                 std::unique_ptr<SharedImageTexture>>
+      textures_;
 };
 
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT RasterScopedAccess {

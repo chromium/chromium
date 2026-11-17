@@ -35,6 +35,7 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/util/transform_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -132,6 +133,7 @@ ArCoreGl::ArCoreGl(std::unique_ptr<ArImageTransport> ar_image_transport)
 ArCoreGl::~ArCoreGl() {
   DVLOG(1) << __func__;
   DCHECK(IsOnGlThread());
+  fence_helper_.reset();
   ar_image_transport_->DestroySharedBuffers(webxr_.get());
   ar_image_transport_.reset();
 
@@ -948,10 +950,14 @@ void ArCoreGl::FinishRenderingFrame(WebXrFrame* frame) {
     // don't need to try to do anything fancy with regards to the ordering of
     // the tokens.
     viz::ContextProvider* provider = ar_image_transport_->GetContextProvider();
+    if (!fence_helper_) {
+      fence_helper_ =
+          std::make_unique<gpu::SharedImageFenceHelper>(provider->ContextGL());
+    }
     for (const auto& reclaimed_buffer : reclaimed_buffers) {
       gpu::ClientSharedImage::CreateGpuFenceForSyncTokens(
           {reclaimed_buffer->shared_image},
-          {reclaimed_buffer->reclaimed_sync_token}, provider->ContextGL(),
+          {reclaimed_buffer->reclaimed_sync_token}, fence_helper_.get(),
           provider->ContextSupport(), barrier_callback);
       reclaimed_buffer->reclaimed_sync_token.Clear();
     }

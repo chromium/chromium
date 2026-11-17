@@ -26,6 +26,10 @@ class GLSurface;
 class GLContext;
 }  // namespace gl
 
+namespace gpu {
+class SharedImageFenceHelper;
+}  // namespace gpu
+
 namespace device {
 
 class CardboardImageTransport;
@@ -132,6 +136,9 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   // Rendering Parameters
   gfx::Size texture_size_ = {0, 0};
   std::unique_ptr<CardboardImageTransport> cardboard_image_transport_;
+  // For each WebXR frame's GPU fence, on `cardboard_image_transport_`'s
+  // context.
+  std::unique_ptr<gpu::SharedImageFenceHelper> fence_helper_;
   std::unique_ptr<WebXrPresentationState> webxr_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
