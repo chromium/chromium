@@ -93,6 +93,38 @@ into, such as `WebContentsObserver`, `WebContentsDelegate`, and
   [content/browser/SECURITY.md](https://chromium.googlesource.com/chromium/src/+/main/content/browser/SECURITY.md)
   for more details.
 
+### Partial Site Isolation on Android {#android-partial-site-isolation}
+
+On desktop platforms, every site gets its own process locked to it. On
+Android, only some sites get locked processes, due to resource constraints:
+for example, sites where the user has entered a password or logged in via
+OAuth (see [Partial Site
+Isolation](https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md#partial-site-isolation)).
+All other sites share renderer processes that are not locked to any site.
+When filing or evaluating a report on Android, keep the following in mind:
+
+* **Unlocked processes are not isolated from each other.** A compromised
+  renderer in an unlocked process can already load documents from other
+  non-isolated sites into its own process (e.g., in an iframe or popup) and
+  script them. Reading or modifying another non-isolated site's data from
+  such a process is not a Site Isolation bypass. See "Android-specific
+  protection gaps" in
+  [compromised-renderers.md](https://chromium.googlesource.com/chromium/src/+/main/docs/security/compromised-renderers.md).
+* **Dynamic isolation is not retroactive.** When a site starts being isolated
+  (e.g., after the user enters a password on it), only new BrowsingInstances
+  put it in a locked process. Existing BrowsingInstances keep hosting the site
+  in unlocked processes, and we don't try to protect those older documents.
+  Some data that the site cached while it ran in unlocked processes, such as
+  JavaScript code cache entries, may remain reachable from other unlocked
+  processes afterwards. This is working as intended, since older documents of
+  that site may still be running and still need that data.
+* **What is in scope.** It is still a Site Isolation bypass if a compromised
+  renderer gets an isolated site's data through a check that the browser
+  process is expected to enforce. For example, a process locked to one site
+  accessing another site's data, or an unlocked process getting cookies or
+  `localStorage` for a site that requires a locked process in all current
+  BrowsingInstances.
+
 ### High-Priority Vulnerabilities
 
 Vulnerabilities that break process-level isolation or bypass the sandbox are of
