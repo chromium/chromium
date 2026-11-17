@@ -10,11 +10,28 @@
 
 namespace optimization_guide {
 
+// These params configure the repetition checker. See HasRepeatingSuffix()
+// below for explanation. A value of 2 for num repeats and 16 for min repeat
+// chars would mean we will halt a response once it repeats at least 16 chars 2
+// times at the end of the response.
+inline constexpr int GetOnDeviceModelNumRepeats() {
+  return 2;
+}
+inline constexpr int GetOnDeviceModelMinRepeatChars() {
+  return 16;
+}
+
+// Whether the response should be retracted if repeats are detected.
+inline constexpr bool GetOnDeviceModelRetractRepeats() {
+  return true;
+}
+
 // Returns true if `text` has a suffix which repeats `num_repeats` times with at
 // least a length of `min_chars`.
 bool HasRepeatingSuffix(int min_chars, int num_repeats, std::string_view text);
 
-// As above, but get min_chars and num_repeats from Feature flags.
+// As above, using GetOnDeviceModelMinRepeatChars() and
+// GetOnDeviceModelNumRepeats().
 bool HasRepeatingSuffix(std::string_view text);
 
 // Get the number of trailing new lines at the end of text

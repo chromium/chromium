@@ -22,7 +22,6 @@
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -220,7 +219,7 @@ void OnDeviceExecution::OnResponse(
     // If a repeat is detected, halt the response, and cancel/finish early.
     receiver_.reset();
     logged_response->set_has_repeats(true);
-    if (features::GetOnDeviceModelRetractRepeats()) {
+    if (GetOnDeviceModelRetractRepeats()) {
       LogRepeatedResponse(opts_.logger.get(), feature_, current_response_);
       logged_response->set_status(
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);

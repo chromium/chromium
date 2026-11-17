@@ -8,7 +8,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_validator.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
@@ -77,7 +76,7 @@ OnDeviceModelAccessController::ShouldStartNewSession() const {
     return OnDeviceModelEligibilityReason::kGpuBlocked;
   }
   if (pref_service_->GetInteger(kOnDeviceModelCrashCount) >=
-          features::GetOnDeviceModelCrashCountBeforeDisable() &&
+          GetOnDeviceModelCrashCountBeforeDisable() &&
       base::Time::Now() < next_attempt_time_after_crash_) {
     return OnDeviceModelEligibilityReason::kTooManyRecentCrashes;
   }
@@ -107,9 +106,9 @@ base::Time OnDeviceModelAccessController::OnDisconnectedFromRemote() {
   // If the model will be disabled because of crash count, use exponential
   // backoff to re-enable.
   next_attempt_time_after_crash_ = GetNextAttemptAfterBackoff(
-      crash_count, features::GetOnDeviceModelCrashCountBeforeDisable(),
-      features::GetOnDeviceModelCrashBackoffBaseTime(),
-      features::GetOnDeviceModelMaxCrashBackoffTime());
+      crash_count, GetOnDeviceModelCrashCountBeforeDisable(),
+      GetOnDeviceModelCrashBackoffBaseTime(),
+      GetOnDeviceModelMaxCrashBackoffTime());
   return next_attempt_time_after_crash_;
 }
 

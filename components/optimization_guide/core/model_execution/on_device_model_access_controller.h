@@ -16,6 +16,20 @@ namespace optimization_guide {
 
 enum class OnDeviceModelEligibilityReason;
 
+// Returns the number of crashes without a successful response before the
+// on-device model won't be used.
+inline constexpr int GetOnDeviceModelCrashCountBeforeDisable() {
+  return 3;
+}
+
+// Constants for handling exponential backoff after crashes.
+inline constexpr base::TimeDelta GetOnDeviceModelMaxCrashBackoffTime() {
+  return base::Hours(1);
+}
+inline constexpr base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime() {
+  return base::Minutes(1);
+}
+
 // OnDeviceModelAccessController determines when the model may be used.
 // If the model repeatedly crashes, or the gpu is blocked, then
 // OnDeviceModelAccessController will disallow usage of the model.

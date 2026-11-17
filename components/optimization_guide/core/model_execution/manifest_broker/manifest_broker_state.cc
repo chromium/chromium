@@ -22,6 +22,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_validation.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -304,8 +305,7 @@ void ManifestBrokerState::GetStateInfo(
 
   result->model_crash_count = local_state_->GetInteger(
       model_execution::prefs::localstate::kOnDeviceModelCrashCount);
-  result->max_model_crash_count =
-      optimization_guide::features::GetOnDeviceModelCrashCountBeforeDisable();
+  result->max_model_crash_count = GetOnDeviceModelCrashCountBeforeDisable();
 
   std::vector<std::pair<mojom::BrokerModelInfoPtr, base::FilePath>>
       models_with_paths;

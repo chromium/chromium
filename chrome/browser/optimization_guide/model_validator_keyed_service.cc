@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +23,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -83,6 +83,12 @@ std::optional<base::FilePath> GetOnDeviceValidationWriteToFile() {
   }
   return command_line->GetSwitchValuePath(
       optimization_guide::kOnDeviceValidationWriteToFileSwitch);
+}
+
+// Returns the delay before starting the on-device model inference when
+// running validation.
+constexpr base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay() {
+  return base::Seconds(5);
 }
 
 }  // namespace
@@ -187,7 +193,7 @@ void ModelValidatorKeyedService::StartOnDeviceModelExecutionValidation(
       base::BindOnce(
           &ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation,
           weak_ptr_factory_.GetWeakPtr(), std::move(input)),
-      features::GetOnDeviceModelExecutionValidationStartupDelay());
+      GetOnDeviceModelExecutionValidationStartupDelay());
 }
 
 void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(

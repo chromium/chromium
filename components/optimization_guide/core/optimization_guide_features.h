@@ -64,10 +64,6 @@ BASE_DECLARE_FEATURE(kOptimizationGuideModelExecution);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kModelQualityLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kLogOnDeviceMetricsOnStartup);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAiSettingsPageForceAvailable);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithActionableElements);
@@ -235,30 +231,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::map<proto::OptimizationTarget, std::set<int64_t>>
 GetPredictionModelVersionsInKillSwitch();
 
-// Returns the delay before starting the on device model inference when
-// running validation.
-inline constexpr base::TimeDelta
-GetOnDeviceModelExecutionValidationStartupDelay() {
-  return base::Seconds(5);
-}
-
-// Returns the number of crashes without a successful response before the
-// on-device model won't be used.
-inline constexpr int GetOnDeviceModelCrashCountBeforeDisable() {
-  return 3;
-}
-
-// Feature params for handling exponential backoff after crashes.
-inline constexpr base::TimeDelta GetOnDeviceModelMaxCrashBackoffTime() {
-  return base::Hours(1);
-}
-inline constexpr base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime() {
-  return base::Minutes(1);
-}
-
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnDeviceStartupMetricDelay();
-
 // Whether on-device execution is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsOnDeviceExecutionEnabled();
@@ -303,22 +275,6 @@ bool IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
     base::ByteSize free_disk_space_bytes);
-
-// These params configure the repetition checker. See HasRepeatingSuffix() in
-// repetition_checker.h for explanation. A value of 2 for num repeats and 16 for
-// min repeat chars would mean we will halt a response once it repeats at least
-// 16 chars 2 times at the end of the response.
-inline constexpr int GetOnDeviceModelNumRepeats() {
-  return 2;
-}
-inline constexpr int GetOnDeviceModelMinRepeatChars() {
-  return 16;
-}
-
-// Whether the response should be retracted if repeats are detected.
-inline constexpr bool GetOnDeviceModelRetractRepeats() {
-  return true;
-}
 
 // Returns what the timeout for calls to GetAIPageContent should be for
 // subframes. An empty return value indicates no timeout should be applied.

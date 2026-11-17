@@ -9,6 +9,8 @@
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/feature_list.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker_debug.mojom-forward.h"
 #include "components/prefs/pref_service.h"
@@ -16,6 +18,17 @@
 #include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
 
 namespace optimization_guide {
+
+// Whether the on-device service is launched after a delay on startup to log
+// metrics.
+BASE_DECLARE_FEATURE(kLogOnDeviceMetricsOnStartup);
+
+// Whether performance class should be fetched each startup or just after a
+// version update.
+BASE_DECLARE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup);
+
+// Returns the delay before logging on-device metrics on startup.
+base::TimeDelta GetOnDeviceStartupMetricDelay();
 
 // Performance class of this device.
 //

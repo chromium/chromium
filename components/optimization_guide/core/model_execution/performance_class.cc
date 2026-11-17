@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,7 +23,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -37,6 +37,18 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace optimization_guide {
+
+BASE_FEATURE(kLogOnDeviceMetricsOnStartup, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+base::TimeDelta GetOnDeviceStartupMetricDelay() {
+  static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
+      &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
+      base::Minutes(3)};
+  return kOnDeviceStartupMetricDelay.Get();
+}
 
 namespace {
 
@@ -84,7 +96,7 @@ const char kOverridePerformanceClassSwitch[] =
 
 bool NeedsPerformanceClassUpdate(const PrefService& local_state) {
   if (base::FeatureList::IsEnabled(
-          features::kOnDeviceModelFetchPerformanceClassEveryStartup)) {
+          kOnDeviceModelFetchPerformanceClassEveryStartup)) {
     return true;
   }
   return local_state.GetString(model_execution::prefs::localstate::
@@ -325,7 +337,7 @@ void PerformanceClassifier::ScheduleEvaluation() {
       FROM_HERE,
       base::BindOnce(&PerformanceClassifier::EnsurePerformanceClassAvailable,
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()),
-      optimization_guide::features::GetOnDeviceStartupMetricDelay());
+      GetOnDeviceStartupMetricDelay());
 }
 
 void PerformanceClassifier::EnsurePerformanceClassAvailable(

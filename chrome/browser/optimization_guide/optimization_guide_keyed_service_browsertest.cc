@@ -44,6 +44,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_store.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -208,7 +209,7 @@ class OptimizationGuideKeyedServiceBrowserTest
          {features::internal::kComposeSettingsVisibility, {}},
          {features::internal::kWallpaperSearchSettingsVisibility, {}},
          {on_device_model::features::kUseFakeChromeML, {}},
-         {features::kLogOnDeviceMetricsOnStartup,
+         {kLogOnDeviceMetricsOnStartup,
           {
               {"on_device_startup_metric_delay", "0"},
           }}},
@@ -872,7 +873,7 @@ class OptimizationGuideKeyedServiceUnsignedUserBrowserTest
          {features::internal::kWallpaperSearchSettingsVisibility,
           {{"allow_unsigned_user", "true"}}},
          {on_device_model::features::kUseFakeChromeML, {}},
-         {features::kLogOnDeviceMetricsOnStartup,
+         {kLogOnDeviceMetricsOnStartup,
           {
               {"on_device_startup_metric_delay", "0"},
           }}},

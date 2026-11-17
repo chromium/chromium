@@ -18,12 +18,12 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
@@ -78,8 +78,7 @@ TEST_F(ManifestBrokerServiceCrashTest, StopsConnectingAfterMultipleDrops) {
       on_device_model::ModelDisconnectReason::kUnspecified);
 
   // Start enough sessions to trigger the crash count limit.
-  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
-       ++i) {
+  for (int i = 0; i < GetOnDeviceModelCrashCountBeforeDisable(); ++i) {
     EXPECT_TRUE(fake_.CreateSession()) << i;
     // Wait for the disconnect to be counted as a crash.
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -89,8 +88,8 @@ TEST_F(ManifestBrokerServiceCrashTest, StopsConnectingAfterMultipleDrops) {
             mojom::ModelUnavailableReason::kNotSupported);
 
   // Fast forward by backoff time and it should be possible to connect again.
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
+  task_environment_.FastForwardBy(GetOnDeviceModelCrashBackoffBaseTime() +
+                                  base::Milliseconds(1));
   ASSERT_EQ(fake_.client().GetSubscriber("test").unavailable_reason(),
             std::nullopt);
 
@@ -104,14 +103,14 @@ TEST_F(ManifestBrokerServiceCrashTest, StopsConnectingAfterMultipleDrops) {
 
   // The backoff period should be longer now, so fast forwarding by base time
   // should not be enough.
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
+  task_environment_.FastForwardBy(GetOnDeviceModelCrashBackoffBaseTime() +
+                                  base::Milliseconds(1));
   ASSERT_EQ(fake_.client().GetSubscriber("test").unavailable_reason(),
             mojom::ModelUnavailableReason::kNotSupported);
 
   // Fast forward again should allow retrying (now 2 * base time).
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
+  task_environment_.FastForwardBy(GetOnDeviceModelCrashBackoffBaseTime() +
+                                  base::Milliseconds(1));
   ASSERT_EQ(fake_.client().GetSubscriber("test").unavailable_reason(),
             std::nullopt);
 }
@@ -123,8 +122,7 @@ TEST_F(ManifestBrokerServiceCrashTest, IdleTimeoutNotCountedAsCrash) {
       on_device_model::ModelDisconnectReason::kIdleShutdown);
 
   // Start enough sessions to trigger the crash count limit.
-  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
-       ++i) {
+  for (int i = 0; i < GetOnDeviceModelCrashCountBeforeDisable(); ++i) {
     EXPECT_TRUE(fake_.CreateSession()) << i;
     // Wait for the disconnect to be counted as a crash.
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -140,8 +138,7 @@ TEST_F(ManifestBrokerServiceCrashTest, ClearsCrashDataOnSuccessAfterBackoff) {
       on_device_model::ModelDisconnectReason::kUnspecified);
 
   // Start enough sessions to trigger the crash count limit.
-  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
-       ++i) {
+  for (int i = 0; i < GetOnDeviceModelCrashCountBeforeDisable(); ++i) {
     EXPECT_TRUE(fake_.CreateSession()) << i;
     // Wait for the disconnect to be counted as a crash.
     task_environment_.FastForwardBy(base::Seconds(1));
@@ -151,8 +148,8 @@ TEST_F(ManifestBrokerServiceCrashTest, ClearsCrashDataOnSuccessAfterBackoff) {
             mojom::ModelUnavailableReason::kNotSupported);
 
   // Fast forward by backoff time and it should be possible to connect again.
-  task_environment_.FastForwardBy(
-      features::GetOnDeviceModelCrashBackoffBaseTime() + base::Milliseconds(1));
+  task_environment_.FastForwardBy(GetOnDeviceModelCrashBackoffBaseTime() +
+                                  base::Milliseconds(1));
   ASSERT_EQ(fake_.client().GetSubscriber("test").unavailable_reason(),
             std::nullopt);
 
@@ -201,8 +198,7 @@ TEST_F(ManifestBrokerServiceCrashTest,
       on_device_model::ModelDisconnectReason::kUnspecified);
 
   // Start enough sessions to trigger the crash count limit.
-  for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
-       ++i) {
+  for (int i = 0; i < GetOnDeviceModelCrashCountBeforeDisable(); ++i) {
     EXPECT_TRUE(fake_.CreateSession()) << i;
     // Wait for the disconnect to be counted as a crash.
     task_environment_.FastForwardBy(base::Seconds(1));

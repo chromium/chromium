@@ -6,8 +6,6 @@
 
 #include <ranges>
 
-#include "components/optimization_guide/core/optimization_guide_features.h"
-
 namespace optimization_guide {
 
 bool HasRepeatingSuffix(int min_chars, int num_repeats, std::string_view text) {
@@ -36,12 +34,12 @@ bool HasRepeatingSuffix(int min_chars, int num_repeats, std::string_view text) {
 }
 
 bool HasRepeatingSuffix(std::string_view text) {
-  int num_repeats = features::GetOnDeviceModelNumRepeats();
+  int num_repeats = GetOnDeviceModelNumRepeats();
   if (num_repeats <= 1) {
     return false;
   }
-  return HasRepeatingSuffix(features::GetOnDeviceModelMinRepeatChars(),
-                            num_repeats, text);
+  return HasRepeatingSuffix(GetOnDeviceModelMinRepeatChars(), num_repeats,
+                            text);
 }
 
 size_t GetNumTrailingNewlines(std::string_view text) {

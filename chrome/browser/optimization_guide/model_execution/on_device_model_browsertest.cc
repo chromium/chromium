@@ -118,7 +118,7 @@ class OnDeviceModelExecutionEnabledBrowserTest
     scoped_feature_list_.InitWithFeatureStates({
         {features::kOptimizationGuideModelExecution, true},
         {kOptimizationGuideManifestBroker, true},
-        {features::kLogOnDeviceMetricsOnStartup, false},
+        {kLogOnDeviceMetricsOnStartup, false},
     });
     InProcessBrowserTest::SetUp();
   }
@@ -148,7 +148,7 @@ class LogOnDeviceMetricsOnStartupEnabledBrowserTest
     scoped_feature_list_.InitWithFeatureStates({
         {features::kOptimizationGuideModelExecution, true},
         {kOptimizationGuideManifestBroker, true},
-        {features::kLogOnDeviceMetricsOnStartup, true},
+        {kLogOnDeviceMetricsOnStartup, true},
     });
     InProcessBrowserTest::SetUp();
   }

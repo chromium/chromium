@@ -90,15 +90,6 @@ BASE_FEATURE(kOptimizationGuidePredictionModelKillswitch,
 BASE_FEATURE(kOptimizationGuideModelExecution,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether the on device service is launched after a delay on startup to log
-// metrics.
-BASE_FEATURE(kLogOnDeviceMetricsOnStartup, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether performance class should be fetched each startup or just after a
-// version update.
-BASE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Force show the AI page and all AI feature sub-pages in settings, even if they
 // would be unavailable otherwise. This is meant for development and test
 // purposes only.
@@ -379,13 +370,6 @@ GetPredictionModelVersionsInKillSwitch() {
     }
   }
   return killswitch_model_versions;
-}
-
-base::TimeDelta GetOnDeviceStartupMetricDelay() {
-  static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
-      &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
-      base::Minutes(3)};
-  return kOnDeviceStartupMetricDelay.Get();
 }
 
 bool IsOnDeviceExecutionEnabled() {
