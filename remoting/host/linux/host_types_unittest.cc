@@ -68,6 +68,7 @@ class HostTypeTest : public testing::Test {
 
   const HostType* single_process() { return HostType::Find("single-process"); }
   const HostType* gdm_managed() { return HostType::Find("gdm-managed"); }
+  const HostType* custom() { return HostType::Find("custom"); }
 
   base::ScopedTempDir temp_dir_;
   base::FilePath routing_config_path_;
@@ -80,6 +81,8 @@ TEST_F(HostTypeTest, Properties) {
   EXPECT_TRUE(single_process()->requires_local_user());
   EXPECT_TRUE(gdm_managed()->is_multi_process());
   EXPECT_FALSE(gdm_managed()->requires_local_user());
+  EXPECT_TRUE(custom()->is_multi_process());
+  EXPECT_TRUE(custom()->requires_local_user());
 }
 
 TEST_F(HostTypeTest, IsUnitActive_TrueForRunningOrStartingUnit) {
@@ -221,13 +224,41 @@ TEST_F(HostTypeTest, GetFallbackConfigured_MultiProcessConfig_GdmManaged) {
   EXPECT_EQ(HostType::GetFallbackConfigured(*env_), gdm_managed());
 }
 
-// gdm-managed is the only multi-process host type for now, so it is also used
-// if there is a routing file.
-TEST_F(HostTypeTest, GetFallbackConfigured_RoutingFile_InterimGdmManaged) {
+TEST_F(HostTypeTest, GetFallbackConfigured_RoutingFile_Custom) {
   WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
   WriteRoutingConfig("{}");
 
-  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), gdm_managed());
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), custom());
+}
+
+TEST_F(HostTypeTest, GetFallbackConfigured_AnyRoutingFile_Custom) {
+  WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
+  for (std::string_view content :
+       {R"({"sessionUser": "testuser"})",
+        R"({"createRemoteUserSessions": true})", "not json"}) {
+    SCOPED_TRACE(content);
+    WriteRoutingConfig(content);
+
+    EXPECT_EQ(HostType::GetFallbackConfigured(*env_), custom());
+  }
+}
+
+TEST_F(HostTypeTest, GetFallbackConfigured_DanglingRoutingFileSymlink_Custom) {
+  WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
+  ASSERT_TRUE(base::CreateSymbolicLink(
+      temp_dir_.GetPath().Append("missing.json"), routing_config_path_));
+
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), custom());
+}
+
+TEST_F(HostTypeTest,
+       GetFallbackConfigured_BothHosts_MultiProcessUnitEnabled_Custom) {
+  WriteFileWithMode(env_->GetMultiProcessConfigPath(), "{}");
+  WriteRoutingConfig("{}");
+  env_->SetUnitEnabled(kMultiProcessUnit);
+  env_->SetUnitEnabled(kSingleProcessUnit);
+
+  EXPECT_EQ(HostType::GetFallbackConfigured(*env_), custom());
 }
 
 TEST_F(HostTypeTest, GetFallbackConfigured_SingleProcessUnitEnabledOrActive) {

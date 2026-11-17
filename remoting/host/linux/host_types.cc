@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -22,9 +23,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "remoting/host/linux/custom_host_type.h"
 #include "remoting/host/linux/gdm_managed_host_type.h"
 #include "remoting/host/linux/host_type_environment.h"
 #include "remoting/host/linux/secure_file_reader.h"
+#include "remoting/host/linux/session_routing_config.h"
 
 namespace remoting {
 namespace {
@@ -172,6 +175,7 @@ HostType::GetHostTypes() {
       kHostTypes({
           {GetSingleProcessHostType().name(), &GetSingleProcessHostType()},
           {GetGdmManagedHostType().name(), &GetGdmManagedHostType()},
+          {GetCustomHostType().name(), &GetCustomHostType()},
       });
   return *kHostTypes;
 }
@@ -239,9 +243,12 @@ base::expected<const HostType*, std::string> HostType::GetConfigured(
 // static
 const HostType* HostType::GetFallbackConfigured(
     const HostTypeEnvironment& env) {
-  // TODO(crbug.com/493980875): Return the host type that uses the session
-  // routing config file if it exists, once there is one.
-  const HostType& multi_process_host_type = GetGdmManagedHostType();
+  // gdm-managed requires that there is no session routing config file, while
+  // custom works with any of them.
+  const HostType& multi_process_host_type =
+      FileOrSymlinkExists(env.GetSessionRoutingConfigPath())
+          ? GetCustomHostType()
+          : GetGdmManagedHostType();
   bool has_multi_process_config = env.MultiProcessConfigExists();
 
   // 1. The multi-process host config exists and the multi-process host unit
@@ -428,6 +435,40 @@ bool MultiProcessHostType::SetUpState(const HostTypeContext& context) const {
 
 bool MultiProcessHostType::CleanUpState(const HostTypeContext& context) const {
   return DeleteSessionRoutingConfig(*context.env);
+}
+
+// static
+bool MultiProcessHostType::CheckUserNameForSessionRouting(
+    const HostTypeContext& context) {
+  if (!context.is_corp_host &&
+      !SessionRoutingConfig::IsValidUsername(context.local_user_name)) {
+    std::cerr << "Username '" << context.local_user_name
+              << "' is not supported for session routing on this host. Only "
+                 "letters, digits, '_', '.' and '-' are allowed, and the "
+                 "name must not start with '-'.\n";
+    return false;
+  }
+  return true;
+}
+
+// static
+bool MultiProcessHostType::WriteSessionRoutingConfig(
+    const HostTypeContext& context,
+    bool create_remote_user_sessions) {
+  // For corp hosts, omit `sessionUser` so the session user is derived from
+  // the client ID.
+  std::string session_user =
+      context.is_corp_host ? std::string() : context.local_user_name;
+  SessionRoutingConfig config(std::move(session_user),
+                              create_remote_user_sessions,
+                              context.is_corp_host);
+  auto result = config.WriteToFile(context.env->GetSessionRoutingConfigPath());
+  if (!result.has_value()) {
+    std::cerr << "Failed to write the session routing config file: "
+              << result.error() << "\n";
+    return false;
+  }
+  return true;
 }
 
 bool IsUserNameSafeForUnitName(std::string_view user_name) {

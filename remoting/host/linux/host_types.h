@@ -182,6 +182,15 @@ class MultiProcessHostType : public HostType {
   // failure.
   static bool DeleteSessionRoutingConfig(HostTypeEnvironment& env);
 
+  // Returns whether `context.local_user_name` is valid for session routing
+  // (a valid `sessionUser` on non-corp hosts), and prints an error if not.
+  static bool CheckUserNameForSessionRouting(const HostTypeContext& context);
+
+  // Writes a session routing config file for `context` and
+  // `create_remote_user_sessions`. Returns false on failure.
+  static bool WriteSessionRoutingConfig(const HostTypeContext& context,
+                                        bool create_remote_user_sessions);
+
   // HostType implementation.
   bool StartHostUnit(const HostTypeContext& context) const final;
 
