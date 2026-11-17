@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/element_fragment_anchor.h"
 
+#include "base/feature_list.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
@@ -37,6 +39,8 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
                                                         bool should_scroll) {
   DCHECK(frame.GetDocument());
   Document& doc = *frame.GetDocument();
+  DCHECK(doc.IsSVGDocument() || !ScriptForbiddenScope::IsScriptForbidden() ||
+         !base::FeatureList::IsEnabled(kTextFragmentFallbackInFinalizeAnchor));
 
   // If our URL has no ref, then we have no place we need to jump to.
   // OTOH If CSS target was set previously, we want to set it to 0, recalc
@@ -77,6 +81,11 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
     return nullptr;
 
   DisplayLockUtilities::RevealAutoExpandableAncestors(*anchor_node);
+  // RevealAutoExpandableAncestors() synchronously dispatches `beforematch`,
+  // which can detach the frame.
+  if (!frame.View()) {
+    return nullptr;
+  }
 
   return MakeGarbageCollected<ElementFragmentAnchor>(*anchor_node, frame);
 }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -39,6 +41,9 @@
 #include "third_party/blink/renderer/platform/search_engine_utils.h"
 
 namespace blink {
+
+BASE_FEATURE(kTextFragmentFallbackInFinalizeAnchor,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -360,7 +365,16 @@ void TextFragmentAnchor::FinalizeAnchor() {
   CHECK_EQ(iteration_, kDone);
   CHECK_LT(state_, kFinalized);
 
-  if (element_fragment_anchor_) {
+  if (base::FeatureList::IsEnabled(kTextFragmentFallbackInFinalizeAnchor)) {
+    DCHECK(!element_fragment_anchor_);
+    if (!first_match_) {
+      if (ElementFragmentAnchor* element_fragment_anchor =
+              ElementFragmentAnchor::TryCreate(frame_->GetDocument()->Url(),
+                                               *frame_, should_scroll_)) {
+        frame_->View()->SetFragmentAnchor(element_fragment_anchor);
+      }
+    }
+  } else if (element_fragment_anchor_) {
     element_fragment_anchor_->Installed();
     element_fragment_anchor_->Invoke();
     element_fragment_anchor_ = nullptr;
@@ -522,18 +536,17 @@ void TextFragmentAnchor::DidFinishSearch() {
 
   metrics_->ReportMetrics();
 
-  bool did_find_any_matches = first_match_ != nullptr;
-
-  if (!did_find_any_matches) {
+  if (!base::FeatureList::IsEnabled(kTextFragmentFallbackInFinalizeAnchor) &&
+      !first_match_) {
     DCHECK(!element_fragment_anchor_);
-    // ElementFragmentAnchor needs to be invoked from FinalizeAnchor
-    // since it can cause script to run and we may be in a ScriptForbiddenScope
-    // here.
+    // Legacy path when TextFragmentFallbackInFinalizeAnchor is disabled:
+    // create the fallback ElementFragmentAnchor here and defer Installed() and
+    // Invoke() to FinalizeAnchor() since we may be in a ScriptForbiddenScope.
     element_fragment_anchor_ = ElementFragmentAnchor::TryCreate(
         frame_->GetDocument()->Url(), *frame_, should_scroll_);
   }
 
-  DCHECK(!did_find_any_matches || !element_fragment_anchor_);
+  DCHECK(!first_match_ || !element_fragment_anchor_);
 
   // Finalizing the anchor may cause script execution so schedule a new frame
   // to perform finalization.

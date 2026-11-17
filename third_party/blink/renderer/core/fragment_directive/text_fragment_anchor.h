@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAGMENT_DIRECTIVE_TEXT_FRAGMENT_ANCHOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAGMENT_DIRECTIVE_TEXT_FRAGMENT_ANCHOR_H_
 
+#include "base/feature_list.h"
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
@@ -25,6 +26,8 @@ class DocumentLoader;
 class LocalFrame;
 class KURL;
 class TextDirective;
+
+CORE_EXPORT BASE_DECLARE_FEATURE(kTextFragmentFallbackInFinalizeAnchor);
 
 // TextFragmentAnchor is the coordinator class for applying text directives
 // from the URL (also known as "scroll-to-text") to a document. This class'
@@ -154,14 +157,14 @@ class CORE_EXPORT TextFragmentAnchor final
   // Returns true if scrolling was performed, false otherwise.
   bool EnsureFirstMatchInViewIfNeeded();
 
-  // Called when the search is finished. Reports metrics and activates the
-  // element fragment anchor if we didn't find a match. Schedules a
+  // Called when the search is finished. Reports metrics and schedules a
   // finalization task to perform any needed script-running actions and move to
   // kDone.
   void DidFinishSearch();
 
-  // Called in an animation frame, performs any nfinal actions that need a
-  // script-safe section and moves the anchor into the kDone state.
+  // Called in an animation frame, performs any final actions that need a
+  // script-safe section (including falling back to the element fragment anchor
+  // if we didn't find a match) and moves the anchor into the kFinalized state.
   void FinalizeAnchor();
 
   void ApplyTargetToCommonAncestor(const EphemeralRangeInFlatTree& range);
@@ -193,8 +196,9 @@ class CORE_EXPORT TextFragmentAnchor final
   // attached to DOM its annotation will be stored in `first_match_`.
   Member<const AnnotationAgentImpl> first_match_;
 
-  // If the text fragment anchor is defined as a fragment directive and we don't
-  // find a match, we fall back to the element anchor if it is present.
+  // Used only when TextFragmentFallbackInFinalizeAnchor is disabled: if the
+  // text fragment anchor is defined as a fragment directive and we don't find
+  // a match, we fall back to the element anchor if it is present.
   Member<ElementFragmentAnchor> element_fragment_anchor_;
 
   // Timers to call the post load task. `post_load_timer_` is scheduled shortly
