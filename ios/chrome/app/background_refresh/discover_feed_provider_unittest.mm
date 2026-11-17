@@ -11,7 +11,6 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
-#import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -21,65 +20,27 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/providers/discover_feed/test_discover_feed_service.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace {
 
-// Fake C++ DiscoverFeedService that implements pure virtual methods
-// and allows controlling the returned earliest background refresh date.
-class FakeDiscoverFeedService : public DiscoverFeedService {
- public:
-  FakeDiscoverFeedService() = default;
-  ~FakeDiscoverFeedService() override = default;
-
-  // DiscoverFeedRefresher implementation.
-  void RefreshFeed(FeedRefreshTrigger trigger) override {}
-  void PerformBackgroundRefreshes(void (^completion)(BOOL)) override {}
-  void HandleBackgroundRefreshTaskExpiration() override {}
-  NSDate* GetEarliestBackgroundRefreshBeginDate() override {
-    return earliest_date_;
-  }
-
-  // DiscoverFeedService implementation.
-  void CreateFeedModel() override {}
-  void SetIsShownOnStartSurface(bool shown_on_start_surface) override {}
-  FeedMetricsRecorder* GetFeedMetricsRecorder() override { return nil; }
-  UIViewController* NewDiscoverFeedViewControllerWithConfiguration(
-      DiscoverFeedViewControllerConfiguration* configuration) override {
-    return nil;
-  }
-  void RemoveFeedViewController(
-      UIViewController* feed_view_controller) override {}
-  void UpdateFeedViewVisibilityState(
-      UICollectionView* collection_view,
-      BrowserViewVisibilityState current_state,
-      BrowserViewVisibilityState previous_state) override {}
-  void UpdateTheme() override {}
-
-  void SetEarliestBackgroundRefreshBeginDate(NSDate* date) {
-    earliest_date_ = date;
-  }
-
- private:
-  NSDate* earliest_date_ = nil;
-};
-
-base::OnceCallback<std::unique_ptr<FakeDiscoverFeedService>()>
-CreateFakeDiscoverFeedServiceCallback(bool return_null_service) {
+base::OnceCallback<std::unique_ptr<TestDiscoverFeedService>()>
+CreateTestDiscoverFeedServiceCallback(bool return_null_service) {
   if (return_null_service) {
     return {};
   }
 
-  return base::BindOnce(&std::make_unique<FakeDiscoverFeedService>);
+  return base::BindOnce(&std::make_unique<TestDiscoverFeedService>);
 }
 
 TestProfileIOS::Builder CreateProfileBuilder(bool return_null_service) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       DiscoverFeedServiceFactory::GetInstance(),
-      CreateFakeDiscoverFeedServiceCallback(return_null_service));
+      CreateTestDiscoverFeedServiceCallback(return_null_service));
   return builder;
 }
 
@@ -100,8 +61,8 @@ class DiscoverFeedProviderTest : public PlatformTest {
     provider_ = [[DiscoverFeedProvider alloc] init];
   }
 
-  FakeDiscoverFeedService* GetFakeService() {
-    return static_cast<FakeDiscoverFeedService*>(
+  TestDiscoverFeedService* GetTestService() {
+    return static_cast<TestDiscoverFeedService*>(
         DiscoverFeedServiceFactory::GetForProfile(personal_profile_));
   }
 
@@ -147,7 +108,7 @@ TEST_F(DiscoverFeedProviderTest, NullServiceHandledSafely) {
 // Verifies that the provider does not crash on a dangling pointer and returns the fallback interval.
 TEST_F(DiscoverFeedProviderTest, AccountRemovalDoesNotCrashOnRefreshInterval) {
   // Step 1: Initial query while service is present.
-  GetFakeService()->SetEarliestBackgroundRefreshBeginDate(
+  GetTestService()->set_earliest_background_refresh_begin_date(
       [NSDate dateWithTimeIntervalSinceNow:3600]);
 
   EXPECT_FALSE([provider_ isDue]);
@@ -169,7 +130,7 @@ TEST_F(DiscoverFeedProviderTest, AccountRemovalDoesNotCrashOnRefreshInterval) {
 
 // Tests that when the service returns a nil earliest date, it returns the no-date interval.
 TEST_F(DiscoverFeedProviderTest, NilEarliestDateReturnsNoDateInterval) {
-  GetFakeService()->SetEarliestBackgroundRefreshBeginDate(nil);
+  GetTestService()->set_earliest_background_refresh_begin_date(nil);
 
   EXPECT_FALSE([provider_ isDue]);
   EXPECT_EQ([provider_ refreshInterval],
@@ -179,7 +140,7 @@ TEST_F(DiscoverFeedProviderTest, NilEarliestDateReturnsNoDateInterval) {
 // Tests that when the service returns a valid future date, interval is calculated properly.
 TEST_F(DiscoverFeedProviderTest, ValidFutureDateCalculatesInterval) {
   NSDate* futureDate = [NSDate dateWithTimeIntervalSinceNow:3600];
-  GetFakeService()->SetEarliestBackgroundRefreshBeginDate(futureDate);
+  GetTestService()->set_earliest_background_refresh_begin_date(futureDate);
 
   EXPECT_FALSE([provider_ isDue]);
   base::TimeDelta interval = [provider_ refreshInterval];

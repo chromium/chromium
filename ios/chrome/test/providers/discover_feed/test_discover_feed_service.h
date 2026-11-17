@@ -41,6 +41,8 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   // `NewDiscoverFeedViewControllerWithConfiguration()` calls (not cleared by
   // `RemoveFeedViewController()`).
   void set_feed_view_controller(UIViewController* feed_view_controller);
+  // Sets the `date` returned by `GetEarliestBackgroundRefreshBeginDate()`.
+  void set_earliest_background_refresh_begin_date(NSDate* date);
   UICollectionView* collection_view();
   BrowserViewVisibilityState visibility_state();
 
@@ -49,6 +51,7 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   BrowserViewVisibilityState visibility_state_;
   FakeDiscoverFeedEligibilityHandler* eligibility_handler_;
   UIViewController* feed_view_controller_;
+  NSDate* earliest_background_refresh_begin_date_ = nil;
 };
 
 #endif  // IOS_CHROME_TEST_PROVIDERS_DISCOVER_FEED_TEST_DISCOVER_FEED_SERVICE_H_

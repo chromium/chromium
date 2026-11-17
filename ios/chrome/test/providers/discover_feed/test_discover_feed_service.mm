@@ -44,7 +44,7 @@ void TestDiscoverFeedService::PerformBackgroundRefreshes(
 void TestDiscoverFeedService::HandleBackgroundRefreshTaskExpiration() {}
 
 NSDate* TestDiscoverFeedService::GetEarliestBackgroundRefreshBeginDate() {
-  return nil;
+  return earliest_background_refresh_begin_date_;
 }
 
 void TestDiscoverFeedService::set_eligibility_handler(
@@ -60,6 +60,11 @@ TestDiscoverFeedService::get_eligibility_handler() {
 void TestDiscoverFeedService::set_feed_view_controller(
     UIViewController* feed_view_controller) {
   feed_view_controller_ = feed_view_controller;
+}
+
+void TestDiscoverFeedService::set_earliest_background_refresh_begin_date(
+    NSDate* date) {
+  earliest_background_refresh_begin_date_ = [date copy];
 }
 
 UICollectionView* TestDiscoverFeedService::collection_view() {
