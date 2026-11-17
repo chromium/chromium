@@ -433,9 +433,10 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
       const StubAccountSelectionViewDelegate&) = delete;
 
   void OnAccountSelected(
-      const GURL&,
+      const GURL& idp_config_url,
       const std::string& account_id,
       const content::IdentityRequestAccount::LoginState&) override {
+    selected_idp_config_url_ = idp_config_url;
     selected_account_id_ = account_id;
   }
   void OnDismiss(DismissReason dismiss_reason) override {
@@ -471,6 +472,9 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   std::optional<std::string> GetSelectedAccountId() {
     return selected_account_id_;
   }
+  std::optional<GURL> GetSelectedIdpConfigUrl() const {
+    return selected_idp_config_url_;
+  }
   int GetAccountsDisplayedCount() const { return accounts_displayed_count_; }
   int GetLoginToIdpCount() const { return login_to_idp_count_; }
 
@@ -486,6 +490,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   raw_ptr<content::WebContents> web_contents_;
   std::optional<DismissReason> dismiss_reason_;
   std::optional<std::string> selected_account_id_;
+  std::optional<GURL> selected_idp_config_url_;
   int accounts_displayed_count_ = 0;
   int login_to_idp_count_ = 0;
   base::OnceClosure on_dismiss_;
@@ -4035,6 +4040,127 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   EXPECT_FALSE(delegate_->GetDismissReason());
 }
 
+// Tests that the ambient bubble shows the accounts of multiple identity
+// providers, each with the name of its identity provider, and that choosing an
+// account selects it at its identity provider.
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       MultipleIdpsShowAmbientBubble) {
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data_->idp_for_display = kIdpEtldPlusOne;
+  idp_data2->idp_for_display = "idp2.com";
+  idp_data_->idp_metadata.config_url = GURL(kConfigUrl);
+  idp_data2->idp_metadata.config_url = GURL(kConfigUrl2);
+  // The same account ID at both identity providers, so that only the identity
+  // provider tells the accounts apart.
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignIn,
+                             LoginState::kSignIn, kAccountId1),
+               CreateAccount(idp_data2, LoginState::kSignIn,
+                             LoginState::kSignIn, kAccountId1)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kPassive);
+
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  EXPECT_FALSE(controller->GetDialogWidget());
+  ASSERT_EQ(request->federated_credentials().size(), 2u);
+  EXPECT_EQ(request->federated_credentials()[0].idp_name, u"idp-example.com");
+  EXPECT_EQ(request->federated_credentials()[1].idp_name, u"idp2.com");
+
+  request->SelectFederatedCredential(1);
+  permission_request_manager()->Accept(std::monostate());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate_->GetSelectedAccountId().has_value(); }));
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId1);
+  EXPECT_EQ(delegate_->GetSelectedIdpConfigUrl(), GURL(kConfigUrl2));
+}
+
+// Tests that with multiple identity providers, an account that shows the
+// disclosure text in the modal dialog falls back to the regular UI without
+// `kFedCmActiveModeMultipleIdentityProviders`, since Back on the modal dialog
+// then shows its account chooser for multiple identity providers.
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       MultipleIdpsWithDisclosureNeedMultipleIdpFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignIn,
+                             LoginState::kSignIn, kAccountId1),
+               CreateAccount(idp_data2, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId2)};
+  ASSERT_FALSE(accounts_[1]->fields.empty());
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kPassive);
+
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+// Tests that with multiple identity providers and
+// `kFedCmActiveModeMultipleIdentityProviders`, choosing an account in the
+// ambient bubble that needs the disclosure text shows it in the modal dialog,
+// titled with the account's identity provider, that Back then shows the modal
+// dialog's account chooser with the accounts of all identity providers, and
+// that continuing selects the account at its identity provider.
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       MultipleIdpsSignUpShowsModalAfterAmbientBubble) {
+  base::test::ScopedFeatureList feature_list(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+  IdentityProviderDataPtr idp_data2 = CreateIdentityProviderData();
+  idp_data_->idp_metadata.config_url = GURL(kConfigUrl);
+  idp_data2->idp_metadata.config_url = GURL(kConfigUrl2);
+  // Use a different context than the first identity provider's, to check that
+  // the modal dialog is titled with the identity provider of the account.
+  idp_data2->rp_context = blink::mojom::RpContext::kSignUp;
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignIn,
+                             LoginState::kSignIn, kAccountId1),
+               CreateAccount(idp_data2, LoginState::kSignUp,
+                             LoginState::kSignUp, kAccountId2)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kPassive);
+
+  EXPECT_FALSE(controller->GetDialogWidget());
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  ASSERT_EQ(request->federated_credentials().size(), 2u);
+
+  // Choosing the new account of the second identity provider shows its
+  // disclosure text in the modal dialog.
+  request->SelectFederatedCredential(1);
+  permission_request_manager()->Accept(std::monostate());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetDialogWidget() != nullptr; }));
+  TestAccountSelectionView* view = controller->GetTestView();
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            view->sheet_type_);
+  EXPECT_THAT(view->account_ids_, testing::ElementsAre(kAccountId2));
+  EXPECT_EQ(controller->GetRpContext(), blink::mojom::RpContext::kSignUp);
+
+  // Going back shows the accounts of both identity providers.
+  controller->OnBackButtonClicked();
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            view->sheet_type_);
+  EXPECT_THAT(view->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+
+  // Choosing the account again and continuing selects it at its identity
+  // provider.
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[1], CreateMouseEvent()));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            view->sheet_type_);
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[1], CreateMouseEvent()));
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId2);
+  EXPECT_EQ(delegate_->GetSelectedIdpConfigUrl(), GURL(kConfigUrl2));
+}
+
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
        FilteredOutAccountDoesNotUseAmbientBubble) {
   // E.g. the second account does not match the login hint. The regular UI
@@ -4045,6 +4171,24 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   accounts_[1]->is_filtered_out = true;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);
+
+  EXPECT_TRUE(controller->GetDialogWidget());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+// Tests that the regular UI is used if an identity provider has a login status
+// mismatch, since only the regular UI offers to log in to it.
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       IdpLoginStatusMismatchDoesNotUseAmbientBubble) {
+  IdentityProviderDataPtr idp_data2 =
+      CreateIdentityProviderData(/*has_login_status_mismatch=*/true);
+  accounts_ = {CreateAccount(idp_data_, LoginState::kSignIn,
+                             LoginState::kSignIn, kAccountId1)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp({idp_data_, idp_data2}, accounts_,
+                            blink::mojom::RpMode::kPassive);
 
   EXPECT_TRUE(controller->GetDialogWidget());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,

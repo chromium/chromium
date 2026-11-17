@@ -93,6 +93,17 @@ tabs::TabInterface* InitiatingTaskTab(tabs::TabInterface* source_tab) {
   return nullptr;
 }
 
+// Returns whether the modal dialog can show its account chooser for
+// `idp_count` identity providers. Back on the modal dialog shows it, also in
+// passive mode, where the modal dialog shows the disclosure text after the
+// bubble or the ambient bubble. With multiple identity providers, the chooser
+// is only shown with `kFedCmActiveModeMultipleIdentityProviders`.
+bool CanShowModalAccountChooser(size_t idp_count) {
+  return idp_count == 1u ||
+         base::FeatureList::IsEnabled(
+             features::kFedCmActiveModeMultipleIdentityProviders);
+}
+
 }  // namespace
 
 // static
@@ -897,15 +908,11 @@ bool FedCmAccountSelectionView::OnAccountSelected(
 
 bool FedCmAccountSelectionView::ShouldSwitchToModalForPermission(
     const content::IdentityRequestAccount& account) const {
-  // With multiple identity providers, also require
-  // `kFedCmActiveModeMultipleIdentityProviders`, since Back on the modal dialog
-  // then shows its account chooser for multiple identity providers, which is
-  // otherwise only shown in active mode with that flag.
+  // Back on the modal dialog shows its account chooser, see
+  // `CanShowModalAccountChooser()`.
   return base::FeatureList::IsEnabled(features::kFedCmIdpLinks) &&
          dialog_type_ == DialogType::BUBBLE && !account.fields.empty() &&
-         (idp_list_.size() == 1u ||
-          base::FeatureList::IsEnabled(
-              features::kFedCmActiveModeMultipleIdentityProviders));
+         CanShowModalAccountChooser(idp_list_.size());
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
@@ -1851,16 +1858,28 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityRequestAccountPtr>& new_accounts) {
-  // Only accounts from a single IdP are supported for now. If the selected
-  // account requires disclosure text (e.g. a new account), the user reviews it
-  // in the modal dialog after accepting the bubble. See
+  // If the selected account requires disclosure text (e.g. a new account), the
+  // user reviews it in the modal dialog after accepting the bubble. See
   // HandleAmbientBubbleDecision().
-  // TODO(crbug.com/567563304): Support multiple IdPs, IdP login status mismatch
-  // and the "use other account" flow, which the regular UI offers when accounts
-  // are filtered out.
-  if (idp_list.size() != 1u || accounts.empty() || !new_accounts.empty() ||
-      idp_list[0]->has_login_status_mismatch ||
+  // TODO(crbug.com/567563304): Support IdP login status mismatch and the "use
+  // other account" flow, which the regular UI offers when accounts are filtered
+  // out.
+  if (accounts.empty() || !new_accounts.empty() ||
+      std::ranges::any_of(
+          idp_list,
+          &content::IdentityProviderData::has_login_status_mismatch) ||
       std::ranges::any_of(accounts, &Account::is_filtered_out)) {
+    return false;
+  }
+  // An account that needs the disclosure text shows it in the modal dialog,
+  // whose Back button shows its account chooser. So if the chooser can't be
+  // shown for these identity providers, use the regular UI if any account would
+  // show the disclosure text in the modal dialog.
+  if (!CanShowModalAccountChooser(idp_list.size()) &&
+      std::ranges::any_of(accounts,
+                          [](const IdentityRequestAccountPtr& account) {
+                            return !account->fields.empty();
+                          })) {
     return false;
   }
 
