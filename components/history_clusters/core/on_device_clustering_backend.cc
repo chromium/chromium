@@ -262,13 +262,9 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   base::ElapsedThreadTimer compute_clusters_timer;
 
   // 1. Group visits into clusters.
-  base::ElapsedThreadTimer context_clusterer_timer;
   std::unique_ptr<Clusterer> clusterer = std::make_unique<Clusterer>();
   std::vector<history::Cluster> clusters =
       clusterer->CreateInitialClustersFromVisits(std::move(visits));
-  base::UmaHistogramTimes(
-      "History.Clusters.Backend.ContextClusterer.ThreadTime",
-      context_clusterer_timer.Elapsed());
 
   if (requires_ui_and_triggerability) {
     // 2. Determine how the clusters should be displayed.
