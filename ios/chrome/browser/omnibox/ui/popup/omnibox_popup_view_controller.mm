@@ -281,9 +281,15 @@ const CGFloat kCloseButtonPadding = 16.0f;
 
   self.shouldUpdateVisibleSuggestionCount = YES;
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
-  [self registerForTraitChanges:traits
-                     withAction:@selector(updateUIOnTraitChange)];
+  __weak __typeof__(self) weakSelf = self;
+  [self
+      registerForTraitChanges:
+          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
+                  withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                UITraitCollection* previousCollection) {
+                    [weakSelf updateUIOnTraitChangeWithPreviousCollection:
+                                  previousCollection];
+                  }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -1342,7 +1348,13 @@ const CGFloat kCloseButtonPadding = 16.0f;
 
 // Update the view controller's background color and notifies `delegate` when a
 // UITrait has been changed.
-- (void)updateUIOnTraitChange {
+- (void)updateUIOnTraitChangeWithPreviousCollection:
+    (UITraitCollection*)previousCollection {
+  BOOL layoutChange = ShouldApplyOmniboxPopoutLayout(previousCollection) !=
+                      ShouldApplyOmniboxPopoutLayout(self.traitCollection);
+  if (!layoutChange) {
+    return;
+  }
   [self updateBackgroundColor];
   [self updateTableViewForCurrentSizeClass];
   [self updateCloseButtonVisibility];
