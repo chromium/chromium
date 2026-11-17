@@ -9592,6 +9592,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxLoomDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kOmniboxLoomChoices)},
 
+    {"omnibox-everywhere-prehandle-mouse-drag",
+     flag_descriptions::kOmniboxEverywherePreHandleMouseDragName,
+     flag_descriptions::kOmniboxEverywherePreHandleMouseDragDescription,
+     kOsWin | kOsMac,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxEverywherePreHandleMouseDrag)},
+
     {"omnibox-everywhere-screenshot-new-window",
      flag_descriptions::kOmniboxEverywhereScreenshotNewWindowName,
      flag_descriptions::kOmniboxEverywhereScreenshotNewWindowDescription,

@@ -7,8 +7,10 @@
 #import <AppKit/AppKit.h>
 
 #include "base/apple/scoped_objc_class_swizzler.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -126,6 +128,9 @@ TEST_F(MacWindowUtilTest, DisassociatePopupOnMac) {
 }
 
 TEST_F(MacWindowUtilTest, NonClientHitTestAllowsHoverInDraggableRegion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kOmniboxEverywherePreHandleMouseDrag);
   OmniboxEverywhereWidgetDelegate delegate(/*template_url_service=*/nullptr);
   SkRegion region;
   region.op(SkIRect::MakeXYWH(0, 0, 200, 100), SkRegion::kUnion_Op);
