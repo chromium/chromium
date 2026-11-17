@@ -153,19 +153,6 @@ void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
   }
 }
 
-// Child account status is refreshed through invalidations which are only
-// available for the primary account. Finding the primary account requires a
-// dependency on PrimaryAccountManager which we get around by only allowing a
-// single account. This is possible since we only support a single account to be
-// a child anyway.
-#if BUILDFLAG(IS_ANDROID)
-void AccountFetcherService::RefreshAccountInfoIfStale(
-    const CoreAccountId& account_id) {
-  DCHECK(network_fetches_enabled_);
-  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
-}
-#endif
-
 void AccountFetcherService::RefreshAllAccountCapabilities() {
   for (const auto& account : token_service_->GetAccounts()) {
     // No-op if a capabilities fetch is already in progress for `account`.

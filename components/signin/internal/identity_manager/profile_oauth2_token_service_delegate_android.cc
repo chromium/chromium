@@ -296,6 +296,9 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
   // FireRefreshToken* methods.
   SetAccounts(curr_ids);
 
+  // Note: `AccountFetcherService` refreshes stale account info in response to
+  // these notifications (or to `FireRefreshTokensLoaded()` below on the first
+  // load).
   for (const CoreAccountId& refreshed_id : refreshed_ids) {
     FireRefreshTokenAvailable(refreshed_id);
   }

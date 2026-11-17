@@ -101,11 +101,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // method is optional.
   void PrepareForFetchingAccountCapabilities();
 
-#if BUILDFLAG(IS_ANDROID)
-  // Refresh the AccountInfo if the existing one is stale
-  void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
-#endif
-
   // Destroy any fetchers created for the specified account.
   void DestroyFetchers(const CoreAccountId& account_id);
 

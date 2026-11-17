@@ -98,11 +98,6 @@ public class IdentityManagerImpl implements IdentityManager {
     }
 
     @Override
-    public void refreshAccountInfoIfStale() {
-        IdentityManagerImplJni.get().refreshAccountInfoIfStale(mNativeIdentityManager);
-    }
-
-    @Override
     public boolean isClearPrimaryAccountAllowed() {
         return IdentityManagerImplJni.get().isClearPrimaryAccountAllowed(mNativeIdentityManager);
     }
@@ -239,8 +234,6 @@ public class IdentityManagerImpl implements IdentityManager {
 
         @JniType("std::vector<AccountInfo>")
         AccountInfo[] getExtendedAccountInfoForAccountsWithRefreshToken(long nativeIdentityManager);
-
-        void refreshAccountInfoIfStale(long nativeIdentityManager);
 
         boolean isClearPrimaryAccountAllowed(long nativeIdentityManager);
 

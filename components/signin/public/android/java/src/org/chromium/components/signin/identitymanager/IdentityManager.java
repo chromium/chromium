@@ -115,11 +115,6 @@ public interface IdentityManager {
     @RefreshTokensLoadingState
     int getRefreshTokensLoadingState();
 
-    /** Refreshes extended {@link AccountInfo} with image for all accounts with a refresh token. */
-    // TODO(crbug.com/365057341): This doesn't need to be exposed in Java. Move this logic to
-    // native.
-    void refreshAccountInfoIfStale();
-
     /** Returns true if the primary account can be cleared/removed from the browser. */
     boolean isClearPrimaryAccountAllowed();
 

@@ -522,19 +522,6 @@ IdentityManager::GetIdentityMutatorJavaObject() {
       identity_mutator_->GetJavaObject());
 }
 
-void IdentityManager::RefreshAccountInfoIfStale(
-    const CoreAccountId& account_id) {
-  DCHECK(HasAccountWithRefreshToken(account_id));
-  account_fetcher_service_->RefreshAccountInfoIfStale(account_id);
-}
-
-void IdentityManager::RefreshAccountInfoIfStale(JNIEnv* env) {
-  std::vector<CoreAccountInfo> accounts = GetAccountsWithRefreshTokens();
-  for (const CoreAccountInfo& account : accounts) {
-    RefreshAccountInfoIfStale(account.account_id);
-  }
-}
-
 base::android::ScopedJavaLocalRef<jobject>
 IdentityManager::GetPrimaryAccountInfo(JNIEnv* env) const {
   CoreAccountInfo account_info = GetPrimaryAccountInfo(ConsentLevel::kSignin);

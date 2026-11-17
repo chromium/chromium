@@ -554,12 +554,6 @@ class IdentityManager : public KeyedService,
   // Provide the reference on the java IdentityMutator.
   base::android::ScopedJavaLocalRef<jobject> GetIdentityMutatorJavaObject();
 
-  // This method refreshes the AccountInfo associated with |account_id| when
-  // the existing account info is stale. Otherwise it's a no-op.
-  // This method triggers an OnExtendedAccountInfoUpdated() callback if the
-  // info was successfully fetched.
-  void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
-
   // Overloads for calls from java:
   bool HasPrimaryAccount(JNIEnv* env) const;
 
@@ -577,10 +571,6 @@ class IdentityManager : public KeyedService,
   FindExtendedAccountInfoByEmailAddress(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_email) const;
-
-  // Refreshes all accounts with refresh tokens if they are stale. See
-  // RefreshAccountInfoIfStale(const CoreAccountId&).
-  void RefreshAccountInfoIfStale(JNIEnv* env);
 
   // Returns true if the browser allows the primary account to be cleared.
   bool IsClearPrimaryAccountAllowed(JNIEnv* env) const;
@@ -706,7 +696,8 @@ class IdentityManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest,
                            CallbackSentOnAccountsCookieDeletedByUserAction);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, OnNetworkInitialized);
-  FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, RefreshAccountInfoIfStale);
+  FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest,
+                           AccountInfoFetchedWhenRefreshTokenAvailable);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, FindExtendedPrimaryAccountInfo);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, BatchOfPrimaryAccountChanges);
 

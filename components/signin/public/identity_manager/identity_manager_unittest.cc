@@ -2529,11 +2529,15 @@ TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
+// Account seeding on Android relies on `OnRefreshTokenAvailable()` triggering a
+// refresh of stale account info.
+TEST_F(IdentityManagerTest, AccountInfoFetchedWhenRefreshTokenAvailable) {
   identity_manager()->GetAccountFetcherService()->OnNetworkInitialized();
   AccountInfo account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail2);
-  identity_manager()->RefreshAccountInfoIfStale(account_info.GetAccountId());
+  // The refresh token becoming available should start a user info fetch.
+  EXPECT_FALSE(
+      identity_manager()->GetAccountFetcherService()->IsAllUserInfoFetched());
 
   SimulateSuccessfulFetchOfAccountInfo(
       identity_manager(), account_info.GetAccountId(), account_info.GetEmail(),
