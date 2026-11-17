@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
@@ -18,6 +19,11 @@ if (is_ios) {
 
 is_serial_enabled_platform =
     is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "IS_SERIAL_ENABLED_PLATFORM=$is_serial_enabled_platform" ]
+}
 
 source_set("lib") {
   # This should be visible only to embedders of the Device Service, and the
@@ -57,6 +63,7 @@ source_set("lib") {
   ]
 
   public_deps = [
+    ":buildflags",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
@@ -81,7 +88,6 @@ source_set("lib") {
 
   if (is_serial_enabled_platform) {
     deps += [ "//services/device/serial" ]
-    defines = [ "IS_SERIAL_ENABLED_PLATFORM" ]
   }
 }
 

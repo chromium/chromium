@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/device/buildflags.h"
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/geolocation/public_ip_address_geolocation_provider.h"
@@ -75,7 +76,7 @@ namespace device {
 class PressureManagerImpl;
 #endif
 
-#if defined(IS_SERIAL_ENABLED_PLATFORM)
+#if BUILDFLAG(IS_SERIAL_ENABLED_PLATFORM)
 class SerialPortManagerImpl;
 #endif
 
@@ -273,9 +274,9 @@ class DeviceService : public mojom::DeviceService {
   std::unique_ptr<PressureManagerImpl> pressure_manager_;
 #endif
 
-#if defined(IS_SERIAL_ENABLED_PLATFORM)
+#if BUILDFLAG(IS_SERIAL_ENABLED_PLATFORM)
   base::SequenceBound<SerialPortManagerImpl> serial_port_manager_;
-#endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
+#endif  // BUILDFLAG(IS_SERIAL_ENABLED_PLATFORM)
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<MtpDeviceManager> mtp_device_manager_;
