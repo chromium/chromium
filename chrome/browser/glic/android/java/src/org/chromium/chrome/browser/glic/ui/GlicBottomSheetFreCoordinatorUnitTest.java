@@ -44,7 +44,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.R;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.base.TestActivity;
@@ -161,6 +163,25 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
         assertEquals(2, styleSpans.length);
         assertEquals(Typeface.BOLD, styleSpans[0].getStyle());
         assertEquals(Typeface.BOLD, styleSpans[1].getStyle());
+        assertTrue(bodyView.getText().toString().contains("improve generative AI models"));
+    }
+
+    @Test
+    public void testEnterpriseCardUsesTrainCopyWhenParamEnabled() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.GLIC_NATIVE_FRE_ANDROID,
+                ChromeFeatureList.GLIC_NATIVE_FRE_ANDROID_USE_TRAIN_ENTERPRISE_COPY,
+                true);
+        GlicBottomSheetFreCoordinator coordinator =
+                createCoordinator(/* isEnterpriseAccount= */ true);
+        TextViewWithClickableSpans bodyView =
+                coordinator.getView().findViewById(R.id.glic_fre_body);
+
+        StyleSpan[] styleSpans = getSpans(bodyView, StyleSpan.class);
+        assertEquals(2, styleSpans.length);
+        assertEquals(Typeface.BOLD, styleSpans[0].getStyle());
+        assertEquals(Typeface.BOLD, styleSpans[1].getStyle());
+        assertTrue(bodyView.getText().toString().contains("train generative AI models"));
     }
 
     @Test
