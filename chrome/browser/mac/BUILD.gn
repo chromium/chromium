@@ -129,7 +129,7 @@ source_set("unit_tests") {
   ]
   data_deps = [
     "//chrome",
-    "//chrome:chrome_helper_app_aperitif",
+    "//chrome:chrome_helper_app_default",
   ]
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

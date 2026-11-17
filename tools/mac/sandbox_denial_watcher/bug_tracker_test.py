@@ -100,20 +100,20 @@ class GetBugUrlTest(unittest.TestCase):
     def test_batch_title_and_description_with_different_targets(self):
         cmd = (
             "/Applications/Google Chrome Canary.app/Contents/MacOS/"
-            "Google Chrome Helper (Aperitif) --type=utility "
+            "Google Chrome Helper --type=utility "
             "--utility-sub-type=unzip.mojom.Unzipper "
             "--service-sandbox-type=service"
         )
         d1 = _denial(
             "/path/to/crl-set",
             action="file-write-times",
-            process="Google Chrome Helper (Aperitif)",
+            process="Google Chrome Helper",
             command_line=cmd,
         )
         d2 = _denial(
             "/path/to/manifest.json",
             action="file-write-times",
-            process="Google Chrome Helper (Aperitif)",
+            process="Google Chrome Helper",
             command_line=cmd,
         )
         _, params = _parse_url(get_bug_url([d1, d2]))
@@ -295,7 +295,7 @@ class GetBugUrlTest(unittest.TestCase):
             with self.subTest(cmd=cmd):
                 denial = _denial(
                     "com.apple.foo",
-                    process="Google Chrome Helper (Aperitif)",
+                    process="Google Chrome Helper",
                     command_line=cmd,
                 )
                 _, params = _parse_url(get_bug_url(denial))
@@ -329,7 +329,7 @@ class GetBugUrlTest(unittest.TestCase):
             with self.subTest(cmd=cmd):
                 denial = _denial(
                     "com.apple.foo",
-                    process="Google Chrome Helper (Aperitif)",
+                    process="Google Chrome Helper",
                     command_line=cmd,
                 )
                 _, params = _parse_url(get_bug_url(denial))
@@ -343,17 +343,8 @@ class GetBugUrlTest(unittest.TestCase):
         cases = (
             ("MTLCompilerService", "MTLCompilerService", "gpu.sb"),
             ("Chromium Helper (Renderer)", "renderer", "renderer.sb"),
-            (
-                "Google Chrome Helper (Aperitif Renderer)",
-                "renderer",
-                "renderer.sb",
-            ),
-            ("Google Chrome Helper (Aperitif R", "renderer", "renderer.sb"),
-            ("Chromium Helper (Aperitif Render", "renderer", "renderer.sb"),
             ("Chromium Helper (GPU)", "gpu-process", "gpu.sb"),
-            ("Google Chrome Helper (Aperitif GPU)", "gpu-process", "gpu.sb"),
-            ("Google Chrome Helper (Aperitif G", "gpu-process", "gpu.sb"),
-            ("Google Chrome Helper (Aperitif)", "unknown", "unknown"),
+            ("Google Chrome Helper", "unknown", "unknown"),
         )
         for proc_name, expected_type, expected_profile in cases:
             with self.subTest(proc_name=proc_name):

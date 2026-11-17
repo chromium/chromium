@@ -136,20 +136,9 @@ def _get_process_and_profile(denial: SandboxDenial) -> tuple[str, str]:
     if not proc_type:
         if denial.process_name == "MTLCompilerService":
             return "MTLCompilerService", "gpu.sb"
-        # macOS truncates process names in sandbox denial logs to 32 bytes
-        # (e.g. "Google Chrome Helper (Aperitif R" or
-        # "Chromium Helper (Aperitif Render"), cutting off the end of
-        # "(Aperitif Renderer)" and "(Aperitif GPU)". These can be removed when
-        # Aperitif is the default.
-        if (
-            denial.process_name.endswith(" (Renderer)")
-            or " (Aperitif R" in denial.process_name
-        ):
+        if denial.process_name.endswith(" (Renderer)"):
             proc_type = "renderer"
-        elif (
-            denial.process_name.endswith(" (GPU)")
-            or " (Aperitif G" in denial.process_name
-        ):
+        elif denial.process_name.endswith(" (GPU)"):
             proc_type = "gpu-process"
         else:
             return "unknown", "unknown"

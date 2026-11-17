@@ -166,8 +166,7 @@ TEST(AperitifTest, InitializerOrder) {
                                       .Append("Current");
   base::apple::SetOverrideFrameworkBundlePath(framework_path);
 
-  std::string helper_name =
-      base::StrCat({chrome::kHelperProcessExecutableName, " (Aperitif)"});
+  std::string helper_name = chrome::kHelperProcessExecutableName;
   base::FilePath helper_path =
       dir_exe_path
           .Append(base::StrCat({chrome::kBrowserProcessExecutableName, ".app"}))

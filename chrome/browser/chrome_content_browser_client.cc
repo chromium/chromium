@@ -9197,12 +9197,8 @@ base::FilePath ChromeContentBrowserClient::GetChildProcessPath(
     if (!base::apple::AmIBundled()) {
       return base::FilePath();
     }
-    std::string_view child_suffix =
-        base::FeatureList::IsEnabled(features::kAperitifHelpers)
-            ? " (Aperitif Alerts)"
-            : chrome::kMacHelperSuffixAlerts;
-    std::string child_base_name =
-        base::StrCat({chrome::kHelperProcessExecutableName, child_suffix});
+    std::string child_base_name = base::StrCat(
+        {chrome::kHelperProcessExecutableName, chrome::kMacHelperSuffixAlerts});
     // Parallel to SetUpBundleOverrides(), helper executables reside in the
     // "Helpers" directory within the versioned framework bundle as
     // `<child_base_name>.app/Contents/MacOS/<child_base_name>`.

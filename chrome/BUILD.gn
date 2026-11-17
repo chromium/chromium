@@ -818,19 +818,7 @@ if (is_win) {
         "CHROMIUM_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
 
-      _is_aperitif_helper =
-          defined(invoker.is_aperitif_helper) && invoker.is_aperitif_helper
-
-      sources = []
-      if (_is_aperitif_helper) {
-        sources += [ "app/chrome_exe_main_mac.c" ]
-      } else {
-        sources += [
-          "app/chrome_exe_main_mac.cc",
-          "app/llvm_profile_util.cc",
-          "app/llvm_profile_util.h",
-        ]
-      }
+      sources = [ "app/chrome_exe_main_mac.c" ]
 
       defines = [ "HELPER_EXECUTABLE" ]
       if (defined(invoker.defines)) {
@@ -839,16 +827,16 @@ if (is_win) {
 
       deps = [
         "//base:compiler_specific",
-        "//base/allocator:early_zone_registration_apple",
         "//build:branding_buildflags",
         "//build/config/compiler:compiler_buildflags",
-        "//chrome/common:version_header",
-        "//sandbox/mac:seatbelt",
+        "//content/public/app:aperitif",
       ]
 
-      if (_is_aperitif_helper) {
-        deps += [ "//content/public/app:aperitif" ]
-      }
+      # Links the framework's shared library directly, after libaperitif, so
+      # that the framework's load command follows libaperitif's. `+link` can't
+      # be used: it adds the framework as `-framework`, which the Apple link
+      # rule places before all shared libraries.
+      deps += [ ":chrome_framework+link_nested" ]
 
       if (defined(invoker.deps)) {
         deps += invoker.deps
@@ -860,10 +848,6 @@ if (is_win) {
 
       ldflags = []
 
-      if (_is_aperitif_helper || is_component_build) {
-        deps += [ ":chrome_framework+link_nested" ]
-      }
-
       if (is_component_build) {
         ldflags += [
           # The helper is in Chromium.app/Contents/Frameworks/Chromium
@@ -871,9 +855,7 @@ if (is_win) {
           # Helper.app/Contents/MacOS
 
           # Set up an rpath to the Contents/Frameworks directory so that
-          # Chromium.framework will be found there. This matches the path that
-          # chrome_exe_main_mac.cc uses with `dlopen` and avoids loading the
-          # framework into memory twice.
+          # Chromium.framework will be found there.
           "-Wl,-rpath,@executable_path/../../../../../../..",
 
           # Add an rpath to the Libraries directory in the versioned framework
@@ -883,7 +865,7 @@ if (is_win) {
           # Add an rpath up to the base for all other libraries.
           "-Wl,-rpath,@loader_path/../../../../../../../../../..",
         ]
-      } else if (_is_aperitif_helper) {
+      } else {
         ldflags += [ "-Wcrl,installnametool,-change,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/Libraries/libaperitif.dylib,@executable_path/../../../../Libraries/libaperitif.dylib,-change,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name,@executable_path/../../../../$chrome_framework_name" ]
       }
 
@@ -919,28 +901,19 @@ if (is_win) {
     ".alerts",
     " (Alerts)",
   ]
-  aperitif_alert_helper_params = [
-    "aperitif_alerts",
-    ".alerts",
-    " (Aperitif Alerts)",
-  ]
 
   # Merge all helper apps needed by //content and //chrome.
-  chrome_mac_helpers = content_mac_helpers + content_mac_aperitif_helpers + [
-                         alert_helper_params,
-                         aperitif_alert_helper_params,
-                       ]
+  chrome_mac_helpers = content_mac_helpers + [ alert_helper_params ]
 
   # Create all helper apps required by //content.
   foreach(helper_params, content_mac_helpers) {
     chrome_helper_app("chrome_helper_app_${helper_params[0]}") {
       helper_name_suffix = helper_params[2]
       helper_bundle_id_suffix = helper_params[1]
-      is_aperitif_helper = false
       if (enable_separate_renderer_binary && helper_params[0] == "renderer") {
         # TODO(crbug.com/534570563): Accommodate Apéritif when
         # enable_separate_renderer_binary is true by updating
-        # chrome_exe_main_mac.cc to link librenderer.dylib directly.
+        # chrome_exe_main_mac.c to link librenderer.dylib directly.
         defines = [ "RENDERER_HELPER_EXECUTABLE" ]
         data_deps = [ ":chrome_renderer" ]
       }
@@ -970,31 +943,10 @@ if (is_win) {
     public_deps = [ ":chrome_helper_app_alerts_plist_strings" ]
   }
 
-  # Create all aperitif helper apps.
-  foreach(helper_params, content_mac_aperitif_helpers) {
-    chrome_helper_app("chrome_helper_app_${helper_params[0]}") {
-      helper_name_suffix = helper_params[2]
-      helper_bundle_id_suffix = helper_params[1]
-      is_aperitif_helper = true
-    }
-  }
-
   chrome_helper_app("chrome_helper_app_${alert_helper_params[0]}") {
     helper_name_suffix = alert_helper_params[2]
     helper_bundle_id_suffix = alert_helper_params[1]
     info_plist_target = ":chrome_helper_app_alerts_plist"
-    deps = [
-      ":chrome_app_icon",
-      ":chrome_asset_catalog",
-      ":chrome_helper_app_alerts_resources",
-    ]
-  }
-
-  chrome_helper_app("chrome_helper_app_${aperitif_alert_helper_params[0]}") {
-    helper_name_suffix = aperitif_alert_helper_params[2]
-    helper_bundle_id_suffix = aperitif_alert_helper_params[1]
-    info_plist_target = ":chrome_helper_app_alerts_plist"
-    is_aperitif_helper = true
     deps = [
       ":chrome_app_icon",
       ":chrome_asset_catalog",
@@ -1007,14 +959,6 @@ if (is_win) {
       _helper_target = helper_params[0]
       _helper_bundle_id = helper_params[1]
       _helper_suffix = helper_params[2]
-
-      _is_aperitif_helper = false
-      foreach(aperitif_params,
-              content_mac_aperitif_helpers + [ aperitif_alert_helper_params ]) {
-        if (helper_params[0] == aperitif_params[0]) {
-          _is_aperitif_helper = true
-        }
-      }
 
       action("verify_libraries_chrome_helper_app_${_helper_target}") {
         script = "//chrome/tools/build/mac/verify_dynamic_libraries.py"
@@ -1033,27 +977,11 @@ if (is_win) {
 
         # Do not --allow more libraries here without consulting with the
         # security team (security-dev@chromium.org).
-        if (_is_aperitif_helper) {
-          if (is_component_build) {
-            args += [
-              "--allow",
-              "@rpath/libaperitif.dylib",
-              "--allow",
-              "@rpath/$chrome_framework_name.framework/$chrome_framework_name",
-            ]
-          } else {
-            args += [
-              "--allow",
-              "@executable_path/../../../../Libraries/libaperitif.dylib",
-              "--allow",
-              "@executable_path/../../../../$chrome_framework_name",
-            ]
-          }
-        }
-
         args += [
           "--allow",
-          "/usr/lib/libsandbox.1.dylib",
+          "@executable_path/../../../../Libraries/libaperitif.dylib",
+          "--allow",
+          "@executable_path/../../../../$chrome_framework_name",
           "--allow",
           "/usr/lib/libSystem.B.dylib",
         ]

@@ -10,7 +10,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
@@ -29,7 +28,6 @@
 #include "content/public/browser/child_process_host_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_channel.h"
@@ -91,24 +89,12 @@ base::FilePath ChildProcessHost::GetChildPath(int flags,
 #if BUILDFLAG(IS_MAC)
   if (base::apple::AmIBundled()) {
     std::string_view child_suffix;
-    if (base::FeatureList::IsEnabled(features::kAperitifHelpers)) {
-      if (flags == CHILD_NORMAL) {
-        child_suffix = " (Aperitif)";
-      } else if (flags == CHILD_RENDERER) {
-        child_suffix = " (Aperitif Renderer)";
-      } else if (flags == CHILD_GPU) {
-        child_suffix = " (Aperitif GPU)";
-      } else {
-        NOTREACHED();
-      }
-    } else {
-      if (flags == CHILD_RENDERER) {
-        child_suffix = kMacHelperSuffix_renderer;
-      } else if (flags == CHILD_GPU) {
-        child_suffix = kMacHelperSuffix_gpu;
-      } else if (flags != CHILD_NORMAL) {
-        NOTREACHED();
-      }
+    if (flags == CHILD_RENDERER) {
+      child_suffix = kMacHelperSuffix_renderer;
+    } else if (flags == CHILD_GPU) {
+      child_suffix = kMacHelperSuffix_gpu;
+    } else if (flags != CHILD_NORMAL) {
+      NOTREACHED();
     }
 
     if (!child_suffix.empty()) {
