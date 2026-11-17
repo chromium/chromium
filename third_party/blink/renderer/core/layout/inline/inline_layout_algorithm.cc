@@ -760,7 +760,8 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
   }
 
   line_box->AddChild(std::move(item_result->layout_result),
-                     /* offset */ LogicalOffset(), item_result->inline_size,
+                     /* offset */ LogicalOffset(),
+                     /* margins */ PhysicalBoxStrut(), item_result->inline_size,
                      /* children_count */ 0, item.BidiLevel());
 }
 

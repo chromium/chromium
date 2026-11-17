@@ -199,6 +199,9 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
   if (line_item.layout_result) {
     const auto& box_fragment =
         To<PhysicalBoxFragment>(line_item.layout_result->GetPhysicalFragment());
+    if (!box_fragment.IsFloating()) {
+      box_fragment.GetMutableForContainerLayout().SetMargins(line_item.margins);
+    }
     new (this) FragmentItem(box_fragment, line_item.ResolvedDirection());
     return;
   }

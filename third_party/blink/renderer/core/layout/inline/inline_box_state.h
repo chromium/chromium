@@ -344,6 +344,13 @@ class CORE_EXPORT InlineLayoutStateStack {
       fragment_end = end_index;
     }
 
+    PhysicalBoxStrut Margins() const {
+      return LineBoxStrut(margin_line_left, margin_line_right, margin_line_over,
+                          margin_line_under)
+          .ConvertToPhysical(
+              {item->Style()->GetWritingMode(), TextDirection::kLtr});
+    }
+
     // The range of child fragments this box contains.
     unsigned fragment_start;
     unsigned fragment_end;

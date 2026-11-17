@@ -147,6 +147,8 @@ struct CORE_EXPORT LineBoxStrut {
            line_under == other.line_under;
   }
 
+  inline PhysicalBoxStrut ConvertToPhysical(WritingDirectionMode) const;
+
   LayoutUnit inline_start;
   LayoutUnit inline_end;
   LayoutUnit line_over;
@@ -334,6 +336,12 @@ inline PhysicalBoxStrut BoxStrut::ConvertToPhysical(
     default:
       NOTREACHED();
   }
+}
+
+inline PhysicalBoxStrut LineBoxStrut::ConvertToPhysical(
+    WritingDirectionMode writing_direction) const {
+  return BoxStrut(*this, writing_direction.IsFlippedLines())
+      .ConvertToPhysical(writing_direction);
 }
 
 inline PhysicalBoxStrut operator-(const PhysicalBoxStrut& a) {

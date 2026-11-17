@@ -498,8 +498,10 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
     // See "text-combine-justify.html".
     const LayoutUnit inline_offset =
         box->margins.inline_start + item_result->spacing_before;
+    const PhysicalBoxStrut margins = box->margins.ConvertToPhysical(
+        {constraint_space_.GetWritingMode(), TextDirection::kLtr});
     line_box->AddChild(std::move(item_result->layout_result),
-                       LogicalOffset{inline_offset, box->text_top},
+                       LogicalOffset{inline_offset, box->text_top}, margins,
                        item_result->inline_size, /* children_count */ 0,
                        item.BidiLevel());
   }
@@ -526,8 +528,10 @@ void LogicalLineBuilder::PlaceLayoutResult(InlineItemResult* item_result,
   }
 
   LayoutUnit line_top = item_result->margins.line_over - metrics.ascent;
+  const PhysicalBoxStrut margins = item_result->margins.ConvertToPhysical(
+      {constraint_space_.GetWritingMode(), TextDirection::kLtr});
   line_box->AddChild(std::move(item_result->layout_result),
-                     LogicalOffset{inline_offset, line_top},
+                     LogicalOffset{inline_offset, line_top}, margins,
                      item_result->inline_size, /* children_count */ 0,
                      item.BidiLevel());
 }
@@ -546,9 +550,11 @@ void LogicalLineBuilder::PlaceInitialLetterBox(const InlineItem& item,
   // Note: `item.Style()` which holds style of `<::first-letter>` should not be
   // include in `InlineBoxState::font_metrics` and `metrics`, because they
   // don't affect baseline of surrounding text.
+  const PhysicalBoxStrut margins = item_result->margins.ConvertToPhysical(
+      {constraint_space_.GetWritingMode(), TextDirection::kLtr});
   line_box->AddChild(
       std::move(item_result->layout_result),
-      LogicalOffset{item_result->margins.inline_start, LayoutUnit()},
+      LogicalOffset{item_result->margins.inline_start, LayoutUnit()}, margins,
       item_result->inline_size, /* children_count */ 0, item.BidiLevel());
 }
 

@@ -633,6 +633,7 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
   // static position calculation as 0.
   placeholder.layout_result = box_data.CreateBoxFragment(
       space, line_box, /*line_box_line_height=*/LayoutUnit());
+  placeholder.margins = box_data.Margins();
   placeholder.inline_size = advance;
   DCHECK(!placeholder.children_count);
   box_data_list_.pop_back();
@@ -1017,9 +1018,12 @@ void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
     DCHECK(box_data.item->ShouldCreateBoxFragment());
     const LayoutResult* box_fragment = box_data.CreateBoxFragment(
         space, line_box, line_box_line_height, is_opaque);
+    const PhysicalBoxStrut margins =
+        is_opaque ? PhysicalBoxStrut() : box_data.Margins();
     if (child->IsPlaceholder()) {
       child->layout_result = std::move(box_fragment);
       child->rect = box_data.rect;
+      child->margins = margins;
       child->children_count = end - start;
       continue;
     }
@@ -1027,7 +1031,7 @@ void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
     // |AddBoxFragmentPlaceholder| adds a placeholder at |fragment_start|, but
     // bidi reordering may move it. Insert in such case.
     line_box->InsertChild(start, std::move(box_fragment), box_data.rect,
-                          end - start + 1);
+                          margins, end - start + 1);
     ChildInserted(start + 1);
   }
 
