@@ -1279,6 +1279,89 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void testOnChildDraw_SolitaryChild_HeaderScrolledOff_DoesNotResetOtherRows() {
+        // Drag a group's only tab; its header (whose TAB_ID matches the tab) moves with it.
+        Token groupId = new Token(1L, 2L);
+        mPropertyModel.set(TabProperties.TAB_GROUP_ID, groupId);
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
+        SimpleRecyclerViewAdapter.ViewHolder headerHolder =
+                createGroupHeaderViewHolder(groupId, 100, 50);
+        headerHolder.model.set(TabProperties.TAB_ID, 1);
+        mockRecyclerViewChildren(mViewHolder, headerHolder);
+
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                /* dX= */ 0f,
+                /* dY= */ 20f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                /* isCurrentlyActive= */ true);
+        assertEquals(20f, headerHolder.itemView.getTranslationY(), 0.01f);
+
+        // The header scrolls off while another group's header, with the same TAB_ID, is shown.
+        SimpleRecyclerViewAdapter.ViewHolder otherHeaderHolder =
+                createGroupHeaderViewHolder(new Token(3L, 4L), 100, 50);
+        otherHeaderHolder.model.set(TabProperties.TAB_ID, 1);
+        mockRecyclerViewChildren(mViewHolder, otherHeaderHolder);
+        otherHeaderHolder.itemView.setTranslationY(7f);
+
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                /* dX= */ 0f,
+                /* dY= */ 20f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                /* isCurrentlyActive= */ true);
+
+        // Neither the dragged tab nor the other group's header is reset.
+        assertEquals(20f, mViewHolder.itemView.getTranslationY(), 0.01f);
+        assertEquals(7f, otherHeaderHolder.itemView.getTranslationY(), 0.01f);
+        // The scrolled-off header is restored.
+        assertEquals(0f, headerHolder.itemView.getTranslationY(), 0.01f);
+    }
+
+    @Test
+    public void testOnChildDraw_GroupHeader_FirstChildScrolledOff_DoesNotResetDraggedHeader() {
+        // Drag a group header whose TAB_ID matches its first tab.
+        Token groupId = new Token(1L, 2L);
+        setItemViewType(mViewHolder, TabProperties.UiType.TAB_GROUP);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
+        mPropertyModel.set(TabProperties.TAB_ID, 2);
+        SimpleRecyclerViewAdapter.ViewHolder childHolder1 =
+                createGroupChildViewHolder(2, groupId, 100, 60);
+        SimpleRecyclerViewAdapter.ViewHolder childHolder2 =
+                createGroupChildViewHolder(3, groupId, 100, 60);
+        mockRecyclerViewChildren(mViewHolder, childHolder1, childHolder2);
+
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                /* dX= */ 0f,
+                /* dY= */ 20f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                /* isCurrentlyActive= */ true);
+
+        // The first tab scrolls off.
+        mockRecyclerViewChildren(mViewHolder, childHolder2);
+
+        mCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mViewHolder,
+                /* dX= */ 0f,
+                /* dY= */ 20f,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                /* isCurrentlyActive= */ true);
+
+        assertEquals(20f, mViewHolder.itemView.getTranslationY(), 0.01f);
+        assertEquals(20f, childHolder2.itemView.getTranslationY(), 0.01f);
+        assertEquals(0f, childHolder1.itemView.getTranslationY(), 0.01f);
+    }
+
+    @Test
     public void testCanDropOver_StandaloneTabOnGroupChild_ReturnsTrue() {
         mPropertyModel.set(TabProperties.IS_PINNED, false);
         mTargetPropertyModel.set(TabProperties.IS_PINNED, false);

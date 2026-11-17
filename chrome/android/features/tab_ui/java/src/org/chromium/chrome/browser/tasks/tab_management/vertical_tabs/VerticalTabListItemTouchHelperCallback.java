@@ -90,7 +90,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     private static final long CONTEXT_MENU_ORCHESTRATOR_DELAY_MS = 10L;
     private static final long MAX_UNGROUP_TRACKING_DURATION_MS = 3 * DateUtils.MINUTE_IN_MILLIS;
     private final int mMouseDragThresholdSquared;
-    private final Set<Integer> mDraggedChildTabIds = new HashSet<>();
+    private final Set<Object> mDraggedChildKeys = new HashSet<>();
     private final List<Integer> mSelectedGroupTabIds = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> mDraggedChildViewHolders = new ArrayList<>();
     private final SparseLongArray mGroupedTabTimestamps = new SparseLongArray();
@@ -733,7 +733,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             Token groupId = getTabGroupId(viewHolder);
             if (groupId == null) return;
 
-            Set<Integer> currentChildIds = new HashSet<>();
+            Set<Object> currentChildKeys = new HashSet<>();
             for (int i = 0; i < recyclerView.getChildCount(); i++) {
                 View childView = recyclerView.getChildAt(i);
                 RecyclerView.ViewHolder childViewHolder =
@@ -744,8 +744,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 if (hasTabPropertiesModel(childViewHolder)) {
                     Token childGroupId = getTabGroupId(childViewHolder);
                     if (groupId.equals(childGroupId)) {
-                        int childTabId = getTabId(childViewHolder);
-                        currentChildIds.add(childTabId);
+                        Object childKey = assumeNonNull(getItemKey(childViewHolder));
+                        currentChildKeys.add(childKey);
 
                         if (recyclerView.getItemAnimator() != null) {
                             recyclerView.getItemAnimator().endAnimation(childViewHolder);
@@ -758,7 +758,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                         }
                         childView.setTranslationY(renderDy);
 
-                        mDraggedChildTabIds.add(childTabId);
+                        mDraggedChildKeys.add(childKey);
                         if (isCurrentlyActive) {
                             childView.setTranslationZ(viewHolder.itemView.getElevation());
                         } else {
@@ -784,17 +784,17 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             }
 
             // Restore any views that scrolled off screen or were recycled away from the group.
-            Iterator<Integer> it = mDraggedChildTabIds.iterator();
+            Iterator<Object> it = mDraggedChildKeys.iterator();
             while (it.hasNext()) {
-                int savedTabId = it.next();
-                if (!currentChildIds.contains(savedTabId)) {
+                Object savedKey = it.next();
+                if (!currentChildKeys.contains(savedKey)) {
                     // If the view is still attached but no longer in the group, reset it.
                     for (int i = 0; i < recyclerView.getChildCount(); i++) {
                         View childView = recyclerView.getChildAt(i);
                         RecyclerView.ViewHolder childViewHolder =
                                 recyclerView.getChildViewHolder(childView);
                         if (hasTabPropertiesModel(childViewHolder)
-                                && getTabId(childViewHolder) == savedTabId) {
+                                && savedKey.equals(getItemKey(childViewHolder))) {
                             childView.setTranslationZ(0f);
                             childView.setTranslationY(0f);
                             break;
@@ -806,7 +806,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                     while (holderIt.hasNext()) {
                         RecyclerView.ViewHolder trackedHolder = holderIt.next();
                         if (hasTabPropertiesModel(trackedHolder)
-                                && getTabId(trackedHolder) == savedTabId) {
+                                && savedKey.equals(getItemKey(trackedHolder))) {
                             trackedHolder.setIsRecyclable(true);
                             recyclerView.getOverlay().remove(trackedHolder.itemView);
 
@@ -891,8 +891,10 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
             pruneExpiredGroupTimestamps(now);
             if (dragResult == DragDropResult.GROUPED) {
                 mGroupedTabTimestamps.put(mDragStartTabId, now);
-                for (int childTabId : mDraggedChildTabIds) {
-                    mGroupedTabTimestamps.put(childTabId, now);
+                for (Object childKey : mDraggedChildKeys) {
+                    if (childKey instanceof Integer childTabId) {
+                        mGroupedTabTimestamps.put(childTabId, now);
+                    }
                 }
             } else if (dragResult == DragDropResult.UNGROUPED) {
                 int index = mGroupedTabTimestamps.indexOfKey(mDragStartTabId);
@@ -918,7 +920,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         mDraggedGroupId = null;
         mIsDraggedGroupHeader = false;
         mDraggedItemViewType = -1;
-        mDraggedChildTabIds.clear();
+        mDraggedChildKeys.clear();
     }
 
     @Override
