@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/actor/actor_critical_action_logger.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
@@ -52,7 +53,8 @@ void PasswordManagerCriticalActionLogger::MaybeLogCriticalAction(
 
   const actor::ActorTask* task =
       actor_service->GetActingActorTaskForWebContents(web_contents());
-  if (!task) {
+  if (!task || !actor::ActorCriticalActionLogger::IsTaskSourceSupported(
+                   task->source_info().type)) {
     return;
   }
 

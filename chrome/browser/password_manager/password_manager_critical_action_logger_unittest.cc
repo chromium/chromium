@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_manager_critical_action_logger.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/actor/core/task_source_info.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/critical_actions/core/browser/features.h"
@@ -142,11 +144,15 @@ class PasswordManagerCriticalActionLoggerTest
     return nav_id;
   }
 
-  actor::TaskId StartActorTask() {
+  actor::TaskId StartActorTask(
+      const actor::TaskSourceInfo& source_info =
+          actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                                "conversation-123")) {
     auto* actor_service = static_cast<actor::ActorKeyedServiceFake*>(
         actor::ActorKeyedService::Get(profile()));
     actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab_);
-    actor::TaskId task_id = actor_service->CreateTaskForTesting();
+    actor::TaskId task_id =
+        actor_service->CreateTaskWithSourceInfoForTesting(source_info);
     actor_service->GetTask(task_id)->AddTab(
         mock_tab_.GetHandle(), /*stop_task_on_detach=*/true, base::DoNothing());
     return task_id;
@@ -221,6 +227,19 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
 
 TEST_F(PasswordManagerCriticalActionLoggerTest,
        DoesNotLogCriticalActionWhenNoActorTaskIsActive) {
+  EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId).Times(0);
+
+  logger()->MaybeLogCriticalAction(
+      critical_actions::ActionType::kGooglePasswordManager,
+      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+          web_contents()->GetPrimaryMainFrame()));
+}
+
+TEST_F(PasswordManagerCriticalActionLoggerTest,
+       DoesNotLogCriticalActionForUnsupportedTaskSource) {
+  StartActorTask(actor::TaskSourceInfo(
+      actor::TaskSourceInfo::Client::kExperimentalActor, std::nullopt));
+
   EXPECT_CALL(*mock_service(), AddCriticalActionWithNavigationId).Times(0);
 
   logger()->MaybeLogCriticalAction(
