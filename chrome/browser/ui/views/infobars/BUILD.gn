@@ -16,6 +16,7 @@ source_set("infobars") {
   ]
 
   sources = [
+    "batch_progress_tracker.h",
     "confirm_infobar_with_custom_view.h",
     "confirm_infobar_with_normal_label.h",
     "confirm_infobar_with_styled_label.h",
@@ -31,6 +32,7 @@ source_set("infobars") {
 source_set("impl") {
   sources = [
     "alternate_nav_infobar_view.cc",
+    "batch_progress_tracker.cc",
     "confirm_infobar.cc",
     "confirm_infobar_with_custom_view.cc",
     "confirm_infobar_with_normal_label.cc",
@@ -90,6 +92,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "batch_progress_tracker_unittest.cc",
     "confirm_infobar_unittest.cc",
     "infobar_view_unittest.cc",
   ]

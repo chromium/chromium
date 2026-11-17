@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/supports_user_data.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
@@ -24,7 +25,7 @@ class InfoBar;
 
 // Provides access to creating, removing and enumerating info bars
 // attached to a tab.
-class InfoBarManager {
+class InfoBarManager : public base::SupportsUserData {
  public:
   // Observer class for infobar events.
   class Observer {
@@ -42,7 +43,7 @@ class InfoBarManager {
   InfoBarManager(const InfoBarManager&) = delete;
   InfoBarManager& operator=(const InfoBarManager&) = delete;
 
-  virtual ~InfoBarManager();
+  ~InfoBarManager() override;
 
   // Adds the specified |infobar|, which already owns a delegate.
   //
@@ -145,7 +146,13 @@ class InfoBarManager {
   bool animations_enabled_ = true;
   const bool infobars_enabled_ = true;
 
-  base::ObserverList<Observer, true>::Unchecked observer_list_;
+  // `RemoveInfoBarInternal()` and `ReplaceInfoBarInternal()` explicitly mutate
+  // `infobars_` prior to notifying so observers may re-entrantly call
+  // `AddInfoBar()`, `RemoveInfoBar()`, or `ReplaceInfoBar()`.
+  base::ObserverList<Observer,
+                     /*check_empty=*/true,
+                     base::ObserverListReentrancyPolicy::kAllowReentrancy>::
+      Unchecked observer_list_;
 };
 
 }  // namespace infobars

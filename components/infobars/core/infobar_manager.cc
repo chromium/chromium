@@ -134,6 +134,7 @@ InfoBarManager::~InfoBarManager() {
   for (Observer& observer : observer_list_) {
     observer.OnManagerWillBeDestroyed(this);
   }
+  ClearAllUserData();
 }
 
 void InfoBarManager::OnNavigation(
