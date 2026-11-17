@@ -216,6 +216,8 @@ StoragePartitionImplMap* BrowserContextImpl::GetOrCreateStoragePartitionMap() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!storage_partition_map_) {
+    CHECK(!storage_partitions_shut_down_, base::NotFatalUntil::M163)
+        << "StoragePartitionImplMap is recreated after shutdown";
     storage_partition_map_ = std::make_unique<StoragePartitionImplMap>(self_);
   }
 
@@ -279,6 +281,7 @@ void BrowserContextImpl::ShutdownStoragePartitions() {
   CHECK(background_sync_scheduler_->HasOneRef(), base::NotFatalUntil::M159);
   background_sync_scheduler_.reset();
 
+  storage_partitions_shut_down_ = true;
   storage_partition_map_.reset();
 
   // Delete the BtmService, causing its SQLite database file to be closed. This

@@ -211,6 +211,10 @@ class CONTENT_EXPORT BrowserContextImpl {
   const std::string unique_id_ = unique_token_.ToString();
   bool will_be_destroyed_soon_ = false;
 
+  // If true, `storage_partition_map_` is already shut down and expected to stay
+  // null until destruction.
+  bool storage_partitions_shut_down_ = false;
+
   std::unique_ptr<StoragePartitionImplMap> storage_partition_map_;
   scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list_ =
       SharedCorsOriginAccessList::Create();
