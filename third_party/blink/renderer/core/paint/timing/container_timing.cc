@@ -63,16 +63,53 @@ bool ContainerTiming::ContributesToContainerTiming(Element* element) {
   // runs before paint), keys images by their generating node and text by its
   // aggregation node, which is exactly `element` either way.
   ContainerTiming& container_timing = From(*window);
-  if (container_timing.has_seen_input_or_scroll_) {
-    return false;
+  return container_timing.IsRecordingFor(
+      container_timing.PaintAttributionTracker()->GetContainerRootFor(element));
+}
+
+bool ContainerTiming::IsRecordingFor(HTMLElement* container_root) const {
+  // A root without a record has not painted yet, so it would start recording.
+  for (HTMLElement* root = LiveContainerRoot(container_root); root;
+       root = NextPropagationRoot(root)) {
+    auto it = container_root_records_.find(root);
+    if (it == container_root_records_.end() ||
+        it->value->IsRecording(input_count_)) {
+      return true;
+    }
   }
-  return container_timing.PaintAttributionTracker()->GetContainerRootFor(
-             element) != nullptr;
+  return false;
+}
+
+// static
+HTMLElement* ContainerTiming::LiveContainerRoot(HTMLElement* container_root) {
+  // Skip roots that are no longer roots, in case the containertiming attribute
+  // was removed, or the root disconnected, since the last pre-paint walk
+  // updated the tracker. See StaleTrackerGuard_* tests.
+  if (container_root && container_root->isConnected() &&
+      container_root->FastHasAttribute(html_names::kContainertimingAttr)) {
+    return container_root;
+  }
+  return nullptr;
+}
+
+HTMLElement* ContainerTiming::NextPropagationRoot(
+    HTMLElement* container_root) const {
+  // A container root with containertimingignore does not propagate to ancestor
+  // roots.
+  if (container_root->FastHasAttribute(
+          html_names::kContainertimingignoreAttr)) {
+    return nullptr;
+  }
+  return LiveContainerRoot(
+      paint_attribution_tracker_->GetParentContainerRootFor(container_root));
 }
 
 ContainerTiming::Record::Record(HTMLElement* container_root,
-                                const AtomicString& identifier)
-    : container_root_(container_root), identifier_(identifier) {}
+                                const AtomicString& identifier,
+                                uint64_t first_paint_input_count)
+    : container_root_(container_root),
+      identifier_(identifier),
+      first_paint_input_count_(first_paint_input_count) {}
 
 bool ContainerTiming::Record::MaybeUpdateLastNewPaintedArea(
     Element* element,
@@ -137,7 +174,8 @@ ContainerTiming::Record* ContainerTiming::GetOrCreateRecord(
   } else {
     record = MakeGarbageCollected<Record>(
         container_root,
-        container_root->FastGetAttribute(html_names::kContainertimingAttr));
+        container_root->FastGetAttribute(html_names::kContainertimingAttr),
+        input_count_);
     container_root_records_.insert(container_root, record);
   }
 
@@ -166,13 +204,6 @@ void ContainerTiming::OnContainerRootDisconnected(HTMLElement* element) {
 
 void ContainerTiming::OnElementPainted(Element& element,
                                        const gfx::RectF& intersection_rect) {
-  // ElementTiming also calls this for elements registered for element timing,
-  // which ContributesToContainerTiming() did not filter.
-  // TODO(crbug.com/559075199): Make this a CHECK once ContainerTiming and
-  // ElementTiming are decoupled.
-  if (has_seen_input_or_scroll_) {
-    return;
-  }
   // The tracker only maps elements that are actually attributed to a container
   // root. A null result means this paint (e.g. a text record that only exists
   // for element timing) is not under any container root and must be ignored.
@@ -186,23 +217,16 @@ void ContainerTiming::OnElementPainted(Element& element,
   }
 
   const gfx::Rect enclosing_rect = gfx::ToEnclosingRect(intersection_rect);
-  // Skip roots that are no longer roots, in case the containertiming attribute
-  // was removed, or the root disconnected, since the last pre-paint walk
-  // updated the tracker. See StaleTrackerGuard_* tests.
-  while (container_root && container_root->isConnected() &&
-         container_root->FastHasAttribute(html_names::kContainertimingAttr)) {
-    Record* record = GetOrCreateRecord(container_root);
-    if (record->MaybeUpdateLastNewPaintedArea(&element, enclosing_rect)) {
+  for (HTMLElement* root = LiveContainerRoot(container_root); root;
+       root = NextPropagationRoot(root)) {
+    // ElementTiming also calls this for elements registered for element
+    // timing, which ContributesToContainerTiming() did not filter, so check
+    // that the root is still recording.
+    Record* record = GetOrCreateRecord(root);
+    if (record->IsRecording(input_count_) &&
+        record->MaybeUpdateLastNewPaintedArea(&element, enclosing_rect)) {
       dirty_records_.push_back(record);
     }
-    // A container root with containertimingignore does not propagate to
-    // ancestor roots.
-    if (container_root->FastHasAttribute(
-            html_names::kContainertimingignoreAttr)) {
-      break;
-    }
-    container_root =
-        paint_attribution_tracker_->GetParentContainerRootFor(container_root);
   }
 }
 

@@ -40,12 +40,14 @@ class CORE_EXPORT ContainerTiming final
   static ContainerTiming& From(LocalDOMWindow&);
 
   // The container-timing decision is made via the paint attribution tracker,
-  // populated during the pre-paint walk. Returns false once recording stopped.
+  // populated during the pre-paint walk. Returns false once every container
+  // root of `element` has stopped recording.
   static bool ContributesToContainerTiming(Element* element);
 
-  // Stops recording paints. Paints committed before this keep their
-  // presentation callbacks, so they are still reported.
-  void OnInputOrScroll() { has_seen_input_or_scroll_ = true; }
+  // Stops recording for the container roots that painted before this. Paints
+  // committed before this keep their presentation callbacks, so they are still
+  // reported.
+  void OnInputOrScroll() { ++input_count_; }
 
   void MaybeUpdateContainerRootIdentifier(HTMLElement* element,
                                           const AtomicString& new_value);
@@ -74,11 +76,19 @@ class CORE_EXPORT ContainerTiming final
  private:
   class Record final : public GarbageCollected<Record> {
    public:
-    Record(HTMLElement* container_root, const AtomicString& identifier);
+    Record(HTMLElement* container_root,
+           const AtomicString& identifier,
+           uint64_t first_paint_input_count);
     Record(const Record&) = delete;
     Record& operator=(const Record&) = delete;
 
     const AtomicString& identifier() const { return identifier_; }
+
+    // A record takes the paints committed before the first input or scroll
+    // after its first paint.
+    bool IsRecording(uint64_t input_count) const {
+      return input_count == first_paint_input_count_;
+    }
 
     // Returns true if the container grew for the first time since the last
     // entry was created.
@@ -101,6 +111,7 @@ class CORE_EXPORT ContainerTiming final
     DOMHighResTimeStamp first_render_time_ = 0.0;
     const WeakMember<HTMLElement> container_root_;
     const AtomicString identifier_;
+    const uint64_t first_paint_input_count_;
     // The largest element, by its own clipped area, painted since the last
     // entry was created, and that area. Both reset when an entry is created.
     WeakMember<Element> largest_painted_area_element_;
@@ -112,6 +123,15 @@ class CORE_EXPORT ContainerTiming final
   // An entry created at paint time, and the record it reports.
   using PendingEntry =
       std::pair<Member<Record>, Member<PerformanceContainerTiming>>;
+
+  // Returns true if `container_root` or one of the roots it propagates to
+  // would take a paint committed now.
+  bool IsRecordingFor(HTMLElement* container_root) const;
+
+  // Paints propagate from a root to its ancestor roots. Both return null where
+  // the propagation stops.
+  static HTMLElement* LiveContainerRoot(HTMLElement* container_root);
+  HTMLElement* NextPropagationRoot(HTMLElement* container_root) const;
 
   void FlushTimingsOnFramePresented(GCedHeapVector<PendingEntry>*,
                                     const base::TimeTicks&,
@@ -127,10 +147,10 @@ class CORE_EXPORT ContainerTiming final
   // is enabled, and never reassigned.
   const Member<ContainerTimingPaintAttributionTracker>
       paint_attribution_tracker_;
-  // Recording stops after the first input or scroll, while element timing
-  // keeps reporting. See
+  // Each container root stops recording after the first input or scroll
+  // since its first paint, while element timing keeps reporting. See
   // https://w3c.github.io/container-timing/#handle-element-painted.
-  bool has_seen_input_or_scroll_ = false;
+  uint64_t input_count_ = 0;
 };
 
 }  // namespace blink

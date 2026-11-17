@@ -380,6 +380,19 @@ TEST_F(ContainerTimingTest, StaleTrackerGuard_RootDisconnected) {
   EXPECT_FALSE(GetContainerTiming().HasRecordForTesting(root));
 }
 
+// A root disconnected since the last pre-paint walk, which dropped its record,
+// must not be taken for a root that has not painted yet.
+TEST_F(ContainerTimingTest, StaleTrackerGuard_DisconnectedRootDoesNotRecord) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root"><div id="content">x</div></div>
+  )HTML");
+  auto* content = GetElementById("content");
+  ASSERT_TRUE(ContainerTiming::ContributesToContainerTiming(content));
+
+  GetElementById("root")->remove();
+  EXPECT_FALSE(ContainerTiming::ContributesToContainerTiming(content));
+}
+
 // Regression test for the graceful early return in OnElementPainted. The
 // painted element is inside a container timing root, but it is neither a
 // text-aggregation nor an image-generating node, so the pre-paint walk never
@@ -1092,6 +1105,156 @@ TEST_F(ContainerTimingTest, AttributeRemovedBetweenPaintAndPresentation) {
   EXPECT_FALSE(GetContainerTiming().HasRecordForTesting(root));
 }
 
+// A container root records until the first input or scroll after its first
+// paint.
+TEST_F(ContainerTimingTest, Input_StopsAfterFirstPaint) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="a">x</div>
+      <div id="b">x</div>
+    </div>
+  )HTML");
+
+  SimulatePaint(GetElementById("a"), gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  GetContainerTiming().OnInputOrScroll();
+  SimulatePaint(GetElementById("b"), gfx::RectF(0, 100, 100, 100));
+  TriggerPopulateEntries();
+  EXPECT_EQ(1u, GetContainerEntryCount());
+}
+
+// `late` is hidden until after the input, so it does not paint before it.
+TEST_F(ContainerTimingTest, Input_RootFirstPaintedAfterInputRecordsUntilNext) {
+  SetBodyContent(R"HTML(
+    <div id="early" containertiming="early"><div id="a">x</div></div>
+    <div id="late" containertiming="late" style="display: none">
+      <div id="b">x</div>
+      <div id="c">x</div>
+    </div>
+  )HTML");
+
+  SimulatePaint(GetElementById("a"), gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  GetContainerTiming().OnInputOrScroll();
+  GetElementById("late")->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  SimulatePaint(GetElementById("b"), gfx::RectF(0, 100, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(2u, GetContainerEntryCount());
+  EXPECT_EQ("late", GetLastContainerEntry()->identifier());
+
+  GetContainerTiming().OnInputOrScroll();
+  SimulatePaint(GetElementById("c"), gfx::RectF(0, 200, 100, 100));
+  TriggerPopulateEntries();
+  EXPECT_EQ(2u, GetContainerEntryCount());
+}
+
+// An inner root first painted after the input records, while its outer root,
+// painted before it, does not. `inner` is hidden until after the input.
+TEST_F(ContainerTimingTest, Input_InnerRootFirstPaintedAfterInput) {
+  SetBodyContent(R"HTML(
+    <div id="outer" containertiming="outer">
+      <div id="a">x</div>
+      <div id="inner" containertiming="inner" style="display: none">
+        <div id="b">x</div>
+      </div>
+    </div>
+  )HTML");
+
+  SimulatePaint(GetElementById("a"), gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  GetContainerTiming().OnInputOrScroll();
+  GetElementById("inner")->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  SimulatePaint(GetElementById("b"), gfx::RectF(0, 100, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(2u, GetContainerEntryCount());
+  EXPECT_EQ("inner", GetLastContainerEntry()->identifier());
+}
+
+// An outer root added after the input records the paints of an inner root
+// that has stopped.
+TEST_F(ContainerTimingTest, Input_OuterRootAddedAfterInput) {
+  SetBodyContent(R"HTML(
+    <div id="outer">
+      <div id="inner" containertiming="inner">
+        <div id="a">x</div>
+        <div id="b">x</div>
+      </div>
+    </div>
+  )HTML");
+
+  SimulatePaint(GetElementById("a"), gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  GetContainerTiming().OnInputOrScroll();
+  GetElementById("outer")->setAttribute(html_names::kContainertimingAttr,
+                                        AtomicString("outer"));
+  UpdateAllLifecyclePhasesForTest();
+  SimulatePaint(GetElementById("b"), gfx::RectF(0, 100, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(2u, GetContainerEntryCount());
+  EXPECT_EQ("outer", GetLastContainerEntry()->identifier());
+}
+
+// A stopped root still keeps its paints from ancestors with
+// containertimingignore.
+TEST_F(ContainerTimingTest, Input_StoppedIgnoreRootStillStopsPropagation) {
+  SetBodyContent(R"HTML(
+    <div id="outer">
+      <div id="inner" containertiming="inner" containertimingignore>
+        <div id="a">x</div>
+        <div id="b">x</div>
+      </div>
+    </div>
+  )HTML");
+
+  SimulatePaint(GetElementById("a"), gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  GetContainerTiming().OnInputOrScroll();
+  GetElementById("outer")->setAttribute(html_names::kContainertimingAttr,
+                                        AtomicString("outer"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      ContainerTiming::ContributesToContainerTiming(GetElementById("b")));
+  SimulatePaint(GetElementById("b"), gfx::RectF(0, 100, 100, 100));
+  TriggerPopulateEntries();
+  EXPECT_EQ(1u, GetContainerEntryCount());
+}
+
+// A new identifier is a new container root, which records until the next
+// input.
+TEST_F(ContainerTimingTest, Input_IdentifierChangedAfterInput) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="old">
+      <div id="a">x</div>
+      <div id="b">x</div>
+    </div>
+  )HTML");
+
+  SimulatePaint(GetElementById("a"), gfx::RectF(0, 0, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(1u, GetContainerEntryCount());
+
+  GetContainerTiming().OnInputOrScroll();
+  GetElementById("root")->setAttribute(html_names::kContainertimingAttr,
+                                       AtomicString("new"));
+  UpdateAllLifecyclePhasesForTest();
+  SimulatePaint(GetElementById("b"), gfx::RectF(0, 100, 100, 100));
+  TriggerPopulateEntries();
+  ASSERT_EQ(2u, GetContainerEntryCount());
+  EXPECT_EQ("new", GetLastContainerEntry()->identifier());
+}
+
 // A paint committed before the input is still reported, even if the frame is
 // presented after it.
 TEST_F(ContainerTimingTest, Input_ReportsPaintPresentedAfterInput) {
@@ -1252,33 +1415,48 @@ TEST_F(ContainerTimingInputTest, ContinuesAfterKeyUp) {
   EXPECT_TRUE(WouldRecord("first"));
 }
 
-// Recording stops for the whole window, including roots that had not painted
-// before the input.
-TEST_F(ContainerTimingInputTest, StopsForRootFirstPaintedAfterInput) {
+// A root that had not painted before the input starts recording on its first
+// paint.
+TEST_F(ContainerTimingInputTest, RecordsRootFirstPaintedAfterInput) {
   SimulateKeyDown();
   PaintSecondImage();
-  EXPECT_FALSE(HasRecord("second_root"));
+  EXPECT_TRUE(HasRecord("second_root"));
 }
 
-// Element timing keeps reporting the image, but container timing must not
-// record it.
-TEST_F(ContainerTimingInputTest, StopsForElementTimingImageAfterInput) {
+// The same holds for an image also registered for element timing.
+TEST_F(ContainerTimingInputTest,
+       RecordsElementTimingImageOfRootFirstPaintedAfterInput) {
   GetElementById("second")->setAttribute(html_names::kElementtimingAttr,
                                          AtomicString("et"));
   SimulateKeyDown();
   PaintSecondImage();
-  EXPECT_FALSE(HasRecord("second_root"));
+  EXPECT_TRUE(HasRecord("second_root"));
 }
 
-TEST_F(ContainerTimingInputTest, StopsForTextOfRootFirstPaintedAfterInput) {
+TEST_F(ContainerTimingInputTest, RecordsTextOfRootFirstPaintedAfterInput) {
   SimulateKeyDown();
   GetElementById("second_root")->setTextContent("Text");
   SimulateRenderingAndPresentationTime();
-  EXPECT_FALSE(HasRecord("second_root"));
+  EXPECT_TRUE(HasRecord("second_root"));
 }
 
 TEST_F(ContainerTimingInputTest, ContinuesForTextWithoutInput) {
   GetElementById("second_root")->setTextContent("Text");
+  SimulateRenderingAndPresentationTime();
+  EXPECT_TRUE(HasRecord("second_root"));
+}
+
+// A root hidden until an input, e.g. a tab panel shown by a click, records its
+// first paints.
+TEST_F(ContainerTimingInputTest, RecordsRootShownAfterInput) {
+  Element* root = GetElementById("second_root");
+  root->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
+  SetImageContent("second", 100, 100);
+  SimulateRenderingAndPresentationTime();
+  ASSERT_FALSE(HasRecord("second_root"));
+
+  SimulateKeyDown();
+  root->removeAttribute(html_names::kStyleAttr);
   SimulateRenderingAndPresentationTime();
   EXPECT_TRUE(HasRecord("second_root"));
 }
