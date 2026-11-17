@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -86,7 +87,7 @@ class PersonalDataManager : public KeyedService,
       syncer::SyncService* sync_service,
       strike_database::StrikeDatabaseBase* strike_database,
       AutofillImageFetcherBase* image_fetcher,
-      std::string app_locale,
+      const base::i18n::LanguageTag& app_locale,
       std::string country_code,
       AutofillOptimizationGuideDecider* autofill_optimization_guide_decider);
   PersonalDataManager(const PersonalDataManager&) = delete;

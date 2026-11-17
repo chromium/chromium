@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -42,8 +43,9 @@ class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
         identity_test_env_.identity_manager(),
         /*history_service=*/nullptr, &sync_service_,
         /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr, "en-US", "US",
-        /*autofill_optimization_guide=*/nullptr);
+        /*image_fetcher=*/nullptr, base::i18n::GetKnownLanguageTag("en-US"),
+        "US",
+        /*autofill_optimization_guide_decider=*/nullptr);
     PersonalDataChangedWaiter(*personal_data_).Wait();
     payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(
         &personal_data_->payments_data_manager());

@@ -9,12 +9,14 @@
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/strike_database/strike_database.h"
@@ -98,11 +100,10 @@ PersonalDataManagerFactory::BuildServiceInstanceForBrowserContext(
       AutofillOptimizationGuideDeciderFactory::GetForProfile(profile);
 
   return std::make_unique<PersonalDataManager>(
-      local_storage, account_storage, profile->GetPrefs(),
-      identity_manager, history_service,
-      sync_service, strike_database, image_fetcher,
-      g_browser_process->GetApplicationLocale(), GetCountryCodeFromVariations(),
-      autofill_optimization_guide_decider);
+      local_storage, account_storage, profile->GetPrefs(), identity_manager,
+      history_service, sync_service, strike_database, image_fetcher,
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag(),
+      GetCountryCodeFromVariations(), autofill_optimization_guide_decider);
 }
 
 }  // namespace autofill

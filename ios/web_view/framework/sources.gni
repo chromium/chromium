@@ -311,6 +311,7 @@ ios_web_view_sources = [
 
 ios_web_view_deps = [
   "//base",
+  "//base/i18n:language_tag",
   "//components/activity_reporter",
   "//components/affiliations/core/browser:affiliations",
   "//components/autofill/core/browser",

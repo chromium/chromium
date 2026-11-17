@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
@@ -23,9 +24,9 @@ TestPersonalDataManager::TestPersonalDataManager()
           /*sync_service=*/nullptr,
           /*strike_database=*/nullptr,
           /*image_fetcher=*/nullptr,
-          "en-US",
+          base::i18n::GetKnownLanguageTag("en-US"),
           "US",
-          /*autofill_optimization_guide=*/nullptr) {
+          /*autofill_optimization_guide_decider=*/nullptr) {
   set_address_data_manager(std::make_unique<TestAddressDataManager>("en-US"));
   set_payments_data_manager(std::make_unique<TestPaymentsDataManager>("en-US"));
 }

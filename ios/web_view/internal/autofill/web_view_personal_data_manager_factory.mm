@@ -6,6 +6,8 @@
 
 #import <utility>
 
+#import "base/i18n/language_tag.h"
+#import "base/i18n/tag_converters.h"
 #import "base/no_destructor.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -68,8 +70,10 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
       /*history_service=*/nullptr, sync_service, /*strike_database=*/nullptr,
       WebViewAutofillImageFetcherFactory::GetForBrowserState(browser_state),
-      ApplicationContext::GetInstance()->GetApplicationLocale(),
-      /*country_code=*/"", /*autofill_optimization_guide=*/nullptr);
+      base::i18n::GetLanguageTagFromString(
+          ApplicationContext::GetInstance()->GetApplicationLocale())
+          .value_or(base::i18n::GetKnownLanguageTag("und")),
+      /*country_code=*/"", /*autofill_optimization_guide_decider=*/nullptr);
 }
 
 }  // namespace ios_web_view
