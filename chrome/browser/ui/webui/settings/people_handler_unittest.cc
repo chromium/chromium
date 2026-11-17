@@ -1916,7 +1916,7 @@ TEST_F(PeopleHandlerWithCookiesSyncTest, SyncCookiesSupported) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-class PeopleHandlerWithReplaceSyncWithSigninUI : public PeopleHandlerTest {
+class PeopleHandlerAccountSettingsTest : public PeopleHandlerTest {
   void SetUp() override {
     PeopleHandlerTest::SetUp();
     SigninUserWithoutSyncFeature();
@@ -1926,7 +1926,7 @@ class PeopleHandlerWithReplaceSyncWithSigninUI : public PeopleHandlerTest {
 
 // Walks through each user selectable type, and tries to activate account
 // storage for that data type.
-TEST_F(PeopleHandlerWithReplaceSyncWithSigninUI, SetIndividualDatatypes) {
+TEST_F(PeopleHandlerAccountSettingsTest, SetIndividualDatatypes) {
   sync_user_settings()->SetSelectedTypes(/*sync_everything=*/false, {});
 
   for (syncer::UserSelectableType type : GetAllTypes()) {
@@ -1939,7 +1939,7 @@ TEST_F(PeopleHandlerWithReplaceSyncWithSigninUI, SetIndividualDatatypes) {
   }
 }
 
-TEST_F(PeopleHandlerWithReplaceSyncWithSigninUI, SetNonRegisteredDatatype) {
+TEST_F(PeopleHandlerAccountSettingsTest, SetNonRegisteredDatatype) {
   // Simulate apps not being registered.
   syncer::UserSelectableTypeSet registered_types = GetAllTypes();
   registered_types.Remove(syncer::UserSelectableType::kApps);
@@ -1953,7 +1953,7 @@ TEST_F(PeopleHandlerWithReplaceSyncWithSigninUI, SetNonRegisteredDatatype) {
       syncer::UserSelectableType::kApps));
 }
 
-TEST_F(PeopleHandlerWithReplaceSyncWithSigninUI, HandleShowAccountSettingsUI) {
+TEST_F(PeopleHandlerAccountSettingsTest, HandleShowAccountSettingsUI) {
   handler_->HandleShowAccountSettingsUI(base::ListValue());
 
   EXPECT_FALSE(handler_->sync_blocker_);

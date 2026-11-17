@@ -16,49 +16,25 @@
   --sync-icon-size: 16px;
 }
 
-:host([promo-type_='sync']) {
-  h3 {
-    font-size: inherit;
-    font-weight: normal;
-    margin: 0;
-  }
-
-  #banner {
-    background: url(chrome://settings/images/sync_banner.svg) no-repeat;
-    background-size: 100% auto;
-    display: block;
-    padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #banner {
-      background-image:
-          url(chrome://settings/images/sync_banner_dark.svg);
-    }
-  }
+h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: .25px;
+  margin-bottom: 4px;
+  margin-top: 4px;
 }
 
-:host([promo-type_='signin']) {
-  h3 {
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: .25px;
-    margin-bottom: 4px;
-    margin-top: 4px;
-  }
+#banner {
+  background: url(chrome://settings/images/signin_banner.svg) no-repeat;
+  background-size: 100% auto;
+  display: block;
+  padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
+}
 
+@media (prefers-color-scheme: dark) {
   #banner {
-    background: url(chrome://settings/images/signin_banner.svg) no-repeat;
-    background-size: 100% auto;
-    display: block;
-    padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #banner {
-      background-image:
-          url(chrome://settings/images/signin_banner_dark.svg);
-    }
+    background-image:
+        url(chrome://settings/images/signin_banner_dark.svg);
   }
 }
 

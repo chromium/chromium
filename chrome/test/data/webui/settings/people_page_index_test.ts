@@ -5,11 +5,12 @@
 import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {DeviceTabVisibilityBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPeoplePageIndexElement} from 'chrome://settings/settings.js';
 import {loadTimeData, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestDeviceTabVisibilityBrowserProxy} from './test_device_tab_visibility_browser_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -93,15 +94,6 @@ suite('PeoplePageIndex', function() {
   }
 
   setup(async function() {
-    // <if expr="is_chromeos">
-    loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: false,
-    });
-    resetRouterForTesting();
-    // </if>
-
-    // Set SignedInState.SIGNED_IN otherwise navigating to routes.SYNC_ADVANCED
-    // would automatically redirect to routes.SYNC.
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
     browserProxy.testSyncStatus = {
@@ -123,8 +115,41 @@ suite('PeoplePageIndex', function() {
     assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
     assertActiveView('parent');
 
-    // <if expr="is_chromeos">
-    let whenEntered = eventToPromise('view-enter-finish', index);
+    let whenEntered: Promise<Event>;
+
+    // <if expr="not is_chromeos">
+    Router.getInstance().navigateTo(routes.IMPORT_DATA);
+    assertActiveView('parent');
+
+    whenEntered = eventToPromise('view-enter-finish', index);
+    Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
+    await whenEntered;
+    assertActiveView('manageProfile');
+    // </if>
+
+    whenEntered = eventToPromise('view-enter-finish', index);
+    Router.getInstance().navigateTo(routes.ACCOUNT);
+    await whenEntered;
+    assertActiveView('account');
+
+    whenEntered = eventToPromise('view-enter-finish', index);
+    Router.getInstance().navigateTo(routes.GOOGLE_SERVICES);
+    await whenEntered;
+    assertActiveView('googleServices');
+
+    whenEntered = eventToPromise('view-enter-finish', index);
+    Router.getInstance().navigateTo(routes.PEOPLE);
+    await whenEntered;
+    assertActiveView('parent');
+
+    browserProxy.testSyncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    webUIListenerCallback('sync-status-changed', browserProxy.testSyncStatus);
+    await microtasksFinished();
+
+    whenEntered = eventToPromise('view-enter-finish', index);
     Router.getInstance().navigateTo(routes.SYNC);
     await whenEntered;
     assertActiveView('sync');
@@ -133,28 +158,15 @@ suite('PeoplePageIndex', function() {
     Router.getInstance().navigateTo(routes.SYNC_ADVANCED);
     await whenEntered;
     assertActiveView('syncControls');
-    // </if>
-
-    // <if expr="not is_chromeos">
-    Router.getInstance().navigateTo(routes.IMPORT_DATA);
-    assertActiveView('parent');
-
-    let whenEntered = eventToPromise('view-enter-finish', index);
-    Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
-    await whenEntered;
-    assertActiveView('manageProfile');
-    // </if>
-
-    whenEntered = eventToPromise('view-enter-finish', index);
-    Router.getInstance().navigateTo(routes.PEOPLE);
-    await whenEntered;
-    assertActiveView('parent');
   });
 
   // Test that the child views are properly annotated.
   test('DataParentViewId', function() {
     const childViewsId = [
-      'sync', 'syncControls',
+      'sync',
+      'syncControls',
+      'account',
+      'googleServices',
       // <if expr="not is_chromeos">
       'manageProfile',
       // </if>
@@ -173,82 +185,30 @@ suite('PeoplePageIndex', function() {
     assertFalse(result.canceled);
     assertTrue(result.matchCount >= 2);
     assertFalse(result.wasClearSearch);
-  });
-
-  test('RoutingWithReplaceSyncPromosWithSignInPromos', async function() {
-    loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
-    });
-    resetRouterForTesting();
-    await createPeoplePageIndex();
-
-    let whenEntered = eventToPromise('view-enter-finish', index);
-    Router.getInstance().navigateTo(routes.ACCOUNT);
-    await whenEntered;
-    assertActiveView('account');
-
-    whenEntered = eventToPromise('view-enter-finish', index);
-    Router.getInstance().navigateTo(routes.GOOGLE_SERVICES);
-    await whenEntered;
-    assertActiveView('googleServices');
-  });
-
-  // Test that the child views are properly annotated.
-  test(
-      'DataParentViewIdWithReplaceSyncPromosWithSignInPromos',
-      async function() {
-        loadTimeData.overrideValues({
-          replaceSyncPromosWithSignInPromos: true,
-        });
-        resetRouterForTesting();
-        await createPeoplePageIndex();
-
-        const childViewsId = [
-          'account',
-          'googleServices',
-        ];
-        for (const id of childViewsId) {
-          assertTrue(!!index.$.viewManager.querySelector(
-              `#${id}[slot=view][data-parent-view-id=parent]`));
-        }
-      });
-
-  test('SearchReplaceSyncPromosWithSigninPromos', async function() {
-    loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
-    });
-    resetRouterForTesting();
-    await createPeoplePageIndex();
 
     // Search for a keyword that is available on the settings pages `/account`
     // and `/googleServices`.
-    const result = await index.searchContents('google');
-    assertFalse(result.canceled);
-    assertTrue(result.matchCount >= 2);
-    assertFalse(result.wasClearSearch);
+    const googleResult = await index.searchContents('google');
+    assertFalse(googleResult.canceled);
+    assertTrue(googleResult.matchCount >= 2);
+    assertFalse(googleResult.wasClearSearch);
   });
 
   // Regression test for crbug.com/443268152.
-  test(
-      'SearchUnavailablePageReplaceSyncPromosWithSigninPromos',
-      async function() {
-        loadTimeData.overrideValues({
-          replaceSyncPromosWithSignInPromos: true,
-        });
-        browserProxy.testSyncStatus = {
-          signedInState: SignedInState.SYNCING,
-          statusAction: StatusAction.NO_ACTION,
-        };
-        resetRouterForTesting();
-        await createPeoplePageIndex();
+  test('SearchUnavailablePage', async function() {
+    browserProxy.testSyncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await createPeoplePageIndex();
 
-        // Search for a keyword that available on the settings pages `/account`
-        // and `/googleServices`, and make sure it does not crash even though
-        // the pages do not exist when the user is syncing.
-        const result = await index.searchContents('google');
-        assertFalse(result.canceled);
-        assertFalse(result.wasClearSearch);
-      });
+    // Search for a keyword that available on the settings pages `/account`
+    // and `/googleServices`, and make sure it does not crash even though
+    // the pages do not exist when the user is syncing.
+    const result = await index.searchContents('google');
+    assertFalse(result.canceled);
+    assertFalse(result.wasClearSearch);
+  });
 
   // Verifies that navigating to DEVICE_TAB_VISIBILITY activates the
   // deviceTabVisibility view in people-page-index when the feature is enabled.
@@ -259,7 +219,6 @@ suite('PeoplePageIndex', function() {
     DeviceTabVisibilityBrowserProxyImpl.setInstance(
         new TestDeviceTabVisibilityBrowserProxy());
     loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
       enableDeviceTabVisibilitySettings: true,
     });
     resetRouterForTesting();

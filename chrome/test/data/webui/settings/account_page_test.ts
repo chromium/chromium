@@ -27,7 +27,6 @@ suite('AccountPage', function() {
     loadTimeData.overrideValues({
       mayShowLinkedGoogleServicesSetting: false,
       // <if expr="is_chromeos">
-      replaceSyncPromosWithSignInPromos: true,
       osSettingsAccountsPageUrl: 'chrome://os-settings/osPeople',
       // </if>
     });

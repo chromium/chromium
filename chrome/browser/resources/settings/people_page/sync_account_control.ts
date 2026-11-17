@@ -38,13 +38,6 @@ export interface SettingsSyncAccountControlElement {
 }
 // </if>
 
-// Helper enum to determine which promo type the app should display. Used in the
-// CSS styling, where the string literals are used for attributes matching.
-enum PromoType {
-  SIGNIN = 'signin',
-  SYNC = 'sync',
-}
-
 const SettingsSyncAccountControlElementBase = WebUiListenerMixinLit(
     PrefServiceObserverMixinLit(RouteObserverMixinLit(CrLitElement)));
 
@@ -109,13 +102,6 @@ export class SettingsSyncAccountControlElement extends
       shouldShowAvatarRow_: {type: Boolean},
       showSetupButtons_: {type: Boolean},
 
-      // Reflected as `promo-type_` to be used in the CSS styling with
-      // attributes matching.
-      promoType_: {
-        type: String,
-        reflect: true,
-      },
-
       signinAllowedOnNextStartupPref_: {type: Object},
 
       // <if expr="not is_chromeos">
@@ -172,7 +158,6 @@ export class SettingsSyncAccountControlElement extends
   // </if>
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
-  protected accessor promoType_: PromoType = PromoType.SIGNIN;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -190,13 +175,6 @@ export class SettingsSyncAccountControlElement extends
         'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
     this.addWebUiListener(
         'profile-avatar-changed', this.handleUpdateAvatar_.bind(this));
-
-    // <if expr="is_chromeos">
-    this.promoType_ =
-        loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') ?
-        PromoType.SIGNIN :
-        PromoType.SYNC;
-    // </if>
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -324,11 +302,7 @@ export class SettingsSyncAccountControlElement extends
           loadTimeData.getString('syncingTo'), email);
     }
 
-    return (this.shownAccount_.isPrimaryAccount &&
-            this.promoType_ === PromoType.SYNC) ?
-        loadTimeData.substituteString(
-            loadTimeData.getString('signedInTo'), email) :
-        email;
+    return email;
   }
 
   // Determines whether the subtitle should show account specific information or
@@ -440,8 +414,7 @@ export class SettingsSyncAccountControlElement extends
       return loadTimeData.getString('accountAwareRowTitle');
     }
 
-    if (this.promoType_ === PromoType.SIGNIN &&
-        this.syncStatus.signedInState === SignedInState.SIGNED_IN) {
+    if (this.syncStatus.signedInState === SignedInState.SIGNED_IN) {
       return this.shownAccount_?.fullName || '';
     }
 

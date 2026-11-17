@@ -88,8 +88,6 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
-
     this.syncBrowserProxy_.getSyncStatus().then(
         this.onSyncStatusChanged_.bind(this));
     this.addWebUiListener(

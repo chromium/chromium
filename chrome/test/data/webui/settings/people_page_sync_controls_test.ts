@@ -8,7 +8,10 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
 import type {CrRadioButtonElement, CrToggleElement, SyncPrefs} from 'chrome://settings/settings.js';
-import {loadTimeData, Router, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+// <if expr="not is_chromeos">
+import {loadTimeData} from 'chrome://settings/settings.js';
+// </if>
+import {Router, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -249,7 +252,6 @@ suite('SyncControlsTest', function() {
   // </if>
 });
 
-// <if expr="is_chromeos">
 suite('SyncControlsSubpageTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
@@ -258,7 +260,6 @@ suite('SyncControlsSubpageTest', function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
     resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -279,6 +280,10 @@ suite('SyncControlsSubpageTest', function() {
     assertEquals(router.getRoutes().SYNC_ADVANCED, router.getCurrentRoute());
   });
 
+  teardown(function() {
+    resetRouterForTesting();
+  });
+
   test('SignedOut', async function() {
     syncControls.syncStatus = {
       disabled: false,
@@ -288,7 +293,7 @@ suite('SyncControlsSubpageTest', function() {
     };
     await microtasksFinished();
     const router = Router.getInstance();
-    assertEquals(router.getRoutes().SYNC.path, router.getCurrentRoute().path);
+    assertEquals(routes.ACCOUNT, router.getCurrentRoute());
   });
 
   test('PassphraseError', async function() {
@@ -300,8 +305,7 @@ suite('SyncControlsSubpageTest', function() {
     };
     await microtasksFinished();
     const router = Router.getInstance();
-    assertEquals(
-        router.getRoutes().SYNC_ADVANCED.path, router.getCurrentRoute().path);
+    assertEquals(router.getRoutes().SYNC_ADVANCED, router.getCurrentRoute());
   });
 
   test('SyncPaused', async function() {
@@ -313,29 +317,23 @@ suite('SyncControlsSubpageTest', function() {
     };
     await microtasksFinished();
     const router = Router.getInstance();
-    assertEquals(router.getRoutes().SYNC.path, router.getCurrentRoute().path);
+    assertEquals(routes.ACCOUNT, router.getCurrentRoute());
   });
 
-  test(
-      'NavigateToAccountSettingsWhenReplacingWithSigninPromoAndNotSyncing',
-      async function() {
-        loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
-        resetRouterForTesting();
-        const router = Router.getInstance();
-        router.navigateTo(routes.SYNC_ADVANCED);
+  test('NavigateToAccountSettingsWhenNotSyncing', async function() {
+    const router = Router.getInstance();
 
-        syncControls.syncStatus = {
-          disabled: false,
-          hasError: false,
-          signedInState: SignedInState.SIGNED_IN,
-          statusAction: StatusAction.NO_ACTION,
-        };
-        await microtasksFinished();
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: false,
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await microtasksFinished();
 
-        assertEquals(routes.ACCOUNT, router.getCurrentRoute());
-      });
+    assertEquals(routes.ACCOUNT, router.getCurrentRoute());
+  });
 });
-// </if>
 
 suite('SyncControlsAccountSettingsTest', function() {
   let syncControls: SettingsSyncControlsElement;
@@ -357,9 +355,6 @@ suite('SyncControlsAccountSettingsTest', function() {
     pluralStringProxy = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralStringProxy);
 
-    // <if expr="is_chromeos">
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
-    // </if>
     // <if expr="not is_chromeos">
     loadTimeData.overrideValues({unoPhase2FollowUp: true});
     // </if>

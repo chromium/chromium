@@ -13,10 +13,8 @@ import '../privacy_page/personalization_options.js';
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
@@ -56,10 +54,6 @@ export class SettingsGoogleServicesPageElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-
-    // <if expr="is_chromeos">
-    assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
-    // </if>
 
     SyncBrowserProxyImpl.getInstance().getSyncStatus().then(
         this.onSyncStatusChanged_.bind(this));

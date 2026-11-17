@@ -1121,12 +1121,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SyncSettings) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(SettingsTest,
-                       SyncSettingsWithReplaceSyncPromosWithSignInPromos) {
-  RunTest("settings/people_page_sync_page_test.js",
-          "runMochaSuite('SyncSettingsWithReplaceSyncPromosWithSignInPromos')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, EEAChoiceCountry) {
   RunTest("settings/people_page_sync_page_test.js",
           "runMochaSuite('EEAChoiceCountry')");

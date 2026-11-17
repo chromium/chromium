@@ -46,14 +46,11 @@ export class SettingsPeoplePageIndexElement extends
   static override get properties() {
     return {
       routes_: {type: Object},
-      replaceSyncPromosWithSignInPromos_: {type: Boolean},
       enableDeviceTabVisibilitySettings_: {type: Boolean},
     };
   }
 
   protected accessor routes_: SettingsRoutes = routes;
-  protected accessor replaceSyncPromosWithSignInPromos_: boolean =
-      loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
   protected accessor enableDeviceTabVisibilitySettings_: boolean =
       loadTimeData.getBoolean('enableDeviceTabVisibilitySettings');
 
@@ -82,17 +79,14 @@ export class SettingsPeoplePageIndexElement extends
               'syncControls', 'no-animation', 'no-animation');
           break;
         case routes.ACCOUNT:
-          assert(this.replaceSyncPromosWithSignInPromos_);
           this.$.viewManager.switchView(
               'account', 'no-animation', 'no-animation');
           break;
         case routes.GOOGLE_SERVICES:
-          assert(this.replaceSyncPromosWithSignInPromos_);
           this.$.viewManager.switchView(
               'googleServices', 'no-animation', 'no-animation');
           break;
         case routes.DEVICE_TAB_VISIBILITY:
-          assert(this.replaceSyncPromosWithSignInPromos_);
           assert(this.enableDeviceTabVisibilitySettings_);
           this.$.viewManager.switchView(
               'deviceTabVisibility', 'no-animation', 'no-animation');

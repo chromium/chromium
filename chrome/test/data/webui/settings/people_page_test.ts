@@ -471,7 +471,6 @@ suite('PeoplePageAccountSettings', function() {
   setup(async function() {
     // <if expr="is_chromeos">
     loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
       isAccountManagerEnabled: true,
     });
     // </if>

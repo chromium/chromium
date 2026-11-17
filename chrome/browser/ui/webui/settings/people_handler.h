@@ -138,11 +138,7 @@ class PeopleHandler : public SettingsPageUIHandler,
                            ChromeSigninUserAvailableOnWebSignin);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithCookiesSyncTest,
                            SyncCookiesSupported);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithReplaceSyncWithSigninUI,
-                           TestSyncIndividualTypes);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithReplaceSyncWithSigninUI,
-                           NonRegisteredType);
-  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithReplaceSyncWithSigninUI,
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerAccountSettingsTest,
                            HandleShowAccountSettingsUI);
 #if DCHECK_IS_ON()
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, DeleteProfileCrashes);

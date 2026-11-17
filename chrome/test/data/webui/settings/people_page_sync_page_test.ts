@@ -27,11 +27,6 @@ import {simulateStoredAccounts} from './sync_test_util.js';
 
 // </if>
 
-// <if expr="is_chromeos">
-import {resetRouterForTesting} from 'chrome://settings/settings.js';
-
-// </if>
-
 import {getSyncAllPrefs} from './sync_test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -826,33 +821,13 @@ suite('SyncSettings', function() {
         !!syncPage.shadowRoot.querySelector('settings-sync-account-control'));
   });
   // </if>
-});
 
-suite('SyncSettingsWithReplaceSyncPromosWithSignInPromos', function() {
-  // <if expr="is_chromeos">
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
-    });
-    resetRouterForTesting();
-  });
-  // </if>
-
-  setup(async function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const syncPage = document.createElement('settings-sync-page');
-    document.body.appendChild(syncPage);
-
-    Router.getInstance().navigateTo(routes.SYNC);
-
+  test('DontShowPageWhenNotSyncing', async function() {
     webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SIGNED_IN,
       statusAction: StatusAction.NO_ACTION,
     });
     await microtasksFinished();
-  });
-
-  test('DontShowPageWhenReplacingWithSigninPromoAndNotSyncing', function() {
     assertEquals(routes.PEOPLE, Router.getInstance().getCurrentRoute());
   });
 });

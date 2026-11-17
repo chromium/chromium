@@ -352,8 +352,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   // </if>
 
   private shouldShowSyncPage_(): boolean {
-    return !loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') ||
-        this.syncStatus_.signedInState === undefined ||
+    return this.syncStatus_.signedInState === undefined ||
         this.syncStatus_.signedInState === SignedInState.SYNCING;
   }
 

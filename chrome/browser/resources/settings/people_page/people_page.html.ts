@@ -87,13 +87,13 @@ export function getHtml(this: SettingsPeoplePageElement) {
         .subLabel="${this.getSyncAndNonPersonalizedServicesSubtext_()}"
         @click="${this.onSyncClick_}"
         role-description="$i18n{subpageArrowRoleDescription}"
-        ?hidden="${this.shouldHideSyncSetupLinkRow_()}">
+        ?hidden="${!this.isSyncing_()}">
     </cr-link-row>
 
     <cr-link-row id="google-services" label="$i18n{googleServicesPageTitle}"
         @click="${this.onGoogleServicesClick_}"
         role-description="$i18n{subpageArrowRoleDescription}"
-        ?hidden="${!this.shouldHideSyncSetupLinkRow_()}">
+        ?hidden="${this.isSyncing_()}">
     </cr-link-row>
 
 <if expr="not is_chromeos">

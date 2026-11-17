@@ -94,12 +94,9 @@ export class SettingsSyncControlsElement extends
 
       /**
        * Returns whether this element is currently displayed on the account
-       * settings page. True when `replaceSyncPromosWithSignInPromos` is enabled
-       * and the user navigates to the account page.
+       * settings page.
        */
       isAccountSettingsPage_: {type: Boolean},
-
-      showBatchUploadPromo_: {type: Boolean},
 
       batchUploadPromoHTML_: {type: String},
     };
@@ -117,8 +114,9 @@ export class SettingsSyncControlsElement extends
   private cachedSyncPrefs_: Partial<SyncPrefs>|null = null;
   accessor showSyncDisabledInformation: boolean = false;
   protected accessor isAccountSettingsPage_: boolean = false;
-  private accessor showBatchUploadPromo_: boolean =
-      loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
+  private readonly showBatchUploadPromo_: boolean =
+      !loadTimeData.valueExists('unoPhase2FollowUp') ||
+      loadTimeData.getBoolean('unoPhase2FollowUp');
   protected accessor batchUploadPromoHTML_: TrustedHTML =
       window.trustedTypes!.emptyHTML;
 
@@ -127,10 +125,6 @@ export class SettingsSyncControlsElement extends
 
     this.addWebUiListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
-
-    if (loadTimeData.valueExists('unoPhase2FollowUp')) {
-      this.showBatchUploadPromo_ = loadTimeData.getBoolean('unoPhase2FollowUp');
-    }
 
     if (this.showBatchUploadPromo_) {
       batchUploadPromoProxyFactory.getInstance()
@@ -151,12 +145,6 @@ export class SettingsSyncControlsElement extends
       this.syncBrowserProxy_.didNavigateToSyncPage();
     }
     if (currentRoute === routes.ACCOUNT) {
-      // <if expr="is_chromeos">
-      if (!loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
-        return;
-      }
-      // </if>
-
       this.isAccountSettingsPage_ = true;
       this.syncBrowserProxy_.didNavigateToAccountSettingsPage();
     }
@@ -262,12 +250,6 @@ export class SettingsSyncControlsElement extends
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
-    // <if expr="is_chromeos">
-    if (!loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
-      return;
-    }
-    // </if>
-
     this.isAccountSettingsPage_ = newRoute === routes.ACCOUNT;
 
     if (this.isAccountSettingsPage_ && oldRoute !== routes.ACCOUNT) {
@@ -409,16 +391,8 @@ export class SettingsSyncControlsElement extends
     const router = Router.getInstance();
     if (router.getCurrentRoute() === routes.SYNC_ADVANCED &&
         this.syncControlsHidden_()) {
-      // <if expr="is_chromeos">
-      if (!loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
-        router.navigateTo(routes.SYNC);
-        return;
-      }
-      // </if>
-
-      // Try to navigate the user to the account page, where they can find the
-      // toggles. If the page does not exist, they will be redirected to the
-      // people settings page from there.
+      // Navigate to the account page, where the user can find the toggles (or
+      // be redirected to the people settings page if not signed in).
       router.navigateTo(routes.ACCOUNT);
     }
   }

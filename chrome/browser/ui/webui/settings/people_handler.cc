@@ -64,7 +64,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -787,8 +786,7 @@ void PeopleHandler::HandleShowSyncSetupUI(const base::ListValue& args) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Mark Sync as requested by the user, in case it was reset via dashboard.
-  if (service && (service->HasSyncConsent() ||
-                  !syncer::IsReplaceSyncPromosWithSignInPromosEnabled())) {
+  if (service && service->HasSyncConsent()) {
     service->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -976,7 +974,6 @@ void PeopleHandler::HandleShowSyncPassphraseDialog(
 }
 
 void PeopleHandler::HandleShowAccountSettingsUI(const base::ListValue& args) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   AllowJavascript();
 
   // Observe the web contents for a before unload event.
@@ -990,7 +987,6 @@ void PeopleHandler::HandleShowAccountSettingsUI(const base::ListValue& args) {
 }
 
 void PeopleHandler::HandleSetDatatype(const base::ListValue& args) {
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
   AllowJavascript();
 
   CHECK_EQ(3U, args.size());
