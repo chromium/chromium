@@ -159,8 +159,7 @@ void CrxUpdateService::Start() {
       config_->InitialDelay(), config_->NextCheckDelay(),
       base::BindRepeating(
           base::IgnoreResult(&CrxUpdateService::CheckForUpdates),
-          weak_ptr_factory_.GetWeakPtr()),
-      base::DoNothing());
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Stops the update loop. In flight operations will be completed.

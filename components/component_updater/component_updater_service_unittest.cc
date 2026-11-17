@@ -28,6 +28,7 @@
 #include "build/branding_buildflags.h"
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/component_updater/pref_names.h"
+#include "components/component_updater/update_scheduler.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/test_configurator.h"
@@ -51,10 +52,8 @@ using ::testing::AnyNumber;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
 using ::testing::Invoke;
-using ::testing::Mock;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
-using ::testing::Unused;
 
 class MockInstaller : public update_client::CrxInstaller {
  public:
@@ -139,8 +138,7 @@ class MockUpdateScheduler : public UpdateScheduler {
               Schedule,
               (base::TimeDelta initial_delay,
                base::TimeDelta delay,
-               const UserTask& user_task,
-               const OnStopTaskCallback& on_stop),
+               const UserTask& user_task),
               (override));
   MOCK_METHOD(void, Stop, (), (override));
 };
@@ -212,8 +210,7 @@ class ComponentUpdaterTest : public testing::Test {
   void RunUpdateTask(const UpdateScheduler::UserTask& user_task);
   void Schedule(base::TimeDelta initial_delay,
                 base::TimeDelta delay,
-                const UpdateScheduler::UserTask& user_task,
-                const UpdateScheduler::OnStopTaskCallback& on_stop);
+                const UpdateScheduler::UserTask& user_task);
 
   base::test::TaskEnvironment task_environment_;
   base::RunLoop runloop_;
@@ -274,7 +271,7 @@ ComponentUpdaterTest::ComponentUpdaterTest(
   EXPECT_CALL(update_client(), AddObserver(_));
   auto scheduler = std::make_unique<MockUpdateScheduler>();
   scheduler_ = scheduler.get();
-  ON_CALL(*scheduler_, Schedule(_, _, _, _))
+  ON_CALL(*scheduler_, Schedule(_, _, _))
       .WillByDefault(Invoke(this, &ComponentUpdaterTest::Schedule));
   RegisterComponentUpdateServicePrefs(pref_->registry());
   update_client::RegisterPrefs(pref_->registry());
@@ -329,8 +326,7 @@ void ComponentUpdaterTest::RunUpdateTask(
 void ComponentUpdaterTest::Schedule(
     base::TimeDelta initial_delay,
     base::TimeDelta delay,
-    const UpdateScheduler::UserTask& user_task,
-    const UpdateScheduler::OnStopTaskCallback& on_stop) {
+    const UpdateScheduler::UserTask& user_task) {
   RunUpdateTask(user_task);
 }
 
@@ -370,7 +366,7 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
 
   EXPECT_CALL(update_client(), IsUpdating(id1));
   EXPECT_CALL(update_client(), Stop());
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Schedule(_, _, _));
   EXPECT_CALL(scheduler(), Stop());
 
   EXPECT_TRUE(component_updater().RegisterComponent(
@@ -401,7 +397,7 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   base::HistogramTester ht;
 
   // Don't run periodic update task.
-  ON_CALL(scheduler(), Schedule(_, _, _, _)).WillByDefault(Return());
+  ON_CALL(scheduler(), Schedule(_, _, _)).WillByDefault(Return());
 
   auto& cus = component_updater();
 
@@ -418,7 +414,7 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   // components have registered, calls `Update` corresponding to each `OnDemand`
   // invocation, and calls to `Stop` when the mocks are torn down.
   LoopHandler loop_handler(2, quit_closure());
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Schedule(_, _, _));
   EXPECT_CALL(update_client(), Update(_, _, _, /*is_foreground=*/true, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnUpdate));
   EXPECT_CALL(update_client(), Update(_, _, _, /*is_foreground=*/false, _))
@@ -513,13 +509,13 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   base::HistogramTester ht;
 
   // Don't run periodic update task.
-  ON_CALL(scheduler(), Schedule(_, _, _, _)).WillByDefault(Return());
+  ON_CALL(scheduler(), Schedule(_, _, _)).WillByDefault(Return());
 
   LoopHandler loop_handler(1, quit_closure());
   EXPECT_CALL(update_client(), Update(_, _, _, /*is_foreground=*/true, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnUpdate));
   EXPECT_CALL(update_client(), Stop());
-  EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
+  EXPECT_CALL(scheduler(), Schedule(_, _, _));
   EXPECT_CALL(scheduler(), Stop());
 
   EXPECT_TRUE(component_updater().RegisterComponent(
@@ -805,8 +801,8 @@ class ComponentUpdaterMeteredTest : public ComponentUpdaterTest {
 
   void SetUp() override {
     // Don't run the periodic update task.
-    ON_CALL(scheduler(), Schedule(_, _, _, _)).WillByDefault(Return());
-    EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(AnyNumber());
+    ON_CALL(scheduler(), Schedule(_, _, _)).WillByDefault(Return());
+    EXPECT_CALL(scheduler(), Schedule(_, _, _)).Times(AnyNumber());
     EXPECT_CALL(update_client(), Stop());
     EXPECT_CALL(scheduler(), Stop());
     // Component updates are enabled, so that `UPDATE_DISABLED` can only come
