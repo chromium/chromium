@@ -120,6 +120,14 @@ config("config") {
       "blink-gc-plugin",
     ]
 
+    # TODO(crbug.com/350256130): Remove once enabled by default in the plugin.
+    cflags += [
+      "-Xclang",
+      "-plugin-arg-blink-gc-plugin",
+      "-Xclang",
+      "enable-off-heap-collections-of-stack-allocated-check",
+    ]
+
     # Add arguments for enabled GC plugin options:
     if (blink_gc_plugin_option_do_dump_graph) {
       cflags += [
