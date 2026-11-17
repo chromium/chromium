@@ -848,11 +848,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& url);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Returns true if the given |url| is for the initial WebUI scheme used
   // by features like the WebUI reload button.
   virtual bool IsInitialWebUIURL(const GURL& url);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns true if the given `url` hosts a Top Chrome WebUI.
   // This allows the embedder to identify WebUIs that are part of the browser

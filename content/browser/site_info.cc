@@ -69,7 +69,6 @@ std::optional<GURL> GetWebUIProcessLockURL(const GURL& url) {
     return std::nullopt;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   if (features::kInitialWebUIUseSeparateProcess.Get() &&
       GetContentClient()->browser()->IsInitialWebUIURL(url)) {
     // If initial WebUIs need to use a different process separate from other
@@ -77,7 +76,6 @@ std::optional<GURL> GetWebUIProcessLockURL(const GURL& url) {
     // shared host.
     return std::nullopt;
   }
-#endif
 
   std::optional<std::string_view> lock_host =
       WebUIConfigMap::GetInstance().GetProcessLockHost(url);

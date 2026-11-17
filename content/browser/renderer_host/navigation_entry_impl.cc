@@ -1097,12 +1097,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           /*force_new_document_sequence_number=*/false,
           /*navigation_metrics_token=*/base::UnguessableToken::Create(),
           /*commit_target_frame_token=*/std::nullopt,
-  /*is_initial_webui=*/
-#if !BUILDFLAG(IS_ANDROID)
+          /*is_initial_webui=*/
           GetContentClient()->browser()->IsInitialWebUIURL(frame_entry.url()),
-#else
-          false,
-#endif
           /*permissions_policy_override=*/std::nullopt,
           /*internal_scroll_to_text_fragment=*/std::nullopt,
           /*is_secure_context_root=*/false,

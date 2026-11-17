@@ -1476,14 +1476,12 @@ Response TargetHandler::GetTargets(
   *target_infos = std::make_unique<protocol::Array<Target::TargetInfo>>();
   for (const auto& host : DevToolsAgentHost::GetOrCreateAll()) {
     if (effective_filter->Match(*host)) {
-#if !BUILDFLAG(IS_ANDROID)
       // Do not return initial WebUI as the DevTools targets.
       // TODO(crbug.com/444358999): consider adding this into the `filter` when
       // we really need to get the initial WebUI target.
       if (GetContentClient()->browser()->IsInitialWebUIURL(host->GetURL())) {
         continue;
       }
-#endif  //  !BUILDFLAG(IS_ANDROID)
       (*target_infos)->emplace_back(BuildTargetInfo(host.get()));
     }
   }

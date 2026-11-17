@@ -1458,9 +1458,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*is_secure_context_root=*/false,
           blink::mojom::ScriptInjectionPolicy::kNone,
           /*can_use_device_bound_session_js_api=*/false);
-#if !BUILDFLAG(IS_ANDROID)
   CHECK(!GetContentClient()->browser()->IsInitialWebUIURL(common_params->url));
-#endif
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1838,7 +1836,6 @@ NavigationRequest::NavigationRequest(
   CheckSoftNavigationHeuristicsInvariants();
   ScopedCrashKeys crash_keys(*this);
 
-#if !BUILDFLAG(IS_ANDROID)
   // It should not be possible to navigate away from the initial WebUI page,
   // except when recovering from a crash. We allow navigating away to
   // about:blank if `kDebugTopChromeWebUI` is enabled so that DevTools can
@@ -1847,8 +1844,8 @@ NavigationRequest::NavigationRequest(
       GetContentClient()->browser()->IsInitialWebUIURL(
           frame_tree_node_->current_frame_host()
               ->GetSiteInstance()
-              ->GetSecurityPrincipal()
-              .GetDeprecatedSiteURL());
+              ->GetSiteInfo()
+              .site_url());
   if (current_rfh_is_initial_webui && !IsInitialWebUINavigation() &&
       !(base::FeatureList::IsEnabled(features::kDebugTopChromeWebUI) &&
         GetURL().IsAboutBlank())) {
@@ -1884,7 +1881,6 @@ NavigationRequest::NavigationRequest(
           is_navigating_from_initial_empty_document ||
           current_rfh_is_initial_webui);
   }
-#endif
 
   if (GetInitiatorFrameToken().has_value()) {
     RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
@@ -13948,11 +13944,7 @@ bool NavigationRequest::IsWaitingForAsyncBeforeUnload() const {
 }
 
 bool NavigationRequest::IsInitialWebUINavigation() {
-#if !BUILDFLAG(IS_ANDROID)
   return GetContentClient()->browser()->IsInitialWebUIURL(GetURL());
-#else
-  return false;
-#endif
 }
 
 perfetto::NamedTrack NavigationRequest::GetNavigationTracingTrack() const {

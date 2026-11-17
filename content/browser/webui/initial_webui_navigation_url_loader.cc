@@ -31,12 +31,8 @@ InitialWebUINavigationURLLoader::InitialWebUINavigationURLLoader(
     : browser_context_(browser_context),
       request_info_(std::move(request_info)),
       delegate_(delegate) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
   CHECK(GetContentClient()->browser()->IsInitialWebUIURL(
       request_info_->common_params->url));
-#endif
 }
 
 InitialWebUINavigationURLLoader::~InitialWebUINavigationURLLoader() = default;

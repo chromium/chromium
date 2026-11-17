@@ -419,11 +419,9 @@ bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   return false;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 bool ContentBrowserClient::IsInitialWebUIURL(const GURL& url) {
   return false;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool ContentBrowserClient::IsTopChromeWebUIURL(const GURL& url) {
   return false;

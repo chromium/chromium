@@ -30,7 +30,6 @@
 
 namespace content {
 
-#if !BUILDFLAG(IS_ANDROID)
 namespace {
 
 class TestWebUIV2EnabledConfig : public DefaultWebUIConfig<WebUIController> {
@@ -371,6 +370,5 @@ IN_PROC_BROWSER_TEST_P(InitialWebUINavigationFeatureEnabledBrowserTest,
   ASSERT_EQ(NavigateToURL(new_web_contents.get(), GURL(url::kAboutBlankURL)),
             ShouldAllowDebug());
 }
-#endif
 
 }  // namespace content
