@@ -116,6 +116,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void CreateTextInput();
   void Focus(bool skip_virtual_keyboard_update);
   void Blur(bool skip_virtual_keyboard_update);
+  // Commits the character of |key_event| as text if it is outside the BMP.
+  // Returns whether the event was consumed.
+  bool MaybeCommitNonBmpCharacter(const KeyEvent& key_event);
+
   void UpdatePreeditText(const std::u16string& preedit_text);
   bool WindowHasTextInputFocusForTextInputV3() const;
   bool WindowIsActiveForTextInputV1() const;

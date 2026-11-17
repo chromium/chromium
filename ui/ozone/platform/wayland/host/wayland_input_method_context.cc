@@ -22,6 +22,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -361,14 +362,40 @@ bool WaylandInputMethodContext::DispatchKeyEvent(const KeyEvent& key_event) {
 
   // This is the fallback key event which was not consumed by IME.
   // So, process it inside Chrome.
-  if (!character_composer_.FilterKeyPress(key_event))
-    return false;
+  if (!character_composer_.FilterKeyPress(key_event)) {
+    return MaybeCommitNonBmpCharacter(key_event);
+  }
 
   // CharacterComposer consumed the key event. Update the composition text.
   UpdatePreeditText(character_composer_.preedit_string());
   auto composed = character_composer_.composed_character();
   if (!composed.empty())
     ime_delegate_->OnCommit(composed);
+  return true;
+}
+
+bool WaylandInputMethodContext::MaybeCommitNonBmpCharacter(
+    const KeyEvent& key_event) {
+  // A keysym may map to a character outside the BMP (e.g. an XKB layout with
+  // U1F642). KeyEvent can only carry BMP characters, so commit such a
+  // character as text, like GtkIMContextSimple does on X11. Leave key
+  // combinations with Ctrl, Alt or Meta to accelerators.
+  if (key_event.flags() & (EF_CONTROL_DOWN | EF_ALT_DOWN | EF_COMMAND_DOWN)) {
+    return false;
+  }
+  const DomKey dom_key = key_event.GetDomKey();
+  if (!dom_key.IsCharacter()) {
+    return false;
+  }
+  const base_icu::UChar32 character = dom_key.ToCharacter();
+  if (character <= 0xFFFF || !base::IsValidCodepoint(character)) {
+    return false;
+  }
+  std::u16string text;
+  base::WriteUnicodeCharacter(character, &text);
+  surrounding_text_tracker_.OnInsertText(
+      text, TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  ime_delegate_->OnCommit(text);
   return true;
 }
 

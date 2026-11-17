@@ -1803,6 +1803,49 @@ TEST_P(WaylandInputMethodContextTest,
   EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"á");
 }
 
+TEST_P(WaylandInputMethodContextTest, NonBmpCharacterIsCommitted) {
+  // E.g. an XKB layout with the U1F642 keysym.
+  auto event = CreateKeyEventForCharacterComposer(
+      VKEY_UNKNOWN, DomCode::DIGIT1, DomKey::FromCharacter(0x1F642));
+  EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
+  EXPECT_EQ(input_method_context_delegate_->last_commit_text(), u"\U0001F642");
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"\U0001F642");
+}
+
+TEST_P(WaylandInputMethodContextTest, NonBmpCharacterWithShiftIsCommitted) {
+  // Layouts often put such keysyms on a shifted or AltGr level.
+  for (int flags : {EF_SHIFT_DOWN, EF_ALTGR_DOWN}) {
+    SCOPED_TRACE(flags);
+    auto event = std::make_unique<KeyEvent>(
+        EventType::kKeyPressed, VKEY_UNKNOWN, DomCode::DIGIT1, flags,
+        DomKey::FromCharacter(0x1F642), EventTimeForNow());
+    ui::SetKeyboardImeFlags(event.get(), ui::kPropertyKeyboardImeIgnoredFlag);
+    EXPECT_TRUE(input_method_context_->DispatchKeyEvent(*event));
+    EXPECT_EQ(input_method_context_delegate_->last_commit_text(),
+              u"\U0001F642");
+  }
+}
+
+TEST_P(WaylandInputMethodContextTest, BmpCharacterIsNotCommitted) {
+  auto event = CreateKeyEventForCharacterComposer(VKEY_A, DomCode::US_A,
+                                                  DomKey::FromCharacter('a'));
+  EXPECT_FALSE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_FALSE(input_method_context_delegate_->was_on_commit_called());
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       NonBmpCharacterWithControlIsNotCommitted) {
+  auto event = std::make_unique<KeyEvent>(
+      EventType::kKeyPressed, VKEY_UNKNOWN, DomCode::DIGIT1, EF_CONTROL_DOWN,
+      DomKey::FromCharacter(0x1F642), EventTimeForNow());
+  ui::SetKeyboardImeFlags(event.get(), ui::kPropertyKeyboardImeIgnoredFlag);
+  EXPECT_FALSE(input_method_context_->DispatchKeyEvent(*event));
+  EXPECT_FALSE(input_method_context_delegate_->was_on_commit_called());
+}
+
 class WaylandInputMethodContextNoKeyboardTest
     : public WaylandInputMethodContextTest {
  public:

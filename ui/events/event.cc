@@ -1073,12 +1073,15 @@ char16_t KeyEvent::GetCharacter() const {
   if (key_ == DomKey::NONE)
     ApplyLayout();
   if (key_.IsCharacter()) {
-    // Historically ui::KeyEvent has held only BMP characters.
-    // Until this explicitly changes, require |key_| to hold a BMP character.
+    // A char16_t can only hold a BMP character. Characters outside the BMP
+    // (e.g. emoji produced by an XKB keysym such as U1F642) can't be
+    // represented, so report no character rather than a truncated one. Such
+    // characters must be inserted as text (e.g. by the input method).
     DomKey::Base utf32_character = key_.ToCharacter();
+    if (utf32_character > 0xFFFF) {
+      return 0;
+    }
     char16_t ucs2_character = static_cast<char16_t>(utf32_character);
-    CHECK_EQ(static_cast<DomKey::Base>(ucs2_character), utf32_character,
-             base::NotFatalUntil::M163);
     // Check if the control character is down. Note that ALTGR is represented
     // on Windows as CTRL|ALT, so we need to make sure that is not set.
     if ((flags() & (EF_ALTGR_DOWN | EF_CONTROL_DOWN)) == EF_CONTROL_DOWN) {

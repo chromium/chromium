@@ -69,6 +69,14 @@ TEST(EventTest, GetCharacter) {
   KeyEvent keyev5 = ui::KeyEvent::FromCharacter(
       0x200C, VKEY_UNKNOWN, ui::DomCode::NONE, EF_CONTROL_DOWN | EF_SHIFT_DOWN);
   EXPECT_EQ(0x200C, keyev5.GetCharacter());
+
+  // Characters outside the BMP can't be represented as a char16_t, so they
+  // must not be truncated (e.g. U+1F642 to U+F642).
+  KeyEvent keyev6(EventType::kKeyPressed, VKEY_UNKNOWN, ui::DomCode::DIGIT1,
+                  EF_NONE, DomKey::FromCharacter(0x1F642), EventTimeForNow());
+  EXPECT_EQ(0, keyev6.GetCharacter());
+  EXPECT_EQ(0, keyev6.GetText());
+  EXPECT_EQ(0, keyev6.GetUnmodifiedText());
 }
 
 TEST(EventTest, ClickCount) {
