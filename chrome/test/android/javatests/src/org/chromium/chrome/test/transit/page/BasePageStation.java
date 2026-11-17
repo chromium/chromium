@@ -16,6 +16,7 @@ import org.chromium.base.TriStateUtils;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
+import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -28,6 +29,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -124,6 +127,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
     public static class Builder<PageT extends BasePageStation<? extends ChromeActivity>> {
         protected final Function<Config, PageT> mFactoryMethod;
         protected final Config mConfig;
+        private final List<Facility<? super PageT>> mFacilities = new ArrayList<>();
 
         public Builder(Function<Config, PageT> factoryMethod) {
             mFactoryMethod = factoryMethod;
@@ -228,8 +232,18 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             return this;
         }
 
+        /** Enter |facility| together with the Station, in the same Trip. */
+        public Builder<PageT> withFacility(Facility<? super PageT> facility) {
+            mFacilities.add(facility);
+            return this;
+        }
+
         public PageT build() {
-            return mFactoryMethod.apply(mConfig);
+            PageT page = mFactoryMethod.apply(mConfig);
+            for (Facility<? super PageT> facility : mFacilities) {
+                page.declareDefaultFacility(facility);
+            }
+            return page;
         }
     }
 

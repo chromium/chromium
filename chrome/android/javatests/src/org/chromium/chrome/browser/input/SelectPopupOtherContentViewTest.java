@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
@@ -26,7 +27,8 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -53,11 +55,13 @@ public class SelectPopupOtherContentViewTest {
                             + "</select>"
                             + "</body></html>");
 
+    private static class SelectPageFacility extends WebPageFacility {
+        public final HtmlElement selectElement = declareHtmlElement("#select");
+    }
+
     private boolean isSelectPopupVisibleOnUiThread() {
         return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        WebContentsUtils.isSelectPopupVisible(
-                                mActivityTestRule.getWebContents()));
+                () -> WebContentsUtils.isSelectPopupVisible(mActivityTestRule.getWebContents()));
     }
 
     /**
@@ -70,12 +74,22 @@ public class SelectPopupOtherContentViewTest {
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445014
     public void testPopupNotClosedByOtherContentView() throws Exception, Throwable {
         // Load the test page.
-        WebPageStation page = mActivityTestRule.startOnUrl(SELECT_URL);
+        SelectPageFacility selectFacility = new SelectPageFacility();
+        WebPageStation page =
+                mActivityTestRule.startOnPage(
+                        SELECT_URL, WebPageStation.newBuilder().withFacility(selectFacility));
 
         // Once clicked, the popup should show up.
-        DOMUtils.clickNode(page.webContentsElement.value(), "select");
-        CriteriaHelper.pollInstrumentationThread(
-                this::isSelectPopupVisibleOnUiThread, "The select popup did not show up on click.");
+        selectFacility
+                .selectElement
+                .clickTo()
+                .waitFor(
+                        SimpleConditions.uiThreadCondition(
+                                "Select popup is visible",
+                                page.webContentsElement,
+                                wc ->
+                                        Condition.whether(
+                                                WebContentsUtils.isSelectPopupVisible(wc))));
 
         // Now create and destroy a different WebContents.
         ThreadUtils.runOnUiThreadBlocking(

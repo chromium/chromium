@@ -22,9 +22,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
@@ -34,7 +34,8 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -50,14 +51,21 @@ public class EyeDropperTest {
 
     private static final String TEST_FILE = "/chrome/test/data/android/eyedropper.html";
 
+    private static class EyeDropperPageFacility extends WebPageFacility {
+        public final HtmlElement openEyeDropperButton = declareHtmlElement("#open_eyedropper");
+    }
+
     private WebContents mWebContents;
+    private EyeDropperPageFacility mEyeDropperFacility;
 
     @Before
     public void setUp() {
         String url = mActivityTestRule.getTestServer().getURL(TEST_FILE);
-        WebPageStation pageStation = mActivityTestRule.startOnWebPage(url);
+        mEyeDropperFacility = new EyeDropperPageFacility();
+        WebPageStation pageStation =
+                mActivityTestRule.startOnPage(
+                        url, WebPageStation.newBuilder().withFacility(mEyeDropperFacility));
         mWebContents = pageStation.webContentsElement.value();
-        DOMUtils.waitForNonZeroNodeBounds(mWebContents, "open_eyedropper");
     }
 
     /** Verifies that window.EyeDropper is defined on Android API 37+. */
@@ -104,9 +112,10 @@ public class EyeDropperTest {
                                 activityResult,
                                 /* block= */ true);
         try {
-            DOMUtils.clickNode(mWebContents, "open_eyedropper");
-
-            waitForLastResult(Matchers.is("\"selected: #ff0000\""));
+            mEyeDropperFacility
+                    .openEyeDropperButton
+                    .clickTo()
+                    .waitFor(lastResultMatches(Matchers.is("\"selected: #ff0000\"")));
             Assert.assertEquals(1, monitor.getHits());
         } finally {
             InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
@@ -137,8 +146,9 @@ public class EyeDropperTest {
         Assert.assertEquals("\"NotAllowedError\"", result);
     }
 
-    private void waitForLastResult(Matcher<String> matcher) {
-        CriteriaHelper.pollInstrumentationThread(
+    private Condition lastResultMatches(Matcher<String> matcher) {
+        return SimpleConditions.instrumentationThreadCondition(
+                "window.lastResult matches " + matcher,
                 () -> {
                     String result;
                     try {
@@ -148,7 +158,8 @@ public class EyeDropperTest {
                     } catch (TimeoutException e) {
                         throw new RuntimeException(e);
                     }
-                    Criteria.checkThat(result, matcher);
+                    return Condition.whether(
+                            matcher.matches(result), "window.lastResult: %s", result);
                 });
     }
 }

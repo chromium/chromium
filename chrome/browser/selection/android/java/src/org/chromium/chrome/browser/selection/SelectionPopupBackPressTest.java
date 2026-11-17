@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -31,7 +33,8 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
-import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 
 import java.util.concurrent.TimeoutException;
 
@@ -52,6 +55,10 @@ public class SelectionPopupBackPressTest {
                     "<html><head>  <meta name=viewport content='width=device-width,"
                         + " initial-scale=1.0'></head><body><p id=\"selection_popup_text\">Test</p>"
                         + "</body></html>");
+
+    private static class SelectionPopupPageFacility extends WebPageFacility {
+        public final HtmlElement selectionPopupText = declareHtmlElement("#selection_popup_text");
+    }
 
     @Test
     @MediumTest
@@ -118,7 +125,9 @@ public class SelectionPopupBackPressTest {
     }
 
     private void testBackPressClearSelectionInternal() throws TimeoutException {
-        mActivityTestRule.startOnUrl(TEST_PAGE);
+        SelectionPopupPageFacility selectionFacility = new SelectionPopupPageFacility();
+        mActivityTestRule.startOnPage(
+                TEST_PAGE, WebPageStation.newBuilder().withFacility(selectionFacility));
         SelectionPopupController controller =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -129,17 +138,13 @@ public class SelectionPopupBackPressTest {
                             return c;
                         });
         Assert.assertNotNull(controller);
-        DOMUtils.waitForNonZeroNodeBounds(
-                mActivityTestRule.getWebContents(), "selection_popup_text");
-        DOMUtils.longPressNode(mActivityTestRule.getWebContents(), "selection_popup_text");
-        // Wait until popup has been displayed.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Selection popup should be triggered after long press",
-                            controller.isSelectActionBarShowing(),
-                            Matchers.is(true));
-                });
+        selectionFacility
+                .selectionPopupText
+                .longPressTo()
+                .waitFor(
+                        SimpleConditions.uiThreadCondition(
+                                "Selection popup is showing",
+                                () -> Condition.whether(controller.isSelectActionBarShowing())));
         Assert.assertTrue(
                 "Selection popup should be triggered after long press.", controller.hasSelection());
         Assert.assertTrue(

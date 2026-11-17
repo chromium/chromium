@@ -34,9 +34,11 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.content_public.browser.test.util.Coordinates;
-import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.reflect.Method;
@@ -108,6 +110,10 @@ public class SmartClipProviderTest implements Handler.Callback {
         private Rect mRect;
     }
 
+    private static class SimpleTextPageFacility extends WebPageFacility {
+        public final HtmlElement simpleText = declareHtmlElement("#simple_text");
+    }
+
     private ChromeActivity mActivity;
     private MyCallbackHelper mCallbackHelper;
     private HandlerThread mHandlerThread;
@@ -116,17 +122,16 @@ public class SmartClipProviderTest implements Handler.Callback {
     private Method mSetSmartClipResultHandlerMethod;
     private Method mExtractSmartClipDataMethod;
     private WebContents mWebContents;
+    private SimpleTextPageFacility mSimpleTextFacility;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startOnWebPage(DATA_URL);
+        mSimpleTextFacility = new SimpleTextPageFacility();
+        WebPageStation page =
+                mActivityTestRule.startOnPage(
+                        DATA_URL, WebPageStation.newBuilder().withFacility(mSimpleTextFacility));
         mActivity = mActivityTestRule.getActivity();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mWebContents = mActivityTestRule.getWebContents();
-                });
-
-        DOMUtils.waitForNonZeroNodeBounds(mWebContents, "simple_text");
+        mWebContents = page.webContentsElement.value();
 
         mCallbackHelper = new MyCallbackHelper();
         mHandlerThread = new HandlerThread("ContentViewTest thread");
@@ -202,7 +207,7 @@ public class SmartClipProviderTest implements Handler.Callback {
     @DisabledTest(message = "https://crbug.com/41395212")
     public void testSmartClipDataCallback() throws TimeoutException {
         final float dpi = Coordinates.createFor(mWebContents).getDeviceScaleFactor();
-        final Rect bounds = DOMUtils.getNodeBounds(mWebContents, "simple_text");
+        final Rect bounds = mSimpleTextFacility.simpleText.value();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // This emulates what OEM will be doing when they want to call

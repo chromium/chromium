@@ -7,9 +7,11 @@ package org.chromium.chrome.test.transit.page;
 import org.chromium.base.test.transit.Element;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.WebContentsElementProvider;
 
 /** The screen that shows a web or native page within a Custom Tab. */
-public class CctPageStation extends BasePageStation<CustomTabActivity> {
+public class CctPageStation extends BasePageStation<CustomTabActivity>
+        implements WebContentsElementProvider {
     public Element<WebContents> webContentsElement;
 
     public static Builder<CctPageStation> newBuilder() {
@@ -27,6 +29,11 @@ public class CctPageStation extends BasePageStation<CustomTabActivity> {
         webContentsElement =
                 declareEnterConditionAsElement(new WebContentsPresentCondition(loadedTabElement));
         declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
+    }
+
+    @Override
+    public Element<WebContents> getWebContentsElement() {
+        return webContentsElement;
     }
 
     /** Loads a |url| in the same tab and waits to transition to a new CctPageStation. */

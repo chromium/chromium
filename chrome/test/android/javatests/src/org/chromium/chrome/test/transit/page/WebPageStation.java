@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.transit.WebContentsElementProvider;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
-public class WebPageStation extends CtaPageStation {
+public class WebPageStation extends CtaPageStation implements WebContentsElementProvider {
     public Element<WebContents> webContentsElement;
     public ViewElement<UrlBar> urlBarElement;
 
@@ -41,6 +42,11 @@ public class WebPageStation extends CtaPageStation {
         // Make sure that the new tab page is not considered a WebPageStation
         List<String> prohibitedUrls = List.of("chrome://newtab", "chrome-native://newtab");
         declareEnterCondition(new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
+    }
+
+    @Override
+    public Element<WebContents> getWebContentsElement() {
+        return webContentsElement;
     }
 
     @Override
