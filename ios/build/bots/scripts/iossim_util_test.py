@@ -5,15 +5,21 @@
 """Unittests for iossim_util.py."""
 
 from copy import deepcopy
+import json
+import os
 import plistlib
-import mock
+import subprocess
+import tempfile
+import threading
+import time
+import types
 import unittest
+import uuid
+import mock
 
 import constants
 import iossim_util
 import mac_util  # noqa: F401
-import os
-import subprocess
 import test_runner
 import test_runner_test
 
@@ -396,6 +402,10 @@ class GetiOSSimUtil(test_runner_test.TestCase):
 
   def setUp(self):
     super(GetiOSSimUtil, self).setUp()
+    # Keep existing unit tests from writing to `/private/var/tmp` on macOS.
+    self.mock(
+      iossim_util, 'disable_simulator_daemons', lambda *args, **kwargs: False
+    )
 
   def test_get_simulator_runtime_by_platform_and_version(self, _, _2):
     """Ensures correctness of filter."""
@@ -1255,6 +1265,1050 @@ class GetiOSSimUtil(test_runner_test.TestCase):
 
       iossim_util.disable_simulator_keyboard_tutorial(udid)
       check_call_mock.assert_has_calls(check_calls)
+
+
+class DisableSimulatorDaemonsTest(test_runner_test.TestCase):
+  """Tests for per-device simulator launchd daemon disabling."""
+
+  def setUp(self):
+    super(DisableSimulatorDaemonsTest, self).setUp()
+    iossim_util.set_simulator_daemon_disabling_override(None)
+    self.addCleanup(iossim_util.set_simulator_daemon_disabling_override, None)
+    env_patcher = mock.patch.dict(
+      os.environ,
+      {iossim_util.IOS_DISABLE_SIMULATOR_DAEMONS_ENV: '1'},
+      clear=False,
+    )
+    env_patcher.start()
+    self.addCleanup(env_patcher.stop)
+    self.mock(
+      iossim_util, '_is_simulator_booted', lambda *args, **kwargs: False
+    )
+
+  def _wait_for_path(self, path: str, timeout: float = 1.0) -> bool:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+      if os.path.exists(path):
+        return True
+      time.sleep(0.01)
+    return os.path.exists(path)
+
+  def test_disabled_jobs_invariants(self):
+    """Verifies allowlist invariants and exclusion of required jobs."""
+    jobs = iossim_util.DISABLED_SIMULATOR_LAUNCHD_JOBS
+    self.assertIsInstance(jobs, tuple)
+    self.assertGreater(len(jobs), 0)
+    self.assertEqual(len(jobs), len(set(jobs)))
+    for job in jobs:
+      self.assertTrue(job.startswith('com.apple.'), job)
+
+    self.assertIn('com.apple.PosterBoard', jobs)
+
+    excluded = (
+      'com.apple.ScreenTimeAgent',
+      'com.apple.ScreenTimeSettingsAgent',
+      'com.apple.passd',
+      'com.apple.financed',
+      'com.apple.assetsd',
+      'com.apple.medialibraryd',
+      'com.apple.photoanalysisd',
+      'com.apple.contactsd',
+      'com.apple.calaccessd',
+      'com.apple.searchd',
+      'com.apple.searchtoold',
+      'com.apple.corespotlightservice',
+      'com.apple.sharingd',
+      'com.apple.gamed',
+      'com.apple.assistantd',
+      'com.apple.intelligenceplatformd',
+      'com.apple.sleepd',
+      'com.apple.nanoregistryd',
+      'com.apple.nanoregistrylaunchd',
+      'com.apple.mobiletimerd',
+      'com.apple.routined',
+      'com.apple.biomed',
+      'com.apple.donotdisturbd',
+      'com.apple.appprotectiond',
+      'com.apple.managedconfiguration.profiled',
+    )
+    for job in excluded:
+      self.assertNotIn(job, jobs)
+
+  def test_disable_simulator_daemons_writes_and_is_idempotent(self):
+    """Writes valid XML `disabled.plist` and skips rewriting when unchanged."""
+    udid = 'A4E66321-177A-450A-9BA1-488D85B7278E'
+    with tempfile.TemporaryDirectory() as tmpdir:
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(udid, store_root=tmpdir)
+      )
+      plist_path = os.path.join(
+        tmpdir, f'com.apple.CoreSimulator.SimDevice.{udid}', 'disabled.plist'
+      )
+      self.assertTrue(os.path.exists(plist_path))
+      self.assertEqual(os.stat(plist_path).st_mode & 0o777, 0o644)
+
+      with open(plist_path, 'rb') as f:
+        raw = f.read()
+        self.assertIn(b'<?xml', raw)
+        f.seek(0)
+        parsed = plistlib.load(f)
+
+      for job in iossim_util.DISABLED_SIMULATOR_LAUNCHD_JOBS:
+        self.assertIs(parsed[job], True)
+
+      mtime_before = os.stat(plist_path).st_mtime_ns
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons(udid, store_root=tmpdir)
+      )
+      self.assertEqual(os.stat(plist_path).st_mtime_ns, mtime_before)
+
+  def test_disable_simulator_daemons_preserves_existing_entries(self):
+    """Preserves pre-existing `<false/>` and unmanaged entries across merges."""
+    udid = 'E4E66320-177A-450A-9BA1-488D85B7278E'
+    with tempfile.TemporaryDirectory() as tmpdir:
+      store_dir = os.path.join(
+        tmpdir, f'com.apple.CoreSimulator.SimDevice.{udid}'
+      )
+      os.makedirs(store_dir)
+      plist_path = os.path.join(store_dir, 'disabled.plist')
+      initial = {
+        'com.apple.assistantd': False,
+        'com.apple.custom.service': False,
+        'com.apple.PosterBoard': False,
+      }
+      with open(plist_path, 'wb') as f:
+        plistlib.dump(initial, f, fmt=plistlib.FMT_XML, sort_keys=True)
+
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(udid, store_root=tmpdir)
+      )
+      with open(plist_path, 'rb') as f:
+        merged = plistlib.load(f)
+
+      self.assertIs(merged['com.apple.assistantd'], False)
+      self.assertIs(merged['com.apple.custom.service'], False)
+      self.assertIs(merged['com.apple.PosterBoard'], True)
+
+  def test_disable_simulator_daemons_invalid_udid_and_platform_gate(self):
+    """Rejects non-UUID inputs and defaults to no-op outside macOS."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons('', store_root=tmpdir)
+      )
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons('UDID', store_root=tmpdir)
+      )
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons('not-a-uuid', store_root=tmpdir)
+      )
+      self.assertEqual(os.listdir(tmpdir), [])
+
+      valid_udid = '11111111-2222-3333-4444-555555555555'
+      with mock.patch.object(iossim_util.sys, 'platform', 'linux'):
+        self.assertFalse(iossim_util.disable_simulator_daemons(valid_udid))
+
+      with (
+        mock.patch.object(iossim_util.sys, 'platform', 'darwin'),
+        mock.patch.object(iossim_util, 'SIMULATOR_DISABLED_STORE_ROOT', tmpdir),
+      ):
+        self.assertTrue(iossim_util.disable_simulator_daemons(valid_udid))
+        plist_path = os.path.join(
+          tmpdir,
+          f'com.apple.CoreSimulator.SimDevice.{valid_udid}',
+          'disabled.plist',
+        )
+        self.assertTrue(os.path.exists(plist_path))
+
+  def test_disable_simulator_daemons_swallows_errors(self):
+    """Logs and returns False on filesystem or plist parse errors."""
+    udid = '11111111-2222-3333-4444-555555555555'
+    with tempfile.TemporaryDirectory() as tmpdir:
+      store_dir = os.path.join(
+        tmpdir, f'com.apple.CoreSimulator.SimDevice.{udid}'
+      )
+      os.makedirs(store_dir)
+      plist_path = os.path.join(store_dir, 'disabled.plist')
+      with open(plist_path, 'wb') as f:
+        f.write(b'not valid plist xml')
+
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons(udid, store_root=tmpdir)
+      )
+
+  @mock.patch.object(iossim_util, 'disable_simulator_daemons', autospec=True)
+  def test_get_simulator_disables_daemons(self, mock_disable):
+    """Calls `disable_simulator_daemons` when reusing an existing simulator."""
+    sim_udid = 'A4E66321-177A-450A-9BA1-488D85B7278E'
+    with mock.patch.object(
+      iossim_util, 'get_simulator_list', return_value=SIMULATORS_LIST
+    ):
+      self.assertEqual(
+        iossim_util.get_simulator('iPhone 11', '13.2.2'), sim_udid
+      )
+    mock_disable.assert_called_once_with(sim_udid)
+
+  @mock.patch.object(iossim_util, 'disable_simulator_daemons', autospec=True)
+  def test_create_device_disables_daemons(self, mock_disable):
+    """Calls `disable_simulator_daemons` when creating a simulator."""
+    new_udid = '11111111-1111-1111-1111-111111111111'
+    with (
+      mock.patch.object(
+        iossim_util, 'get_simulator_list', return_value=SIMULATORS_LIST
+      ),
+      mock.patch.object(
+        iossim_util, 'is_device_with_udid_simulator', return_value=True
+      ),
+      mock.patch('subprocess.check_output', return_value=new_udid.encode()),
+    ):
+      created = iossim_util._create_device_by_platform_and_version(
+        'iPhone 11', '13.2.2', path='/tmp/set'
+      )
+    self.assertEqual(created, new_udid)
+    mock_disable.assert_called_once_with(
+      new_udid, simset_path='/tmp/set', check_booted=False
+    )
+
+  @mock.patch.object(iossim_util, 'disable_simulator_daemons', autospec=True)
+  def test_clone_simulator_disables_daemons(self, mock_disable):
+    """Calls `disable_simulator_daemons` for cloned simulators."""
+    sim_udid = 'A4E66321-177A-450A-9BA1-488D85B7278E'
+    clone_udid = '22222222-2222-2222-2222-222222222222'
+    with mock.patch(
+      'subprocess.check_output', return_value=clone_udid.encode()
+    ):
+      cloned = iossim_util.clone_simulator_by_udid(
+        sim_udid, 'clone', path='/src', dest_path='/dest'
+      )
+      self.assertEqual(cloned, clone_udid)
+      mock_disable.assert_called_once_with(
+        clone_udid, simset_path='/dest', check_booted=False
+      )
+
+      mock_disable.reset_mock()
+      iossim_util.clone_simulator_by_udid(sim_udid, 'clone', path='/src')
+      mock_disable.assert_called_once_with(
+        clone_udid, simset_path='/src', check_booted=False
+      )
+
+  @mock.patch.object(iossim_util, 'disable_simulator_daemons', autospec=True)
+  def test_boot_simulator_if_not_booted_disables_daemons(self, mock_disable):
+    """Configures daemons before booting Shutdown simulators only."""
+    sim_udid = 'A4E66321-177A-450A-9BA1-488D85B7278E'
+    with (
+      mock.patch.object(
+        iossim_util, 'get_simulator_list', return_value=SIMULATORS_LIST
+      ),
+      mock.patch('subprocess.check_output', return_value=b''),
+    ):
+      iossim_util.boot_simulator_if_not_booted(sim_udid, path='/tmp/set')
+    mock_disable.assert_called_once_with(
+      sim_udid, simset_path='/tmp/set', check_booted=False
+    )
+
+    mock_disable.reset_mock()
+    booted_list = deepcopy(SIMULATORS_LIST)
+    booted_list['devices']['com.apple.CoreSimulator.SimRuntime.iOS-13-2'][1][
+      'state'
+    ] = 'Booted'
+    with mock.patch.object(
+      iossim_util, 'get_simulator_list', return_value=booted_list
+    ):
+      iossim_util.boot_simulator_if_not_booted(sim_udid, path='/tmp/set')
+    self.assertFalse(mock_disable.called)
+
+  @mock.patch.object(iossim_util, 'disable_simulator_daemons', autospec=True)
+  def test_ensure_simulator_fully_booted_disables_daemons(self, mock_disable):
+    """Calls `disable_simulator_daemons` before running `bootstatus`."""
+    sim_udid = 'A4E66321-177A-450A-9BA1-488D85B7278E'
+    with (
+      mock.patch.object(
+        iossim_util, 'get_simulator_list', return_value=SIMULATORS_LIST
+      ),
+      mock.patch.object(
+        iossim_util, 'is_device_with_udid_simulator', return_value=True
+      ),
+      mock.patch.object(iossim_util, 'update_dyld_shared_cache'),
+      mock.patch('subprocess.check_call'),
+    ):
+      self.assertTrue(
+        iossim_util.ensure_simulator_fully_booted(sim_udid, path='/tmp/set')
+      )
+    mock_disable.assert_called_once_with(sim_udid, simset_path='/tmp/set')
+
+  @mock.patch.object(iossim_util, 'disable_simulator_daemons', autospec=True)
+  def test_copy_trusted_certificate_disables_daemons(self, mock_disable):
+    """Calls `disable_simulator_daemons` before booting to add a root cert."""
+    sim_udid = 'A4E66321-177A-450A-9BA1-488D85B7278E'
+    with (
+      mock.patch('os.path.exists', return_value=True),
+      mock.patch('subprocess.check_call'),
+    ):
+      iossim_util.copy_trusted_certificate('test/cert', sim_udid)
+    mock_disable.assert_called_once_with(sim_udid)
+
+  def test_disable_simulator_daemons_skips_when_booted(self):
+    """Skips touching `disabled.plist` when `check_booted` detects Booted."""
+    udid = '11111111-2222-3333-4444-555555555555'
+    with tempfile.TemporaryDirectory() as tmpdir:
+      plist_path = os.path.join(
+        tmpdir, f'com.apple.CoreSimulator.SimDevice.{udid}', 'disabled.plist'
+      )
+      with mock.patch.object(
+        iossim_util, '_is_simulator_booted', return_value=True
+      ) as mock_booted:
+        self.assertFalse(
+          iossim_util.disable_simulator_daemons(
+            udid, store_root=tmpdir, simset_path='/tmp/set', check_booted=True
+          )
+        )
+        mock_booted.assert_called_once_with(udid, simset_path='/tmp/set')
+        self.assertFalse(os.path.exists(plist_path))
+
+        mock_booted.reset_mock()
+        self.assertTrue(
+          iossim_util.disable_simulator_daemons(
+            udid, store_root=tmpdir, simset_path='/tmp/set', check_booted=False
+          )
+        )
+        mock_booted.assert_not_called()
+        self.assertTrue(os.path.exists(plist_path))
+
+  def test_is_simulator_booted_plist_and_simctl(self):
+    """Checks `device.plist` `Booted` state, `simctl` JSON, and debug logs."""
+    self.unmock(iossim_util, '_is_simulator_booted')
+    udid = '11111111-2222-3333-4444-555555555555'
+
+    with tempfile.TemporaryDirectory() as simset_dir:
+      dev_dir = os.path.join(simset_dir, udid)
+      os.makedirs(dev_dir)
+      device_plist = os.path.join(dev_dir, 'device.plist')
+
+      # Fast path via device.plist state == SIMULATOR_PLIST_STATE_BOOTED (3).
+      with open(device_plist, 'wb') as f:
+        plistlib.dump({'state': iossim_util.SIMULATOR_PLIST_STATE_BOOTED}, f)
+      with mock.patch('subprocess.check_output') as mock_subproc:
+        self.assertTrue(
+          iossim_util._is_simulator_booted(udid, simset_path=simset_dir)
+        )
+        mock_subproc.assert_not_called()
+
+      # Corrupt device.plist logs at DEBUG and falls back to simctl.
+      for corrupt_bytes in (b'not valid plist xml', b'<plist><dict></plist>'):
+        with open(device_plist, 'wb') as f:
+          f.write(corrupt_bytes)
+        booted_json = json.dumps(
+          {'devices': {'rt': [{'udid': udid, 'state': 'Booted'}]}}
+        ).encode('utf-8')
+        with (
+          mock.patch('subprocess.check_output', return_value=booted_json),
+          self.assertLogs(iossim_util.LOGGER, level='DEBUG') as cm,
+        ):
+          self.assertTrue(
+            iossim_util._is_simulator_booted(udid, simset_path=simset_dir)
+          )
+        self.assertTrue(any('device.plist' in msg for msg in cm.output))
+
+      # Shutdown device.plist falls through to simctl and handles errors.
+      with open(device_plist, 'wb') as f:
+        plistlib.dump({'state': 1}, f)
+      shutdown_json = json.dumps(
+        {'devices': {'rt': [{'udid': udid, 'state': 'Shutdown'}]}}
+      ).encode('utf-8')
+      with mock.patch(
+        'subprocess.check_output', return_value=shutdown_json
+      ) as mock_subproc:
+        self.assertFalse(
+          iossim_util._is_simulator_booted(udid, simset_path=simset_dir)
+        )
+        mock_subproc.assert_called_once_with(
+          [
+            'xcrun',
+            'simctl',
+            '--set',
+            simset_dir,
+            'list',
+            'devices',
+            'booted',
+            '-j',
+          ],
+          stderr=subprocess.DEVNULL,
+        )
+
+      for err in (
+        OSError('no simctl'),
+        subprocess.CalledProcessError(1, 'simctl'),
+        b'not json',
+      ):
+        if isinstance(err, bytes):
+          patch_ctx = mock.patch('subprocess.check_output', return_value=err)
+        else:
+          patch_ctx = mock.patch('subprocess.check_output', side_effect=err)
+        with (
+          patch_ctx,
+          self.assertLogs(iossim_util.LOGGER, level='DEBUG') as cm,
+        ):
+          self.assertFalse(
+            iossim_util._is_simulator_booted(udid, simset_path=simset_dir)
+          )
+        self.assertTrue(any('simctl booted state' in msg for msg in cm.output))
+
+    # Missing simset_path returns False without invoking simctl.
+    with mock.patch('subprocess.check_output') as mock_subproc:
+      self.assertFalse(
+        iossim_util._is_simulator_booted(
+          udid, simset_path=os.path.join(simset_dir, 'missing')
+        )
+      )
+      mock_subproc.assert_not_called()
+
+    # Default simset (simset_path=None) runs simctl without --set.
+    booted_json = json.dumps(
+      {'devices': {'rt': [{'udid': udid, 'state': 'Booted'}]}}
+    ).encode('utf-8')
+    with mock.patch(
+      'subprocess.check_output', return_value=booted_json
+    ) as mock_subproc:
+      self.assertTrue(iossim_util._is_simulator_booted(udid))
+      mock_subproc.assert_called_once_with(
+        ['xcrun', 'simctl', 'list', 'devices', 'booted', '-j'],
+        stderr=subprocess.DEVNULL,
+      )
+
+  def test_watch_simulator_clones_polling(self):
+    """Watches clone directory via polling fallback and cleans up thread."""
+    with (
+      tempfile.TemporaryDirectory() as device_set_dir,
+      tempfile.TemporaryDirectory() as store_root,
+    ):
+      non_uuid_dir = os.path.join(device_set_dir, 'not-a-uuid')
+      os.makedirs(non_uuid_dir)
+      uuid_file = os.path.join(
+        device_set_dir, '33333333-3333-3333-3333-333333333333'
+      )
+      with open(uuid_file, 'w') as f:
+        f.write('')
+
+      pre_clone = '44444444-4444-4444-4444-444444444444'
+      os.makedirs(os.path.join(device_set_dir, pre_clone))
+
+      fake_select = types.SimpleNamespace()
+      created_threads: list[threading.Thread] = []
+      real_thread = threading.Thread
+
+      def _track_thread(*args, **kwargs):
+        t = real_thread(*args, **kwargs)
+        created_threads.append(t)
+        return t
+
+      new_clone = str(uuid.uuid4()).upper()
+      with (
+        mock.patch.object(iossim_util, 'select', fake_select),
+        mock.patch.object(threading, 'Thread', side_effect=_track_thread),
+        iossim_util.watch_simulator_clones_for_daemon_disabling(
+          device_set_dir, store_root=store_root, poll_interval=0.01
+        ),
+      ):
+        pre_plist = os.path.join(
+          store_root,
+          f'com.apple.CoreSimulator.SimDevice.{pre_clone}',
+          'disabled.plist',
+        )
+        self.assertTrue(self._wait_for_path(pre_plist))
+
+        os.makedirs(os.path.join(device_set_dir, new_clone))
+        new_plist = os.path.join(
+          store_root,
+          f'com.apple.CoreSimulator.SimDevice.{new_clone}',
+          'disabled.plist',
+        )
+        self.assertTrue(self._wait_for_path(new_plist))
+
+      self.assertEqual(len(created_threads), 1)
+      self.assertFalse(created_threads[0].is_alive())
+      self.assertFalse(
+        os.path.exists(
+          os.path.join(
+            store_root, 'com.apple.CoreSimulator.SimDevice.not-a-uuid'
+          )
+        )
+      )
+      self.assertFalse(
+        os.path.exists(
+          os.path.join(
+            store_root,
+            'com.apple.CoreSimulator.SimDevice.'
+            '33333333-3333-3333-3333-333333333333',
+          )
+        )
+      )
+
+  def test_watch_simulator_clones_kqueue(self):
+    """Registers VNODE write kqueue filter and closes descriptors on exit."""
+    with (
+      tempfile.TemporaryDirectory() as device_set_dir,
+      tempfile.TemporaryDirectory() as store_root,
+    ):
+      clone_udid = str(uuid.uuid4()).upper()
+
+      class _FakeKqueue:
+        def __init__(self):
+          self.closed = False
+          self.registered = []
+          self.wait_calls = 0
+
+        def control(self, changelist, nevents, timeout=None):
+          if changelist is not None:
+            self.registered.extend(changelist)
+            return []
+          self.wait_calls += 1
+          if self.wait_calls == 1:
+            os.makedirs(os.path.join(device_set_dir, clone_udid), exist_ok=True)
+            return ['write-event']
+          time.sleep(0.02)
+          return []
+
+        def close(self):
+          self.closed = True
+
+      fake_kq = _FakeKqueue()
+      fake_select = types.SimpleNamespace(
+        kqueue=lambda: fake_kq,
+        kevent=lambda fd, filter=0, flags=0, fflags=0: (
+          fd,
+          filter,
+          flags,
+          fflags,
+        ),
+        KQ_FILTER_VNODE=1,
+        KQ_EV_ADD=2,
+        KQ_EV_CLEAR=4,
+        KQ_NOTE_WRITE=8,
+      )
+
+      real_open = os.open
+      real_close = os.close
+      opened_dir_fds: list[int] = []
+      closed_fds: list[int] = []
+
+      def _fake_open(path, flags, *args, **kwargs):
+        if path == device_set_dir:
+          opened_dir_fds.append(999)
+          return 999
+        return real_open(path, flags, *args, **kwargs)
+
+      def _fake_close(fd):
+        if fd == 999:
+          closed_fds.append(fd)
+          return None
+        return real_close(fd)
+
+      with (
+        mock.patch.object(iossim_util, 'select', fake_select),
+        mock.patch('os.open', side_effect=_fake_open),
+        mock.patch('os.close', side_effect=_fake_close),
+        iossim_util.watch_simulator_clones_for_daemon_disabling(
+          device_set_dir, store_root=store_root
+        ),
+      ):
+        plist_path = os.path.join(
+          store_root,
+          f'com.apple.CoreSimulator.SimDevice.{clone_udid}',
+          'disabled.plist',
+        )
+        self.assertTrue(self._wait_for_path(plist_path))
+
+      self.assertEqual(opened_dir_fds, [999])
+      self.assertEqual(closed_fds, [999])
+      self.assertTrue(fake_kq.closed)
+      self.assertEqual(fake_kq.registered, [(999, 1, 2 | 4, 8)])
+
+  def test_watch_simulator_clones_no_op_non_darwin_or_empty_path(self):
+    """Skips watching outside macOS without `store_root` or device path."""
+    with (
+      mock.patch.object(iossim_util.sys, 'platform', 'linux'),
+      mock.patch('os.makedirs') as mock_makedirs,
+      mock.patch.object(threading, 'Thread') as mock_thread,
+    ):
+      with iossim_util.watch_simulator_clones_for_daemon_disabling('/tmp/x'):
+        pass
+      with iossim_util.watch_simulator_clones_for_daemon_disabling(
+        '', store_root='/tmp/store'
+      ):
+        pass
+      mock_makedirs.assert_not_called()
+      mock_thread.assert_not_called()
+
+  def test_daemon_disabling_default_off_and_strips_stale_entries(self):
+    """Defaults to disabled, no-ops clean sims, and strips stale entries."""
+    self.assertIs(iossim_util.DEFAULT_DISABLE_SIMULATOR_DAEMONS, False)
+    udid = '11111111-2222-3333-4444-555555555555'
+    clone_shutdown = '22222222-2222-3333-4444-555555555555'
+    clone_booted = '33333333-2222-3333-4444-555555555555'
+    with (
+      tempfile.TemporaryDirectory() as device_set_dir,
+      tempfile.TemporaryDirectory() as store_root,
+    ):
+      # Pre-populate Shutdown simulator and clones while opted in via setUp.
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(udid, store_root=store_root)
+      )
+      os.makedirs(os.path.join(device_set_dir, clone_shutdown))
+      os.makedirs(os.path.join(device_set_dir, clone_booted))
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(
+          clone_shutdown, store_root=store_root
+        )
+      )
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(
+          clone_booted, store_root=store_root
+        )
+      )
+
+      # Reused simulator with unmanaged <false/> watch keys keeps only those.
+      reused_udid = '44444444-2222-3333-4444-555555555555'
+      reused_dir = os.path.join(
+        store_root, f'com.apple.CoreSimulator.SimDevice.{reused_udid}'
+      )
+      reused_plist = os.path.join(reused_dir, 'disabled.plist')
+      os.makedirs(reused_dir)
+      with open(reused_plist, 'wb') as f:
+        plistlib.dump(
+          {
+            'com.apple.PosterBoard': True,
+            'com.apple.chronod': True,
+            'com.apple.custom.watch': False,
+          },
+          f,
+          fmt=plistlib.FMT_XML,
+        )
+
+      # Simulator with non-empty dir (e.g. syslogsock) keeps dir when empty.
+      sock_udid = '55555555-2222-3333-4444-555555555555'
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(sock_udid, store_root=store_root)
+      )
+      sock_dir = os.path.join(
+        store_root, f'com.apple.CoreSimulator.SimDevice.{sock_udid}'
+      )
+      with open(os.path.join(sock_dir, 'syslogsock'), 'w') as f:
+        f.write('')
+
+      with (
+        mock.patch.dict(os.environ, {}, clear=False),
+        mock.patch.object(threading, 'Thread') as mock_thread,
+      ):
+        os.environ.pop(iossim_util.IOS_DISABLE_SIMULATOR_DAEMONS_ENV, None)
+
+        # Clean simulator returns False with zero booted checks.
+        missing_udid = '66666666-2222-3333-4444-555555555555'
+        with mock.patch.object(
+          iossim_util, '_is_simulator_booted'
+        ) as mock_booted:
+          self.assertFalse(
+            iossim_util.disable_simulator_daemons(
+              missing_udid, store_root=store_root
+            )
+          )
+          mock_booted.assert_not_called()
+
+        # Non-existent clone watch dir is a fast no-op with zero threads.
+        missing_set = os.path.join(device_set_dir, 'missing')
+        with iossim_util.watch_simulator_clones_for_daemon_disabling(
+          missing_set, store_root=store_root
+        ):
+          pass
+        self.assertFalse(os.path.exists(missing_set))
+
+        # Reused Shutdown simulator removes empty store dir when only managed
+        # entries existed.
+        with self.assertLogs(iossim_util.LOGGER, level='INFO') as cm:
+          self.assertFalse(
+            iossim_util.disable_simulator_daemons(udid, store_root=store_root)
+          )
+        self.assertTrue(
+          any('(daemon disabling not enabled)' in msg for msg in cm.output)
+        )
+        self.assertFalse(
+          os.path.exists(
+            os.path.join(
+              store_root, f'com.apple.CoreSimulator.SimDevice.{udid}'
+            )
+          )
+        )
+
+        # Unlinks disabled.plist while preserving dir when extra files exist.
+        self.assertFalse(
+          iossim_util.disable_simulator_daemons(
+            sock_udid, store_root=store_root
+          )
+        )
+        self.assertFalse(
+          os.path.exists(os.path.join(sock_dir, 'disabled.plist'))
+        )
+        self.assertTrue(os.path.isdir(sock_dir))
+
+        # Preserves unmanaged <false/> entries when stripping managed keys.
+        self.assertFalse(
+          iossim_util.disable_simulator_daemons(
+            reused_udid, store_root=store_root
+          )
+        )
+        with open(reused_plist, 'rb') as f:
+          self.assertEqual(plistlib.load(f), {'com.apple.custom.watch': False})
+
+        # Skips Booted clones and cleans pre-existing Shutdown clones once
+        # without spawning a watcher thread.
+        with mock.patch.object(
+          iossim_util,
+          '_is_simulator_booted',
+          side_effect=lambda u, simset_path=None: u == clone_booted,
+        ):
+          with iossim_util.watch_simulator_clones_for_daemon_disabling(
+            device_set_dir, store_root=store_root
+          ):
+            pass
+        mock_thread.assert_not_called()
+        self.assertFalse(
+          os.path.exists(
+            os.path.join(
+              store_root,
+              f'com.apple.CoreSimulator.SimDevice.{clone_shutdown}',
+            )
+          )
+        )
+        self.assertTrue(
+          os.path.exists(
+            os.path.join(
+              store_root,
+              f'com.apple.CoreSimulator.SimDevice.{clone_booted}',
+              'disabled.plist',
+            )
+          )
+        )
+
+  def test_daemon_disabling_env_and_override_precedence(self):
+    """Applies env var opt-in/out and gives Python override precedence."""
+    env_name = iossim_util.IOS_DISABLE_SIMULATOR_DAEMONS_ENV
+    udid_a = '77777777-2222-3333-4444-555555555555'
+    udid_b = '88888888-2222-3333-4444-555555555555'
+    with (
+      tempfile.TemporaryDirectory() as store_root,
+      mock.patch.dict(os.environ, {}, clear=False),
+    ):
+      os.environ[env_name] = '0'
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons(udid_a, store_root=store_root)
+      )
+
+      iossim_util.set_simulator_daemon_disabling_override(True)
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(udid_a, store_root=store_root)
+      )
+
+      os.environ[env_name] = '1'
+      iossim_util.set_simulator_daemon_disabling_override(False)
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons(udid_b, store_root=store_root)
+      )
+
+      iossim_util.set_simulator_daemon_disabling_override(None)
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(udid_b, store_root=store_root)
+      )
+
+  def test_cleanup_simulator_disabled_store_and_booted_guard(self):
+    """Cleans up store dirs only when simulator is valid and not Booted."""
+    udid = '11111111-2222-3333-4444-555555555555'
+    with tempfile.TemporaryDirectory() as store_root:
+      self.assertFalse(
+        iossim_util.cleanup_simulator_disabled_store(
+          'not-a-uuid', store_root=store_root
+        )
+      )
+      self.assertFalse(
+        iossim_util.cleanup_simulator_disabled_store(
+          udid, store_root=store_root
+        )
+      )
+
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(udid, store_root=store_root)
+      )
+      store_dir = os.path.join(
+        store_root, f'com.apple.CoreSimulator.SimDevice.{udid}'
+      )
+      self.assertTrue(os.path.isdir(store_dir))
+
+      with mock.patch.object(
+        iossim_util, '_is_simulator_booted', return_value=True
+      ):
+        self.assertFalse(
+          iossim_util.cleanup_simulator_disabled_store(
+            udid, store_root=store_root
+          )
+        )
+        self.assertTrue(os.path.isdir(store_dir))
+
+      with mock.patch.object(
+        iossim_util, '_is_simulator_booted', return_value=False
+      ):
+        self.assertTrue(
+          iossim_util.cleanup_simulator_disabled_store(
+            udid, store_root=store_root
+          )
+        )
+        self.assertFalse(os.path.exists(store_dir))
+
+  def test_delete_simulator_by_udid_cleans_disabled_store(self):
+    """Cleans disabled store after delete succeeds and skips on error."""
+    udid = '11111111-2222-3333-4444-555555555555'
+    with (
+      mock.patch.object(
+        iossim_util, 'cleanup_simulator_disabled_store'
+      ) as mock_cleanup,
+      mock.patch.object(
+        iossim_util, 'is_device_with_udid_simulator'
+      ) as is_simulator_mock,
+      mock.patch(
+        'subprocess.check_output', return_value=b''
+      ) as subprocess_mock,
+    ):
+      iossim_util.delete_simulator_by_udid(udid, path='/tmp/set')
+      mock_cleanup.assert_called_once_with(udid, simset_path='/tmp/set')
+      is_simulator_mock.cache_clear.assert_called_once_with()
+
+      mock_cleanup.reset_mock()
+      subprocess_mock.side_effect = subprocess.CalledProcessError(1, 'simctl')
+      iossim_util.delete_simulator_by_udid(udid)
+      mock_cleanup.assert_not_called()
+
+  def test_watch_simulator_clones_kqueue_error_falls_back_to_polling(self):
+    """Falls back to polling on `kqueue.control` `OSError` and cleans clones."""
+    with (
+      tempfile.TemporaryDirectory() as device_set_dir,
+      tempfile.TemporaryDirectory() as store_root,
+    ):
+      poll_clone = str(uuid.uuid4()).upper()
+      booted_clone = str(uuid.uuid4()).upper()
+
+      booted_clone_dir = os.path.join(device_set_dir, booted_clone)
+      os.makedirs(booted_clone_dir)
+      with open(os.path.join(booted_clone_dir, 'device.plist'), 'wb') as f:
+        plistlib.dump({'state': iossim_util.SIMULATOR_PLIST_STATE_BOOTED}, f)
+      booted_store_dir = os.path.join(
+        store_root, f'com.apple.CoreSimulator.SimDevice.{booted_clone}'
+      )
+      os.makedirs(booted_store_dir)
+      with open(os.path.join(booted_store_dir, 'syslogsock'), 'w') as f:
+        f.write('')
+
+      class _FailingWaitKqueue:
+        def __init__(self):
+          self.closed = False
+          self.wait_called = threading.Event()
+
+        def control(self, changelist, nevents, timeout=None):
+          if changelist is not None:
+            return []
+          self.wait_called.set()
+          raise OSError('mock kqueue error')
+
+        def close(self):
+          self.closed = True
+
+      fake_kq = _FailingWaitKqueue()
+      fake_select = types.SimpleNamespace(
+        kqueue=lambda: fake_kq,
+        kevent=lambda fd, filter=0, flags=0, fflags=0: (
+          fd,
+          filter,
+          flags,
+          fflags,
+        ),
+        KQ_FILTER_VNODE=1,
+        KQ_EV_ADD=2,
+        KQ_EV_CLEAR=4,
+        KQ_NOTE_WRITE=8,
+      )
+
+      real_open = os.open
+      real_close = os.close
+      closed_fds: list[int] = []
+
+      def _fake_open(path, flags, *args, **kwargs):
+        if path == device_set_dir:
+          return 998
+        return real_open(path, flags, *args, **kwargs)
+
+      def _fake_close(fd):
+        if fd == 998:
+          closed_fds.append(fd)
+          return None
+        return real_close(fd)
+
+      with (
+        mock.patch.object(iossim_util, 'select', fake_select),
+        mock.patch('os.open', side_effect=_fake_open),
+        mock.patch('os.close', side_effect=_fake_close),
+        mock.patch.object(
+          iossim_util,
+          '_is_simulator_booted',
+          side_effect=lambda u, simset_path=None: u == booted_clone,
+        ),
+        iossim_util.watch_simulator_clones_for_daemon_disabling(
+          device_set_dir, store_root=store_root, poll_interval=0.01
+        ),
+      ):
+        self.assertTrue(fake_kq.wait_called.wait(timeout=1.0))
+        os.makedirs(os.path.join(device_set_dir, poll_clone))
+        poll_plist = os.path.join(
+          store_root,
+          f'com.apple.CoreSimulator.SimDevice.{poll_clone}',
+          'disabled.plist',
+        )
+        self.assertTrue(self._wait_for_path(poll_plist))
+
+      self.assertEqual(closed_fds, [998])
+      self.assertTrue(fake_kq.closed)
+      # Non-booted clone disabled store removed on exit; booted clone kept
+      # untouched without writing disabled.plist.
+      self.assertFalse(
+        os.path.exists(
+          os.path.join(
+            store_root, f'com.apple.CoreSimulator.SimDevice.{poll_clone}'
+          )
+        )
+      )
+      self.assertTrue(
+        os.path.exists(os.path.join(booted_store_dir, 'syslogsock'))
+      )
+      self.assertFalse(
+        os.path.exists(os.path.join(booted_store_dir, 'disabled.plist'))
+      )
+
+  def test_watch_simulator_clones_retries_transient_error_and_ignores_booted(
+    self,
+  ):
+    """Retries failed writes without re-checking Booted or finished clones."""
+    with (
+      tempfile.TemporaryDirectory() as device_set_dir,
+      tempfile.TemporaryDirectory() as store_root,
+    ):
+      booted_clone = str(uuid.uuid4()).upper()
+      os.makedirs(os.path.join(device_set_dir, booted_clone))
+      booted_store_dir = os.path.join(
+        store_root, f'com.apple.CoreSimulator.SimDevice.{booted_clone}'
+      )
+      os.makedirs(booted_store_dir)
+      with open(os.path.join(booted_store_dir, 'syslogsock'), 'w') as f:
+        f.write('')
+
+      retry_clone = str(uuid.uuid4()).upper()
+      fake_select = types.SimpleNamespace()
+      real_write = iossim_util._write_plist_atomically
+      write_attempts = 0
+      retry_succeeded = threading.Event()
+      booted_checks: list[str] = []
+
+      def _flaky_write(store_dir, store_path, payload):
+        nonlocal write_attempts
+        write_attempts += 1
+        if write_attempts == 1:
+          raise OSError('transient write failure')
+        real_write(store_dir, store_path, payload)
+        retry_succeeded.set()
+
+      def _check_booted(udid, simset_path=None):
+        booted_checks.append(udid)
+        return udid == booted_clone
+
+      with (
+        mock.patch.object(iossim_util, 'select', fake_select),
+        mock.patch.object(
+          iossim_util, '_is_simulator_booted', side_effect=_check_booted
+        ),
+        mock.patch.object(
+          iossim_util, '_write_plist_atomically', side_effect=_flaky_write
+        ),
+        iossim_util.watch_simulator_clones_for_daemon_disabling(
+          device_set_dir, store_root=store_root, poll_interval=0.01
+        ),
+      ):
+        os.makedirs(os.path.join(device_set_dir, retry_clone))
+        self.assertTrue(retry_succeeded.wait(timeout=2.0))
+        # Allow multiple subsequent poll intervals to verify no repeat work.
+        time.sleep(0.05)
+        self.assertEqual(booted_checks, [booted_clone])
+
+      self.assertEqual(write_attempts, 2)
+      self.assertEqual(booted_checks, [booted_clone, retry_clone])
+      self.assertTrue(
+        os.path.exists(os.path.join(booted_store_dir, 'syslogsock'))
+      )
+      self.assertFalse(
+        os.path.exists(
+          os.path.join(
+            store_root, f'com.apple.CoreSimulator.SimDevice.{retry_clone}'
+          )
+        )
+      )
+
+  def test_watch_simulator_clones_skips_cleanup_if_watcher_alive(self):
+    """Skips disabled store cleanup with warning if watcher stays alive."""
+    with (
+      tempfile.TemporaryDirectory() as device_set_dir,
+      tempfile.TemporaryDirectory() as store_root,
+    ):
+      clone_udid = str(uuid.uuid4()).upper()
+      os.makedirs(os.path.join(device_set_dir, clone_udid))
+      fake_select = types.SimpleNamespace()
+      real_thread_cls = threading.Thread
+      real_threads: list[threading.Thread] = []
+
+      class _AliveThreadProxy:
+        def __init__(self, real_thread):
+          self._real = real_thread
+
+        def start(self):
+          self._real.start()
+
+        def join(self, timeout=None):
+          pass
+
+        def is_alive(self):
+          return True
+
+      def _make_proxy_thread(*args, **kwargs):
+        real_thread = real_thread_cls(*args, **kwargs)
+        real_threads.append(real_thread)
+        return _AliveThreadProxy(real_thread)
+
+      try:
+        with (
+          mock.patch.object(iossim_util, 'select', fake_select),
+          mock.patch.object(
+            threading, 'Thread', side_effect=_make_proxy_thread
+          ),
+          self.assertLogs(iossim_util.LOGGER, level='WARNING') as cm,
+        ):
+          with iossim_util.watch_simulator_clones_for_daemon_disabling(
+            device_set_dir, store_root=store_root, poll_interval=0.01
+          ):
+            plist_path = os.path.join(
+              store_root,
+              f'com.apple.CoreSimulator.SimDevice.{clone_udid}',
+              'disabled.plist',
+            )
+            self.assertTrue(self._wait_for_path(plist_path))
+      finally:
+        for t in real_threads:
+          t.join(timeout=2.0)
+
+      self.assertTrue(
+        any('skipping disabled store cleanup' in msg for msg in cm.output)
+      )
+      self.assertTrue(os.path.exists(plist_path))
 
 
 if __name__ == '__main__':

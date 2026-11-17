@@ -5,6 +5,8 @@
 
 """Unittests for xcodebuild_runner.py."""
 
+import collections  # noqa: F401
+import contextlib
 import json
 import logging
 import mock
@@ -401,6 +403,95 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
     )
     self.assertEqual(1, len(mock_collect_results.mock_calls))
     mock_plugin_service.reset.assert_called_once_with()
+
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  @mock.patch.object(iossim_util, 'disable_simulator_keyboard_tutorial')
+  def testLaunchCommand_watchesSimulatorClonesWhenClonesGreaterThanOne(
+    self, mock_disable_kb, mock_collect_results
+  ):
+    self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: True)
+    egtests = test_apps.EgtestsApp(
+      _EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES, constants.IOSPlatformType.IPHONEOS
+    )
+    mock_collect_results.return_value = ResultCollection(
+      test_results=[
+        TestResult('Class1/passedTest1', TestStatus.PASS),
+        TestResult('Class1/passedTest2', TestStatus.PASS),
+      ]
+    )
+
+    events = []
+    watched_paths = []
+
+    @contextlib.contextmanager
+    def _fake_watch(path):
+      watched_paths.append(path)
+      events.append('enter')
+      try:
+        yield
+      finally:
+        events.append('exit')
+
+    launch_command = xcodebuild_runner.LaunchCommand(
+      egtests,
+      _DESTINATION,
+      clones=4,
+      retries=0,
+      readline_timeout=180,
+      exception_checker=None,
+      test_runner=mock.MagicMock(),
+    )
+
+    def _fake_launch_attempt(_cmd):
+      events.append('launch_attempt')
+      return []
+
+    with (
+      mock.patch.object(
+        iossim_util, 'watch_simulator_clones_for_daemon_disabling', _fake_watch
+      ),
+      mock.patch.object(
+        launch_command, 'launch_attempt', side_effect=_fake_launch_attempt
+      ),
+    ):
+      launch_command.launch()
+
+    self.assertEqual(
+      xcodebuild_runner.XTDEVICE_FOLDER,
+      iossim_util.SIMULATOR_XCTEST_DEVICES_PATH,
+    )
+    self.assertEqual(watched_paths, [xcodebuild_runner.XTDEVICE_FOLDER])
+    self.assertEqual(events, ['enter', 'launch_attempt', 'exit'])
+    mock_disable_kb.assert_called_once_with(_DESTINATION)
+
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  @mock.patch.object(iossim_util, 'disable_simulator_keyboard_tutorial')
+  @mock.patch.object(iossim_util, 'watch_simulator_clones_for_daemon_disabling')
+  def testLaunchCommand_skipsCloneWatcherForSingleClone(
+    self, mock_watch, mock_disable_kb, mock_collect_results
+  ):
+    self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: True)
+    egtests = test_apps.EgtestsApp(
+      _EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES, constants.IOSPlatformType.IPHONEOS
+    )
+    mock_collect_results.return_value = ResultCollection(
+      test_results=[
+        TestResult('Class1/passedTest1', TestStatus.PASS),
+        TestResult('Class1/passedTest2', TestStatus.PASS),
+      ]
+    )
+    launch_command = xcodebuild_runner.LaunchCommand(
+      egtests,
+      _DESTINATION,
+      clones=1,
+      retries=0,
+      readline_timeout=180,
+      exception_checker=None,
+      test_runner=mock.MagicMock(),
+    )
+    launch_command.launch()
+    mock_watch.assert_not_called()
+    mock_disable_kb.assert_called_once_with(_DESTINATION)
 
 
 class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):

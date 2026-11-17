@@ -9,6 +9,7 @@ import signal
 import sys
 
 import collections
+import contextlib
 import json  # noqa: F401
 import logging
 import os
@@ -637,6 +638,10 @@ class TestRunner(object):
     LOGGER.warning('Sigterm caught during test run. Killing test process.')
     proc.kill()
 
+  def _clone_watch_context(self, clones):
+    """Returns a context manager for watching parallel simulator clones."""
+    return contextlib.nullcontext()
+
   def _run(self, cmd, clones=1):
     """Runs the specified command, parsing GTest output.
 
@@ -650,17 +655,18 @@ class TestRunner(object):
 
     # TODO(crbug.com/41370857): Implement test sharding for unit tests.
     # TODO(crbug.com/41370858): Use thread pool for DeviceTestRunner as well.
-    proc = self.start_proc(cmd)
-    old_handler = self.set_sigterm_handler(
-      lambda _signum, _frame: self.handle_sigterm(proc)
-    )
-    print_process_output(
-      proc, 'xcodebuild', parser, timeout=self.readline_timeout
-    )
-    LOGGER.info('Waiting for test process to terminate.')
-    proc.wait()
-    LOGGER.info('Test process terminated.')
-    self.set_sigterm_handler(old_handler)
+    with self._clone_watch_context(clones):
+      proc = self.start_proc(cmd)
+      old_handler = self.set_sigterm_handler(
+        lambda _signum, _frame: self.handle_sigterm(proc)
+      )
+      print_process_output(
+        proc, 'xcodebuild', parser, timeout=self.readline_timeout
+      )
+      LOGGER.info('Waiting for test process to terminate.')
+      proc.wait()
+      LOGGER.info('Test process terminated.')
+      self.set_sigterm_handler(old_handler)
     sys.stdout.flush()
     LOGGER.debug('Stdout flushed after test process.')
     returncode = proc.returncode
@@ -1025,6 +1031,13 @@ class SimulatorTestRunner(TestRunner):
       self.platform
     )
     self.use_clang_coverage = kwargs.get('use_clang_coverage') or False
+
+  def _clone_watch_context(self, clones):
+    if clones > 1:
+      return iossim_util.watch_simulator_clones_for_daemon_disabling(
+        iossim_util.SIMULATOR_XCTEST_DEVICES_PATH
+      )
+    return contextlib.nullcontext()
 
   @staticmethod
   def kill_simulators():

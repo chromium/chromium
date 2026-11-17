@@ -161,6 +161,9 @@ class Runner:
     summary = {}
     tr = None
     self.parse_args(args)
+    iossim_util.set_simulator_daemon_disabling_override(
+      self.args.disable_simulator_daemons
+    )
 
     # If xcode already exists in /Applications, then use that instead of
     # trying to cache another xcode in the work directory
@@ -625,6 +628,26 @@ class Runner:
       action='store_true',
       help='Whether to skip enumerating tests in the EG test bundle.',
     )
+    parser.add_argument(
+      '--disable-simulator-daemons',
+      dest='disable_simulator_daemons',
+      action='store_true',
+      default=None,
+      help=(
+        'Enable disabling unneeded background launchd daemons on test '
+        'simulators before boot.'
+      ),
+    )
+    parser.add_argument(
+      '--no-disable-simulator-daemons',
+      dest='disable_simulator_daemons',
+      action='store_false',
+      default=argparse.SUPPRESS,
+      help=(
+        'Disable pruning unneeded background launchd daemons on test '
+        'simulators.'
+      ),
+    )
 
     def load_from_json(args):
       """Loads and sets arguments from args_json.
@@ -645,6 +668,9 @@ class Runner:
       )
       args.skip_enumerate_tests = args_json.get(
         'skip_enumerate_tests', args.skip_enumerate_tests
+      )
+      args.disable_simulator_daemons = args_json.get(
+        'disable_simulator_daemons', args.disable_simulator_daemons
       )
       args.clones = args_json.get('clones', args.clones)
       test_args.extend(args_json.get('test_args', []))

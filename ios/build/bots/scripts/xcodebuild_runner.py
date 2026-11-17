@@ -5,6 +5,7 @@
 """Test runner for running tests using xcodebuild."""
 
 import collections
+import contextlib
 import glob
 import json
 import logging
@@ -44,7 +45,7 @@ import measures  # noqa: E402
 
 LOGGER = logging.getLogger(__name__)
 MAXIMUM_TESTS_PER_SHARD_FOR_RERUN = 20
-XTDEVICE_FOLDER = os.path.expanduser('~/Library/Developer/XCTestDevices')
+XTDEVICE_FOLDER = iossim_util.SIMULATOR_XCTEST_DEVICES_PATH
 
 
 def _tests_decided_at_runtime(app_name):
@@ -210,7 +211,13 @@ class LaunchCommand(object):
         'Start test attempt #%d for command [%s]'
         % (attempt, ' '.join(cmd_list))
       )
-      output = self.launch_attempt(cmd_list)
+      watch_ctx = (
+        iossim_util.watch_simulator_clones_for_daemon_disabling(XTDEVICE_FOLDER)
+        if clones > 1 and iossim_util.is_device_with_udid_simulator(self.udid)
+        else contextlib.nullcontext()
+      )
+      with watch_ctx:
+        output = self.launch_attempt(cmd_list)
 
       if xcode_util.using_xcode_16_or_higher():
         result = Xcode16LogParser.collect_test_results(outdir_attempt, output)

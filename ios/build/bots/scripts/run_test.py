@@ -73,6 +73,15 @@ class RotateOutDirTest(TestCase):
 
 
 class ParseArgsUnitTest(unittest.TestCase):
+  def setUp(self):
+    super(ParseArgsUnitTest, self).setUp()
+    iossim_util.set_simulator_daemon_disabling_override(None)
+    self.addCleanup(iossim_util.set_simulator_daemon_disabling_override, None)
+
+  def tearDown(self):
+    iossim_util.set_simulator_daemon_disabling_override(None)
+    super(ParseArgsUnitTest, self).tearDown()
+
   def test_parse_args_ok(self):
     cmd = [
       '--app',
@@ -658,12 +667,70 @@ class ParseArgsUnitTest(unittest.TestCase):
     runner.parse_args(cmd)
     self.assertTrue(runner.args.skip_enumerate_tests)
 
+  def test_disable_simulator_daemons_flags(self):
+    base_cmd = [
+      '--app',
+      './foo-Runner.app',
+      '--xcode-build-version',
+      '123abc',
+      '--out-dir',
+      'some/dir',
+    ]
+
+    default_runner = run.Runner()
+    default_runner.parse_args(base_cmd)
+    self.assertIsNone(default_runner.args.disable_simulator_daemons)
+
+    enable_runner = run.Runner()
+    enable_runner.parse_args(base_cmd + ['--disable-simulator-daemons'])
+    self.assertIs(enable_runner.args.disable_simulator_daemons, True)
+
+    disable_runner = run.Runner()
+    disable_runner.parse_args(base_cmd + ['--no-disable-simulator-daemons'])
+    self.assertIs(disable_runner.args.disable_simulator_daemons, False)
+
+    override_runner = run.Runner()
+    override_runner.parse_args(
+      base_cmd
+      + ['--disable-simulator-daemons', '--no-disable-simulator-daemons']
+    )
+    self.assertIs(override_runner.args.disable_simulator_daemons, False)
+
+  def test_disable_simulator_daemons_json_arg(self):
+    base_cmd = [
+      '--app',
+      './foo-Runner.app',
+      '--xcode-build-version',
+      '123abc',
+      '--out-dir',
+      'some/dir',
+    ]
+
+    enable_runner = run.Runner()
+    enable_runner.parse_args(
+      base_cmd + ['--args-json', '{"disable_simulator_daemons": true}']
+    )
+    self.assertIs(enable_runner.args.disable_simulator_daemons, True)
+
+    disable_runner = run.Runner()
+    disable_runner.parse_args(
+      base_cmd
+      + [
+        '--disable-simulator-daemons',
+        '--args-json',
+        '{"disable_simulator_daemons": false}',
+      ]
+    )
+    self.assertIs(disable_runner.args.disable_simulator_daemons, False)
+
 
 class RunnerInstallXcodeTest(test_runner_test.TestCase):
   """Tests Xcode and runtime installing logic in Runner.run()"""
 
   def setUp(self):
     super(RunnerInstallXcodeTest, self).setUp()
+    iossim_util.set_simulator_daemon_disabling_override(None)
+    self.addCleanup(iossim_util.set_simulator_daemon_disabling_override, None)
     self.runner = run.Runner()
 
     self.mock(self.runner, 'parse_args', lambda _: None)
@@ -690,6 +757,11 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     self.runner.args.out_dir = 'out/dir'
     self.runner.args.benchmark_name = None
     self.runner.args.isolated_script_test_perf_output = None
+    self.runner.args.disable_simulator_daemons = None
+
+  def tearDown(self):
+    iossim_util.set_simulator_daemon_disabling_override(None)
+    super(RunnerInstallXcodeTest, self).tearDown()
 
   @mock.patch('test_runner.defaults_delete')
   @mock.patch('json.dump')
@@ -1351,6 +1423,47 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
       rc = self.runner.run(None)
       self.assertEqual(rc, 1)
       self.assertEqual(mock_tr.call_args[1]['benchmark_name'], 'bling.startup')
+
+  @mock.patch('xcode_util.is_local_run', return_value=False)
+  @mock.patch('test_runner.defaults_delete')
+  @mock.patch('xcode_util.install_xcode', autospec=True, return_value=True)
+  @mock.patch('xcode_util.check_xcode_exists_in_apps', return_value=False)
+  @mock.patch('test_runner.DeviceTestRunner')
+  def test_run_applies_disable_simulator_daemons_override(
+    self, mock_tr, _exists, _install, _defaults, _local
+  ):
+    mock_tr.return_value.launch.return_value = True
+    mock_tr.return_value.logs = {}
+    mock_tr.return_value.test_results = {'version': 3, 'tests': {}}
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+      base_cmd = [
+        '--xcode-build-version',
+        'testXcodeVersion',
+        '--out-dir',
+        tmpdir,
+      ]
+      cli_runner = run.Runner()
+      with mock.patch.object(
+        iossim_util,
+        'set_simulator_daemon_disabling_override',
+        wraps=iossim_util.set_simulator_daemon_disabling_override,
+      ) as mock_set_override:
+        rc = cli_runner.run(base_cmd + ['--disable-simulator-daemons'])
+        self.assertEqual(rc, 0)
+        mock_set_override.assert_called_once_with(True)
+
+        mock_set_override.reset_mock()
+        rc = cli_runner.run(base_cmd + ['--no-disable-simulator-daemons'])
+        self.assertEqual(rc, 0)
+        mock_set_override.assert_called_once_with(False)
+
+        mock_set_override.reset_mock()
+        rc = cli_runner.run(
+          base_cmd + ['--args-json', '{"disable_simulator_daemons": true}']
+        )
+        self.assertEqual(rc, 0)
+        mock_set_override.assert_called_once_with(True)
 
 
 if __name__ == '__main__':

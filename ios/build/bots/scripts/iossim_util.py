@@ -3,15 +3,22 @@
 # found in the LICENSE file.
 
 from collections import OrderedDict
+import contextlib
+import functools
 import json
 import logging
 import os
 import plistlib
+import select
+import shutil
 import subprocess
+import sys
+import tempfile
+import threading
 import time
 import typing  # noqa: F401
-import functools
-import sys
+import uuid
+import xml.parsers.expat
 
 import constants
 import test_runner
@@ -34,6 +41,185 @@ SIMULATOR_DEFAULT_PATH = os.path.expanduser(
   '~/Library/Developer/CoreSimulator/Devices'
 )
 SIMULATOR_CACHE_PATH = os.path.expanduser('~/Library/Developer/SimulatorCache')
+SIMULATOR_XCTEST_DEVICES_PATH = os.path.expanduser(
+  '~/Library/Developer/XCTestDevices'
+)
+SIMULATOR_DISABLED_STORE_ROOT = '/private/var/tmp'
+SIMULATOR_PLIST_STATE_BOOTED = (
+  3  # CoreSimulator SimDeviceState.Booted in device.plist.
+)
+DEFAULT_DISABLE_SIMULATOR_DAEMONS = False
+IOS_DISABLE_SIMULATOR_DAEMONS_ENV = 'IOS_DISABLE_SIMULATOR_DAEMONS'
+_DISABLE_SIMULATOR_DAEMONS_OVERRIDE: bool | None = None
+
+# Background launchd jobs safe to disable in Chrome for iOS test simulators via
+# per-UDID host-side `disabled.plist` overrides. Because `launchd_sim` runs on
+# the host, these overrides reduce idle memory footprint and boot contention
+# without mutating signed runtime volumes.
+#
+# Daemons required by Chrome, WebKit, or XCTest are intentionally excluded:
+# - `com.apple.ScreenTimeAgent`, `com.apple.ScreenTimeSettingsAgent`:
+#   `WebTestSuite::Initialize` blocks up to 120s waiting on ScreenTime XPC.
+# - `com.apple.passd`, `com.apple.financed`: required by `PassKitEGTest`.
+# - `com.apple.assetsd`, `com.apple.medialibraryd`, `com.apple.photoanalysisd`:
+#   required by photo library / picker flows in `FileUploadPanelEGTest`.
+# - `com.apple.contactsd`, `com.apple.calaccessd`: required by `VcardEGTest`.
+# - `com.apple.searchd`, `com.apple.searchtoold`,
+#   `com.apple.corespotlightservice`: required by `SpotlightInterface` and the
+#   document picker.
+# - `com.apple.sharingd`: required for system share sheets.
+# - `com.apple.gamed`: required for timely XCTest / XCUITest app launches.
+# - com.apple.assistantd: kept running because it hosts dictation XPC
+#   services; without it Spotlight leaks memory retrying connections.
+# - `com.apple.intelligenceplatformd`: kept running because disabling it causes
+#   `biomed`'s per-process `IntelligencePlatformComputeService` XPC service
+#   (which ignores system `disabled.plist`) to spin for ~20s CPU on boot.
+# - WebKit, MDM/policy, and CoreSimulator/SpringBoard-sensitive daemons
+#   (`com.apple.webkit.*`, `com.apple.webprivacyd`, `com.apple.swcd`,
+#   `com.apple.nanoregistry*`, `com.apple.sleepd`, `com.apple.mobiletimerd`,
+#   `com.apple.routined`, `com.apple.biomed*`, `com.apple.donotdisturbd`,
+#   `com.apple.appprotectiond`, `com.apple.managedconfiguration.profiled`).
+DISABLED_SIMULATOR_LAUNCHD_JOBS: tuple[str, ...] = (
+  # Wallpaper & widgets.
+  'com.apple.PosterBoard',
+  'com.apple.chronod',
+  'com.apple.liveactivitiesd',
+  'com.apple.navd',
+  # Siri, speech & Apple Intelligence / on-device ML (excludes assistantd and
+  # intelligenceplatformd).
+  'com.apple.assistant_cdmd',
+  'com.apple.assistant_service',
+  'com.apple.siriactionsd',
+  'com.apple.siriinferenced',
+  'com.apple.siriknowledged',
+  'com.apple.sirittsd',
+  'com.apple.siri.context.service',
+  'com.apple.siri.acousticsignature',
+  'com.apple.corespeechd',
+  'com.apple.voiced',
+  'com.apple.voicebankingd',
+  'com.apple.speechmodeltrainingd',
+  'com.apple.intelligencecontextd',
+  'com.apple.intelligenceflowd',
+  'com.apple.intelligencetasksd',
+  'com.apple.generativeexperiencesd',
+  'com.apple.knowledgeconstructiond',
+  'com.apple.naturallanguaged',
+  'com.apple.textunderstandingd',
+  'com.apple.modelcatalogd',
+  'com.apple.modelmanagerd',
+  'com.apple.mlhostd',
+  'com.apple.mlruntimed',
+  'com.apple.suggestd',
+  'com.apple.parsecd',
+  'com.apple.parsec-fbf',
+  'com.apple.proactiveeventtrackerd',
+  # Health, HomeKit & Fitness.
+  'com.apple.healthd',
+  'com.apple.healthappd',
+  'com.apple.healthcontentd',
+  'com.apple.healtheventsd',
+  'com.apple.healthrecordsd',
+  'com.apple.finhealthd',
+  'com.apple.homed',
+  'com.apple.homeeventsd',
+  'com.apple.fitcore',
+  'com.apple.fitcore.session',
+  'com.apple.fitnesscoachingd',
+  'com.apple.fitnessintelligenced',
+  'com.apple.activityawardsd',
+  'com.apple.activitysharingd',
+  # iCloud, CloudKit & account sync.
+  'com.apple.appleaccountd',
+  'com.apple.appleaccounttransparencyd',
+  'com.apple.appleidsetupd',
+  'com.apple.akd',
+  'com.apple.cloudd',
+  'com.apple.cloudphotod',
+  'com.apple.ckdiscretionaryd',
+  'com.apple.cloudsettingssyncagent',
+  'com.apple.bird',
+  'com.apple.syncdefaultsd',
+  'com.apple.cdpd',
+  'com.apple.sosd',
+  'com.apple.SecureBackupDaemon',
+  'com.apple.TrustedPeersHelper',
+  'com.apple.protectedcloudstorage.protectedcloudkeysyncing',
+  'com.apple.icloudmailagent',
+  'com.apple.icloudsubscriptionoptimizerd',
+  'com.apple.ind',
+  # Built-in consumer apps & media store.
+  'com.apple.newsd',
+  'com.apple.weatherd',
+  'com.apple.Maps.mapssyncd',
+  'com.apple.Maps.mapspushd',
+  'com.apple.Maps.geocorrectiond',
+  'com.apple.maps.destinationd',
+  'com.apple.MapKit.SnapshotService',
+  'com.apple.tipsd',
+  'com.apple.jetpackassetd',
+  'com.apple.gamesaved',
+  'com.apple.GameController.gamecontrollerd',
+  'com.apple.appstored',
+  'com.apple.appstorecomponentsd',
+  'com.apple.itunescloudd',
+  'com.apple.itunesstored',
+  'com.apple.storekitd',
+  'com.apple.amsaccountsd',
+  'com.apple.amsengagementd',
+  'com.apple.amsondevicestoraged',
+  'com.apple.musicd',
+  'com.apple.videosubscriptionsd',
+  'com.apple.assetsubscriptiond',
+  'com.apple.apsd',
+  # Messaging, FaceTime, Mail, Reminders & companion connectivity.
+  'com.apple.identityservicesd',
+  'com.apple.ids_simd',
+  'com.apple.imautomatichistorydeletionagent',
+  'com.apple.imcore.imtransferagent',
+  'com.apple.imdpersistence.IMDPersistenceAgent',
+  'com.apple.facetimemessagestored',
+  'com.apple.telephonyutilities.callservicesd',
+  'com.apple.email.maild',
+  'com.apple.exchangesyncd',
+  'com.apple.dataaccess.dataaccessd',
+  'com.apple.remindd',
+  'com.apple.contacts.postersyncd',
+  'com.apple.peopled',
+  'com.apple.rapportd',
+  'com.apple.companiond',
+  'com.apple.carkitd',
+  'com.apple.wcd',
+  'com.apple.tvremoted',
+  'com.apple.avatarsd',
+  'com.apple.stickersd',
+  'com.apple.sociallayerd',
+  'com.apple.announced',
+  'com.apple.findmy.findmylocated',
+  # Safari sync, media ML & background telemetry.
+  'com.apple.SafariBookmarksSyncAgent',
+  'com.apple.Safari.History',
+  'com.apple.Safari.passwordbreachd',
+  'com.apple.safarifetcherd',
+  'com.apple.mediaanalysisd',
+  'com.apple.mediaanalysisd.service',
+  'com.apple.mediastream.mstreamd',
+  'com.apple.ClipServices.clipserviced',
+  'com.apple.accessibility.axassetsd',
+  'com.apple.storagedatad',
+  'com.apple.StatusKitAgent',
+  'com.apple.businessservicesd',
+  'com.apple.ap.adprivacyd',
+  'com.apple.ap.promotedcontentd',
+  'com.apple.diagnosticextensionsd',
+  'com.apple.feedbackd',
+  'com.apple.rtcreportingd',
+  'com.apple.securityuploadd',
+  'com.apple.geoanalyticsd',
+  'com.apple.triald',
+  'com.apple.followupd',
+  'com.apple.purplebuddy.budd',
+)
 
 # TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
 IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
@@ -82,6 +268,7 @@ def get_simulator(platform, version, out_dir=None, use_cache=False):
     platform, version, out_dir
   )
   if udids:
+    disable_simulator_daemons(udids[0])
     return udids[0]
   return create_device_by_platform_and_version(platform, version, use_cache)
 
@@ -305,6 +492,7 @@ def _create_device_by_platform_and_version(platform, version, path=None):
         .rstrip()
       )
       LOGGER.info('Created simulator in second attempt with UDID: %s', udid)
+    disable_simulator_daemons(udid, simset_path=path, check_booted=False)
     return udid
   except subprocess.CalledProcessError as e:
     LOGGER.error(f'Error when creating simulator "{name}": {e.output}')
@@ -423,7 +611,11 @@ def clone_simulator_by_udid(
   if dest_path:
     command += [dest_path]
 
-  return subprocess.check_output(command).decode('utf-8').strip()
+  cloned_udid = subprocess.check_output(command).decode('utf-8').strip()
+  disable_simulator_daemons(
+    cloned_udid, simset_path=dest_path or path, check_booted=False
+  )
+  return cloned_udid
 
 
 def shutdown_simulator_by_udid(udid: str, path: str = None):
@@ -460,6 +652,7 @@ def delete_simulator_by_udid(udid, path: str = None):
       _compose_simctl_cmd(['delete', udid], path=path), stderr=subprocess.STDOUT
     ).decode('utf-8')
     is_device_with_udid_simulator.cache_clear()
+    cleanup_simulator_disabled_store(udid, simset_path=path)
   except subprocess.CalledProcessError as e:
     # Logging error instead of throwing so we don't cause failures in case
     # this was indeed failing to clean up.
@@ -509,7 +702,12 @@ def boot_simulator_if_not_booted(sim_udid, path=SIMULATOR_DEFAULT_PATH):
       if device['udid'] != sim_udid:
         continue
       if device['state'] == 'Booted':
+        LOGGER.debug(
+          'Simulator %s is already Booted; skipping disabled.plist update.',
+          sim_udid,
+        )
         return
+      disable_simulator_daemons(sim_udid, simset_path=path, check_booted=False)
       subprocess.check_output(
         ['xcrun', 'simctl', '--set', path, 'boot', sim_udid]
       ).decode('utf-8')
@@ -576,6 +774,7 @@ def ensure_simulator_fully_booted(sim_udid: str, path=None, num_attempts=1):
   runtime = get_simulator_runtime_by_device_udid(sim_udid, path=path)
   for boot_attempt in range(num_attempts):
     try:
+      disable_simulator_daemons(sim_udid, simset_path=path)
       update_dyld_shared_cache(runtime)
       subprocess.check_call(cmd, timeout=120)
       return True
@@ -643,6 +842,7 @@ def copy_trusted_certificate(cert_path, udid):
     return
 
   LOGGER.info('Copying cert into %s', udid)
+  disable_simulator_daemons(udid)
   # Try to boot first, if the simulator is already booted, continue.
   try:
     subprocess.check_call(['xcrun', 'simctl', 'boot', udid])
@@ -1143,3 +1343,499 @@ def disable_simulator_keyboard_tutorial(udid):
   except subprocess.CalledProcessError as e:
     message = f'Unable to disable keyboard tutorial: {e.stderr}'
     LOGGER.error(message)
+
+
+def _is_valid_uuid(value: str) -> bool:
+  """Returns whether `value` is a canonical hyphenated UUID string."""
+  if not isinstance(value, str):
+    return False
+  try:
+    return str(uuid.UUID(value)) == value.lower()
+  except ValueError:
+    return False
+
+
+def _is_valid_uuid_dir(name: str, full_path: str) -> bool:
+  """Returns whether `full_path` is a directory named by a valid UUID."""
+  return os.path.isdir(full_path) and _is_valid_uuid(name)
+
+
+def set_simulator_daemon_disabling_override(enabled: bool | None) -> None:
+  """Sets an in-process override for simulator daemon disabling."""
+  global _DISABLE_SIMULATOR_DAEMONS_OVERRIDE
+  _DISABLE_SIMULATOR_DAEMONS_OVERRIDE = enabled
+
+
+def _is_simulator_daemon_disabling_enabled() -> bool:
+  """Returns whether background daemon disabling is enabled for this run."""
+  if _DISABLE_SIMULATOR_DAEMONS_OVERRIDE is not None:
+    return _DISABLE_SIMULATOR_DAEMONS_OVERRIDE
+  env_val = (
+    os.environ.get(IOS_DISABLE_SIMULATOR_DAEMONS_ENV, '').strip().lower()
+  )
+  if env_val in ('1', 'true', 'yes'):
+    return True
+  if env_val in ('0', 'false', 'no'):
+    return False
+  return DEFAULT_DISABLE_SIMULATOR_DAEMONS
+
+
+def _is_simulator_booted(udid: str, simset_path: str | None = None) -> bool:
+  """Returns whether the given simulator UDID is currently Booted."""
+  if simset_path:
+    device_plist = os.path.join(simset_path, udid, 'device.plist')
+    try:
+      if os.path.exists(device_plist):
+        with open(device_plist, 'rb') as f:
+          device_info = plistlib.load(f)
+        if (
+          isinstance(device_info, dict)
+          and device_info.get('state') == SIMULATOR_PLIST_STATE_BOOTED
+        ):
+          return True
+    except (
+      OSError,
+      plistlib.InvalidFileException,
+      xml.parsers.expat.ExpatError,
+    ):
+      LOGGER.debug(
+        'Failed to read device.plist for simulator %s.', udid, exc_info=True
+      )
+
+  if simset_path and not os.path.isdir(simset_path):
+    return False
+
+  try:
+    raw = subprocess.check_output(
+      _compose_simctl_cmd(
+        ['list', 'devices', 'booted', '-j'], path=simset_path
+      ),
+      stderr=subprocess.DEVNULL,
+    ).decode('utf-8')
+    devices = json.loads(raw).get('devices', {})
+    for runtime_devices in devices.values():
+      for device in runtime_devices:
+        if device.get('udid') == udid and device.get('state') == 'Booted':
+          return True
+  except (OSError, subprocess.SubprocessError, ValueError):
+    LOGGER.debug(
+      'Failed to query simctl booted state for simulator %s.',
+      udid,
+      exc_info=True,
+    )
+  return False
+
+
+def cleanup_simulator_disabled_store(
+  udid: str,
+  store_root: str | None = None,
+  simset_path: str | None = None,
+) -> bool:
+  """Removes an orphaned per-device host `disabled.plist` store directory.
+
+  Skips removal if the target simulator is still `Booted` because `launchd_sim`
+  holds live `syslogsock` and `launchd.log` handles inside that directory.
+
+  Args:
+    udid: Simulator UDID string.
+    store_root: Optional root directory for per-device `disabled.plist` stores.
+      Defaults to `SIMULATOR_DISABLED_STORE_ROOT` on macOS; no-ops elsewhere
+      when `None`.
+    simset_path: Optional CoreSimulator `--set` path to check for booted state.
+
+  Returns:
+    True if the store directory existed and was removed, False otherwise.
+  """
+  if not udid or not _is_valid_uuid(udid):
+    return False
+
+  if store_root is None:
+    if sys.platform != 'darwin':
+      return False
+    store_root = SIMULATOR_DISABLED_STORE_ROOT
+
+  store_dir = os.path.join(
+    store_root, f'com.apple.CoreSimulator.SimDevice.{udid}'
+  )
+  if not os.path.exists(store_dir):
+    return False
+
+  if _is_simulator_booted(udid, simset_path=simset_path):
+    LOGGER.debug(
+      'Skipping cleanup of %s because simulator %s is still Booted.',
+      store_dir,
+      udid,
+    )
+    return False
+
+  try:
+    shutil.rmtree(store_dir)
+    LOGGER.debug('Removed simulator disabled store %s.', store_dir)
+    return True
+  except OSError:
+    LOGGER.warning(
+      'Failed to remove simulator disabled store %s.', store_dir, exc_info=True
+    )
+    return False
+
+
+def _write_plist_atomically(
+  store_dir: str, store_path: str, payload: dict[str, object]
+) -> None:
+  """Writes `payload` as a world-readable XML plist to `store_path`."""
+  os.makedirs(store_dir, exist_ok=True)
+  temp_path = None
+  try:
+    with tempfile.NamedTemporaryFile(
+      mode='wb',
+      dir=store_dir,
+      prefix='.disabled.',
+      suffix='.plist.tmp',
+      delete=False,
+    ) as temp_file:
+      temp_path = temp_file.name
+      plistlib.dump(payload, temp_file, fmt=plistlib.FMT_XML, sort_keys=True)
+    os.chmod(temp_path, 0o644)
+    os.replace(temp_path, store_path)
+    temp_path = None
+  finally:
+    if temp_path and os.path.exists(temp_path):
+      os.unlink(temp_path)
+
+
+def _configure_simulator_daemons(
+  udid: str,
+  store_root: str | None = None,
+  simset_path: str | None = None,
+  check_booted: bool = True,
+) -> tuple[bool, bool, bool]:
+  """Applies or strips `disabled.plist` daemon overrides for one simulator.
+
+  Returns:
+    A `(modified, skipped_booted, had_error)` tuple where `modified` is True
+    only when `DISABLED_SIMULATOR_LAUNCHD_JOBS` entries were written.
+  """
+  if not udid or not _is_valid_uuid(udid):
+    return (False, False, False)
+
+  if store_root is None:
+    if sys.platform != 'darwin':
+      return (False, False, False)
+    store_root = SIMULATOR_DISABLED_STORE_ROOT
+
+  store_dir = os.path.join(
+    store_root, f'com.apple.CoreSimulator.SimDevice.{udid}'
+  )
+  store_path = os.path.join(store_dir, 'disabled.plist')
+
+  if not _is_simulator_daemon_disabling_enabled():
+    if not os.path.exists(store_path):
+      return (False, False, False)
+    if check_booted and _is_simulator_booted(udid, simset_path=simset_path):
+      LOGGER.debug(
+        'Simulator %s is Booted; skipping disabled.plist cleanup.',
+        udid,
+      )
+      return (False, True, False)
+    try:
+      with open(store_path, 'rb') as f:
+        loaded = plistlib.load(f)
+      if not isinstance(loaded, dict):
+        return (False, False, False)
+      managed_jobs = frozenset(DISABLED_SIMULATOR_LAUNCHD_JOBS)
+      remaining = {
+        job: value
+        for job, value in loaded.items()
+        if not (job in managed_jobs and value is True)
+      }
+      removed_count = len(loaded) - len(remaining)
+      if removed_count == 0:
+        return (False, False, False)
+      if remaining:
+        _write_plist_atomically(store_dir, store_path, remaining)
+      else:
+        os.unlink(store_path)
+        try:
+          os.rmdir(store_dir)
+        except OSError:
+          pass
+      LOGGER.info(
+        'Removed %d managed disabled launchd jobs for simulator %s '
+        '(daemon disabling not enabled).',
+        removed_count,
+        udid,
+      )
+      return (False, False, False)
+    except Exception:
+      LOGGER.exception(
+        'Failed to strip managed simulator daemons for %s.', udid
+      )
+      return (False, False, True)
+
+  if check_booted and _is_simulator_booted(udid, simset_path=simset_path):
+    LOGGER.debug(
+      'Simulator %s is already Booted; skipping disabled.plist update.',
+      udid,
+    )
+    return (False, True, False)
+
+  try:
+    existing: dict[str, object] = {}
+    if os.path.exists(store_path):
+      with open(store_path, 'rb') as f:
+        loaded = plistlib.load(f)
+      if isinstance(loaded, dict):
+        existing = loaded
+
+    if all(
+      existing.get(job) is True for job in DISABLED_SIMULATOR_LAUNCHD_JOBS
+    ):
+      return (False, False, False)
+
+    updated = dict(existing)
+    for job in DISABLED_SIMULATOR_LAUNCHD_JOBS:
+      updated[job] = True
+
+    _write_plist_atomically(store_dir, store_path, updated)
+    LOGGER.info(
+      'Configured %d disabled launchd jobs for simulator %s.',
+      len(DISABLED_SIMULATOR_LAUNCHD_JOBS),
+      udid,
+    )
+    return (True, False, False)
+  except Exception:
+    LOGGER.exception('Failed to disable simulator daemons for %s.', udid)
+    return (False, False, True)
+
+
+def disable_simulator_daemons(
+  udid: str,
+  store_root: str | None = None,
+  simset_path: str | None = None,
+  check_booted: bool = True,
+) -> bool:
+  """Disables unneeded background launchd jobs for the given simulator.
+
+  Writes `DISABLED_SIMULATOR_LAUNCHD_JOBS` into CoreSimulator's per-device
+  host `disabled.plist` store before `launchd_sim` reads it on boot when
+  daemon disabling is enabled (via `--disable-simulator-daemons` or
+  `IOS_DISABLE_SIMULATOR_DAEMONS=1`). Existing entries (including explicit
+  `False` entries written by the runtime) are preserved. When daemon disabling
+  is not enabled, strips any pre-existing managed `True` entries instead and
+  returns `False`. Exceptions are caught and logged so infra or filesystem
+  failures never abort test execution.
+
+  Args:
+    udid: Simulator UDID string.
+    store_root: Optional root directory for per-device `disabled.plist` files.
+      Defaults to `SIMULATOR_DISABLED_STORE_ROOT` on macOS; no-ops on other
+      platforms when `None`.
+    simset_path: Optional CoreSimulator `--set` path used when checking whether
+      `udid` is already `Booted`.
+    check_booted: Whether to skip modifying `disabled.plist` if the simulator is
+      already `Booted`.
+
+  Returns:
+    True if `disabled.plist` was written/updated to disable daemons, False if
+    skipped, disabled, already up to date, or an error occurred.
+  """
+  modified, _, _ = _configure_simulator_daemons(
+    udid,
+    store_root=store_root,
+    simset_path=simset_path,
+    check_booted=check_booted,
+  )
+  return modified
+
+
+@contextlib.contextmanager
+def watch_simulator_clones_for_daemon_disabling(
+  device_set_path: str,
+  store_root: str | None = None,
+  poll_interval: float = 0.05,
+):
+  """Watches a simulator set directory and disables daemons on new clones.
+
+  CoreSimulator cloning (`xcodebuild` parallel workers under `XCTestDevices`)
+  copies device data directories without copying host-side `disabled.plist`
+  stores. Monitoring `device_set_path` lets new clones receive `disabled.plist`
+  before `launchd_sim` boots them.
+
+  Args:
+    device_set_path: Directory containing simulator device subdirectories.
+    store_root: Optional root directory for `disabled.plist` stores. If `None`,
+      defaults to `SIMULATOR_DISABLED_STORE_ROOT` on macOS and no-ops on other
+      platforms.
+    poll_interval: Fallback sleep interval in seconds when `select.kqueue` is
+      unavailable.
+  """
+  if (store_root is None and sys.platform != 'darwin') or not device_set_path:
+    yield
+    return
+
+  if not _is_simulator_daemon_disabling_enabled():
+    # Reused Shutdown clones in XCTestDevices may still carry disabled.plist
+    # entries from an earlier opted-in run, so run one cleanup pass without
+    # spawning a watcher thread.
+    if os.path.isdir(device_set_path):
+      try:
+        for entry in os.listdir(device_set_path):
+          entry_path = os.path.join(device_set_path, entry)
+          if _is_valid_uuid_dir(entry, entry_path):
+            _configure_simulator_daemons(
+              entry,
+              store_root=store_root,
+              simset_path=device_set_path,
+              check_booted=True,
+            )
+      except OSError:
+        LOGGER.debug(
+          'Failed to scan %s for disabled.plist cleanup.',
+          device_set_path,
+          exc_info=True,
+        )
+    yield
+    return
+
+  try:
+    os.makedirs(device_set_path, exist_ok=True)
+  except OSError:
+    LOGGER.exception(
+      'Failed to create simulator clone watch directory %s.', device_set_path
+    )
+    yield
+    return
+  stop_event = threading.Event()
+  ready_event = threading.Event()
+  seen_lock = threading.Lock()
+  seen_udids: set[str] = set()
+  ignored_booted_udids: set[str] = set()
+
+  def _scan_once(initial_scan: bool = False) -> None:
+    try:
+      entries = os.listdir(device_set_path)
+    except OSError:
+      return
+    for entry in entries:
+      with seen_lock:
+        already_handled = entry in seen_udids or entry in ignored_booted_udids
+      if already_handled:
+        continue
+      entry_path = os.path.join(device_set_path, entry)
+      if not _is_valid_uuid_dir(entry, entry_path):
+        continue
+      _, skipped_booted, had_error = _configure_simulator_daemons(
+        entry,
+        store_root=store_root,
+        simset_path=device_set_path,
+        check_booted=initial_scan,
+      )
+      if had_error:
+        continue
+      with seen_lock:
+        if skipped_booted:
+          ignored_booted_udids.add(entry)
+        else:
+          seen_udids.add(entry)
+
+  def _watch_loop() -> None:
+    kq = None
+    dir_fd = None
+    try:
+      if hasattr(select, 'kqueue'):
+        try:
+          kq = select.kqueue()
+          open_flags = getattr(os, 'O_EVTONLY', os.O_RDONLY)
+          dir_fd = os.open(device_set_path, open_flags)
+          kevent = select.kevent(
+            dir_fd,
+            filter=select.KQ_FILTER_VNODE,
+            flags=select.KQ_EV_ADD | select.KQ_EV_CLEAR,
+            fflags=select.KQ_NOTE_WRITE,
+          )
+          kq.control([kevent], 0, 0)
+        except OSError:
+          if dir_fd is not None:
+            try:
+              os.close(dir_fd)
+            except OSError:
+              pass
+            dir_fd = None
+          if kq is not None:
+            try:
+              kq.close()
+            except OSError:
+              pass
+            kq = None
+
+      # Configure pre-existing Shutdown clones right away because xcodebuild
+      # reuses XCTestDevices worker clones across retry attempts, while
+      # skipping pre-existing Booted clones so we neither modify nor clean up
+      # their live stores.
+      _scan_once(initial_scan=True)
+      ready_event.set()
+
+      while not stop_event.is_set():
+        if kq is not None:
+          try:
+            kq.control(None, 1, 0.25)
+          except OSError:
+            LOGGER.warning(
+              'kqueue watch failed on %s; falling back to polling.',
+              device_set_path,
+              exc_info=True,
+            )
+            try:
+              kq.close()
+            except OSError:
+              pass
+            kq = None
+            if dir_fd is not None:
+              try:
+                os.close(dir_fd)
+              except OSError:
+                pass
+              dir_fd = None
+            _scan_once()
+            continue
+          if stop_event.is_set():
+            break
+          _scan_once()
+        else:
+          if stop_event.wait(poll_interval):
+            break
+          _scan_once()
+    finally:
+      ready_event.set()
+      if dir_fd is not None:
+        try:
+          os.close(dir_fd)
+        except OSError:
+          pass
+      if kq is not None:
+        try:
+          kq.close()
+        except OSError:
+          pass
+
+  watcher = threading.Thread(target=_watch_loop, daemon=True)
+  watcher.start()
+  ready_event.wait(timeout=1.0)
+  try:
+    yield
+  finally:
+    stop_event.set()
+    watcher.join(timeout=2.0)
+    if watcher.is_alive():
+      LOGGER.warning(
+        'Simulator clone watcher for %s did not stop within timeout; '
+        'skipping disabled store cleanup.',
+        device_set_path,
+      )
+    else:
+      with seen_lock:
+        clones_to_clean = sorted(seen_udids)
+      for clone_udid in clones_to_clean:
+        cleanup_simulator_disabled_store(
+          clone_udid, store_root=store_root, simset_path=device_set_path
+        )

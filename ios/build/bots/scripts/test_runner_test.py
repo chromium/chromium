@@ -6,6 +6,7 @@
 """Unittests for test_runner.py."""
 
 import collections
+import contextlib
 import logging
 import mock
 import os
@@ -484,6 +485,80 @@ class SimulatorTestRunnerTest(TestCase):
     self.assertFalse(tr.test_results['interrupted'])
     # Only 2 _run calls: initial run + single-test retry (no suite resume run).
     self.assertEqual(len(mock_run.mock_calls), 2)
+
+  def test_run_watches_clones_when_clones_gt_one(self):
+    """Wraps `SimulatorTestRunner._run` with clone watcher when `clones > 1`."""
+    tr = test_runner.SimulatorTestRunner(
+      'fake-app', 'iPhone X', '11.4', 'out-dir', clones=2
+    )
+    fake_proc = mock.MagicMock(returncode=0)
+    watched_paths = []
+
+    @contextlib.contextmanager
+    def _fake_watch(path):
+      watched_paths.append(path)
+      yield
+
+    with (
+      mock.patch.object(
+        test_runner.iossim_util,
+        'watch_simulator_clones_for_daemon_disabling',
+        _fake_watch,
+      ),
+      mock.patch.object(tr, 'start_proc', return_value=fake_proc),
+      mock.patch.object(test_runner, 'print_process_output'),
+    ):
+      tr._run(['xcodebuild'], clones=2)
+      self.assertEqual(
+        watched_paths, [iossim_util.SIMULATOR_XCTEST_DEVICES_PATH]
+      )
+      tr._run(['xcodebuild'], clones=1)
+      self.assertEqual(
+        watched_paths, [iossim_util.SIMULATOR_XCTEST_DEVICES_PATH]
+      )
+
+  def test_clone_watch_context(self):
+    """Uses clone watcher only when `clones > 1`."""
+    tr = test_runner.SimulatorTestRunner(
+      'fake-app', 'iPhone X', '11.4', 'out-dir', clones=2
+    )
+    sentinel_ctx = contextlib.nullcontext()
+    with mock.patch.object(
+      test_runner.iossim_util,
+      'watch_simulator_clones_for_daemon_disabling',
+      return_value=sentinel_ctx,
+    ) as mock_watch:
+      self.assertIsInstance(tr._clone_watch_context(1), contextlib.nullcontext)
+      mock_watch.assert_not_called()
+      self.assertIs(tr._clone_watch_context(2), sentinel_ctx)
+      mock_watch.assert_called_once_with(
+        iossim_util.SIMULATOR_XCTEST_DEVICES_PATH
+      )
+
+  def test_non_simulator_runner_does_not_watch_clones(self):
+    """Uses nullcontext on base `TestRunner` and `DeviceTestRunner`."""
+    fake_proc = mock.MagicMock(returncode=0)
+    with mock.patch(
+      'test_runner.subprocess.check_output', return_value=b'device-udid'
+    ):
+      device_tr = test_runner.DeviceTestRunner('fake-app', 'out-dir')
+    base_tr = test_runner.TestRunner('fake-app', 'out-dir')
+
+    self.assertIsInstance(
+      base_tr._clone_watch_context(2), contextlib.nullcontext
+    )
+    self.assertIsInstance(
+      device_tr._clone_watch_context(2), contextlib.nullcontext
+    )
+    with (
+      mock.patch.object(
+        test_runner.iossim_util, 'watch_simulator_clones_for_daemon_disabling'
+      ) as mock_watch,
+      mock.patch.object(device_tr, 'start_proc', return_value=fake_proc),
+      mock.patch.object(test_runner, 'print_process_output'),
+    ):
+      device_tr._run(['xcodebuild'], clones=2)
+    mock_watch.assert_not_called()
 
 
 class DeviceTestRunnerTest(TestCase):
