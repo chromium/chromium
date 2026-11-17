@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonControll
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.contextual_tasks.AskGoogleToolbarButtonController;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.toolbar_button.GlicToolbarButtonController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -65,6 +66,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final NonNullObservableSupplier<Boolean> mIsGlicPinnedSupplier;
     private @Nullable Callback<Boolean> mGlicVerticalTabsObserver;
     private @Nullable GlicToolbarButtonController mGlicButtonController;
+    private @Nullable AskGoogleToolbarButtonController mAskGoogleButtonController;
 
     /**
      * @param activity The Android activity.
@@ -166,6 +168,17 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             controller.addButtonVariant(AdaptiveToolbarButtonVariant.GLIC, mGlicButtonController);
         }
 
+        if (AdaptiveToolbarFeatures.isAskGoogleEnabledForAdaptiveToolbar()) {
+            mAskGoogleButtonController =
+                    new AskGoogleToolbarButtonController(
+                            mActivityTabProvider,
+                            AppCompatResources.getDrawable(
+                                    mActivity, R.drawable.ic_search_spark_24dp),
+                            mActivity.getString(R.string.contextual_search_open_lens_action_label));
+            controller.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.ASK_GOOGLE, mAskGoogleButtonController);
+        }
+
         mGlicVerticalTabsObserver = state -> controller.recomputeUiState();
         mIsVerticalTabsActiveSupplier.addSyncObserver(mGlicVerticalTabsObserver);
         mIsGlicPinnedSupplier.addSyncObserver(mGlicVerticalTabsObserver);
@@ -184,6 +197,10 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                     && !skipGlic) {
                 return AdaptiveToolbarButtonVariant.GLIC;
             }
+        }
+        if (mAskGoogleButtonController != null
+                && AdaptiveToolbarFeatures.isAskGoogleForcedForAdaptiveToolbar()) {
+            return AdaptiveToolbarButtonVariant.ASK_GOOGLE;
         }
         if (skipGlic) {
             List<Integer> filteredResults = new ArrayList<>();

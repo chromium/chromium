@@ -129,6 +129,7 @@ public interface AdaptiveToolbarBehavior {
             sValidButtons.add(AdaptiveToolbarButtonVariant.NEW_TAB);
             sValidButtons.add(AdaptiveToolbarButtonVariant.VOICE);
             sValidButtons.add(AdaptiveToolbarButtonVariant.GLIC);
+            sValidButtons.add(AdaptiveToolbarButtonVariant.ASK_GOOGLE);
         }
 
         List<Integer> validResults = new ArrayList<>();

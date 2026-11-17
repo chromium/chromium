@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -313,6 +314,43 @@ public class TabbedAdaptiveToolbarBehaviorTest {
                 .addButtonVariant(eq(AdaptiveToolbarButtonVariant.GLIC), any());
         verify(mAdaptiveToolbarButtonController)
                 .addButtonVariant(eq(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS), any());
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h820dp")
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXTUAL_TASKS_ENTRY_POINTS + ":force_toolbar_button/true",
+        ChromeFeatureList.CONTEXTUAL_TASKS_SIDE_PANEL
+    })
+    public void testResultFilterWithAskGoogleForced() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mBehavior.registerPerSurfaceButtons(
+                mAdaptiveToolbarButtonController, SupplierUtils.ofNull());
+        verify(mAdaptiveToolbarButtonController)
+                .addButtonVariant(eq(AdaptiveToolbarButtonVariant.ASK_GOOGLE), any());
+        assertTopResult(
+                /* segmentationResults= */ List.of(AdaptiveToolbarButtonVariant.SHARE),
+                /* expectedTopResult= */ AdaptiveToolbarButtonVariant.ASK_GOOGLE);
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h820dp")
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXTUAL_TASKS_ENTRY_POINTS,
+        ChromeFeatureList.CONTEXTUAL_TASKS_SIDE_PANEL
+    })
+    public void testResultFilterWithAskGooglePinned() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mBehavior.registerPerSurfaceButtons(
+                mAdaptiveToolbarButtonController, SupplierUtils.ofNull());
+        verify(mAdaptiveToolbarButtonController)
+                .addButtonVariant(eq(AdaptiveToolbarButtonVariant.ASK_GOOGLE), any());
+        assertTopResult(
+                /* segmentationResults= */ List.of(AdaptiveToolbarButtonVariant.ASK_GOOGLE),
+                /* expectedTopResult= */ AdaptiveToolbarButtonVariant.ASK_GOOGLE);
+        assertTopResult(
+                /* segmentationResults= */ List.of(AdaptiveToolbarButtonVariant.SHARE),
+                /* expectedTopResult= */ AdaptiveToolbarButtonVariant.SHARE);
     }
 
     private void assertTopResult(
