@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -255,17 +256,17 @@ void OtpManagerLegacyImpl::OnOneTimeTokenReceived(
             [](base::WeakPtr<OtpManagerLegacyImpl> self,
                base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)>
                    show_suggestions,
-               base::TimeTicks start_time, bool is_phishing_site) {
+               base::TimeTicks start_time,
+               OneTimeTokensPhishGuardVerdict verdict) {
+              CHECK(verdict != OneTimeTokensPhishGuardVerdict::kUnknown &&
+                    verdict != OneTimeTokensPhishGuardVerdict::kTimedOut);
               if (!self) {
                 return;
               }
               base::UmaHistogramTimes(
                   "Autofill.OneTimeTokens.PhishGuard.Latency",
                   base::TimeTicks::Now() - start_time);
-              std::move(show_suggestions)
-                  .Run(is_phishing_site
-                           ? OneTimeTokensPhishGuardVerdict::kPhishing
-                           : OneTimeTokensPhishGuardVerdict::kNotPhishing);
+              std::move(show_suggestions).Run(verdict);
             },
             weak_ptr_factory_.GetWeakPtr(), std::move(show_suggestions),
             start_time));

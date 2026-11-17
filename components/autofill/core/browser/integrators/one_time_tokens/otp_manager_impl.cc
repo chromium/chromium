@@ -628,17 +628,17 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
         base::BindOnce(
             [](base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)>
                    show_suggestions,
-               base::TimeTicks start_time, bool is_phishing_site) {
+               base::TimeTicks start_time,
+               OneTimeTokensPhishGuardVerdict verdict) {
+              CHECK(verdict != OneTimeTokensPhishGuardVerdict::kUnknown &&
+                    verdict != OneTimeTokensPhishGuardVerdict::kTimedOut);
               if (show_suggestions.IsCancelled()) {
                 return;
               }
               base::UmaHistogramTimes(
                   "Autofill.OneTimeTokens.PhishGuard.Latency",
                   base::TimeTicks::Now() - start_time);
-              std::move(show_suggestions)
-                  .Run(is_phishing_site
-                           ? OneTimeTokensPhishGuardVerdict::kPhishing
-                           : OneTimeTokensPhishGuardVerdict::kNotPhishing);
+              std::move(show_suggestions).Run(verdict);
             },
             std::move(show_suggestions), start_time));
   } else {

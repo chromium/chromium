@@ -141,8 +141,8 @@ class ChromeOtpPhishGuardDelegateTest : public ChromeRenderViewHostTestHarness {
   GURL frame_to_fill_url_;
 };
 
-// Test that when SafeBrowsing is disabled, PhishGuard check reports false
-// (safe/not phishing) instantly.
+// Test that when SafeBrowsing is disabled, PhishGuard check reports
+// `kNotPhishing` instantly.
 TEST_F(ChromeOtpPhishGuardDelegateTest, SafeBrowsingDisabled) {
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),
@@ -151,17 +151,17 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, SafeBrowsingDisabled) {
   // We should not make database check calls if SafeBrowsing is disabled.
   EXPECT_CALL(*database_manager_, CheckBrowseUrl).Times(0);
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
   delegate->StartOtpPhishGuardCheck(main_frame_token(), future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
 }
 
 // `ActorKeyedService` and actor mode tab capabilities are only supported on
 // Desktop.
 #if !BUILDFLAG(IS_ANDROID)
 // Test that when SafeBrowsing is disabled and an actor task is ongoing,
-// PhishGuard check reports true (unsafe/malicious) to fail closed.
+// PhishGuard check reports `kPhishing` to fail closed.
 TEST_F(ChromeOtpPhishGuardDelegateTest, SafeBrowsingDisabled_ActorTaskOngoing) {
   actor::TestTabState tab_state(web_contents());
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
@@ -186,15 +186,14 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, SafeBrowsingDisabled_ActorTaskOngoing) {
   // We should not make database check calls if SafeBrowsing is disabled.
   EXPECT_CALL(*database_manager_, CheckBrowseUrl).Times(0);
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
   delegate->StartOtpPhishGuardCheck(main_frame_token(), future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Test that when both URLs are safe, the delegate callback is run with false
-// (safe/not phishing).
+// Test that when both URLs are safe, the check reports `kNotPhishing`.
 TEST_F(ChromeOtpPhishGuardDelegateTest, BothUrlsSafe) {
   LocalFrameToken iframe_token = CreateSubframe(frame_to_fill_url_);
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(main_frame_url_, _, _, _))
@@ -202,14 +201,14 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, BothUrlsSafe) {
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(frame_to_fill_url_, _, _, _))
       .WillOnce(Return(true));
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
   delegate->StartOtpPhishGuardCheck(iframe_token, future.GetCallback());
-  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
 }
 
-// Test that when the iframe URL is unsafe, the check stops and reports true
-// (unsafe/is phishing).
+// Test that when the iframe URL is unsafe, the check stops and reports
+// `kPhishing`.
 TEST_F(ChromeOtpPhishGuardDelegateTest, IframeUnsafe) {
   LocalFrameToken iframe_token = CreateSubframe(frame_to_fill_url_);
   // First URL (main frame) is safe.
@@ -227,7 +226,7 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, IframeUnsafe) {
         return false;
       });
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
   delegate->StartOtpPhishGuardCheck(iframe_token, future.GetCallback());
 
@@ -238,11 +237,11 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, IframeUnsafe) {
   sb_client->OnCheckBrowseUrlResult(
       frame_to_fill_url_,
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
 }
 
-// Test that when the main frame URL is unsafe, the check stops and reports true
-// (unsafe/is phishing) without checking the iframe.
+// Test that when the main frame URL is unsafe, the check stops and reports
+// `kPhishing` without checking the iframe.
 TEST_F(ChromeOtpPhishGuardDelegateTest, MainFrameUnsafe) {
   LocalFrameToken iframe_token = CreateSubframe(frame_to_fill_url_);
   // First URL (main frame) is unsafe asynchronously.
@@ -259,7 +258,7 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, MainFrameUnsafe) {
   EXPECT_CALL(*database_manager_, CheckBrowseUrl(frame_to_fill_url_, _, _, _))
       .Times(0);
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
   delegate->StartOtpPhishGuardCheck(iframe_token, future.GetCallback());
 
@@ -269,17 +268,17 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, MainFrameUnsafe) {
   sb_client->OnCheckBrowseUrlResult(
       main_frame_url_,
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
 }
 
 // Test that if the frame is not found (e.g. detached), it safely reports
 // phishing.
 TEST_F(ChromeOtpPhishGuardDelegateTest, FrameNotFoundReturnsPhishing) {
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
   delegate->StartOtpPhishGuardCheck(test::MakeLocalFrameToken(),
                                     future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
 }
 
 // Test that if the frame has an opaque origin, it safely reports phishing.
@@ -290,10 +289,10 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, OpaqueOriginFrameReturnsPhishing) {
       GURL("data:text/html,<div>test</div>"), subframe);
   LocalFrameToken data_frame_token(subframe->GetFrameToken().value());
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
   delegate->StartOtpPhishGuardCheck(data_frame_token, future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
 }
 
 // Test that non-HTTP/HTTPS frames like about:blank safely report phishing.
@@ -302,10 +301,10 @@ TEST_F(ChromeOtpPhishGuardDelegateTest, AboutBlankFrameReturnsPhishing) {
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   LocalFrameToken about_frame_token(subframe->GetFrameToken().value());
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<OneTimeTokensPhishGuardVerdict> future;
   auto delegate = std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents());
   delegate->StartOtpPhishGuardCheck(about_frame_token, future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
 }
 
 }  // namespace autofill

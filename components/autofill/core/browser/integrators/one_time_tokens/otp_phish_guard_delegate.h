@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_PHISH_GUARD_DELEGATE_H_
 
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -14,14 +15,16 @@ namespace autofill {
 // an OTP.
 class OtpPhishGuardDelegate {
  public:
+  using VerdictCallback =
+      base::OnceCallback<void(OneTimeTokensPhishGuardVerdict)>;
+
   virtual ~OtpPhishGuardDelegate() = default;
 
   // Checks if the target frame to fill is safe from phishing or other
-  // threats. `callback` is run with `is_phishing` (true if phishing/unsafe,
-  // false if safe).
-  virtual void StartOtpPhishGuardCheck(
-      LocalFrameToken frame_to_fill,
-      base::OnceCallback<void(bool is_phishing)> callback) = 0;
+  // threats. `callback` is never run with `kUnknown` or `kTimedOut`, which
+  // callers use when there is no delegate or the check times out.
+  virtual void StartOtpPhishGuardCheck(LocalFrameToken frame_to_fill,
+                                       VerdictCallback callback) = 0;
 };
 
 }  // namespace autofill

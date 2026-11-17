@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -65,7 +66,7 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
  public:
   MOCK_METHOD(void,
               StartOtpPhishGuardCheck,
-              (LocalFrameToken, base::OnceCallback<void(bool is_phishing)>),
+              (LocalFrameToken, VerdictCallback),
               (override));
 };
 
@@ -155,7 +156,8 @@ TEST_F(OtpSecurityGatewayTest, ValidateDelivery_AllowsSafeSmsAndRecordsMetric) {
   OtpCandidate candidate = MakeSmsCandidate(LocalFrameToken());
 
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+      .WillOnce(
+          RunOnceCallback<1>(OneTimeTokensPhishGuardVerdict::kNotPhishing));
 
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
       future;
@@ -190,8 +192,9 @@ TEST_F(OtpSecurityGatewayTest,
   OtpCandidate candidate_2 = MakeSmsCandidate(frame, "654321");
 
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false))
-      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/true));
+      .WillOnce(
+          RunOnceCallback<1>(OneTimeTokensPhishGuardVerdict::kNotPhishing))
+      .WillOnce(RunOnceCallback<1>(OneTimeTokensPhishGuardVerdict::kPhishing));
 
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
       first;
@@ -257,11 +260,9 @@ TEST_F(OtpSecurityGatewayTest,
 
   // Case 2: WebOTP becomes used while PhishGuard check is in flight.
   ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(false));
-  base::OnceCallback<void(bool)> phish_guard_cb;
+  OtpPhishGuardDelegate::VerdictCallback phish_guard_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        phish_guard_cb = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&phish_guard_cb));
 
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
       inflight_blocked;
@@ -270,7 +271,7 @@ TEST_F(OtpSecurityGatewayTest,
   ASSERT_TRUE(phish_guard_cb);
 
   ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
-  std::move(phish_guard_cb).Run(/*is_phishing=*/false);
+  std::move(phish_guard_cb).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
 
   ASSERT_TRUE(inflight_blocked.Wait());
   EXPECT_FALSE(inflight_blocked.Get<2>().allowed);
@@ -292,8 +293,9 @@ TEST_F(
   OtpCandidate candidate = MakeGmailCandidate(origin, LocalFrameToken());
 
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false))
-      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/true));
+      .WillOnce(
+          RunOnceCallback<1>(OneTimeTokensPhishGuardVerdict::kNotPhishing))
+      .WillOnce(RunOnceCallback<1>(OneTimeTokensPhishGuardVerdict::kPhishing));
 
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
       allowed_future;
@@ -356,11 +358,9 @@ TEST_F(OtpSecurityGatewayTest,
 
   // Case 2: User opts out while PhishGuard is in flight.
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
-  base::OnceCallback<void(bool)> phish_guard_cb;
+  OtpPhishGuardDelegate::VerdictCallback phish_guard_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        phish_guard_cb = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&phish_guard_cb));
 
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
       opted_out_inflight;
@@ -368,7 +368,7 @@ TEST_F(OtpSecurityGatewayTest,
   ASSERT_TRUE(phish_guard_cb);
 
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
-  std::move(phish_guard_cb).Run(/*is_phishing=*/false);
+  std::move(phish_guard_cb).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
 
   ASSERT_TRUE(opted_out_inflight.Wait());
   EXPECT_FALSE(opted_out_inflight.Get<2>().allowed);
@@ -449,11 +449,9 @@ TEST_F(OtpSecurityGatewayTest,
   const LocalFrameToken frame = test::MakeLocalFrameToken();
   const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
 
-  base::OnceCallback<void(bool)> phish_guard_cb;
+  OtpPhishGuardDelegate::VerdictCallback phish_guard_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        phish_guard_cb = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&phish_guard_cb));
 
   base::MockCallback<OtpSecurityGateway::ValidationCallback> callback;
   EXPECT_CALL(callback, Run).Times(0);
@@ -463,7 +461,7 @@ TEST_F(OtpSecurityGatewayTest,
   ASSERT_TRUE(phish_guard_cb);
 
   gateway.reset();
-  std::move(phish_guard_cb).Run(/*is_phishing=*/false);
+  std::move(phish_guard_cb).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
 }
 
 // Verifies that `ProactiveTriggerContext` defaults to fail-closed values and

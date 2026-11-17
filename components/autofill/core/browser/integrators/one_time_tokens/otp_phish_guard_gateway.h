@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_PHISH_GUARD_GATEWAY_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_ONE_TIME_TOKENS_OTP_PHISH_GUARD_GATEWAY_H_
 
-#include <optional>
-
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -70,7 +68,8 @@ class OtpPhishGuardGateway {
   };
 
   void DrainPendingChecks();
-  void OnPhishGuardCheckCompleted(std::optional<bool> is_phishing_site);
+  void OnDelegateVerdict(OneTimeTokensPhishGuardVerdict verdict);
+  void OnPhishGuardCheckCompleted(OneTimeTokensPhishGuardVerdict verdict);
 
   const raw_ref<AutofillClient> client_;
   DispatchState dispatch_state_ = DispatchState::kIdle;

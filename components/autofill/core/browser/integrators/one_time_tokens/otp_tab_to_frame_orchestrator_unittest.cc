@@ -89,10 +89,9 @@ class RecordingAutofillDriver : public TestAutofillDriver {
 
 class FakeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
  public:
-  void StartOtpPhishGuardCheck(
-      LocalFrameToken,
-      base::OnceCallback<void(bool is_phishing)> callback) override {
-    std::move(callback).Run(/*is_phishing=*/false);
+  void StartOtpPhishGuardCheck(LocalFrameToken,
+                               VerdictCallback callback) override {
+    std::move(callback).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   }
 };
 

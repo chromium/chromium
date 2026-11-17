@@ -93,9 +93,8 @@ auto HasValue(std::string_view code) {
 
 class FakeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
  public:
-  void StartOtpPhishGuardCheck(
-      LocalFrameToken,
-      base::OnceCallback<void(bool is_phishing)> callback) override {
+  void StartOtpPhishGuardCheck(LocalFrameToken,
+                               VerdictCallback callback) override {
     if (hold_callbacks_) {
       held_callbacks_.push_back(std::move(callback));
       if (on_check_) {
@@ -103,7 +102,7 @@ class FakeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
       }
       return;
     }
-    std::move(callback).Run(/*is_phishing=*/false);
+    std::move(callback).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
     ++completed_checks_;
     if (on_check_) {
       std::move(on_check_).Run();
@@ -131,15 +130,13 @@ class FakeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
     ASSERT_EQ(held_callbacks_.size(), expected_count);
   }
 
-  std::vector<base::OnceCallback<void(bool)>>& held_callbacks() {
-    return held_callbacks_;
-  }
+  std::vector<VerdictCallback>& held_callbacks() { return held_callbacks_; }
 
  private:
   bool hold_callbacks_ = false;
   size_t completed_checks_ = 0;
   size_t last_observed_checks_ = 0;
-  std::vector<base::OnceCallback<void(bool)>> held_callbacks_;
+  std::vector<VerdictCallback> held_callbacks_;
   base::OnceClosure on_check_;
 };
 
@@ -468,12 +465,12 @@ TEST_F(OtpCoordinatorTest,
 
   SendGmailOtp("222222", t0 + base::Seconds(20));
   std::move(phish_guard_delegate_->held_callbacks()[0])
-      .Run(/*is_phishing=*/false);
+      .Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   frame_observer_->WaitForNotifications(1u);
   phish_guard_delegate_->WaitForHeldCallbacks(2u);
 
   std::move(phish_guard_delegate_->held_callbacks()[1])
-      .Run(/*is_phishing=*/false);
+      .Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 2u);
   EXPECT_THAT(
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
@@ -497,7 +494,7 @@ TEST_F(OtpCoordinatorTest, PhishingVerdictBlocksSiteFrameAndClearsOriginCache) {
   SendGmailOtp("333333", t0 + base::Seconds(30));
   phish_guard_delegate_->WaitForHeldCallbacks(1u);
   std::move(phish_guard_delegate_->held_callbacks()[0])
-      .Run(/*is_phishing=*/true);
+      .Run(OneTimeTokensPhishGuardVerdict::kPhishing);
   EXPECT_THAT(
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(targets[0]),
       IsEmpty());
@@ -521,7 +518,7 @@ TEST_F(OtpCoordinatorTest, PhishingVerdictBlocksSiteFrameAndClearsOriginCache) {
                   post_phishing_target),
               IsEmpty());
   std::move(phish_guard_delegate_->held_callbacks()[1])
-      .Run(/*is_phishing=*/false);
+      .Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
                   other_site_target),
               HasValue("444444"));
@@ -547,7 +544,7 @@ TEST_F(OtpCoordinatorTest,
   SendGmailOtp("222222", base::Time::Now());
   phish_guard_delegate_->WaitForHeldCallbacks(2u);
   std::move(phish_guard_delegate_->held_callbacks()[1])
-      .Run(/*is_phishing=*/false);
+      .Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   EXPECT_THAT(frame_observer_->triggered_fields(), ElementsAre(target.field));
   EXPECT_THAT(
       coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(target),
@@ -695,10 +692,10 @@ TEST_F(OtpCoordinatorTest,
   coordinator_->StopListeningForForm(site2_targets[0].form,
                                      /*except=*/{site2_targets[1].field});
   std::move(phish_guard_delegate_->held_callbacks()[0])
-      .Run(/*is_phishing=*/false);
+      .Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   phish_guard_delegate_->WaitForHeldCallbacks(2u);
   std::move(phish_guard_delegate_->held_callbacks()[1])
-      .Run(/*is_phishing=*/false);
+      .Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   EXPECT_THAT(coordinator_->RenewSubscriptionsAndRetrieveAvailableTokens(
                   site2_targets[0]),
               IsEmpty());

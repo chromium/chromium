@@ -28,14 +28,13 @@ class ChromeOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
   ~ChromeOtpPhishGuardDelegate() override;
 
   // OtpPhishGuardDelegate:
-  void StartOtpPhishGuardCheck(
-      LocalFrameToken frame_to_fill,
-      base::OnceCallback<void(bool)> callback) override;
+  void StartOtpPhishGuardCheck(LocalFrameToken frame_to_fill,
+                               VerdictCallback callback) override;
 
  private:
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void OnSafeBrowsingCheckComplete(const GURL& main_frame_url,
-                                   base::OnceCallback<void(bool)> callback,
+                                   VerdictCallback callback,
                                    bool is_malicious);
 #endif
 

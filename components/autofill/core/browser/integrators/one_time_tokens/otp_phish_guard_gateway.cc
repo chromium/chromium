@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -62,17 +63,10 @@ void OtpPhishGuardGateway::DrainPendingChecks() {
           FROM_HERE, kCheckTimeout,
           base::BindOnce(&OtpPhishGuardGateway::OnPhishGuardCheckCompleted,
                          in_flight_weak_ptr_factory_.GetWeakPtr(),
-                         std::nullopt));
+                         OneTimeTokensPhishGuardVerdict::kTimedOut));
       delegate->StartOtpPhishGuardCheck(
-          next.frame,
-          base::BindOnce(
-              [](base::WeakPtr<OtpPhishGuardGateway> self,
-                 bool is_phishing_site) {
-                if (self) {
-                  self->OnPhishGuardCheckCompleted(is_phishing_site);
-                }
-              },
-              in_flight_weak_ptr_factory_.GetWeakPtr()));
+          next.frame, base::BindOnce(&OtpPhishGuardGateway::OnDelegateVerdict,
+                                     in_flight_weak_ptr_factory_.GetWeakPtr()));
       // If `delegate` completed synchronously, `OnPhishGuardCheckCompleted`
       // already drained remaining checks; otherwise wait for the async verdict.
       return;
@@ -95,19 +89,20 @@ void OtpPhishGuardGateway::DrainPendingChecks() {
   }
 }
 
+void OtpPhishGuardGateway::OnDelegateVerdict(
+    OneTimeTokensPhishGuardVerdict verdict) {
+  CHECK(verdict != OneTimeTokensPhishGuardVerdict::kUnknown &&
+        verdict != OneTimeTokensPhishGuardVerdict::kTimedOut);
+  base::UmaHistogramTimes(kLatencyHistogram,
+                          base::TimeTicks::Now() - in_flight_start_time_);
+  OnPhishGuardCheckCompleted(verdict);
+}
+
 void OtpPhishGuardGateway::OnPhishGuardCheckCompleted(
-    std::optional<bool> is_phishing_site) {
+    OneTimeTokensPhishGuardVerdict verdict) {
   in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
   in_flight_timeout_timer_.Stop();
   dispatch_state_ = DispatchState::kRunningCallback;
-  OneTimeTokensPhishGuardVerdict verdict =
-      OneTimeTokensPhishGuardVerdict::kTimedOut;
-  if (is_phishing_site.has_value()) {
-    base::UmaHistogramTimes(kLatencyHistogram,
-                            base::TimeTicks::Now() - in_flight_start_time_);
-    verdict = *is_phishing_site ? OneTimeTokensPhishGuardVerdict::kPhishing
-                                : OneTimeTokensPhishGuardVerdict::kNotPhishing;
-  }
   LOG_AF(client_->GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens
       << "PhishGuard check completed with verdict: "

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -52,7 +53,7 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
  public:
   MOCK_METHOD(void,
               StartOtpPhishGuardCheck,
-              (LocalFrameToken, base::OnceCallback<void(bool is_phishing)>),
+              (LocalFrameToken, VerdictCallback),
               (override));
 };
 
@@ -79,7 +80,7 @@ class OtpPhishGuardGatewayTest : public Test {
   raw_ptr<MockOtpPhishGuardDelegate> phish_guard_delegate_ = nullptr;
 };
 
-// Verifies that `Check` invokes `OtpPhishGuardDelegate`, maps `false` to
+// Verifies that `Check` invokes `OtpPhishGuardDelegate`, forwards
 // `kNotPhishing`, and records `CheckPerformed`, `Latency`, and `Verdict`
 // histograms.
 TEST_F(OtpPhishGuardGatewayTest,
@@ -88,11 +89,9 @@ TEST_F(OtpPhishGuardGatewayTest,
   OtpPhishGuardGateway gateway(client_);
   const LocalFrameToken frame = test::MakeLocalFrameToken();
 
-  base::OnceCallback<void(bool)> delegate_cb;
+  OtpPhishGuardDelegate::VerdictCallback delegate_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        delegate_cb = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&delegate_cb));
 
   base::test::TestFuture<OneTimeTokensPhishGuardVerdict> verdict_future;
   gateway.Check(frame, verdict_future.GetCallback());
@@ -100,7 +99,7 @@ TEST_F(OtpPhishGuardGatewayTest,
   EXPECT_FALSE(verdict_future.IsReady());
 
   task_environment_.FastForwardBy(base::Milliseconds(120));
-  std::move(delegate_cb).Run(/*is_phishing=*/false);
+  std::move(delegate_cb).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
 
   EXPECT_EQ(verdict_future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
   histogram_tester.ExpectUniqueSample(
@@ -113,26 +112,23 @@ TEST_F(OtpPhishGuardGatewayTest,
   EXPECT_THAT(log_receiver_.entries(), Contains(HasSubstr("NotPhishing")));
 }
 
-// Verifies that `Check` maps `is_phishing = true` to `kPhishing` and records
-// PhishGuard histograms.
+// Verifies that `Check` forwards `kPhishing` and records PhishGuard histograms.
 TEST_F(OtpPhishGuardGatewayTest,
        Check_PhishingVerdictRecordsMetricsAndInvokesCallback) {
   base::HistogramTester histogram_tester;
   OtpPhishGuardGateway gateway(client_);
   const LocalFrameToken frame = test::MakeLocalFrameToken();
 
-  base::OnceCallback<void(bool)> delegate_cb;
+  OtpPhishGuardDelegate::VerdictCallback delegate_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        delegate_cb = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&delegate_cb));
 
   base::test::TestFuture<OneTimeTokensPhishGuardVerdict> verdict_future;
   gateway.Check(frame, verdict_future.GetCallback());
   ASSERT_TRUE(delegate_cb);
 
   task_environment_.FastForwardBy(base::Milliseconds(50));
-  std::move(delegate_cb).Run(/*is_phishing=*/true);
+  std::move(delegate_cb).Run(OneTimeTokensPhishGuardVerdict::kPhishing);
 
   EXPECT_EQ(verdict_future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
   histogram_tester.ExpectUniqueSample(
@@ -154,8 +150,9 @@ TEST_F(OtpPhishGuardGatewayTest,
   const LocalFrameToken frame = test::MakeLocalFrameToken();
 
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false))
-      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/true));
+      .WillOnce(
+          RunOnceCallback<1>(OneTimeTokensPhishGuardVerdict::kNotPhishing))
+      .WillOnce(RunOnceCallback<1>(OneTimeTokensPhishGuardVerdict::kPhishing));
 
   base::test::TestFuture<OneTimeTokensPhishGuardVerdict> first_check;
   gateway.Check(frame, first_check.GetCallback());
@@ -185,12 +182,10 @@ TEST_F(OtpPhishGuardGatewayTest,
   const LocalFrameToken frame_1 = test::MakeLocalFrameToken();
   const LocalFrameToken frame_2 = test::MakeLocalFrameToken();
 
-  base::OnceCallback<void(bool)> delegate_cb_1;
-  base::OnceCallback<void(bool)> delegate_cb_2;
+  OtpPhishGuardDelegate::VerdictCallback delegate_cb_1;
+  OtpPhishGuardDelegate::VerdictCallback delegate_cb_2;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_1, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        delegate_cb_1 = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&delegate_cb_1));
 
   base::test::TestFuture<OneTimeTokensPhishGuardVerdict> first_future;
   base::test::TestFuture<OneTimeTokensPhishGuardVerdict> second_future;
@@ -205,19 +200,17 @@ TEST_F(OtpPhishGuardGatewayTest,
       OtpPhishGuardGateway::kCheckPerformedHistogram, true, 1);
 
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_2, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        delegate_cb_2 = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&delegate_cb_2));
 
   task_environment_.FastForwardBy(base::Milliseconds(40));
-  std::move(delegate_cb_1).Run(/*is_phishing=*/false);
+  std::move(delegate_cb_1).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
 
   EXPECT_EQ(first_future.Get(), OneTimeTokensPhishGuardVerdict::kNotPhishing);
   ASSERT_TRUE(delegate_cb_2);
   EXPECT_FALSE(second_future.IsReady());
 
   task_environment_.FastForwardBy(base::Milliseconds(75));
-  std::move(delegate_cb_2).Run(/*is_phishing=*/true);
+  std::move(delegate_cb_2).Run(OneTimeTokensPhishGuardVerdict::kPhishing);
 
   EXPECT_EQ(second_future.Get(), OneTimeTokensPhishGuardVerdict::kPhishing);
   histogram_tester.ExpectUniqueSample(
@@ -244,16 +237,12 @@ TEST_F(OtpPhishGuardGatewayTest,
   const LocalFrameToken frame_2 = test::MakeLocalFrameToken();
   const LocalFrameToken frame_3 = test::MakeLocalFrameToken();
 
-  base::OnceCallback<void(bool)> delegate_cb_1;
-  base::OnceCallback<void(bool)> delegate_cb_2;
+  OtpPhishGuardDelegate::VerdictCallback delegate_cb_1;
+  OtpPhishGuardDelegate::VerdictCallback delegate_cb_2;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_1, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        delegate_cb_1 = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&delegate_cb_1));
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_2, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        delegate_cb_2 = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&delegate_cb_2));
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_3, _))
       .Times(0);
 
@@ -274,9 +263,9 @@ TEST_F(OtpPhishGuardGatewayTest,
       }));
 
   ASSERT_TRUE(delegate_cb_1);
-  std::move(delegate_cb_1).Run(/*is_phishing=*/false);
+  std::move(delegate_cb_1).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   ASSERT_TRUE(delegate_cb_2);
-  std::move(delegate_cb_2).Run(/*is_phishing=*/false);
+  std::move(delegate_cb_2).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
   EXPECT_EQ(gateway, nullptr);
 }
 
@@ -311,11 +300,9 @@ TEST_F(OtpPhishGuardGatewayTest,
   auto gateway = std::make_unique<OtpPhishGuardGateway>(client_);
   const LocalFrameToken frame = test::MakeLocalFrameToken();
 
-  base::OnceCallback<void(bool)> in_flight_cb;
+  OtpPhishGuardDelegate::VerdictCallback in_flight_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        in_flight_cb = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&in_flight_cb));
 
   base::MockCallback<OtpPhishGuardGateway::VerdictCallback> verdict_callback;
   EXPECT_CALL(verdict_callback, Run).Times(0);
@@ -324,7 +311,7 @@ TEST_F(OtpPhishGuardGatewayTest,
   ASSERT_TRUE(in_flight_cb);
 
   gateway.reset();
-  std::move(in_flight_cb).Run(/*is_phishing=*/false);
+  std::move(in_flight_cb).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
 
   histogram_tester.ExpectUniqueSample(
       OtpPhishGuardGateway::kCheckPerformedHistogram, true, 1);
@@ -343,13 +330,12 @@ TEST_F(OtpPhishGuardGatewayTest,
   const LocalFrameToken frame_1 = test::MakeLocalFrameToken();
   const LocalFrameToken frame_2 = test::MakeLocalFrameToken();
 
-  base::OnceCallback<void(bool)> late_first_cb;
+  OtpPhishGuardDelegate::VerdictCallback late_first_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_1, _))
-      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> cb) {
-        late_first_cb = std::move(cb);
-      });
+      .WillOnce(MoveArg<1>(&late_first_cb));
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame_2, _))
-      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+      .WillOnce(
+          RunOnceCallback<1>(OneTimeTokensPhishGuardVerdict::kNotPhishing));
 
   base::test::TestFuture<OneTimeTokensPhishGuardVerdict> first_future;
   base::test::TestFuture<OneTimeTokensPhishGuardVerdict> second_future;
@@ -372,7 +358,7 @@ TEST_F(OtpPhishGuardGatewayTest,
 
   // If the first check's callback is invoked after timing out, it is ignored.
   ASSERT_TRUE(late_first_cb);
-  std::move(late_first_cb).Run(/*is_phishing=*/true);
+  std::move(late_first_cb).Run(OneTimeTokensPhishGuardVerdict::kPhishing);
 }
 
 }  // namespace
