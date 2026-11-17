@@ -3288,7 +3288,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.SiteFamiliarity.DeferNavigationToComputeSiteFamiliarity.DeferDuration"
-    units="ms" expires_after="2027-03-14">
+    units="ms" expires_after="2027-05-16">
   <owner>jacastro@chromium.org</owner>
   <owner>tiffanysong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>

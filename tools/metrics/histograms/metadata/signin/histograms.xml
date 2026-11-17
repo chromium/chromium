@@ -2563,7 +2563,7 @@ prefs when the profile is loaded.  -->
 
 <histogram
     name="Signin.GetAccounts.AndroidApiAvailabilityLatency.{Availability}"
-    units="ms" expires_after="2027-03-14">
+    units="ms" expires_after="2027-05-16">
   <owner>mlbipin@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
@@ -5070,7 +5070,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.TokenBinding.BoundTokenPrevalence"
-    enum="TokenBindingBoundTokenPrevalence" expires_after="2027-03-14">
+    enum="TokenBindingBoundTokenPrevalence" expires_after="2027-05-16">
   <owner>alexilin@chromium.org</owner>
   <owner>ahijazi@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

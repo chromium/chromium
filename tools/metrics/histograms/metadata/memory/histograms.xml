@@ -2954,7 +2954,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PressureVoter.{Level}" enum="MemoryPressureVoter"
-    expires_after="2027-03-01">
+    expires_after="2027-05-16">
   <owner>andresrperez@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

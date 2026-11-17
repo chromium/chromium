@@ -1639,7 +1639,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WrenchMenu.TimeToAction{Action}" units="ms"
-    expires_after="2027-03-14">
+    expires_after="2027-05-16">
   <owner>ainslie@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <summary>
