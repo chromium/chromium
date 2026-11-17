@@ -77,13 +77,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
   // Returns true if the request was handled by the virtual wallet.
   bool HandleVirtualWalletAction();
 
-  // Called when the user has fulfilled the interstitial requirement. Will be
-  // called immediately in Get() if no interstitial is needed.
-  void OnInterstitialDone(base::Value request_to_send,
-                          DigitalIdentityProvider::UiWarningLevel warning_level,
-                          DigitalIdentityProvider::RequestStatusForMetrics
-                              status_after_interstitial);
-
   // Infers blink::mojom::RequestDigitalIdentityStatus based on
   // `status_for_metrics`.
   void CompleteRequest(
@@ -100,11 +93,6 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
 
   std::unique_ptr<DigitalIdentityProvider> provider_;
   GetCallback callback_;
-
-  // Callback which updates interstitial to inform user that the credential
-  // request has been aborted.
-  DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback
-      update_interstitial_on_abort_callback_;
 
   base::WeakPtrFactory<DigitalIdentityRequestImpl> weak_ptr_factory_{this};
 };

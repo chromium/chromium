@@ -156,7 +156,6 @@ source_set("browser_sources") {
     "devtools_network_transaction_factory.h",
     "devtools_socket_factory.h",
     "digital_credentials_cross_device.h",
-    "digital_identity_interstitial_type.h",
     "digital_identity_provider.cc",
     "digital_identity_provider.h",
     "disallow_activation_reason.h",
@@ -794,10 +793,7 @@ if (is_android) {
   }
 
   java_cpp_enum("digital_identity_enum") {
-    sources = [
-      "digital_identity_interstitial_type.h",
-      "digital_identity_provider.h",
-    ]
+    sources = [ "digital_identity_provider.h" ]
   }
 
   java_cpp_enum("transfer_input_to_viz_result_enum") {

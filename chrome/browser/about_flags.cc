@@ -908,31 +908,6 @@ const FeatureEntry::FeatureVariation kEnergyEffectVariations[] = {
     {"Energy Effect with Fusebox Shadow", kEnergyEffectFuseboxParam, nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kWebIdentityDigitalIdentityCredentialNoDialogParam[] = {
-        {"dialog", "no_dialog"}};
-const FeatureEntry::FeatureParam
-    kWebIdentityDigitalIdentityCredentialDefaultParam[] = {
-        {"dialog", "default"}};
-const FeatureEntry::FeatureParam
-    kWebIdentityDigitalIdentityCredentialLowRiskDialogParam[] = {
-        {"dialog", "low_risk"}};
-const FeatureEntry::FeatureParam
-    kWebIdentityDigitalIdentityCredentialHighRiskDialogParam[] = {
-        {"dialog", "high_risk"}};
-const FeatureEntry::FeatureVariation
-    kWebIdentityDigitalIdentityCredentialVariations[] = {
-        {"with dialog depending on what credentials are requested",
-         kWebIdentityDigitalIdentityCredentialDefaultParam, nullptr},
-        {"without dialog", kWebIdentityDigitalIdentityCredentialNoDialogParam,
-         nullptr},
-        {"with confirmation dialog with mild warning before sending identity "
-         "request to Android OS",
-         kWebIdentityDigitalIdentityCredentialLowRiskDialogParam, nullptr},
-        {"with confirmation dialog with severe warning before sending "
-         "identity request to Android OS",
-         kWebIdentityDigitalIdentityCredentialHighRiskDialogParam, nullptr}};
-
 const FeatureEntry::FeatureParam kMBIModeLegacy[] = {{"mode", "legacy"}};
 const FeatureEntry::FeatureParam kMBIModeEnabledPerRenderProcessHost[] = {
     {"mode", "per_render_process_host"}};
@@ -8894,10 +8869,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-identity-digital-credentials",
      flag_descriptions::kWebIdentityDigitalCredentialsName,
      flag_descriptions::kWebIdentityDigitalCredentialsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         features::kWebIdentityDigitalCredentials,
-         kWebIdentityDigitalIdentityCredentialVariations,
-         "WebIdentityDigitalCredentials")},
+     FEATURE_VALUE_TYPE(features::kWebIdentityDigitalCredentials)},
 
     {"web-identity-digital-credentials-creation",
      flag_descriptions::kWebIdentityDigitalCredentialsCreationName,

@@ -13,7 +13,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
-#include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_bridge_android.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -26,22 +25,7 @@ using base::android::ScopedJavaLocalRef;
 
 using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
-using DigitalIdentityInterstitialAbortCallback =
-    content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
 using DigitalCredential = content::DigitalIdentityProvider::DigitalCredential;
-
-namespace {
-
-void RunDigitalIdentityCallback(
-    std::unique_ptr<DigitalIdentitySafetyInterstitialBridgeAndroid> controller,
-    content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
-        callback,
-    content::DigitalIdentityProvider::RequestStatusForMetrics
-        status_for_metrics) {
-  std::move(callback).Run(status_for_metrics);
-}
-
-}  // anonymous namespace
 
 DigitalIdentityProviderAndroid::DigitalIdentityProviderAndroid() {
   JNIEnv* env = AttachCurrentThread();
@@ -59,21 +43,6 @@ DigitalIdentityProviderAndroid::~DigitalIdentityProviderAndroid() {
 bool DigitalIdentityProviderAndroid::IsLastCommittedOriginLowRisk(
     content::RenderFrameHost& render_frame_host) const {
   return digital_credentials::IsLastCommittedOriginLowRisk(render_frame_host);
-}
-
-DigitalIdentityInterstitialAbortCallback
-DigitalIdentityProviderAndroid::ShowDigitalIdentityInterstitial(
-    content::WebContents& web_contents,
-    const url::Origin& origin,
-    content::DigitalIdentityInterstitialType interstitial_type,
-    DigitalIdentityInterstitialCallback callback) {
-  auto controller =
-      std::make_unique<DigitalIdentitySafetyInterstitialBridgeAndroid>();
-  // Callback takes ownership of |controller|.
-  return controller->ShowInterstitial(
-      web_contents, origin, interstitial_type,
-      base::BindOnce(&RunDigitalIdentityCallback, std::move(controller),
-                     std::move(callback)));
 }
 
 void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,

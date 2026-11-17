@@ -5,7 +5,6 @@ if (is_android) {
 source_set("digital_credentials") {
   sources = [
     "digital_credentials_keyed_service.h",
-    "digital_identity_interstitial_closed_reason.h",
     "digital_identity_low_risk_origins.h",
   ]
   public_deps = [
@@ -48,7 +47,6 @@ source_set("impl") {
   if (is_android) {
     sources += [ "digital_identity_provider_android.cc" ]
     deps += [
-      "//chrome/browser/ui/digital_credentials",
       "//chrome/browser/webid:jni_headers",
       "//ui/android",
     ]

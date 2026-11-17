@@ -36,11 +36,6 @@ class DigitalIdentityProviderDesktop : public content::DigitalIdentityProvider {
   // content::DigitalIdentityProvider:
   bool IsLastCommittedOriginLowRisk(
       content::RenderFrameHost& render_frame_host) const override;
-  DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
-      content::WebContents& web_contents,
-      const url::Origin& origin,
-      content::DigitalIdentityInterstitialType interstitial_type,
-      DigitalIdentityInterstitialCallback callback) override;
   void Get(content::WebContents* web_contents,
            const url::Origin& rp_origin,
            base::ValueView request,

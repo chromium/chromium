@@ -97,7 +97,7 @@ public class DigitalCredentialProviderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures("WebIdentityDigitalCredentials:dialog/no_dialog")
+    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
     public void testRequestMDocWithCaution() throws TimeoutException {
         when(mDelegate.get(any(), any(), any(), eq(DigitalIdentityUiWarningLevel.HINT_CAUTION)))
                 .thenAnswer(

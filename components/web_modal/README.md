@@ -130,7 +130,7 @@ Understanding how web-contents modal dialogs behave when the underlying `WebCont
 * **Same-Origin / Same-Site Dismissal (Dialog Features)**:
   Because the manager only auto-closes dialogs on cross-site navigations, dialogs remain open across same-origin or same-site primary main frame navigations. Dialog feature controllers whose prompts should dismiss on *any* page navigation (e.g., [`PrintPreviewDialogController::DidFinishNavigation()`](../../chrome/browser/printing/print_preview_dialog_controller.cc)) must observe `WebContentsObserver` directly and tear down their own prompt.
 * **Pre-Teardown Navigation Hook**:
-  Dialog feature controllers needing to distinguish whether their prompt closed due to a user clicking "Cancel" versus being forcibly closed by an automatic cross-site navigation teardown (e.g., [`DigitalIdentitySafetyInterstitialControllerDesktop::CloseOnNavigationObserver`](../../chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h)) can implement `WebContentsModalDialogManager::Observer::OnWillCloseOnNavigation()`.
+  Dialog feature controllers needing to distinguish whether their prompt closed due to a user clicking "Cancel" versus being forcibly closed by an automatic cross-site navigation teardown can implement `WebContentsModalDialogManager::Observer::OnWillCloseOnNavigation()`.
 
 ---
 

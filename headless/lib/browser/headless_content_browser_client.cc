@@ -148,14 +148,6 @@ class HeadlessDigitalIdentityProvider
     return false;
   }
 
-  DigitalIdentityInterstitialAbortCallback ShowDigitalIdentityInterstitial(
-      content::WebContents& web_contents,
-      const url::Origin& origin,
-      content::DigitalIdentityInterstitialType interstitial_type,
-      DigitalIdentityInterstitialCallback callback) override {
-    return base::OnceClosure();
-  }
-
   void Get(content::WebContents* web_contents,
            const url::Origin& origin,
            base::ValueView request,

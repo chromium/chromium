@@ -33,21 +33,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
-#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
 using UiWarningLevel = content::DigitalIdentityProvider::UiWarningLevel;
-
-// Callback for when a views::Widget is shown. Runs `dialog_shown_callback` if
-// the shown views::Widget has `expected_dialog_title`.
-void OnDialogShown(base::RepeatingClosure dialog_shown_callback,
-                   std::u16string expected_dialog_title,
-                   views::Widget* widget) {
-  if (widget->widget_delegate()->GetWindowTitle() == expected_dialog_title) {
-    dialog_shown_callback.Run();
-  }
-}
 
 // content::DigitalIdentityProvider which:
 // - records the received UiWarningLevel on `Get()`
@@ -155,36 +144,13 @@ class DigitalIdentityIntegrationTest : public InProcessBrowserTest {
   base::WeakPtrFactory<DigitalIdentityIntegrationTest> weak_ptr_factory_{this};
 };
 
-// Test that an interstitial is shown if the page requests more than just age,
-// and accepting it forwards `UiWarningLevel::kHintCaution` to `Get()`.
+// Test that requesting more than just age forwards
+// `UiWarningLevel::kHintCaution` directly to `DigitalIdentityProvider::Get()`
+// without showing an interstitial.
 IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest,
-                       InterstitialShownMoreThanJustAge) {
+                       HintCautionWhenRequestingMoreThanJustAge) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-
-  std::u16string kExpectedDialogTitle = l10n_util::GetStringUTF16(
-      IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE);
-
-  base::RunLoop run_loop;
-
-  auto dialog_observer = std::make_unique<views::AnyWidgetObserver>(
-      views::test::AnyWidgetTestPasskey());
-  dialog_observer->set_shown_callback(base::BindRepeating(
-      [](base::RepeatingClosure quit_closure,
-         std::u16string expected_dialog_title, views::Widget* widget) {
-        if (widget->widget_delegate()->GetWindowTitle() ==
-            expected_dialog_title) {
-          quit_closure.Run();
-          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  [](views::Widget* w) {
-                    w->widget_delegate()->AsDialogDelegate()->AcceptDialog();
-                  },
-                  widget));
-        }
-      },
-      run_loop.QuitClosure(), kExpectedDialogTitle));
 
   GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
@@ -194,31 +160,15 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest,
       web_contents,
       "document.getElementById('request_age_and_name_button').click();"));
 
-  run_loop.Run();
   EXPECT_EQ(UiWarningLevel::kHintCaution, WaitTillRequestCredential());
 }
 
-// Test that an interstitial is not shown if the page only requests age, and
-// `UiWarningLevel::kHintNoIssues` is forwarded to `Get()`.
-IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest, InterstitialNotShown) {
+// Test that requesting only age forwards `UiWarningLevel::kHintNoIssues`
+// directly to `DigitalIdentityProvider::Get()` without showing an interstitial.
+IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest,
+                       HintNoIssuesWhenRequestingAgeOnly) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-
-  std::u16string kExpectedDialogTitle = l10n_util::GetStringUTF16(
-      IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE);
-
-  auto dialog_observer = std::make_unique<views::AnyWidgetObserver>(
-      views::test::AnyWidgetTestPasskey());
-  bool was_dialog_shown = false;
-
-  auto dialog_shown_action = [](bool& was_dialog_shown) {
-    was_dialog_shown = true;
-  };
-
-  dialog_observer->set_shown_callback(base::BindRepeating(
-      &OnDialogShown,
-      base::BindRepeating(dialog_shown_action, std::ref(was_dialog_shown)),
-      kExpectedDialogTitle));
 
   GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
@@ -229,10 +179,6 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest, InterstitialNotShown) {
       "document.getElementById('request_age_only_button').click();"));
 
   EXPECT_EQ(UiWarningLevel::kHintNoIssues, WaitTillRequestCredential());
-
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(was_dialog_shown);
 }
 
 class TestQrCodeDigitalIdentityProvider
@@ -411,8 +357,6 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationQrCodeTest,
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
 
-  std::u16string kExpectedInterstitialTitle = l10n_util::GetStringUTF16(
-      IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE);
   std::u16string kExpectedQrTitle =
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE);
 
@@ -420,18 +364,8 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationQrCodeTest,
       views::test::AnyWidgetTestPasskey());
 
   dialog_observer->set_shown_callback(base::BindRepeating(
-      [](std::u16string expected_interstitial_title,
-         std::u16string expected_qr_title, views::Widget* widget) {
-        std::u16string title = widget->widget_delegate()->GetWindowTitle();
-        if (title == expected_interstitial_title) {
-          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  [](views::Widget* w) {
-                    w->widget_delegate()->AsDialogDelegate()->AcceptDialog();
-                  },
-                  widget));
-        } else if (title == expected_qr_title) {
+      [](std::u16string expected_qr_title, views::Widget* widget) {
+        if (widget->widget_delegate()->GetWindowTitle() == expected_qr_title) {
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
               base::BindOnce(
@@ -442,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationQrCodeTest,
                   widget));
         }
       },
-      kExpectedInterstitialTitle, kExpectedQrTitle));
+      kExpectedQrTitle));
 
   GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),

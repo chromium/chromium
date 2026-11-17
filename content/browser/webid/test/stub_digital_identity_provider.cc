@@ -8,24 +8,12 @@
 
 namespace content {
 
-using DigitalIdentityInterstitialAbortCallback =
-    DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
-
 StubDigitalIdentityProvider::StubDigitalIdentityProvider() = default;
 StubDigitalIdentityProvider::~StubDigitalIdentityProvider() = default;
 
 bool StubDigitalIdentityProvider::IsLastCommittedOriginLowRisk(
     RenderFrameHost& render_frame_host) const {
   return false;
-}
-
-DigitalIdentityInterstitialAbortCallback
-StubDigitalIdentityProvider::ShowDigitalIdentityInterstitial(
-    WebContents& web_contents,
-    const url::Origin& origin,
-    DigitalIdentityInterstitialType interstitial_type,
-    DigitalIdentityInterstitialCallback callback) {
-  return base::OnceClosure();
 }
 
 void StubDigitalIdentityProvider::Get(WebContents*,

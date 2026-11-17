@@ -14,8 +14,7 @@ class RenderFrameHost;
 namespace digital_credentials {
 
 // Returns whether the last committed origin is a known low risk origin for
-// which the digital credential interstitial should not be shown regardless of
-// the credential being requested.
+// digital credential requests.
 bool IsLastCommittedOriginLowRisk(content::RenderFrameHost& render_frame_host);
 
 bool IsLowRiskOriginMatcherForTesting(

@@ -48,7 +48,6 @@ using testing::Eq;
 using testing::Optional;
 using testing::WithArg;
 
-using InterstitialType = content::DigitalIdentityInterstitialType;
 using UiWarningLevel = content::DigitalIdentityProvider::UiWarningLevel;
 using DigitalCredentialCreateRequestPtr =
     blink::mojom::DigitalCredentialCreateRequestPtr;
@@ -1470,9 +1469,8 @@ class DigitalIdentityRequestImplTest : public RenderViewHostTestHarness {
         *web_contents()->GetPrimaryMainFrame(),
         request_remote_.BindNewPipeAndPassReceiver());
 
-    // Tests in this fixture don't test the dialog behavior.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kWebIdentityDigitalCredentials, {{"dialog", "no_dialog"}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebIdentityDigitalCredentials);
   }
 
   void TearDown() override {
@@ -1569,10 +1567,6 @@ TEST_F(DigitalIdentityRequestImplTest,
 }
 
 TEST_F(DigitalIdentityRequestImplTest, GetPassesCautionWarningLevelToProvider) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kWebIdentityDigitalCredentials, {{"dialog", ""}});
-
   DigitalCredentialGetRequestPtr digital_credential_request =
       DigitalCredentialGetRequest::New();
   digital_credential_request->protocol = kOpenid4vpProtocol;
@@ -1583,15 +1577,6 @@ TEST_F(DigitalIdentityRequestImplTest, GetPassesCautionWarningLevelToProvider) {
 
   EXPECT_CALL(*mock_digital_identity_provider(), IsLastCommittedOriginLowRisk)
       .WillOnce(testing::Return(false));
-  EXPECT_CALL(
-      *mock_digital_identity_provider(),
-      ShowDigitalIdentityInterstitial(_, _, InterstitialType::kLowRisk, _))
-      .WillOnce(WithArg<3>(
-          [](DigitalIdentityProvider::DigitalIdentityInterstitialCallback
-                 callback) {
-            std::move(callback).Run(RequestStatusForMetrics::kSuccess);
-            return base::OnceClosure();
-          }));
   EXPECT_CALL(*mock_digital_identity_provider(),
               Get(_, _, _, UiWarningLevel::kHintCaution, _));
   digital_identity_request_impl()->Get(std::move(requests), base::DoNothing());
@@ -1809,9 +1794,8 @@ class DigitalIdentityRequestImplProviderResetTest
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL("https://example.com"));
-    // Skip the interstitial so provider_->Get() is reached synchronously.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kWebIdentityDigitalCredentials, {{"dialog", "no_dialog"}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebIdentityDigitalCredentials);
 
     browser_client_ =
         std::make_unique<WebContentsDestroyingBrowserClient>(base::BindOnce(
@@ -1835,9 +1819,8 @@ class DigitalIdentityRequestImplProviderResetTest
 // DigitalIdentityRequestImpl::CompleteRequestWithStatus(). If destroying the
 // DigitalIdentityProvider synchronously destroys the WebContents that hosts the
 // requesting frame, the DocumentService base class will `delete this` while
-// CompleteRequestWithStatus() is still executing, and the subsequent accesses
-// to `update_interstitial_on_abort_callback_` and `callback_` are
-// use-after-free.
+// CompleteRequestWithStatus() is still executing, and the subsequent access to
+// `callback_` would be a use-after-free.
 //
 // This test models that destruction directly: the provider's destructor
 // synchronously deletes the harness WebContents. Under ASAN this surfaces as a

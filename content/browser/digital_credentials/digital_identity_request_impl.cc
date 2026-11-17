@@ -17,7 +17,6 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -28,23 +27,18 @@
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-forward.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using blink::mojom::RequestDigitalIdentityStatus;
-using InterstitialType = content::DigitalIdentityInterstitialType;
 using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
-using DigitalIdentityInterstitialAbortCallback =
-    content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
 using UiWarningLevel = content::DigitalIdentityProvider::UiWarningLevel;
 
 namespace content {
@@ -76,11 +70,6 @@ constexpr char kMdlDocumentType[] = "org.iso.18013.5.1.mDL";
 constexpr char kMdlNamespace[] = "org.iso.18013.5.1";
 constexpr char kMeta[] = "meta";
 constexpr char kDoctypeValue[] = "doctype_value";
-
-constexpr char kDigitalIdentityDialogParam[] = "dialog";
-constexpr char kDigitalIdentityNoDialogParamValue[] = "no_dialog";
-constexpr char kDigitalIdentityLowRiskDialogParamValue[] = "low_risk";
-constexpr char kDigitalIdentityHighRiskDialogParamValue[] = "high_risk";
 
 // Returns whether an interstitial should be shown for a request which solely
 // requests the passed-in claims/data elements.
@@ -390,27 +379,6 @@ void RecordOpenId4VpResponseMode(const base::Value& request) {
       "Blink.DigitalIdentityRequest.OpenId4VpResponseMode", mode);
 }
 
-std::optional<InterstitialType> ComputeInterstitialTypeForWarningLevel(
-    UiWarningLevel warning_level) {
-  std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
-      features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
-  if (dialog_param_value == kDigitalIdentityNoDialogParamValue) {
-    return std::nullopt;
-  }
-
-  if (dialog_param_value == kDigitalIdentityHighRiskDialogParamValue) {
-    return InterstitialType::kHighRisk;
-  }
-
-  if (dialog_param_value == kDigitalIdentityLowRiskDialogParamValue) {
-    return InterstitialType::kLowRisk;
-  }
-
-  return warning_level == UiWarningLevel::kHintCaution
-             ? std::optional<InterstitialType>(InterstitialType::kLowRisk)
-             : std::nullopt;
-}
-
 }  // anonymous namespace
 
 // static
@@ -536,7 +504,6 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     return;
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
-  update_interstitial_on_abort_callback_.Reset();
 
   if (response) {
     std::move(callback_).Run(status, response->protocol,
@@ -667,34 +634,12 @@ void DigitalIdentityRequestImpl::Get(
 
   UiWarningLevel warning_level = ComputeUiWarningLevel(
       render_frame_host(), *provider_, digital_credential_requests);
-  std::optional<InterstitialType> interstitial_type =
-      ComputeInterstitialTypeForWarningLevel(warning_level);
 
   base::Value request_to_send = BuildGetRequest(digital_credential_requests);
-  if (!interstitial_type) {
-    OnInterstitialDone(std::move(request_to_send), warning_level,
-                       RequestStatusForMetrics::kSuccess);
-    return;
-  }
-
-  // ShowDigitalIdentityInterstitial can synchronously exit fullscreen on
-  // Windows, which can spin the message loop and destroy the WebContents and
-  // `this`. We use a WeakPtr to guard against this potential UAF.
-  base::WeakPtr<DigitalIdentityRequestImpl> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-
-  auto abort_callback = provider_->ShowDigitalIdentityInterstitial(
-      *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-      *interstitial_type,
-      base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request_to_send),
-                     warning_level));
-
-  if (!weak_this) {
-    return;
-  }
-
-  update_interstitial_on_abort_callback_ = std::move(abort_callback);
+  provider_->Get(WebContents::FromRenderFrameHost(&render_frame_host()),
+                 origin(), request_to_send, warning_level,
+                 base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DigitalIdentityRequestImpl::Create(
@@ -804,32 +749,7 @@ void DigitalIdentityRequestImpl::Abort() {
     return;
   }
 
-  base::WeakPtr<DigitalIdentityRequestImpl> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  if (update_interstitial_on_abort_callback_) {
-    std::move(update_interstitial_on_abort_callback_).Run();
-  }
-
-  if (!weak_this) {
-    return;
-  }
-
   CompleteRequestWithError(RequestStatusForMetrics::kErrorAborted);
-}
-
-void DigitalIdentityRequestImpl::OnInterstitialDone(
-    base::Value request_to_send,
-    UiWarningLevel warning_level,
-    RequestStatusForMetrics status_after_interstitial) {
-  if (status_after_interstitial != RequestStatusForMetrics::kSuccess) {
-    CompleteRequestWithError(status_after_interstitial);
-    return;
-  }
-
-  provider_->Get(WebContents::FromRenderFrameHost(&render_frame_host()),
-                 origin(), request_to_send, warning_level,
-                 base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace content

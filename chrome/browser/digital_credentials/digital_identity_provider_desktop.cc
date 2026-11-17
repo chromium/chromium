@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
-#include "chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -48,8 +47,6 @@ namespace {
 constexpr int kQrCodeSize = 240;
 constexpr int kQrCodeMargin = 20;
 
-using DigitalIdentityInterstitialAbortCallback =
-    content::DigitalIdentityProvider::DigitalIdentityInterstitialAbortCallback;
 using RequestStatusForMetrics =
     content::DigitalIdentityProvider::RequestStatusForMetrics;
 using content::digital_credentials::cross_device::Error;
@@ -61,16 +58,6 @@ using content::digital_credentials::cross_device::Response;
 using content::digital_credentials::cross_device::SystemError;
 using content::digital_credentials::cross_device::SystemEvent;
 using content::digital_credentials::cross_device::Transaction;
-
-void RunDigitalIdentityCallback(
-    std::unique_ptr<DigitalIdentitySafetyInterstitialControllerDesktop>
-        controller,
-    content::DigitalIdentityProvider::DigitalIdentityInterstitialCallback
-        callback,
-    content::DigitalIdentityProvider::RequestStatusForMetrics
-        status_for_metrics) {
-  std::move(callback).Run(status_for_metrics);
-}
 
 std::unique_ptr<views::View> MakeQrCodeImageView(const std::string& qr_url) {
   auto qr_code = qr_code_generator::GenerateImage(
@@ -113,21 +100,6 @@ DigitalIdentityProviderDesktop::~DigitalIdentityProviderDesktop() = default;
 bool DigitalIdentityProviderDesktop::IsLastCommittedOriginLowRisk(
     content::RenderFrameHost& render_frame_host) const {
   return digital_credentials::IsLastCommittedOriginLowRisk(render_frame_host);
-}
-
-DigitalIdentityInterstitialAbortCallback
-DigitalIdentityProviderDesktop::ShowDigitalIdentityInterstitial(
-    content::WebContents& web_contents,
-    const url::Origin& origin,
-    content::DigitalIdentityInterstitialType interstitial_type,
-    DigitalIdentityInterstitialCallback callback) {
-  auto controller =
-      std::make_unique<DigitalIdentitySafetyInterstitialControllerDesktop>();
-  // Callback takes ownership of |controller|.
-  return controller->ShowInterstitial(
-      web_contents, origin, interstitial_type,
-      base::BindOnce(&RunDigitalIdentityCallback, std::move(controller),
-                     std::move(callback)));
 }
 
 void DigitalIdentityProviderDesktop::Get(content::WebContents* web_contents,
