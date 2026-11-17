@@ -577,7 +577,6 @@ suite('AimAppTest', function() {
     assertTrue(composebox.showVoiceSearch);
     assertFalse(composebox.disableVoiceSearchAnimation);
     assertFalse(composebox.showMenuOnClick);
-    assertTrue(composebox.shouldShowGhostFiles);
     assertTrue(composebox.usePecApi);
     assertTrue(composebox.smartComposeEnabled);
     assertTrue(composebox.composeboxNoFlickerSuggestionsFix);

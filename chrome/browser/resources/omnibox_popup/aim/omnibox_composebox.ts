@@ -17,7 +17,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
 import '/strings.m.js';
 
-import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabs, ProcessFilesError, SingleTabType, SubmitButtonIconType} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabs, isContextUploadStatusTerminal, ProcessFilesError, SingleTabType, SubmitButtonIconType} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -89,7 +89,6 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       disableCaretColorAnimation: {type: Boolean, reflect: true},
       energyEffectEnabled: {type: Boolean, reflect: true},
       showMenuOnClick: {type: Boolean},
-      shouldShowGhostFiles: {type: Boolean},
       usePecApi: {type: Boolean, reflect: true},
       contextManagementInComposeboxEnabled: {type: Boolean, reflect: true},
       smartComposeEnabled: {type: Boolean, reflect: true},
@@ -142,7 +141,6 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   override accessor energyEffectEnabled: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');
   override accessor showMenuOnClick: boolean = false;
-  override accessor shouldShowGhostFiles: boolean = true;
   override accessor usePecApi: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
   override accessor contextManagementInComposeboxEnabled: boolean =
@@ -558,17 +556,49 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    const pendingStatus = this.attachedContext.get(fileAttachment.uuid)?.status;
+    const pendingStatus = this.takeEarlyUploadStatus_(fileAttachment.uuid);
+    if (pendingStatus === null) {
+      return;
+    }
     const composeboxFile = ComposeboxFile.createFromFile(
         fileAttachment.uuid,
         {name: fileAttachment.name, type: fileAttachment.mimeType},
-        pendingStatus ?? ContextUploadStatus.kNotUploaded, {
+        pendingStatus, {
           dataUrl: fileAttachment.imageDataUrl ?? null,
           iconUrl: fileAttachment.iconUrl,
           thumbnailUrl: fileAttachment.thumbnailUrl ?? null,
           supportsUnimodal: true,
         });
     this.onFileContextAdded(composeboxFile);
+  }
+
+  // Early statuses are kept in `earlyTerminalUploads` rather than as ghost
+  // files in `attachedContext`. Returns the status to attach the file with, or
+  // reports the failure and returns null if the upload already failed, since
+  // attaching it would leave it uploading forever.
+  private takeEarlyUploadStatus_(uuid: UnguessableToken): ContextUploadStatus|
+      null {
+    const earlyStatus = this.earlyTerminalUploads.get(uuid);
+    this.earlyTerminalUploads.delete(uuid);
+    if (earlyStatus === undefined) {
+      return ContextUploadStatus.kNotUploaded;
+    }
+    if (!isContextUploadStatusTerminal(earlyStatus)) {
+      // The file has its name and type from `fileAttachment`, so
+      // it renders as a real chip with a spinner while the upload finishes.
+      return ContextUploadStatus.kUploadStarted;
+    }
+    if (earlyStatus === ContextUploadStatus.kUploadSuccessful) {
+      return earlyStatus;
+    }
+    const errorMessage =
+        this.getErrorMessageForUploadStatus(earlyStatus, /*errorType=*/ null);
+    if (errorMessage) {
+      this.errorMessage = errorMessage;
+      this.getSearchboxHandler().deleteContext(
+          uuid, /*fromAutomaticChip=*/ false);
+    }
+    return null;
   }
 
   private addTabFromAttachment_(tabAttachment: TabAttachment) {

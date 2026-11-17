@@ -137,11 +137,6 @@ export class ComposeboxFile {
   origin?: TabAttachmentSource;
   delayUpload?: boolean;
   singleTabType?: SingleTabType;
-  // True if this is a placeholder ("ghost") entry created from an upload
-  // status update for a token the frontend does not know about yet. Its
-  // metadata, including `inputType`, is not yet known and must not be relied
-  // on until the entry is replaced by a fully hydrated one.
-  isGhost?: boolean;
 
   constructor(
       uuid: UnguessableToken, name: string, type: string, inputType: InputType,
@@ -163,7 +158,6 @@ export class ComposeboxFile {
     this.origin = options?.origin;
     this.delayUpload = options?.delayUpload ?? false;
     this.singleTabType = options?.singleTabType;
-    this.isGhost = options?.isGhost ?? false;
   }
 
   static createFromFile(

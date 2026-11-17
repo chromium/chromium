@@ -98,7 +98,6 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
               type: Boolean,
             },
-            shouldShowGhostFiles: {type: Boolean},
             showMenuOnClick: {type: Boolean},
             submitButtonIconType: {type: String},
             isCanvasQuerySubmitted: {type: Boolean},
@@ -240,7 +239,6 @@ export const ComposeboxEmbedderMixin =
             getLoadTimeBoolean('composeboxShowContextMenuDescription', false);
         accessor showContextMenuDescription: boolean =
             this.contextMenuDescriptionEnabled;
-        accessor shouldShowGhostFiles: boolean = false;
         accessor showMenuOnClick: boolean = true;
         accessor isCanvasQuerySubmitted: boolean = false;
         accessor recentTabId: number|null = null;
@@ -940,17 +938,6 @@ export const ComposeboxEmbedderMixin =
 
           const allowedTypes = this.inputState.allowedInputTypes;
           this.attachedContext.forEach((file, uuid) => {
-            // Ghost files are placeholders created from an upload status
-            // update before the frontend learned what the context actually is.
-            // Their `inputType` is a placeholder value, so they must not be
-            // evaluated against the allowed input types; doing so would delete
-            // context that is still being attached and tear down its
-            // browser-side upload. They are re-evaluated once hydrated.
-            // TODO(b/537852029): Remove once ghost files carry a real input
-            // type.
-            if (file.isGhost) {
-              return;
-            }
             if (!allowedTypes.includes(file.inputType)) {
               this.deleteFile(uuid);
             }
@@ -1069,26 +1056,16 @@ export const ComposeboxEmbedderMixin =
             token: UnguessableToken, status: ContextUploadStatus,
             errorType: ContextUploadErrorType|null) {
           // Statuses arrive on the page pipe, which is not ordered with the
-          // `addTabContext` response. A ghost placeholder created for an
-          // unknown token (see `updateFileStatus()`) is not the real
-          // attachment yet, so a terminal status landing on it must still be
-          // recorded; otherwise `addTabContextHandleCallback()` replaces the
-          // ghost with an in-flight attachment that never completes.
+          // `addTabContext` response or `addSearchContext` attachment handoff.
           const existing = this.attachedContext.get(token);
-          if ((!existing || existing.isGhost) &&
-              isContextUploadStatusTerminal(status)) {
-            this.earlyTerminalUploads.set(token, status);
+          if (!existing) {
+            if (isContextUploadStatusTerminal(status) ||
+                !this.earlyTerminalUploads.has(token)) {
+              this.earlyTerminalUploads.set(token, status);
+            }
+            return;
           }
-          // `kProcessing` means the delayed-tab snapshot is in memory. If the
-          // token is not mapped yet, park it for the `addTabContext()` reply.
-          if (this.shouldWaitForDelayedTabContext() &&
-              this.pendingDelayedTabRequests_.size > 0 &&
-              (!existing || existing.isGhost) &&
-              status === ContextUploadStatus.kProcessing &&
-              !this.earlyTerminalUploads.has(token)) {
-            this.earlyTerminalUploads.set(token, status);
-          }
-          if (existing?.delayUpload && !isContextUploadStatusTerminal(status)) {
+          if (existing.delayUpload && !isContextUploadStatusTerminal(status)) {
             if (status === ContextUploadStatus.kProcessing) {
               // Nothing is uploading before submit, so the snapshot being
               // ready is the terminal state for a delayed tab here.
@@ -1669,20 +1646,14 @@ export const ComposeboxEmbedderMixin =
             // mapped into `attachedContext`. Consume it here; note the
             // `delete()` must run even when the status is unused, so that it
             // is not left behind for a later tab that reuses the token.
-            const existingStatus =
-                this.attachedContext.get(token)?.status ?? null;
-            const earlyStatus = this.earlyTerminalUploads.get(token) ??
-                (existingStatus !== null &&
-                         isContextUploadStatusTerminal(existingStatus) ?
-                     existingStatus :
-                     null);
+            const cachedStatus = this.earlyTerminalUploads.get(token) ?? null;
             this.earlyTerminalUploads.delete(token);
+            const earlyStatus = cachedStatus !== null &&
+                    isContextUploadStatusTerminal(cachedStatus) ?
+                cachedStatus :
+                null;
             if (earlyStatus !== null &&
                 earlyStatus !== ContextUploadStatus.kUploadSuccessful) {
-              if (this.attachedContext.has(token)) {
-                this.attachedContext.delete(token);
-                this.attachedContext = new Map([...this.attachedContext]);
-              }
               return null;
             }
             // A tab shows as in flight while its upload runs, or, for a
@@ -3166,36 +3137,6 @@ export const ComposeboxEmbedderMixin =
               this.attachedContext.set(token, file);
               this.attachedContext = new Map([...this.attachedContext]);
             }
-          } else if (
-              this.shouldShowGhostFiles &&
-              (!isContextUploadStatusTerminal(status) ||
-               status === ContextUploadStatus.kUploadSuccessful)) {
-            // File is unknown but its status is known. Show this if
-            // ghost/unknown files in frontend are allowed to be in
-            // carousel.
-            file = {
-              uuid: token,
-              name: '',
-              objectUrl: null,
-              dataUrl: null,
-              type: '',
-              inputType: InputType.kLensFile,
-              // Override non-terminal statuses with kUploadStarted so the tab
-              // spinner is shown, while preserving kUploadSuccessful if the
-              // upload already completed before addTabContext resolved.
-              status: status === ContextUploadStatus.kUploadSuccessful ?
-                  ContextUploadStatus.kUploadSuccessful :
-                  ContextUploadStatus.kUploadStarted,
-              url: null,
-              tabId: null,
-              isDeletable: true,
-              iconName: null,
-              supportsUnimodal: true,
-              isGhost: true,
-            };
-            // Update pending uploads in 'composebox.ts' to disable
-            // submit button.
-            this.onFileContextAdded(file);
           }
           return {file, errorMessage};
         }
@@ -3554,7 +3495,6 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   composeboxSkillsEnabled: boolean;
   contextMenuDescriptionEnabled: boolean;
   showContextMenuDescription: boolean;
-  shouldShowGhostFiles: boolean;
   showMenuOnClick: boolean;
   isCanvasQuerySubmitted: boolean;
   browserTabContextAdded: boolean;
@@ -3794,6 +3734,9 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   addDroppedFiles(files: FileList|null): void;
   addDriveUploads(driveUploads: DriveUpload[], error?: DriveUploadError): void;
   processFiles(files: FileList|null): void;
+  getErrorMessageForUploadStatus(
+      status: ContextUploadStatus,
+      errorType: ContextUploadErrorType|null): string|null;
   updateFileStatus(
       token: UnguessableToken, status: ContextUploadStatus,
       errorType: ContextUploadErrorType|
