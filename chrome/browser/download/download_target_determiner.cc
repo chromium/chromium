@@ -1104,8 +1104,7 @@ DownloadTargetDeterminer::Result
   // TODO(crbug.com/570767468): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK(!virtual_path_.MatchesExtension(kCrdownloadSuffix));
-  CHECK(!local_path_.MatchesExtension(kCrdownloadSuffix),
-        base::NotFatalUntil::M161);
+  DCHECK(!local_path_.MatchesExtension(kCrdownloadSuffix));
 
   next_state_ = STATE_NONE;
 
