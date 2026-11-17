@@ -24,6 +24,26 @@ message PhysicalDeviceRecoveryFactorData {
   optional bytes private_key_material = 1;
 }
 
+// Google Password Manager (GPM) PIN local verification state. Stored at the
+// user level rather than per-domain even though only `kPasskeys` uses the GPM
+// PIN today.
+message GpmPinData {
+  enum PinForm {
+    PIN_FORM_UNSPECIFIED = 0;
+    SIX_DIGITS = 1;
+    ARBITRARY = 2;
+  }
+
+  // scrypt hash of the PIN and the parameters needed to recompute it.
+  optional bytes scrypt_hash = 1;
+  optional bytes hash_salt = 2;
+  optional int32 hash_difficulty = 3;
+  optional PinForm pin_form = 4;
+
+  // Consecutive failed local PIN verification attempts (0..5).
+  optional int32 failed_attempts = 5;
+}
+
 // Generic per-domain registration status for any local recovery factor.
 message RecoveryFactorRegistrationInfo {
   // LocalRecoveryFactorType enum value.
@@ -82,6 +102,9 @@ message UserDomainData {
   // Flag indicating whether local keys for this user account should be deleted
   // when the account is no longer the primary account.
   optional bool should_delete_keys_when_non_primary = 4;
+
+  // GPM PIN local verification state.
+  optional GpmPinData gpm_pin_data = 5;
 }
 
 // Root snapshot message stored on disk containing all multi-domain local
