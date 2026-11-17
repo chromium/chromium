@@ -1058,8 +1058,8 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
   GlicEnablingAnchorEntryPointTestBase() {
     // Force basic password store to avoid talking to Linux desktop keyring
     // services, which can run asynchronously and cause flakiness.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII("password-store",
-                                                              "basic");
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        "password-store", "basic");
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
@@ -1089,13 +1089,19 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
   }
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kTestType);
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::android_info::sdk_int() <
         base::android::android_info::SDK_VERSION_S) {
       GTEST_SKIP() << "Glic requires Android S+";
     }
 #endif
+    // IsSystemRequirementMet() caches its answer in a function-local static,
+    // so it is settled by whichever test in the process asks first and does
+    // not see the feature state set up above. Pin it rather than depending on
+    // the order tests happen to run in.
+    GlicEnabling::SetSystemRequirementMetForTesting(true);
     raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
@@ -1145,6 +1151,7 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
       identity_test_env_adaptor_;
 
  private:
+  base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1216,17 +1223,8 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase, FeatureFlagDisablesAnchoring) {
               testing::IsEmpty());
 }
 
-// TODO(crbug.com/585643966): Fails in batched runs on Android (leaked
-// global state makes the profile ineligible).
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AnchoredButtonForIneligibleAccount \
-  DISABLED_AnchoredButtonForIneligibleAccount
-#else
-#define MAYBE_AnchoredButtonForIneligibleAccount \
-  AnchoredButtonForIneligibleAccount
-#endif
 TEST_F(GlicEnablingAnchorEntryPointTestBase,
-       MAYBE_AnchoredButtonForIneligibleAccount) {
+       AnchoredButtonForIneligibleAccount) {
   profile()->GetPrefs()->SetInteger(
       glic::prefs::kGlicCompletedFre,
       static_cast<int>(glic::prefs::FreStatus::kCompleted));
@@ -1366,17 +1364,8 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase,
       GlicEnabling::EnablementForProfile(profile()).ShouldShowGlicButton());
 }
 
-// TODO(crbug.com/585643966): Fails in batched runs on Android (leaked
-// global state makes the profile ineligible).
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_PrimaryAccountNotCapable_ReturnsIneligibleAccountWhenAnchored \
-  DISABLED_PrimaryAccountNotCapable_ReturnsIneligibleAccountWhenAnchored
-#else
-#define MAYBE_PrimaryAccountNotCapable_ReturnsIneligibleAccountWhenAnchored \
-  PrimaryAccountNotCapable_ReturnsIneligibleAccountWhenAnchored
-#endif
 TEST_F(GlicEnablingAnchorEntryPointTestBase,
-       MAYBE_PrimaryAccountNotCapable_ReturnsIneligibleAccountWhenAnchored) {
+       PrimaryAccountNotCapable_ReturnsIneligibleAccountWhenAnchored) {
   profile()->GetPrefs()->SetInteger(
       glic::prefs::kGlicCompletedFre,
       std::to_underlying(glic::prefs::FreStatus::kCompleted));
@@ -3563,7 +3552,6 @@ class GlicEnablingAnchorEntryPointCountryTest
   }
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     variations::TestVariationsService::RegisterPrefs(local_state_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         &local_state_, &enabled_state_provider_, std::wstring(),
@@ -3594,16 +3582,8 @@ class GlicEnablingAnchorEntryPointCountryTest
   std::unique_ptr<variations::TestVariationsService> variations_service_;
 };
 
-// TODO(crbug.com/585643966): Fails in batched runs on Android (leaked
-// global state makes the profile ineligible).
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AnchoredButtonForCountryDisabled \
-  DISABLED_AnchoredButtonForCountryDisabled
-#else
-#define MAYBE_AnchoredButtonForCountryDisabled AnchoredButtonForCountryDisabled
-#endif
 TEST_F(GlicEnablingAnchorEntryPointCountryTest,
-       MAYBE_AnchoredButtonForCountryDisabled) {
+       AnchoredButtonForCountryDisabled) {
   profile()->GetPrefs()->SetInteger(
       glic::prefs::kGlicCompletedFre,
       static_cast<int>(glic::prefs::FreStatus::kCompleted));
@@ -3641,17 +3621,8 @@ TEST_F(GlicEnablingAnchorEntryPointCountryTest,
               base::BucketsAre(base::Bucket(Reason::kCountryDisabled, 1)))));
 }
 
-// TODO(crbug.com/585643966): Fails in batched runs on Android (leaked
-// global state makes the profile ineligible).
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AnchoredButtonForMultipleIneligibilityReasons \
-  DISABLED_AnchoredButtonForMultipleIneligibilityReasons
-#else
-#define MAYBE_AnchoredButtonForMultipleIneligibilityReasons \
-  AnchoredButtonForMultipleIneligibilityReasons
-#endif
 TEST_F(GlicEnablingAnchorEntryPointCountryTest,
-       MAYBE_AnchoredButtonForMultipleIneligibilityReasons) {
+       AnchoredButtonForMultipleIneligibilityReasons) {
   profile()->GetPrefs()->SetInteger(
       glic::prefs::kGlicCompletedFre,
       static_cast<int>(glic::prefs::FreStatus::kCompleted));
