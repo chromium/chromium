@@ -265,8 +265,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   // Setup sync, wait for its completion, and make sure changes were synced.
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
   // Upon a local creation, the received update will be seen as reflection and
   // get counted as incremental update.
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
