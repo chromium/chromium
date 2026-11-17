@@ -470,6 +470,13 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
     ReportPartitionAllocThreadCacheStats(memory_dump_, all_thread_caches_dump,
                                          all_thread_caches_stats, "",
                                          detailed_);
+    // The cached slots are already in the partition's buckets, so own them to
+    // not count them twice. Without bucket dumps there is no double count.
+    if (MemoryAllocatorDump* buckets_dump =
+            memory_dump_->GetAllocatorDump(dump_name + "/buckets")) {
+      memory_dump_->AddOwnershipEdge(all_thread_caches_dump->guid(),
+                                     buckets_dump->guid());
+    }
   }
 
   if (memory_stats->has_scheduler_loop_quarantine) {
@@ -491,6 +498,8 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
     const partition_alloc::PartitionBucketMemoryStats* memory_stats) {
   DCHECK(memory_stats->is_valid);
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
+  // Explicit, so that the thread cache dump can own it.
+  memory_dump_->GetOrCreateAllocatorDump(dump_name + "/buckets");
   if (memory_stats->is_direct_map) {
     dump_name.append(base::StringPrintf("/buckets/directMap_%" PRIu64, ++uid_));
   } else {

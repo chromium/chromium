@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/allocator/buildflags.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/malloc_dump_provider_internal.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -379,6 +380,47 @@ TEST(MallocDumpProviderTest, PartitionsObjectsOwnPartitions) {
     ASSERT_TRUE(edge != edges.cend());
     EXPECT_EQ(edge->second.target.ToUint64(),
               partitions_dump->guid().ToUint64());
+  }
+}
+
+// The cached slots are already in the partition's buckets, so the thread cache
+// dump keeps its size but owns the buckets, to not count them twice.
+TEST(MallocDumpProviderTest, ThreadCacheDumpsOwnTheirBuckets) {
+  for (MemoryDumpLevelOfDetail level_of_detail :
+       {MemoryDumpLevelOfDetail::kBackground, MemoryDumpLevelOfDetail::kLight,
+        MemoryDumpLevelOfDetail::kDetailed}) {
+    std::unique_ptr<MallocDumpProvider> mdp =
+        MallocDumpProvider::CreateForTesting();
+    const MemoryDumpArgs dump_args = {level_of_detail};
+    ProcessMemoryDump pmd(dump_args);
+    ASSERT_TRUE(mdp->OnMemoryDump(dump_args, &pmd));
+
+    constexpr std::string_view kSuffix = "/thread_cache";
+    size_t thread_cache_dumps = 0;
+    const auto& edges = pmd.allocator_dumps_edges();
+    for (const auto& [name, dump] : pmd.allocator_dumps()) {
+      if (!name.ends_with(kSuffix)) {
+        continue;
+      }
+      ++thread_cache_dumps;
+      EXPECT_TRUE(GetBytesEntry(*dump, MemoryAllocatorDump::kNameSize)) << name;
+
+      auto edge = edges.find(dump->guid());
+      // Background dumps have no buckets to double count.
+      if (level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
+        EXPECT_TRUE(edge == edges.cend()) << name;
+        continue;
+      }
+      const MemoryAllocatorDump* buckets_dump = FindAllocatorDump(
+          pmd, base::StrCat({std::string_view(name).substr(
+                                 0, name.size() - kSuffix.size()),
+                             "/buckets"}));
+      ASSERT_TRUE(buckets_dump) << name;
+      ASSERT_TRUE(edge != edges.cend()) << name;
+      EXPECT_EQ(edge->second.target.ToUint64(), buckets_dump->guid().ToUint64())
+          << name;
+    }
+    EXPECT_GT(thread_cache_dumps, 0u);
   }
 }
 
