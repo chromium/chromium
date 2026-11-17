@@ -13375,6 +13375,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(dictation::kDictation,
                                     kDictationVariations,
                                     "Dictation")},
+    {"dictation-press-and-hold", flag_descriptions::kDictationPressAndHoldName,
+     flag_descriptions::kDictationPressAndHoldDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(dictation::kDictationPressAndHold)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

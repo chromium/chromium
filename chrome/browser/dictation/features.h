@@ -56,6 +56,9 @@ extern const base::FeatureParam<std::string> kDictationConnectorTag;
 // sending them one-time IME input. See DictationAgent.PopulateEditContext.
 extern const base::FeatureParam<std::string> kPopulateEditContextHosts;
 
+// Enables press-and-hold (push-to-talk) hotkey support for Dictation.
+BASE_DECLARE_FEATURE(kDictationPressAndHold);
+
 }  // namespace dictation
 
 #endif  // CHROME_BROWSER_DICTATION_FEATURES_H_

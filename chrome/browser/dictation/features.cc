@@ -40,4 +40,6 @@ const base::FeatureParam<std::string> kDictationConnectorTag{
 const base::FeatureParam<std::string> kPopulateEditContextHosts{
     &kDictation, "populate_edit_context_hosts", "docs.google.com"};
 
+BASE_FEATURE(kDictationPressAndHold, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace dictation

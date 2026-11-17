@@ -583,6 +583,11 @@ inline constexpr char kDictationName[] = "Dictation";
 inline constexpr char kDictationDescription[] =
     "Enables the Dictation feature.";
 
+inline constexpr char kDictationPressAndHoldName[] =
+    "Dictation press-and-hold hotkey";
+inline constexpr char kDictationPressAndHoldDescription[] =
+    "Enables press-and-hold (push-to-talk) hotkey support for Dictation.";
+
 inline constexpr char kDisableAutofillStrikeSystemName[] =
     "Disable the Autofill strike system";
 inline constexpr char kDisableAutofillStrikeSystemDescription[] =
