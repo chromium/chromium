@@ -19177,7 +19177,7 @@ be describing additional metrics about the same event.
 
 <event name="PerformanceAPI.LongAnimationFrame">
   <owner>nrosenthal@chromium.org</owner>
-  <owner>zuoaoyuan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
   <summary>
     This event is associated with the LongAnimationFrame Web Platform API. The
     metrics are recorded when a long animation frame is detected and reported to
@@ -19211,37 +19211,16 @@ be describing additional metrics about the same event.
       between the desired time for rendering the frame and rendering it in
       practice. Positive means delayed, negative means deferred.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration.EffectiveBlocking">
     <summary>
       The duration in milliseconds, representing the time the LoAF was blocking.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration.LongScript.JSCompilation">
     <summary>
       The total duration of long-script JS compilation, in milliseconds.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration.LongScript.JSExecution">
     <summary>
@@ -19260,13 +19239,6 @@ be describing additional metrics about the same event.
     <summary>
       The total duration spent in event listeners (e.g. onclick).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration.LongScript.JSExecution.PromiseHandlers">
     <summary>
@@ -19284,50 +19256,22 @@ be describing additional metrics about the same event.
     <summary>
       The total duration spent in script blocks (script element, import)
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration.LongScript.JSExecution.UserCallbacks">
     <summary>
       The total duration spent in user callbacks (e.g. requestAnimationFrame).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration.StyleAndLayout.Forced">
     <summary>
       The total duration of forced style and layout in long scripts.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration.StyleAndLayout.RenderPhase">
     <summary>
       The total duration of the style and layout lifecycle phase, not including
       forced style and layout.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Duration.Total">
     <summary>
