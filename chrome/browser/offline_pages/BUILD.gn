@@ -189,7 +189,11 @@ source_set("unit_tests") {
       "android/offline_page_auto_fetcher_service_unittest.cc",
     ]
 
-    deps += [ "//chrome/browser/download:test_support" ]
+    deps += [
+      "//chrome/browser/download:test_support",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/tab_model:test_support",
+    ]
   }
 }
 

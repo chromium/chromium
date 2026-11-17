@@ -11,6 +11,7 @@
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace offline_pages {
 
@@ -71,7 +72,8 @@ OfflinePageAutoFetcherServiceFactory::BuildServiceInstanceForBrowserContext(
   OfflinePageModel* model =
       OfflinePageModelFactory::GetForBrowserContext(context);
   return std::make_unique<OfflinePageAutoFetcherService>(
-      coordinator, model, service_delegate_.get());
+      Profile::FromBrowserContext(context), coordinator, model,
+      service_delegate_.get());
 }
 
 }  // namespace offline_pages

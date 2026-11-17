@@ -77,11 +77,11 @@ class FakeInternalImplDelegate : public InternalImpl::Delegate {
 
 // Note that TabAndroid doesn't work in unit tests, so this stubs out access to
 // tab information.
-class StubTabFinder : public AutoFetchPageLoadWatcher::AndroidTabFinder {
+class StubTabFinder : public AndroidTabFinder {
  public:
   ~StubTabFinder() override = default;
 
-  // AutoFetchPageLoadWatcher::AndroidTabFinder.
+  // AndroidTabFinder.
   std::map<int, TabInfo> FindAndroidTabs(
       std::vector<int> android_tab_ids) override {
     std::map<int, TabInfo> result;

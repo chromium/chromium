@@ -21,6 +21,8 @@
 #include "components/offline_pages/core/offline_page_model.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace offline_pages {
 class RequestCoordinator;
 class SavePageRequest;
@@ -72,10 +74,10 @@ class OfflinePageAutoFetcherService : public KeyedService,
         int64_t offline_id) = 0;
   };
 
-  explicit OfflinePageAutoFetcherService(
-      RequestCoordinator* request_coordinator,
-      OfflinePageModel* offline_page_model,
-      Delegate* delegate);
+  OfflinePageAutoFetcherService(Profile* profile,
+                                RequestCoordinator* request_coordinator,
+                                OfflinePageModel* offline_page_model,
+                                Delegate* delegate);
   ~OfflinePageAutoFetcherService() override;
 
   AutoFetchPageLoadWatcher* page_load_watcher() { return &page_load_watcher_; }

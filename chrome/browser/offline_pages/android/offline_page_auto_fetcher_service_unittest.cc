@@ -14,7 +14,11 @@
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/offline_pages/test_request_coordinator_builder.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/offline_pages/core/auto_fetch.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 #include "components/offline_pages/core/background/request_coordinator_stub_taco.h"
@@ -66,12 +70,15 @@ class OfflinePageAutoFetcherServiceTest : public testing::Test {
   void SetUp() override {
     request_coordinator_taco_.CreateRequestCoordinator();
     service_ = std::make_unique<OfflinePageAutoFetcherService>(
-        request_coordinator(), &offline_page_model_, &delegate_);
+        &profile_, request_coordinator(), &offline_page_model_, &delegate_);
   }
 
   void TearDown() override {
     task_environment_.RunUntilIdle();
-    service_.reset();
+    if (service_) {
+      service_->Shutdown();
+      service_.reset();
+    }
   }
   RequestCoordinator* request_coordinator() {
     return request_coordinator_taco_.request_coordinator();
@@ -101,6 +108,7 @@ class OfflinePageAutoFetcherServiceTest : public testing::Test {
   TestOfflinePageModel offline_page_model_;
 
   RequestCoordinatorStubTaco request_coordinator_taco_;
+  TestingProfile profile_;
   std::unique_ptr<OfflinePageAutoFetcherService> service_;
 };
 
@@ -263,6 +271,44 @@ TEST_F(OfflinePageAutoFetcherServiceTest, DontNotifyOnOtherRequestCompleted) {
                         RequestNotifier::BackgroundSavePageResult::SUCCESS);
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(OfflinePageAutoFetcherServiceTest,
+       AutoFetchPageLoadWatcherScopesToProfile) {
+  // Adding a TabModel for a different profile must not be observed by the
+  // watcher for `profile_`.
+  TestingProfile other_profile;
+  TestTabModel other_tab_model(&other_profile);
+  TabModelList::AddTabModel(&other_tab_model);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(nullptr, other_tab_model.GetObserver());
+
+  // Adding a TabModel for this profile is observed by the watcher.
+  TestTabModel own_tab_model(&profile_);
+  TabModelList::AddTabModel(&own_tab_model);
+  task_environment_.RunUntilIdle();
+  EXPECT_NE(nullptr, own_tab_model.GetObserver());
+
+  service_->Shutdown();
+  EXPECT_EQ(nullptr, own_tab_model.GetObserver());
+
+  base::MockCallback<
+      base::OnceCallback<void(OfflinePageAutoFetcherScheduleResult)>>
+      schedule_callback;
+  EXPECT_CALL(schedule_callback,
+              Run(OfflinePageAutoFetcherScheduleResult::kOtherError));
+  service_->TrySchedule(false, GURL("http://foo.com"), kTabId,
+                        schedule_callback.Get());
+
+  base::MockCallback<base::OnceClosure> cancel_all_callback;
+  EXPECT_CALL(cancel_all_callback, Run());
+  service_->CancelAll(cancel_all_callback.Get());
+
+  service_->CancelSchedule(GURL("http://foo.com"));
+  service_->page_load_watcher()->HandleNavigation(nullptr);
+
+  TabModelList::RemoveTabModel(&own_tab_model);
+  TabModelList::RemoveTabModel(&other_tab_model);
 }
 
 }  // namespace

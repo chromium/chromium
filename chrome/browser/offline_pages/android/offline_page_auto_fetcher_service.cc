@@ -50,14 +50,12 @@ class AutoFetchNotifierImpl : public AutoFetchNotifier {
 }  // namespace
 
 OfflinePageAutoFetcherService::OfflinePageAutoFetcherService(
+    Profile* profile,
     RequestCoordinator* request_coordinator,
     OfflinePageModel* offline_page_model,
     Delegate* delegate)
     : notifier_(std::make_unique<AutoFetchNotifierImpl>()),
-      page_load_watcher_(
-          notifier_.get(),
-          request_coordinator,
-          std::make_unique<AutoFetchPageLoadWatcher::AndroidTabFinder>()),
+      page_load_watcher_(profile, notifier_.get(), request_coordinator),
       request_coordinator_(request_coordinator),
       offline_page_model_(offline_page_model),
       delegate_(delegate) {
@@ -70,13 +68,23 @@ OfflinePageAutoFetcherService::OfflinePageAutoFetcherService(
 OfflinePageAutoFetcherService::~OfflinePageAutoFetcherService() = default;
 
 void OfflinePageAutoFetcherService::Shutdown() {
-  request_coordinator_->RemoveObserver(this);
+  page_load_watcher_.Shutdown();
+  if (request_coordinator_) {
+    request_coordinator_->RemoveObserver(this);
+    request_coordinator_ = nullptr;
+  }
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void OfflinePageAutoFetcherService::TrySchedule(bool user_requested,
                                                 const GURL& url,
                                                 int android_tab_id,
                                                 TryScheduleCallback callback) {
+  if (!request_coordinator_) {
+    std::move(callback).Run(OfflinePageAutoFetcherScheduleResult::kOtherError);
+    return;
+  }
+
   // Return an early failure if the URL is not suitable.
   if (!OfflinePageModel::CanSaveURL(url)) {
     std::move(callback).Run(OfflinePageAutoFetcherScheduleResult::kOtherError);
@@ -103,6 +111,11 @@ void OfflinePageAutoFetcherService::TrySchedule(bool user_requested,
 }
 
 void OfflinePageAutoFetcherService::CancelAll(base::OnceClosure callback) {
+  if (!request_coordinator_) {
+    std::move(callback).Run();
+    return;
+  }
+
   auto condition = base::BindRepeating([](const SavePageRequest& request) {
     return request.client_id().name_space == kAutoAsyncNamespace;
   });
@@ -113,6 +126,10 @@ void OfflinePageAutoFetcherService::CancelAll(base::OnceClosure callback) {
 }
 
 void OfflinePageAutoFetcherService::CancelSchedule(const GURL& url) {
+  if (!request_coordinator_) {
+    return;
+  }
+
   auto predicate = base::BindRepeating(
       [](const GURL& url, const SavePageRequest& request) {
         return request.client_id().name_space == kAutoAsyncNamespace &&
