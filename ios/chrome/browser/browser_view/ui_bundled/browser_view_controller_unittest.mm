@@ -116,14 +116,26 @@
 // testing.
 @interface TestSafeAreaProvider : SafeAreaProvider
 @property(nonatomic, assign) UIEdgeInsets fakeSafeArea;
+@property(nonatomic, assign) NSDirectionalEdgeInsets fakeDirectionalEdgeInsets;
 @end
 
 @implementation TestSafeAreaProvider
 - (UIEdgeInsets)safeArea {
-  if (!UIEdgeInsetsEqualToEdgeInsets(_fakeSafeArea, UIEdgeInsetsZero)) {
-    return _fakeSafeArea;
+  UIEdgeInsets fakeSafeArea = self.fakeSafeArea;
+  if (!UIEdgeInsetsEqualToEdgeInsets(fakeSafeArea, UIEdgeInsetsZero)) {
+    return fakeSafeArea;
   }
   return [super safeArea];
+}
+
+- (NSDirectionalEdgeInsets)directionalEdgeInsetsForLayoutRegion:
+    (UIViewLayoutRegion*)layoutRegion API_AVAILABLE(ios(26.0)) {
+  NSDirectionalEdgeInsets fakeInsets = self.fakeDirectionalEdgeInsets;
+  if (!NSDirectionalEdgeInsetsEqualToDirectionalEdgeInsets(
+          fakeInsets, NSDirectionalEdgeInsetsZero)) {
+    return fakeInsets;
+  }
+  return [super directionalEdgeInsetsForLayoutRegion:layoutRegion];
 }
 @end
 
@@ -691,6 +703,52 @@ TEST_F(BrowserViewControllerTest, ActivityReporting) {
 
   [bvc_ setActive:NO];
   [mockInstance stopMocking];
+}
+
+// Tests that `BrowserViewController` updates the NTP's additional top safe area
+// inset for corner adaptation (e.g. iPad window controls) when the window is in
+// windowed mode, even when `SceneLayoutState.windowedMode` is false.
+TEST_F(BrowserViewControllerTest, UpdateNTPSafeAreaInsetsInWindowedMode) {
+  if (!@available(iOS 26, *)) {
+    GTEST_SKIP() << "Requires iOS 26.";
+  }
+
+  static constexpr CGFloat kCornerAdaptedTopInset = 120.0;
+  safe_area_provider_.fakeDirectionalEdgeInsets =
+      NSDirectionalEdgeInsetsMake(kCornerAdaptedTopInset, 0.0, 0.0, 0.0);
+
+  bvc_.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+  bvc_.traitOverrides.verticalSizeClass = UIUserInterfaceSizeClassRegular;
+  [bvc_.view layoutIfNeeded];
+
+  // Ensure the window starts in full-screen mode (`IsWindowedMode` is false).
+  window_.frame = window_.windowScene.screen.bounds;
+  ASSERT_FALSE(scene_state_.layoutState.windowedMode);
+
+  auto ntp_web_state = CreateWebState();
+  NewTabPageTabHelper::FromWebState(ntp_web_state.get())
+      ->SetDelegate(tab_events_mediator_);
+  LoadNTP(ntp_web_state.get());
+  InsertWebState(std::move(ntp_web_state));
+  [bvc_.view setNeedsLayout];
+  [bvc_.view layoutIfNeeded];
+
+  UIViewController* ntp_view_controller = NTPCoordinator_.viewController;
+  ASSERT_TRUE(ntp_view_controller.viewLoaded);
+  ASSERT_EQ(ntp_view_controller.additionalSafeAreaInsets.top, 0.0);
+
+  // Resize the window so `IsWindowedMode(window_)` is true while
+  // `scene_state_.layoutState.windowedMode` remains false.
+  static constexpr CGRect kCompactWindowFrame = {{0.0, 0.0}, {320.0, 600.0}};
+  window_.frame = kCompactWindowFrame;
+  [bvc_.view setNeedsLayout];
+  [bvc_.view layoutIfNeeded];
+
+  CGFloat expected_additional_top_inset =
+      kCornerAdaptedTopInset - bvc_.view.safeAreaInsets.top;
+  ASSERT_GT(expected_additional_top_inset, 0.0);
+  EXPECT_EQ(ntp_view_controller.additionalSafeAreaInsets.top,
+            expected_additional_top_inset);
 }
 
 // Test fixture for `BrowserViewController` with `kChromeNextIa` enabled during

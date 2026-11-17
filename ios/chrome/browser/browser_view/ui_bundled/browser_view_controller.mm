@@ -1632,10 +1632,6 @@ bool IsFullscreenNextIAEnabled() {
     NewTabPageCoordinator* NTPCoordinator = self.ntpCoordinator;
     if (NTPCoordinator.isNTPActiveForCurrentWebState) {
       UIViewController* viewController = NTPCoordinator.viewController;
-      if (!IsFullscreenRefactoringEnabled()) {
-        viewController.view.frame = [self ntpFrameForCurrentWebState];
-        [viewController.view layoutIfNeeded];
-      }
       // TODO(crbug.com/41407753): For a newly created WebState, the session
       // will not be restored until LoadIfNecessary call. Remove when fixed.
       self.currentWebState->GetNavigationManager()->LoadIfNecessary();
@@ -1644,6 +1640,14 @@ bool IsFullscreenNextIAEnabled() {
       if (IsFullscreenRefactoringEnabled()) {
         viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
         [self updateNTPConstraints];
+      } else {
+        // Update the NTP frame and safe area insets after attaching
+        // `viewController` to `browserContentViewController` so
+        // `viewController.view` is in the window hierarchy and inherits its
+        // parent's `safeAreaInsets`.
+        viewController.view.frame = [self ntpFrameForCurrentWebState];
+        [self updateNTPSafeAreaInsets];
+        [viewController.view layoutIfNeeded];
       }
     } else {
       self.browserContentViewController.contentView = view;
@@ -1949,7 +1953,13 @@ bool IsFullscreenNextIAEnabled() {
 // otherwise returns 0.
 - (CGFloat)topInsetWithCornerAdaptation {
   if (@available(iOS 26, *)) {
-    if (self.layoutState.windowedMode) {
+    // `layoutState.windowedMode` is only populated when `SceneViewController`
+    // (`IsUseSceneViewControllerEnabled()`) is active; fall back to
+    // `IsWindowedMode()` otherwise.
+    const BOOL isWindowedMode = IsUseSceneViewControllerEnabled()
+                                    ? self.layoutState.windowedMode
+                                    : IsWindowedMode(self.viewIfLoaded.window);
+    if (isWindowedMode) {
       UIViewLayoutRegion* safeAreaRegion =
           [UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:
                                   UIViewLayoutRegionAdaptivityAxisVertical];
