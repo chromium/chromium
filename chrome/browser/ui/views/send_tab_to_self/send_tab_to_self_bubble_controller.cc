@@ -203,10 +203,6 @@ void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
   widget_observation_.Observe(widget);
   is_bubble_anchored_to_avatar_pill_ =
       browser && ShouldAnchorBubbleToAvatarPill(reason);
-  if (!is_bubble_anchored_to_avatar_pill_) {
-    send_tab_to_self_bubble_view_->SetHighlightedElement(
-        kPinnedToolbarActionSendTabToSelfElementId);
-  }
   // This is always triggered due to a user gesture, c.f. method
   // documentation.
   send_tab_to_self_bubble_view_->ShowForReason(
