@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2026 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+
+  Codebase map template. Rendered by scripts/codebase_map.py, which replaces
+  the DATA marker below with the extracted JSON. Fully self-contained: no
+  network requests, no external dependencies.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codebase map</title>
+<script>
+  // Apply a saved theme before first paint so there's no flash. One key for
+  // every map, so the choice follows you across directories.
+  (function () {
+    try {
+      const t = localStorage.getItem('codebase-map-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    } catch (e) { /* storage disabled: fall back to OS preference */ }
+  })();
+</script>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161a22; --panel-2: #1c212b; --border: #2a303c;
+    --text: #e6e9ef; --muted: #8b94a7; --faint: #5c6578;
+    --accent: #8ab4f8; --accent-2: #c58af9;
+    --public: #81c995; --header: #a8dab5; --impl: #8ab4f8; --test: #fdd663;
+    --build: #f28b82; --docs: #c58af9; --meta: #78d9ec; --mojom: #ff8bcb;
+    --webui: #ffb86b; --other: #8b94a7; --script: #b8c5ff;
+    --mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "Google Sans", Roboto, system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f8f9fb; --panel: #ffffff; --panel-2: #f1f3f7; --border: #dde2ea;
+      --text: #1f2430; --muted: #5f6b7f; --faint: #9aa4b5;
+      --accent: #1a73e8; --accent-2: #8430ce;
+      --public: #1e8e3e; --header: #34a853; --impl: #1a73e8; --test: #b06000;
+      --build: #d93025; --docs: #8430ce; --meta: #007b83; --mojom: #c2185b;
+      --webui: #e8710a; --other: #5f6b7f; --script: #3c4fb3;
+    }
+  }
+  /* Explicit choice from the toggle (persisted in localStorage) wins over the OS. */
+  :root[data-theme="light"] {
+    --bg: #f8f9fb; --panel: #ffffff; --panel-2: #f1f3f7; --border: #dde2ea;
+    --text: #1f2430; --muted: #5f6b7f; --faint: #9aa4b5;
+    --accent: #1a73e8; --accent-2: #8430ce;
+    --public: #1e8e3e; --header: #34a853; --impl: #1a73e8; --test: #b06000;
+    --build: #d93025; --docs: #8430ce; --meta: #007b83; --mojom: #c2185b;
+    --webui: #e8710a; --other: #5f6b7f; --script: #3c4fb3;
+  }
+  :root { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { color-scheme: light; } }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--text); font: 14px/1.45 var(--sans);
+    display: grid; grid-template-rows: auto 1fr; overflow: hidden;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, .mono { font-family: var(--mono); font-size: 12.5px; }
+  button {
+    font: inherit; color: var(--text); background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px;
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #0b1220; border-color: transparent; font-weight: 600; }
+  input[type=search] {
+    font: inherit; color: var(--text); background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;
+    width: 100%;
+  }
+  input[type=search]:focus { outline: none; border-color: var(--accent); }
+
+  /* ---------- Header ---------- */
+  header {
+    padding: 14px 20px 10px; border-bottom: 1px solid var(--border);
+    background: var(--panel); display: grid; gap: 8px; position: relative;
+  }
+  #theme-toggle {
+    position: absolute; top: 12px; right: 16px; display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; font-size: 12px; color: var(--muted);
+  }
+  #theme-toggle:hover { color: var(--text); }
+  #theme-toggle .icon { font-size: 14px; line-height: 1; }
+  .crumbs { font-family: var(--mono); font-size: 13px; color: var(--muted); padding-right: 120px; }
+  .crumbs b { color: var(--text); font-weight: 600; }
+  .summary { max-width: 1100px; color: var(--text); font-size: 15px; }
+  .summary:empty::before {
+    content: attr(data-placeholder); color: var(--faint); font-style: italic;
+  }
+  .stats { display: flex; gap: 18px; flex-wrap: wrap; color: var(--muted); font-size: 12.5px; }
+  .stats b { color: var(--text); font-weight: 600; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+    padding: 3px 9px; border-radius: 999px; background: var(--panel-2);
+    border: 1px solid var(--border); color: var(--text); white-space: nowrap;
+  }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* ---------- Layout ---------- */
+  main { display: grid; grid-template-columns: minmax(380px, 1.1fr) minmax(360px, 0.9fr); min-height: 0; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } }
+  section { min-height: 0; display: grid; grid-template-rows: auto 1fr; }
+  .toolbar {
+    display: flex; gap: 8px; align-items: center; padding: 10px 14px;
+    border-bottom: 1px solid var(--border); background: var(--panel);
+  }
+  .toolbar .grow { flex: 1; }
+  .scroll { overflow: auto; padding: 8px 10px 40px; }
+  #tree-pane { border-right: 1px solid var(--border); }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; padding: 6px 14px; font-size: 11.5px; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--panel); }
+  .legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: currentColor; vertical-align: 1px; }
+  .legend .public { color: var(--public); } .legend .header { color: var(--header); } .legend .impl { color: var(--impl); }
+  .legend .test { color: var(--test); } .legend .build { color: var(--build); } .legend .docs { color: var(--docs); }
+  .legend .meta { color: var(--meta); } .legend .mojom { color: var(--mojom); } .legend .webui { color: var(--webui); }
+
+  /* ---------- Tree ---------- */
+  .node { position: relative; }
+  .row {
+    display: grid; grid-template-columns: 18px 14px 1fr auto auto; gap: 6px;
+    align-items: center; padding: 3px 6px; border-radius: 6px; cursor: pointer;
+    min-height: 26px;
+  }
+  .row:hover { background: var(--panel-2); }
+  .row.selected { background: color-mix(in srgb, var(--accent) 18%, transparent); outline: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); }
+  /* Toggled on .node (row + children) so a filtered-out directory hides its subtree too. */
+  .node.hidden-by-filter { display: none; }
+  .twisty { width: 18px; height: 18px; display: grid; place-items: center; color: var(--muted); font-size: 10px; transition: transform .12s; }
+  .node.open > .row .twisty { transform: rotate(90deg); }
+  .twisty.leaf { visibility: hidden; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; }
+  .swatch.dir { border-radius: 2px; background: var(--muted); clip-path: polygon(0 20%, 40% 20%, 50% 0, 100% 0, 100% 100%, 0 100%); }
+  .label { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .label .desc { font-family: var(--sans); color: var(--muted); font-size: 12px; margin-left: 8px; }
+  .label mark { background: color-mix(in srgb, var(--test) 45%, transparent); color: inherit; border-radius: 2px; }
+  .meta-col { display: flex; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .meta-col .faces { display: inline-flex; }
+  .face {
+    width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center;
+    font-size: 9.5px; font-weight: 700; color: #0b1220; margin-left: -4px;
+    border: 1.5px solid var(--panel); letter-spacing: -.2px;
+  }
+  .face:first-child { margin-left: 0; }
+  .spark { display: inline-flex; gap: 1px; align-items: flex-end; height: 12px; }
+  .spark i { width: 3px; background: var(--accent); opacity: .7; border-radius: 1px; display: block; }
+  .children { margin-left: 15px; border-left: 1px solid var(--border); padding-left: 4px; display: none; }
+  .node.open > .children { display: block; }
+  .group-head { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .06em; padding: 6px 6px 2px 24px; }
+  .pick { width: 14px; height: 14px; accent-color: var(--accent); margin: 0; cursor: pointer; }
+  .row .pick { opacity: .35; }
+  .row:hover .pick, .row .pick:checked { opacity: 1; }
+
+  /* ---------- Detail / reviewer pane ---------- */
+  .tabs { display: flex; gap: 2px; }
+  .tabs button { border-radius: 6px 6px 0 0; border-bottom: none; background: transparent; color: var(--muted); }
+  .tabs button.active { background: var(--panel-2); color: var(--text); }
+  .pane { display: none; } .pane.active { display: block; }
+  h2 { font-size: 15px; margin: 14px 4px 6px; font-weight: 600; }
+  h3 { font-size: 12px; margin: 16px 4px 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 8px 4px; }
+  .card.soft { background: var(--panel-2); }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: 13px; }
+  .kv dt { color: var(--muted); } .kv dd { margin: 0; }
+  .owner-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--border); }
+  .owner-row:first-of-type { border-top: none; }
+  .owner-row .who { flex: 1; min-width: 0; }
+  .owner-row .who .email { font-family: var(--mono); font-size: 12.5px; }
+  .owner-row .who .why { color: var(--muted); font-size: 12px; }
+  .badge { font-size: 10.5px; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted); white-space: nowrap; }
+  .badge.active { color: var(--public); border-color: color-mix(in srgb, var(--public) 50%, transparent); }
+  .badge.noparent { color: var(--build); border-color: color-mix(in srgb, var(--build) 50%, transparent); }
+  .badge.perfile { color: var(--test); border-color: color-mix(in srgb, var(--test) 50%, transparent); }
+  .badge.inherit { color: var(--accent-2); border-color: color-mix(in srgb, var(--accent-2) 50%, transparent); }
+  .commit { display: grid; grid-template-columns: max-content minmax(0, 1fr) auto; gap: 10px; padding: 5px 0; border-top: 1px solid var(--border); font-size: 12.5px; align-items: baseline; }
+  .commit:first-child { border-top: none; }
+  .commit .h { font-family: var(--mono); color: var(--accent); white-space: nowrap; }
+  .commit .s { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .commit .a { color: var(--muted); white-space: nowrap; font-size: 11.5px; }
+  .bar { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; margin-top: 4px; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .people { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; font-size: 12.5px; align-items: center; }
+  .people .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .people .n small { color: var(--faint); }
+  .empty { color: var(--faint); font-style: italic; padding: 10px 4px; }
+
+  /* Expandable hot-spot rows */
+  details.hot { border-top: 1px solid var(--border); }
+  details.hot:first-child { border-top: none; }
+  details.hot > summary {
+    list-style: none; cursor: pointer; display: grid; grid-template-columns: 14px 1fr auto;
+    gap: 8px; align-items: center; padding: 6px 2px; font-size: 12.5px;
+  }
+  details.hot > summary::-webkit-details-marker { display: none; }
+  details.hot > summary .tw { color: var(--muted); font-size: 10px; transition: transform .12s; }
+  details.hot[open] > summary .tw { transform: rotate(90deg); }
+  details.hot > summary .n { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  details.hot > .why { padding: 2px 2px 10px 22px; font-size: 12.5px; }
+  details.hot > .why p { margin: 0 0 6px; }
+  details.hot > .why .facts { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+  details.hot > .why .commit { grid-template-columns: max-content minmax(0, 1fr) auto; font-size: 12px; }
+  .tag { font-size: 11px; padding: 1px 7px; border-radius: 4px; background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); white-space: nowrap; }
+  .tag.hi { color: var(--test); border-color: color-mix(in srgb, var(--test) 50%, transparent); }
+  pre.cmd {
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-family: var(--mono); font-size: 12px; white-space: pre-wrap; word-break: break-all; margin: 8px 0 0;
+    user-select: all;
+  }
+  .picked-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .picked-list .chip button { border: none; background: transparent; padding: 0 0 0 2px; color: var(--muted); line-height: 1; }
+  .warn { color: var(--test); font-size: 12.5px; }
+  /* "Pick one of" groups in the reviewer planner. */
+  .group { padding: 8px 0; }
+  .group.sep { border-top: 1px solid var(--border); }
+  .group-files { font-size: 12px; margin-bottom: 6px; }
+  .group-owners { display: flex; flex-wrap: wrap; gap: 6px; }
+  .owner-pill {
+    display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 4px;
+    border-radius: 999px; font-size: 12px; font-family: var(--mono); color: var(--text);
+    background: var(--panel-2); border: 1px solid var(--border); cursor: pointer;
+  }
+  .owner-pill:hover { border-color: var(--accent); }
+  .owner-pill.active { background: color-mix(in srgb, var(--accent) 18%, var(--panel-2)); border-color: var(--accent); }
+  .owner-pill.pinned { box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent); }
+  .owner-pill .face.sm { width: 16px; height: 16px; font-size: 8.5px; margin-left: 0; border-width: 1px; }
+  .owner-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--public); display: inline-block; }
+  .doc { color: var(--muted); font-size: 13px; border-left: 3px solid var(--border); padding-left: 10px; margin: 8px 0; }
+  .role-pill { font-size: 10.5px; padding: 1px 7px; border-radius: 999px; color: #0b1220; font-weight: 600; }
+  kbd { font: 11px var(--mono); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <button id="theme-toggle" type="button" title="Switch between light and dark (remembered in this browser)"><span class="icon"></span><span class="label"></span></button>
+  <div class="crumbs" id="crumbs"></div>
+  <div class="summary" id="summary" data-placeholder="No summary yet — the agent fills this in from the README, DIR_METADATA and recent commit history."></div>
+  <div class="stats" id="stats"></div>
+</header>
+<main>
+  <section id="tree-pane">
+    <div class="toolbar">
+      <input type="search" id="filter" placeholder="Filter files, dirs, owners… ( / )" autocomplete="off">
+      <button id="expand-all" title="Expand all">Expand</button>
+      <button id="collapse-all" title="Collapse all">Collapse</button>
+    </div>
+    <div class="legend">
+      <span class="public">public API</span><span class="header">header</span><span class="impl">impl</span>
+      <span class="test">test</span><span class="build">build</span><span class="docs">docs</span>
+      <span class="meta">OWNERS/metadata</span><span class="mojom">mojom</span><span class="webui">webui</span>
+    </div>
+    <div class="scroll" id="tree"></div>
+  </section>
+  <section id="detail-pane">
+    <div class="toolbar">
+      <div class="tabs">
+        <button data-tab="detail" class="active">Details</button>
+        <button data-tab="reviewers">Reviewers <span id="pick-count" class="badge" style="display:none"></span></button>
+        <button data-tab="activity">Activity</button>
+      </div>
+      <div class="grow"></div>
+      <span class="mono" style="color:var(--faint);font-size:11px" id="generated"></span>
+    </div>
+    <div class="scroll">
+      <div class="pane active" id="pane-detail"></div>
+      <div class="pane" id="pane-reviewers"></div>
+      <div class="pane" id="pane-activity"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const DATA = /*__CODEBASE_MAP_DATA__*/;
+</script>
+<script id="map-lib">
+// Pure helpers: no DOM, no DATA. codebase_map_test.py extracts this block by
+// its id and runs it under Node, so keep it self-contained.
+const MapLib = (() => {
+  'use strict';
+
+  // Paths of nodes that match `q` (name, description, doc comment or an
+  // owner) or have a matching descendant. `q` is matched case-insensitively.
+  function visiblePaths(tree, q) {
+    const needle = q.trim().toLowerCase();
+    const has = s => (s || '').toLowerCase().includes(needle);
+    const match = n =>
+      has(n.name) || has(n.description) || has(n.doc) || (n.owners || []).some(has);
+    const visible = new Set();
+    (function walk(n) {
+      let any = match(n);
+      for (const c of n.children || []) {
+        if (walk(c)) any = true;
+      }
+      if (any) visible.add(n.path);
+      return any;
+    })(tree);
+    return visible;
+  }
+
+  const ownerKey = f => [...f.owners].sort().join(',');
+
+  // Is `o` tagged #{LAST_RESORT_SUGGESTION} for file `f`? The tag is per
+  // file: someone can be last-resort through a parent OWNERS and a regular
+  // owner where a nearer OWNERS lists them.
+  const isLastResort = (f, o) => (f.last_resort || []).includes(o);
+
+  // Orders a file's owners for display: regular owners before last-resort
+  // ones, then by involvement.
+  const ownerOrder = (f, involvement) => (a, b) =>
+    (isLastResort(f, a) - isLastResort(f, b)) || involvement(b) - involvement(a);
+
+  // Files bucketed by identical owner set. Files in one bucket are
+  // interchangeable for approval purposes, so "pick one of" is well defined.
+  // A bucket's order and `lastResort` list come from its first file.
+  function ownerGroups(need, involvement) {
+    const groups = new Map();
+    for (const f of need) {
+      const k = ownerKey(f);
+      if (!groups.has(k)) {
+        const owners = [...f.owners].sort(ownerOrder(f, involvement));
+        const lastResort = owners.filter(o => isLastResort(f, o));
+        groups.set(k, {key: k, owners, lastResort, files: []});
+      }
+      groups.get(k).files.push(f);
+    }
+    return [...groups.values()].sort((a, b) => b.files.length - a.files.length);
+  }
+
+  // Suggests approvers for `files` (objects with `path`, `owners` and
+  // optionally `last_resort`). Each file needs one approver from its owner
+  // set. This is a greedy set cover: repeatedly take the owner who covers the
+  // most remaining files, breaking ties by `involvement(email)`. The result
+  // is small but not guaranteed minimal. `pinned` maps an owner-set key to an
+  // email the user chose for that group; pins are seeded first so a swap only
+  // re-plans what the pin doesn't already cover. Files with no owners or a
+  // `*` owner need nobody. An owner counts toward a file only where they are
+  // not last-resort for it; last-resort owners are taken once the files still
+  // uncovered have nobody else, as Gerrit does.
+  function planReviewers(files, pinned, involvement) {
+    const need = files.filter(f => f.owners.length && !f.owners.includes('*'));
+    const free = files.filter(f => !f.owners.length || f.owners.includes('*'));
+    const groups = ownerGroups(need, involvement);
+    const uncovered = new Set(need.map(f => f.path));
+    const chosen = [];
+    const take = (email, isPinned) => {
+      const covers = need
+        .filter(f => uncovered.has(f.path) && f.owners.includes(email))
+        .map(f => f.path);
+      if (!covers.length) return;
+      covers.forEach(p => uncovered.delete(p));
+      chosen.push({email, covers, pinned: isPinned});
+    };
+    for (const g of groups) {
+      if (pinned.has(g.key)) take(pinned.get(g.key), true);
+    }
+    // Owner -> number of uncovered files they could approve.
+    const tally = withLastResort => {
+      const score = new Map();
+      for (const f of need) {
+        if (!uncovered.has(f.path)) continue;
+        for (const o of f.owners) {
+          if (withLastResort || !isLastResort(f, o)) {
+            score.set(o, (score.get(o) || 0) + 1);
+          }
+        }
+      }
+      return score;
+    };
+    while (uncovered.size) {
+      let score = tally(false);
+      if (!score.size) score = tally(true);
+      if (!score.size) break;
+      const ranked = [...score.entries()].sort((a, b) =>
+        b[1] - a[1] || involvement(b[0]) - involvement(a[0]));
+      take(ranked[0][0], false);
+    }
+    return {need, free, groups, chosen};
+  }
+
+  // Maps a deep-link path to a repo-relative one. Links may give either a
+  // repo-relative path (`base/x.h`) or one relative to the mapped root
+  // (`x.h`). Requires a `/` after the root so that, with root `base`,
+  // `base_export.h` is read as `base/base_export.h`.
+  function resolvePath(root, p) {
+    if (p === root || p.startsWith(root + '/')) return p;
+    return p ? root + '/' + p : root;
+  }
+
+  // Can `email` approve node `n`? 'direct' = in the nearest OWNERS / per-file
+  // rule, 'inherited' = in a parent OWNERS further up the chain (still a
+  // valid approver, just a broader one), null = not an owner at all.
+  // `ownersFiles` maps an OWNERS path to its owner list. `owners_chain` only
+  // holds OWNERS files whose owners can approve `n`: it stops at a matching
+  // `per-file ... set noparent` rule. `inherited_owner_rules` are the
+  // matching per-file rules above the nearest owners.
+  function ownerStatus(n, email, ownersFiles) {
+    if (n.owners.includes(email)) return {kind: 'direct'};
+    for (const path of n.owners_chain || []) {
+      if ((ownersFiles?.[path] || []).includes(email)) {
+        return {kind: 'inherited', via: path};
+      }
+    }
+    for (const rule of n.inherited_owner_rules || []) {
+      if (rule.owners.includes(email)) return {kind: 'inherited', via: rule.source};
+    }
+    return null;
+  }
+
+  // "Watch out" notes for picked files: every matching per-file rule, any
+  // `set noparent` OWNERS other than the mapped root's own (the user already
+  // knows the root is self-contained), and includes that could not be read.
+  // Deduplicated, input order.
+  function ruleFlags(files, rootOwnersPath) {
+    const flags = [];
+    const seen = new Set();
+    const add = f => {
+      const key = f.file + '\n' + f.text;
+      if (!seen.has(key)) {
+        seen.add(key);
+        flags.push(f);
+      }
+    };
+    for (const f of files) {
+      for (const r of f.owner_rules || []) {
+        for (const u of r.unresolved || []) {
+          const text = `${r.source} includes ${u}, which could not be read — ` +
+            'its owners are missing from the suggestion';
+          add({file: f.path, text, noparent: false});
+        }
+        if (r.pattern) {
+          const extra = r.noparent ? ' — set noparent, only these owners can approve' : '';
+          const text = `matches per-file ${r.pattern} (${r.source})${extra}`;
+          add({file: f.path, text, noparent: r.noparent});
+        } else if (r.noparent && r.source !== rootOwnersPath) {
+          add({file: f.path, text: `${r.source} has set noparent`, noparent: true});
+        }
+      }
+    }
+    return flags;
+  }
+
+  // Per-directory count of picked files beneath it, for tri-state checkboxes.
+  // `parentOf(path)` returns the parent path or undefined at the root.
+  // O(picked × depth) instead of re-walking every directory's subtree.
+  function pickedCounts(picked, parentOf) {
+    const counts = new Map();
+    for (const p of picked) {
+      for (let d = parentOf(p); d !== undefined; d = parentOf(d)) {
+        counts.set(d, (counts.get(d) || 0) + 1);
+      }
+    }
+    return counts;
+  }
+
+  return {
+    visiblePaths, ownerKey, ownerGroups, planReviewers, resolvePath,
+    ownerStatus, ruleFlags, pickedCounts,
+  };
+})();
+</script>
+<script>
+(() => {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+  const el = (tag, attrs = {}, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === 'class') {
+        n.className = v;
+      } else if (k.startsWith('on')) {
+        n.addEventListener(k.slice(2), v);
+      } else if (v !== null && v !== undefined && v !== false) {
+        n.setAttribute(k, v === true ? '' : v);
+      }
+    }
+    for (const k of kids.flat()) {
+      if (k === null || k === undefined) continue;
+      n.append(k.nodeType ? k : document.createTextNode(String(k)));
+    }
+    return n;
+  };
+  const fmt = n => {
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+    return String(n);
+  };
+  const ROLE_ORDER = [
+    'public', 'header', 'impl', 'mojom', 'webui', 'test', 'build', 'docs', 'meta',
+    'script', 'other',
+  ];
+  const ROLE_LABEL = {
+    public: 'Public API',
+    header: 'Headers',
+    impl: 'Implementation',
+    mojom: 'Mojom',
+    webui: 'WebUI',
+    test: 'Tests',
+    build: 'Build',
+    docs: 'Docs',
+    meta: 'OWNERS / metadata',
+    script: 'Scripts',
+    other: 'Other',
+  };
+  const TABS = ['detail', 'reviewers', 'activity'];
+
+  // --------------------------------------------------------------- Indexing
+  const byPath = new Map();
+  const parentOf = new Map();
+  (function walk(n, p) {
+    byPath.set(n.path, n);
+    if (p) parentOf.set(n.path, p);
+    (n.children || []).forEach(c => walk(c, n));
+  })(DATA.tree, null);
+  const people = new Map(DATA.people.map(p => [p.email, p]));
+  const handle = e => (e || '').split('@')[0];
+  const nameFor = e => people.get(e)?.name || handle(e);
+  const initials = e => {
+    const n = nameFor(e);
+    const parts = n.split(/\s+/);
+    const letters = parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : n.slice(0, 2);
+    return letters.toUpperCase();
+  };
+  const hue = s => {
+    let h = 0;
+    for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    return h % 360;
+  };
+  const faceColor = e => `hsl(${hue(e)} 55% 70%)`;
+  const commitsOf = e => people.get(e)?.commits || 0;
+  const reviewsOf = e => people.get(e)?.reviews || 0;
+  const isActive = e => commitsOf(e) + reviewsOf(e) > 0;
+  const since = DATA.since.replace('.', ' ');
+  const roleColor = r => `var(--${r === 'dir' ? 'other' : r})`;
+  const CS = p => `https://source.chromium.org/chromium/chromium/src/+/main:${p}`;
+  // Hashes are full-length in the data; crrev needs that to avoid treating
+  // an all-digit abbreviation as a commit position. Shorten for display only.
+  const CRREV = h => `https://crrev.com/${h}`;
+  const shortHash = h => h.slice(0, 9);
+  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const displayName = n => n.name + (n.type === 'dir' ? '/' : '');
+  const avatar = (email, style = '') =>
+    el('span', {class: 'face', style: `background:${faceColor(email)};${style}`}, initials(email));
+
+  // "83 reviews · 1 commit" style badge summarising someone's involvement in
+  // this directory. Reviews first: that's the number that says whether they
+  // actually look at CLs here.
+  function activityBadge(email, opts = {}) {
+    const c = commitsOf(email);
+    const r = reviewsOf(email);
+    if (!c && !r) {
+      const title = opts.idleTitle || `No commits or reviews here in the last ${since}.`;
+      return el('span', {class: 'badge', title}, opts.idleLabel || 'quiet');
+    }
+    const parts = [];
+    if (r) parts.push(plural(r, 'review'));
+    if (c) parts.push(plural(c, 'commit'));
+    const title = `In the last ${since}: ${parts.join(', ')}`;
+    return el('span', {class: 'badge active', title}, parts.join(' · '));
+  }
+  function personCell(email, ...extra) {
+    return el('div', {}, avatar(email, 'margin-right:6px'), nameFor(email), ...extra);
+  }
+  // Can `email` approve `n`? See MapLib.ownerStatus.
+  const ownerStatus = (n, email) => MapLib.ownerStatus(n, email, DATA.owners_files);
+  function ownerBadge(n, email) {
+    const s = ownerStatus(n, email);
+    const style = 'margin-left:6px';
+    if (!s) {
+      const title = 'Reviews CLs here but is not in any applicable OWNERS — ' +
+        'a good second pair of eyes, not the approving LGTM.';
+      return el('span', {class: 'badge', style, title}, 'not an owner');
+    }
+    if (s.kind === 'direct') {
+      const title = 'Listed in the nearest OWNERS that applies here';
+      return el('span', {class: 'badge active', style, title}, 'owner');
+    }
+    const label = 'owner via ' + s.via.replace(/\/OWNERS$/, '/');
+    return el('span', {class: 'badge inherit', style, title: `Can approve via ${s.via}`}, label);
+  }
+
+  // --------------------------------------------------------------- Header
+  function renderHeader() {
+    const parts = DATA.root.split('/');
+    const crumbs = parts.map((p, i) =>
+      i === parts.length - 1 ? el('b', {}, p) : el('span', {}, p + '/'));
+    const csLink = el('a', {
+      href: CS(DATA.root),
+      target: '_blank',
+      style: 'font-size:12px;margin-left:8px',
+    }, 'codesearch ↗');
+    $('#crumbs').replaceChildren(el('span', {}, '//'), ...crumbs, '  ', csLink);
+    $('#summary').textContent = DATA.summary || '';
+    const s = DATA.stats;
+    const stat = (value, label, title) =>
+      el('span', title ? {title} : {}, el('b', {}, fmt(value)), label);
+    const reviewersTitle = 'People who appear in a Reviewed-by: trailer on a commit here';
+    $('#stats').replaceChildren(
+      stat(s.files, ' files'),
+      stat(s.dirs, ' dirs'),
+      stat(s.loc, ' lines'),
+      stat(s.commits, ` commits in last ${since}`),
+      stat(s.contributors, ' authors'),
+      s.reviewers ? stat(s.reviewers, ' reviewers', reviewersTitle) : null,
+    );
+    const generated = DATA.generated_at.slice(0, 16).replace('T', ' ');
+    $('#generated').textContent = `generated ${generated}`;
+  }
+
+  // --------------------------------------------------------------- Tree
+  const picked = new Set();
+  let selected = null;
+  let openHot = null;  // hot-spot row to expand on first render (from #hot=)
+
+  // A single bar per node, scaled so that a node with a sixth of the root's
+  // commits (or more) is full height.
+  function sparkline(n) {
+    const c = n.activity.commits;
+    if (!c) return null;
+    const max = Math.max(1, DATA.tree.activity.commits / 6);
+    const h = Math.max(2, Math.min(12, Math.round(12 * c / max)));
+    const title = `${c} commits in the last ${since}`;
+    return el('span', {class: 'spark', title}, el('i', {style: `height:${h}px`}));
+  }
+  function faces(owners, max = 3) {
+    const wrap = el('span', {class: 'faces'});
+    for (const o of owners.slice(0, max)) {
+      const face = avatar(o);
+      face.title = o;
+      wrap.append(face);
+    }
+    if (owners.length > max) {
+      wrap.append(el('span', {
+        class: 'face',
+        style: 'background:var(--border);color:var(--muted)',
+        title: owners.slice(max).join('\n'),
+      }, '+' + (owners.length - max)));
+    }
+    return wrap;
+  }
+
+  function renderNode(n, depth) {
+    const isDir = n.type === 'dir';
+    const nodeClass = 'node' + (isDir && depth === 0 ? ' open' : '');
+    const node = el('div', {class: nodeClass, 'data-path': n.path});
+    const row = el('div', {class: 'row', 'data-path': n.path});
+    row.append(el('span', {class: 'twisty' + (isDir ? '' : ' leaf')}, '▶'));
+    row.append(el('span', {
+      class: 'swatch' + (isDir ? ' dir' : ''),
+      style: isDir ? '' : `background:${roleColor(n.role)}`,
+    }));
+    const label = el('span', {class: 'label'}, el('span', {class: 'nm'}, displayName(n)));
+    if (n.description) {
+      label.append(el('span', {class: 'desc'}, '— ' + n.description));
+    } else if (n.doc) {
+      const short = n.doc.slice(0, 90) + (n.doc.length > 90 ? '…' : '');
+      label.append(el('span', {class: 'desc', title: n.doc}, '— ' + short));
+    }
+    row.append(label);
+    const meta = el('span', {class: 'meta-col'});
+    if (isDir) meta.append(el('span', {title: 'files'}, n.file_count + ' f'));
+    meta.append(el('span', {title: 'lines'}, fmt(n.loc)));
+    const sp = sparkline(n);
+    if (sp) meta.append(sp);
+    // Only show faces where owners differ from the parent (an OWNERS boundary
+    // or a per-file rule).
+    const p = parentOf.get(n.path);
+    const differs = !p || JSON.stringify(p.owners) !== JSON.stringify(n.owners);
+    if (differs && n.owners.length) meta.append(faces(n.owners));
+    row.append(meta);
+    const pick = el('input', {
+      type: 'checkbox',
+      class: 'pick',
+      title: isDir ?
+        'Add all files in this directory to the CL reviewer picker' :
+        'I will touch this file',
+      onclick: ev => {
+        ev.stopPropagation();
+        togglePick(n, pick.checked);
+      },
+    });
+    row.append(pick);
+    row.addEventListener('click', ev => {
+      if (ev.target === pick) return;
+      select(n);
+      const wantsToggle =
+        ev.target.closest('.twisty') || ev.detail === 2 || !node.classList.contains('open');
+      if (isDir && wantsToggle) setOpen(node, !node.classList.contains('open'));
+    });
+    node.append(row);
+    if (isDir) {
+      // Children are built on first open (see setOpen), so a large directory
+      // costs one row per *visible* node rather than one per file up front.
+      node.append(el('div', {class: 'children'}));
+      childBuilders.set(node, () => buildChildren(n, depth));
+      if (depth === 0) setOpen(node, true);
+    }
+    return node;
+  }
+
+  // Directory element -> function that builds its children, until first open.
+  const childBuilders = new WeakMap();
+
+  function buildChildren(n, depth) {
+    const kids = [];
+    const dirs = n.children.filter(c => c.type === 'dir');
+    const files = n.children.filter(c => c.type === 'file');
+    dirs.forEach(c => kids.push(renderNode(c, depth + 1)));
+    // Group files by role, in a stable, meaningful order.
+    const groups = new Map();
+    for (const f of files) {
+      if (!groups.has(f.role)) groups.set(f.role, []);
+      groups.get(f.role).push(f);
+    }
+    for (const role of ROLE_ORDER) {
+      const list = groups.get(role);
+      if (!list) continue;
+      if (files.length > 12) {
+        const head = `${ROLE_LABEL[role]} · ${list.length}`;
+        kids.push(el('div', {class: 'group-head', 'data-group': role}, head));
+      }
+      list.forEach(c => kids.push(renderNode(c, depth + 1)));
+    }
+    return kids;
+  }
+
+  // Opens or closes a directory element, building its children on first open.
+  function setOpen(node, open) {
+    // Set the class first: the filter pass below re-enters via the node and
+    // only descends into directories that are already open.
+    node.classList.toggle('open', open);
+    const build = open && childBuilders.get(node);
+    if (!build) return;
+    childBuilders.delete(node);
+    const container = node.querySelector(':scope > .children');
+    container.append(...build());
+    syncPickBoxes(container);
+    const q = filterQuery();
+    if (q) applyFilterWithin(node, q);
+  }
+
+  // The tree element for `path`, opening its ancestors so it exists.
+  function nodeEl(path) {
+    const chain = [];
+    for (let p = parentOf.get(path); p; p = parentOf.get(p.path)) chain.unshift(p);
+    for (const p of chain) {
+      const elp = $(`#tree .node[data-path="${CSS.escape(p.path)}"]`);
+      if (elp) setOpen(elp, true);
+    }
+    return $(`#tree .node[data-path="${CSS.escape(path)}"]`);
+  }
+
+  function renderTree() {
+    $('#tree').replaceChildren(renderNode(DATA.tree, 0));
+    // Auto-open first level dirs if the tree is small.
+    if (DATA.stats.dirs <= 12) {
+      $('#tree')
+        .querySelectorAll(':scope > .node > .children > .node')
+        .forEach(n => {
+          if (byPath.get(n.dataset.path).type === 'dir') setOpen(n, true);
+        });
+    }
+  }
+
+  // --------------------------------------------------------------- Filter
+  // Renders `text` into `nm`, wrapping the first occurrence of `q` in <mark>.
+  function highlight(nm, text, q) {
+    const i = q ? text.toLowerCase().indexOf(q) : -1;
+    if (i < 0) {
+      nm.textContent = text;
+      return;
+    }
+    const hit = el('mark', {}, text.slice(i, i + q.length));
+    nm.replaceChildren(text.slice(0, i), hit, text.slice(i + q.length));
+  }
+
+  const filterQuery = () => $('#filter').value.trim().toLowerCase();
+  let visibleForQuery = {q: '', paths: null};
+
+  // Applies the current filter to `root` and its built descendants. Matching
+  // directories are opened, which builds (and so filters) their children.
+  function applyFilterWithin(root, q) {
+    if (visibleForQuery.q !== q) {
+      visibleForQuery = {q, paths: q ? MapLib.visiblePaths(DATA.tree, q) : null};
+    }
+    const visible = visibleForQuery.paths;
+    const visit = elNode => {
+      const n = byPath.get(elNode.dataset.path);
+      const show = !visible || visible.has(n.path);
+      elNode.classList.toggle('hidden-by-filter', !show);
+      highlight(elNode.querySelector(':scope > .row .nm'), displayName(n), q);
+      if (n.type !== 'dir') return;
+      if (q && show && !elNode.classList.contains('open')) {
+        // Opening a directory for the first time builds its children and
+        // filters them (setOpen re-enters here). One that was opened and
+        // collapsed earlier already has its rows, which still show whatever
+        // the previous filter left, so fall through and visit them.
+        const firstOpen = childBuilders.has(elNode);
+        setOpen(elNode, true);
+        if (firstOpen) return;
+      }
+      elNode.querySelectorAll(':scope > .children > .node').forEach(visit);
+    };
+    visit(root);
+  }
+
+  function applyFilter() {
+    const q = filterQuery();
+    applyFilterWithin($('#tree > .node'), q);
+    // Role headings would sit above hidden rows, so drop them while filtering.
+    $('#tree').querySelectorAll('.group-head').forEach(g => {
+      g.style.display = q ? 'none' : '';
+    });
+  }
+
+  // Typing re-filters at most every 120 ms rather than on every keystroke.
+  let filterTimer = 0;
+  function applyFilterSoon() {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(applyFilter, 120);
+  }
+
+  // --------------------------------------------------------------- Detail
+  function select(n) {
+    selected = n;
+    $('#tree').querySelectorAll('.row.selected').forEach(r => r.classList.remove('selected'));
+    $(`#tree .row[data-path="${CSS.escape(n.path)}"]`)?.classList.add('selected');
+    // The Reviewers tab is per-node too, so stay on it if that's where the user is.
+    const onReviewers = $('.tabs button.active')?.dataset.tab === 'reviewers';
+    renderDetail(n);
+    showTab(onReviewers ? 'reviewers' : 'detail');
+  }
+
+  function ownerList(owners, rulesFor) {
+    if (!owners.length) {
+      return el('div', {class: 'empty'}, 'No OWNERS found (approval falls to top-level owners).');
+    }
+    const idleTitle = `Listed in OWNERS but no commits or reviews here in the last ${since}.`;
+    return el('div', {}, ...owners.map(o => {
+      const why = rulesFor(o);
+      const literal = o === '*';
+      const email = el('div', {class: 'email'},
+        literal ? o : nameFor(o) + ' ',
+        el('span', {style: 'color:var(--muted)'}, o.includes('@') ? `<${o}>` : ''));
+      const copy = () => navigator.clipboard?.writeText(o);
+      return el('div', {class: 'owner-row'},
+        avatar(o),
+        el('span', {class: 'who'}, email, why ? el('div', {class: 'why'}, why) : null),
+        activityBadge(o, {idleLabel: 'owner', idleTitle}),
+        el('button', {title: 'Copy email', onclick: copy}, '⧉'));
+    }));
+  }
+
+  function dirOwnersCard(n) {
+    const chain = n.owners_chain || [];
+    const of = n.owners_file;
+    const card = el('div', {class: 'card'});
+    if (of) {
+      const noparentTitle = 'set noparent: parent OWNERS do not apply';
+      card.append(el('div', {
+        style: 'display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap',
+      },
+      el('span', {class: 'mono', style: 'color:var(--muted)'}, of.path),
+      of.noparent ?
+        el('span', {class: 'badge noparent', title: noparentTitle}, 'set noparent') :
+        null,
+      ...of.includes.map(i =>
+        el('span', {class: 'badge inherit', title: 'included via file://'}, 'file://' + i)),
+      ...(of.unresolved || []).map(u => el('span', {
+        class: 'badge noparent',
+        title: 'This include could not be read (missing, or nested too deeply), ' +
+          'so its owners are not listed here',
+      }, 'unresolved ' + u))));
+    }
+    // Directory owners use the nearest OWNERS that lists people, the same rule
+    // as files, so say where they came from when it isn't this directory.
+    if (n.owners_source && n.owners_source !== of?.path) {
+      const why = of ?
+        `${of.path} lists no one directly — approvers come from ` :
+        'No OWNERS file here — inherits from ';
+      card.append(el('div', {style: 'color:var(--muted);font-size:12.5px;margin-bottom:6px'},
+        why, el('span', {class: 'mono'}, n.owners_source)));
+    }
+    card.append(ownerList(n.owners, o => of?.comments?.[o] || ''));
+    if (of && of.per_file.length) {
+      card.append(el('h3', {style: 'margin-top:12px'}, 'Per-file rules'));
+      for (const pf of of.per_file) {
+        card.append(el('div', {style: 'padding:4px 0;font-size:12.5px'},
+          el('span', {class: 'badge perfile'}, pf.pattern), ' ',
+          pf.noparent ? el('span', {class: 'badge noparent'}, 'set noparent') : null, ' ',
+          el('span', {class: 'mono'}, pf.owners.map(handle).join(', ')),
+          pf.comment ? el('div', {style: 'color:var(--muted)'}, pf.comment) : null));
+      }
+    }
+    if (chain.length > 1) {
+      const links = chain.map((c, i) => el('span', {class: 'mono'}, (i ? ' ← ' : '') + c));
+      card.append(el('div', {style: 'margin-top:10px;font-size:12px;color:var(--muted)'},
+        'Inheritance: ', links));
+    }
+    return card;
+  }
+
+  function fileOwnersCard(n) {
+    const card = el('div', {class: 'card'});
+    card.append(ownerList(n.owners, o => {
+      const r = (n.owner_rules || []).find(r => r.owners.includes(o));
+      if (!r) return '';
+      if (!r.pattern) return `from ${r.source}`;
+      return `per-file ${r.pattern} in ${r.source}${r.noparent ? ' (set noparent)' : ''}`;
+    }));
+    const isPicked = picked.has(n.path);
+    const toggle = () => {
+      togglePick(n, !isPicked);
+      renderDetail(n);
+    };
+    const button = el('button', {class: isPicked ? '' : 'primary', onclick: toggle},
+      isPicked ? 'Remove from CL' : '+ I will touch this file');
+    card.append(el('div', {style: 'margin-top:10px'}, button));
+    return card;
+  }
+
+  function recentPeopleCard(n) {
+    const act = n.activity;
+    const max = act.authors[0].commits;
+    const rows = act.authors.flatMap(a => [
+      personCell(a.email,
+        n.owners.includes(a.email) ?
+          el('span', {class: 'badge', style: 'margin-left:6px'}, 'owner') :
+          null,
+        el('div', {class: 'bar'}, el('i', {style: `width:${100 * a.commits / max}%`}))),
+      el('div', {class: 'n'}, plural(a.commits, 'commit')),
+    ]);
+    const card = el('div', {class: 'card'}, el('div', {class: 'people'}, ...rows));
+    if (act.reviewers.length) {
+      const top = act.reviewers.slice(0, 3).flatMap((r, i) => [
+        i ? ', ' : '',
+        el('b', {style: 'font-weight:600;color:var(--text)'}, handle(r.email)),
+        ` (${r.reviews})`,
+      ]);
+      const link = el('a', {
+        href: '#',
+        onclick: ev => {
+          ev.preventDefault();
+          showTab('reviewers');
+        },
+      }, 'Reviewers tab');
+      card.append(el('div', {style: 'margin-top:8px;font-size:12px;color:var(--muted)'},
+        'Most reviewed by ', ...top, ' — see the ', link, '.'));
+    }
+    return card;
+  }
+
+  function renderDetail(n) {
+    const pane = $('#pane-detail');
+    const isDir = n.type === 'dir';
+    const act = n.activity;
+    const kids = [];
+    const rolePill = isDir ? null : el('span', {
+      class: 'role-pill',
+      style: `background:${roleColor(n.role)}`,
+    }, ROLE_LABEL[n.role] || n.role);
+    const csLink = el('a', {
+      href: CS(n.path),
+      target: '_blank',
+      style: 'font-size:12px;font-weight:400',
+    }, 'codesearch ↗');
+    kids.push(el('h2', {},
+      el('span', {class: 'mono'}, n.path + (isDir ? '/' : '')), ' ', rolePill, ' ', csLink));
+
+    // Description / docs
+    const descCard = el('div', {class: 'card'});
+    const description = n.description || (n === DATA.tree ? DATA.summary : '');
+    if (description) {
+      descCard.append(el('div', {}, description));
+    } else {
+      const text = isDir ?
+        'No agent summary for this directory yet.' :
+        'No agent summary for this file yet.';
+      descCard.append(el('div', {style: 'color:var(--faint);font-style:italic'}, text));
+    }
+    if (n === DATA.tree && (DATA.highlights || []).length) {
+      const items = DATA.highlights.map(h => el('li', {}, h));
+      descCard.append(el('ul', {style: 'margin:8px 0 0;padding-left:18px'}, ...items));
+    }
+    if (n.readme) {
+      descCard.append(el('div', {class: 'doc', title: 'From README.md'}, n.readme));
+    }
+    if (n.doc) {
+      descCard.append(el('div', {class: 'doc', title: 'Leading comment from the header'}, n.doc));
+    }
+    kids.push(descCard);
+
+    // Facts
+    const dl = el('dl', {class: 'kv'});
+    const addKV = (k, v) => {
+      if (v !== null && v !== undefined && v !== '') dl.append(el('dt', {}, k), el('dd', {}, v));
+    };
+    if (isDir) {
+      addKV('Files', `${n.file_count} (${fmt(n.loc)} lines)`);
+    } else {
+      addKV('Lines', fmt(n.loc));
+    }
+    addKV('Recent commits', act.commits ?
+      `${act.commits} in the last ${since} · last ${act.last}` :
+      'none in window');
+    const md = n.dir_metadata;
+    if (md) {
+      const comp = n.component;
+      const team = md.team_email;
+      addKV('Component', comp ? el('span', {class: 'mono'}, String(comp)) : null);
+      addKV('Team', team ? el('a', {href: `mailto:${team}`}, team) : null);
+      addKV('OS', Array.isArray(md.os) ? md.os.join(', ') : md.os);
+      const source = n.dir_metadata_source;
+      const inherited = source && source !== n.path + '/DIR_METADATA';
+      addKV('Metadata from', inherited ? el('span', {class: 'mono'}, source) : null);
+    }
+    kids.push(el('div', {class: 'card'}, dl));
+
+    // Owners
+    kids.push(el('h3', {}, 'Who can approve'));
+    kids.push(isDir ? dirOwnersCard(n) : fileOwnersCard(n));
+
+    // Recent people
+    if (act.authors.length) {
+      kids.push(el('h3', {}, 'Recently active here'));
+      kids.push(recentPeopleCard(n));
+    }
+
+    // Children overview for dirs
+    if (isDir && n.children.length) {
+      kids.push(el('h3', {}, 'Contents'));
+      const counts = {};
+      for (const c of n.children) {
+        const key = c.type === 'dir' ? 'dir' : c.role;
+        counts[key] = (counts[key] || 0) + 1;
+      }
+      const chips = Object.entries(counts).map(([r, c]) => el('span', {class: 'chip'},
+        el('span', {class: 'dot', style: `background:${roleColor(r)}`}),
+        `${c} ${r === 'dir' ? 'subdirs' : ROLE_LABEL[r]}`));
+      kids.push(el('div', {class: 'card', style: 'display:flex;flex-wrap:wrap;gap:6px'}, ...chips));
+    }
+    pane.replaceChildren(...kids);
+  }
+
+  // --------------------------------------------------------------- Reviewer picker
+  function togglePick(n, on) {
+    for (const f of allFiles(n)) {
+      if (on) {
+        picked.add(f.path);
+      } else {
+        picked.delete(f.path);
+      }
+    }
+    syncPickBoxes();
+    renderReviewers();
+  }
+  function allFiles(n) {
+    return n.type === 'file' ? [n] : n.children.flatMap(allFiles);
+  }
+  // Updates checkboxes for the built rows under `scope` (default: all).
+  function syncPickBoxes(scope = $('#tree')) {
+    const counts = MapLib.pickedCounts(picked, p => parentOf.get(p)?.path);
+    scope.querySelectorAll('.row').forEach(r => {
+      const n = byPath.get(r.dataset.path);
+      const box = r.querySelector('.pick');
+      if (n.type === 'file') {
+        box.checked = picked.has(n.path);
+        return;
+      }
+      const k = counts.get(n.path) || 0;
+      box.checked = k > 0 && k === n.file_count;
+      box.indeterminate = k > 0 && k < n.file_count;
+    });
+    const pc = $('#pick-count');
+    pc.textContent = picked.size;
+    pc.style.display = picked.size ? '' : 'none';
+  }
+
+  // Reviews count double: someone who approves CLs here is a better bet than
+  // someone who only lands them.
+  const involvement = e => 2 * reviewsOf(e) + commitsOf(e);
+
+  // Owner-set key -> email the user pinned for that group (see MapLib.ownerGroups).
+  const pinned = new Map();
+
+  function computeReviewers() {
+    const files = [...picked].map(p => byPath.get(p)).filter(Boolean);
+    const {need, free, groups, chosen} =
+      MapLib.planReviewers(files, pinned, involvement);
+    const flags = MapLib.ruleFlags(need, DATA.tree.owners_file?.path);
+    return {files, chosen, groups, flags, free};
+  }
+
+  // "Who reviews here" for a node: top Reviewed-by: names on commits touching it,
+  // flagged by whether they can actually approve (owner) or just tend to look.
+  function reviewersCard(n) {
+    const card = el('div', {class: 'card'});
+    const list = n.activity.reviewers || [];
+    if (!list.length) {
+      const text = `No Reviewed-by: trailers on commits here in the last ${since}.`;
+      card.append(el('div', {class: 'empty'}, text));
+      return card;
+    }
+    const max = list[0].reviews;
+    card.append(el('div', {class: 'people'}, ...list.flatMap(r => [
+      personCell(r.email,
+        ownerBadge(n, r.email),
+        el('div', {class: 'bar'}, el('i', {style: `width:${100 * r.reviews / max}%`}))),
+      el('div', {class: 'n'},
+        plural(r.reviews, 'review'), ' ',
+        el('small', {}, `· ${plural(commitsOf(r.email), 'commit')}`)),
+    ])));
+    card.append(el('div', {style: 'margin-top:8px;font-size:12px;color:var(--muted)'},
+      'From Reviewed-by: trailers on the ', plural(n.activity.commits, 'commit'), ' touching ',
+      el('span', {class: 'mono'}, displayName(n)), ` in the last ${since}.`));
+    return card;
+  }
+
+  function suggestedCard(files, chosen, free) {
+    const card = el('div', {class: 'card'});
+    if (!chosen.length) {
+      card.append(el('div', {class: 'empty'}, 'No OWNERS constraints — any committer can review.'));
+    }
+    const idleTitle =
+      'No commits or reviews in this directory in the activity window; still a valid approver.';
+    for (const c of chosen) {
+      const names = c.covers.map(p => p.split('/').pop());
+      const more = c.covers.length > 4 ? '…' : '';
+      const covers = `covers ${c.covers.length} of ${files.length}: ` +
+        names.slice(0, 4).join(', ') + more;
+      const pinBadge = c.pinned ? el('span', {
+        class: 'badge',
+        title: 'You picked this person below',
+        style: 'margin-left:6px',
+      }, 'your pick') : null;
+      card.append(el('div', {class: 'owner-row'},
+        avatar(c.email),
+        el('span', {class: 'who'},
+          el('div', {class: 'email'},
+            nameFor(c.email), ' ',
+            el('span', {style: 'color:var(--muted)'}, `<${c.email}>`),
+            pinBadge),
+          el('div', {class: 'why'}, covers)),
+        activityBadge(c.email, {idleTitle})));
+    }
+    if (free.length) {
+      const text = `${free.length} file(s) have no specific owner constraint.`;
+      card.append(el('div', {style: 'margin-top:8px;color:var(--muted);font-size:12.5px'}, text));
+    }
+    return card;
+  }
+
+  // Per owner-set group: the files, and every owner who could sign them off.
+  // Clicking an owner pins them for that group; the suggestion re-plans around it.
+  function groupsCard(groups, chosen) {
+    const chosenSet = new Set(chosen.map(c => c.email));
+    const card = el('div', {class: 'card'});
+    groups.forEach((g, gi) => {
+      const pin = pinned.get(g.key);
+      const names = g.files.map(f => f.name);
+      const more = names.length > 5 ?
+        el('span', {style: 'color:var(--muted)'}, ` +${names.length - 5} more`) :
+        null;
+      const filesRow = el('div', {
+        class: 'group-files mono',
+        title: g.files.map(f => f.path).join('\n'),
+      }, names.slice(0, 5).join(', '), more);
+      const pills = g.owners.map(o => {
+        const active = chosenSet.has(o);
+        const title = `${o}\n${plural(reviewsOf(o), 'review')}, ` +
+          `${plural(commitsOf(o), 'commit')} here in the last ${since}` +
+          (g.lastResort.includes(o) ? '\nOWNERS marks them #{LAST_RESORT_SUGGESTION}' : '') +
+          (active ? '\n(currently in the suggested set)' : '\nClick to use instead');
+        const onclick = () => {
+          if (pin === o) {
+            pinned.delete(g.key);
+          } else {
+            pinned.set(g.key, o);
+          }
+          renderReviewers();
+        };
+        const cls = 'owner-pill' + (active ? ' active' : '') + (pin === o ? ' pinned' : '');
+        const face = el('span', {class: 'face sm', style: `background:${faceColor(o)}`}, initials(o));
+        const dot = isActive(o) ? el('span', {class: 'dot', title: 'active here'}) : null;
+        return el('button', {class: cls, title, onclick}, face, handle(o), dot);
+      });
+      card.append(el('div', {class: 'group' + (gi ? ' sep' : '')},
+        filesRow, el('div', {class: 'group-owners'}, ...pills)));
+    });
+    card.append(el('div', {style: 'margin-top:8px;font-size:12px;color:var(--muted)'},
+      'Files are grouped by identical approver set; anyone in a group\u2019s list can approve ' +
+      'all of its files. Highlighted = in the suggested set; click another to swap.'));
+    return card;
+  }
+
+  function renderReviewers() {
+    const pane = $('#pane-reviewers');
+    const kids = [];
+    const n = selected || DATA.tree;
+
+    kids.push(el('h3', {}, 'Who reviews here'));
+    const label = n === DATA.tree ?
+      n.name + '/' :
+      n.path.slice(DATA.root.length + 1) + (n.type === 'dir' ? '/' : '');
+    const wholeDir = el('a', {
+      href: '#',
+      onclick: ev => {
+        ev.preventDefault();
+        select(DATA.tree);
+        showTab('reviewers');
+      },
+    }, 'whole directory');
+    kids.push(el('div', {style: 'margin:0 4px 6px;font-size:12.5px;color:var(--muted)'},
+      'For ', el('span', {class: 'mono', style: 'color:var(--text)'}, label),
+      n !== DATA.tree ?
+        el('span', {}, ' · ', wholeDir) :
+        ' (select a file or subdirectory in the tree to narrow this)'));
+    kids.push(reviewersCard(n));
+
+    if (!picked.size) {
+      kids.push(el('h3', {}, 'Plan reviewers for a CL'));
+      kids.push(el('div', {class: 'card soft'}, el('div', {style: 'color:var(--muted)'},
+        'Tick the checkbox next to each file (or directory) you expect to touch. This panel ' +
+        'suggests a small set of OWNERS that can approve all of them, calls out per-file and ',
+        el('code', {}, 'set noparent'),
+        ' rules, and prefers owners who actually review and land code here.')));
+      pane.replaceChildren(...kids);
+      return;
+    }
+    const {files, chosen, groups, flags, free} = computeReviewers();
+    kids.push(el('h2', {}, `${plural(files.length, 'file')} in this CL`));
+    const chips = files.map(f => el('span', {class: 'chip mono', title: f.path},
+      f.name,
+      el('button', {title: 'remove', onclick: () => togglePick(f, false)}, '×')));
+    const clear = () => {
+      picked.clear();
+      pinned.clear();
+      syncPickBoxes();
+      renderReviewers();
+    };
+    const reset = () => {
+      pinned.clear();
+      renderReviewers();
+    };
+    kids.push(el('div', {class: 'card'},
+      el('div', {class: 'picked-list'}, ...chips),
+      el('div', {style: 'margin-top:8px;display:flex;gap:8px'},
+        el('button', {onclick: clear}, 'Clear'),
+        pinned.size ? el('button', {onclick: reset}, 'Reset choices') : null)));
+
+    kids.push(el('h3', {}, 'Suggested reviewers'));
+    kids.push(suggestedCard(files, chosen, free));
+
+    if (groups.length) {
+      const title = groups.length === 1 ?
+        'Pick one of' :
+        `Pick one of, per group (${groups.length})`;
+      kids.push(el('h3', {}, title));
+      kids.push(groupsCard(groups, chosen));
+    }
+
+    if (flags.length) {
+      kids.push(el('h3', {}, 'Watch out'));
+      const rows = flags.map(f => el('div', {class: 'warn', style: 'padding:3px 0'},
+        f.noparent ? '⛔ ' : '⚠ ',
+        el('span', {class: 'mono'}, f.file.split('/').pop()), ' ', f.text));
+      kids.push(el('div', {class: 'card'}, ...rows));
+    }
+
+    kids.push(el('h3', {}, 'Copy into your CL'));
+    const emails = chosen.map(c => c.email).filter(e => e.includes('@'));
+    const copyEmails = () => navigator.clipboard?.writeText(emails.join(', '));
+    const copyFiles = () => navigator.clipboard?.writeText(files.map(f => f.path).join('\n'));
+    kids.push(el('div', {class: 'card'},
+      el('div', {style: 'color:var(--muted);font-size:12.5px'},
+        'Reviewer line for the CL description, or pass to ',
+        el('code', {}, 'git cl upload -r'), ':'),
+      el('pre', {class: 'cmd'}, `R=${emails.join(', ')}`),
+      el('pre', {class: 'cmd'}, `git cl upload -r ${emails.join(',')}`),
+      el('div', {style: 'margin-top:8px;display:flex;gap:8px'},
+        el('button', {class: 'primary', onclick: copyEmails}, 'Copy emails'),
+        el('button', {onclick: copyFiles}, 'Copy file list'))));
+    pane.replaceChildren(...kids);
+  }
+
+  // --------------------------------------------------------------- Activity tab
+
+  // Builds a plain-language reading of why a file is churning, from the
+  // numbers we have: who's touching it, how concentrated that is, who reviews
+  // it, and how recent it is. Heuristic, but it turns "206 commits" into
+  // something you can act on.
+  function hotspotWhy(f) {
+    const a = f.activity;
+    const top = a.authors[0];
+    const topShare = top ? top.commits / a.commits : 0;
+    const topPct = Math.round(topShare * 100);
+    const topRev = a.reviewers[0];
+    const revShare = topRev ? topRev.reviews / a.commits : 0;
+    const daysSince = a.last ? Math.floor((Date.now() - new Date(a.last)) / 864e5) : null;
+    const locPerCommit = f.loc / a.commits;
+    const tags = [];
+    const sentences = [];
+
+    if (topShare >= 0.5 && a.distinct_authors >= 10) {
+      tags.push({t: 'one driver, many visitors', hi: true});
+      sentences.push(
+        `${nameFor(top.email)} wrote ${topPct}% of the commits, so this is probably their ` +
+        `ongoing project — but ${a.distinct_authors - 1} other people also had to touch it, ` +
+        'which suggests it\u2019s a shared integration point everyone ends up editing.');
+    } else if (topShare >= 0.5) {
+      tags.push({t: 'one person\u2019s project', hi: false});
+      sentences.push(
+        `${nameFor(top.email)} wrote ${topPct}% of the commits: this is most likely active ` +
+        'feature work by one person. Ask them before touching it.');
+    } else if (a.distinct_authors >= 15) {
+      tags.push({t: 'everyone touches it', hi: true});
+      sentences.push(
+        `${a.distinct_authors} different authors with no dominant one. Files like this are ` +
+        'usually registries, feature lists or glue that every unrelated change has to ' +
+        'update — expect merge conflicts, and ask whether your change really needs to go here.');
+    } else if (a.distinct_authors >= 5) {
+      tags.push({t: 'shared', hi: false});
+      sentences.push(
+        `Spread across ${a.distinct_authors} authors (${nameFor(top.email)} leads with ` +
+        `${top.commits}). Actively co-owned rather than one person's area.`);
+    } else {
+      tags.push({t: 'small group', hi: false});
+      sentences.push(`${plural(a.distinct_authors, 'author')} account for all ${a.commits} commits.`);
+    }
+
+    if (topRev && revShare >= 0.4) {
+      tags.push({t: `${handle(topRev.email)} reviews most`, hi: false});
+      const notOwner = ownerStatus(f, topRev.email) ?
+        '' :
+        ', even though they are not in any applicable OWNERS';
+      sentences.push(
+        `${nameFor(topRev.email)} approved ${topRev.reviews} of the ${a.commits} commits ` +
+        `(${Math.round(revShare * 100)}%) — effectively the gatekeeper for this file${notOwner}.`);
+    } else if (a.reviewers.length >= 4) {
+      tags.push({t: 'many reviewers', hi: false});
+      sentences.push(
+        `Reviews are spread across ${a.reviewers.length}+ people; there is no single gatekeeper.`);
+    }
+
+    if (f.role === 'test') tags.push({t: 'test file', hi: false});
+    if (f.role === 'build') {
+      tags.push({t: 'build file', hi: false});
+      sentences.push(
+        'Build files churn whenever sources are added or moved; usually not a design signal.');
+    }
+    if (locPerCommit < 4 && f.loc > 50) {
+      tags.push({t: 'tiny edits', hi: false});
+      sentences.push(
+        `Only ~${fmt(f.loc)} lines for ${a.commits} commits — mostly one-line additions, ` +
+        'typical of a list that grows by one entry per CL.');
+    }
+    if (daysSince !== null) {
+      if (daysSince <= 7) {
+        const when = daysSince === 0 ? 'today' : plural(daysSince, 'day') + ' ago';
+        tags.push({t: `touched ${when}`, hi: true});
+      } else if (daysSince > 60) {
+        tags.push({t: `quiet for ${Math.round(daysSince / 30)} mo`, hi: false});
+        sentences.push('Churn has cooled off; the burst was earlier in the window.');
+      }
+    }
+    return {tags, text: sentences.join(' ')};
+  }
+
+  function commitRow(c, author) {
+    return el('div', {class: 'commit'},
+      el('a', {class: 'h', href: CRREV(c.hash), target: '_blank', title: c.hash}, shortHash(c.hash)),
+      el('span', {class: 's', title: c.subject}, c.subject),
+      el('span', {class: 'a'}, `${author} · ${c.date}`));
+  }
+
+  function hotspotRow(f, maxCommits) {
+    const a = f.activity;
+    const {tags, text} = hotspotWhy(f);
+    const facts = el('div', {class: 'facts'},
+      ...tags.map(t => el('span', {class: 'tag' + (t.hi ? ' hi' : '')}, t.t)));
+    const extraAuthors = a.distinct_authors > a.authors.length ?
+      ` +${a.distinct_authors - a.authors.length} more` :
+      '';
+    const authors = a.authors.map(x => `${handle(x.email)} (${x.commits})`).join(', ') + extraAuthors;
+    const reviewers = a.reviewers.length ?
+      a.reviewers.map(x => `${handle(x.email)} (${x.reviews})`).join(', ') :
+      '—';
+    const kv = el('div', {class: 'kv', style: 'font-size:12px;margin:6px 0'},
+      el('dt', {}, 'Authors'), el('dd', {}, authors),
+      el('dt', {}, 'Reviewers'), el('dd', {}, reviewers),
+      el('dt', {}, 'Owners'), el('dd', {}, f.owners.length ? f.owners.map(handle).join(', ') : 'inherited'),
+      el('dt', {}, 'Size'), el('dd', {}, `${fmt(f.loc)} lines · last touched ${a.last}`));
+    const latestHead = el('div', {
+      style: 'font-size:11px;color:var(--faint);text-transform:uppercase;' +
+        'letter-spacing:.06em;margin:8px 0 2px',
+    }, 'Latest commits');
+    const latest = a.recent?.length ?
+      el('div', {}, latestHead, ...a.recent.map(c => commitRow(c, handle(c.author)))) :
+      null;
+    const whoReviews = () => {
+      select(f);
+      showTab('reviewers');
+    };
+    const actions = el('div', {style: 'margin-top:8px;display:flex;gap:8px'},
+      el('button', {onclick: () => reveal(f)}, 'Show in tree'),
+      el('button', {onclick: whoReviews}, 'Who reviews it'),
+      el('a', {href: CS(f.path), target: '_blank', style: 'align-self:center;font-size:12px'},
+        'codesearch ↗'));
+    const why = el('div', {class: 'why'}, facts, el('p', {}, text), kv, latest, actions);
+    const bar = el('div', {class: 'bar'}, el('i', {style: `width:${100 * a.commits / maxCommits}%`}));
+    return el('details', {class: 'hot'},
+      el('summary', {},
+        el('span', {class: 'tw'}, '▶'),
+        el('span', {}, el('span', {class: 'mono'}, f.path.slice(DATA.root.length + 1)), bar),
+        el('span', {class: 'n'},
+          plural(a.commits, 'commit'), ' ',
+          el('small', {style: 'color:var(--faint)'}, `· ${plural(a.distinct_authors, 'author')}`))),
+      why);
+  }
+
+  function topAuthorsCard() {
+    const top = [...DATA.people]
+      .filter(p => p.commits)
+      .sort((a, b) => b.commits - a.commits)
+      .slice(0, 12);
+    if (!top.length) return el('div', {class: 'card'}, el('div', {class: 'empty'}, 'No commits in window.'));
+    const max = top[0].commits;
+    const rows = top.flatMap(p => [
+      personCell(p.email,
+        DATA.tree.owners.includes(p.email) ?
+          el('span', {class: 'badge', style: 'margin-left:6px'}, 'owner') :
+          null,
+        el('div', {class: 'bar'}, el('i', {style: `width:${100 * p.commits / max}%`}))),
+      el('div', {class: 'n'},
+        `${plural(p.commits, 'commit')} `,
+        el('small', {}, p.reviews ? `· ${plural(p.reviews, 'review')} ` : ''),
+        el('small', {}, `· last ${p.last}`)),
+    ]);
+    return el('div', {class: 'card'}, el('div', {class: 'people'}, ...rows));
+  }
+
+  function renderActivity() {
+    const pane = $('#pane-activity');
+    const kids = [];
+    kids.push(el('h3', {}, `Top authors · last ${since}`));
+    kids.push(topAuthorsCard());
+    // Hot spots
+    const files = allFiles(DATA.tree)
+      .filter(f => f.activity.commits)
+      .sort((a, b) => b.activity.commits - a.activity.commits)
+      .slice(0, 10);
+    if (files.length) {
+      kids.push(el('h3', {}, 'Hot spots'));
+      kids.push(el('div', {style: 'margin:0 4px 6px;font-size:12.5px;color:var(--muted)'},
+        'Most-changed files. Expand a row for a read on ', el('i', {}, 'why'),
+        ' it churns and who to talk to.'));
+      const rows = files.map(f => {
+        const row = hotspotRow(f, files[0].activity.commits);
+        if (openHot === f.path) row.open = true;
+        return row;
+      });
+      kids.push(el('div', {class: 'card'}, ...rows));
+    }
+    kids.push(el('h3', {}, 'Recent commits'));
+    const recent = DATA.recent_commits.map(c => {
+      const row = commitRow(c, c.author.split(' ')[0]);
+      if (c.reviewers?.length) {
+        row.querySelector('.s').title = `${c.subject}\nReviewed-by: ${c.reviewers.join(', ')}`;
+      }
+      return row;
+    });
+    kids.push(el('div', {class: 'card'}, ...recent));
+    pane.replaceChildren(...kids);
+  }
+
+  function reveal(n) {
+    nodeEl(n.path);
+    select(n);
+    const row = $(`#tree .row[data-path="${CSS.escape(n.path)}"]`);
+    row?.scrollIntoView({block: 'center', behavior: 'smooth'});
+  }
+
+  // --------------------------------------------------------------- Tabs & wiring
+  function showTab(name) {
+    document.querySelectorAll('.tabs button').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === name);
+    });
+    document.querySelectorAll('.pane').forEach(p => {
+      p.classList.toggle('active', p.id === 'pane-' + name);
+    });
+    if (name === 'reviewers') renderReviewers();
+    if (name === 'activity') renderActivity();
+  }
+  document.querySelectorAll('.tabs button').forEach(b => {
+    b.addEventListener('click', () => showTab(b.dataset.tab));
+  });
+
+  // --------------------------------------------------------------- Theme toggle
+  const osPrefersLight = () => matchMedia('(prefers-color-scheme: light)').matches;
+  const currentTheme = () =>
+    document.documentElement.dataset.theme || (osPrefersLight() ? 'light' : 'dark');
+  function paintThemeToggle() {
+    const dark = currentTheme() === 'dark';
+    $('#theme-toggle .icon').textContent = dark ? '☾' : '☀';
+    $('#theme-toggle .label').textContent = dark ? 'Dark' : 'Light';
+  }
+  $('#theme-toggle').addEventListener('click', () => {
+    const next = currentTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem('codebase-map-theme', next);
+    } catch (e) {
+      // Storage disabled: the choice just won't persist.
+    }
+    paintThemeToggle();
+  });
+  matchMedia('(prefers-color-scheme: light)').addEventListener('change', paintThemeToggle);
+  paintThemeToggle();
+  $('#filter').addEventListener('input', applyFilterSoon);
+  $('#expand-all').addEventListener('click', () => {
+    // Opening builds children, which may hold more closed directories.
+    const closedDirs = () => [...$('#tree').querySelectorAll('.node:not(.open)')]
+      .filter(e => byPath.get(e.dataset.path).type === 'dir');
+    for (let batch = closedDirs(); batch.length; batch = closedDirs()) {
+      batch.forEach(e => setOpen(e, true));
+    }
+  });
+  $('#collapse-all').addEventListener('click', () => {
+    // Keep the root open.
+    $('#tree').querySelectorAll('.node').forEach((n, i) => {
+      if (i) setOpen(n, false);
+    });
+  });
+  document.addEventListener('keydown', e => {
+    const filter = $('#filter');
+    if (e.key === '/' && document.activeElement !== filter) {
+      e.preventDefault();
+      filter.focus();
+    }
+    if (e.key === 'Escape') {
+      filter.value = '';
+      applyFilter();
+      filter.blur();
+    }
+  });
+
+  renderHeader();
+  renderTree();
+  // Deep links: #sel=<path>&pick=<path,path>&tab=<detail|reviewers|activity>&q=<filter>&hot=<path>
+  const hash = new URLSearchParams(location.hash.slice(1));
+  const rel = p => MapLib.resolvePath(DATA.root, p);
+  openHot = hash.get('hot') ? rel(hash.get('hot')) : null;
+  for (const p of (hash.get('pick') || '').split(',').filter(Boolean)) {
+    const n = byPath.get(rel(p));
+    if (n) togglePick(n, true);
+  }
+  reveal(byPath.get(rel(hash.get('sel') || '')) || DATA.tree);
+  if (hash.get('q')) {
+    $('#filter').value = hash.get('q');
+    applyFilter();
+  }
+  renderReviewers();
+  // An unknown tab name would deactivate every pane, so ignore it.
+  if (TABS.includes(hash.get('tab'))) showTab(hash.get('tab'));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+description: >-
+  Verify the codebase-map skill drives the extract / targets / annotate /
+  render / serve workflow and answers with a localhost URL.
+owner: sdrasner@google.com
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - codebase-map
+tests:
+  - vars:
+      query: >-
+        What commands do I run, from src/, to build an annotated codebase map
+        of chrome/browser/ui/tabs and show it to me?
+    assert:
+      - type: contains
+        value: "codebase_map.py extract"
+      - type: contains
+        value: "targets"
+      - type: contains
+        value: "annotate"
+      - type: contains
+        value: "render"
+      - type: contains
+        value: "serve"
+      - type: contains
+        value: "out/codebase_map/"
+  - vars:
+      query: >-
+        I'm on a cloudtop. How do I open a codebase map of
+        components/omnibox/browser in my local browser?
+    assert:
+      - type: contains
+        value: "serve"
+      - type: contains
+        value: "http://localhost:"
+      - type: icontains
+        value: "port"
+  - vars:
+      query: >-
+        Using the codebase map, how do I get a link that suggests reviewers for
+        a CL touching base/files/file_path.cc and base/files/file_util.cc?
+    assert:
+      - type: contains
+        value: "#tab=reviewers"
+      - type: contains
+        value: "pick="
