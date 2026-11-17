@@ -23,6 +23,9 @@ class AutocompleteProviderDebouncer {
   // cancelled.
   void RequestRun(base::OnceCallback<void()> callback);
 
+  // Whether a request is waiting for the debounce delay.
+  bool IsRequestPending() const;
+
   // Cancels any pending request.
   void CancelRequest();
 

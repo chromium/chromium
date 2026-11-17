@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -151,8 +152,8 @@ std::string SerializeAndEncodeEntityInfo(
 
 class SearchProviderFeatureTestComponent {
  public:
-  explicit SearchProviderFeatureTestComponent(
-      const bool command_line_overrides);
+  explicit SearchProviderFeatureTestComponent(const bool command_line_overrides,
+                                              bool isolate_field_trials);
 
   ~SearchProviderFeatureTestComponent() {
     variations::test::ClearAllVariationParams();
@@ -163,7 +164,11 @@ class SearchProviderFeatureTestComponent {
 };
 
 SearchProviderFeatureTestComponent::SearchProviderFeatureTestComponent(
-    const bool command_line_overrides) {
+    const bool command_line_overrides,
+    bool isolate_field_trials) {
+  if (isolate_field_trials) {
+    feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  }
   if (command_line_overrides) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kGoogleBaseURL, "http://www.bar.com/");
@@ -217,8 +222,13 @@ class BaseSearchProviderTest : public testing::Test,
     bool allowed_to_be_default_match;
   };
 
-  explicit BaseSearchProviderTest(const bool command_line_overrides = false)
-      : feature_test_component_(command_line_overrides) {
+  explicit BaseSearchProviderTest(
+      const bool command_line_overrides = false,
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME,
+      bool isolate_field_trials = false)
+      : feature_test_component_(command_line_overrides, isolate_field_trials),
+        task_environment_(time_source) {
     // We need the history service, the template url model, and the signin
     // client and the remote suggestions service initialized with a
     // TestURLLoaderFactory.
@@ -625,6 +635,116 @@ class SearchProviderTest : public BaseSearchProviderTest {
         "https://defaultturl2/{searchTerms}");
   }
 };
+
+// Exercise the real SearchProvider scheduling with a mock clock and network.
+class SearchProviderDebouncingTest : public BaseSearchProviderTest,
+                                     public testing::WithParamInterface<bool> {
+ public:
+  SearchProviderDebouncingTest()
+      : BaseSearchProviderTest(
+            false,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            /*isolate_field_trials=*/true) {}
+
+  void SetUp() override {
+    ASSERT_TRUE(base::AssociateFieldTrialParams(
+        OmniboxFieldTrial::kBundledExperimentFieldTrialName, "Debouncing",
+        {{OmniboxFieldTrial::kMeasureSuggestPollingDelayFromLastKeystrokeRule,
+          GetParam() ? "true" : "false"},
+         {OmniboxFieldTrial::kSuggestPollingDelayMsRule, "100"}}));
+    base::FieldTrialList::CreateFieldTrial(
+        OmniboxFieldTrial::kBundledExperimentFieldTrialName, "Debouncing");
+    bool from_last_keystroke;
+    int polling_delay_ms;
+    OmniboxFieldTrial::GetSuggestPollingStrategy(&from_last_keystroke,
+                                                 &polling_delay_ms);
+    ASSERT_EQ(from_last_keystroke, GetParam());
+    ASSERT_EQ(polling_delay_ms, 100);
+    CustomizableSetUp("https://search.test/{searchTerms}",
+                      "https://suggest.test/{searchTerms}");
+  }
+
+ protected:
+  void StartQuery(std::u16string_view text, bool synchronous_only = false) {
+    AutocompleteInput input(std::u16string(text),
+                            metrics::OmniboxEventProto::OTHER,
+                            ChromeAutocompleteSchemeClassifier(profile_.get()));
+    input.set_omit_asynchronous_matches(synchronous_only);
+    static_cast<AutocompleteProvider*>(provider_.get())->Start(input, false);
+  }
+
+  // Establish a common last-request time for both polling strategies.
+  void CompleteInitialQuery() {
+    StartQuery(u"first");
+    if (GetParam()) {
+      EXPECT_FALSE(
+          test_url_loader_factory_.IsPending("https://suggest.test/first"));
+      EXPECT_FALSE(provider_->done());
+      task_environment_.FastForwardBy(base::Milliseconds(100));
+    }
+    ASSERT_TRUE(
+        test_url_loader_factory_.IsPending("https://suggest.test/first"));
+    const auto request_time = base::TimeTicks::Now();
+    test_url_loader_factory_.AddResponse("https://suggest.test/first", "");
+    // RunUntil() can advance mock time to unrelated delayed tasks while waiting
+    // for the response. Preserve the request time used by last-request mode.
+    task_environment_.FastForwardBy(base::TimeDelta());
+    ASSERT_TRUE(provider_->done());
+    ASSERT_EQ(base::TimeTicks::Now(), request_time);
+  }
+};
+
+TEST_P(SearchProviderDebouncingTest, FirstRequest) {
+  CompleteInitialQuery();
+}
+
+TEST_P(SearchProviderDebouncingTest, RapidTypingReplacesPendingRequest) {
+  ASSERT_NO_FATAL_FAILURE(CompleteInitialQuery());
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  StartQuery(u"second");
+  EXPECT_FALSE(provider_->done());
+  EXPECT_FALSE(
+      test_url_loader_factory_.IsPending("https://suggest.test/second"));
+  task_environment_.FastForwardBy(base::Milliseconds(30));
+  StartQuery(u"third");
+  EXPECT_FALSE(provider_->done());
+
+  // Last-keystroke mode waits 100 ms from "third". Last-request mode waits
+  // only until 100 ms after "first", regardless of subsequent keystrokes.
+  task_environment_.FastForwardBy(base::Milliseconds(GetParam() ? 99 : 49));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(provider_->done());
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(
+      test_url_loader_factory_.IsPending("https://suggest.test/second"));
+  ASSERT_TRUE(test_url_loader_factory_.IsPending("https://suggest.test/third"));
+  test_url_loader_factory_.AddResponse("https://suggest.test/third", "");
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_TRUE(provider_->done());
+}
+
+TEST_P(SearchProviderDebouncingTest, StopCancelsPendingRequest) {
+  ASSERT_NO_FATAL_FAILURE(CompleteInitialQuery());
+  StartQuery(u"second");
+  EXPECT_FALSE(provider_->done());
+  static_cast<AutocompleteProvider*>(provider_.get())
+      ->Stop(AutocompleteStopReason::kClobbered);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_TRUE(provider_->done());
+}
+
+TEST_P(SearchProviderDebouncingTest, SynchronousQueryCancelsPendingRequest) {
+  ASSERT_NO_FATAL_FAILURE(CompleteInitialQuery());
+  StartQuery(u"second");
+  EXPECT_FALSE(provider_->done());
+  StartQuery(u"third", /*synchronous_only=*/true);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_TRUE(provider_->done());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, SearchProviderDebouncingTest, testing::Bool());
 
 // Make sure we query history for the default provider and a URLFetcher is
 // created for the default provider suggest results.

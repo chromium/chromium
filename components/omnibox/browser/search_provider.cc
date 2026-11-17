@@ -39,6 +39,7 @@
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -506,7 +507,9 @@ void SearchProvider::OnURLLoadComplete(
 void SearchProvider::StopSuggest() {
   CancelLoader(&default_loader_);
   CancelLoader(&keyword_loader_);
-  timer_.Stop();
+  if (debouncer_) {
+    debouncer_->CancelRequest();
+  }
 }
 
 void SearchProvider::ClearAllResults() {
@@ -731,23 +734,6 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
       db_query_timer.Elapsed());
 }
 
-base::TimeDelta SearchProvider::GetSuggestQueryDelay() const {
-  // TODO(manukh): Reuse AutocompleteProviderDebouncer which duplicates all
-  //  this logic and would avoid polling field trial params repeatedly.
-  bool from_last_keystroke;
-  int polling_delay_ms;
-  OmniboxFieldTrial::GetSuggestPollingStrategy(&from_last_keystroke,
-                                               &polling_delay_ms);
-
-  base::TimeDelta delay(base::Milliseconds(polling_delay_ms));
-  if (from_last_keystroke)
-    return delay;
-
-  base::TimeDelta time_since_last_suggest_request =
-      base::TimeTicks::Now() - time_suggest_request_sent_;
-  return std::max(base::TimeDelta(), delay - time_since_last_suggest_request);
-}
-
 void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
   if (ShouldOnlyShowVerbatimMatches(input_)) {
     return;
@@ -807,14 +793,16 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
   // the user types another character.  Requests may be delayed to avoid
   // flooding the server with requests that are likely to be thrown away later
   // anyway.
-  const base::TimeDelta delay = GetSuggestQueryDelay();
-  if (delay <= base::TimeDelta()) {
-    Run(query_is_private);
-    return;
+  if (!debouncer_) {
+    bool from_last_keystroke;
+    int polling_delay_ms;
+    OmniboxFieldTrial::GetSuggestPollingStrategy(&from_last_keystroke,
+                                                 &polling_delay_ms);
+    debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(
+        /*from_last_run=*/!from_last_keystroke, polling_delay_ms);
   }
-  timer_.Start(FROM_HERE, delay,
-               base::BindOnce(&SearchProvider::Run, base::Unretained(this),
-                              query_is_private));
+  debouncer_->RequestRun(base::BindOnce(
+      &SearchProvider::Run, base::Unretained(this), query_is_private));
 }
 
 void SearchProvider::CancelLoader(
@@ -1566,9 +1554,9 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
 }
 
 void SearchProvider::UpdateDone() {
-  // We're done when the timer isn't running and there are no suggest queries
-  // pending.
-  done_ = !timer_.IsRunning() && !default_loader_ && !keyword_loader_;
+  // We're done when there are no delayed or in-flight suggest queries.
+  done_ = (!debouncer_ || !debouncer_->IsRequestPending()) &&
+          !default_loader_ && !keyword_loader_;
 }
 
 

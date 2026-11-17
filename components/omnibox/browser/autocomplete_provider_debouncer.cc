@@ -28,6 +28,10 @@ void AutocompleteProviderDebouncer::RequestRun(
   }
 }
 
+bool AutocompleteProviderDebouncer::IsRequestPending() const {
+  return timer_.IsRunning();
+}
+
 void AutocompleteProviderDebouncer::CancelRequest() {
   timer_.Stop();
 }

@@ -21,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
@@ -32,6 +31,7 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 
 class AutocompleteProviderClient;
+class AutocompleteProviderDebouncer;
 class AutocompleteProviderListener;
 class SearchProviderTest;
 
@@ -219,7 +219,7 @@ class SearchProvider : public BaseSearchProvider,
   // asynchronously.
   void RecordTopSuggestion();
 
-  // Called when |timer_| expires.  Sends the suggest requests.
+  // Called when the debounce delay expires. Sends the suggest requests.
   // If |query_is_private|, the function doesn't send this query to the default
   // provider.
   void Run(bool query_is_private);
@@ -227,9 +227,6 @@ class SearchProvider : public BaseSearchProvider,
   // Runs the history query, if necessary. The history query is synchronous.
   // This does not update |done_|.
   void DoHistoryQuery(bool minimal_changes);
-
-  // Returns the time to delay before sending the Suggest request.
-  base::TimeDelta GetSuggestQueryDelay() const;
 
   // Determines whether an asynchronous subcomponent query should run for the
   // current input.  If so, starts it if necessary; otherwise stops it.
@@ -395,9 +392,8 @@ class SearchProvider : public BaseSearchProvider,
   SearchSuggestionParser::SuggestResults transformed_keyword_history_results_;
   SearchSuggestionParser::SuggestResults transformed_default_history_results_;
 
-  // A timer to start a query to the suggest server after the user has stopped
-  // typing for long enough.
-  base::OneShotTimer timer_;
+  // Created on the first suggest query to cache the polling strategy.
+  std::unique_ptr<AutocompleteProviderDebouncer> debouncer_;
 
   // The time at which we sent a query to the suggest server.
   base::TimeTicks time_suggest_request_sent_;
