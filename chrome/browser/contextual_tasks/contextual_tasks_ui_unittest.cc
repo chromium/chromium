@@ -22,6 +22,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_test_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_post_rearchitecture.h"
@@ -428,12 +429,7 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if BUILDFLAG(IS_ANDROID)
-    if (!base::android::device_info::is_desktop()) {
-      GTEST_SKIP() << "Contextual Tasks UI is only supported on Desktop "
-                      "Android.";
-    }
-#endif
+    SKIP_IF_CONTEXTUAL_TASKS_UNSUPPORTED();
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -506,13 +502,11 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-#if BUILDFLAG(IS_ANDROID)
-    if (!base::android::device_info::is_desktop()) {
+    if (IsSkipped()) {
       // SetUp() skipped the test after setting up the harness.
       ChromeRenderViewHostTestHarness::TearDown();
       return;
     }
-#endif
     embedded_web_contents_ = nullptr;
     service_for_nav_ = nullptr;
     contextual_tasks_service_ = nullptr;

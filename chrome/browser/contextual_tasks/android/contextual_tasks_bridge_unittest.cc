@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/android/device_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/test/bind.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_test_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
@@ -63,10 +63,7 @@ std::unique_ptr<KeyedService> BuildMockContextualTasksService(
 class ContextualTasksBridgeTest : public testing::Test {
  public:
   void SetUp() override {
-    if (!base::android::device_info::is_desktop()) {
-      GTEST_SKIP() << "Contextual Tasks UI is only supported on Desktop "
-                      "Android.";
-    }
+    SKIP_IF_CONTEXTUAL_TASKS_UNSUPPORTED();
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         AimEligibilityServiceFactory::GetInstance(),
