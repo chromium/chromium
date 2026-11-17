@@ -49,6 +49,7 @@ static_assert(static_cast<int>(SqliteResultCode::kLoggingNotice) ==
               SQLITE_NOTICE);
 static_assert(static_cast<int>(SqliteResultCode::kLoggingWarning) ==
               SQLITE_WARNING);
+static_assert(static_cast<int>(SqliteResultCode::kMoved) == SQLITE_MOVED);
 static_assert(static_cast<int>(SqliteResultCode::kRow) == SQLITE_ROW);
 static_assert(static_cast<int>(SqliteResultCode::kDone) == SQLITE_DONE);
 static_assert(static_cast<int>(SqliteResultCode::kLoadPermanently) ==

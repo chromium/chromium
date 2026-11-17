@@ -86,6 +86,7 @@ constexpr SqliteResultCodeMappingEntry kResultCodeMapping[] = {
     {SQLITE_NOTADB, static_cast<int>(SqliteLoggedResultCode::kNotADatabase)},
     {SQLITE_NOTICE, static_cast<int>(SqliteLoggedResultCode::kUnusedSqlite)},
     {SQLITE_WARNING, static_cast<int>(SqliteLoggedResultCode::kUnusedSqlite)},
+    {SQLITE_MOVED, static_cast<int>(SqliteLoggedResultCode::kUnusedSqlite)},
     {SQLITE_ROW, static_cast<int>(SqliteLoggedResultCode::kNoError)},
     {SQLITE_DONE, static_cast<int>(SqliteLoggedResultCode::kNoError)},
     {SQLITE_OK_LOAD_PERMANENTLY,
@@ -322,7 +323,7 @@ file lock requests"
 //
 // This number is also stated at
 // https://www.sqlite.org/rescode.html#primary_result_code_list
-static constexpr int kPrimaryResultCodes = 31;
+static constexpr int kPrimaryResultCodes = 32;
 
 // Number of extended codes defined in //third_party/sqlite/src/src/sqlite.h.in.
 //

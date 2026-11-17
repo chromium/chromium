@@ -31,6 +31,7 @@ bool IsErrorCatastrophic(int sqlite_error_code) {
     case SQLITE_FORMAT:    // Not currently used, according to SQLite docs.
     case SQLITE_NOTICE:    // Only used as an argument to sqlite3_log().
     case SQLITE_WARNING:   // Only used as an argument to sqlite3_log().
+    case SQLITE_MOVED:     // Marked for SQLite internal use.
       NOTREACHED() << "SQLite returned result code marked for internal use: "
                    << sqlite_error_code;
 

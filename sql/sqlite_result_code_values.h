@@ -46,6 +46,7 @@ enum class SqliteResultCode : int {
   kNotADatabase = 26,                       // SQLITE_NOTADB
   kLoggingNotice = 27,                      // SQLITE_NOTICE
   kLoggingWarning = 28,                     // SQLITE_WARNING
+  kMoved = 29,                              // SQLITE_MOVED
   kRow = 100,                               // SQLITE_ROW
   kDone = 101,                              // SQLITE_DONE
   kLoadPermanently = 256,                   // SQLITE_OK_LOAD_PERMANENTLY
@@ -167,6 +168,7 @@ enum class SqliteErrorCode : int {
   kNotADatabase = static_cast<int>(SqliteResultCode::kNotADatabase),
   kLoggingNotice = static_cast<int>(SqliteResultCode::kLoggingNotice),
   kLoggingWarning = static_cast<int>(SqliteResultCode::kLoggingWarning),
+  kMoved = static_cast<int>(SqliteResultCode::kMoved),
   kMissingCollatingSequence =
       static_cast<int>(SqliteResultCode::kMissingCollatingSequence),
   kBusyRecovery = static_cast<int>(SqliteResultCode::kBusyRecovery),

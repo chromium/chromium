@@ -27420,6 +27420,7 @@ Called by update_net_error_codes.py.-->
   </int>
   <int value="27" label="SQLITE_NOTICE">Notifications from sqlite3_log()</int>
   <int value="28" label="SQLITE_WARNING">Warnings from sqlite3_log()</int>
+  <int value="29" label="SQLITE_MOVED">Internal use only: Cursor moved</int>
   <int value="100" label="SQLITE_ROW">sqlite3_step() has another row ready</int>
   <int value="101" label="SQLITE_DONE">
     sqlite3_step() has finished executing
