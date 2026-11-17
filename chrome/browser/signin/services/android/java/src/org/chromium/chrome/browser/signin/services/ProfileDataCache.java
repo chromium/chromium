@@ -718,20 +718,22 @@ public class ProfileDataCache
         // Only the primary account can have a tier; the others' isn't known.
         int aiSubscriptionTier =
                 isPrimaryAccount(accountInfo) ? getPrimaryAccountAiSubscriptionTier() : 0;
-        boolean hasAiTierRing = false;
 
         if (mAiTierRingEnabled) {
             croppedAvatar = padAvatarForAiTierRing(croppedAvatar);
         }
 
+        // A badge replaces the ring unless it was built to keep it, so that the identity error
+        // badge on the New Tab Page avatar is never shown together with the ring.
+        boolean hasAiTierRing =
+                (badgeConfig == null || badgeConfig.keepsAiTierRing())
+                        && isEligibleForAiTierRing(aiSubscriptionTier);
+        if (hasAiTierRing) {
+            croppedAvatar = overlayAiRingOnAvatar(croppedAvatar);
+        }
         if (badgeConfig != null) {
             croppedAvatar =
                     overlayBadgeOnUserPicture(badgeConfig, croppedAvatar, mAiTierRingEnabled);
-        } else {
-            hasAiTierRing = isEligibleForAiTierRing(aiSubscriptionTier);
-            if (hasAiTierRing) {
-                croppedAvatar = overlayAiRingOnAvatar(croppedAvatar);
-            }
         }
 
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {

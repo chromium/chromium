@@ -27,6 +27,14 @@ found in the LICENSE file.
     <dimen name="toolbar_identity_disc_badge_position_x">12dp</dimen>
     <dimen name="toolbar_identity_disc_badge_position_y">12dp</dimen>
 
+    <!-- Edit Avatar Badge Dimensions, for the 60dp avatar of the Account
+         page's central card (account_management_picture_size). The badge stays
+         within the avatar's bounds: position + size <= 60dp. -->
+    <dimen name="edit_avatar_badge_size">20dp</dimen>
+    <dimen name="edit_avatar_badge_border_size">0dp</dimen>
+    <dimen name="edit_avatar_badge_position_x">40dp</dimen>
+    <dimen name="edit_avatar_badge_position_y">40dp</dimen>
+
     <!-- AI Tier Ring Dimensions -->
     <dimen name="ai_tier_ring_spacing">2dp</dimen>
     <!-- AI tier ring thickness for avatars up to 24dp -->

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.content.res.Resources;
 
@@ -56,5 +57,23 @@ public class AiTierRingDimensTest {
                         + 2 * mRingPadding,
                 mResources.getDimensionPixelSize(
                         R.dimen.account_management_picture_size_with_ai_tier_ring));
+    }
+
+    @Test
+    public void testEditAvatarBadgeStaysWithinAccountPageAvatar() {
+        int avatarSize = mResources.getDimensionPixelSize(R.dimen.account_management_picture_size);
+        int badgeSize =
+                mResources.getDimensionPixelSize(
+                        org.chromium.chrome.browser.signin.services.R.dimen.edit_avatar_badge_size);
+        int badgePositionX =
+                mResources.getDimensionPixelOffset(
+                        org.chromium.chrome.browser.signin.services.R.dimen
+                                .edit_avatar_badge_position_x);
+        int badgePositionY =
+                mResources.getDimensionPixelOffset(
+                        org.chromium.chrome.browser.signin.services.R.dimen
+                                .edit_avatar_badge_position_y);
+        assertTrue(badgePositionX + badgeSize <= avatarSize);
+        assertTrue(badgePositionY + badgeSize <= avatarSize);
     }
 }

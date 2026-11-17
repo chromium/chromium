@@ -4,7 +4,13 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -19,6 +25,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
@@ -30,6 +39,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.subscription_eligibility.SubscriptionEligibilityService;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -53,6 +64,10 @@ import java.util.List;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
 public class ProfileDataCacheWithBadgeRenderTest {
+    // The avatar size the edit avatar badge is designed for (account_management_picture_size,
+    // the Account page's central card).
+    private static final int EDIT_AVATAR_BADGE_AVATAR_SIZE_DP = 60;
+
     @ClassParameter
     private static final List<ParameterSet> sClassParams =
             Arrays.asList(
@@ -74,6 +89,10 @@ public class ProfileDataCacheWithBadgeRenderTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private SubscriptionEligibilityService mSubscriptionEligibilityServiceMock;
 
     private IdentityManager mIdentityManager;
     private FrameLayout mContentView;
@@ -140,6 +159,42 @@ public class ProfileDataCacheWithBadgeRenderTest {
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
     }
 
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testProfileDataWithEditAvatarBadgeConfig() throws IOException {
+        setUpProfileDataCacheForEditAvatarBadge(/* aiTierRingEnabled= */ false);
+        setBadge(
+                BadgeConfig.create(R.drawable.ic_error_badge_16dp)
+                        .withEditAvatarConfig()
+                        .withAiTierRingKept()
+                        .build(sActivity));
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_edit_avatar_badge_config");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testProfileDataWithBadgeOverAiTierRing() throws IOException {
+        setUpProfileDataCacheForEditAvatarBadge(/* aiTierRingEnabled= */ true);
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_ai_tier_ring_60dp");
+
+        // A badge built to keep the ring is drawn over it.
+        setBadge(
+                BadgeConfig.create(R.drawable.ic_error_badge_16dp)
+                        .withEditAvatarConfig()
+                        .withAiTierRingKept()
+                        .build(sActivity));
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_badge_over_ai_tier_ring");
+
+        // The same badge without withAiTierRingKept() replaces the ring.
+        setBadge(
+                BadgeConfig.create(R.drawable.ic_error_badge_16dp)
+                        .withEditAvatarConfig()
+                        .build(sActivity));
+        mRenderTestRule.render(mImageView, "profile_data_cache_with_badge_replacing_ai_tier_ring");
+    }
+
     private void setUpProfileDataCache() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -147,6 +202,64 @@ public class ProfileDataCacheWithBadgeRenderTest {
                             ProfileDataCache.create(
                                     sActivity, mIdentityManager, R.dimen.user_picture_size);
                 });
+        waitForProfileDataAndShowImage();
+    }
+
+    /**
+     * Creates a cache for the 60dp avatar the edit avatar badge is designed for, with or without
+     * the AI tier ring around it, and shows the primary account's image.
+     */
+    private void setUpProfileDataCacheForEditAvatarBadge(boolean aiTierRingEnabled) {
+        if (aiTierRingEnabled) {
+            when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(1);
+        }
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var resources = sActivity.getResources();
+                    int avatarSize =
+                            Math.round(
+                                    EDIT_AVATAR_BADGE_AVATAR_SIZE_DP
+                                            * resources.getDisplayMetrics().density);
+                    int ringThickness =
+                            resources.getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_large);
+                    int ringSpacing = resources.getDimensionPixelSize(R.dimen.ai_tier_ring_spacing);
+                    int imageSize =
+                            aiTierRingEnabled
+                                    ? avatarSize + 2 * (ringThickness + ringSpacing)
+                                    : avatarSize;
+                    mProfileDataCache =
+                            new ProfileDataCache(
+                                    sActivity,
+                                    mAccountManagerTestRule.getAccountManagerFacade(),
+                                    mIdentityManager,
+                                    aiTierRingEnabled ? mSubscriptionEligibilityServiceMock : null,
+                                    /* syncService= */ null,
+                                    imageSize,
+                                    aiTierRingEnabled ? ringThickness : 0,
+                                    aiTierRingEnabled,
+                                    aiTierRingEnabled ? createBrandingDelegate() : null);
+                });
+        waitForProfileDataAndShowImage();
+    }
+
+    private static SubscriptionTierBrandingDelegate createBrandingDelegate() {
+        return new SubscriptionTierBrandingDelegate() {
+            @Override
+            public Shader getRingShader(RectF bounds) {
+                return new LinearGradient(
+                        bounds.left,
+                        bounds.top,
+                        bounds.right,
+                        bounds.bottom,
+                        Color.RED,
+                        Color.GREEN,
+                        Shader.TileMode.CLAMP);
+            }
+        };
+    }
+
+    private void waitForProfileDataAndShowImage() {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !TextUtils.isEmpty(
@@ -160,25 +273,19 @@ public class ProfileDataCacheWithBadgeRenderTest {
     }
 
     private void setBadge(@DrawableRes int badgeResId) {
+        setBadge(
+                badgeResId == 0
+                        ? null
+                        : BadgeConfig.create(badgeResId)
+                                .withDefaultSizeChildAccountConfig()
+                                .build(sActivity));
+    }
+
+    private void setBadge(@Nullable BadgeConfig badgeConfig) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfileDataCache.setBadge(
-                            TestAccounts.ACCOUNT1.getId(),
-                            badgeResId == 0
-                                    ? null
-                                    : BadgeConfig.create(badgeResId)
-                                            .withDefaultSizeChildAccountConfig()
-                                            .build(sActivity));
+                    mProfileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), badgeConfig);
                 });
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return !TextUtils.isEmpty(
-                            mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getFullName());
-                });
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mImageView.setImageDrawable(
-                            mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getImage());
-                });
+        waitForProfileDataAndShowImage();
     }
 }

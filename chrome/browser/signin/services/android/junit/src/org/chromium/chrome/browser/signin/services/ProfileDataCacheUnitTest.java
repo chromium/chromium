@@ -14,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -1192,6 +1193,132 @@ public class ProfileDataCacheUnitTest {
     }
 
     @Test
+    public void testBadgeBuiltWithAiTierRingKeepsTheRing() {
+        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mProfileDataCache = createWithAiTierRing();
+        mProfileDataCache.addObserver(mObserverMock);
+        BadgeConfig editBadge = createEditAvatarBadge();
+
+        mProfileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), editBadge);
+
+        DisplayableProfileData profileData =
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
+        Assert.assertTrue(profileData.hasAiTierRing());
+        Assert.assertEquals(
+                editBadge,
+                mProfileDataCache.getBadgeConfigForTesting(TestAccounts.ACCOUNT1.getId()));
+        // The badge is drawn into the image, which keeps the cache's size.
+        Assert.assertEquals(IMAGE_SIZE, profileData.getImage().getIntrinsicWidth());
+        Assert.assertEquals(IMAGE_SIZE, profileData.getImage().getIntrinsicHeight());
+        verify(mObserverMock).onProfileDataUpdated(profileData);
+    }
+
+    @Test
+    public void testBadgeBuiltWithAiTierRingReplacesBadgeThatHidesIt() {
+        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mProfileDataCache = createWithAiTierRing();
+        BadgeConfig badgeHidingRing =
+                BadgeConfig.create(R.drawable.ic_error_24dp)
+                        .withEditAvatarConfig()
+                        .build(RuntimeEnvironment.getApplication().getApplicationContext());
+        BadgeConfig badgeKeepingRing =
+                BadgeConfig.create(R.drawable.ic_error_24dp)
+                        .withEditAvatarConfig()
+                        .withAiTierRingKept()
+                        .build(RuntimeEnvironment.getApplication().getApplicationContext());
+        // Same drawable and geometry: only the ring handling tells the two configs apart.
+        Assert.assertNotEquals(badgeHidingRing, badgeKeepingRing);
+
+        mProfileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), badgeHidingRing);
+        Assert.assertFalse(
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).hasAiTierRing());
+
+        mProfileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), badgeKeepingRing);
+        Assert.assertTrue(mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).hasAiTierRing());
+        Assert.assertEquals(
+                badgeKeepingRing,
+                mProfileDataCache.getBadgeConfigForTesting(TestAccounts.ACCOUNT1.getId()));
+    }
+
+    @Test
+    public void testBadgeBuiltWithAiTierRingStaysWhileSyncErrorHidesTheRing() {
+        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mProfileDataCache = createWithAiTierRing();
+        // The cache listens to the SyncService while it has observers.
+        mProfileDataCache.addObserver(mObserverMock);
+        SyncService.SyncStateChangedListener listener = captureSyncStateChangedListener();
+        BadgeConfig editBadge = createEditAvatarBadge();
+        mProfileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), editBadge);
+
+        when(mSyncServiceMock.getUserActionableError())
+                .thenReturn(UserActionableError.SIGN_IN_NEEDS_UPDATE);
+        listener.syncStateChanged();
+        Assert.assertFalse(
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).hasAiTierRing());
+        Assert.assertEquals(
+                editBadge,
+                mProfileDataCache.getBadgeConfigForTesting(TestAccounts.ACCOUNT1.getId()));
+
+        // Unlike a badge that replaces the ring, this one lets the ring come back.
+        when(mSyncServiceMock.getUserActionableError()).thenReturn(UserActionableError.NONE);
+        listener.syncStateChanged();
+        Assert.assertTrue(mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).hasAiTierRing());
+        Assert.assertEquals(
+                editBadge,
+                mProfileDataCache.getBadgeConfigForTesting(TestAccounts.ACCOUNT1.getId()));
+    }
+
+    @Test
+    public void testBadgeBuiltWithAiTierRingWithoutTierShowsNoRing() {
+        when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(0);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mProfileDataCache = createWithAiTierRing();
+
+        mProfileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), createEditAvatarBadge());
+
+        DisplayableProfileData profileData =
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
+        Assert.assertFalse(profileData.hasAiTierRing());
+        Assert.assertEquals(IMAGE_SIZE, profileData.getImage().getIntrinsicWidth());
+        Assert.assertEquals(IMAGE_SIZE, profileData.getImage().getIntrinsicHeight());
+    }
+
+    @Test
+    public void testEditAvatarBadgeOnCacheWithoutAiTierRingKeepsImageSize() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        // The edit avatar badge is designed for the 60dp avatar of the Account page.
+        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
+        int imageSize = Math.round(60 * context.getResources().getDisplayMetrics().density);
+        mProfileDataCache =
+                new ProfileDataCache(
+                        context,
+                        mAccountManagerTestRule.getAccountManagerFacade(),
+                        mAccountManagerTestRule.getIdentityManager(),
+                        /* subscriptionEligibilityService= */ null,
+                        /* syncService= */ null,
+                        imageSize,
+                        /* ringThicknessPx= */ 0,
+                        /* aiTierRingEnabled= */ false,
+                        /* brandingDelegate= */ null);
+
+        mProfileDataCache.setBadge(TestAccounts.ACCOUNT1.getId(), createEditAvatarBadge());
+
+        // The badge stays within the avatar's bounds, so the image doesn't grow.
+        DisplayableProfileData profileData =
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId());
+        Assert.assertFalse(profileData.hasAiTierRing());
+        Assert.assertEquals(imageSize, profileData.getImage().getIntrinsicWidth());
+        Assert.assertEquals(imageSize, profileData.getImage().getIntrinsicHeight());
+    }
+
+    @Test
     public void testSyncErrorKeepsAiTierRingHiddenWhenTierChanges() {
         when(mSubscriptionEligibilityServiceMock.getAiSubscriptionTier()).thenReturn(0);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -1536,6 +1663,14 @@ public class ProfileDataCacheUnitTest {
                 mSyncServiceMock,
                 IMAGE_SIZE,
                 RING_THICKNESS);
+    }
+
+    /** Returns the badge that marks the avatar as editable; it is drawn over the ring. */
+    private BadgeConfig createEditAvatarBadge() {
+        return BadgeConfig.create(R.drawable.ic_error_24dp)
+                .withEditAvatarConfig()
+                .withAiTierRingKept()
+                .build(RuntimeEnvironment.getApplication().getApplicationContext());
     }
 
     /**

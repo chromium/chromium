@@ -20,6 +20,10 @@ import java.util.Objects;
 /**
  * Encapsulates info necessary to overlay a circular badge (e.g., child account icon) on top of a
  * user avatar.
+ *
+ * <p>A badge replaces the AI tier ring, like the identity error badge on the New Tab Page avatar,
+ * unless it is built with {@link Builder#withAiTierRingKept()}, in which case it is drawn over the
+ * ring.
  */
 @NullMarked
 public final class BadgeConfig {
@@ -28,13 +32,15 @@ public final class BadgeConfig {
     private final @Px int mBadgeSize;
     private final @Px int mBorderSize;
     private final Point mPosition;
+    private final boolean mKeepsAiTierRing;
 
     private BadgeConfig(
             @DrawableRes int badgeResId,
             Drawable badge,
             @Px int badgeSize,
             @Px int borderSize,
-            Point position) {
+            Point position,
+            boolean keepsAiTierRing) {
         assert badgeResId != 0;
 
         mBadgeResId = badgeResId;
@@ -42,6 +48,7 @@ public final class BadgeConfig {
         mBadgeSize = badgeSize;
         mBorderSize = borderSize;
         mPosition = position;
+        mKeepsAiTierRing = keepsAiTierRing;
     }
 
     /** Returns the badge drawable. */
@@ -66,18 +73,24 @@ public final class BadgeConfig {
         return mPosition;
     }
 
+    /** Returns whether the AI tier ring stays visible under the badge. */
+    boolean keepsAiTierRing() {
+        return mKeepsAiTierRing;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof BadgeConfig bc
                 && mBadgeResId == bc.mBadgeResId
                 && mBadgeSize == bc.mBadgeSize
                 && mBorderSize == bc.mBorderSize
-                && mPosition.equals(bc.mPosition);
+                && mPosition.equals(bc.mPosition)
+                && mKeepsAiTierRing == bc.mKeepsAiTierRing;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mBadgeResId, mBadgeSize, mBorderSize, mPosition);
+        return Objects.hash(mBadgeResId, mBadgeSize, mBorderSize, mPosition, mKeepsAiTierRing);
     }
 
     /** Returns a new {@link Builder} for the given badge drawable. */
@@ -92,6 +105,7 @@ public final class BadgeConfig {
         private @DimenRes int mBorderSizeResId;
         private @DimenRes int mPositionXResId;
         private @DimenRes int mPositionYResId;
+        private boolean mKeepsAiTierRing;
 
         private Builder(@DrawableRes int badgeResId) {
             assert badgeResId != 0;
@@ -120,6 +134,28 @@ public final class BadgeConfig {
                     .withBorderSize(R.dimen.toolbar_identity_disc_badge_border_size)
                     .withXPosition(R.dimen.toolbar_identity_disc_badge_position_x)
                     .withYPosition(R.dimen.toolbar_identity_disc_badge_position_y);
+        }
+
+        /**
+         * Sets the full config for the badge that marks the 60dp avatar of the Account page's
+         * central card as editable.
+         */
+        public Builder withEditAvatarConfig() {
+            return withBadgeSize(R.dimen.edit_avatar_badge_size)
+                    .withBorderSize(R.dimen.edit_avatar_badge_border_size)
+                    .withXPosition(R.dimen.edit_avatar_badge_position_x)
+                    .withYPosition(R.dimen.edit_avatar_badge_position_y);
+        }
+
+        /**
+         * Draws the badge over the AI tier ring instead of replacing it.
+         *
+         * <p>Note: A non-zero border size cuts a transparent gap into the ring around the badge;
+         * use a 0dp border size so the badge sits directly on the ring.
+         */
+        public Builder withAiTierRingKept() {
+            mKeepsAiTierRing = true;
+            return this;
         }
 
         /** Sets the badge size to the given dimension resource ID. */
@@ -165,7 +201,8 @@ public final class BadgeConfig {
                     resources.getDimensionPixelSize(mBorderSizeResId),
                     new Point(
                             resources.getDimensionPixelOffset(mPositionXResId),
-                            resources.getDimensionPixelOffset(mPositionYResId)));
+                            resources.getDimensionPixelOffset(mPositionYResId)),
+                    mKeepsAiTierRing);
         }
     }
 }
