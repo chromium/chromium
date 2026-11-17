@@ -8640,3 +8640,9 @@ crbug.com/580335041 [ Mac ] external/wpt/resize-observer/scrollbars.html [ Failu
 # commit of the net::ERR_FILE_NOT_FOUND error page. Fix pending in crrev.com/c/8677279.
 crbug.com/566257733 tables/mozilla/bugs/bug137388-1.html [ Failure Pass ]
 crbug.com/566257733 tables/mozilla/bugs/bug137388-2.html [ Failure Pass ]
+
+# Time out on Mac bots that use overlay scrollbars and fail or time out
+# intermittently elsewhere. Remove once the tests are reimplemented with
+# variants.
+crbug.com/586512414 external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchanging-on-user-root-scroll.tentative.html [ Failure Pass Timeout ]
+crbug.com/586512414 external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchanging-on-user-scroll.tentative.html [ Failure Pass Timeout ]
