@@ -1626,7 +1626,9 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitHelper(
       {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
        AXBoundaryDetection::kDontCheckInitialPosition},
       boundary_direction);
-  CHECK(next_endpoint->IsLeafTextPosition(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586468297): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(next_endpoint->IsLeafTextPosition());
 
   bool is_ignored_for_text_navigation = false;
   int iteration = 0;
@@ -1646,7 +1648,9 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitHelper(
         {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
          AXBoundaryDetection::kDontCheckInitialPosition},
         boundary_direction);
-    CHECK(next_endpoint->IsLeafTextPosition(), base::NotFatalUntil::M163);
+    // TODO(crbug.com/586468297): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(next_endpoint->IsLeafTextPosition());
 
     // Loop until we're not on a position that is ignored for text navigation.
     // There is one exception for character navigation - since the ignored
