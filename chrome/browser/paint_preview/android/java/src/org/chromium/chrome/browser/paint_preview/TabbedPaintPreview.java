@@ -315,6 +315,10 @@ public class TabbedPaintPreview implements UserData {
     @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
+        if (mPlayerManager != null) {
+            mPlayerManager.destroy();
+            mPlayerManager = null;
+        }
         if (mTab != null) {
             mTab.removeObserver(mTabObserver);
             mTab = null;

@@ -25,6 +25,7 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -84,11 +85,14 @@ public class ScrollCaptureCallbackRenderTest {
                                 .getTestServer()
                                 .getURL("/chrome/test/data/android/share/checkerboard.html"));
         mInitialPage = mActivityTestRule.startOnWebPage(url.getSpec());
-        mCallback =
-                new ScrollCaptureCallbackDelegate(
-                        new ScrollCaptureCallbackDelegate.EntryManagerWrapper());
         mTab = mInitialPage.loadedTabElement.value();
-        mCallback.setCurrentTab(mTab);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCallback =
+                            new ScrollCaptureCallbackDelegate(
+                                    new ScrollCaptureCallbackDelegate.EntryManagerWrapper());
+                    mCallback.setCurrentTab(mTab);
+                });
         // Wait for the script to execute and for the renderer to actually paint everything.
         noopTo().waitFor(
                         uiThreadCondition(
@@ -107,6 +111,13 @@ public class ScrollCaptureCallbackRenderTest {
                                             "contentHeightPix %d",
                                             contentHeightPix);
                                 }));
+    }
+
+    @After
+    public void tearDown() {
+        if (mCallback != null) {
+            ThreadUtils.runOnUiThreadBlocking(mCallback::destroy);
+        }
     }
 
     @Test

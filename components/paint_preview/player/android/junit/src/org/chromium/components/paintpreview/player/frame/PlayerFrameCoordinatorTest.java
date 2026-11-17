@@ -6,6 +6,7 @@ package org.chromium.components.paintpreview.player.frame;
 
 import android.graphics.Rect;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,10 +21,19 @@ import org.chromium.components.paintpreview.player.PlayerGestureListener;
 /** Tests for the {@link PlayerFrameCoordinator} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayerFrameCoordinatorTest {
+    private PlayerFrameCoordinator mRootCoordinator;
+
+    @After
+    public void tearDown() {
+        if (mRootCoordinator != null) {
+            mRootCoordinator.destroy();
+        }
+    }
+
     /** Tests the {@link PlayerFrameCoordinator#setAcceptUserInput(boolean)} method. */
     @Test
     public void testUserInputToggle() {
-        PlayerFrameCoordinator rootCoordinator =
+        mRootCoordinator =
                 new PlayerFrameCoordinator(
                         RuntimeEnvironment.systemContext,
                         Mockito.mock(PlayerCompositorDelegate.class),
@@ -55,18 +65,18 @@ public class PlayerFrameCoordinatorTest {
                         null,
                         null,
                         null);
-        rootCoordinator.addSubFrame(childCoordinator, new Rect(10, 20, 35, 40));
+        mRootCoordinator.addSubFrame(childCoordinator, new Rect(10, 20, 35, 40));
 
-        rootCoordinator.getMediator().setLayoutDimensions(100, 200);
+        mRootCoordinator.getMediator().setLayoutDimensions(100, 200);
         childCoordinator.getMediator().setLayoutDimensions(25, 20);
 
         // Main frame and the sub-frame should be able to scroll and scale.
         Assert.assertTrue(
                 "Should be able to scroll.",
-                rootCoordinator.getScrollControllerForTest().scrollBy(10f, 10f));
+                mRootCoordinator.getScrollControllerForTest().scrollBy(10f, 10f));
         Assert.assertTrue(
                 "Should be able to scale.",
-                rootCoordinator.getScaleControllerForTest().scaleBy(1.1f, 0f, 0f));
+                mRootCoordinator.getScaleControllerForTest().scaleBy(1.1f, 0f, 0f));
         Assert.assertTrue(
                 "Should be able to scroll.",
                 childCoordinator.getScrollControllerForTest().scrollBy(1f, 1f));
@@ -75,13 +85,13 @@ public class PlayerFrameCoordinatorTest {
                 childCoordinator.getScaleControllerForTest().scaleBy(1.1f, 0f, 0f));
 
         // Don't accept user input. Scaling and scrolling is not permitted.
-        rootCoordinator.setAcceptUserInput(false);
+        mRootCoordinator.setAcceptUserInput(false);
         Assert.assertFalse(
                 "Should not be able to scroll.",
-                rootCoordinator.getScrollControllerForTest().scrollBy(10f, 10f));
+                mRootCoordinator.getScrollControllerForTest().scrollBy(10f, 10f));
         Assert.assertFalse(
                 "Should not be able to scale.",
-                rootCoordinator.getScaleControllerForTest().scaleBy(1.1f, 0f, 0f));
+                mRootCoordinator.getScaleControllerForTest().scaleBy(1.1f, 0f, 0f));
         Assert.assertFalse(
                 "Should not be able to scroll.",
                 childCoordinator.getScrollControllerForTest().scrollBy(1f, 1f));
@@ -90,13 +100,13 @@ public class PlayerFrameCoordinatorTest {
                 childCoordinator.getScaleControllerForTest().scaleBy(1.1f, 0f, 0f));
 
         // Accept user input. All scale and scroll operations should be executed.
-        rootCoordinator.setAcceptUserInput(true);
+        mRootCoordinator.setAcceptUserInput(true);
         Assert.assertTrue(
                 "Should be able to scroll.",
-                rootCoordinator.getScrollControllerForTest().scrollBy(10f, 10f));
+                mRootCoordinator.getScrollControllerForTest().scrollBy(10f, 10f));
         Assert.assertTrue(
                 "Should be able to scale.",
-                rootCoordinator.getScaleControllerForTest().scaleBy(1.1f, 0f, 0f));
+                mRootCoordinator.getScaleControllerForTest().scaleBy(1.1f, 0f, 0f));
         Assert.assertTrue(
                 "Should be able to scroll.",
                 childCoordinator.getScrollControllerForTest().scrollBy(1f, 1f));

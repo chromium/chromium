@@ -40,6 +40,11 @@ public class ScrollCaptureManagerDelegateImpl implements ScrollCaptureManagerDel
         mScrollCaptureCallback.setCurrentTab(tab);
     }
 
+    @Override
+    public void destroy() {
+        mScrollCaptureCallback.destroy();
+    }
+
     private void setScrollCaptureCallbackForView(
             View view, @Nullable ScrollCaptureCallback scrollCaptureCallback) {
         view.setScrollCaptureHint(

@@ -24,6 +24,7 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.View;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,8 +42,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.MemoryPressureLevel;
-import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.base.memory_coordinator.MemoryLimit;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -89,7 +89,6 @@ public class ScrollCaptureCallbackDelegateTest {
 
     @Before
     public void setUp() {
-        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(MemoryPressureLevel.NONE);
         PaintPreviewCompositorUtilsJni.setInstanceForTesting(mCompositorUtils);
         doReturn(false).when(mCompositorUtils).stopWarmCompositor();
         doNothing().when(mCompositorUtils).warmupCompositor();
@@ -108,6 +107,13 @@ public class ScrollCaptureCallbackDelegateTest {
 
         mScrollCaptureCallbackObj = new ScrollCaptureCallbackDelegate(mEntryManagerWrapper);
         ((ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj).setCurrentTab(mTab);
+    }
+
+    @After
+    public void tearDown() {
+        if (mScrollCaptureCallbackObj != null) {
+            ((ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj).destroy();
+        }
     }
 
     @Test
@@ -272,11 +278,10 @@ public class ScrollCaptureCallbackDelegateTest {
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
         CancellationSignal signal = new CancellationSignal();
 
-        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
-                MemoryPressureLevel.MODERATE);
+        scrollCaptureCallback.onUpdateMemoryLimit(MemoryLimit.MODERATE_PRESSURE);
         Assert.assertTrue(scrollCaptureCallback.onScrollCaptureSearch(signal).isEmpty());
 
-        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(MemoryPressureLevel.NONE);
+        scrollCaptureCallback.onUpdateMemoryLimit(MemoryLimit.NO_PRESSURE);
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(500);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(2000);
 
@@ -294,8 +299,7 @@ public class ScrollCaptureCallbackDelegateTest {
         CancellationSignal signal = new CancellationSignal();
 
         // Memory pressure is MODERATE, but flag is enabled. Should NOT return empty Rect.
-        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
-                MemoryPressureLevel.MODERATE);
+        scrollCaptureCallback.onUpdateMemoryLimit(MemoryLimit.MODERATE_PRESSURE);
 
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(500);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(2000);
@@ -304,8 +308,7 @@ public class ScrollCaptureCallbackDelegateTest {
                 new Rect(0, 0, 500, 2000), scrollCaptureCallback.onScrollCaptureSearch(signal));
 
         // On Android 16+ (BAKLAVA), even under CRITICAL memory pressure, it should still work.
-        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
-                MemoryPressureLevel.CRITICAL);
+        scrollCaptureCallback.onUpdateMemoryLimit(MemoryLimit.CRITICAL_PRESSURE);
         Assert.assertEquals(
                 new Rect(0, 0, 500, 2000), scrollCaptureCallback.onScrollCaptureSearch(signal));
     }
@@ -323,14 +326,12 @@ public class ScrollCaptureCallbackDelegateTest {
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(2000);
 
         // On Android < 16 (Pre-BAKLAVA), MODERATE pressure should be allowed (lenient threshold).
-        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
-                MemoryPressureLevel.MODERATE);
+        scrollCaptureCallback.onUpdateMemoryLimit(MemoryLimit.MODERATE_PRESSURE);
         Assert.assertEquals(
                 new Rect(0, 0, 500, 2000), scrollCaptureCallback.onScrollCaptureSearch(signal));
 
         // CRITICAL memory pressure should still be blocked on Android < 16 to avoid framework NPE.
-        MemoryPressureMonitor.INSTANCE.setLastReportedPressureForTesting(
-                MemoryPressureLevel.CRITICAL);
+        scrollCaptureCallback.onUpdateMemoryLimit(MemoryLimit.CRITICAL_PRESSURE);
         Assert.assertTrue(scrollCaptureCallback.onScrollCaptureSearch(signal).isEmpty());
     }
 

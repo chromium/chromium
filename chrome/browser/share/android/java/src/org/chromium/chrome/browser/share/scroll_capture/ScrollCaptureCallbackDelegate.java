@@ -21,7 +21,10 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.MemoryPressureLevel;
-import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.base.memory_coordinator.MemoryConsumerRegistration;
+import org.chromium.base.memory_coordinator.MemoryConsumerTraits;
+import org.chromium.base.memory_coordinator.MemoryLimit;
+import org.chromium.base.memory_coordinator.PassiveMemoryConsumer;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,7 +42,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** An delegate to provide an Android API level independent implementation Scroll Capture. */
 @NullMarked
-public class ScrollCaptureCallbackDelegate {
+public class ScrollCaptureCallbackDelegate implements PassiveMemoryConsumer {
     private static final int BITMAP_HEIGHT_THRESHOLD = 20;
 
     /** Wrapper class for {@link EntryManager}. */
@@ -50,6 +53,8 @@ public class ScrollCaptureCallbackDelegate {
     }
 
     private final EntryManagerWrapper mEntryManagerWrapper;
+    private final MemoryConsumerRegistration mMemoryConsumerRegistration;
+    private MemoryLimit mMemoryLimit = MemoryLimit.DEFAULT;
     private @Nullable Tab mCurrentTab;
     private @Nullable EntryManager mEntryManager;
 
@@ -67,13 +72,36 @@ public class ScrollCaptureCallbackDelegate {
 
     public ScrollCaptureCallbackDelegate(EntryManagerWrapper entryManagerWrapper) {
         mEntryManagerWrapper = entryManagerWrapper;
+        mMemoryConsumerRegistration =
+                MemoryConsumerRegistration.create(
+                        "ScrollCaptureCallbackDelegate",
+                        MemoryConsumerTraits.createPassive(),
+                        this);
+    }
+
+    @Override
+    public void onUpdateMemoryLimit(MemoryLimit memoryLimit) {
+        mMemoryLimit = memoryLimit;
+    }
+
+    public void destroy() {
+        mMemoryConsumerRegistration.close();
+    }
+
+    private static @MemoryPressureLevel int memoryPressureLevelFromMemoryLimit(MemoryLimit limit) {
+        if (limit.getPercent() >= MemoryLimit.NO_PRESSURE.getPercent()) {
+            return MemoryPressureLevel.NONE;
+        } else if (limit.getPercent() >= MemoryLimit.MODERATE_PRESSURE.getPercent()) {
+            return MemoryPressureLevel.MODERATE;
+        }
+        return MemoryPressureLevel.CRITICAL;
     }
 
     /** See {@link ScrollCaptureCallback#onScrollCaptureSearch}. */
     public Rect onScrollCaptureSearch(CancellationSignal cancellationSignal) {
         assert mCurrentTab != null;
 
-        int pressure = MemoryPressureMonitor.INSTANCE.getLastReportedPressure();
+        int pressure = memoryPressureLevelFromMemoryLimit(mMemoryLimit);
         RecordHistogram.recordEnumeratedHistogram(
                 "Sharing.ScrollCapture.MemoryPressureOnSearch",
                 pressure,

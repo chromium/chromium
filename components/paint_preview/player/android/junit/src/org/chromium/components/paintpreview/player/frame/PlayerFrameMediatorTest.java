@@ -22,8 +22,7 @@ import android.util.Size;
 import android.view.View;
 import android.widget.OverScroller;
 
-import androidx.annotation.NonNull;
-
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -124,7 +123,6 @@ public class PlayerFrameMediatorTest {
                     && rb.mScaleFactor == mScaleFactor;
         }
 
-        @NonNull
         @Override
         public String toString() {
             return mFrameGuid + ", " + mClipRect + ", " + mScaleFactor;
@@ -157,7 +155,6 @@ public class PlayerFrameMediatorTest {
             return cp.mFrameGuid.equals(mFrameGuid) && cp.mX == mX && cp.mY == mY;
         }
 
-        @NonNull
         @Override
         public String toString() {
             return "Click event for frame "
@@ -275,6 +272,11 @@ public class PlayerFrameMediatorTest {
                         mGestureListener::onScroll,
                         mGestureListener::onFling);
         mBitmapStateController = mMediator.getBitmapStateControllerForTest();
+    }
+
+    @After
+    public void tearDown() {
+        mMediator.destroy();
     }
 
     private static Rect getRectForTile(int tileWidth, int tileHeight, int row, int col) {

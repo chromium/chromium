@@ -106,5 +106,6 @@ public class ScrollCaptureManagerTest {
         mScrollCaptureManager.destroy();
         inOrder.verify(mTab).removeObserver(mScrollCaptureManager);
         inOrder.verify(mScrollCaptureManagerDelegateMock).removeScrollCaptureBindings(eq(view));
+        inOrder.verify(mScrollCaptureManagerDelegateMock).destroy();
     }
 }

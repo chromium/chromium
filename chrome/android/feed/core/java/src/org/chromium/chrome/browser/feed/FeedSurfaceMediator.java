@@ -21,10 +21,17 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.MemoryPressureLevel;
-import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ObserverList;
-import org.chromium.base.memory.MemoryPressureCallback;
+import org.chromium.base.memory_coordinator.EstimatedMemoryUsage;
+import org.chromium.base.memory_coordinator.ExecutionType;
+import org.chromium.base.memory_coordinator.InformationRetention;
+import org.chromium.base.memory_coordinator.IsStateful;
+import org.chromium.base.memory_coordinator.MemoryConsumer;
+import org.chromium.base.memory_coordinator.MemoryConsumerRegistration;
+import org.chromium.base.memory_coordinator.MemoryConsumerTraits;
+import org.chromium.base.memory_coordinator.MemoryLimit;
+import org.chromium.base.memory_coordinator.ReleaseMemoryDataAccess;
+import org.chromium.base.memory_coordinator.SupportsMemoryLimit;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -106,7 +113,7 @@ public class FeedSurfaceMediator
     private @Nullable RecyclerViewAnimationFinishDetector mStreamScrollAnimationFinishDetector;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
     private @Nullable ContentChangedListener mStreamContentChangedListener;
-    private @Nullable MemoryPressureCallback mMemoryPressureCallback;
+    private @Nullable MemoryConsumerRegistration mMemoryConsumerRegistration;
     private @Nullable RecyclerViewAnimationFinishDetector mRecyclerViewAnimationFinishDetector;
 
     private boolean mFeedEnabled;
@@ -383,17 +390,42 @@ public class FeedSurfaceMediator
         mSettingUpStreams = false;
 
         mStreamScrollAnimationFinishDetector = new RecyclerViewAnimationFinishDetector();
-        var view = mCoordinator.getRecyclerView();
+        RecyclerView view = mCoordinator.getRecyclerView();
 
         initStreamHeaderViews();
 
-        mMemoryPressureCallback =
-                pressure -> {
-                    if (pressure != MemoryPressureLevel.NONE) {
-                        view.getRecycledViewPool().clear();
-                    }
-                };
-        MemoryPressureListener.addCallback(mMemoryPressureCallback);
+        MemoryConsumerTraits traits =
+                new MemoryConsumerTraits.Builder(
+                                // Typically a few MB at most: the pool only holds a handful of
+                                // detached ViewHolders per view type.
+                                EstimatedMemoryUsage.SMALL,
+                                // Only drops references to recently used ViewHolders; the Java GC
+                                // reclaims them later.
+                                ReleaseMemoryDataAccess.NONE,
+                                // Recycled views are only kept for reuse; they are recreated when
+                                // needed.
+                                InformationRetention.LOSSLESS,
+                                // clear() completes before onReleaseMemory() returns.
+                                ExecutionType.SYNCHRONOUS)
+                        // There is no size to cap; the pool is only cleared.
+                        .setSupportsMemoryLimit(SupportsMemoryLimit.NO)
+                        // Each call does a one-time clear; the pool refills as the user scrolls.
+                        .setIsStateful(IsStateful.NO)
+                        .build();
+
+        mMemoryConsumerRegistration =
+                MemoryConsumerRegistration.create(
+                        "FeedSurfaceMediator",
+                        traits,
+                        new MemoryConsumer() {
+                            @Override
+                            public void onUpdateMemoryLimit(MemoryLimit memoryLimit) {}
+
+                            @Override
+                            public void onReleaseMemory() {
+                                view.getRecycledViewPool().clear();
+                            }
+                        });
 
         mIsPropertiesInitializedForStream = true;
     }
@@ -536,9 +568,9 @@ public class FeedSurfaceMediator
             mStreamScrollAnimationFinishDetector = null;
         }
 
-        if (mMemoryPressureCallback != null) {
-            MemoryPressureListener.removeCallback(mMemoryPressureCallback);
-            mMemoryPressureCallback = null;
+        if (mMemoryConsumerRegistration != null) {
+            mMemoryConsumerRegistration.close();
+            mMemoryConsumerRegistration = null;
         }
 
         if (mStreamHolder != null) {

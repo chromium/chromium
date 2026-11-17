@@ -12,7 +12,6 @@ import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.browser.paint_preview.TabbedPaintPreviewTest.assertAttachedAndShown;
 
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
 
@@ -342,16 +341,5 @@ public class StartupPaintPreviewTest {
                             dismissCallback == null ? null : dismissCallback::notifyCalled);
                 });
         assertAttachedAndShown(tabbedPaintPreview, true, true);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "TabbedPaintPreview has no view",
-                            tabbedPaintPreview.getViewForTesting(),
-                            Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "TabbedPaintPreview has 0 children",
-                            ((ViewGroup) tabbedPaintPreview.getViewForTesting()).getChildCount(),
-                            Matchers.not(0));
-                });
     }
 }

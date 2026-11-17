@@ -79,5 +79,6 @@ public class ScrollCaptureManager implements TabObserver, Callback<@Nullable Tab
         mTabSupplier.removeObserver(this);
         if (mCurrentTab != null) mCurrentTab.removeObserver(this);
         if (mCurrentView != null) removeScrollCaptureBindings(mCurrentView);
+        mDelegate.destroy();
     }
 }

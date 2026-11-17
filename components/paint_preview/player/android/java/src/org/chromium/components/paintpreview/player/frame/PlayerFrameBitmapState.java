@@ -11,10 +11,9 @@ import android.graphics.Rect;
 import android.util.Size;
 
 import org.chromium.base.Callback;
-import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.memory.MemoryPressureMonitor;
+import org.chromium.base.memory_coordinator.MemoryLimit;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
@@ -171,8 +170,8 @@ public class PlayerFrameBitmapState {
         }
 
         // Only fetch out-of-viewport bitmaps eagerly if not under memory pressure.
-        if (MemoryPressureMonitor.INSTANCE.getLastReportedPressure()
-                < MemoryPressureLevel.MODERATE) {
+        if (mStateController.getMemoryLimit().getPercent()
+                >= MemoryLimit.NO_PRESSURE.getPercent()) {
             // Request bitmaps for adjacent tiles that are not currently in the view port. The
             // reason that we do this in a separate loop is to make sure bitmaps for tiles inside
             // the view port are fetched first.

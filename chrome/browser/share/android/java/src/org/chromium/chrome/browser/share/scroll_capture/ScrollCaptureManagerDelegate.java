@@ -21,4 +21,7 @@ public interface ScrollCaptureManagerDelegate {
 
     /** Updates the current tab. */
     void setCurrentTab(@Nullable Tab tab);
+
+    /** Destroys the delegate and cleans up resources. */
+    void destroy();
 }

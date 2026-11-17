@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.paint_preview.TabbedPaintPreviewTest.a
 import androidx.test.filters.MediumTest;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,9 +62,20 @@ public class DemoPaintPreviewTest {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDownClass() {
         PlayerManager.overrideCompositorDelegateFactoryForTesting(null);
         TabbedPaintPreview.overridePaintPreviewTabServiceForTesting(null);
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = mActivityTestRule.getActivityTab();
+                    if (tab != null) {
+                        TabbedPaintPreview.get(tab).remove(false, false);
+                    }
+                });
     }
 
     @Before

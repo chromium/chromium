@@ -63,4 +63,8 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
     void setCurrentTab(@Nullable Tab tab) {
         mDelegate.setCurrentTab(tab);
     }
+
+    public void destroy() {
+        mDelegate.destroy();
+    }
 }

@@ -8,7 +8,9 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
@@ -195,6 +197,7 @@ public class TabbedPaintPreviewTest {
                                         TabClosureParams.closeTab(newTab).allowUndo(false).build(),
                                         /* allowDialog= */ false));
         assertToolbarPersistence(true, visibilityDelegate);
+        ThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.remove(false, false));
     }
 
     /**
@@ -298,6 +301,14 @@ public class TabbedPaintPreviewTest {
         CriteriaHelper.pollUiThread(
                 () -> tabbedPaintPreview.isAttached() == attached, attachedMessage);
         CriteriaHelper.pollUiThread(() -> tabbedPaintPreview.isShowing() == shown, shownMessage);
+        if (shown) {
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        ViewGroup view = (ViewGroup) tabbedPaintPreview.getViewForTesting();
+                        return view != null && view.getChildCount() > 0;
+                    },
+                    "Paint Preview view should be inflated.");
+        }
     }
 
     public static void assertWasEverShown(
@@ -345,6 +356,7 @@ public class TabbedPaintPreviewTest {
 
     /** Dummy implementation of {@link PlayerCompositorDelegate}. */
     public static class TestCompositorDelegate implements PlayerCompositorDelegate {
+        private final Handler mHandler = new Handler(Looper.getMainLooper());
         private int mNextRequestId;
 
         TestCompositorDelegate(
@@ -357,27 +369,25 @@ public class TabbedPaintPreviewTest {
                 Callback<Integer> compositorErrorCallback) {
             Assert.assertEquals(0, nativeCaptureResultPtr);
             Assert.assertFalse(mainFrameMode);
-            new Handler()
-                    .postDelayed(
-                            () -> {
-                                Parcel parcel = Parcel.obtain();
-                                parcel.writeLong(4577L);
-                                parcel.writeLong(23L);
-                                parcel.setDataPosition(0);
-                                UnguessableToken token =
-                                        UnguessableToken.CREATOR.createFromParcel(parcel);
-                                compositorListener.onCompositorReady(
-                                        token,
-                                        new UnguessableToken[] {token},
-                                        new int[] {500, 500},
-                                        new int[] {0, 0},
-                                        new int[] {0},
-                                        null,
-                                        null,
-                                        0f,
-                                        0);
-                            },
-                            250);
+            mHandler.postDelayed(
+                    () -> {
+                        Parcel parcel = Parcel.obtain();
+                        parcel.writeLong(4577L);
+                        parcel.writeLong(23L);
+                        parcel.setDataPosition(0);
+                        UnguessableToken token = UnguessableToken.CREATOR.createFromParcel(parcel);
+                        compositorListener.onCompositorReady(
+                                token,
+                                new UnguessableToken[] {token},
+                                new int[] {500, 500},
+                                new int[] {0, 0},
+                                new int[] {0},
+                                null,
+                                null,
+                                0f,
+                                0);
+                    },
+                    250);
         }
 
         @Override
@@ -387,17 +397,16 @@ public class TabbedPaintPreviewTest {
                 float scaleFactor,
                 Callback<Bitmap> bitmapCallback,
                 Runnable errorCallback) {
-            new Handler()
-                    .postDelayed(
-                            () -> {
-                                Bitmap emptyBitmap =
-                                        Bitmap.createBitmap(
-                                                clipRect.width(),
-                                                clipRect.height(),
-                                                Bitmap.Config.ARGB_4444);
-                                bitmapCallback.onResult(emptyBitmap);
-                            },
-                            100);
+            mHandler.postDelayed(
+                    () -> {
+                        Bitmap emptyBitmap =
+                                Bitmap.createBitmap(
+                                        clipRect.width(),
+                                        clipRect.height(),
+                                        Bitmap.Config.ARGB_4444);
+                        bitmapCallback.onResult(emptyBitmap);
+                    },
+                    100);
             int requestId = mNextRequestId;
             mNextRequestId++;
             return requestId;
@@ -437,7 +446,9 @@ public class TabbedPaintPreviewTest {
         public void setCompressOnClose(boolean compressOnClose) {}
 
         @Override
-        public void destroy() {}
+        public void destroy() {
+            mHandler.removeCallbacksAndMessages(null);
+        }
     }
 
     /** Blank implementation of {@link PlayerManager.Listener}. */

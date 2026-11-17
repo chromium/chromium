@@ -9,6 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.util.Size;
 
 import org.chromium.base.UnguessableToken;
+import org.chromium.base.memory_coordinator.MemoryConsumerRegistration;
+import org.chromium.base.memory_coordinator.MemoryConsumerTraits;
+import org.chromium.base.memory_coordinator.MemoryLimit;
+import org.chromium.base.memory_coordinator.PassiveMemoryConsumer;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -16,7 +20,10 @@ import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
 /** Class for managing which bitmap state is shown. */
 @NullMarked
-public class PlayerFrameBitmapStateController {
+public class PlayerFrameBitmapStateController implements PassiveMemoryConsumer {
+    private final MemoryConsumerRegistration mMemoryConsumerRegistration;
+    private MemoryLimit mMemoryLimit = MemoryLimit.DEFAULT;
+
     private @Nullable PlayerFrameBitmapState mLoadingBitmapState;
     private @Nullable PlayerFrameBitmapState mVisibleBitmapState;
 
@@ -37,6 +44,20 @@ public class PlayerFrameBitmapStateController {
         mContentSize = contentSize;
         mCompositorDelegate = compositorDelegate;
         mMediatorDelegate = mediatorDelegate;
+        mMemoryConsumerRegistration =
+                MemoryConsumerRegistration.create(
+                        "PlayerFrameBitmapStateController",
+                        MemoryConsumerTraits.createPassive(),
+                        this);
+    }
+
+    @Override
+    public void onUpdateMemoryLimit(MemoryLimit memoryLimit) {
+        mMemoryLimit = memoryLimit;
+    }
+
+    MemoryLimit getMemoryLimit() {
+        return mMemoryLimit;
     }
 
     void deleteAll() {
@@ -51,6 +72,7 @@ public class PlayerFrameBitmapStateController {
     }
 
     void destroy() {
+        mMemoryConsumerRegistration.close();
         deleteAll();
     }
 
