@@ -562,12 +562,11 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     }
 #endif
 
-    const bool end_semaphores_empty = end_semaphores.empty();
     bool result = scoped_output_device_paint_->Flush(vulkan_context_provider_,
                                                      std::move(end_semaphores),
                                                      std::move(on_finished));
 
-    if (!result && !(begin_semaphores.empty() && end_semaphores_empty)) {
+    if (!result) {
       if (!return_release_fence_cb.is_null()) {
         std::move(return_release_fence_cb).Run(gfx::GpuFenceHandle());
         return_release_fence_cb.Reset();
@@ -777,13 +776,14 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       context_state_->progress_reporter());
 
   // This flushes paint ops first, then applies Vulkan transition layouts and
-  // then submit semaphores to signal.
-  gr_context()->flush(surface, {});
+  // then submit semaphores to signal. The first flush is the one that executes
+  // the draw, so its result is checked too. The last flush must always run
+  // since it hands the semaphores and finished callbacks to Skia.
+  bool result = gr_context()->flush(surface, {}).fSuccess;
   scoped_access->ApplyBackendSurfaceEndState();
-  auto result = gr_context()->flush(surface, flush_info, nullptr);
+  result &= gr_context()->flush(surface, flush_info, nullptr).fSuccess;
 
-  if (!result.fSuccess &&
-      !(begin_semaphores.empty() && end_semaphores.empty())) {
+  if (!result) {
     if (!return_release_fence_cb.is_null()) {
       std::move(return_release_fence_cb).Run(gfx::GpuFenceHandle());
       return_release_fence_cb.Reset();
@@ -1185,7 +1185,7 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     if (scoped_write_access) {
       scoped_write_access->ApplyBackendSurfaceEndState();
     }
-    return flush_result.fSuccess || end_semaphores.empty();
+    return flush_result.fSuccess;
   }
 
   CHECK(graphite_recorder());
