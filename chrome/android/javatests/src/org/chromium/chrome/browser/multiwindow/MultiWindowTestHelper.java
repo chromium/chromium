@@ -181,9 +181,23 @@ public class MultiWindowTestHelper {
      * @param context The context used to build the intent to start the new activity.
      * @return The newly created ChromeTabbedActivity after it is resumed and its tab state is
      *     initialized.
-     * @see #waitForNewChromeTabbedActivity(Runnable)
+     * @see #createNewChromeTabbedActivityWindow(Context)
      */
     public static ChromeTabbedActivity createNewChromeTabbedActivity(Context context) {
+        return createNewChromeTabbedActivityWindow(context).getActivity();
+    }
+
+    /**
+     * Creates a new ChromeTabbedActivity (API 31 only) and enters a {@link CtaPageStation} there.
+     *
+     * <p>From a page Station on tablet or desktop, prefer {@code
+     * PageAppMenuFacility#openNewWindow()} or {@code CtaPageStation#openNewWindowFast()}.
+     *
+     * @param context The context used to build the intent to start the new activity.
+     * @return The ACTIVE {@link CtaPageStation} in the new window, after it is resumed and its tab
+     *     state is initialized.
+     */
+    public static CtaPageStation createNewChromeTabbedActivityWindow(Context context) {
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         context,
@@ -191,8 +205,11 @@ public class MultiWindowTestHelper {
                         /* preferNew= */ true,
                         /* openAdjacently= */ false,
                         NewWindowAppSource.MENU);
-        return waitForNewChromeTabbedActivity(
-                () -> ContextUtils.getApplicationContext().startActivity(intent));
+        return arriveInNewWindow(
+                Triggers.runOnUiThreadTo(
+                        () -> ContextUtils.getApplicationContext().startActivity(intent)),
+                /* isIncognito= */ false,
+                /* allowSubclasses= */ false);
     }
 
     /**

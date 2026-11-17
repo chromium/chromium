@@ -50,7 +50,8 @@ import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 import java.io.File;
@@ -572,7 +573,9 @@ public class TabPersistentStoreIntegrationTest {
         ChromeTabbedActivity recreatedActivity2 = null;
         try {
             // 1. Start second activity (Activity2).
-            activity2 = MultiWindowTestHelper.createNewChromeTabbedActivity(activity1);
+            CtaPageStation page2 =
+                    MultiWindowTestHelper.createNewChromeTabbedActivityWindow(activity1);
+            activity2 = page2.getActivity();
 
             final ChromeTabbedActivity finalActivity2 = activity2;
 
@@ -581,10 +584,9 @@ public class TabPersistentStoreIntegrationTest {
                             () -> finalActivity2.getTabModelSelector().getModel(false));
             int count2 = ThreadUtils.runOnUiThreadBlocking(() -> model2.getCount());
             assertEquals(1, count2);
-            final Tab tab0W2 = ThreadUtils.runOnUiThreadBlocking(() -> model2.getTabAt(0));
             String testUrl2 = UrlUtils.encodeHtmlDataUri("<html>test_url_2.</html>");
-            ChromeTabUtils.loadUrlOnUiThread(tab0W2, testUrl2);
-            ChromeTabUtils.waitForTabPageLoaded(tab0W2, testUrl2);
+            WebPageStation webPage2 = page2.loadWebPageProgrammatically(testUrl2);
+            final Tab tab0W2 = webPage2.loadedTabElement.value();
 
             // 2. Open NTP in Activity2.
             final TabModelOrchestrator orchestrator2 =
