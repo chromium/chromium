@@ -222,17 +222,14 @@ double GetSystemTextScaleFactor() {
   return kMinTextScaleFactor;
 }
 
-int ScaleFontForDpiAndTextScale(int base_font_size,
-                                UINT dpi,
-                                double text_scale) {
+int ScaleForDpiAndTextScale(int value, UINT dpi, double text_scale) {
   if (dpi == 0) {
     dpi = USER_DEFAULT_SCREEN_DPI;
   }
   double clamped_scale =
       std::clamp(text_scale, kMinTextScaleFactor, kMaxTextScaleFactor);
-  return std::max(1,
-                  base::ClampRound(base_font_size * static_cast<double>(dpi) *
-                                   clamped_scale / USER_DEFAULT_SCREEN_DPI));
+  return std::max(1, base::ClampRound(value * static_cast<double>(dpi) *
+                                      clamped_scale / USER_DEFAULT_SCREEN_DPI));
 }
 
 base::AutoReset<std::optional<double>> ScopedOverrideTextScaleFactorForTesting(
@@ -454,6 +451,7 @@ BackdropContentLayout ComputeBackdropContentLayout(HDC dc,
                                                    int client_width,
                                                    int client_height,
                                                    UINT dpi,
+                                                   double text_scale,
                                                    bool is_rtl,
                                                    BackdropTextBlock title,
                                                    BackdropTextBlock body,
@@ -464,6 +462,8 @@ BackdropContentLayout ComputeBackdropContentLayout(HDC dc,
 
   BackdropContentLayout layout;
   layout.draw_text_flags = GetBackdropDrawTextFlags(is_rtl);
+  // Keep vertical spacing and icon size DPI-only so enlarged accessibility text
+  // preserves screen space rather than compounding margins.
   int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
   layout.icon_size = ScaleForDpi(kBaseIconSize, dpi);
 
@@ -474,18 +474,21 @@ BackdropContentLayout ComputeBackdropContentLayout(HDC dc,
   layout.text_left = center_x - layout.max_text_width / 2;
   layout.text_right = layout.text_left + layout.max_text_width;
 
-  // Use the unpadded font pixel size as the fallback minimum height for each
-  // non-empty block so single-line and multi-line sharing messages maintain a
-  // uniform `spacing / 2` visual gap above `hint.text`.
+  // Use the unpadded scaled font pixel size as the fallback minimum height for
+  // each non-empty block so single-line and multi-line sharing messages
+  // maintain a uniform `spacing / 2` visual gap above `hint.text`.
   layout.title_height = MeasureWrappedTextHeight(
       dc, title.font, title.text, layout.max_text_width,
-      ScaleForDpi(kBaseTitleFontSize, dpi), layout.draw_text_flags);
+      ScaleForDpiAndTextScale(kBaseTitleFontSize, dpi, text_scale),
+      layout.draw_text_flags);
   layout.body_height = MeasureWrappedTextHeight(
       dc, body.font, body.text, layout.max_text_width,
-      ScaleForDpi(kBaseBodyFontSize, dpi), layout.draw_text_flags);
+      ScaleForDpiAndTextScale(kBaseBodyFontSize, dpi, text_scale),
+      layout.draw_text_flags);
   layout.hint_height = MeasureWrappedTextHeight(
       dc, hint.font, hint.text, layout.max_text_width,
-      ScaleForDpi(kBaseHintFontSize, dpi), layout.draw_text_flags);
+      ScaleForDpiAndTextScale(kBaseHintFontSize, dpi, text_scale),
+      layout.draw_text_flags);
   layout.hint_gap =
       (layout.body_height > 0 && layout.hint_height > 0) ? (spacing / 2) : 0;
   layout.below_center_height =

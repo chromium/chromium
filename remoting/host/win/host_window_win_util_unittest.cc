@@ -43,15 +43,15 @@ TEST(HostWindowWinUtilTest, ScalesValuesForDpi) {
 }
 
 TEST(HostWindowWinUtilTest,
-     ScalesFontForDpiAndTextScaleWithSingleStepRoundingAndClamping) {
-  EXPECT_EQ(ScaleFontForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 1.0), 18);
-  EXPECT_EQ(ScaleFontForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 1.5), 27);
-  EXPECT_EQ(ScaleFontForDpiAndTextScale(18, 192, 1.5), 54);
+     ScalesValuesForDpiAndTextScaleWithSingleStepRoundingAndClamping) {
+  EXPECT_EQ(ScaleForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 1.0), 18);
+  EXPECT_EQ(ScaleForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 1.5), 27);
+  EXPECT_EQ(ScaleForDpiAndTextScale(18, 192, 1.5), 54);
   // Single-step rounding (`14 * 120 * 1.25 / 96 = 21.875 -> 22`, avoiding the
   // 1px overestimate from rounding `14 * 120 / 96` to `18` first).
-  EXPECT_EQ(ScaleFontForDpiAndTextScale(14, 120, 1.25), 22);
-  EXPECT_EQ(ScaleFontForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 0.5), 18);
-  EXPECT_EQ(ScaleFontForDpiAndTextScale(20, USER_DEFAULT_SCREEN_DPI, 5.0), 45);
+  EXPECT_EQ(ScaleForDpiAndTextScale(14, 120, 1.25), 22);
+  EXPECT_EQ(ScaleForDpiAndTextScale(18, USER_DEFAULT_SCREEN_DPI, 0.5), 18);
+  EXPECT_EQ(ScaleForDpiAndTextScale(20, USER_DEFAULT_SCREEN_DPI, 5.0), 45);
 }
 
 TEST(HostWindowWinUtilTest, OverridesAndClampsSystemTextScaleFactor) {
@@ -284,12 +284,16 @@ TEST(HostWindowWinUtilTest,
   ASSERT_NE(static_cast<HDC>(screen_dc), nullptr);
 
   constexpr UINT kDpi = USER_DEFAULT_SCREEN_DPI;
-  base::win::ScopedGDIObject<HFONT> title_font =
-      CreateOverlayFont(ScaleForDpi(kBaseTitleFontSize, kDpi), FW_SEMIBOLD);
-  base::win::ScopedGDIObject<HFONT> body_font =
-      CreateOverlayFont(ScaleForDpi(kBaseBodyFontSize, kDpi), FW_NORMAL);
-  base::win::ScopedGDIObject<HFONT> hint_font =
-      CreateOverlayFont(ScaleForDpi(kBaseHintFontSize, kDpi), FW_NORMAL);
+  constexpr double kBaselineScale = 1.0;
+  base::win::ScopedGDIObject<HFONT> title_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseTitleFontSize, kDpi, kBaselineScale),
+      FW_SEMIBOLD);
+  base::win::ScopedGDIObject<HFONT> body_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseBodyFontSize, kDpi, kBaselineScale),
+      FW_NORMAL);
+  base::win::ScopedGDIObject<HFONT> hint_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseHintFontSize, kDpi, kBaselineScale),
+      FW_NORMAL);
   ASSERT_TRUE(title_font.is_valid());
   ASSERT_TRUE(body_font.is_valid());
   ASSERT_TRUE(hint_font.is_valid());
@@ -305,8 +309,8 @@ TEST(HostWindowWinUtilTest,
 
   // Standard 1920x1080 layout with both sharing text and hotkey hint.
   BackdropContentLayout with_hint = ComputeBackdropContentLayout(
-      screen_dc, 1920, 1080, kDpi, /*is_rtl=*/false, title_block, body_block,
-      hint_block);
+      screen_dc, 1920, 1080, kDpi, kBaselineScale, /*is_rtl=*/false,
+      title_block, body_block, hint_block);
   EXPECT_EQ(with_hint.draw_text_flags,
             GetBackdropDrawTextFlags(/*is_rtl=*/false));
   EXPECT_EQ(with_hint.draw_text_flags & DT_RTLREADING, 0u);
@@ -324,8 +328,8 @@ TEST(HostWindowWinUtilTest,
 
   // Omitting `hint.text` collapses both `hint_height` and `hint_gap` to 0.
   BackdropContentLayout without_hint = ComputeBackdropContentLayout(
-      screen_dc, 1920, 1080, kDpi, /*is_rtl=*/false, title_block, body_block,
-      {.font = hint_font.get(), .text = L""});
+      screen_dc, 1920, 1080, kDpi, kBaselineScale, /*is_rtl=*/false,
+      title_block, body_block, {.font = hint_font.get(), .text = L""});
   EXPECT_EQ(without_hint.body_height, with_hint.body_height);
   EXPECT_EQ(without_hint.hint_height, 0);
   EXPECT_EQ(without_hint.hint_gap, 0);
@@ -337,7 +341,7 @@ TEST(HostWindowWinUtilTest,
       L"Your desktop is currently shared with user@host. This additional "
       L"sentence forces multi-line word wrapping on narrow displays.";
   BackdropContentLayout wrapped = ComputeBackdropContentLayout(
-      screen_dc, 360, 1080, kDpi, /*is_rtl=*/false, title_block,
+      screen_dc, 360, 1080, kDpi, kBaselineScale, /*is_rtl=*/false, title_block,
       {.font = body_font.get(), .text = long_body}, hint_block);
   EXPECT_GT(wrapped.body_height, with_hint.body_height);
   EXPECT_EQ(wrapped.hint_top,
@@ -345,9 +349,9 @@ TEST(HostWindowWinUtilTest,
 
   // An unusually short monitor shifts `icon_top`, `title_bottom`, and
   // `center_y` downward so the icon never clips above `kBaseVerticalSpacing`.
-  BackdropContentLayout short_screen =
-      ComputeBackdropContentLayout(screen_dc, 1920, 160, kDpi, /*is_rtl=*/true,
-                                   title_block, body_block, hint_block);
+  BackdropContentLayout short_screen = ComputeBackdropContentLayout(
+      screen_dc, 1920, 160, kDpi, kBaselineScale, /*is_rtl=*/true, title_block,
+      body_block, hint_block);
   EXPECT_EQ(short_screen.draw_text_flags,
             GetBackdropDrawTextFlags(/*is_rtl=*/true));
   EXPECT_EQ(short_screen.icon_top, kBaseVerticalSpacing);

@@ -30,6 +30,7 @@
 #include "remoting/base/email_utils.h"
 #include "remoting/base/errors.h"
 #include "remoting/host/client_session_control.h"
+#include "remoting/host/disconnect_window_base.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/host_window.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
@@ -175,6 +176,102 @@ OverlayThreadWindows FindOverlayThreadWindows() {
   return windows;
 }
 
+// Offscreen rendered snapshot and layout metrics for a `PrivacyOverlayWin`
+// backdrop window at a given `text_scale`.
+struct CapturedBackdropSnapshot {
+  CapturedBackdropSnapshot() = default;
+  CapturedBackdropSnapshot(CapturedBackdropSnapshot&&) = default;
+  CapturedBackdropSnapshot& operator=(CapturedBackdropSnapshot&&) = default;
+  ~CapturedBackdropSnapshot() = default;
+
+  bool HasGlyphPixels(int left, int top, int right, int bottom) const {
+    int clamped_left = std::max(0, left);
+    int clamped_top = std::max(0, top);
+    int clamped_right = std::min(client_width, right);
+    int clamped_bottom = std::min(client_height, bottom);
+    if (clamped_left >= clamped_right || clamped_top >= clamped_bottom) {
+      return false;
+    }
+    base::win::ScopedSelectObject select_bitmap(mem_dc.get(), bitmap.get());
+    return HasNonBackgroundPixel(mem_dc.get(), clamped_left, clamped_top,
+                                 clamped_right, clamped_bottom,
+                                 expected_bg_color);
+  }
+
+  int client_width = 0;
+  int client_height = 0;
+  UINT dpi = USER_DEFAULT_SCREEN_DPI;
+  COLORREF expected_bg_color = kGoogleBlueColor;
+  base::win::ScopedCreateDC mem_dc;
+  base::win::ScopedGDIObject<HBITMAP> bitmap;
+  BackdropContentLayout layout;
+};
+
+std::optional<CapturedBackdropSnapshot> CaptureBackdropSnapshot(
+    HWND backdrop_hwnd,
+    double text_scale) {
+  RECT client_rect = {};
+  if (!GetClientRect(backdrop_hwnd, &client_rect)) {
+    return std::nullopt;
+  }
+  int client_width = client_rect.right - client_rect.left;
+  int client_height = client_rect.bottom - client_rect.top;
+  if (client_width <= 0 || client_height <= 0) {
+    return std::nullopt;
+  }
+
+  base::win::ScopedGetDC screen_dc(nullptr);
+  base::win::ScopedCreateDC mem_dc(CreateCompatibleDC(screen_dc));
+  base::win::ScopedGDIObject<HBITMAP> bitmap(
+      CreateCompatibleBitmap(screen_dc, client_width, client_height));
+  if (!mem_dc.is_valid() || !bitmap.is_valid()) {
+    return std::nullopt;
+  }
+
+  UINT dpi =
+      GetMonitorDpi(MonitorFromWindow(backdrop_hwnd, MONITOR_DEFAULTTONEAREST),
+                    backdrop_hwnd);
+  const std::wstring product_name = LoadModuleString(IDS_PRODUCT_NAME);
+  const std::wstring hotkey_hint = LoadModuleString(IDS_DISCONNECT_HOTKEY_HINT);
+  const std::wstring backdrop_title = GetWindowTextOrEmpty(backdrop_hwnd);
+  size_t newline_pos = backdrop_title.find(L'\n');
+  std::wstring_view sharing_text =
+      (newline_pos == std::wstring::npos)
+          ? std::wstring_view(backdrop_title)
+          : std::wstring_view(backdrop_title).substr(0, newline_pos);
+  std::wstring_view hint_text = (newline_pos == std::wstring::npos)
+                                    ? std::wstring_view()
+                                    : std::wstring_view(hotkey_hint);
+
+  base::win::ScopedGDIObject<HFONT> title_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseTitleFontSize, dpi, text_scale),
+      FW_SEMIBOLD);
+  base::win::ScopedGDIObject<HFONT> body_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseBodyFontSize, dpi, text_scale), FW_NORMAL);
+  base::win::ScopedGDIObject<HFONT> hint_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseHintFontSize, dpi, text_scale), FW_NORMAL);
+
+  CapturedBackdropSnapshot snapshot;
+  snapshot.client_width = client_width;
+  snapshot.client_height = client_height;
+  snapshot.dpi = dpi;
+  snapshot.expected_bg_color =
+      IsHighContrastEnabled() ? GetSysColor(COLOR_WINDOW) : kGoogleBlueColor;
+  {
+    base::win::ScopedSelectObject select_bitmap(mem_dc.get(), bitmap.get());
+    SendMessage(backdrop_hwnd, WM_PRINTCLIENT,
+                reinterpret_cast<WPARAM>(mem_dc.get()), PRF_CLIENT);
+    snapshot.layout = ComputeBackdropContentLayout(
+        mem_dc.get(), client_width, client_height, dpi, text_scale,
+        /*is_rtl=*/false, {.font = title_font.get(), .text = product_name},
+        {.font = body_font.get(), .text = sharing_text},
+        {.font = hint_font.get(), .text = hint_text});
+  }
+  snapshot.mem_dc = std::move(mem_dc);
+  snapshot.bitmap = std::move(bitmap);
+  return snapshot;
+}
+
 }  // namespace
 
 class PrivacyOverlayWinTest : public testing::Test {
@@ -205,6 +302,15 @@ class PrivacyOverlayWinTest : public testing::Test {
     ASSERT_TRUE(error_callback_);
   }
 
+  void ResetAndStartOverlay() {
+    DestroyOverlay();
+    auto input_monitor = std::make_unique<FakeLocalInputMonitor>(base::BindOnce(
+        &PrivacyOverlayWinTest::OnStartMonitoring, base::Unretained(this)));
+    overlay_ = HostWindow::CreatePrivacyOverlay(std::move(input_monitor));
+    ASSERT_NE(overlay_, nullptr);
+    StartOverlay();
+  }
+
   void OnStartMonitoring(
       LocalInputMonitor::PointerMoveCallback on_pointer_input,
       LocalInputMonitor::KeyPressedCallback on_keyboard_input,
@@ -221,6 +327,8 @@ class PrivacyOverlayWinTest : public testing::Test {
       ScopedAllowCaptureExclusionFailureForTesting();
   base::AutoReset<std::optional<bool>> hotkey_registration_override_ =
       ScopedOverrideHotKeyRegistrationForTesting(true);
+  base::AutoReset<std::optional<double>> text_scale_override_ =
+      ScopedOverrideTextScaleFactorForTesting(1.0);
   testing::NiceMock<FakeClientSessionControl> client_session_control_{
       "user@domain/rest-of-jid"};
   LocalInputMonitor::PointerMoveCallback pointer_callback_;
@@ -631,7 +739,8 @@ TEST_F(
   RECT expected_rect = {};
   ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &expected_rect));
 
-  for (int attempt = 0; attempt < 3; ++attempt) {
+  for (int attempt = 0; attempt < DisconnectWindowBase::kMaxRepositionAttempts;
+       ++attempt) {
     WINDOWPOS pos = {};
     pos.hwnd = windows.button_hwnd;
     pos.x = expected_rect.left + 100;
@@ -679,6 +788,8 @@ TEST_F(PrivacyOverlayWinTest, ScalesAndRecentersButtonOnDpiChanged) {
   OverlayThreadWindows windows = FindOverlayThreadWindows();
   ASSERT_NE(windows.button_hwnd, nullptr);
   ASSERT_FALSE(windows.backdrop_hwnds.empty());
+  HWND disconnect_btn_hwnd = GetDlgItem(windows.button_hwnd, IDC_DISCONNECT);
+  ASSERT_NE(disconnect_btn_hwnd, nullptr);
 
   RECT rect_96_dpi = {};
   EXPECT_EQ(
@@ -696,6 +807,16 @@ TEST_F(PrivacyOverlayWinTest, ScalesAndRecentersButtonOnDpiChanged) {
   EXPECT_GT(rect_192_dpi.bottom - rect_192_dpi.top,
             rect_96_dpi.bottom - rect_96_dpi.top);
 
+  // Verify the button control still holds a live GDI font handle at the
+  // updated 192-DPI height after repeated `UpdateButtonLayoutForDpi()` calls.
+  HFONT font_192_dpi = reinterpret_cast<HFONT>(
+      SendMessage(disconnect_btn_hwnd, WM_GETFONT, 0, 0));
+  ASSERT_NE(font_192_dpi, nullptr);
+  LOGFONTW lf_192_dpi = {};
+  ASSERT_GT(GetObjectW(font_192_dpi, sizeof(lf_192_dpi), &lf_192_dpi), 0);
+  EXPECT_EQ(lf_192_dpi.lfHeight,
+            -ScaleForDpiAndTextScale(kBaseButtonFontSize, 192, 1.0));
+
   HMONITOR dpi_monitor =
       MonitorFromWindow(windows.button_hwnd, MONITOR_DEFAULTTONEAREST);
   MONITORINFO dpi_monitor_info = {sizeof(dpi_monitor_info)};
@@ -711,17 +832,31 @@ TEST_F(PrivacyOverlayWinTest, ScalesAndRecentersButtonOnDpiChanged) {
   }
 }
 
-TEST_F(PrivacyOverlayWinTest,
-       HandlesThemeAndSystemMetricsChangesAndControlColorMessages) {
+TEST_F(PrivacyOverlayWinTest, HandlesSysColorChangeAndControlColorMessages) {
   StartOverlay();
 
   OverlayThreadWindows windows = FindOverlayThreadWindows();
   ASSERT_NE(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(windows.backdrop_hwnds.empty());
 
-  EXPECT_EQ(SendMessage(windows.button_hwnd, WM_SETTINGCHANGE,
-                        SPI_SETNONCLIENTMETRICS, 0),
-            0);
+  // Reveal `button_hwnd` and clear pending update regions so
+  // `WM_SYSCOLORCHANGE` invalidation can be observed on both the button dialog
+  // and backdrops.
+  key_pressed_callback_.Run(0);
+  ASSERT_TRUE(IsWindowVisible(windows.button_hwnd));
+  ValidateRect(windows.button_hwnd, nullptr);
+  ASSERT_FALSE(GetUpdateRect(windows.button_hwnd, nullptr, FALSE));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    ValidateRect(backdrop_hwnd, nullptr);
+    ASSERT_FALSE(GetUpdateRect(backdrop_hwnd, nullptr, FALSE));
+  }
+
   EXPECT_EQ(SendMessage(windows.button_hwnd, WM_SYSCOLORCHANGE, 0, 0), 0);
+  EXPECT_TRUE(GetUpdateRect(windows.button_hwnd, nullptr, FALSE));
+  for (HWND backdrop_hwnd : windows.backdrop_hwnds) {
+    EXPECT_TRUE(GetUpdateRect(backdrop_hwnd, nullptr, FALSE));
+  }
+
   EXPECT_NE(SendMessage(windows.button_hwnd, WM_CTLCOLORBTN, 0, 0), 0);
   EXPECT_NE(SendMessage(windows.button_hwnd, WM_CTLCOLORSTATIC, 0, 0), 0);
 }
@@ -909,13 +1044,15 @@ TEST_F(PrivacyOverlayWinTest,
   // hotkey hint band (unless clamped at the bottom of an unusually tiny
   // screen).
   UINT dpi = GetMonitorDpi(button_monitor, target_backdrop);
+  const double text_scale = GetSystemTextScaleFactor();
   int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
-  base::win::ScopedGDIObject<HFONT> title_font =
-      CreateOverlayFont(ScaleForDpi(kBaseTitleFontSize, dpi), FW_SEMIBOLD);
-  base::win::ScopedGDIObject<HFONT> body_font =
-      CreateOverlayFont(ScaleForDpi(kBaseBodyFontSize, dpi), FW_NORMAL);
-  base::win::ScopedGDIObject<HFONT> hint_font =
-      CreateOverlayFont(ScaleForDpi(kBaseHintFontSize, dpi), FW_NORMAL);
+  base::win::ScopedGDIObject<HFONT> title_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseTitleFontSize, dpi, text_scale),
+      FW_SEMIBOLD);
+  base::win::ScopedGDIObject<HFONT> body_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseBodyFontSize, dpi, text_scale), FW_NORMAL);
+  base::win::ScopedGDIObject<HFONT> hint_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseHintFontSize, dpi, text_scale), FW_NORMAL);
 
   std::wstring product_name = LoadModuleString(IDS_PRODUCT_NAME);
   std::wstring backdrop_title = GetWindowTextOrEmpty(target_backdrop);
@@ -926,8 +1063,8 @@ TEST_F(PrivacyOverlayWinTest,
       std::wstring_view(backdrop_title).substr(0, newline_pos);
 
   BackdropContentLayout layout = ComputeBackdropContentLayout(
-      mem_dc.get(), client_width, client_height, dpi, /*is_rtl=*/false,
-      {.font = title_font.get(), .text = product_name},
+      mem_dc.get(), client_width, client_height, dpi, text_scale,
+      /*is_rtl=*/false, {.font = title_font.get(), .text = product_name},
       {.font = body_font.get(), .text = sharing_only},
       {.font = hint_font.get(), .text = hotkey_hint});
   ASSERT_GT(layout.body_height, 0);
@@ -1015,17 +1152,19 @@ TEST_F(PrivacyOverlayWinTest, OmitsHotkeyHintWhenHotkeyRegistrationFails) {
 
   HMONITOR monitor = MonitorFromWindow(backdrop_hwnd, MONITOR_DEFAULTTONEAREST);
   UINT dpi = GetMonitorDpi(monitor, backdrop_hwnd);
-  base::win::ScopedGDIObject<HFONT> title_font =
-      CreateOverlayFont(ScaleForDpi(kBaseTitleFontSize, dpi), FW_SEMIBOLD);
-  base::win::ScopedGDIObject<HFONT> body_font =
-      CreateOverlayFont(ScaleForDpi(kBaseBodyFontSize, dpi), FW_NORMAL);
-  base::win::ScopedGDIObject<HFONT> hint_font =
-      CreateOverlayFont(ScaleForDpi(kBaseHintFontSize, dpi), FW_NORMAL);
+  const double text_scale = GetSystemTextScaleFactor();
+  base::win::ScopedGDIObject<HFONT> title_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseTitleFontSize, dpi, text_scale),
+      FW_SEMIBOLD);
+  base::win::ScopedGDIObject<HFONT> body_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseBodyFontSize, dpi, text_scale), FW_NORMAL);
+  base::win::ScopedGDIObject<HFONT> hint_font = CreateOverlayFont(
+      ScaleForDpiAndTextScale(kBaseHintFontSize, dpi, text_scale), FW_NORMAL);
 
   const std::wstring product_name = LoadModuleString(IDS_PRODUCT_NAME);
   BackdropContentLayout layout_if_shown = ComputeBackdropContentLayout(
-      mem_dc.get(), client_width, client_height, dpi, /*is_rtl=*/false,
-      {.font = title_font.get(), .text = product_name},
+      mem_dc.get(), client_width, client_height, dpi, text_scale,
+      /*is_rtl=*/false, {.font = title_font.get(), .text = product_name},
       {.font = body_font.get(), .text = sharing_control_text},
       {.font = hint_font.get(), .text = hotkey_hint});
   int hint_bottom = std::min(
@@ -1037,6 +1176,118 @@ TEST_F(PrivacyOverlayWinTest, OmitsHotkeyHintWhenHotkeyRegistrationFails) {
         std::min(client_width, layout_if_shown.text_right), hint_bottom,
         expected_bg_color));
   }
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       ScalesDisconnectButtonFontAndSizeWithSystemTextScale) {
+  StartOverlay();
+
+  OverlayThreadWindows windows_1x = FindOverlayThreadWindows();
+  ASSERT_NE(windows_1x.button_hwnd, nullptr);
+  HWND disconnect_btn_1x = GetDlgItem(windows_1x.button_hwnd, IDC_DISCONNECT);
+  ASSERT_NE(disconnect_btn_1x, nullptr);
+
+  RECT rect_1x = {};
+  ASSERT_TRUE(GetWindowRect(windows_1x.button_hwnd, &rect_1x));
+
+  HFONT font_1x =
+      reinterpret_cast<HFONT>(SendMessage(disconnect_btn_1x, WM_GETFONT, 0, 0));
+  ASSERT_NE(font_1x, nullptr);
+  LOGFONTW lf_1x = {};
+  ASSERT_GT(GetObjectW(font_1x, sizeof(lf_1x), &lf_1x), 0);
+
+  base::AutoReset<std::optional<double>> enlarged_text_scale =
+      ScopedOverrideTextScaleFactorForTesting(1.75);
+  ResetAndStartOverlay();
+
+  OverlayThreadWindows windows_175x = FindOverlayThreadWindows();
+  ASSERT_NE(windows_175x.button_hwnd, nullptr);
+  HWND disconnect_btn_175x =
+      GetDlgItem(windows_175x.button_hwnd, IDC_DISCONNECT);
+  ASSERT_NE(disconnect_btn_175x, nullptr);
+
+  HMONITOR monitor =
+      MonitorFromWindow(windows_175x.button_hwnd, MONITOR_DEFAULTTONEAREST);
+  UINT dpi = GetMonitorDpi(monitor, windows_175x.button_hwnd);
+
+  HFONT font_175x = reinterpret_cast<HFONT>(
+      SendMessage(disconnect_btn_175x, WM_GETFONT, 0, 0));
+  ASSERT_NE(font_175x, nullptr);
+  LOGFONTW lf_175x = {};
+  ASSERT_GT(GetObjectW(font_175x, sizeof(lf_175x), &lf_175x), 0);
+  EXPECT_EQ(lf_175x.lfHeight,
+            -ScaleForDpiAndTextScale(kBaseButtonFontSize, dpi, 1.75));
+  EXPECT_LT(lf_175x.lfHeight, lf_1x.lfHeight);
+
+  RECT rect_175x = {};
+  ASSERT_TRUE(GetWindowRect(windows_175x.button_hwnd, &rect_175x));
+  EXPECT_GT(rect_175x.right - rect_175x.left, rect_1x.right - rect_1x.left);
+  EXPECT_GT(rect_175x.bottom - rect_175x.top, rect_1x.bottom - rect_1x.top);
+}
+
+TEST_F(PrivacyOverlayWinTest, ScalesBackdropRenderedTextWithSystemTextScale) {
+  StartOverlay();
+
+  OverlayThreadWindows windows_1x = FindOverlayThreadWindows();
+  ASSERT_NE(windows_1x.button_hwnd, nullptr);
+  ASSERT_FALSE(windows_1x.backdrop_hwnds.empty());
+
+  std::optional<CapturedBackdropSnapshot> snapshot_1x =
+      CaptureBackdropSnapshot(windows_1x.backdrop_hwnds.front(),
+                              /*text_scale=*/1.0);
+  ASSERT_TRUE(snapshot_1x.has_value());
+
+  // Use `kMaxTextScaleFactor` (2.25x) so the enlarged sharing message and gap
+  // push `layout_225x.hint_top` completely below `hint_bottom_1x` on standard
+  // displays, avoiding overlap with the 1.0x hint band.
+  base::AutoReset<std::optional<double>> enlarged_text_scale =
+      ScopedOverrideTextScaleFactorForTesting(kMaxTextScaleFactor);
+  ResetAndStartOverlay();
+
+  OverlayThreadWindows windows_225x = FindOverlayThreadWindows();
+  ASSERT_NE(windows_225x.button_hwnd, nullptr);
+  ASSERT_FALSE(windows_225x.backdrop_hwnds.empty());
+
+  std::optional<CapturedBackdropSnapshot> snapshot_225x =
+      CaptureBackdropSnapshot(windows_225x.backdrop_hwnds.front(),
+                              /*text_scale=*/kMaxTextScaleFactor);
+  ASSERT_TRUE(snapshot_225x.has_value());
+
+  const BackdropContentLayout& layout_1x = snapshot_1x->layout;
+  const BackdropContentLayout& layout_225x = snapshot_225x->layout;
+  if (layout_225x.hint_top + layout_225x.hint_height >
+      snapshot_225x->client_height) {
+    GTEST_SKIP() << "Display height (" << snapshot_225x->client_height
+                 << "px) is too short for unclamped 2.25x backdrop layout.";
+  }
+
+  int hint_bottom_1x = std::min(snapshot_1x->client_height,
+                                layout_1x.hint_top + layout_1x.hint_height);
+  int body_bottom_225x =
+      std::min(snapshot_225x->client_height,
+               layout_225x.body_top + layout_225x.body_height);
+  int hint_bottom_225x =
+      std::min(snapshot_225x->client_height,
+               layout_225x.hint_top + layout_225x.hint_height);
+  ASSERT_LT(layout_225x.body_top, body_bottom_225x);
+  ASSERT_LT(layout_225x.hint_top, hint_bottom_225x);
+  ASSERT_LT(hint_bottom_1x, hint_bottom_225x);
+
+  int non_overlapping_hint_top = std::max(hint_bottom_1x, layout_225x.hint_top);
+  ASSERT_LT(non_overlapping_hint_top, hint_bottom_225x);
+
+  EXPECT_TRUE(
+      snapshot_225x->HasGlyphPixels(layout_225x.text_left, layout_225x.body_top,
+                                    layout_225x.text_right, body_bottom_225x));
+  EXPECT_TRUE(
+      snapshot_225x->HasGlyphPixels(layout_225x.text_left, layout_225x.hint_top,
+                                    layout_225x.text_right, hint_bottom_225x));
+  EXPECT_FALSE(snapshot_1x->HasGlyphPixels(
+      layout_225x.text_left, non_overlapping_hint_top, layout_225x.text_right,
+      hint_bottom_225x));
+  EXPECT_TRUE(snapshot_225x->HasGlyphPixels(
+      layout_225x.text_left, non_overlapping_hint_top, layout_225x.text_right,
+      hint_bottom_225x));
 }
 
 }  // namespace remoting

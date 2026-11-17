@@ -105,12 +105,10 @@ double GetSystemTextScaleFactor();
 // non-`Segoe UI` typeface whose default baseline may exceed 12px.
 double ComputeNonClientMessageFontScale(const LOGFONTW& message_font);
 
-// Scales a 96-DPI base font/control measurement by both `dpi` and `text_scale`
-// (clamped to `[kMinTextScaleFactor, kMaxTextScaleFactor]`) in a single
-// rounding step.
-int ScaleFontForDpiAndTextScale(int base_font_size,
-                                UINT dpi,
-                                double text_scale);
+// Scales a 96-DPI base pixel measurement (such as a font height or
+// text-dependent control dimension) by both `dpi` and `text_scale` (clamped to
+// `[kMinTextScaleFactor, kMaxTextScaleFactor]`) in a single rounding step.
+int ScaleForDpiAndTextScale(int value, UINT dpi, double text_scale);
 
 // Overrides `GetSystemTextScaleFactor()` in unit tests so font layout tests run
 // hermetically regardless of the host machine's accessibility settings.
@@ -173,9 +171,11 @@ bool GetControlTextWidth(HWND control,
 // using a zero-copy read-only resource pointer.
 std::wstring LoadModuleString(UINT resource_id);
 
-// Creates a GDI font derived from the system UI message font (via
-// `SPI_GETNONCLIENTMETRICS`) at the specified pixel height and weight so CJK,
-// Indic, and RTL scripts use the appropriate localized system font family and
+// Creates a GDI font using the localized typeface from the system UI message
+// font (`SPI_GETNONCLIENTMETRICS` `lfMessageFont`) while explicitly overriding
+// `lfHeight` to `-abs(pixel_height)` and `lfWeight` to `weight` (avoiding
+// double-scaling if `lfMessageFont` is already enlarged), so CJK, Indic, and
+// RTL scripts use the appropriate localized system font family and
 // `DEFAULT_CHARSET` GDI font linking.
 base::win::ScopedGDIObject<HFONT> CreateOverlayFont(int pixel_height,
                                                     LONG weight);
@@ -215,7 +215,7 @@ struct BackdropContentLayout {
 };
 
 // Computes the centered backdrop content layout for a `client_width` x
-// `client_height` surface at `dpi`. Shared by
+// `client_height` surface at `dpi` and `text_scale`. Shared by
 // `PrivacyOverlayWin::PaintBackdrop` and
 // `PrivacyOverlayWin::PositionDisconnectButton` (as well as unit tests) so
 // Disconnect button placement and backdrop text rendering never drift out of
@@ -224,6 +224,7 @@ BackdropContentLayout ComputeBackdropContentLayout(HDC dc,
                                                    int client_width,
                                                    int client_height,
                                                    UINT dpi,
+                                                   double text_scale,
                                                    bool is_rtl,
                                                    BackdropTextBlock title,
                                                    BackdropTextBlock body,

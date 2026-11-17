@@ -150,8 +150,8 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   bool GetControlRect(HWND control, RECT* rect);
 
   // Resizes the Disconnect button dialog (`hwnd_`), its child button control
-  // (`IDC_DISCONNECT`), its DPI-scaled button font, and its rounded window
-  // region to match `dpi`.
+  // (`IDC_DISCONNECT`), its DPI- and text-scale-adjusted button font, and its
+  // rounded window region to match `dpi`.
   void UpdateButtonLayoutForDpi(UINT dpi);
 
   // Returns the cached backdrop fonts and icon for `dpi`, creating and
@@ -244,7 +244,14 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // region were computed.
   UINT active_button_dpi_ = 0;
 
-  // Cached DPI-scaled font for `IDC_DISCONNECT` and border pen for `hwnd_`.
+  // Cached OS text scale factor read once in `BeginOverlay()` so backdrop
+  // painting, layout, and button sizing use a consistent scale without
+  // repeating WTS/registry queries on every paint. Mid-session OS text-scale
+  // changes are intentionally ignored until the next `BeginOverlay()`.
+  double cached_text_scale_ = kMinTextScaleFactor;
+
+  // Cached DPI- and text-scale-adjusted font for `IDC_DISCONNECT` and border
+  // pen for `hwnd_`.
   base::win::ScopedGDIObject<HFONT> button_font_;
   base::win::ScopedGDIObject<HPEN> button_border_pen_;
   bool cached_button_high_contrast_ = false;
@@ -454,27 +461,24 @@ BOOL PrivacyOverlayWin::OnDialogMessage(HWND hwnd,
       return TRUE;
     }
 
-    // Refresh the overlay and invalidate cached fonts/pens if the user toggles
-    // Windows High Contrast mode or updates system display/font metrics.
-    case WM_SETTINGCHANGE:
-    case WM_SYSCOLORCHANGE: {
-      backdrop_dpi_cache_.clear();
-      UINT dpi_to_restore = active_button_dpi_;
-      active_button_monitor_ = nullptr;
-      active_button_dpi_ = 0;
+    // Repaint the overlay windows and rebuild the cached border pen if system
+    // colors change during a session (for example, toggling Windows High
+    // Contrast via Left Alt + Left Shift + Print Screen).
+    case WM_SYSCOLORCHANGE:
       button_border_pen_.reset();
-      POINT pt = {mouse_position_.x(), mouse_position_.y()};
-      PositionDisconnectButton(pt, dpi_to_restore);
       for (HWND backdrop_hwnd : backdrop_hwnds_) {
         if (backdrop_hwnd && IsWindow(backdrop_hwnd)) {
           InvalidateRect(backdrop_hwnd, nullptr, FALSE);
         }
       }
       if (hwnd_ && IsWindow(hwnd_)) {
+        if (HWND hwnd_button = GetDlgItem(hwnd_, IDC_DISCONNECT)) {
+          SendMessage(hwnd_button, WM_SYSCOLORCHANGE, wparam, lparam);
+          InvalidateRect(hwnd_button, nullptr, TRUE);
+        }
         InvalidateRect(hwnd_, nullptr, FALSE);
       }
       return TRUE;
-    }
 
     // Handle the Ctrl+Alt+Esc disconnect hot-key.
     case WM_HOTKEY:
@@ -670,6 +674,7 @@ bool PrivacyOverlayWin::BeginOverlay() {
       std::max(1, MulDiv(margin_px, USER_DEFAULT_SCREEN_DPI, initial_dpi));
   base_button_height_ = std::max(
       1, MulDiv(button_height_px, USER_DEFAULT_SCREEN_DPI, initial_dpi));
+  cached_text_scale_ = GetSystemTextScaleFactor();
 
   UpdateButtonLayoutForDpi(initial_dpi);
 
@@ -714,16 +719,17 @@ void PrivacyOverlayWin::EndOverlay() {
   active_button_monitor_ = nullptr;
   active_button_monitor_rect_ = {0, 0, 0, 0};
   active_button_dpi_ = 0;
-
-  backdrop_dpi_cache_.clear();
-  button_font_.reset();
-  button_border_pen_.reset();
+  cached_text_scale_ = kMinTextScaleFactor;
 
   if (hwnd_) {
     HWND hwnd = std::exchange(hwnd_, nullptr);
     SetWindowLongPtr(hwnd, DWLP_USER, 0);
     DestroyWindow(hwnd);
   }
+
+  backdrop_dpi_cache_.clear();
+  button_font_.reset();
+  button_border_pen_.reset();
 }
 
 bool PrivacyOverlayWin::GetControlRect(HWND control, RECT* rect) {
@@ -754,26 +760,39 @@ void PrivacyOverlayWin::UpdateButtonLayoutForDpi(UINT dpi) {
   active_button_dpi_ = dpi;
   button_border_pen_.reset();
 
-  // Scale and assign the system UI font for the Disconnect button at `dpi`, and
-  // re-measure the localized button text width at the target DPI so the label
-  // is never clipped when moving across mixed-DPI monitors.
-  int button_font_height = ScaleForDpi(kBaseButtonFontSize, dpi);
-  button_font_ = CreateOverlayFont(button_font_height, FW_NORMAL);
-  if (button_font_.is_valid()) {
+  // Scale and assign the system UI font for the Disconnect button at `dpi` and
+  // `cached_text_scale_`, replacing the font on `hwnd_button` via `WM_SETFONT`
+  // before deleting any previous `button_font_` handle, and re-measure the
+  // localized button text width so the label is not clipped across mixed-DPI
+  // monitors or enlarged accessibility text sizes. `CreateOverlayFont()` takes
+  // only the localized typeface from `lfMessageFont` and overrides `lfHeight`
+  // explicitly, and `base_button_height_` comes from the fixed `IDD_DISCONNECT`
+  // dialog-template font (unaffected by `TextScaleFactor`), so applying
+  // `cached_text_scale_` once avoids double-scaling.
+  int button_font_height =
+      ScaleForDpiAndTextScale(kBaseButtonFontSize, dpi, cached_text_scale_);
+  base::win::ScopedGDIObject<HFONT> new_button_font =
+      CreateOverlayFont(button_font_height, FW_NORMAL);
+  if (new_button_font.is_valid()) {
     SendMessage(hwnd_button, WM_SETFONT,
-                reinterpret_cast<WPARAM>(button_font_.get()), TRUE);
+                reinterpret_cast<WPARAM>(new_button_font.get()), TRUE);
+    button_font_ = std::move(new_button_font);
   }
 
   LONG button_text_width = 0;
   if (!GetControlTextWidth(hwnd_button, button_text_, is_rtl_,
                            &button_text_width) ||
       button_text_width <= 0) {
-    button_text_width = ScaleForDpi(kDefaultButtonTextWidthPx, dpi);
+    button_text_width = ScaleForDpiAndTextScale(kDefaultButtonTextWidthPx, dpi,
+                                                cached_text_scale_);
   }
 
+  // Keep margins and corner radius DPI-only (`ScaleForDpi`) so enlarged text
+  // preserves screen space rather than compounding outer padding.
   int margin = ScaleForDpi(base_button_margin_, dpi);
   int button_width = button_text_width + margin * 2;
-  int button_height = ScaleForDpi(base_button_height_, dpi);
+  int button_height =
+      ScaleForDpiAndTextScale(base_button_height_, dpi, cached_text_scale_);
   int dialog_width = button_width + margin * 2;
   int dialog_height = button_height + margin * 2;
   int border_radius = ScaleForDpi(kBaseWindowBorderRadius, dpi);
@@ -809,10 +828,15 @@ PrivacyOverlayWin::GetBackdropResourcesForDpi(UINT dpi) {
   }
 
   BackdropDpiResources resources;
+  // Keep the branding icon DPI-only while scaling font heights by both `dpi`
+  // and `cached_text_scale_`.
   int icon_size = ScaleForDpi(kBaseIconSize, dpi);
-  int title_height = ScaleForDpi(kBaseTitleFontSize, dpi);
-  int body_height = ScaleForDpi(kBaseBodyFontSize, dpi);
-  int hint_height = ScaleForDpi(kBaseHintFontSize, dpi);
+  int title_height =
+      ScaleForDpiAndTextScale(kBaseTitleFontSize, dpi, cached_text_scale_);
+  int body_height =
+      ScaleForDpiAndTextScale(kBaseBodyFontSize, dpi, cached_text_scale_);
+  int hint_height =
+      ScaleForDpiAndTextScale(kBaseHintFontSize, dpi, cached_text_scale_);
 
   resources.crd_icon.reset(static_cast<HICON>(
       LoadImageW(CURRENT_MODULE(), MAKEINTRESOURCEW(IDI_CHROME_REMOTE_DESKTOP),
@@ -832,7 +856,7 @@ BackdropContentLayout PrivacyOverlayWin::ComputeBackdropLayout(HDC dc,
                                                                UINT dpi) {
   const BackdropDpiResources& resources = GetBackdropResourcesForDpi(dpi);
   return ComputeBackdropContentLayout(
-      dc, width, height, dpi, is_rtl_,
+      dc, width, height, dpi, cached_text_scale_, is_rtl_,
       {.font = resources.title_font.get(), .text = product_name_text_},
       {.font = resources.body_font.get(), .text = sharing_with_text_},
       {.font = resources.hint_font.get(), .text = hotkey_hint_text_});
