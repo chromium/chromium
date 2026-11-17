@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.PRICE
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.Contract;
@@ -225,6 +226,7 @@ public class ShoppingPersistedTabDataService {
     /** Sets the {@link ShoppingPersistedTabDataService} for testing. */
     public static void setServiceForTesting(ShoppingPersistedTabDataService service) {
         sServiceForTesting = service;
+        ResettersForTesting.register(() -> sServiceForTesting = null);
     }
 
     /** Get the current set of tabs with price drop for testing. */

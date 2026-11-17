@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,9 +47,12 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Test relating to {@link ShoppingPersistedTabData} */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -64,6 +68,8 @@ public class ShoppingPersistedTabDataTest {
     @Mock private ShoppingPersistedTabDataService mShoppingPersistedTabDataService;
 
     @Mock ShoppingService mShoppingService;
+
+    private final List<Tab> mTabsToDestroy = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -81,6 +87,21 @@ public class ShoppingPersistedTabDataTest {
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
         ShoppingPersistedTabDataService.setServiceForTesting(mShoppingPersistedTabDataService);
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (Tab tab : mTabsToDestroy) {
+                        tab.getUserDataHost().destroy();
+                        if (!tab.isDestroyed()) {
+                            tab.destroy();
+                        }
+                    }
+                    mTabsToDestroy.clear();
+                    ProfileManager.resetForTesting();
+                });
     }
 
     @UiThreadTest
@@ -457,24 +478,24 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
-    public void testSPTDSavingEnabledUponSuccessfulProductUpdateResponse() {
-        final Semaphore semaphore = new Semaphore(0);
-        Tab tab =
-                ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                        ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
+    public void testSPTDSavingEnabledUponSuccessfulProductUpdateResponse() throws TimeoutException {
+        MockTab tab = getDefaultTab();
         ShoppingPersistedTabDataTestUtils.mockShoppingServiceResponse(
                 mShoppingService, tab.getUrl(), ShoppingServiceResponse.PRICE_DROP_1);
+        AtomicReference<ShoppingPersistedTabData> res = new AtomicReference<>();
+        CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShoppingPersistedTabData.from(
                             tab,
                             (shoppingPersistedTabData) -> {
-                                Assert.assertTrue(
-                                        shoppingPersistedTabData.mIsTabSaveEnabledSupplier.get());
-                                semaphore.release();
+                                res.set(shoppingPersistedTabData);
+                                helper.notifyCalled();
                             });
                 });
-        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+        helper.waitForCallback(0);
+        Assert.assertNotNull(res.get());
+        Assert.assertTrue(res.get().mIsTabSaveEnabledSupplier.get());
     }
 
     @SmallTest
@@ -878,8 +899,11 @@ public class ShoppingPersistedTabDataTest {
     }
 
     private MockTab getDefaultTab() {
-        return ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
+        MockTab tab =
+                ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
+                        ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
+        mTabsToDestroy.add(tab);
+        return tab;
     }
 
     private void mockShoppingServiceDefaults(GURL url) {
