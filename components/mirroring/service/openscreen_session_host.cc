@@ -1135,6 +1135,39 @@ void OpenscreenSessionHost::ProcessFeedback(
   }
 }
 
+int OpenscreenSessionHost::GetEstimatedNetworkBandwidthForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return session_ ? session_->GetEstimatedNetworkBandwidth() : 0;
+}
+
+uint32_t OpenscreenSessionHost::GetVideoNetworkBandwidthForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetVideoNetworkBandwidth();
+}
+
+uint32_t OpenscreenSessionHost::GetVideoEncoderBitrateForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return video_sender_ ? video_sender_->GetEncoderBitrate() : 0;
+}
+
+std::optional<int> OpenscreenSessionHost::GetVideoFramesDroppedForTesting()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!video_sender_) {
+    return std::nullopt;
+  }
+  return video_sender_->GetFramesDropped();
+}
+
+std::optional<int>
+OpenscreenSessionHost::GetVideoFramesDroppedByEncoderForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!video_sender_) {
+    return std::nullopt;
+  }
+  return video_sender_->GetFramesDroppedByEncoder();
+}
+
 uint32_t OpenscreenSessionHost::GetVideoNetworkBandwidth() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (audio_sender_) {

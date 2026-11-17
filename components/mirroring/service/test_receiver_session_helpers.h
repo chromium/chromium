@@ -101,6 +101,15 @@ class ReceiverConsumer : public openscreen::cast::Receiver::Consumer {
     on_frame_decoded_ = std::move(cb);
   }
 
+  // If false, decoded frames are only passed to the `on_frame_decoded_`
+  // callback and not accumulated in `decoded_frames_`. Useful for long
+  // simulations. Defaults to true.
+  void set_retain_decoded_frames(bool retain) {
+    retain_decoded_frames_ = retain;
+  }
+
+  int num_frames_decoded() const { return num_frames_decoded_; }
+
  private:
   void OnFrameDecoded(scoped_refptr<media::VideoFrame> frame);
 
@@ -109,6 +118,8 @@ class ReceiverConsumer : public openscreen::cast::Receiver::Consumer {
   const media::VideoCodec codec_;
   std::unique_ptr<media::VpxVideoDecoder> decoder_;
   std::vector<scoped_refptr<media::VideoFrame>> decoded_frames_;
+  bool retain_decoded_frames_ = true;
+  int num_frames_decoded_ = 0;
   base::RepeatingCallback<void(scoped_refptr<media::VideoFrame>)>
       on_frame_decoded_;
 };

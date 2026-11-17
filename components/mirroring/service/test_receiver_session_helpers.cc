@@ -145,9 +145,12 @@ void ReceiverConsumer::OnFramesReady(size_t next_frame_buffer_size) {
 
 void ReceiverConsumer::OnFrameDecoded(scoped_refptr<media::VideoFrame> frame) {
   if (frame) {
-    decoded_frames_.push_back(std::move(frame));
+    ++num_frames_decoded_;
+    if (retain_decoded_frames_) {
+      decoded_frames_.push_back(frame);
+    }
     if (on_frame_decoded_) {
-      on_frame_decoded_.Run(decoded_frames_.back());
+      on_frame_decoded_.Run(std::move(frame));
     }
   }
 }

@@ -94,8 +94,14 @@ source_set("unittests") {
     "openscreen_session_host_unittest.cc",
     "openscreen_stats_client_unittest.cc",
     "remoting_sender_unittest.cc",
+    "simulated_network_link.cc",
+    "simulated_network_link.h",
+    "simulated_network_link_unittest.cc",
     "test_receiver_session_helpers.cc",
     "test_receiver_session_helpers.h",
+    "text_document_content.cc",
+    "text_document_content.h",
+    "text_document_content_unittest.cc",
     "video_capture_client_unittest.cc",
   ]
 

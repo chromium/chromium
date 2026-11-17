@@ -115,6 +115,16 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   using AsyncInitializedCallback = base::OnceCallback<void()>;
   void AsyncInitialize(AsyncInitializedCallback done_cb = {});
 
+  // Test-only accessors, used by simulation tests to observe the bandwidth
+  // estimation and frame dropping behavior over time.
+  int GetEstimatedNetworkBandwidthForTesting() const;
+  uint32_t GetVideoNetworkBandwidthForTesting() const;
+  uint32_t GetVideoEncoderBitrateForTesting() const;
+  // Return std::nullopt when there is no video sender, which is distinct from
+  // zero dropped frames.
+  std::optional<int> GetVideoFramesDroppedForTesting() const;
+  std::optional<int> GetVideoFramesDroppedByEncoderForTesting() const;
+
   // SenderSession::Client overrides.
   void OnNegotiated(const openscreen::cast::SenderSession* session,
                     openscreen::cast::SenderSession::ConfiguredSenders senders,
