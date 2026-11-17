@@ -127,6 +127,7 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
     @Mock private SendTabToSelfTabCardLabelData.Natives mTabCardLabelDataNatives;
+    @Mock private SendTabToSelfMetricsRecorder.Natives mMetricsRecorderMock;
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
@@ -144,6 +145,7 @@ public class SendTabToSelfAndroidBridgeTest {
         ContextUtils.initApplicationContextForTests(RuntimeEnvironment.getApplication());
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
         SendTabToSelfTabCardLabelDataJni.setInstanceForTesting(mTabCardLabelDataNatives);
+        SendTabToSelfMetricsRecorderJni.setInstanceForTesting(mMetricsRecorderMock);
         mWebContents = mock(WebContents.class);
         mWindowAndroid = mock(WindowAndroid.class);
         mSnackbarManager = mock(SnackbarManager.class);
@@ -1110,6 +1112,7 @@ public class SendTabToSelfAndroidBridgeTest {
                         eq(mProfile),
                         eq("guid"),
                         eq(ShareActivatedEntryPoint.MOBILE_MESSAGE_BANNER));
+        verify(mMetricsRecorderMock, never()).recordOpenedInNativeApp(anyInt());
         // Verify that the tab switcher is not opened.
         verify(layoutManager, never()).showLayout(any(Integer.class), any(Boolean.class));
 
@@ -1413,6 +1416,8 @@ public class SendTabToSelfAndroidBridgeTest {
                         eq(mProfile),
                         eq("guid"),
                         eq(ShareActivatedEntryPoint.MOBILE_MESSAGE_BANNER));
+        verify(mMetricsRecorderMock)
+                .recordOpenedInNativeApp(NativeAppOpenEntryPoint.LINK_RECEIVED_MESSAGE_BANNER);
         Assert.assertNull(userDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
 
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
@@ -1494,8 +1499,9 @@ public class SendTabToSelfAndroidBridgeTest {
         int result = onPrimaryAction.get();
 
         Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
-        // Verify newest tab is selected (index 1).
+        // Verify newest tab is selected (index 1) and native app metric is not recorded yet.
         verify(normalTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER));
+        verify(mMetricsRecorderMock, never()).recordOpenedInNativeApp(anyInt());
         // Verify secondary message banner was enqueued on WebContents.
         ArgumentCaptor<PropertyModel> secondaryMessageCaptor =
                 ArgumentCaptor.forClass(PropertyModel.class);
@@ -1511,6 +1517,13 @@ public class SendTabToSelfAndroidBridgeTest {
                 secondaryModel.get(MessageBannerProperties.MESSAGE_IDENTIFIER));
         Assert.assertEquals(
                 "From Pixel 10", secondaryModel.get(MessageBannerProperties.DESCRIPTION));
+
+        // Clicking the secondary banner opens the native app and records the continue-to-app
+        // entry point.
+        int secondaryResult = secondaryModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, secondaryResult);
+        verify(mMetricsRecorderMock)
+                .recordOpenedInNativeApp(NativeAppOpenEntryPoint.CONTINUE_TO_APP_MESSAGE_BANNER);
 
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
         MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
@@ -1634,6 +1647,8 @@ public class SendTabToSelfAndroidBridgeTest {
                 Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
         Assert.assertNotNull(startedIntent);
         Assert.assertEquals(url, startedIntent.getDataString());
+        verify(mMetricsRecorderMock)
+                .recordOpenedInNativeApp(NativeAppOpenEntryPoint.CONTINUE_TO_APP_MESSAGE_BANNER);
 
         MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
     }

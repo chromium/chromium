@@ -157,6 +157,30 @@ enum class ShareActivatedEntryPoint {
 // Records the entry point from which a received tab was opened.
 void RecordActivatedEntryPoint(ShareActivatedEntryPoint entry_point);
 
+// Entry point from which a received Send Tab to Self link was opened in a
+// native Android app.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.share.send_tab_to_self)
+// LINT.IfChange(SendTabToSelfNativeAppOpenEntryPoint)
+enum class NativeAppOpenEntryPoint {
+  // Opened directly in a native app by tapping the system notification.
+  kMobileNotification = 0,
+  // Opened directly in a native app by tapping the "Link received" in-app
+  // message banner (when a single tab was received).
+  kLinkReceivedMessageBanner = 1,
+  // Opened in a native app by tapping the "Continue to [App]" in-tab message
+  // banner after switching to the background tab in Chrome.
+  kContinueToAppMessageBanner = 2,
+  kMaxValue = kContinueToAppMessageBanner,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfNativeAppOpenEntryPoint)
+
+// Records the entry point from which a received tab was opened in a native app.
+void RecordOpenedInNativeApp(NativeAppOpenEntryPoint entry_point);
+
 // Outcome of matching a received form field to a field on the page.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

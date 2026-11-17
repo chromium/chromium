@@ -156,6 +156,11 @@ void RecordActivatedEntryPoint(ShareActivatedEntryPoint entry_point) {
                                 entry_point);
 }
 
+void RecordOpenedInNativeApp(NativeAppOpenEntryPoint entry_point) {
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.OpenedInNativeApp",
+                                entry_point);
+}
+
 void RecordFormFieldMatchOutcome(FormFieldMatchOutcome outcome, int count) {
   for (int i = 0; i < count; ++i) {
     base::UmaHistogramEnumeration(

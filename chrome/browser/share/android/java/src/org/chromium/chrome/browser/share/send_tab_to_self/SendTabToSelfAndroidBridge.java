@@ -590,7 +590,9 @@ public class SendTabToSelfAndroidBridge {
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    NotificationManager.openInNativeAppIfPossible(uri);
+                                    NotificationManager.openInNativeAppIfPossible(
+                                            uri,
+                                            NativeAppOpenEntryPoint.CONTINUE_TO_APP_MESSAGE_BANNER);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 });
 
@@ -684,7 +686,8 @@ public class SendTabToSelfAndroidBridge {
             // In the single-tab case, open the matching native app directly if available.
             if (openedTabCount == 1
                     && NotificationManager.openInNativeAppIfPossible(
-                            Uri.parse(newestTab.getUrl().getSpec()))) {
+                            Uri.parse(newestTab.getUrl().getSpec()),
+                            NativeAppOpenEntryPoint.LINK_RECEIVED_MESSAGE_BANNER)) {
                 return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
             }
 
