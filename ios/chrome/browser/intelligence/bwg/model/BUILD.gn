@@ -5,6 +5,7 @@
 source_set("custom_ui") {
   sources = [
     "gemini_block_data_types.h",
+    "gemini_browser_actuations_block.h",
     "gemini_custom_ui_delegate.h",
     "gemini_custom_ui_handler.h",
     "gemini_custom_ui_handler.mm",
