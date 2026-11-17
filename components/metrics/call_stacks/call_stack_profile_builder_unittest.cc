@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/metrics/metrics_hashes.h"
@@ -654,7 +655,7 @@ TEST(CallStackProfileBuilderTest, ResidencyMetadata) {
     auto profile_builder =
         std::make_unique<TestingCallStackProfileBuilder>(kProfileParams);
     profile_builder->OnSampleCompleted(frames, base::TimeTicks(), 1, 1,
-                                       /*resident_bytes=*/1024);
+                                       /*resident_bytes=*/base::ByteSize(1024));
     profile_builder->OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
 
     const SampledProfile& proto = profile_builder->test_sampled_profile();

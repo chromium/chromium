@@ -12,6 +12,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -164,7 +165,7 @@ void CallStackProfileBuilder::OnSampleCompleted(
     base::TimeTicks sample_timestamp,
     size_t weight,
     size_t count,
-    std::optional<size_t> resident_bytes) {
+    std::optional<base::ByteSize> resident_bytes) {
   // Write CallStackProfile::Stack protobuf message.
   CallStackProfile::Stack stack;
 
@@ -244,7 +245,7 @@ void CallStackProfileBuilder::OnSampleCompleted(
         base::HashMetricName("resident_bytes");
     metadata_.SetMetadata(base::MetadataRecorder::Item(
                               kResidentBytesHash, std::nullopt, std::nullopt,
-                              static_cast<int64_t>(*resident_bytes)),
+                              static_cast<int64_t>(resident_bytes->InBytes())),
                           stack_sample_proto->mutable_metadata()->Add(),
                           call_stack_profile->mutable_metadata_name_hash());
   }

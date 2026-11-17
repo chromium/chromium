@@ -16,6 +16,7 @@
 
 #include "base/allocator/dispatcher/reentry_guard.h"
 #include "base/base_switches.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -584,9 +585,9 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
       frames.emplace_back(address, module);
     }
 
-    std::optional<size_t> merged_resident_bytes;
-    if (value.total > 0) {
-      merged_resident_bytes = value.resident_total;
+    std::optional<base::ByteSize> merged_resident_bytes;
+    if (value.total > 0 && value.resident_total.has_value()) {
+      merged_resident_bytes = base::ByteSize(*value.resident_total);
     }
 
     // Heap "samples" represent allocation stacks aggregated over time so

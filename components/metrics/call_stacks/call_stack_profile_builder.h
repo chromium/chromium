@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/metadata_recorder.h"
@@ -70,11 +71,12 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
   // Both weight and count are used by the heap profiler only.
   // |resident_bytes| indicates how many bytes of the heap allocation are
   // resident in physical memory.
-  void OnSampleCompleted(std::vector<base::Frame> frames,
-                         base::TimeTicks sample_timestamp,
-                         size_t weight,
-                         size_t count,
-                         std::optional<size_t> resident_bytes = std::nullopt);
+  void OnSampleCompleted(
+      std::vector<base::Frame> frames,
+      base::TimeTicks sample_timestamp,
+      size_t weight,
+      size_t count,
+      std::optional<base::ByteSize> resident_bytes = std::nullopt);
 
   // base::ProfileBuilder:
   base::ModuleCache* GetModuleCache() override;
