@@ -106,11 +106,6 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
   // RunWhenVisible() calls.
   void OnButtonShown(ui::TrackedElement* element);
 
-  // Handles a button press once the button is visible.
-  void OnButtonPressedAndVisible(bool is_source_accelerator,
-                                 views::BubbleAnchor anchor,
-                                 base::ScopedClosureRunner keep_visible);
-
   base::OnceCallback<void(std::u16string)> announce_callback_for_testing_;
 
   const raw_ptr<WebUIToolbarControlDelegate> delegate_;

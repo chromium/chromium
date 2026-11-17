@@ -819,8 +819,7 @@ class ProfileMenuViewPixelTest
       auto* coordinator = ProfileMenuCoordinator::From(browser());
       ASSERT_TRUE(coordinator);
       coordinator->Show(/*is_source_accelerator=*/false,
-                        /*from_avatar_promo=*/true,
-                        /*keep_anchor_visible=*/{});
+                        /*from_avatar_promo=*/true);
       ASSERT_TRUE(base::test::RunUntil(
           [coordinator]() { return coordinator->IsShowing(); }));
     } else {

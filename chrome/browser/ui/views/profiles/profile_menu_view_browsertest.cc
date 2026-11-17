@@ -259,8 +259,7 @@ class ProfileMenuViewTestBase {
       auto* coordinator = ProfileMenuCoordinator::From(target_browser);
       ASSERT_TRUE(coordinator);
       coordinator->Show(/*is_source_accelerator=*/false,
-                        /*from_avatar_promo=*/true,
-                        /*keep_anchor_visible=*/{});
+                        /*from_avatar_promo=*/true);
       ASSERT_TRUE(base::test::RunUntil(
           [coordinator]() { return coordinator->IsShowing(); }));
       ASSERT_NO_FATAL_FAILURE(WaitForMenuToBeActive(profile_menu_view()));
@@ -465,30 +464,6 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
   batch_upload_test_helper().FireReturnDescriptionRequest();
   // Profile menu should still be shown.
   EXPECT_TRUE(coordinator->IsShowing());
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewBrowserTest,
-                       ShowKeepsCallerVisibilityRunnerAliveUntilMenuCloses) {
-  AvatarToolbarButtonTestAccessor avatar_accessor(browser());
-  views::test::WidgetVisibleWaiter(avatar_accessor.GetWidget()).Wait();
-
-  auto* coordinator = ProfileMenuCoordinator::From(browser());
-  ASSERT_TRUE(coordinator);
-  bool runner_released = false;
-  coordinator->Show(
-      /*is_source_accelerator=*/false, /*from_avatar_promo=*/false,
-      base::ScopedClosureRunner(
-          base::BindLambdaForTesting([&]() { runner_released = true; })));
-  ASSERT_TRUE(base::test::RunUntil(
-      [coordinator]() { return coordinator->IsShowing(); }));
-  EXPECT_FALSE(runner_released);
-
-  views::Widget* widget = profile_menu_view()->GetWidget();
-  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
-  widget->Close();
-  destroyed_waiter.Wait();
-  EXPECT_FALSE(coordinator->IsShowing());
-  EXPECT_TRUE(runner_released);
 }
 
 class ProfileMenuViewAiSubscriptionTierOverrideTest
@@ -2780,18 +2755,23 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest,
   auto* coordinator =
       ProfileMenuCoordinator::From(toolbar_helper().app_browser());
   ASSERT_TRUE(coordinator);
-  base::RunLoop run_loop;
-  coordinator->Show(/*is_source_accelerator=*/false,
-                    /*from_avatar_promo=*/false,
-                    base::ScopedClosureRunner(run_loop.QuitClosure()));
-  run_loop.Run();
-  EXPECT_FALSE(coordinator->IsShowing());
-
   // Views `RunWhenVisible()` and `BatchUploadServiceTestHelper` both invoke
   // their callbacks synchronously.
+  coordinator->Show(/*is_source_accelerator=*/false,
+                    /*from_avatar_promo=*/false);
+  EXPECT_FALSE(coordinator->IsShowing());
+
   toolbar_helper().browser_view()->ShowAvatarBubbleFromAvatarButton(
       /*is_source_accelerator=*/false);
   EXPECT_FALSE(coordinator->IsShowing());
+
+  // Positive control: the same synchronous `Show()` call opens the menu in the
+  // regular browser window, so the negative checks above are not vacuous.
+  auto* browser_coordinator = ProfileMenuCoordinator::From(browser());
+  ASSERT_TRUE(browser_coordinator);
+  browser_coordinator->Show(/*is_source_accelerator=*/false,
+                            /*from_avatar_promo=*/false);
+  EXPECT_TRUE(browser_coordinator->IsShowing());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -2893,8 +2873,7 @@ class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
     ASSERT_TRUE(coordinator);
     if (from_avatar_promo) {
       coordinator->Show(/*is_source_accelerator=*/false,
-                        /*from_avatar_promo=*/true,
-                        /*keep_anchor_visible=*/{});
+                        /*from_avatar_promo=*/true);
     } else {
       AvatarToolbarButtonTestAccessor avatar_accessor(browser());
       views::test::WidgetVisibleWaiter(avatar_accessor.GetWidget()).Wait();

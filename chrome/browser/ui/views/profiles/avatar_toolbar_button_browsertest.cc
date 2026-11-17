@@ -1330,40 +1330,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonViewsOverflowBrowserTest,
   ASSERT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
       kToolbarAvatarButtonElementId));
 
-  class PressVisibilityObserver
-      : public AvatarToolbarButtonInterface::Observer {
-   public:
-    explicit PressVisibilityObserver(AvatarToolbarButton* button)
-        : button_(button) {
-      observation_.Observe(button);
-    }
-
-    void OnButtonPressed() override {
-      pressed_count_++;
-      was_visible_on_press_ = button_->GetVisible();
-      bounds_on_press_ = button_->GetAnchorBoundsInScreen();
-    }
-
-    int pressed_count() const { return pressed_count_; }
-    bool was_visible_on_press() const { return was_visible_on_press_; }
-    const gfx::Rect& bounds_on_press() const { return bounds_on_press_; }
-
-   private:
-    raw_ptr<AvatarToolbarButton> button_;
-    bool was_visible_on_press_ = false;
-    gfx::Rect bounds_on_press_;
-    int pressed_count_ = 0;
-    base::ScopedObservation<AvatarToolbarButtonInterface,
-                            AvatarToolbarButtonInterface::Observer>
-        observation_{this};
-  };
-
-  PressVisibilityObserver observer(avatar_button);
   avatar_button->ButtonPressed(/*is_source_accelerator=*/true);
-
-  EXPECT_EQ(observer.pressed_count(), 1);
-  EXPECT_TRUE(observer.was_visible_on_press());
-  EXPECT_FALSE(observer.bounds_on_press().IsEmpty());
 
   ProfileMenuCoordinator* coordinator =
       ProfileMenuCoordinator::From(target_browser);
@@ -1374,6 +1341,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonViewsOverflowBrowserTest,
   // so concurrent browser_tests windows stealing OS focus cannot close the
   // bubble prematurely.
   ASSERT_TRUE(coordinator->IsShowing());
+  EXPECT_TRUE(avatar_button->GetVisible());
 
   ProfileMenuViewBase* menu_view =
       coordinator->GetProfileMenuViewBaseForTesting();
@@ -1391,6 +1359,131 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonViewsOverflowBrowserTest,
   EXPECT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
       kToolbarAvatarButtonElementId));
 }
+
+// Tests that pressing an overflowed avatar button that has an explicit action
+// runs the action without popping the button out. ChromeOS only shows the
+// avatar button for Incognito and Guest profiles, whose button states outrank
+// explicit states, so explicit actions never run there.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonViewsOverflowBrowserTest,
+                       ExplicitActionDoesNotPopOutWhenOverflowed) {
+  BrowserWindowInterface* target_browser = browser();
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(target_browser);
+  ASSERT_TRUE(browser_view);
+  ToolbarView* toolbar = browser_view->toolbar();
+  ASSERT_TRUE(toolbar);
+  AvatarToolbarButton* avatar_button = toolbar->avatar_toolbar_button();
+  ASSERT_TRUE(avatar_button);
+
+  int action_count = 0;
+  AvatarToolbarButtonInterface* avatar_interface = avatar_button;
+  base::ScopedClosureRunner reset_explicit_state =
+      avatar_interface->SetExplicitButtonState(
+          u"Avatar button text",
+          /*accessibility_label=*/std::nullopt,
+          base::BindLambdaForTesting(
+              [&](bool /*is_source_accelerator*/) { ++action_count; }));
+
+  OverflowToolbar(browser_view);
+  ASSERT_FALSE(avatar_button->GetVisible());
+  ASSERT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+
+  avatar_button->ButtonPressed(/*is_source_accelerator=*/false);
+  EXPECT_EQ(action_count, 1);
+
+  views::test::RunScheduledLayout(browser_view);
+  EXPECT_FALSE(avatar_button->GetVisible());
+  EXPECT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Tests that pressing an overflowed avatar button leaves it overflowed while
+// the profile menu waits for promo results, then pops it out to anchor the
+// menu once they arrive, and lets it overflow again when the menu closes.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonViewsOverflowBrowserTest,
+                       ButtonPressedWhenOverflowedPopsOutAfterPromoResults) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  ToolbarView* toolbar = browser_view->toolbar();
+  ASSERT_TRUE(toolbar);
+  AvatarToolbarButton* avatar_button = toolbar->avatar_toolbar_button();
+  ASSERT_TRUE(avatar_button);
+
+  OverflowToolbar(browser_view);
+  ASSERT_FALSE(avatar_button->GetVisible());
+  ASSERT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+
+  // Hold the promo lookup until `FireReturnDescriptionRequest()`.
+  batch_upload_test_helper().SetReturnDescriptionOnRequest(true);
+
+  avatar_button->ButtonPressed(/*is_source_accelerator=*/true);
+
+  ProfileMenuCoordinator* coordinator = ProfileMenuCoordinator::From(browser());
+  ASSERT_TRUE(coordinator);
+  EXPECT_FALSE(coordinator->IsShowing());
+  views::test::RunScheduledLayout(browser_view);
+  EXPECT_FALSE(avatar_button->GetVisible());
+  EXPECT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+
+  // Firing the lookup and the Views `RunWhenVisible()` both run synchronously,
+  // so the menu is already showing. Check synchronously and disable
+  // close-on-deactivate before spinning any RunLoop so concurrent
+  // browser_tests windows stealing OS focus cannot close the bubble.
+  batch_upload_test_helper().FireReturnDescriptionRequest();
+  ASSERT_TRUE(coordinator->IsShowing());
+  EXPECT_TRUE(avatar_button->GetVisible());
+
+  ProfileMenuViewBase* menu_view =
+      coordinator->GetProfileMenuViewBaseForTesting();
+  ASSERT_TRUE(menu_view);
+  menu_view->set_close_on_deactivate(false);
+  EXPECT_EQ(menu_view->GetAnchorRect(),
+            avatar_button->GetAnchorBoundsInScreen());
+
+  views::test::WidgetDestroyedWaiter menu_destroyed(menu_view->GetWidget());
+  menu_view->GetWidget()->Close();
+  menu_destroyed.Wait();
+
+  views::test::RunScheduledLayout(browser_view);
+  EXPECT_FALSE(avatar_button->GetVisible());
+  EXPECT_TRUE(toolbar->toolbar_controller()->IsElementOverflowedForTesting(
+      kToolbarAvatarButtonElementId));
+}
+
+// Tests that closing the browser while the profile menu waits for promo
+// results drops the pending request without showing a menu or crashing.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonViewsOverflowBrowserTest,
+                       BrowserClosedWhileWaitingForPromoResults) {
+  BrowserWindowInterface* target_browser =
+      CreateBrowser(browser()->GetProfile());
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(target_browser);
+  ASSERT_TRUE(browser_view);
+  AvatarToolbarButton* avatar_button =
+      browser_view->toolbar()->avatar_toolbar_button();
+  ASSERT_TRUE(avatar_button);
+
+  OverflowToolbar(browser_view);
+  ASSERT_FALSE(avatar_button->GetVisible());
+
+  batch_upload_test_helper().SetReturnDescriptionOnRequest(true);
+  avatar_button->ButtonPressed(/*is_source_accelerator=*/false);
+  ASSERT_FALSE(ProfileMenuCoordinator::From(target_browser)->IsShowing());
+
+  CloseBrowserSynchronously(target_browser);
+  batch_upload_test_helper().FireReturnDescriptionRequest();
+
+  // The original browser does not show a menu for the dropped request.
+  EXPECT_FALSE(ProfileMenuCoordinator::From(browser())->IsShowing());
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 class AvatarToolbarButtonWebAppBrowserTest
     : public AvatarToolbarButtonBrowserTest {

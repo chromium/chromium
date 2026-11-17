@@ -200,13 +200,7 @@ void WebUIAvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
   }
 
   if (state_manager_ && delegate_->GetView()->GetWidget()) {
-    // Pressing the button typically shows a bubble anchored to it, so wait
-    // until the button is visible before handling the press. This is needed
-    // for presses from the overflow menu or accelerators while the button is
-    // overflowed.
-    RunWhenVisible(
-        base::BindOnce(&WebUIAvatarToolbarButton::OnButtonPressedAndVisible,
-                       weak_ptr_factory_.GetWeakPtr(), is_source_accelerator));
+    state_manager_->HandleButtonPressed(is_source_accelerator);
   }
 }
 
@@ -464,20 +458,4 @@ void WebUIAvatarToolbarButton::OnButtonShown(ui::TrackedElement* element) {
     CHECK(self);
     std::move(callback).Run(views::BubbleAnchor(element));
   }
-}
-
-void WebUIAvatarToolbarButton::OnButtonPressedAndVisible(
-    bool is_source_accelerator,
-    views::BubbleAnchor /*anchor*/,
-    base::ScopedClosureRunner keep_visible) {
-  // The widget may have been destroyed while waiting for the button to be
-  // shown.
-  if (!delegate_->GetView()->GetWidget()) {
-    return;
-  }
-
-  // `state_manager_` was checked before binding this method, and is not
-  // modified after construction, so cannot be nullptr.
-  state_manager_->HandleButtonPressed(is_source_accelerator,
-                                      std::move(keep_visible));
 }

@@ -1394,8 +1394,8 @@ void WebUIToolbarWebView::OverflowButtonClicked(
     media_control_.OnClicked();
     return;
   } else if (identifier == kToolbarAvatarButtonElementId) {
-    // ButtonPressed() makes the button visible before showing any bubble
-    // anchored to it.
+    // Bubbles anchored to the button (such as the profile menu) make it
+    // visible before showing.
     avatar_control_.ButtonPressed(/*is_source_accelerator=*/false);
     return;
   }

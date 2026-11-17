@@ -435,17 +435,7 @@ class ExplicitStateProvider : public StateProvider {
     if (!explicit_action_) {
       return std::nullopt;
     }
-    // Explicit actions don't show bubbles anchored to the avatar button, so
-    // `keep_anchor_visible` can be released as soon as the action is run.
-    // TODO(crbug.com/556290451): Avoid waiting for the button to become visible
-    // before running explicit actions.
-    return base::BindRepeating(
-        [](const base::RepeatingCallback<void(bool)>& action,
-           bool is_source_accelerator,
-           base::ScopedClosureRunner keep_anchor_visible) {
-          action.Run(is_source_accelerator);
-        },
-        *explicit_action_);
+    return *explicit_action_;
   }
 
   // Used as the callback closure to the setter of the explicit state,
@@ -690,11 +680,9 @@ class OnSigninStateProvider : public StateProvider {
   void ClearForTesting() override { coordinator_->Collapse(); }
 
  private:
-  void OnButtonClick(bool is_source_accelerator,
-                     base::ScopedClosureRunner keep_anchor_visible) {
+  void OnButtonClick(bool is_source_accelerator) {
     ProfileMenuCoordinator::From(&browser_.get())
-        ->Show(is_source_accelerator, /*from_avatar_promo=*/false,
-               std::move(keep_anchor_visible));
+        ->Show(is_source_accelerator, /*from_avatar_promo=*/false);
     coordinator_->Collapse();
   }
 
@@ -1363,11 +1351,10 @@ class PromoStateProvider : public StateProvider {
   }
 
  private:
-  void OnButtonClick(bool is_source_accelerator,
-                     base::ScopedClosureRunner keep_anchor_visible) {
+  void OnButtonClick(bool is_source_accelerator) {
     ProfileMenuCoordinator::From(&browser_.get())
         ->Show(is_source_accelerator,
-               /*from_avatar_promo=*/true, std::move(keep_anchor_visible));
+               /*from_avatar_promo=*/true);
     coordinator_->PromoUsed();
   }
 
@@ -2303,8 +2290,7 @@ void AvatarToolbarButtonStateManager::RegisterObserver(Observer* observer) {
 }
 
 void AvatarToolbarButtonStateManager::HandleButtonPressed(
-    bool is_source_accelerator,
-    base::ScopedClosureRunner keep_anchor_visible) {
+    bool is_source_accelerator) {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (browser_ &&
       BrowserUserEducationInterface::From(browser_)->IsFeaturePromoActive(
@@ -2343,15 +2329,14 @@ void AvatarToolbarButtonStateManager::HandleButtonPressed(
   std::optional<StateProvider::ButtonAction> action_override =
       active_state_provider->GetButtonActionOverride();
   if (action_override.has_value()) {
-    action_override->Run(is_source_accelerator, std::move(keep_anchor_visible));
+    action_override->Run(is_source_accelerator);
     return;
   }
 
   // By default, show the profile menu.
   if (browser_ && ProfileMenuCoordinator::From(browser_)) {
-    ProfileMenuCoordinator::From(browser_)->Show(
-        is_source_accelerator, /*from_avatar_promo=*/false,
-        std::move(keep_anchor_visible));
+    ProfileMenuCoordinator::From(browser_)->Show(is_source_accelerator,
+                                                 /*from_avatar_promo=*/false);
   }
 }
 

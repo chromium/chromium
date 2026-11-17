@@ -40,10 +40,8 @@ ProfileMenuCoordinator::~ProfileMenuCoordinator() {
   }
 }
 
-void ProfileMenuCoordinator::Show(
-    bool is_source_accelerator,
-    bool from_avatar_promo,
-    base::ScopedClosureRunner keep_anchor_visible) {
+void ProfileMenuCoordinator::Show(bool is_source_accelerator,
+                                  bool from_avatar_promo) {
   // Do not show avatar bubble if the avatar button cannot be shown for this
   // profile, or if the bubble is already showing.
   if (!AvatarToolbarButtonInterface::CanShowForProfile(GetProfile()) ||
@@ -75,26 +73,20 @@ void ProfileMenuCoordinator::Show(
   // to show the batch upload row item in the menu.
   const bool allow_batch_upload_promos = from_avatar_promo;
 
-  // `keep_anchor_visible` is bound to the callback, so that the avatar button
-  // stays visible while waiting for the results. If the callback is dropped,
-  // `keep_anchor_visible` will be destroyed, allowing the button to be hidden
-  // again.
   signin::ComputeProfileMenuAvatarButtonPromoInfo(
       *GetProfile(),
       base::BindOnce(&ProfileMenuCoordinator::ShowWithPromoResults,
                      weak_pointer_factory_.GetWeakPtr(), is_source_accelerator,
-                     from_avatar_promo, std::move(keep_anchor_visible)),
+                     from_avatar_promo),
       allow_batch_upload_promos);
 #else
-  ShowWithPromoResults(is_source_accelerator, from_avatar_promo,
-                       std::move(keep_anchor_visible));
+  ShowWithPromoResults(is_source_accelerator, from_avatar_promo);
 #endif
 }
 
 void ProfileMenuCoordinator::ShowWithPromoResults(
     bool is_source_accelerator,
-    bool from_avatar_promo,
-    base::ScopedClosureRunner keep_anchor_visible
+    bool from_avatar_promo
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     ,
     signin::ProfileMenuAvatarButtonPromoInfo promo_info
@@ -116,9 +108,9 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
     }
     avatar_button->RunWhenVisible(base::BindOnce(
         &ProfileMenuCoordinator::ShowBubble, weak_pointer_factory_.GetWeakPtr(),
-        is_source_accelerator, from_avatar_promo, std::move(keep_anchor_visible)
+        is_source_accelerator, from_avatar_promo
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-                                                      ,
+        ,
         std::move(promo_info)
 #endif
             ));
@@ -129,7 +121,7 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
   // experimental `WebUIBrowser` windows), which expose the avatar button
   // directly via `BrowserElements`.
   ShowBubble(
-      is_source_accelerator, from_avatar_promo, std::move(keep_anchor_visible),
+      is_source_accelerator, from_avatar_promo,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       std::move(promo_info),
 #endif
@@ -141,12 +133,11 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
 void ProfileMenuCoordinator::ShowBubble(
     bool is_source_accelerator,
     bool from_avatar_promo,
-    base::ScopedClosureRunner caller_keep_anchor_visible,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     signin::ProfileMenuAvatarButtonPromoInfo promo_info,
 #endif
     views::BubbleAnchor anchor,
-    base::ScopedClosureRunner anchor_keep_visible) {
+    base::ScopedClosureRunner keep_anchor_visible) {
   // Check again in case `RunWhenVisible()` resolved asynchronously, and
   // bail out if `RunWhenVisible()` fell back to the parent container view
   // because the avatar button itself stayed hidden (such as single-profile
@@ -192,8 +183,8 @@ void ProfileMenuCoordinator::ShowBubble(
   CHECK_EQ(nullptr, bubble_tracker_.view(), base::NotFatalUntil::M162);
   bubble_tracker_.SetView(bubble_ptr);
   // Keep the avatar button from being hidden until the bubble is destroyed.
-  bubble_tracker_.SetIsDeletingCallback(base::DoNothingWithBoundArgs(
-      std::move(caller_keep_anchor_visible), std::move(anchor_keep_visible)));
+  bubble_tracker_.SetIsDeletingCallback(
+      base::DoNothingWithBoundArgs(std::move(keep_anchor_visible)));
 
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));

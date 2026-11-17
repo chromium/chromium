@@ -468,16 +468,7 @@ void AvatarToolbarButton::RunWhenVisible(WhenVisibleCallback callback) {
 }
 
 void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
-  RunWhenVisible(base::BindOnce(
-      [](base::WeakPtr<AvatarToolbarButton> self, bool is_source_accelerator,
-         views::BubbleAnchor /*anchor*/,
-         base::ScopedClosureRunner keep_visible) {
-        if (self) {
-          self->state_manager_.HandleButtonPressed(is_source_accelerator,
-                                                   std::move(keep_visible));
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr(), is_source_accelerator));
+  state_manager_.HandleButtonPressed(is_source_accelerator);
 }
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,

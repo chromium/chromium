@@ -8122,6 +8122,48 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
   AssertNoJsErrors();
 }
 
+// Tests that pressing an overflowed avatar button that has an explicit action
+// runs the action immediately, without waiting for the button to be shown.
+// ChromeOS only shows the avatar button for Incognito and Guest profiles, whose
+// button states outrank explicit states, so explicit actions never run there.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
+                       AvatarExplicitActionRunsWhileOverflowed) {
+  BrowserWindowInterface* target_browser = browser();
+  InstallErrorListener();
+
+  ASSERT_TRUE(WaitForTrackedElementVisible(kToolbarAvatarButtonElementId,
+                                           target_browser));
+  AvatarToolbarButtonInterface* avatar =
+      GetWebUIToolbar(target_browser)->GetAvatarToolbarButtonInterface();
+  ASSERT_TRUE(avatar);
+
+  int action_count = 0;
+  base::ScopedClosureRunner reset_explicit_state =
+      avatar->SetExplicitButtonState(
+          u"Avatar button text",
+          /*accessibility_label=*/std::nullopt,
+          base::BindLambdaForTesting(
+              [&](bool /*is_source_accelerator*/) { ++action_count; }));
+
+  ASSERT_EQ(SetSpacerWidth(target_browser->GetWindow()->GetBounds().width(),
+                           target_browser),
+            true);
+  ASSERT_TRUE(WaitForTrackedElementHidden(kToolbarAvatarButtonElementId,
+                                          target_browser));
+
+  avatar->ButtonPressed(/*is_source_accelerator=*/false);
+  EXPECT_EQ(action_count, 1);
+
+  // Explicit actions don't anchor UI to the button, so it stays overflowed.
+  ASSERT_TRUE(FlushWebUIToolbarPipes(target_browser));
+  EXPECT_FALSE(
+      GetTrackedElement(kToolbarAvatarButtonElementId, target_browser));
+
+  AssertNoJsErrors();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
                        AvatarRunWhenVisibleDuringInitialLoad) {
   InstallErrorListener();
