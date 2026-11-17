@@ -150,4 +150,39 @@ IN_PROC_BROWSER_TEST_F(GlicWebUiBrowserTest,
       base::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
 }
 
+// Killing the WebUI renderer of one instance must only shut down that instance,
+// even when other instances exist.
+IN_PROC_BROWSER_TEST_F(GlicWebUiBrowserTest,
+                       WebUiCrashWithMultipleInstancesShutsDownOnlyOne) {
+  ASSERT_OK_AND_ASSIGN(auto* first_instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(WaitForGlicClient(first_instance).has_value());
+
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(auto* second_instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(WaitForGlicClient(second_instance).has_value());
+  ASSERT_NE(first_instance, second_instance);
+
+  content::WebContents* first_webui_contents =
+      first_instance->host().webui_contents();
+  ASSERT_TRUE(first_webui_contents);
+  content::RenderProcessHost* process =
+      first_webui_contents->GetPrimaryMainFrame()->GetProcess();
+  ASSERT_TRUE(process);
+  ASSERT_NE(process, second_instance->host()
+                         .webui_contents()
+                         ->GetPrimaryMainFrame()
+                         ->GetProcess());
+
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    content::RenderProcessHostWatcher watcher(
+        process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    EXPECT_TRUE(process->Shutdown(content::RESULT_CODE_KILLED));
+    watcher.Wait();
+  }
+
+  EXPECT_TRUE(first_instance->IsHibernated());
+  EXPECT_FALSE(second_instance->IsHibernated());
+}
+
 }  // namespace glic

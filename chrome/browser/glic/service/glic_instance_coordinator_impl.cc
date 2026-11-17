@@ -1030,7 +1030,10 @@ void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
   for (auto& [id, instance] : instances_) {
     if (instance &&
         instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
+      // Shutdown() destroys the WebContents that owns `render_frame_host`, so
+      // it must not be used after this point.
       instance->Shutdown();
+      return;
     }
   }
 }

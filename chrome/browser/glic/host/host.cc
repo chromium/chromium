@@ -173,7 +173,8 @@ bool Host::IsAwake() const {
 
 bool Host::IsWebContentPresentAndMatches(
     content::RenderFrameHost* render_frame_host) {
-  if (!render_frame_host) {
+  // A hibernated host has no WebContents to match against.
+  if (!render_frame_host || !contents_) {
     return false;
   }
   content::WebContents* rfh_contents =
