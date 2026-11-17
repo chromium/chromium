@@ -8,36 +8,15 @@ chromium::import! {
 
 use orb_sniffers::SniffingResult;
 
-#[derive(Clone, Copy)]
 enum CompareCase {
     Sensitive,
     InsensitiveAscii,
 }
 
-fn starts_with(str: &[u8], search_for: &[u8], compare_case: CompareCase) -> bool {
-    let Some(prefix) = str.get(..search_for.len()) else {
-        return false;
-    };
-    match compare_case {
-        CompareCase::Sensitive => prefix == search_for,
-        CompareCase::InsensitiveAscii => prefix.eq_ignore_ascii_case(search_for),
-    }
-}
-
 fn strip_utf8_bom(data: &[u8]) -> &[u8] {
     // https://en.wikipedia.org/wiki/Byte_order_mark#UTF-8
-    const UTF8_BOM: &[u8] = b"\xEF\xBB\xBF";
+    const UTF8_BOM: &[u8] = "\u{FEFF}".as_bytes();
     data.strip_prefix(UTF8_BOM).unwrap_or(data)
-}
-
-// Based on https://infra.spec.whatwg.org/#ascii-whitespace
-const WHITESPACE_CHARS: &[u8] = b"\t\n\x0c\r ";
-
-fn trim_leading_whitespace(data: &[u8]) -> &[u8] {
-    match data.iter().position(|c| !WHITESPACE_CHARS.contains(c)) {
-        None => &[],
-        Some(offset) => &data[offset..],
-    }
 }
 
 // Returns `SniffingResult::kYes` if `data` starts with one of the string
@@ -48,23 +27,24 @@ fn matches_signature(
     signatures: &[&[u8]],
     compare_case: CompareCase,
 ) -> SniffingResult {
+    let eq = match compare_case {
+        CompareCase::Sensitive => <[u8]>::eq,
+        CompareCase::InsensitiveAscii => <[u8]>::eq_ignore_ascii_case,
+    };
     for &signature in signatures {
-        if signature.len() <= data.len() {
-            if starts_with(data, signature, compare_case) {
-                // When `signature` is a prefix of `data`, it constitutes a
-                // match.
-                return SniffingResult::kYes;
-            }
-        } else if starts_with(signature, data, compare_case) {
-            // When `data` is a prefix of `signature`, that means that
-            // subsequent bytes in the stream could cause a match to occur.
-            return SniffingResult::kMaybe;
+        let len = data.len().min(signature.len());
+        if eq(&data[..len], &signature[..len]) {
+            return if data.len() >= signature.len() {
+                SniffingResult::kYes
+            } else {
+                SniffingResult::kMaybe
+            };
         }
     }
     SniffingResult::kNo
 }
 
-fn find_first_javascript_line_terminator(hay: &[u8], mut pos: usize) -> Option<usize> {
+fn skip_until_javascript_line_terminator(mut hay: &[u8]) -> Option<&[u8]> {
     // https://www.ecma-international.org/ecma-262/8.0/index.html#prod-LineTerminator
     // defines LineTerminator ::= <LF> | <CR> | <LS> | <PS>.
     //
@@ -72,68 +52,56 @@ fn find_first_javascript_line_terminator(hay: &[u8], mut pos: usize) -> Option<u
     // defines <LF>, <CR>, <LS> ::= "\u2028", <PS> ::= "\u2029".
     //
     // In UTF8 encoding <LS> is 0xE2 0x80 0xA8 and <PS> is 0xE2 0x80 0xA9.
+    const LS: &[u8] = "\u{2028}".as_bytes();
+    const PS: &[u8] = "\u{2029}".as_bytes();
     loop {
-        let offset = hay[pos..].iter().position(|&b| matches!(b, b'\n' | b'\r' | b'\xe2'))?;
-        pos += offset;
-
-        if hay[pos] != b'\xe2' {
-            debug_assert!(hay[pos] == b'\r' || hay[pos] == b'\n');
-            return Some(pos);
-        }
+        let offset = hay.iter().position(|&b| matches!(b, b'\n' | b'\r' | b'\xe2'))?;
+        hay = &hay[offset..];
 
         // TODO(lukasza): Prevent matching 3 bytes that span/straddle 2 UTF8
         // characters.
-        let substr = &hay[pos..];
-        if substr.starts_with("\u{2028}".as_bytes()) || substr.starts_with("\u{2029}".as_bytes()) {
-            return Some(pos);
+        if hay[0] != b'\xe2' || hay.starts_with(LS) || hay.starts_with(PS) {
+            return Some(hay);
         }
 
-        pos += 1; // Skip the \xe2 character.
+        hay = &hay[1..]; // Skip the \xe2 character.
     }
 }
 
 // Checks if `data` starts with an HTML comment (i.e. with "<!-- ... -->").
-// - If there is a valid, terminated comment then returns
-//   `SniffingResult::kYes`.
+// - If there is a valid, terminated comment then returns `Ok` with the
+//   remaining slice after the comment. Note that the SingleLineHTMLCloseComment
+//   ECMAScript rule is taken into account, which means that characters
+//   following an HTML comment are consumed up to the nearest line-terminating
+//   character.
 // - If there is a start of a comment, but the comment is not completed (e.g.
 //   `data` == "<!-" or `data` == "<!-- not terminated yet") then returns
-//   `SniffingResult::kMaybe`.
-// - Returns `SniffingResult::kNo` otherwise.
-//
-// Mutates `data` to advance past the comment when returning
-// `SniffingResult::kYes`. Note that SingleLineHTMLCloseComment ECMAScript rule
-// is taken into account which means that characters following an HTML comment
-// are consumed up to the nearest line terminating character.
-fn maybe_skip_html_comment(data: &mut &[u8]) -> SniffingResult {
+//   `Err(SniffingResult::kMaybe)`.
+// - Returns `Err(SniffingResult::kNo)` otherwise.
+fn skip_html_comment(data: &[u8]) -> Result<&[u8], SniffingResult> {
     const START_STRING: &[u8] = b"<!--";
-    if !data.starts_with(START_STRING) {
-        if START_STRING.starts_with(data) {
-            return SniffingResult::kMaybe;
-        }
-        return SniffingResult::kNo;
-    }
+    let Some(rest) = data.strip_prefix(START_STRING) else {
+        return Err(if START_STRING.starts_with(data) {
+            SniffingResult::kMaybe
+        } else {
+            SniffingResult::kNo
+        });
+    };
 
     const END_STRING: &[u8] = b"-->";
-    let Some(end_offset) =
-        data[START_STRING.len()..].windows(END_STRING.len()).position(|w| w == END_STRING)
-    else {
-        return SniffingResult::kMaybe;
-    };
-    let end_of_html_comment = START_STRING.len() + end_offset + END_STRING.len();
+    let end_offset = rest
+        .windows(END_STRING.len())
+        .position(|w| w == END_STRING)
+        .ok_or(SniffingResult::kMaybe)?;
+    let after_comment = &rest[end_offset + END_STRING.len()..];
 
     // Skipping until the first line terminating character. See
     // https://crbug.com/839945 for the motivation behind this.
-    let Some(end_of_line) = find_first_javascript_line_terminator(data, end_of_html_comment) else {
-        return SniffingResult::kMaybe;
-    };
-
-    // Found real end of the combined HTML/JS comment.
-    *data = &data[end_of_line..];
-    SniffingResult::kYes
+    skip_until_javascript_line_terminator(after_comment).ok_or(SniffingResult::kMaybe)
 }
 
 // This function is a slight modification of `net::SniffForHTML`.
-pub fn sniff_for_html(mut data: &[u8]) -> SniffingResult {
+pub fn sniff_for_html(data: &[u8]) -> SniffingResult {
     // The content sniffers used by Chrome and Firefox are using "<!--" as one
     // of the HTML signatures, but it also appears in valid JavaScript,
     // considered as well-formed JS by the browser. Since we do not want to
@@ -163,20 +131,20 @@ pub fn sniff_for_html(mut data: &[u8]) -> SniffingResult {
         b"<p",             // Mozilla
     ];
 
-    data = strip_utf8_bom(data);
+    let mut data = strip_utf8_bom(data);
     while !data.is_empty() {
-        data = trim_leading_whitespace(data);
+        // Based on https://infra.spec.whatwg.org/#ascii-whitespace
+        data = data.trim_ascii_start();
 
-        let signature_match =
-            matches_signature(data, HTML_SIGNATURES, CompareCase::InsensitiveAscii);
-        if signature_match != SniffingResult::kNo {
-            return signature_match;
+        match matches_signature(data, HTML_SIGNATURES, CompareCase::InsensitiveAscii) {
+            SniffingResult::kNo => {}
+            result => return result,
         }
 
-        let comment_match = maybe_skip_html_comment(&mut data);
-        if comment_match != SniffingResult::kYes {
-            return comment_match;
-        }
+        data = match skip_html_comment(data) {
+            Ok(rest) => rest,
+            Err(result) => return result,
+        };
     }
 
     // All of `data` was consumed, without a clear determination.
@@ -184,8 +152,8 @@ pub fn sniff_for_html(mut data: &[u8]) -> SniffingResult {
 }
 
 pub fn sniff_for_xml(data: &[u8]) -> SniffingResult {
-    let data = trim_leading_whitespace(strip_utf8_bom(data));
     const XML_SIGNATURES: &[&[u8]] = &[b"<?xml"];
+    let data = strip_utf8_bom(data).trim_ascii_start();
     matches_signature(data, XML_SIGNATURES, CompareCase::Sensitive)
 }
 
@@ -199,7 +167,6 @@ pub fn sniff_for_json(data: &[u8]) -> SniffingResult {
     // TODO(nick): We have to come up with a better way to sniff JSON. The
     // following are known limitations of this function:
     // https://crbug.com/795470/ Support non-dictionary values (e.g. lists)
-    #[derive(PartialEq, Eq)]
     enum State {
         Start,
         LeftBrace,
@@ -209,48 +176,25 @@ pub fn sniff_for_json(data: &[u8]) -> SniffingResult {
     }
     let mut state = State::Start;
 
-    let data = strip_utf8_bom(data);
-    for &c in data {
-        if state != State::LeftQuote && state != State::Escape {
-            // Whitespace is ignored (outside of string literals)
-            if WHITESPACE_CHARS.contains(&c) {
-                continue;
+    for &c in strip_utf8_bom(data) {
+        state = match (state, c) {
+            // Whitespace is ignored (outside of string literals).
+            (s @ (State::Start | State::LeftBrace | State::RightQuote), c)
+                if c.is_ascii_whitespace() =>
+            {
+                s
             }
-        }
-
-        match state {
-            State::Start => {
-                if c == b'{' {
-                    state = State::LeftBrace;
-                } else {
-                    return SniffingResult::kNo;
-                }
-            }
-            State::LeftBrace => {
-                if c == b'"' {
-                    state = State::LeftQuote;
-                } else {
-                    return SniffingResult::kNo;
-                }
-            }
-            State::LeftQuote => {
-                if c == b'"' {
-                    state = State::RightQuote;
-                } else if c == b'\\' {
-                    state = State::Escape;
-                }
-            }
-            State::Escape => {
-                // Simplification: don't bother rejecting hex escapes.
-                state = State::LeftQuote;
-            }
-            State::RightQuote => {
-                if c == b':' {
-                    return SniffingResult::kYes;
-                }
+            (State::Start, b'{') => State::LeftBrace,
+            (State::LeftBrace, b'"') => State::LeftQuote,
+            (State::LeftQuote, b'"') => State::RightQuote,
+            (State::LeftQuote, b'\\') => State::Escape,
+            // Simplification: don't bother rejecting hex escapes.
+            (State::LeftQuote | State::Escape, _) => State::LeftQuote,
+            (State::RightQuote, b':') => return SniffingResult::kYes,
+            (State::Start | State::LeftBrace | State::RightQuote, _) => {
                 return SniffingResult::kNo;
             }
-        }
+        };
     }
     SniffingResult::kMaybe
 }
@@ -291,12 +235,10 @@ pub fn sniff_for_fetch_only_resource(data: &[u8]) -> SniffingResult {
     ];
 
     let data = strip_utf8_bom(data);
-    let has_parser_breaker =
-        matches_signature(data, SCRIPT_BREAKING_PREFIXES, CompareCase::Sensitive);
-    if has_parser_breaker != SniffingResult::kNo {
-        return has_parser_breaker;
+    match matches_signature(data, SCRIPT_BREAKING_PREFIXES, CompareCase::Sensitive) {
+        // A non-empty JSON object also effectively introduces a JS syntax
+        // error.
+        SniffingResult::kNo => sniff_for_json(data),
+        result => result,
     }
-
-    // A non-empty JSON object also effectively introduces a JS syntax error.
-    sniff_for_json(data)
 }
