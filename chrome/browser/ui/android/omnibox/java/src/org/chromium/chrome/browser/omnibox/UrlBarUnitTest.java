@@ -77,6 +77,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
+import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -93,6 +94,7 @@ import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.ViewUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -106,8 +108,16 @@ public class UrlBarUnitTest {
     // UrlBar has 4 px of padding on the left and right. Set this to url bar width + padding so
     // getVisibleMeasuredViewportWidth() returns 100. This ensures NUMBER_OF_VISIBLE_CHARACTERS
     // is accurate.
-    private static final int URL_BAR_WIDTH = 100 + 8;
+    private static final int URL_BAR_HORIZONTAL_PADDING = 8;
+    private static final int VIEWPORT_WIDTH = 100;
+    private static final int URL_BAR_WIDTH = VIEWPORT_WIDTH + URL_BAR_HORIZONTAL_PADDING;
     private static final int URL_BAR_HEIGHT = 50;
+    // Wide enough to fit UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT (150) sampled chars while still
+    // narrower than a full over-limit origin.
+    private static final int WIDE_VIEWPORT_WIDTH = 3000;
+    private static final int WIDE_URL_BAR_WIDTH = WIDE_VIEWPORT_WIDTH + URL_BAR_HORIZONTAL_PADDING;
+    // UrlBar truncates the scroll position to whole pixels.
+    private static final float SCROLL_ROUNDING_TOLERANCE_PX = 1f;
     private static final float FONT_HEIGHT_NOMINAL = 100f;
     private static final float FONT_HEIGHT_ACTUAL_TALL = 120f;
     private static final float FONT_HEIGHT_ACTUAL_SHORT = 80f;
@@ -129,12 +139,30 @@ public class UrlBarUnitTest {
             "/" + TextUtils.join("", Collections.nCopies(MIN_LENGTH_FOR_TRUNCATION, "a"));
     private static final String SHORT_DOMAIN = "www.a.com";
     private static final String SHORT_SUBDOMAIN = "www.a.com.foo";
+    // Unlike SHORT_DOMAIN, leaves room in the viewport for a few path characters.
+    private static final String TINY_DOMAIN = "a.com";
+    // A hostname that starts with a trusted-looking name and ends in the real registrable domain.
+    private static final String SPOOF_DOMAIN = "accounts.google.com.evil.test";
+    private static final String SPOOF_REGISTRABLE_DOMAIN = "evil.test";
     private static final String LONG_DOMAIN =
             "www."
                     + TextUtils.join("", Collections.nCopies(MIN_LENGTH_FOR_TRUNCATION, "a"))
                     + ".com";
 
     private static final int MAX_DISPLAYABLE_LENGTH = 4000;
+    private static final int MAX_DISPLAYABLE_LENGTH_LOW_END = 1000;
+
+    // SPOOF_DOMAIN padded so that the hostname alone exceeds MAX_DISPLAYABLE_LENGTH.
+    private static final String SUPER_LONG_SPOOF_DOMAIN =
+            "accounts.google.com."
+                    + TextUtils.join("", Collections.nCopies(MAX_DISPLAYABLE_LENGTH, "a"))
+                    + "."
+                    + SPOOF_REGISTRABLE_DOMAIN;
+
+    // Long enough that a middle length-limit ellipsis would cover the end of
+    // SUPER_LONG_SPOOF_DOMAIN. The trailing Hebrew letter makes the URL contain RTL text.
+    private static final String SUPER_LONG_RTL_PATH =
+            "/" + TextUtils.join("", Collections.nCopies(MAX_DISPLAYABLE_LENGTH, "a")) + "\u05D0";
 
     private static final String SUPER_LONG_URL =
             "www.a.com/"
@@ -295,6 +323,36 @@ public class UrlBarUnitTest {
                 /* previouslyFocusedRect= */ null);
         mUrlBar.setText(url);
         measureAndLayoutUrlBar();
+    }
+
+    /** Displays {@code url} with bounds ellipsis and scrolls it to {@code originEndIndex}. */
+    private void showUnfocusedUrlScrolledToTld(String url, int originEndIndex) {
+        showUnfocusedUrlWithBoundsEllipsis(url);
+        mUrlBar.setScrollState(ScrollType.SCROLL_TO_TLD, originEndIndex, /* originChanged= */ true);
+        measureAndLayoutUrlBar();
+    }
+
+    /** Displays {@code url} via setTextWithTruncation() followed by setScrollState(). */
+    private void showUnfocusedUrlViaBinderPath(String url, int originEndIndex) {
+        showUnfocusedUrlWithBoundsEllipsis(SHORT_DOMAIN);
+        mUrlBar.setTextWithTruncation(url, ScrollType.SCROLL_TO_TLD, originEndIndex);
+        mUrlBar.setScrollState(ScrollType.SCROLL_TO_TLD, originEndIndex, /* originChanged= */ true);
+        measureAndLayoutUrlBar();
+    }
+
+    /** Returns the x position of {@code index} relative to the start of the visible viewport. */
+    private float viewportXOf(int index) {
+        return mUrlBar.getLayout().getPrimaryHorizontal(index) - mUrlBar.getScrollX();
+    }
+
+    /** Asserts disjoint middle origin length-limit and trailing bounds spans. */
+    private void assertDisjointOriginAndBoundsSpans(int hostLength, int maxLength) {
+        Editable text = mUrlBar.getText();
+        int halfMax = maxLength / 2;
+        assertEquals(halfMax, text.getSpanStart(EllipsisSpan.INSTANCE));
+        assertEquals(hostLength - halfMax, text.getSpanEnd(EllipsisSpan.INSTANCE));
+        assertEquals(hostLength, text.getSpanStart(BoundsEllipsisSpan.INSTANCE));
+        assertEquals(text.length(), text.getSpanEnd(BoundsEllipsisSpan.INSTANCE));
     }
 
     private void verifySelectionState(
@@ -1752,6 +1810,239 @@ public class UrlBarUnitTest {
 
         Editable text = mUrlBar.getText();
         assertEquals(0, text.getSpans(0, text.length(), BoundsEllipsisSpan.class).length);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_NeverHidesOverflowingHost() {
+        showUnfocusedUrlScrolledToTld(LONG_DOMAIN + SHORT_PATH, LONG_DOMAIN.length());
+
+        Editable text = mUrlBar.getText();
+        BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(1, spans.length);
+        assertEquals(LONG_DOMAIN.length(), text.getSpanStart(spans[0]));
+        assertEquals(
+                VIEWPORT_WIDTH, viewportXOf(LONG_DOMAIN.length()), SCROLL_ROUNDING_TOLERANCE_PX);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_NeverHidesHostWhenScrollDeferredUntilLayout() {
+        showUnfocusedUrlWithBoundsEllipsis(SHORT_DOMAIN);
+
+        // Mirror UrlBarViewBinder: set the text, then the scroll state, and let layout() scroll.
+        mUrlBar.setText(LONG_DOMAIN + SHORT_PATH);
+        ViewUtils.requestLayout(mUrlBar, "UrlBarUnitTest");
+        mUrlBar.setScrollState(
+                ScrollType.SCROLL_TO_TLD, LONG_DOMAIN.length(), /* originChanged= */ true);
+        assertTrue(mUrlBar.hasPendingDisplayTextScrollForTesting());
+        measureAndLayoutUrlBar();
+
+        Editable text = mUrlBar.getText();
+        assertEquals(LONG_DOMAIN.length(), text.getSpanStart(BoundsEllipsisSpan.INSTANCE));
+        assertEquals(
+                VIEWPORT_WIDTH, viewportXOf(LONG_DOMAIN.length()), SCROLL_ROUNDING_TOLERANCE_PX);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_SpoofHostShowsRegistrableDomain() {
+        showUnfocusedUrlScrolledToTld(SPOOF_DOMAIN, SPOOF_DOMAIN.length());
+
+        Editable text = mUrlBar.getText();
+        assertEquals(0, text.getSpans(0, text.length(), BoundsEllipsisSpan.class).length);
+        assertTrue(viewportXOf(SPOOF_DOMAIN.indexOf(SPOOF_REGISTRABLE_DOMAIN)) >= 0);
+        assertEquals(
+                VIEWPORT_WIDTH, viewportXOf(SPOOF_DOMAIN.length()), SCROLL_ROUNDING_TOLERANCE_PX);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_LengthLimitNeverHidesEndOfSuperLongHost() {
+        showUnfocusedUrlWithBoundsEllipsis(SHORT_DOMAIN);
+        int hostLength = SUPER_LONG_SPOOF_DOMAIN.length();
+
+        // Mirror UrlBarViewBinder: the length limit is applied before the origin end is known.
+        mUrlBar.setText(SUPER_LONG_SPOOF_DOMAIN);
+        ViewUtils.requestLayout(mUrlBar, "UrlBarUnitTest");
+        mUrlBar.setScrollState(ScrollType.SCROLL_TO_TLD, hostLength, /* originChanged= */ true);
+        measureAndLayoutUrlBar();
+
+        Editable text = mUrlBar.getText();
+        assertEquals(-1, text.getSpanStart(BoundsEllipsisSpan.INSTANCE));
+        assertEquals(MAX_DISPLAYABLE_LENGTH / 2, text.getSpanStart(EllipsisSpan.INSTANCE));
+        assertEquals(
+                hostLength - MAX_DISPLAYABLE_LENGTH / 2, text.getSpanEnd(EllipsisSpan.INSTANCE));
+        assertTrue(viewportXOf(SUPER_LONG_SPOOF_DOMAIN.indexOf(SPOOF_REGISTRABLE_DOMAIN)) >= 0);
+        assertEquals(VIEWPORT_WIDTH, viewportXOf(hostLength), SCROLL_ROUNDING_TOLERANCE_PX);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_SuperLongHostWithRtlPathKeepsHostEndVisible() {
+        int hostLength = SUPER_LONG_SPOOF_DOMAIN.length();
+        // RTL text skips truncation in setTextWithTruncation(), so the length limit is applied
+        // before the origin end is known.
+        showUnfocusedUrlViaBinderPath(SUPER_LONG_SPOOF_DOMAIN + SUPER_LONG_RTL_PATH, hostLength);
+
+        assertDisjointOriginAndBoundsSpans(hostLength, MAX_DISPLAYABLE_LENGTH);
+        assertTrue(viewportXOf(SUPER_LONG_SPOOF_DOMAIN.indexOf(SPOOF_REGISTRABLE_DOMAIN)) >= 0);
+        assertEquals(VIEWPORT_WIDTH, viewportXOf(hostLength), SCROLL_ROUNDING_TOLERANCE_PX);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_WideViewportStillKeepsOriginAndBoundsSpan() {
+        int hostLength = SUPER_LONG_SPOOF_DOMAIN.length();
+        showUnfocusedUrlWithBoundsEllipsis(SHORT_DOMAIN);
+        mUrlBar.setTextWithTruncation(
+                SUPER_LONG_SPOOF_DOMAIN + SUPER_LONG_RTL_PATH,
+                ScrollType.SCROLL_TO_TLD,
+                hostLength);
+        mUrlBar.setScrollState(ScrollType.SCROLL_TO_TLD, hostLength, /* originChanged= */ true);
+        measureAndLayoutUrlBarForSize(WIDE_URL_BAR_WIDTH, URL_BAR_HEIGHT);
+
+        assertTrue(
+                mUrlBar.getPaint()
+                                .measureText(
+                                        SUPER_LONG_SPOOF_DOMAIN,
+                                        0,
+                                        UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT)
+                        <= WIDE_VIEWPORT_WIDTH);
+        assertDisjointOriginAndBoundsSpans(hostLength, MAX_DISPLAYABLE_LENGTH);
+        assertTrue(viewportXOf(SUPER_LONG_SPOOF_DOMAIN.indexOf(SPOOF_REGISTRABLE_DOMAIN)) >= 0);
+        assertEquals(WIDE_VIEWPORT_WIDTH, viewportXOf(hostLength), SCROLL_ROUNDING_TOLERANCE_PX);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_SuperLongHostWithPathCapsOriginOnLowEndDevice() {
+        SysUtils.setIsLowEndDeviceForTesting(true);
+        int hostLength = SUPER_LONG_SPOOF_DOMAIN.length();
+        showUnfocusedUrlViaBinderPath(SUPER_LONG_SPOOF_DOMAIN + LONG_PATH, hostLength);
+
+        assertDisjointOriginAndBoundsSpans(hostLength, MAX_DISPLAYABLE_LENGTH_LOW_END);
+        assertTrue(viewportXOf(SUPER_LONG_SPOOF_DOMAIN.indexOf(SPOOF_REGISTRABLE_DOMAIN)) >= 0);
+        assertEquals(VIEWPORT_WIDTH, viewportXOf(hostLength), SCROLL_ROUNDING_TOLERANCE_PX);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testLimitDisplayableLength_BottomBarDisabledCapsOverLimitOriginWithPath() {
+        int hostLength = SUPER_LONG_SPOOF_DOMAIN.length();
+        showUnfocusedUrlViaBinderPath(SUPER_LONG_SPOOF_DOMAIN + LONG_PATH, hostLength);
+
+        assertDisjointOriginAndBoundsSpans(hostLength, MAX_DISPLAYABLE_LENGTH);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_FocusExpandsOriginLengthLimitToFullText() {
+        int hostLength = SUPER_LONG_SPOOF_DOMAIN.length();
+        showUnfocusedUrlViaBinderPath(SUPER_LONG_SPOOF_DOMAIN + SUPER_LONG_RTL_PATH, hostLength);
+        assertDisjointOriginAndBoundsSpans(hostLength, MAX_DISPLAYABLE_LENGTH);
+
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
+
+        Editable text = mUrlBar.getText();
+        assertEquals(-1, text.getSpanStart(BoundsEllipsisSpan.INSTANCE));
+        assertEquals(MAX_DISPLAYABLE_LENGTH / 2, text.getSpanStart(EllipsisSpan.INSTANCE));
+        assertEquals(
+                text.length() - MAX_DISPLAYABLE_LENGTH / 2, text.getSpanEnd(EllipsisSpan.INSTANCE));
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_UnfocusRestoresDisjointOriginAndBoundsSpans() {
+        int hostLength = SUPER_LONG_SPOOF_DOMAIN.length();
+        showUnfocusedUrlViaBinderPath(SUPER_LONG_SPOOF_DOMAIN + SUPER_LONG_RTL_PATH, hostLength);
+
+        mUrlBar.onFocusChanged(
+                /* focused= */ true,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
+        mUrlBar.onFocusChanged(
+                /* focused= */ false,
+                /* direction= */ View.FOCUS_DOWN,
+                /* previouslyFocusedRect= */ null);
+        measureAndLayoutUrlBar();
+
+        assertDisjointOriginAndBoundsSpans(hostLength, MAX_DISPLAYABLE_LENGTH);
+    }
+
+    @Test
+    public void testLimitDisplayableLength_FocusedTypingAfterEllipsisPreservesSpan() {
+        focusUrlBar();
+        mUrlBar.setText(SUPER_LONG_URL);
+        Editable text = mUrlBar.getText();
+        int initialSpanEnd = text.getSpanEnd(EllipsisSpan.INSTANCE);
+        assertEquals(SUPER_LONG_URL.length() - MAX_DISPLAYABLE_LENGTH / 2, initialSpanEnd);
+
+        // Typing right after the ellipsis must stay visible instead of shifting span end over it.
+        text.insert(initialSpanEnd, "x");
+        assertEquals(MAX_DISPLAYABLE_LENGTH / 2, text.getSpanStart(EllipsisSpan.INSTANCE));
+        assertEquals(initialSpanEnd, text.getSpanEnd(EllipsisSpan.INSTANCE));
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void calculateVisibleHint_withOriginLengthLimitAndBoundsEllipsis() {
+        String url = SUPER_LONG_SPOOF_DOMAIN + SUPER_LONG_RTL_PATH;
+        int hostLength = SUPER_LONG_SPOOF_DOMAIN.length();
+        showUnfocusedUrlViaBinderPath(url, hostLength);
+
+        CharSequence hint = mUrlBar.calculateVisibleHint();
+        assertNotNull(hint);
+        assertEquals(url.substring(0, hostLength + 1), hint.toString());
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void calculateVisibleHint_withMiddleOriginLengthLimitOnly() {
+        showUnfocusedUrlViaBinderPath(SUPER_LONG_SPOOF_DOMAIN, SUPER_LONG_SPOOF_DOMAIN.length());
+
+        Editable text = mUrlBar.getText();
+        assertEquals(-1, text.getSpanStart(BoundsEllipsisSpan.INSTANCE));
+        assertEquals(MAX_DISPLAYABLE_LENGTH / 2, text.getSpanStart(EllipsisSpan.INSTANCE));
+        assertTrue(text.getSpanEnd(EllipsisSpan.INSTANCE) < text.length());
+
+        CharSequence hint = mUrlBar.calculateVisibleHint();
+        assertNotNull(hint);
+        assertTrue(hint.length() < MAX_DISPLAYABLE_LENGTH / 2);
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testApplyBoundsEllipsis_ShortHostLongPathElidesPath() {
+        // The host fits, so the viewport decides where the ellipsis starts, not the host end.
+        showUnfocusedUrlScrolledToTld(TINY_DOMAIN + LONG_PATH, TINY_DOMAIN.length());
+
+        Editable text = mUrlBar.getText();
+        BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(1, spans.length);
+        int spanStart = text.getSpanStart(spans[0]);
+        assertTrue(spanStart > TINY_DOMAIN.length());
+        float visibleWidth = mUrlBar.getPaint().measureText(text, 0, spanStart);
+        int ellipsisWidth =
+                spans[0].getSize(mUrlBar.getPaint(), text, spanStart, text.length(), null);
+        assertTrue(visibleWidth + ellipsisWidth <= VIEWPORT_WIDTH);
+        assertEquals(0, mUrlBar.getScrollX());
     }
 
     @Test

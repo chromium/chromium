@@ -802,7 +802,7 @@ public class UrlBar extends AutocompleteEditText {
             afm.notifyValueChanged(this);
         }
 
-        limitDisplayableLength();
+        limitDisplayableLength(/* updateExistingSpan= */ false);
         // Notifies observers about text changes with rich context (e.g., whether it was an
         // insertion or deletion).
         if (mRichTextChangeListener != null) {
@@ -1490,13 +1490,14 @@ public class UrlBar extends AutocompleteEditText {
 
     private void clearBoundsEllipsisSpans(Editable text) {
         text.removeSpan(BoundsEllipsisSpan.INSTANCE);
-        // The bounds ellipsis replaced the length limit; restore it for long URLs.
-        limitDisplayableLength();
+        // Recompute the length limit across the full text now that the bounds span is gone.
+        limitDisplayableLength(/* updateExistingSpan= */ true);
     }
 
     /**
-     * Evaluates visible constraints dynamically for long URLs. If character width exceeds available
-     * viewport limits, a BoundsEllipsisSpan overrides trailing overflowing text.
+     * Elides text that overflows the viewport with a trailing {@link BoundsEllipsisSpan}. The span
+     * never starts before the end of the origin. When the origin covers the whole text, no trailing
+     * span is applied and scrollToTLD() brings the end of the origin into view instead.
      */
     private void applyBoundsEllipsis(Editable text, int measuredWidth) {
         if (!shouldApplyBoundsEllipsis()) return;
@@ -1504,34 +1505,41 @@ public class UrlBar extends AutocompleteEditText {
         int textLength = text.length();
         if (textLength == 0 || getLayout() == null) return;
 
-        if (getTextWidth() <= measuredWidth) {
+        if (mOriginEndIndex >= textLength || getTextWidth() <= measuredWidth) {
             clearBoundsEllipsisSpans(text);
             return;
         }
 
-        CharSequence ellipsizedText =
-                TextUtils.ellipsize(
-                        assumeNonNull(mLastMeasuredText),
-                        getPaint(),
-                        measuredWidth,
-                        TextUtils.TruncateAt.END);
-        if (TextUtils.equals(mLastMeasuredText, ellipsizedText)) {
-            clearBoundsEllipsisSpans(text);
-            return;
+        String measuredText = assumeNonNull(mLastMeasuredText);
+        int offset;
+        if (mOriginEndIndex >= measuredText.length()) {
+            // The sampled prefix lies within the origin, so the viewport ellipsis cannot start
+            // before mOriginEndIndex. Skip ellipsizing the sample so a narrow prefix fitting a
+            // wide viewport cannot clear the bounds span on an overflowing URL.
+            offset = mOriginEndIndex;
+        } else {
+            CharSequence ellipsizedText =
+                    TextUtils.ellipsize(
+                            measuredText, getPaint(), measuredWidth, TextUtils.TruncateAt.END);
+            if (TextUtils.equals(measuredText, ellipsizedText)) {
+                clearBoundsEllipsisSpans(text);
+                return;
+            }
+            // Never hide any part of the origin.
+            offset = Math.max(ellipsizedText.length() - 1, mOriginEndIndex);
         }
 
-        int offset = Math.max(0, ellipsizedText.length() - 1);
         if (text.getSpanStart(BoundsEllipsisSpan.INSTANCE) != offset
                 || text.getSpanEnd(BoundsEllipsisSpan.INSTANCE) != textLength) {
-            // The bounds ellipsis hides everything the length limit hides. Keep a single
-            // EllipsisSpan so the two never overlap.
-            text.removeSpan(EllipsisSpan.INSTANCE);
             text.setSpan(
                     BoundsEllipsisSpan.INSTANCE,
                     offset,
                     textLength,
                     Editable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
+        // Reconcile the length limit with the bounds span: drop it when the bounds span hides
+        // everything past maxLength, or bound it inside an origin longer than maxLength.
+        limitDisplayableLength(/* updateExistingSpan= */ true);
     }
 
     /** Scrolls the omnibox text to show the very beginning of the text entered. */
@@ -1579,18 +1587,25 @@ public class UrlBar extends AutocompleteEditText {
 
             Layout textLayout = assumeNonNull(getLayout());
 
-            boolean hasEllipsis = false;
-            EllipsisSpan[] spans = null;
+            int trailingSpanStart = -1;
             if (shouldApplyBoundsEllipsis()) {
-                spans = url.getSpans(0, urlTextLength, EllipsisSpan.class);
-                hasEllipsis = spans != null && spans.length > 0;
+                int boundsStart = url.getSpanStart(BoundsEllipsisSpan.INSTANCE);
+                int lengthLimitStart = url.getSpanStart(EllipsisSpan.INSTANCE);
+                assert boundsStart < 0
+                                || lengthLimitStart < 0
+                                || url.getSpanEnd(EllipsisSpan.INSTANCE) <= boundsStart
+                        : "EllipsisSpan and BoundsEllipsisSpan must not overlap";
+                if (boundsStart >= 0) {
+                    trailingSpanStart = boundsStart;
+                } else if (url.getSpanEnd(EllipsisSpan.INSTANCE) == urlTextLength) {
+                    trailingSpanStart = lengthLimitStart;
+                }
             }
 
+            boolean hasEllipsis = trailingSpanStart >= 0;
             int finalVisibleCharIndex;
             if (hasEllipsis) {
-                assert spans != null && spans.length == 1
-                        : "Should never apply more than a single EllipsisSpan";
-                finalVisibleCharIndex = url.getSpanStart(spans[0]);
+                finalVisibleCharIndex = trailingSpanStart;
             } else {
                 finalVisibleCharIndex =
                         textLayout
@@ -1856,7 +1871,7 @@ public class UrlBar extends AutocompleteEditText {
         }
     }
 
-    private void limitDisplayableLength() {
+    private void limitDisplayableLength(boolean updateExistingSpan) {
         // To limit displayable length we replace the middle portion of the string with an ellipsis
         // (or the end of the string when the toolbar variation is enabled). That affects only
         // presentation of the text, and doesn't affect other aspects like copying to the clipboard,
@@ -1866,9 +1881,14 @@ public class UrlBar extends AutocompleteEditText {
 
         Editable text = getText();
         int textLength = text.length();
-        if (textLength <= maxLength) {
-            // Only drop the length-limit span; setTextWithTruncation() may have just attached a
-            // BoundsEllipsisSpan.
+        int boundsStart =
+                textLength > maxLength && text.getSpanEnd(BoundsEllipsisSpan.INSTANCE) == textLength
+                        ? text.getSpanStart(BoundsEllipsisSpan.INSTANCE)
+                        : -1;
+        int visibleLength = boundsStart >= 0 ? boundsStart : textLength;
+        if (visibleLength <= maxLength) {
+            // Only drop the length-limit span; setTextWithTruncation() or applyBoundsEllipsis()
+            // may have attached a BoundsEllipsisSpan.
             if (mDidEllipsizeTextHint) text.removeSpan(EllipsisSpan.INSTANCE);
             mDidEllipsizeTextHint = false;
             return;
@@ -1876,24 +1896,35 @@ public class UrlBar extends AutocompleteEditText {
 
         mDidEllipsizeTextHint = true;
 
-        int spanLeft = text.nextSpanTransition(0, textLength, EllipsisSpan.class);
-        if (spanLeft != textLength) return;
+        // Avoid shifting an existing span during focused edits so typing adjacent to the ellipsis
+        // does not get swallowed or trigger extra relayouts on every keystroke.
+        if (!updateExistingSpan && mFocused && text.getSpanStart(EllipsisSpan.INSTANCE) >= 0) {
+            return;
+        }
 
-        if (shouldApplyBoundsEllipsis() && !mFocused) {
-            // If the toolbar variation is active, append trailing ellipsis at the very end for
-            // unfocused
-            // sessions. Preserves middle-chunk masking for standard focused editing behavior.
-            text.setSpan(
-                    EllipsisSpan.INSTANCE,
-                    maxLength,
-                    textLength,
-                    Editable.SPAN_INCLUSIVE_EXCLUSIVE);
+        int targetStart;
+        int targetEnd;
+        // A trailing ellipsis must never hide the end of the origin. When a bounds span already
+        // covers the path or the origin exceeds the limit, collapse the middle of the visible
+        // prefix so the end of the origin stays visible and layout stays capped at maxLength.
+        if (shouldApplyBoundsEllipsis()
+                && !mFocused
+                && boundsStart < 0
+                && mOriginEndIndex <= maxLength) {
+            targetStart = maxLength;
+            targetEnd = textLength;
         } else {
-            spanLeft = maxLength / 2;
+            int spanLeft = maxLength / 2;
+            targetStart = spanLeft;
+            targetEnd = visibleLength - spanLeft;
+        }
+
+        if (text.getSpanStart(EllipsisSpan.INSTANCE) != targetStart
+                || text.getSpanEnd(EllipsisSpan.INSTANCE) != targetEnd) {
             text.setSpan(
                     EllipsisSpan.INSTANCE,
-                    spanLeft,
-                    textLength - spanLeft,
+                    targetStart,
+                    targetEnd,
                     Editable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
     }
