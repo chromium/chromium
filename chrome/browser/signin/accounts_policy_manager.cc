@@ -137,6 +137,7 @@ class AccountsPolicyManager::DeleteProfileDialogManager
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (active_browser_ == browser) {
       active_browser_ = nullptr;
+      browser_did_become_inactive_subscription_ = {};
     }
   }
 
@@ -159,6 +160,8 @@ class AccountsPolicyManager::DeleteProfileDialogManager
     // Show the dialog.
     CHECK(active_browser_->GetWindow()->GetNativeWindow(),
           base::NotFatalUntil::M162);
+    base::WeakPtr<DeleteProfileDialogManager> weak_this =
+        weak_factory_.GetWeakPtr();
     chrome::MessageBoxResult result = chrome::ShowWarningMessageBoxSync(
         active_browser_->GetWindow()->GetNativeWindow(),
         l10n_util::GetStringUTF16(IDS_PROFILE_WILL_BE_DELETED_DIALOG_TITLE),
@@ -167,6 +170,12 @@ class AccountsPolicyManager::DeleteProfileDialogManager
             base::ASCIIToUTF16(primary_account_email_),
             base::ASCIIToUTF16(
                 gaia::ExtractDomainName(primary_account_email_))));
+    // `ShowWarningMessageBoxSync()` runs a nested run loop during which `this`
+    // may be destroyed (e.g. via `Shutdown()`) or `active_browser_` may be
+    // cleared if the browser is deactivated or closed.
+    if (!weak_this) {
+      return;
+    }
 
     switch (result) {
       case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_NO: {
@@ -174,11 +183,13 @@ class AccountsPolicyManager::DeleteProfileDialogManager
         // the dialog by clicking on the close "X" button, then re-present the
         // dialog (the user should not be able to interact with the
         // `active_browser_` window as the profile must be deleted).
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
-                           weak_factory_.GetWeakPtr(),
-                           active_browser_->GetWeakPtr()));
+        if (active_browser_) {
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &DeleteProfileDialogManager::ShowDeleteProfileDialog,
+                  weak_factory_.GetWeakPtr(), active_browser_->GetWeakPtr()));
+        }
         break;
       }
       case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_YES:
@@ -243,6 +254,9 @@ void AccountsPolicyManager::Initialize() {
 }
 
 void AccountsPolicyManager::Shutdown() {
+  weak_pointer_factory_.InvalidateWeakPtrs();
+  delete_profile_dialog_manager_.reset();
+  identity_manager_observation_.Reset();
   profile_pref_change_registrar_.RemoveAll();
   local_state_pref_registrar_.RemoveAll();
   signin_allowed_.Destroy();

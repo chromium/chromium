@@ -399,6 +399,7 @@ source_set("impl") {
       "accounts_policy_manager_factory.cc",
     ]
     deps += [
+      "//chrome/browser/ui:browser_manager_service",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/webui:profile_helper",
     ]
@@ -832,8 +833,10 @@ if (!is_android) {
         "//chrome/browser/profiles:profile",
         "//chrome/browser/search_engines",
         "//chrome/browser/sync",
+        "//chrome/browser/ui:browser_window_header",
         "//chrome/browser/ui:simple_message_box_internal",
         "//chrome/browser/ui:ui_features",
+        "//chrome/browser/ui/browser_active_state_manager",
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/signin",
         "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
@@ -858,6 +861,8 @@ if (!is_android) {
         "//google_apis",
         "//testing/gmock",
         "//testing/gtest",
+        "//ui/views",
+        "//ui/views:test_support",
       ]
 
       if (is_win) {
