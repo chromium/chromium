@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '../icons.html.js';
+import '../organizer_list_section_item.js';
+
+import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
+import type {OrganizerListSectionItem, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
 import {SplitTabLayout} from '../tab_search.mojom-webui.js';
 
 export function tokenToString(token: Token): string {
@@ -51,4 +58,19 @@ export function removeListeners(
     callbackRouter.removeListener(id);
   }
   listenerIds.length = 0;
+}
+
+export function getCompactZeroState(
+    title: string, icon: string, onClick: () => void): TemplateResult {
+  const item: OrganizerListSectionItem<unknown> = {
+    title: [title],
+    prefixIcon: {
+      element: html`<cr-icon icon="${icon}"></cr-icon>`,
+    },
+    size: CrUrlListItemSize.COMPACT,
+  };
+  return html`
+    <organizer-list-section-item .item="${item}" @click="${onClick}">
+    </organizer-list-section-item>
+  `;
 }

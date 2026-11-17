@@ -109,6 +109,27 @@ suite('OrganizerPanelAppTest', () => {
     await microtasksFinished();
   });
 
+  async function withVisibilityState(
+      fn: (setVisibility: (state: DocumentVisibilityState) => void) =>
+          Promise<void>| void) {
+    const originalDescriptor =
+        Object.getOwnPropertyDescriptor(document, 'visibilityState');
+    try {
+      await fn((state: DocumentVisibilityState) => {
+        Object.defineProperty(
+            document, 'visibilityState',
+            {value: state, configurable: true, writable: true});
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+    } finally {
+      if (originalDescriptor) {
+        Object.defineProperty(document, 'visibilityState', originalDescriptor);
+      } else {
+        Reflect.deleteProperty(document, 'visibilityState');
+      }
+    }
+  }
+
   test('renders search field with correct label and shortcut', () => {
     const searchField = app.$.searchField;
     assertEquals('Search Tabs', searchField.getAttribute('label'));
@@ -340,35 +361,21 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals('test search', app.$.list.searchQuery);
     assertEquals(50, app.$.list.scrollTop);
 
-    const originalDescriptor =
-        Object.getOwnPropertyDescriptor(document, 'visibilityState');
-    try {
-      Object.defineProperty(
-          document, 'visibilityState',
-          {value: 'hidden', configurable: true, writable: true});
-      document.dispatchEvent(new Event('visibilitychange'));
+    await withVisibilityState(async setVisibility => {
+      setVisibility('hidden');
       await microtasksFinished();
 
       assertEquals('', app.$.searchField.getValue());
       assertEquals('', app.$.list.searchQuery);
       assertEquals(0, app.$.list.scrollTop);
 
-      Object.defineProperty(
-          document, 'visibilityState',
-          {value: 'visible', configurable: true, writable: true});
-      document.dispatchEvent(new Event('visibilitychange'));
+      setVisibility('visible');
       await microtasksFinished();
 
       assertEquals('', app.$.searchField.getValue());
       assertEquals('', app.$.list.searchQuery);
       assertEquals(0, app.$.list.scrollTop);
-    } finally {
-      if (originalDescriptor) {
-        Object.defineProperty(document, 'visibilityState', originalDescriptor);
-      } else {
-        Reflect.deleteProperty(document, 'visibilityState');
-      }
-    }
+    });
   });
 
   test('clicking close button closes panel', async () => {
@@ -657,27 +664,6 @@ suite('OrganizerPanelAppTest', () => {
     foreignTabsDelegate.onItemClick(foreignTabItem);
     assertEquals(1, metrics.count('OrganizerPanel.OpenCrossDeviceTab'));
   });
-
-  async function withVisibilityState(
-      fn: (setVisibility: (state: DocumentVisibilityState) => void) =>
-          Promise<void>| void) {
-    const originalDescriptor =
-        Object.getOwnPropertyDescriptor(document, 'visibilityState');
-    try {
-      await fn((state: DocumentVisibilityState) => {
-        Object.defineProperty(
-            document, 'visibilityState',
-            {value: state, configurable: true, writable: true});
-        document.dispatchEvent(new Event('visibilitychange'));
-      });
-    } finally {
-      if (originalDescriptor) {
-        Object.defineProperty(document, 'visibilityState', originalDescriptor);
-      } else {
-        Reflect.deleteProperty(document, 'visibilityState');
-      }
-    }
-  }
 
   test('records StartSearch user action at most once per session', async () => {
     // Empty search does not record StartSearch.

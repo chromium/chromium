@@ -53,35 +53,22 @@ function getMostRecentTab(item: OpenTabsItem): Tab {
       item.tabs[0];
 }
 
-function tabIsAudioPlaying(tab: Tab): boolean {
-  return tab.alertStates.includes(TabAlertState.kAudioPlaying);
+function matchesAnyTab(
+    item: OpenTabsItem, predicate: (tab: Tab) => boolean): boolean {
+  return isSplitTab(item) ? item.tabs.some(predicate) : predicate(item.tab);
 }
 
-function tabIsAudioMuting(tab: Tab): boolean {
-  return tab.alertStates.includes(TabAlertState.kAudioMuting);
-}
-
-function tabHasAudioAlert(tab: Tab): boolean {
-  return tabIsAudioPlaying(tab) || tabIsAudioMuting(tab);
-}
-
-function isAudioPlaying(item: OpenTabsItem): boolean {
-  return isSplitTab(item) ? item.tabs.some(tabIsAudioPlaying) :
-                            tabIsAudioPlaying(item.tab);
-}
-
-function isAudioMuting(item: OpenTabsItem): boolean {
-  return isSplitTab(item) ? item.tabs.some(tabIsAudioMuting) :
-                            tabIsAudioMuting(item.tab);
+function hasAlertState(item: OpenTabsItem, state: TabAlertState): boolean {
+  return matchesAnyTab(item, tab => tab.alertStates.includes(state));
 }
 
 function hasAudioAlert(item: OpenTabsItem): boolean {
-  return isSplitTab(item) ? item.tabs.some(tabHasAudioAlert) :
-                            tabHasAudioAlert(item.tab);
+  return hasAlertState(item, TabAlertState.kAudioPlaying) ||
+      hasAlertState(item, TabAlertState.kAudioMuting);
 }
 
 export function isActive(item: OpenTabsItem): boolean {
-  return isSplitTab(item) ? item.tabs.some(tab => tab.active) : item.tab.active;
+  return matchesAnyTab(item, tab => tab.active);
 }
 
 export class OpenTabsDelegate implements
@@ -332,9 +319,9 @@ export class OpenTabsDelegate implements
 
     const description: OrganizerListSectionItemDescriptionPart[] = [];
     let statusText = getMostRecentTab(item).lastActiveElapsedText;
-    if (isAudioMuting(item)) {
+    if (hasAlertState(item, TabAlertState.kAudioMuting)) {
       statusText = loadTimeData.getString('audioMuted');
-    } else if (isAudioPlaying(item)) {
+    } else if (hasAlertState(item, TabAlertState.kAudioPlaying)) {
       statusText = loadTimeData.getString('currentlyPlaying');
     }
     if (statusText) {

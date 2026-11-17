@@ -19,9 +19,9 @@ ${this.inTrayView ? html`
 ` : ''}
 <cr-toolbar-search-field autofocus id="searchField" label="$i18n{searchTabs}"
     clear-label="$i18n{clearSearch}" search-delay="100" hide-clear-button
-    @search-changed="${this.onSearchChanged_}"
-    @search-icon-clicked="${this.onSearchIconClicked_}">
-  <div id="shortcut" slot="suffixElement" @click="${this.onShortcutClick_}">
+    @click="${this.onSearchFieldClick_}"
+    @search-changed="${this.onSearchChanged_}">
+  <div id="shortcut" slot="suffixElement">
     ${this.shortcut_}
   </div>
 </cr-toolbar-search-field>

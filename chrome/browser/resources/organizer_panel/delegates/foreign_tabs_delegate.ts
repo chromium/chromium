@@ -2,22 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '../icons.html.js';
-import '../organizer_list_section_item.js';
-
-import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserProxy, ForeignTab} from '../foreign_tabs.mojom-webui.js';
 import {browserProxyFactory} from '../foreign_tabs.mojom-webui.js';
 import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 
-import {getHostnameOrUrl} from './tab_delegate_utils.js';
+import {getCompactZeroState, getHostnameOrUrl} from './tab_delegate_utils.js';
 
 export class ForeignTabsDelegate implements
     OrganizerListSectionDelegate<ForeignTab> {
@@ -65,18 +59,9 @@ export class ForeignTabsDelegate implements
   }
 
   getZeroState(): TemplateResult {
-    const item: OrganizerListSectionItem<unknown> = {
-      title: [loadTimeData.getString('signInOnPhone')],
-      prefixIcon: {
-        element: html`<cr-icon icon="organizer-panel:login"></cr-icon>`,
-      },
-      size: CrUrlListItemSize.COMPACT,
-    };
-    return html`
-      <organizer-list-section-item .item="${item}"
-          @click="${this.onShowCrossDeviceSignInPromoClick_}">
-      </organizer-list-section-item>
-    `;
+    return getCompactZeroState(
+        loadTimeData.getString('signInOnPhone'), 'organizer-panel:login',
+        this.onShowCrossDeviceSignInPromoClick_);
   }
 
   onItemClick(item: OrganizerListSectionItem<ForeignTab>) {

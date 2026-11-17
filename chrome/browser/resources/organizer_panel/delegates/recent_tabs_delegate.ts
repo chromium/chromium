@@ -108,6 +108,10 @@ export class RecentTabsDelegate implements
 
   private async updateItems_() {
     const {profileData} = await this.browserProxy_.handler.getProfileData();
+    this.updateFromProfileData_(profileData);
+  }
+
+  private updateFromProfileData_(profileData: ProfileData) {
     this.tabs_ = profileData.recentlyClosedTabs;
     this.tabGroups_ = profileData.recentlyClosedTabGroups;
     this.splitViews_ = profileData.recentlyClosedSplitViews;
@@ -120,10 +124,7 @@ export class RecentTabsDelegate implements
   }
 
   private onTabsChanged_(profileData: ProfileData) {
-    this.tabs_ = profileData.recentlyClosedTabs;
-    this.tabGroups_ = profileData.recentlyClosedTabGroups;
-    this.splitViews_ = profileData.recentlyClosedSplitViews;
-    this.items_ = this.extractAndSortItems_();
+    this.updateFromProfileData_(profileData);
     this.notifyClient_();
   }
 
