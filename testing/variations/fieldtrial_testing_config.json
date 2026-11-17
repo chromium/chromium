@@ -12679,8 +12679,6 @@
     "LensComposeboxIdentityDelegation": [
         {
             "platforms": [
-                "android",
-                "android_desktop",
                 "ios"
             ],
             "experiments": [

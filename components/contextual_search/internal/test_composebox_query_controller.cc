@@ -67,7 +67,7 @@ TestComposeboxQueryController::TestComposeboxQueryController(
                                 template_url_service,
                                 variations_client,
                                 std::move(config_params),
-                                base::DoNothing()),
+                                GetAuthHeadersCallback()),
       enable_cluster_info_ttl_(enable_cluster_info_ttl) {}
 TestComposeboxQueryController::~TestComposeboxQueryController() = default;
 

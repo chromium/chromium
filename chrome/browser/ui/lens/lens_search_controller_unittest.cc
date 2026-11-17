@@ -6,6 +6,7 @@
 
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -31,6 +32,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#endif
 
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -119,6 +124,11 @@ class LensSearchControllerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_CHROMEOS)
+  // Identity delegation reads the profile's cookie manager, which needs the
+  // NetworkHandler on ChromeOS.
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
+#endif
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::test::ScopedFeatureList feature_list_;
   FakeVariationsClient fake_variations_client_;

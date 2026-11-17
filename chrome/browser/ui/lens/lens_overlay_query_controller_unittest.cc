@@ -718,9 +718,10 @@ TEST_F(LensOverlayQueryControllerTest,
 TEST_F(LensOverlayQueryControllerTest,
        ClusterInfoExpires_RefetchesClusterInfo) {
   feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      lens::features::kLensOverlayLatencyOptimizations,
-      {{"enable-cluster-info-optimization", "true"}});
+  feature_list_.InitWithFeaturesAndParameters(
+      {{lens::features::kLensOverlayLatencyOptimizations,
+        {{"enable-cluster-info-optimization", "true"}}}},
+      {lens::features::kLensComposeboxIdentityDelegation});
 
   // Prep the Primary account.
   signin::IdentityTestEnvironment identity_test_env;
