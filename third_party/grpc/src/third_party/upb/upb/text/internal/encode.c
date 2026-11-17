@@ -25,7 +25,7 @@
 #define CHK(x)      \
   do {              \
     if (!(x)) {     \
-      return false; \
+      return NULL;  \
     }               \
   } while (0)
 
