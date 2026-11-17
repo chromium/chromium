@@ -3628,7 +3628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.DuringSession.ToggleEndSessionSource"
-    enum="FocusModeEndSessionSource" expires_after="2026-11-20">
+    enum="FocusModeEndSessionSource" expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -3639,7 +3639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.EndingMomentBubbleAction"
-    enum="FocusModeEndingMomentBubbleClosedReason" expires_after="2026-11-20">
+    enum="FocusModeEndingMomentBubbleClosedReason" expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -3745,7 +3745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.InitialDuration" units="minutes"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -3766,7 +3766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.ToggleSource"
-    enum="FocusModeStartSessionSource" expires_after="2026-11-20">
+    enum="FocusModeStartSessionSource" expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -3789,7 +3789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TasksSelected" units="count"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
@@ -6326,7 +6326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.PowerSoundsController.UnpluggedBatteryLevel" units="%"
-    expires_after="2026-11-20">
+    expires_after="2027-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
