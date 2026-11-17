@@ -1838,6 +1838,15 @@ void AuthenticatorCommonImpl::GetPasswordOnlyCredential(
     CompleteGetAssertionRequest(status);
     return;
   }
+  if (is_cross_origin_iframe) {
+    mojo::ReportBadMessage(
+        "Password-only credentials cannot be requested from a cross-origin "
+        "iframe.");
+    req_state_->request_outcome = GetAssertionOutcome::kSecurityError;
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
 
   if (base::FeatureList::IsEnabled(device::kWebAuthnActorCheck) &&
       GetContentClient()->browser()->ShouldDisallowCredentialRequest(
@@ -2099,7 +2108,7 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
       requested_types |=
           static_cast<int>(blink::mojom::CredentialTypeFlags::kPublicKey);
     }
-    if (options->password) {
+    if (options->password && !is_cross_origin_iframe) {
       requested_types |=
           static_cast<int>(blink::mojom::CredentialTypeFlags::kPassword);
     }

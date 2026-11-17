@@ -809,7 +809,7 @@ void ChromeAuthenticatorRequestDelegate::SetHints(
 void ChromeAuthenticatorRequestDelegate::MaybeStartPasswordFetch(
     const url::Origin& origin,
     bool synthesize_tai) {
-  if (PasswordsUsable() && GetRenderFrameHost()->IsInPrimaryMainFrame()) {
+  if (PasswordsUsable()) {
     if (!password_ui_controller_) {
       password_ui_controller_ =
           std::make_unique<PasswordCredentialUIController>(

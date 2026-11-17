@@ -1573,6 +1573,40 @@ TEST_F(AuthenticatorContentBrowserClientTest,
             AuthenticatorStatus::IMMEDIATE_NOT_FOUND);
 }
 
+TEST_F(AuthenticatorContentBrowserClientTest,
+       GetPasswordOnlyCredentialCrossOriginIframeRejected) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  network::ParsedPermissionsPolicy policy(1);
+  policy[0].feature =
+      network::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet;
+  policy[0].matches_all_origins = true;
+  RenderFrameHost* child = RenderFrameHostTester::For(main_rfh())
+                               ->AppendChildWithPolicy("child", policy);
+  child = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://other.example.com"), child);
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator;
+  static_cast<RenderFrameHostImpl*>(child)->GetWebAuthenticationService(
+      authenticator.BindNewPipeAndPassReceiver());
+  base::test::TestFuture<void> mojo_error_future;
+  SetMojoErrorHandler(base::BindLambdaForTesting([&](const std::string& error) {
+    EXPECT_EQ(error,
+              "Password-only credentials cannot be requested from a "
+              "cross-origin iframe.");
+    mojo_error_future.SetValue();
+  }));
+
+  auto options = GetCredentialOptions::New();
+  options->mediation = blink::mojom::Mediation::IMMEDIATE;
+  options->password = true;
+  base::test::TestFuture<blink::mojom::GetCredentialResponsePtr> future;
+  authenticator->GetCredential(std::move(options), future.GetCallback());
+  EXPECT_TRUE(mojo_error_future.Wait());
+  ASSERT_TRUE(future.Get()->is_get_assertion_response());
+  EXPECT_EQ(future.Get()->get_get_assertion_response()->status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
 TEST_F(AuthenticatorContentBrowserClientTest, TestGetAssertionCancel) {
   NavigateAndCommit(GURL(kTestOrigin1));
   test_client_.simulate_user_cancelled_ = true;

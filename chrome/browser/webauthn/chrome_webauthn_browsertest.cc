@@ -1220,12 +1220,15 @@ class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
 
   class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
    public:
-    virtual ~Observer() = default;
+    virtual ~Observer() {
+      PasswordCredentialFetcher::SetInstanceForTesting(nullptr);
+    }
 
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       if (password_fetcher_) {
-        delegate->SetPasswordFetcherForTesting(std::move(password_fetcher_));
+        PasswordCredentialFetcher::SetInstanceForTesting(
+            password_fetcher_.release());
       }
     }
 
@@ -1541,6 +1544,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPasswordDeduplication) {
   form->url = GURL("https://www.example.com");
   passwords.push_back(std::move(form));
   fetcher->SetPasswords(std::move(passwords));
+  fetcher->SetCallCallbackImmediately(true);
   observer_->SetPasswordFetcher(std::move(fetcher));
 
   content::WebContents* web_contents =
@@ -1632,6 +1636,133 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest,
               testing::ElementsAre(static_cast<int64_t>(
                   webauthn::metrics::AmbientUkmBubbleOutcome::
                       kSelectedDefaultInUnexpandedBubble)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest,
+                       AmbientUICrossOriginSubframeIgnoresPassword) {
+  auto fetcher = std::make_unique<FakePasswordCredentialFetcher>(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame());
+  PasswordCredentialFetcher::PasswordCredentials passwords;
+  auto form = std::make_unique<password_manager::PasswordForm>();
+  form->username_value = u"subframe_user";
+  form->password_value = password_manager::PasswordString(u"password");
+  form->url = GURL("https://sub.example.com");
+  passwords.push_back(std::move(form));
+  fetcher->SetPasswords(std::move(passwords));
+  fetcher->SetCallCallbackImmediately(true);
+  PasswordCredentialFetcher::SetInstanceForTesting(fetcher.get());
+
+  virtual_device_factory_->mutable_state()->InjectResidentKey(
+      std::vector<uint8_t>{1, 2, 3, 4}, "sub.example.com",
+      std::vector<uint8_t>{5, 6, 7, 8}, "flandre", "Flandre Scarlet");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL subframe_url =
+      https_server_.GetURL("sub.example.com", "/title1.html");
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      content::JsReplace(
+          "const f = document.createElement('iframe');"
+          "f.allow = 'publickey-credentials-get';"
+          "f.src = $1;"
+          "new Promise(r => { f.onload = r; document.body.appendChild(f); });",
+          subframe_url)));
+
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(subframe, nullptr);
+  ASSERT_EQ(subframe->GetLastCommittedURL(), subframe_url);
+
+  content::DOMMessageQueue message_queue(web_contents);
+  permissions::PermissionRequestObserver permission_observer(web_contents);
+
+  content::ExecuteScriptAsync(subframe, kAmbientUIGetRequestWithPassword);
+  permission_observer.Wait();
+  ASSERT_TRUE(permission_observer.request_shown());
+  EXPECT_FALSE(fetcher->fetch_passwords_called());
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ASSERT_FALSE(permission_request_manager->Requests().empty());
+  auto* ambient_request =
+      static_cast<ambient_signin::AmbientLoginPermissionRequest*>(
+          permission_request_manager->Requests().front().get());
+  ASSERT_EQ(ambient_request->credentials().size(), 1u);
+  EXPECT_EQ(ambient_request->credentials()[0].type,
+            ambient_signin::CredentialType::kPasskey);
+
+  permission_request_manager->Accept(std::monostate());
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
+  PasswordCredentialFetcher::SetInstanceForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest,
+                       AmbientUISameOriginSubframeIncludesPassword) {
+  auto fetcher = std::make_unique<FakePasswordCredentialFetcher>(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame());
+  PasswordCredentialFetcher::PasswordCredentials passwords;
+  auto form = std::make_unique<password_manager::PasswordForm>();
+  form->username_value = u"password_only_user";
+  form->password_value = password_manager::PasswordString(u"password");
+  form->url = GURL("https://www.example.com");
+  passwords.push_back(std::move(form));
+  fetcher->SetPasswords(std::move(passwords));
+  fetcher->SetCallCallbackImmediately(true);
+  observer_->SetPasswordFetcher(std::move(fetcher));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL subframe_url =
+      https_server_.GetURL("www.example.com", "/title2.html");
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      content::JsReplace(
+          "const f = document.createElement('iframe');"
+          "f.src = $1;"
+          "new Promise(r => { f.onload = r; document.body.appendChild(f); });",
+          subframe_url)));
+
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(subframe, nullptr);
+  ASSERT_EQ(subframe->GetLastCommittedURL(), subframe_url);
+
+  content::DOMMessageQueue message_queue(web_contents);
+  permissions::PermissionRequestObserver permission_observer(web_contents);
+
+  content::ExecuteScriptAsync(subframe, kAmbientUIGetRequestWithPassword);
+  permission_observer.Wait();
+  ASSERT_TRUE(permission_observer.request_shown());
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ASSERT_FALSE(permission_request_manager->Requests().empty());
+  auto* ambient_request =
+      static_cast<ambient_signin::AmbientLoginPermissionRequest*>(
+          permission_request_manager->Requests().front().get());
+  ASSERT_EQ(ambient_request->credentials().size(), 2u);
+  EXPECT_EQ(ambient_request->credentials()[0].type,
+            ambient_signin::CredentialType::kPasskey);
+  EXPECT_EQ(ambient_request->credentials()[1].type,
+            ambient_signin::CredentialType::kPassword);
+
+  permission_request_manager->Accept(std::monostate());
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
 }
 
 class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {

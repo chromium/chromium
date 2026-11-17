@@ -36,7 +36,7 @@ PasswordFormDigest GetSynthesizedFormForUrl(GURL url) {
 std::unique_ptr<PasswordCredentialFetcher> PasswordCredentialFetcher::Create(
     RenderFrameHost* rfh) {
   if (instance_for_testing_) {
-    return base::WrapUnique(instance_for_testing_);
+    return base::WrapUnique(std::exchange(instance_for_testing_, nullptr));
   }
   return base::WrapUnique(new PasswordCredentialFetcher(rfh));
 }
