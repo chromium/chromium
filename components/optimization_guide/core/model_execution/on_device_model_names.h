@@ -18,10 +18,11 @@ namespace optimization_guide {
 // tools/metrics/histograms/metadata/optimization/enums.xml.
 enum class OnDeviceBaseModel {
   kUnknown = 0,
-  kXxs = 1,
-  kXs = 2,
-  kV2Nano = 3,
-  kV3Nano = 4,
+  // Base models served by a legacy model manager, no longer emitted.
+  // kXxs = 1,
+  // kXs = 2,
+  // kV2Nano = 3,
+  // kV3Nano = 4,
   kV3NanoCpu = 5,
   kV3NanoGpu = 6,
   kGemma4 = 7,

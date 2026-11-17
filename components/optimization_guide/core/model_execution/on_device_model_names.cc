@@ -9,8 +9,6 @@ namespace optimization_guide {
 // LINT.IfChange(OnDeviceBaseModelName)
 std::string ConvertBaseModelToUmaModelName(OnDeviceBaseModel base_model) {
   switch (base_model) {
-    case OnDeviceBaseModel::kV3Nano:
-      return "V3Nano";
     case OnDeviceBaseModel::kV3NanoCpu:
       return "V3NanoCpu";
     case OnDeviceBaseModel::kV3NanoGpu:
@@ -32,9 +30,6 @@ std::string ConvertBaseModelToUmaModelName(OnDeviceBaseModel base_model) {
     case OnDeviceBaseModel::kLayaMlWint8:
       return "LayaMlWint8";
     case OnDeviceBaseModel::kUnknown:
-    case OnDeviceBaseModel::kXxs:
-    case OnDeviceBaseModel::kXs:
-    case OnDeviceBaseModel::kV2Nano:
       return "Unknown";
   }
 }
@@ -80,10 +75,6 @@ std::optional<OnDeviceModelCategory> GetOnDeviceModelCategory(
     case OnDeviceBaseModel::kSpeechRecognitionSmallExpert:
       return OnDeviceModelCategory::kLiveTranscription;
     case OnDeviceBaseModel::kUnknown:
-    case OnDeviceBaseModel::kXxs:
-    case OnDeviceBaseModel::kXs:
-    case OnDeviceBaseModel::kV2Nano:
-    case OnDeviceBaseModel::kV3Nano:
     case OnDeviceBaseModel::kClassifier:
     case OnDeviceBaseModel::kLanguageDetection:
     case OnDeviceBaseModel::kProofreaderSmallExpert:

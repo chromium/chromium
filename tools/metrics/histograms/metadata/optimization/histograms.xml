@@ -50,8 +50,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SummarizerSmallExpert"
       summary="Summarizer Small Expert base model"/>
   <variant name="Unknown" summary="Unknown base model"/>
-  <variant name="V3Nano"
-      summary="General nano V3 served by the single model component"/>
   <variant name="V3NanoCpu" summary="Nano V3 with CPU backend"/>
   <variant name="V3NanoGpu" summary="Nano V3 with GPU backend"/>
 </variants>
@@ -1467,47 +1465,6 @@ chromium-metrics-reviews@google.com.
     Recorded when the on-device model installer is registered near startup and
     only if the device failed the disk space check.
   </summary>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.{Event}.{Criteria}"
-    enum="Boolean" expires_after="2027-04-14">
-  <owner>holte@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    Records evaluation of various criteria required for on-device model
-    installation. {Event}
-  </summary>
-  <token key="Criteria">
-    <variant name="All" summary="All criteria have been met"/>
-    <variant name="DeviceCapability"
-        summary="The device is capable of running an on-device model"/>
-    <variant name="DiskSpace"
-        summary="There is sufficient disk space to install"/>
-    <variant name="EnabledByEnterprisePolicy"
-        summary="model installation is enabled by enterprise policy"/>
-    <variant name="EnabledByFeature"
-        summary="model installation is enabled by feature"/>
-    <variant name="EnabledByUserSetting"
-        summary="model installation is enabled by user setting"/>
-    <variant name="FeatureUse"
-        summary="There has been recent feature use that could benefit from an
-                 on-device model"/>
-    <variant name="IsBackground"
-        summary="The install mode is background (as opposed to on-demand)"/>
-  </token>
-  <token key="Event">
-    <variant name="AtAttemptedUse"
-        summary="Recorded when a feature is being used that could benefit
-                 from the on-device model."/>
-    <variant name="AtRegistration"
-        summary="Recorded once shortly after startup, regardless of whether
-                 the on-device model is currently installed."/>
-    <variant name="InitialInstall"
-        summary="Recorded when the model is first eligible for install. This
-                 is not recorded for users who have already installed the
-                 model."/>
-  </token>
 </histogram>
 
 <histogram

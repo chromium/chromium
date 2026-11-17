@@ -72,12 +72,6 @@ TEST(OnDeviceModelUiMetadataTest, LiveTranscriptionModel) {
 TEST(OnDeviceModelUiMetadataTest, HiddenModelsReturnNullopt) {
   EXPECT_FALSE(
       GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kUnknown).has_value());
-  EXPECT_FALSE(GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kXxs).has_value());
-  EXPECT_FALSE(GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kXs).has_value());
-  EXPECT_FALSE(
-      GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kV2Nano).has_value());
-  EXPECT_FALSE(
-      GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kV3Nano).has_value());
   EXPECT_FALSE(
       GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kClassifier).has_value());
   EXPECT_FALSE(GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kLanguageDetection)

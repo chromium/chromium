@@ -98,10 +98,6 @@ std::u16string GetBaseModelDisplayName(OnDeviceBaseModel base_model) {
     case OnDeviceBaseModel::kSpeechRecognitionSmallExpert:
       return u"Live Caption and Transcription";
     case OnDeviceBaseModel::kUnknown:
-    case OnDeviceBaseModel::kXxs:
-    case OnDeviceBaseModel::kXs:
-    case OnDeviceBaseModel::kV2Nano:
-    case OnDeviceBaseModel::kV3Nano:
     case OnDeviceBaseModel::kClassifier:
     case OnDeviceBaseModel::kLanguageDetection:
     case OnDeviceBaseModel::kLayaEnWint8:
