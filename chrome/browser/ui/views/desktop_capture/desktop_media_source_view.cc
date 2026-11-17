@@ -6,9 +6,12 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -58,6 +61,17 @@ DesktopMediaSourceView::DesktopMediaSourceView(
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   image_view_ = AddChildView(std::make_unique<views::ImageView>());
   label_ = AddChildView(std::make_unique<views::Label>());
+  blocked_label_ = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_BLOCKED_PREVIEW)));
+  blocked_label_->SetCustomTooltipText(
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE));
+  blocked_label_->SetEnabledColor(ui::kColorSysOnTonalContainer);
+  blocked_label_->SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysTonalContainer,
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::Emphasis::kMedium)));
+  blocked_label_->SetBackgroundColor(ui::kColorSysTonalContainer);
+  blocked_label_->SetVisible(false);
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCornerRadius(
@@ -88,7 +102,29 @@ void DesktopMediaSourceView::SetThumbnail(const gfx::ImageSkia& thumbnail) {
 }
 
 void DesktopMediaSourceView::SetIcon(const gfx::ImageSkia& icon) {
+  icon_ = icon;
   icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
+}
+
+void DesktopMediaSourceView::SetSharingBlocked(bool blocked) {
+  if (blocked == sharing_blocked_) {
+    return;
+  }
+  sharing_blocked_ = blocked;
+  image_view_->SetVisible(!blocked);
+  blocked_label_->SetVisible(blocked);
+  icon_view_->SetImage(blocked ? ui::ImageModel::FromVectorIcon(
+                                     features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kDomainIcon
+                                         : vector_icons::kBusinessOldIcon,
+                                     ui::kColorIcon, icon_view_->width())
+                               : ui::ImageModel::FromImageSkia(icon_));
+  if (blocked) {
+    GetViewAccessibility().SetDescription(
+        l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE));
+  } else {
+    GetViewAccessibility().RemoveDescription();
+  }
 }
 
 void DesktopMediaSourceView::SetSelected(bool selected) {
@@ -130,6 +166,7 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
 
 void DesktopMediaSourceView::SetStyle(DesktopMediaSourceViewStyle style) {
   image_view_->SetBoundsRect(style.image_rect);
+  blocked_label_->SetBoundsRect(style.image_rect);
   icon_view_->SetBoundsRect(style.icon_rect);
   icon_view_->SetImageSize(style.icon_rect.size());
   label_->SetBoundsRect(style.label_rect);

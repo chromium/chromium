@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
@@ -69,6 +70,9 @@ class DesktopMediaSourceView : public views::View {
   void SetName(const std::u16string& name);
   void SetThumbnail(const gfx::ImageSkia& thumbnail);
   void SetIcon(const gfx::ImageSkia& icon);
+  // Shows that sharing this source is blocked by the admin, instead of its
+  // thumbnail and icon.
+  void SetSharingBlocked(bool blocked);
 
   // Id for the source shown by this View.
   const content::DesktopMediaID& source_id() const { return source_id_; }
@@ -103,6 +107,10 @@ class DesktopMediaSourceView : public views::View {
   raw_ptr<views::ImageView> icon_view_;
   raw_ptr<views::ImageView> image_view_;
   raw_ptr<views::Label> label_;
+  raw_ptr<views::Label> blocked_label_;
+
+  gfx::ImageSkia icon_;
+  bool sharing_blocked_ = false;
 
   bool selected_;
 };
