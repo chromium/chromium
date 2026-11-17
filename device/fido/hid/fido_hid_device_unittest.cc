@@ -10,6 +10,7 @@
 #include <cstring>
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -27,12 +28,16 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_device.h"
+#include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/hid/fido_hid_message.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/hid/hid_device_filter.h"
@@ -309,6 +314,11 @@ TEST_F(FidoHidDeviceTest, TestDeviceError) {
   TestDeviceFuture future_3;
   device->DeviceTransact(GetMockDeviceRequest(), future_3.GetCallback());
   FakeFidoHidConnection::mock_connection_error_ = false;
+
+  // `DeviceTransact` must not hairpin callbacks when already in an error state.
+  EXPECT_FALSE(future_1.IsReady());
+  EXPECT_FALSE(future_2.IsReady());
+  EXPECT_FALSE(future_3.IsReady());
 
   EXPECT_EQ(FidoDevice::State::kDeviceError, device->state_);
   EXPECT_FALSE(future_1.Get());
@@ -1141,6 +1151,68 @@ TEST_F(FidoHidDeviceTest, RetryAfterU2fChannelBusy) {
   const auto& value = test_device_future.Get();
   ASSERT_TRUE(value);
   EXPECT_THAT(*value, testing::ElementsAreArray(kU2fMockResponseData));
+}
+
+// Regression test for https://crbug.com/567370135 (heap-use-after-free under
+// ASAN). Tests that when a CTAP2 HID device returns ERR_INVALID_LEN during
+// multi-batch silent credential probing, it transitions to `State::kMsgError`
+// and fails remaining batches cleanly.
+TEST_F(FidoHidDeviceTest, GetAssertionMultiBatchMessageError) {
+  // CTAPHID_ERROR(0xBF), payload length 1, ERR_INVALID_LEN(0x03).
+  constexpr uint8_t kHidInvalidLengthError[] = {0xBF, 0x00, 0x01, 0x03};
+
+  testing::Sequence sequence;
+  std::unique_ptr<MockFidoHidConnection> mock_connection =
+      CreateHidConnectionWithHidInitExpectations(
+          kChannelId, fake_hid_manager_.get(), sequence);
+
+  // AuthenticatorGetInfo request and response.
+  mock_connection->ExpectHidWriteWithCommand(sequence,
+                                             FidoHidDeviceCommand::kCbor);
+  SetupReadExpectation(mock_connection.get(), FidoHidDeviceCommand::kCbor,
+                       test_data::kTestAuthenticatorGetInfoResponse, sequence);
+
+  // First silent GetAssertion probe (spans two HID packets) receives
+  // ERR_INVALID_LEN, transitioning the device to `State::kMsgError`.
+  EXPECT_CALL(*mock_connection, WritePtr(_, _, _))
+      .Times(testing::AtLeast(1))
+      .InSequence(sequence)
+      .WillRepeatedly([](auto&&, const std::vector<uint8_t>&,
+                         device::mojom::HidConnection::WriteCallback* cb) {
+        std::move(*cb).Run(true);
+      });
+  mock_connection->ExpectReadAndReplyWith(
+      sequence,
+      CreateMockResponseWithChannelId(mock_connection->connection_channel_id(),
+                                      kHidInvalidLengthError));
+
+  FidoDeviceEnumerateFuture enumerate_future(hid_manager_.get());
+  hid_manager_->GetDevices(enumerate_future.GetCallback());
+  EXPECT_TRUE(enumerate_future.Wait());
+  std::unique_ptr<FidoHidDevice> device = enumerate_future.TakeSingleDevice();
+
+  FidoDeviceAuthenticator authenticator(std::move(device));
+  base::test::TestFuture<void> init_future;
+  authenticator.InitializeAuthenticator(init_future.GetCallback());
+  ASSERT_TRUE(init_future.Wait());
+
+  CtapGetAssertionRequest request(test_data::kRelyingPartyId,
+                                  test_data::kClientDataJson);
+  request.allow_list.emplace_back(CredentialType::kPublicKey,
+                                  std::vector<uint8_t>{1, 2, 3, 4});
+  request.allow_list.emplace_back(CredentialType::kPublicKey,
+                                  std::vector<uint8_t>{5, 6, 7, 8});
+
+  base::test::TestFuture<GetAssertionStatus,
+                         std::vector<AuthenticatorGetAssertionResponse>>
+      assertion_future;
+  authenticator.GetAssertion(std::move(request), CtapGetAssertionOptions(),
+                             assertion_future.GetCallback());
+  ASSERT_TRUE(assertion_future.Wait());
+  EXPECT_EQ(FidoDevice::State::kMsgError,
+            authenticator.device()->state_for_testing());
+  EXPECT_EQ(GetAssertionStatus::kUserConsentButCredentialNotRecognized,
+            std::get<0>(assertion_future.Get()));
 }
 
 }  // namespace device
