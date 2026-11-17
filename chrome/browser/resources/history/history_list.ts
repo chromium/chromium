@@ -790,7 +790,8 @@ export class HistoryListElement extends HistoryListElementBase {
 
   private isHistoryFilteringEnabled_(): boolean {
     return loadTimeData.getBoolean('isBrowsingHistoryFilterByActorEnabled') ||
-        loadTimeData.getBoolean('isBrowsingHistoryFilterByDeviceEnabled');
+        loadTimeData.getBoolean('isBrowsingHistoryFilterByDeviceEnabled') ||
+        loadTimeData.getBoolean('isBrowsingHistoryFilterByTimePeriodEnabled');
   }
 
   private hasActiveFilter_(): boolean {

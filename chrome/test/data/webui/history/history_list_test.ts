@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {CrA11yAnnouncerMessagesSentEvent, HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, CriticalActionType, CrRouter, OpenConversationResult} from 'chrome://history/history.js';
+import {BrowserProxyImpl, CriticalActionType, CrRouter, OpenConversationResult, TimePeriodOptionId} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -338,6 +338,7 @@ suite('HistoryListTest', function() {
     loadTimeData.overrideValues({
       isBrowsingHistoryFilterByActorEnabled: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     await finishSetup([]);
     await microtasksFinished();
@@ -367,6 +368,7 @@ suite('HistoryListTest', function() {
     loadTimeData.overrideValues({
       isBrowsingHistoryFilterByActorEnabled: true,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: true,
     });
     await finishSetup([]);
     await microtasksFinished();
@@ -431,6 +433,37 @@ suite('HistoryListTest', function() {
         loadTimeData.getString('noMatchingResults'),
         element.$.noResults.textContent.trim());
 
+    // Filtering by time period alone when only time-period filtering is
+    // enabled.
+    loadTimeData.overrideValues({
+      isBrowsingHistoryFilterByActorEnabled: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: true,
+    });
+    element.searchedTerm = '';
+    element.queryState = {
+      ...element.queryState,
+      includeUserVisits: true,
+      includeActorVisits: true,
+      clientIds: [],
+      timePeriodOptionId: TimePeriodOptionId.kAllTime,
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noResults'),
+        element.$.noResults.textContent.trim());
+
+    element.queryState = {
+      ...element.queryState,
+      timePeriodOptionId: TimePeriodOptionId.kYesterday,
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noMatchingResults'),
+        element.$.noResults.textContent.trim());
+
     // Resetting all filters and the search query restores the default
     // empty-state message.
     element.searchedTerm = '';
@@ -439,6 +472,7 @@ suite('HistoryListTest', function() {
       includeUserVisits: true,
       includeActorVisits: true,
       clientIds: [],
+      timePeriodOptionId: TimePeriodOptionId.kAllTime,
     };
     await microtasksFinished();
     assertFalse(element.$.noResults.hidden);
@@ -1355,6 +1389,7 @@ suite('HistoryListTest', function() {
     loadTimeData.overrideValues({
       isBrowsingHistoryFilterByActorEnabled: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     await finishSetup([]);
     assertFalse(element.$.noResults.hidden);
