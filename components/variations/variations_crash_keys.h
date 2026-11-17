@@ -39,12 +39,21 @@ extern const char kNumRuntimeFieldTrialOverridesKey[];
 
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedVersionKey[];
 
+// Indicates whether crash keys are being initialized in the browser process or
+// a child process. On Android and ChromeOS, active variations are only written
+// to disk from the browser process.
+enum class ProcessType {
+  kBrowser,
+  kChild,
+};
+
 // Initializes crash keys that report the current set of active FieldTrial
 // groups (aka variations) for crash reports. After initialization, an observer
 // will be registered on FieldTrialList that will keep the crash keys up-to-date
 // with newly-activated trials. Synthetic trials must be manually updated using
 // the API below.
-COMPONENT_EXPORT(VARIATIONS) void InitCrashKeys();
+COMPONENT_EXPORT(VARIATIONS)
+void InitCrashKeys(ProcessType process_type = ProcessType::kBrowser);
 
 // Resets and reinitializes crash keys that report the current set of active
 // FieldTrial groups for crash reports. This is used in certain process types

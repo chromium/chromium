@@ -4,10 +4,14 @@
 
 #include "components/variations/variations_crash_keys_android.h"
 
+#include <string>
+#include <utility>
+
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -17,10 +21,6 @@
 #include "components/crash/android/anr_collector_jni_headers/AnrCollector_jni.h"
 
 namespace {
-
-// This is defined in content/public/common/content_switches.h, which cannot be
-// included here because of cyclic dependencies.
-constexpr const char kProcessTypeSwitchName[] = "type";
 
 // Turn the variations::ExperimentListInfo struct into a string and pass it to
 // the JNI function, which will save the string to a file on disk and save the
@@ -45,17 +45,13 @@ void SaveVariationsForAnrReporting(
     scoped_refptr<base::SequencedTaskRunner> runner,
     ExperimentListInfo info) {
   // ANR collection and reporting is only available on R and above.
-  bool sdk_version_enough = base::android::android_info::sdk_int() >=
-                            base::android::android_info::SDK_VERSION_R;
-  bool is_browser_process = base::CommandLine::ForCurrentProcess()
-                                ->GetSwitchValueASCII(kProcessTypeSwitchName)
-                                .empty();
-  if (sdk_version_enough && is_browser_process) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_R) {
     // Since a second call to SaveVariations() overwrites the value saved by the
     // first call, we can safely cancel all the previously posted tasks here.
     tracker->TryCancelAll();
     tracker->PostTask(runner.get(), FROM_HERE,
-                      base::BindOnce(&SaveVariations, info));
+                      base::BindOnce(&SaveVariations, std::move(info)));
   }
 }
 

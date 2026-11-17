@@ -58,8 +58,10 @@ ChildProcessFieldTrialSyncer::~ChildProcessFieldTrialSyncer() = default;
 
 void ChildProcessFieldTrialSyncer::Init(
     const base::FieldTrialList::ActiveTrialNames& initially_active_trials) {
-  // Set up initial set of crash dump data for field trials in this process.
-  variations::InitCrashKeys();
+  // Set up initial set of crash dump data for field trials in this child
+  // process. Passing ProcessType::kChild avoids browser-only file reporting on
+  // Android and ChromeOS.
+  variations::InitCrashKeys(variations::ProcessType::kChild);
 
   // Listen for field trial activations to report them to the browser.
   // All trials (including low anonymity ones) are required so that the browser

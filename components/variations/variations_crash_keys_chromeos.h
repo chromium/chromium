@@ -9,13 +9,19 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/variations/variations_crash_keys.h"
 
+namespace base {
+class CancelableTaskTracker;
+}
+
 namespace variations {
 
-// On a separate thread, report the provided crash keys to Chrome OS using a
-// .variant-list.txt in the user's home directory, or /home/chronos if no user
-// is logged in.
+// On `runner`, reports the provided crash keys to ChromeOS using a
+// .variations-list.txt file in the user's home directory, or /home/chronos if
+// no user is logged in. Uses `tracker` to cancel any previously posted writes
+// that have not started to run.
 COMPONENT_EXPORT(VARIATIONS)
-void ReportVariationsToChromeOs(scoped_refptr<base::SequencedTaskRunner> runner,
+void ReportVariationsToChromeOs(base::CancelableTaskTracker* tracker,
+                                scoped_refptr<base::SequencedTaskRunner> runner,
                                 ExperimentListInfo info);
 
 }  // namespace variations

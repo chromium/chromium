@@ -4,14 +4,18 @@
 
 #include "components/variations/variations_crash_keys_chromeos.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 
 namespace variations {
 
@@ -41,10 +45,15 @@ void WriteVariationsToFile(ExperimentListInfo info) {
 
 }  // namespace
 
-void ReportVariationsToChromeOs(scoped_refptr<base::SequencedTaskRunner> runner,
+void ReportVariationsToChromeOs(base::CancelableTaskTracker* tracker,
+                                scoped_refptr<base::SequencedTaskRunner> runner,
                                 ExperimentListInfo info) {
-  // On a thread in the background, write variants to a file.
-  runner->PostTask(FROM_HERE, base::BindOnce(&WriteVariationsToFile, info));
+  // Since a subsequent call to WriteVariationsToFile() overwrites the value
+  // saved by an earlier call, cancel any previously posted tasks that have not
+  // started running yet before posting the latest snapshot.
+  tracker->TryCancelAll();
+  tracker->PostTask(runner.get(), FROM_HERE,
+                    base::BindOnce(&WriteVariationsToFile, std::move(info)));
 }
 
 }  // namespace variations

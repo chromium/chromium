@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
@@ -26,11 +27,11 @@
 #include "components/variations/variations_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/thread_pool.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/task/cancelable_task_tracker.h"
 #include "components/variations/variations_crash_keys_android.h"
 #endif
 
@@ -102,7 +103,7 @@ class VariationsCrashKeys final
     : public base::FieldTrialList::Observer,
       public base::RuntimeFieldTrialOverrides::Observer {
  public:
-  VariationsCrashKeys();
+  explicit VariationsCrashKeys(ProcessType process_type);
 
   VariationsCrashKeys(const VariationsCrashKeys&) = delete;
   VariationsCrashKeys& operator=(const VariationsCrashKeys&) = delete;
@@ -128,6 +129,10 @@ class VariationsCrashKeys final
   // Gets the list of experiments and number of experiments in the format we
   // want to place it in the crash keys.
   ExperimentListInfo GetExperimentListInfo();
+
+  // Returns whether this instance was initialized for the browser or a child
+  // process. Used by RecreateCrashKeys() to preserve the process type.
+  ProcessType process_type() const { return process_type_; }
 
  private:
   // Populates `active_trials_` with all the currently active trials.
@@ -155,17 +160,19 @@ class VariationsCrashKeys final
   // observer calls that happen on a different thread.
   scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
 
+  // Whether this instance was initialized in the browser process or a child
+  // process.
+  const ProcessType process_type_;
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Task runner corresponding to a background thread, used for tasks that may
-  // block.
+  // block. Null in child processes.
   scoped_refptr<base::SequencedTaskRunner> background_thread_task_runner_;
-#endif  // IS_CHROMEOS || IS_ANDROID
 
-#if BUILDFLAG(IS_ANDROID)
   // A task tracker that allows us to cancel any tasks that have been posted
   // but have not started to run.
   base::CancelableTaskTracker cancelable_task_tracker_;
-#endif  // IS_ANDROID
+#endif  // IS_CHROMEOS || IS_ANDROID
 
   // A serialized string containing the variations state.
   std::string variations_string_;
@@ -189,7 +196,8 @@ class VariationsCrashKeys final
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-VariationsCrashKeys::VariationsCrashKeys() {
+VariationsCrashKeys::VariationsCrashKeys(ProcessType process_type)
+    : process_type_(process_type) {
   // Set |ui_thread_task_runner_| *before* observering field trials. Otherwise,
   // it would be possible for a field trial to be activated on a different
   // thread, calling OnFieldTrialGroupFinalized(), and accessing
@@ -197,10 +205,13 @@ VariationsCrashKeys::VariationsCrashKeys() {
   ui_thread_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Set |background_thread_task_runner_| before observering field trials for
-  // the same reason mentioned above.
-  background_thread_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
+  if (process_type_ == ProcessType::kBrowser) {
+    // Set |background_thread_task_runner_| before observering field trials for
+    // the same reason mentioned above.
+    background_thread_task_runner_ =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
+  }
 #endif  // IS_CHROMEOS || IS_ANDROID
 
   // Observe field trials before filling the crash key with the currently
@@ -387,14 +398,23 @@ void VariationsCrashKeys::UpdateCrashKeys() {
         variations::switches::kVariationsSeedVersion));
   }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  // Android and ChromeOS are the only platforms where VariationsCrashKeys
+  // persists active variations to disk (for OS-level ANR and crash reporting).
+  // Only write from the browser process: child processes have an incomplete
+  // view of active variations (e.g. missing synthetic trials) and should not
+  // overwrite the browser's file.
+  if (process_type_ == ProcessType::kBrowser) {
 #if BUILDFLAG(IS_ANDROID)
-  SaveVariationsForAnrReporting(&cancelable_task_tracker_,
-                                background_thread_task_runner_, info);
-#endif  // IS_ANDROID
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ReportVariationsToChromeOs(background_thread_task_runner_, info);
-#endif  // IS_CHROMEOS
+    SaveVariationsForAnrReporting(&cancelable_task_tracker_,
+                                  background_thread_task_runner_,
+                                  std::move(info));
+#elif BUILDFLAG(IS_CHROMEOS)
+    ReportVariationsToChromeOs(&cancelable_task_tracker_,
+                               background_thread_task_runner_, std::move(info));
+#endif
+  }
+#endif  // IS_ANDROID || IS_CHROMEOS
 }
 
 void VariationsCrashKeys::OnSyntheticTrialsChanged(
@@ -425,17 +445,19 @@ const char kRuntimeFieldTrialOverridesKey[] = "variations-runtime-overrides";
 const char kNumRuntimeFieldTrialOverridesKey[] =
     "num-variations-runtime-overrides";
 
-void InitCrashKeys() {
+void InitCrashKeys(ProcessType process_type) {
   DCHECK(!g_variations_crash_keys);
-  g_variations_crash_keys = new VariationsCrashKeys();
+  g_variations_crash_keys = new VariationsCrashKeys(process_type);
   ANNOTATE_LEAKING_OBJECT_PTR(g_variations_crash_keys);
 }
 
 void RecreateCrashKeys() {
   DCHECK(g_variations_crash_keys);
+  // Preserve the process type across recreation (e.g. in macOS app shims).
+  const ProcessType process_type = g_variations_crash_keys->process_type();
   delete g_variations_crash_keys;
   g_variations_crash_keys = nullptr;
-  InitCrashKeys();
+  InitCrashKeys(process_type);
 }
 
 void UpdateCrashKeysWithSyntheticTrials(
