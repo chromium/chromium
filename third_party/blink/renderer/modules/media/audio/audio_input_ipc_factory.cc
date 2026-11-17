@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/modules/media/audio/mojo_audio_input_ipc.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 

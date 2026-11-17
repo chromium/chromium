@@ -75,8 +75,6 @@ const WTF_EXPORT Big5EncodeIndex& EnsureBig5EncodeIndexForEncode();
 const WTF_EXPORT Big5EncodeTable& EnsureBig5EncodeTable();
 
 // Functions for using sorted arrays of pairs as a map.
-// FIXME: Consider moving these functions to std_lib_extras.h for uses other
-// than encoding tables.
 
 struct CompareFirst {
   template <typename TypeA, typename TypeB>

@@ -8,7 +8,6 @@
 #include "base/observer_list.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {

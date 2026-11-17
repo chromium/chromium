@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/list_style_type_data.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 #if DCHECK_IS_ON()
 #include <stdio.h>

@@ -367,7 +367,7 @@ contention, use `blink::ThreadSpecific<T>` (defined in
 [`platform/wtf/thread_specific.h`](thread_specific.h)):
 
 ```cpp
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 struct ThreadLocalContext {
@@ -375,8 +375,8 @@ struct ThreadLocalContext {
 };
 
 ThreadSpecific<ThreadLocalContext>& GetThreadLocalContext() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<ThreadLocalContext>, context, ());
-  return context;
+  static base::NoDestructor<ThreadSpecific<ThreadLocalContext>> context;
+  return *context;
 }
 
 void IncrementLocal() {

@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 namespace xpath {

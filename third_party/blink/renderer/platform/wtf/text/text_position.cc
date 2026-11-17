@@ -27,7 +27,6 @@
 
 #include <algorithm>
 #include <memory>
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 

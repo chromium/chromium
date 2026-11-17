@@ -37,6 +37,7 @@
 #include "base/types/to_address.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"

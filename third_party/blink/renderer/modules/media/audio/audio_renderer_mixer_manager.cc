@@ -22,7 +22,6 @@
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace {
 
