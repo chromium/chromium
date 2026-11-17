@@ -5727,27 +5727,6 @@
             ]
         }
     ],
-    "ClientSideDetectionTrickToBill": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionTrickToBill"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClipboardDeemphasisAndroid": [
         {
             "platforms": [
