@@ -131,15 +131,6 @@ std::string LoadLatencyStepName(LoadLatencyTimes::StepKind kind) {
   }
 }
 
-void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
-  for (const LoadLatencyTimes::Step& step : latencies->steps()) {
-    base::UmaHistogramCustomTimes("ContentSuggestions.Feed.LoadStepLatency." +
-                                      LoadLatencyStepName(step.kind),
-                                  step.latency, base::Milliseconds(50),
-                                  kLoadTimeout, 50);
-  }
-}
-
 void ReportContentLifetimeStaleAge(base::TimeDelta content_lifetime_stale_age) {
   if (content_lifetime_stale_age.is_zero()) {
     base::UmaHistogramBoolean(
@@ -461,15 +452,6 @@ void MetricsReporter::FeedViewed(SurfaceId surface_id) {
         VVLOG << "LoadStepLatency." << LoadLatencyStepName(step.kind) << " = "
               << step.latency;
       }
-    }
-
-    if (!load_latencies_recorded_) {
-      // Use |load_latencies_recorded_| to only report load latencies once.
-      // This generally will be the worst-case, since caches are likely to be
-      // cold, a network request is more likely to be required, and Chrome
-      // may be working on initializing other systems.
-      load_latencies_recorded_ = true;
-      ReportLoadLatencies(std::move(load_latencies_));
     }
     load_latencies_ = nullptr;
   }

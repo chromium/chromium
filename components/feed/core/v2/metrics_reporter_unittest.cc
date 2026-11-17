@@ -345,34 +345,6 @@ TEST_F(MetricsReporterTest, DoNotReportContentAgeWhenNotPositive) {
       "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh", 0);
 }
 
-TEST_F(MetricsReporterTest, ReportsLoadStepLatenciesOnFirstView) {
-  {
-    auto latencies = std::make_unique<LoadLatencyTimes>();
-    task_environment_.FastForwardBy(base::Milliseconds(150));
-    latencies->StepComplete(LoadLatencyTimes::kLoadFromStore);
-    task_environment_.FastForwardBy(base::Milliseconds(50));
-    latencies->StepComplete(LoadLatencyTimes::kUploadActions);
-    MetricsReporter::LoadStreamResultSummary result_summary =
-        NetworkLoadResults();
-    result_summary.stored_content_age = base::TimeDelta();
-    reporter_->OnLoadStream(StreamType(StreamKind::kForYou), result_summary,
-                            kContentStats, std::move(latencies));
-  }
-  task_environment_.FastForwardBy(base::Milliseconds(300));
-  reporter_->FeedViewed(kSurfaceId);
-  reporter_->FeedViewed(kSurfaceId);
-
-  histogram_.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.LoadStepLatency.LoadFromStore",
-      base::Milliseconds(150), 1);
-  histogram_.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.LoadStepLatency.ActionUpload",
-      base::Milliseconds(50), 1);
-  histogram_.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.LoadStepLatency.StreamView",
-      base::Milliseconds(300), 1);
-}
-
 TEST_F(MetricsReporterTest, ReportsLoadMoreStatus) {
   reporter_->OnLoadMore(StreamType(StreamKind::kForYou),
                         LoadStreamStatus::kLoadedFromNetwork, kContentStats);

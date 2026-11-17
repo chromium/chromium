@@ -224,7 +224,6 @@ class MetricsReporter {
   base::TimeDelta tracked_visit_time_in_feed_;
   // Non-null only directly after a stream load.
   std::unique_ptr<LoadLatencyTimes> load_latencies_;
-  bool load_latencies_recorded_ = false;
 
   class GoodVisitState {
    public:
