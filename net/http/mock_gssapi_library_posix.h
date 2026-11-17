@@ -15,6 +15,11 @@ namespace net {
 
 namespace test {
 
+// `gss_buffer_desc` helpers. Buffers filled by CopyGssBuffer() own their data,
+// which must be released with ClearGssBuffer().
+void ClearGssBuffer(gss_buffer_desc* dest);
+void CopyGssBuffer(const gss_buffer_desc* src, gss_buffer_desc* dest);
+
 class GssContextMockImpl {
  public:
   GssContextMockImpl();

@@ -9,7 +9,6 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
@@ -27,37 +26,6 @@
 namespace net {
 
 namespace {
-
-// gss_buffer_t helpers.
-void ClearBuffer(gss_buffer_t dest) {
-  if (!dest)
-    return;
-  dest->length = 0;
-  delete [] reinterpret_cast<char*>(dest->value);
-  dest->value = nullptr;
-}
-
-void SetBuffer(gss_buffer_t dest, const void* src, size_t length) {
-  if (!dest)
-    return;
-  ClearBuffer(dest);
-  if (!src)
-    return;
-  dest->length = length;
-  if (length) {
-    dest->value = new char[length];
-    UNSAFE_TODO(memcpy(dest->value, src, length));
-  }
-}
-
-void CopyBuffer(gss_buffer_t dest, const gss_buffer_t src) {
-  if (!dest)
-    return;
-  ClearBuffer(dest);
-  if (!src)
-    return;
-  SetBuffer(dest, src->value, src->length);
-}
 
 const char kInitialAuthResponse[] = "Mary had a little lamb";
 
@@ -257,10 +225,10 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
                                                   &ret_flags,
                                                   &time_rec);
     EXPECT_EQ(query.response_code, major_status);
-    CopyBuffer(&input_token, &output_token);
-    ClearBuffer(&output_token);
+    test::CopyGssBuffer(&output_token, &input_token);
+    test::ClearGssBuffer(&output_token);
   }
-  ClearBuffer(&input_token);
+  test::ClearGssBuffer(&input_token);
   major_status = mock_library->delete_sec_context(&minor_status,
                                                   &context_handle,
                                                   GSS_C_NO_BUFFER);

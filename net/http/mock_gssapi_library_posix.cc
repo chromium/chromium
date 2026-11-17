@@ -4,8 +4,11 @@
 
 #include "net/http/mock_gssapi_library_posix.h"
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,52 +62,28 @@ void CopyOid(gss_OID dest, const gss_OID_desc* src) {
   SetOid(dest, src->elements, src->length);
 }
 
-// gss_buffer_t helpers.
-void ClearBuffer(gss_buffer_t dest) {
-  if (!dest)
-    return;
-  dest->length = 0;
-  if (dest->value) {
-    delete[] reinterpret_cast<char*>(dest->value);
-    dest->value = nullptr;
+// gss_buffer_desc helpers.
+base::span<char> GssBufferToSpan(const gss_buffer_desc& buffer) {
+  if (!buffer.value) {
+    CHECK_EQ(buffer.length, 0u);
+    return {};
   }
+  // SAFETY: `gss_buffer_desc` invariant is that `value` has `length` bytes.
+  return UNSAFE_BUFFERS(
+      base::span(static_cast<char*>(buffer.value), buffer.length));
 }
 
-void SetBuffer(gss_buffer_t dest, const void* src, size_t length) {
-  if (!dest)
+void SetGssBuffer(gss_buffer_desc* dest, base::span<const char> src) {
+  if (!dest) {
     return;
-  ClearBuffer(dest);
-  if (!src)
-    return;
-  dest->length = length;
-  if (length) {
-    dest->value = new char[length];
-    UNSAFE_TODO(memcpy(dest->value, src, length));
   }
-}
-
-void CopyBuffer(gss_buffer_t dest, const gss_buffer_t src) {
-  if (!dest)
+  test::ClearGssBuffer(dest);
+  if (src.empty()) {
     return;
-  ClearBuffer(dest);
-  if (!src)
-    return;
-  SetBuffer(dest, src->value, src->length);
-}
-
-std::string BufferToString(const gss_buffer_t src) {
-  std::string dest;
-  if (!src)
-    return dest;
-  const char* string = reinterpret_cast<char*>(src->value);
-  dest.assign(string, src->length);
-  return dest;
-}
-
-void BufferFromString(const std::string& src, gss_buffer_t dest) {
-  if (!dest)
-    return;
-  SetBuffer(dest, src.c_str(), src.length());
+  }
+  dest->length = src.size();
+  dest->value = new char[src.size()];
+  GssBufferToSpan(*dest).copy_from(src);
 }
 
 // gss_name_t helpers.
@@ -116,26 +95,35 @@ void ClearName(gss_name_t dest) {
   ClearOid(&name->name_type);
 }
 
-void SetName(gss_name_t dest, const void* src, size_t length) {
-  if (!dest)
-    return;
-  ClearName(dest);
-  if (!src)
-    return;
-  auto* name = test::GssNameMockImpl::FromGssName(dest);
-  name->name.assign(reinterpret_cast<const char*>(src), length);
-}
-
 gss_name_t NameFromString(const std::string& src) {
-  gss_name_t dest = test::GssNameMockImpl::ToGssName(
-      new test::GssNameMockImpl{"", {0, nullptr}});
-  SetName(dest, src.c_str(), src.length());
-  return dest;
+  return test::GssNameMockImpl::ToGssName(
+      new test::GssNameMockImpl{src, {0, nullptr}});
 }
 
 }  // namespace
 
 namespace test {
+
+void ClearGssBuffer(gss_buffer_desc* dest) {
+  if (!dest) {
+    return;
+  }
+  dest->length = 0;
+  delete[] static_cast<char*>(dest->value);
+  dest->value = nullptr;
+}
+
+void CopyGssBuffer(const gss_buffer_desc* src, gss_buffer_desc* dest) {
+  if (!dest) {
+    return;
+  }
+  CHECK_NE(src, dest);
+  ClearGssBuffer(dest);
+  if (!src) {
+    return;
+  }
+  SetGssBuffer(dest, GssBufferToSpan(*src));
+}
 
 GssContextMockImpl::GssContextMockImpl()
   : lifetime_rec(0),
@@ -278,7 +266,7 @@ OM_uint32 MockGSSAPILibrary::import_name(
   output->name_type.elements = nullptr;
 
   // Save the data.
-  output->name = BufferToString(input_name_buffer);
+  output->name = base::as_string_view(GssBufferToSpan(*input_name_buffer));
   CopyOid(&output->name_type, input_name_type);
   *output_name = test::GssNameMockImpl::ToGssName(output);
 
@@ -308,7 +296,7 @@ OM_uint32 MockGSSAPILibrary::release_buffer(
     *minor_status = 0;
   if (!buffer)
     return GSS_S_BAD_NAME;
-  ClearBuffer(buffer);
+  ClearGssBuffer(buffer);
   return GSS_S_COMPLETE;
 }
 
@@ -327,7 +315,7 @@ OM_uint32 MockGSSAPILibrary::display_name(
     return GSS_S_CALL_BAD_STRUCTURE;
   GssNameMockImpl* internal_name = GssNameMockImpl::FromGssName(input_name);
   std::string name = internal_name->name;
-  BufferFromString(name, output_name_buffer);
+  SetGssBuffer(output_name_buffer, name);
   if (output_name_type) {
     *output_name_type =
         internal_name ? &internal_name->name_type : GSS_C_NO_OID;
@@ -381,7 +369,7 @@ OM_uint32 MockGSSAPILibrary::display_status(
       msg = base::StringPrintf("Value: %u, Type %u", status_value, status_type);
       EXPECT_EQ(*message_context, 0u);
   }
-  BufferFromString(msg, status_string);
+  SetGssBuffer(status_string, msg);
   return rv;
 }
 
@@ -430,14 +418,10 @@ OM_uint32 MockGSSAPILibrary::init_sec_context(
   if (!input_token) {
     EXPECT_FALSE(security_query.expected_input_token.length);
   } else {
-    EXPECT_EQ(input_token->length, security_query.expected_input_token.length);
-    if (input_token->length) {
-      UNSAFE_TODO(EXPECT_EQ(0, memcmp(input_token->value,
-                                      security_query.expected_input_token.value,
-                                      input_token->length)));
-    }
+    EXPECT_EQ(GssBufferToSpan(*input_token),
+              GssBufferToSpan(security_query.expected_input_token));
   }
-  CopyBuffer(output_token, &security_query.output_token);
+  CopyGssBuffer(&security_query.output_token, output_token);
   if (actual_mech_type)
     CopyOid(*actual_mech_type, mech_type);
   if (ret_flags)

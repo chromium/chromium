@@ -20,13 +20,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_auth.h"
-#include "net/http/http_auth_gssapi_posix.h"
 #include "net/http/http_auth_multi_round_parse.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_values.h"
@@ -58,6 +58,15 @@ static_assert(
 PaddedOidDesc CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL = {
     0,
     {6, const_cast<char*>("\x2b\x06\x01\x05\x05\x02")}};
+
+base::span<const uint8_t> GssBufferToSpan(const gss_buffer_desc& buffer) {
+  if (!buffer.value) {
+    return {};
+  }
+  // SAFETY: The GSS-API contract is that `value` points to `length` bytes.
+  return UNSAFE_BUFFERS(
+      base::span(static_cast<const uint8_t*>(buffer.value), buffer.length));
+}
 
 }  // namespace
 
@@ -173,14 +182,13 @@ base::DictValue GetGssStatusCodeValue(GSSAPILibrary* gssapi_lib,
         &minor_status, status, status_code_type, GSS_C_NO_OID, &message_context,
         &message_buffer);
 
-    if (major_status != GSS_S_COMPLETE || message_buffer.length == 0 ||
-        !message_buffer.value) {
+    base::span<const uint8_t> message_bytes = GssBufferToSpan(message_buffer);
+    if (major_status != GSS_S_COMPLETE || message_bytes.empty()) {
       continue;
     }
 
-    std::string_view message_string{
-        static_cast<const char*>(message_buffer.value),
-        std::min(kMaxMsgLength, message_buffer.length)};
+    std::string_view message_string = base::as_string_view(
+        message_bytes.first(std::min(kMaxMsgLength, message_bytes.size())));
 
     // The returned string is almost assuredly ASCII, but be defensive.
     if (!base::IsStringUTF8(message_string))
@@ -219,10 +227,14 @@ base::DictValue OidToValue(gss_OID oid) {
   if (!oid->elements)
     return params;
 
+  // SAFETY: The GSS-API contract is that `elements` points to `length` bytes.
+  auto oid_bytes = UNSAFE_BUFFERS(
+      base::span(static_cast<const char*>(oid->elements), oid->length));
+
   // Cap OID content at arbitrary limit 1k.
-  constexpr OM_uint32 kMaxOidDataSize = 1024;
-  params.Set("bytes", NetLogBinaryValue(oid->elements, std::min(kMaxOidDataSize,
-                                                                oid->length)));
+  constexpr size_t kMaxOidDataSize = 1024;
+  params.Set("bytes", NetLogBinaryValue(base::as_byte_span(oid_bytes).first(
+                          std::min(kMaxOidDataSize, oid_bytes.size()))));
 
   // Based on RFC 2744 Appendix A. Hardcoding the OIDs in the list below to
   // avoid having a static dependency on the library. The OIDs are stored as
@@ -246,9 +258,6 @@ base::DictValue OidToValue(gss_OID oid) {
       {"GSS_C_NT_EXPORT_NAME",
        base::span_from_cstring("\x2b\x06\x01\x05\x06\x04")}};
 
-  // SAFETY: The GSS-API contract is that `elements` points to `length` bytes.
-  auto oid_bytes = UNSAFE_BUFFERS(
-      base::span(static_cast<const char*>(oid->elements), oid->length));
   for (auto& well_known_oid : kWellKnownOIDs) {
     if (well_known_oid.oid == oid_bytes) {
       params.Set("oid", well_known_oid.symbolic_name);
@@ -274,11 +283,11 @@ base::DictValue GetDisplayNameValue(GSSAPILibrary* gssapi_lib,
                                       major_status, minor_status));
     return rv;
   }
-  auto name_string =
-      std::string_view(reinterpret_cast<const char*>(name.value), name.length);
+  base::span<const uint8_t> name_bytes = GssBufferToSpan(name);
+  std::string_view name_string = base::as_string_view(name_bytes);
   rv.Set("name", base::IsStringUTF8(name_string)
                      ? NetLogStringValue(name_string)
-                     : NetLogBinaryValue(name.value, name.length));
+                     : NetLogBinaryValue(name_bytes));
   rv.Set("type", OidToValue(name_type));
   return rv;
 }
@@ -728,10 +737,8 @@ int HttpAuthGSSAPI::GenerateAuthToken(const AuthCredentials* credentials,
     return rv;
 
   // Base64 encode data in output buffer and prepend the scheme.
-  std::string encode_input(static_cast<char*>(output_token.value),
-                           output_token.length);
-  std::string encode_output = base::Base64Encode(encode_input);
-  *auth_token = "Negotiate " + encode_output;
+  *auth_token =
+      "Negotiate " + base::Base64Encode(GssBufferToSpan(output_token));
   return OK;
 }
 
