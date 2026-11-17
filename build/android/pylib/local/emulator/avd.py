@@ -1525,6 +1525,10 @@ class _AvdInstance:
                 'ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL': '1',
                 # Sets the emulator configuration directory
                 'ANDROID_EMULATOR_HOME': self._emulator_home,
+                # Always compress RAM when saving snapshots regardless of host
+                # disk type (SSD vs HDD), reducing AVD package size and speeding
+                # up cold-disk snapshot loads on HDD bots.
+                'ANDROID_SNAPSHOT_COMPRESS': '1',
                 # emulator tools like crashreport need $USER info to locate data.
                 'USER': os.environ.get('USER'),
             }
