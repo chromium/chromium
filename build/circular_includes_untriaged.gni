@@ -80,7 +80,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/multidevice_setup:multidevice_setup",
   "//chrome/browser/ash/net:net",
   "//chrome/browser/ash/notifications:notifications",
-  "//chrome/browser/ash/office_web_app:office_web_app",
   "//chrome/browser/ash/os_feedback:os_feedback",
   "//chrome/browser/ash/ownership:ownership",
   "//chrome/browser/ash/phonehub:phonehub",
