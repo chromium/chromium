@@ -1,0 +1,90 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Example of replacing one of two mutually-recursive C++ functions with Rust.
+# See `README.md` for an overview and for more details.
+#
+# `:parity` depends on `:is_odd` (through `:is_odd_cpp_api`), because
+# `parity.cc` calls `is_odd::is_odd`.  `:is_odd` can't depend on `:parity`,
+# because GN doesn't allow dependency cycles.  Instead, `:is_odd` gets its
+# bindings for `IsEven` from `:parity_headers`, a headers-only target:
+#
+#   :parity                                (parity.cc)
+#   +-- :parity_headers                    (parity.h)
+#   +-- :is_odd_cpp_api                    (generated .h)
+#       +-- :is_odd                        (is_odd.rs)
+#           +-- :parity_headers_rs_api     (generated .rs)
+#               +-- :parity_headers        (parity.h)
+
+import("//build/rust/rust_api_from_cpp.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "unittests.rs"
+  sources = [ crate_root ]
+  deps = [
+    ":is_odd",
+    ":parity_headers_rs_api",
+    "//testing/rust_gtest_interop",
+
+    # Provides the definitions of the functions declared in `parity.h`.
+    ":parity",
+  ]
+}
+
+# The C++ target that C++ callers depend on.  It provides the definitions of
+# the functions declared in `:parity_headers`.
+#
+# If this target were a `component`, then `:is_odd` (and the C++ code that
+# Crubit generates for `:is_odd`) would be linked into it.  See the
+# "Components" section in `README.md` for what this means.
+source_set("parity") {
+  testonly = true
+  sources = [ "parity.cc" ]
+  public_deps = [ ":parity_headers" ]
+  deps = [ ":is_odd_cpp_api" ]
+}
+
+# Headers-only target: declarations from `parity.h`, but no definitions (the
+# definitions come from `:parity`).  This lets `:is_odd` call `IsEven`
+# without depending on `:parity`.
+source_set("parity_headers") {
+  testonly = true
+  sources = [ "parity.h" ]
+
+  # Targets that depend only on `:parity_headers` would compile, but they
+  # would fail to link (because of the missing implementations / definitions
+  # that are provided by the `:parity` target).  To prevent such link errors,
+  # `:parity_headers` is only visible to other local targets here - only
+  # `:parity` (and targets that `:parity` depends on like `:is_odd` and
+  # `:parity_headers_rs_api`) should depend on this target.
+  visibility = [ ":*" ]
+}
+
+rust_api_from_cpp("parity_headers_rs_api") {
+  testonly = true
+  bindings_target = ":parity_headers"
+  public_headers = [ "parity.h" ]
+  root_namespaces = [ "parity" ]
+
+  # Same reason as for the `visibility` of `:parity_headers`.
+  visibility = [ ":*" ]
+}
+
+# The Rust implementation of `IsOdd`.
+rust_static_library("is_odd") {
+  testonly = true
+  crate_root = "is_odd.rs"
+  sources = [ crate_root ]
+  deps = [ ":parity_headers_rs_api" ]
+  cpp_api_from_rust = {
+    target_name = "is_odd_cpp_api"
+    cpp_namespace = "is_odd"
+  }
+
+  # Same reason as for the `visibility` of `:parity_headers`.
+  visibility = [ ":*" ]
+}

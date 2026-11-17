@@ -85,6 +85,14 @@ for working with `cxx` in the meantime.
 * [Think carefully](#safety-considerations) about if and how data can be
   shared by C++ and Rust at the same time, as this is a major source of
   potential unsafety.
+* List the targets of all C++ headers that a `#[cxx::bridge]` `#include`s in
+  the `deps` of the `rust_static_library`.  `cxx` doesn't parse these headers,
+  so neither `cxx` nor a plain `gn check` reports missing dependencies, and
+  missing dependencies can cause flaky builds (e.g. when a generated header
+  isn't generated yet).  To find them, build the target, and then run
+  `gn check <out_dir> --check-generated //path/to:<target>_cxx_generated`
+  (`gn check` skips generated files that don't exist yet, and it checks the
+  generated C++ code only as part of the `..._cxx_generated` target).
 
 ### Suggestions
 
