@@ -29,6 +29,7 @@
 -GpuRasterPixelTest.DrawRectScaleTransformOptions
 -GpuRasterPixelTest.DrawTextBlobPersistentShaderCache
 -GpuRasterPixelTest.DrawTextMultipleRasterCHROMIUM
+-GpuRasterPixelTest.RecordShaderDoesNotReuseDestroyedSharedImage
 -GpuRasterPixelTest.RecordShaderExceedsMaxTextureSize
 -GpuRasterPixelTest.SkSLCommandShader
 -P/GpuRasterClearPixelTest.ClearingOpaqueBottomEdge/0

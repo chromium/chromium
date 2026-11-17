@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op.h"
@@ -1277,7 +1278,16 @@ class TestFontBufferClient : public ClientFontManager::Client {
 
 }  // namespace
 
-TEST_F(RasterDecoderOOPTest, DeserializesFontsWhenBeginRasterFails) {
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+// SwiftShader crashes when running this test on ARM64 debug builds on Fuchsia,
+// see crbug.com/40194695.
+#define MAYBE_DeserializesFontsWhenBeginRasterFails \
+  DISABLED_DeserializesFontsWhenBeginRasterFails
+#else
+#define MAYBE_DeserializesFontsWhenBeginRasterFails \
+  DeserializesFontsWhenBeginRasterFails
+#endif
+TEST_F(RasterDecoderOOPTest, MAYBE_DeserializesFontsWhenBeginRasterFails) {
   absl::Cleanup purge_fonts = [] { SkGraphics::PurgeFontCache(); };
   int32_t raster_shm_id = 0;
   int32_t font_shm_id = 0;
