@@ -2435,6 +2435,83 @@ TEST_P(D3DImageBackingFactoryTest, ReadbackAfterSkiaWrite) {
   }
 }
 
+// Verifies that if a deferred Graphite write does not initialize the Dawn
+// texture (e.g. due to a failed submission on OOM, see
+// https://crbug.com/578796878), flushing Graphite commands marks the backing
+// as uncleared and prevents uninitialized reads.
+TEST_P(D3DImageBackingFactoryTest, UninitializedAfterFailedDeferredSkiaWrite) {
+  if (!context_state_->IsGraphiteDawnD3D11()) {
+    GTEST_SKIP() << "Persistent Graphite Dawn access is only enabled on D3D11";
+  }
+
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(4, 4);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_CPU_READ;
+  const auto mailbox = Mailbox::Generate();
+
+  auto owned_backing = shared_image_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       usage, "TestLabel"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_TRUE(owned_backing);
+  SharedImageBacking* backing = owned_backing.get();
+
+  auto factory_ref = shared_image_manager_.Register(std::move(owned_backing),
+                                                    memory_type_tracker_.get());
+  ASSERT_TRUE(factory_ref);
+
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_);
+  ASSERT_TRUE(skia_representation);
+
+  // Begin and end a Skia write access without recording/flushing commands that
+  // initialize the Dawn texture, while marking the representation as cleared.
+  {
+    auto scoped_write_access = skia_representation->BeginScopedWriteAccess(
+        /*begin_semaphores=*/nullptr, /*end_semaphores=*/nullptr,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_write_access);
+    skia_representation->SetCleared();
+  }
+  EXPECT_TRUE(backing->IsCleared());
+
+  // ReadbackToMemory flushes deferred Graphite commands, sees the Dawn texture
+  // is still uninitialized, resets the cleared rect, and fails.
+  const size_t num_pixels = size.width() * size.height();
+  std::vector<uint8_t> readback_pixels(num_pixels * 4, 0);
+  auto info =
+      SkImageInfo::Make(size.width(), size.height(), kRGBA_8888_SkColorType,
+                        kPremul_SkAlphaType, color_space.ToSkColorSpace());
+  std::vector<SkPixmap> pixmaps = {
+      SkPixmap(info, readback_pixels.data(), info.minRowBytes())};
+  EXPECT_FALSE(backing->ReadbackToMemory(pixmaps));
+  EXPECT_FALSE(backing->IsCleared());
+
+  // Repeat for a GL read access via BeginAccessD3D.
+  {
+    auto scoped_write_access = skia_representation->BeginScopedWriteAccess(
+        /*begin_semaphores=*/nullptr, /*end_semaphores=*/nullptr,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_write_access);
+    skia_representation->SetCleared();
+  }
+  EXPECT_TRUE(backing->IsCleared());
+
+  auto gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          mailbox);
+  ASSERT_TRUE(gl_representation);
+  auto scoped_gl_read = gl_representation->BeginScopedAccess(
+      GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+      SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  EXPECT_FALSE(scoped_gl_read);
+  EXPECT_FALSE(backing->IsCleared());
+}
+
 TEST_P(D3DImageBackingFactoryTest, CanCreateScanoutBacking) {
   const gfx::Size arbitrary_size = gfx::Size(4, 4);
 
