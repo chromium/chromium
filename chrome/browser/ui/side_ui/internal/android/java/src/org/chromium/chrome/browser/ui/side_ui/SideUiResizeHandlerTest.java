@@ -87,6 +87,14 @@ public class SideUiResizeHandlerTest {
                 mSideUiCoordinator);
     }
 
+    private SideUiResizeHandler createShownHandler(@AnchorSide int anchorSide) {
+        SideUiResizeHandler handler = createHandler(anchorSide);
+        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
+        handler.onUiUpdateCompleted();
+        assertNotNull(handler.getHandleViewForTesting());
+        return handler;
+    }
+
     private void dispatch(SideUiResizeHandler handler, int action, float x) {
         MotionEvent event =
                 MotionEvent.obtain(/* downTime= */ 0, /* eventTime= */ 0, action, x, 0f, 0);
@@ -122,9 +130,7 @@ public class SideUiResizeHandlerTest {
 
     @Test
     public void testPointerIcon_ClearedOnDestroyHandleView() {
-        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
-        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
-        handler.onUiUpdateCompleted();
+        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
 
         dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
         assertNotNull(mAnchorContainerParent.getPointerIcon());
@@ -154,11 +160,8 @@ public class SideUiResizeHandlerTest {
 
     @Test
     public void testHandleViewIsHiddenWhenResizeUnsupported() {
-        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
-        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
-        handler.onUiUpdateCompleted();
+        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
         View handleView = handler.getHandleViewForTesting();
-        assertNotNull(handleView);
 
         when(mSideUiContainer.supportsManualResize()).thenReturn(false);
         handler.onUiUpdateCompleted();
@@ -170,11 +173,8 @@ public class SideUiResizeHandlerTest {
 
     @Test
     public void testHandleViewIsGoneWhenAnchorContainerNotShown() {
-        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
-        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
-        handler.onUiUpdateCompleted();
+        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
         View handleView = handler.getHandleViewForTesting();
-        assertNotNull(handleView);
 
         mAnchorContainer.setVisibility(View.GONE);
         handler.onUiUpdateCompleted();
@@ -184,11 +184,8 @@ public class SideUiResizeHandlerTest {
 
     @Test
     public void testDestroyHandleView() {
-        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
-        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
-        handler.onUiUpdateCompleted();
+        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
         View handleView = handler.getHandleViewForTesting();
-        assertNotNull(handleView);
 
         handler.destroyHandleView();
 
@@ -199,12 +196,8 @@ public class SideUiResizeHandlerTest {
 
     @Test
     public void testCreateResizeTransition_TargetsShownHandle() {
-        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
-        // The handle is created lazily on the first UI update that supports manual resize.
-        when(mSideUiContainer.supportsManualResize()).thenReturn(true);
-        handler.onUiUpdateCompleted();
+        SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
         View handleView = handler.getHandleViewForTesting();
-        assertNotNull(handleView);
 
         Transition transition = handler.createResizeTransition();
 
