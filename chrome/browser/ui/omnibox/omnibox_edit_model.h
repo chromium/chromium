@@ -251,10 +251,11 @@ class OmniboxEditModel {
   // no user input in progress).
   void Revert();
 
-  // Reverts the edit model if the user hasn't edited the text: when the text
-  // isn't the permanent text and no input is in progress (e.g. an unelided
-  // URL), or when the edited text equals the permanent text or the full URL.
-  // Never exits keyword mode.
+  // Reverts the edit model if the user hasn't edited the text: when no input
+  // is in progress and the text isn't the permanent text (e.g. an unelided URL)
+  // or temporary text is showing (e.g. a previewed zero-prefix suggestion), or
+  // when the edited text equals the permanent text or the full URL. Never exits
+  // keyword mode.
   void RevertUneditedText();
 
   // Directs the popup to start autocomplete. Makes use of the `view_`

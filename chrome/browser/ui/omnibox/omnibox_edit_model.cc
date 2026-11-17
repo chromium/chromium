@@ -709,7 +709,7 @@ void OmniboxEditModel::RevertUneditedText() {
   // the permanent text. An example of this scenario is someone typing on the
   // new tab page and then deleting everything using backspace/delete.
   if ((!user_input_in_progress() &&
-       user_text() != GetPermanentDisplayText()) ||
+       (user_text() != GetPermanentDisplayText() || has_temporary_text())) ||
       (user_input_in_progress() &&
        (user_text() == GetPermanentDisplayText() ||
         user_text() == controller_->client()->GetFormattedFullURL()))) {

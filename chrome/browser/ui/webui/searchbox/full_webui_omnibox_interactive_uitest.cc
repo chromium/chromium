@@ -7134,6 +7134,19 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
       PressKey(ui::VKEY_DOWN), WaitForZpsShown());
 }
 
+// Verifies that from a highlighted ZPS match, clicking outside on the webpage
+// body to blur the omnibox reverts the temporary suggestion text in the
+// location bar.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
+                       ZpsSelectionRevertsOnBlur) {
+  RunTestSequence(
+      FocusOmniboxOnNtpAndWaitForZps(), PressKey(ui::VKEY_DOWN),
+      WaitForWebUIInputValue(kZpsMatch0),
+      WaitForOmniboxText(base::ASCIIToUTF16(std::string_view(kZpsMatch0))),
+      ClickWebPageBody(kTab1), WaitForPopupDismissed(),
+      WaitForOmniboxText(u""));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          FullWebUIOmniboxZpsInteractiveTest,
                          testing::Bool(),
