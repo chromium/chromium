@@ -24,11 +24,14 @@ content::RenderFrameHost* FindRenderFrameHostByToken(
     content::WebContents& web_contents,
     const LocalFrameToken& frame_token) {
   content::RenderFrameHost* render_frame_host = nullptr;
-  web_contents.ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-    if (rfh->GetFrameToken().value() == frame_token.value()) {
-      render_frame_host = rfh;
-    }
-  });
+  web_contents.ForEachRenderFrameHostWithAction(
+      [&](content::RenderFrameHost* rfh) {
+        if (rfh->GetFrameToken().value() == frame_token.value()) {
+          render_frame_host = rfh;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
   return render_frame_host;
 }
 
@@ -71,7 +74,7 @@ std::optional<RendererForms> RendererFormsFromBrowserForm(
     result.emplace_back(std::move(form), rfh_id);
   }
 
-  return std::move(result);
+  return result;
 }
 
 }  // namespace autofill
