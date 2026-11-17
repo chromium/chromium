@@ -46,7 +46,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
@@ -57,6 +56,8 @@ import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +80,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -126,7 +126,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -138,7 +138,6 @@ import org.chromium.ui.test.util.ViewUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.FRE_STRING_CHANGES)
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // https://crbug.com/584460317
 public class SigninFirstRunFragmentTest {
     /** This class is used to test {@link SigninFirstRunFragment}. */
     public static class CustomSigninFirstRunFragment extends SigninFirstRunFragment {
@@ -154,14 +153,13 @@ public class SigninFirstRunFragmentTest {
         }
     }
 
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
-
-    @Rule(order = 1)
-    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+    @Rule public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
@@ -176,15 +174,14 @@ public class SigninFirstRunFragmentTest {
     private final FakeEnterpriseInfo mFakeEnterpriseInfo = new FakeEnterpriseInfo();
     private CustomSigninFirstRunFragment mFragment;
 
+    @BeforeClass
+    public static void setUpSuite() {
+        sActivityTestRule.launchActivity(null);
+    }
+
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppCompatDelegate.setDefaultNightMode(
-                            nightModeEnabled
-                                    ? AppCompatDelegate.MODE_NIGHT_YES
-                                    : AppCompatDelegate.MODE_NIGHT_NO);
-                });
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
     }
 
     @Before
@@ -234,7 +231,6 @@ public class SigninFirstRunFragmentTest {
                         });
         when(mFirstRunPageDelegateMock.getProfileProviderSupplier()).thenReturn(profileSupplier);
 
-        mActivityTestRule.launchActivity(null);
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
 
@@ -246,12 +242,22 @@ public class SigninFirstRunFragmentTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    BlankUiTestActivity activity = sActivityTestRule.getActivity();
+                    activity.getModalDialogManager()
+                            .dismissAllDialogs(DialogDismissalCause.ACTIVITY_DESTROYED);
+                    if (mFragment != null) {
+                        activity.getSupportFragmentManager()
+                                .beginTransaction()
+                                .remove(mFragment)
+                                .commitNowAllowingStateLoss();
+                    }
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(Pref.SIGNIN_ALLOWED);
                     LocalStatePrefs.get().clearPref(Pref.FORCE_BROWSER_SIGNIN);
                 });
-        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
+        ActivityTestUtils.clearActivityOrientation(sActivityTestRule.getActivity());
     }
 
     @Test
@@ -441,7 +447,7 @@ public class SigninFirstRunFragmentTest {
         checkFragmentWithSelectedAccount(TestAccounts.ACCOUNT1);
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -664,7 +670,7 @@ public class SigninFirstRunFragmentTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -696,7 +702,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -706,7 +712,7 @@ public class SigninFirstRunFragmentTest {
 
         // Verify that the title changed to the "signed in" title (part of the animation).
         final String signedInTitle =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.signed_in_fre_title, TestAccounts.ACCOUNT1.getGivenName());
@@ -865,7 +871,7 @@ public class SigninFirstRunFragmentTest {
                 .inRoot(isDialog())
                 .perform(click());
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -902,7 +908,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -928,7 +934,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1060,7 +1066,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1095,7 +1101,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1103,12 +1109,12 @@ public class SigninFirstRunFragmentTest {
         clickContinueButton(continueAsText);
 
         final String expectedTitle =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.signed_in_fre_title, TestAccounts.ACCOUNT1.getGivenName());
         final String expectedLoadingText =
-                mActivityTestRule.getActivity().getString(R.string.fre_signing_in);
+                sActivityTestRule.getActivity().getString(R.string.fre_signing_in);
         onView(allOf(withId(R.id.title), withText(expectedTitle))).check(matches(isDisplayed()));
         onView(withId(R.id.fre_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.fre_icon))
@@ -1125,7 +1131,7 @@ public class SigninFirstRunFragmentTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment();
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1156,7 +1162,7 @@ public class SigninFirstRunFragmentTest {
                 .isAccountManaged(eq(TestAccounts.ACCOUNT1), any());
         launchActivityWithFragment();
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1169,7 +1175,7 @@ public class SigninFirstRunFragmentTest {
                         allOf(
                                 withId(R.id.title),
                                 withText(
-                                        mActivityTestRule
+                                        sActivityTestRule
                                                 .getActivity()
                                                 .getString(R.string.signin_fre_title))))
                 .check(matches(isDisplayed()));
@@ -1188,13 +1194,13 @@ public class SigninFirstRunFragmentTest {
         clickContinueButton(continueAsText);
 
         final String expectedTitle =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.signed_in_fre_title,
                                 TestAccounts.CHILD_ACCOUNT.getGivenName());
         final String expectedLoadingText =
-                mActivityTestRule.getActivity().getString(R.string.fre_signing_in);
+                sActivityTestRule.getActivity().getString(R.string.fre_signing_in);
         onView(allOf(withId(R.id.title), withText(expectedTitle))).check(matches(isDisplayed()));
         onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
         onView(withText(R.string.fre_browser_managed_by_parent)).check(matches(isDisplayed()));
@@ -1211,7 +1217,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1219,7 +1225,7 @@ public class SigninFirstRunFragmentTest {
         clickContinueButton(continueAsText);
 
         final String expectedTitle =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.signed_in_fre_title, TestAccounts.ACCOUNT1.getGivenName());
@@ -1227,7 +1233,7 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.fre_signin_progress_spinner)).check(matches(isDisplayed()));
 
         ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+                sActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
 
         onView(withId(R.id.fre_signin_progress_spinner)).check(matches(isDisplayed()));
     }
@@ -1240,7 +1246,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1249,7 +1255,7 @@ public class SigninFirstRunFragmentTest {
 
         // Given name is empty, so title should format with an empty string.
         final String expectedTitle =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.signed_in_fre_title,
@@ -1335,7 +1341,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.done)).perform(click());
 
         final String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1420,7 +1426,7 @@ public class SigninFirstRunFragmentTest {
         // Allow account list update and the continue button starts sign-in.
         checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         String continueAsText =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.sync_promo_continue_as,
@@ -1525,7 +1531,7 @@ public class SigninFirstRunFragmentTest {
         // Changing the activity orientation will create FullscreenSigninCoordinator again and call
         // SigninFirstRunFragment.notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded()
         ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+                sActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
 
         // These histograms should not be recorded again. The call count should be the same as
         // before as mockito does not reset invocation counts between consecutive verify calls.
@@ -1674,7 +1680,7 @@ public class SigninFirstRunFragmentTest {
         // otherwise this test is racy.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ((BlankUiTestActivity) mActivityTestRule.getActivity())
+                    ((BlankUiTestActivity) sActivityTestRule.getActivity())
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .detach(mFragment)
@@ -1822,7 +1828,7 @@ public class SigninFirstRunFragmentTest {
                         /* hasAiTierRing= */ false,
                         /* aiSubscriptionTier= */ 0);
         final String expectedTitle =
-                mActivityTestRule
+                sActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string.signed_in_fre_title,
@@ -1890,7 +1896,7 @@ public class SigninFirstRunFragmentTest {
     private void launchActivityWithFragment() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ((BlankUiTestActivity) mActivityTestRule.getActivity())
+                    ((BlankUiTestActivity) sActivityTestRule.getActivity())
                             .getSupportFragmentManager()
                             .beginTransaction()
                             .add(android.R.id.content, mFragment)
@@ -1960,6 +1966,8 @@ public class SigninFirstRunFragmentTest {
      * crbug.com/358148764.
      */
     private ViewInteraction onScrollToView(Matcher<View> viewMatcher) {
+        View view = waitForView(viewMatcher, ViewElement.displayingAtLeastOption(0)).getView();
+        ViewUtils.waitForStableView(view);
         return onView(viewMatcher).perform(scrollTo());
     }
 }
