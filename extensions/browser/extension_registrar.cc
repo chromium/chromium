@@ -7,6 +7,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -425,22 +426,21 @@ void ExtensionRegistrar::DisableExtensionWithRawReasons(
     // Remove disallowed disable reasons.
     // Certain disable reasons are always allowed, since they are more internal
     // to the browser (rather than the user choosing to disable the extension).
-    base::flat_set<int> internal_disable_reasons = {
-        extensions::disable_reason::DISABLE_RELOAD,
-        extensions::disable_reason::DISABLE_CORRUPTED,
-        extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY,
-        extensions::disable_reason::
-            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
-        extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY,
-        extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED,
-        extensions::disable_reason::DISABLE_REINSTALL,
-        extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
-        extensions::disable_reason::DISABLE_NOT_VERIFIED,
-        extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
-    };
+    static constexpr auto kInternalDisableReasons =
+        base::MakeFixedFlatSet<int>({
+            disable_reason::DISABLE_RELOAD,
+            disable_reason::DISABLE_CORRUPTED,
+            disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY,
+            disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
+            disable_reason::DISABLE_BLOCKED_BY_POLICY,
+            disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED,
+            disable_reason::DISABLE_REINSTALL,
+            disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
+            disable_reason::DISABLE_NOT_VERIFIED,
+            disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
+        });
 
-    disable_reasons = base::STLSetIntersection<base::flat_set<int>>(
-        disable_reasons, internal_disable_reasons);
+    base::EraseIf(disable_reasons, base::IsNotIn(kInternalDisableReasons));
 
     if (disable_reasons.empty()) {
       return;
