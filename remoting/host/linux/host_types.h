@@ -138,6 +138,18 @@ class HostType {
   virtual bool StopHostUnit(const HostTypeContext& context) const = 0;
 
  protected:
+  // Enables and starts `unit`. Returns false on failure.
+  static bool StartUnit(HostTypeEnvironment& env, std::string_view unit);
+
+  // Stops and disables the units matching the glob `pattern` that are enabled
+  // or active, except `except_unit` (may be empty). Prints
+  // `active_unit_warning` (may be empty) when stopping an active unit. Returns
+  // false on failure, including if the units can't be listed.
+  static bool StopUnitsMatching(HostTypeEnvironment& env,
+                                std::string_view pattern,
+                                std::string_view active_unit_warning = {},
+                                std::string_view except_unit = {});
+
   // Enables and starts the host unit of this host type, without changing its
   // state. See RunStartHostHook(). Returns false on failure.
   virtual bool StartHostUnit(const HostTypeContext& context) const = 0;
@@ -149,6 +161,36 @@ class HostType {
   // Cleans up the state of this host type, see RunStopHostHook(). The default
   // implementation does nothing and returns true.
   virtual bool CleanUpState(const HostTypeContext& context) const;
+};
+
+// Base class of the multi-process host types, whose host unit is
+// `chrome-remote-desktop.service`.
+class MultiProcessHostType : public HostType {
+ public:
+  ~MultiProcessHostType() override;
+  bool is_multi_process() const final;
+  bool StopHostUnit(const HostTypeContext& context) const final;
+
+ protected:
+  MultiProcessHostType();
+
+  // Stops and disables the single-process host units of all users that are
+  // enabled or active. Returns false on failure.
+  static bool StopAllSingleProcessUnits(HostTypeEnvironment& env);
+
+  // Deletes the session routing config file if it exists. Returns false on
+  // failure.
+  static bool DeleteSessionRoutingConfig(HostTypeEnvironment& env);
+
+  // HostType implementation.
+  bool StartHostUnit(const HostTypeContext& context) const final;
+
+  // Stops and disables any leftover single-process units of all users.
+  // Subclasses that override SetUpState() should call this first.
+  bool SetUpState(const HostTypeContext& context) const override;
+
+  // Deletes the session routing config file.
+  bool CleanUpState(const HostTypeContext& context) const override;
 };
 
 // Returns whether `user_name` can be used in the name of a per-user systemd

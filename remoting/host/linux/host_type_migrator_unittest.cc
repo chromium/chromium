@@ -287,7 +287,6 @@ class HostTypeMigratorTest : public testing::Test {
 
   void UseEnvironment(const base::FilePath& routing_config_path) {
     routing_config_path_ = routing_config_path;
-    backup_path_ = routing_config_path.AddExtension("bak");
     env_.emplace(routing_config_path_);
   }
 
@@ -338,7 +337,6 @@ class HostTypeMigratorTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath routing_config_path_;
-  base::FilePath backup_path_;
   std::vector<std::string> log_;
   std::optional<FakeHostTypeEnvironment> env_;
   PasswdUserInfo user_info_;
@@ -371,7 +369,7 @@ TEST_F(HostTypeMigratorTest, SingleToMulti_CopiesStateBeforeStoppingCurrent) {
   EXPECT_THAT(output, HasSubstr("Successfully migrated to gdm-managed host."));
 }
 
-TEST_F(HostTypeMigratorTest, MultiToSingle_CopiesStateAndBacksUpRoutingConfig) {
+TEST_F(HostTypeMigratorTest, MultiToSingle_CopiesStateAndDeletesRoutingConfig) {
   env_->EnableAndStartUnit(kMultiProcessUnit);
   ASSERT_TRUE(base::WriteFile(routing_config_path_, "{}"));
   base::DictValue host_config =
@@ -391,7 +389,6 @@ TEST_F(HostTypeMigratorTest, MultiToSingle_CopiesStateAndBacksUpRoutingConfig) {
   EXPECT_EQ(migrator.saved_registration()->host_config, host_config);
   EXPECT_FALSE(env_->IsUnitEnabled(kMultiProcessUnit));
   EXPECT_FALSE(base::PathExists(routing_config_path_));
-  EXPECT_EQ(ReadContent(backup_path_), "{}");
   EXPECT_TRUE(env_->IsUnitActive(kSingleProcessUnit));
   EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(single_process()));
 }

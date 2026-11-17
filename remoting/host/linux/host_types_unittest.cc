@@ -39,7 +39,6 @@ class HostTypeTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     routing_config_path_ = temp_dir_.GetPath().Append("session_routing.json");
-    backup_path_ = temp_dir_.GetPath().Append("session_routing.json.bak");
     env_.emplace(routing_config_path_);
     record_path_ = env_->GetHostTypeRecordPath();
   }
@@ -72,7 +71,6 @@ class HostTypeTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath routing_config_path_;
-  base::FilePath backup_path_;
   base::FilePath record_path_;
   std::optional<FakeHostTypeEnvironment> env_;
 };
@@ -448,6 +446,29 @@ TEST_F(HostTypeTest, ValidateStartHostHookContext) {
       HostTypeContext(*env_, kUserName, /*is_corp_host=*/true)));
 }
 
+TEST_F(HostTypeTest, StopUnitsMatching_ExceptUnit_LeavesExceptUnitUntouched) {
+  class TestHostType : public HostType {
+   public:
+    using HostType::StopUnitsMatching;
+  };
+
+  env_->SetUnitActive("test@user1.service");
+  env_->SetUnitEnabled("test@user1.service");
+  env_->SetUnitActive("test@user2.service");
+  env_->SetUnitEnabled("test@user2.service");
+
+  EXPECT_TRUE(TestHostType::StopUnitsMatching(
+      *env_, "test@*.service", /*active_unit_warning=*/{},
+      /*except_unit=*/"test@user2.service"));
+
+  EXPECT_FALSE(env_->IsUnitEnabled("test@user1.service"));
+  EXPECT_FALSE(env_->IsUnitActive("test@user1.service"));
+  EXPECT_TRUE(env_->IsUnitEnabled("test@user2.service"));
+  EXPECT_TRUE(env_->IsUnitActive("test@user2.service"));
+  EXPECT_THAT(env_->unit_operations(),
+              ElementsAre("disable test@user1.service"));
+}
+
 TEST_F(HostTypeTest,
        SingleProcessStartHook_FailsIfMultiProcessUnitFailsToStop) {
   env_->SetUnitActive(kMultiProcessUnit);
@@ -523,7 +544,6 @@ TEST_F(HostTypeTest, GdmManagedStartHook_StartsUnitIfRoutingFileAbsent) {
   EXPECT_THAT(env_->unit_operations(),
               ElementsAre(base::StrCat({"enable ", kMultiProcessUnit})));
   EXPECT_FALSE(base::PathExists(routing_config_path_));
-  EXPECT_FALSE(base::PathExists(backup_path_));
 }
 
 TEST_F(HostTypeTest, GdmManagedStartHook_SucceedsIfRoutingDirectoryAbsent) {
@@ -588,18 +608,17 @@ TEST_F(HostTypeTest, GdmManagedStartHook_FailsIfUnitsCannotBeListed) {
   EXPECT_EQ(ReadContent(routing_config_path_), "{}");
 }
 
-TEST_F(HostTypeTest, GdmManagedStartHook_BacksUpRoutingFile) {
+TEST_F(HostTypeTest, GdmManagedStartHook_DeletesRoutingFile) {
   WriteRoutingConfig(R"({"sessionUser": "testuser"})");
 
   EXPECT_TRUE(gdm_managed()->RunStartHostHook(
       HostTypeContext(*env_, "", /*is_corp_host=*/false)));
 
   EXPECT_FALSE(base::PathExists(routing_config_path_));
-  EXPECT_EQ(ReadContent(backup_path_), R"({"sessionUser": "testuser"})");
   EXPECT_TRUE(env_->IsUnitActive(kMultiProcessUnit));
 }
 
-TEST_F(HostTypeTest, GdmManagedStartHook_MovesDanglingSymlink) {
+TEST_F(HostTypeTest, GdmManagedStartHook_DeletesDanglingSymlink) {
   base::FilePath target = temp_dir_.GetPath().Append("missing.json");
   ASSERT_TRUE(base::CreateSymbolicLink(target, routing_config_path_));
 
@@ -607,24 +626,22 @@ TEST_F(HostTypeTest, GdmManagedStartHook_MovesDanglingSymlink) {
       HostTypeContext(*env_, "", /*is_corp_host=*/false)));
 
   EXPECT_FALSE(base::IsLink(routing_config_path_));
-  EXPECT_TRUE(base::IsLink(backup_path_));
   EXPECT_FALSE(base::PathExists(target));
 }
 
-TEST_F(HostTypeTest, GdmManagedStartHook_FailsIfBackupFails) {
-  // A directory can't replace a file, so the backup fails.
-  WriteRoutingConfig("{}");
-  ASSERT_TRUE(base::CreateDirectory(backup_path_));
-  ASSERT_TRUE(base::WriteFile(backup_path_.Append("file"), "x"));
+TEST_F(HostTypeTest, GdmManagedStartHook_FailsIfDeleteFails) {
+  // base::DeleteFile() fails on a non-empty directory.
+  ASSERT_TRUE(base::CreateDirectory(routing_config_path_));
+  ASSERT_TRUE(base::WriteFile(routing_config_path_.Append("file"), "x"));
 
   EXPECT_FALSE(gdm_managed()->RunStartHostHook(
       HostTypeContext(*env_, "", /*is_corp_host=*/false)));
 
-  EXPECT_EQ(ReadContent(routing_config_path_), "{}");
+  EXPECT_TRUE(base::DirectoryExists(routing_config_path_));
   EXPECT_THAT(env_->unit_operations(), IsEmpty());
 }
 
-TEST_F(HostTypeTest, GdmManagedStopHook_StopsUnitAndBacksUpRoutingFile) {
+TEST_F(HostTypeTest, GdmManagedStopHook_StopsUnitAndDeletesRoutingFile) {
   env_->SetUnitActive(kMultiProcessUnit);
   env_->SetUnitEnabled(kMultiProcessUnit);
   WriteRoutingConfig("{}");
@@ -637,7 +654,6 @@ TEST_F(HostTypeTest, GdmManagedStopHook_StopsUnitAndBacksUpRoutingFile) {
   EXPECT_FALSE(env_->IsUnitActive(kMultiProcessUnit));
   EXPECT_FALSE(env_->IsUnitEnabled(kMultiProcessUnit));
   EXPECT_FALSE(base::PathExists(routing_config_path_));
-  EXPECT_EQ(ReadContent(backup_path_), "{}");
 }
 
 TEST_F(HostTypeTest, GdmManagedStopHook_KeepsRoutingFileIfUnitFailsToStop) {
@@ -649,7 +665,6 @@ TEST_F(HostTypeTest, GdmManagedStopHook_KeepsRoutingFileIfUnitFailsToStop) {
       HostTypeContext(*env_, "", /*is_corp_host=*/false)));
 
   EXPECT_EQ(ReadContent(routing_config_path_), "{}");
-  EXPECT_FALSE(base::PathExists(backup_path_));
 }
 
 TEST_F(HostTypeTest, SingleProcessStartHook_AlreadySetUp_OnlyStartsHostUnit) {
@@ -784,18 +799,6 @@ TEST_F(HostTypeTest, GdmManagedStopHook_SucceedsWithoutRoutingFile) {
 
   EXPECT_FALSE(env_->IsUnitActive(kMultiProcessUnit));
   EXPECT_FALSE(base::PathExists(routing_config_path_));
-  EXPECT_FALSE(base::PathExists(backup_path_));
-}
-
-TEST_F(HostTypeTest, GdmManagedStopHook_OverwritesExistingBackup) {
-  WriteRoutingConfig("{}");
-  ASSERT_TRUE(base::WriteFile(backup_path_, "old"));
-
-  EXPECT_TRUE(gdm_managed()->RunStopHostHook(
-      HostTypeContext(*env_, "", /*is_corp_host=*/false)));
-
-  EXPECT_FALSE(base::PathExists(routing_config_path_));
-  EXPECT_EQ(ReadContent(backup_path_), "{}");
 }
 
 }  // namespace

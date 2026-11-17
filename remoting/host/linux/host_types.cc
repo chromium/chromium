@@ -22,6 +22,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "remoting/host/linux/gdm_managed_host_type.h"
 #include "remoting/host/linux/host_type_environment.h"
 #include "remoting/host/linux/secure_file_reader.h"
 
@@ -44,6 +45,10 @@ std::string GetSingleProcessUnit(std::string_view local_user_name) {
   return base::StrCat({kSingleProcessUnitPrefix, local_user_name, ".service"});
 }
 
+bool FileOrSymlinkExists(const base::FilePath& path) {
+  return base::PathExists(path) || base::IsLink(path);
+}
+
 // Returns the error message for an invalid host type record at `path`.
 // `reason` describes what is wrong with it.
 std::string InvalidHostTypeRecordError(const base::FilePath& path,
@@ -52,51 +57,21 @@ std::string InvalidHostTypeRecordError(const base::FilePath& path,
                        reason, "\nFix or delete the file, then try again."});
 }
 
-// Renames the session routing config file at `path` to `<path>.bak`,
-// overwriting any existing backup, and prints the path of the backup. Does
-// nothing if the file doesn't exist. Returns false on failure.
-bool BackUpSessionRoutingConfig(const base::FilePath& path) {
-  base::FilePath backup_path = path.AddExtension("bak");
-  // rename() replaces `backup_path` atomically, and moves `path` itself if it
-  // is a symlink.
-  base::File::Error error;
-  if (!base::ReplaceFile(path, backup_path, &error)) {
-    if (error == base::File::FILE_ERROR_NOT_FOUND) {
-      return true;
-    }
-    std::cerr << "Failed to move " << path << " to " << backup_path << ": "
-              << base::File::ErrorToString(error) << "\n";
-    return false;
-  }
-  std::cout << "Moved the session routing config file to " << backup_path
-            << "\n";
-  return true;
-}
-
 // Stops and disables `unit` if it is enabled or active. Prints `warning` (may
 // be empty) when stopping an active unit. Returns false on failure.
 bool StopUnit(HostTypeEnvironment& env,
-              const std::string& unit,
+              std::string_view unit,
               std::string_view warning) {
-  bool active = env.IsUnitActive(unit);
-  if (!active && !env.IsUnitEnabled(unit)) {
+  std::string unit_str(unit);
+  bool active = env.IsUnitActive(unit_str);
+  if (!active && !env.IsUnitEnabled(unit_str)) {
     return true;
   }
   if (active) {
     std::cout << "Stopping " << unit << "." << warning << "\n";
   }
-  if (!env.DisableAndStopUnit(unit)) {
+  if (!env.DisableAndStopUnit(unit_str)) {
     std::cerr << "Failed to stop " << unit << ".\n";
-    return false;
-  }
-  return true;
-}
-
-// Enables and starts `unit`. Returns false on failure.
-bool StartUnit(HostTypeEnvironment& env, const std::string& unit) {
-  std::cout << "Starting " << unit << ".\n";
-  if (!env.EnableAndStartUnit(unit)) {
-    std::cerr << "Failed to start " << unit << ".\n";
     return false;
   }
   return true;
@@ -112,25 +87,6 @@ bool StopSingleProcessUnit(const HostTypeContext& context) {
   }
   return StopUnit(*context.env, GetSingleProcessUnit(context.local_user_name),
                   kSingleProcessUnitStopWarning);
-}
-
-// Stops and disables the single-process host units of all users that are
-// enabled or active. Returns false on failure, including if the units can't
-// be listed.
-bool StopAllSingleProcessUnits(HostTypeEnvironment& env) {
-  std::string pattern = GetSingleProcessUnit("*");
-  std::optional<std::vector<std::string>> units =
-      env.ListEnabledOrActiveUnits(pattern);
-  if (!units.has_value()) {
-    std::cerr << "Failed to list the units matching " << pattern << ".\n";
-    return false;
-  }
-  for (const std::string& unit : *units) {
-    if (!StopUnit(env, unit, kSingleProcessUnitStopWarning)) {
-      return false;
-    }
-  }
-  return true;
 }
 
 // Stops and disables the multi-process host unit if it is enabled or active.
@@ -155,42 +111,6 @@ class SingleProcessHostType : public HostType {
  protected:
   bool StartHostUnit(const HostTypeContext& context) const override;
   bool StopHostUnit(const HostTypeContext& context) const override;
-  bool SetUpState(const HostTypeContext& context) const override;
-};
-
-// Base class of the multi-process host types, whose host unit is
-// `chrome-remote-desktop.service`.
-class MultiProcessHostType : public HostType {
- public:
-  ~MultiProcessHostType() override;
-  bool is_multi_process() const override;
-
- protected:
-  bool StartHostUnit(const HostTypeContext& context) const override;
-  bool StopHostUnit(const HostTypeContext& context) const override;
-
-  // HostType implementation. Stops and disables the single-process host units
-  // of all users that are enabled or active, e.g. after the single-process
-  // host was stopped without its stop hook, since both host units can't be
-  // used at the same time. Subclasses that override SetUpState() must call
-  // this first.
-  bool SetUpState(const HostTypeContext& context) const override;
-
-  // HostType implementation. Subclasses that override CleanUpState() must
-  // call this first. Backs up the session routing config file.
-  bool CleanUpState(const HostTypeContext& context) const override;
-};
-
-// Multi-process host whose sessions are managed by GDM, which is the case if
-// there is no session routing config file.
-class GdmManagedHostType : public MultiProcessHostType {
- public:
-  ~GdmManagedHostType() override;
-  std::string_view name() const override;
-  std::string_view description() const override;
-  bool requires_local_user() const override;
-
- protected:
   bool SetUpState(const HostTypeContext& context) const override;
 };
 
@@ -230,69 +150,8 @@ bool SingleProcessHostType::SetUpState(const HostTypeContext& context) const {
   return StopMultiProcessUnit(*context.env);
 }
 
-// MultiProcessHostType
-
-MultiProcessHostType::~MultiProcessHostType() = default;
-
-bool MultiProcessHostType::is_multi_process() const {
-  return true;
-}
-
-bool MultiProcessHostType::StartHostUnit(const HostTypeContext& context) const {
-  return StartUnit(*context.env, kMultiProcessHostUnit);
-}
-
-bool MultiProcessHostType::StopHostUnit(const HostTypeContext& context) const {
-  return StopMultiProcessUnit(*context.env);
-}
-
-bool MultiProcessHostType::SetUpState(const HostTypeContext& context) const {
-  // All users' units are stopped, so that the local user isn't needed, e.g.
-  // after a single-process host was set up for a different user.
-  return StopAllSingleProcessUnits(*context.env);
-}
-
-bool MultiProcessHostType::CleanUpState(const HostTypeContext& context) const {
-  // Kept as a backup, since the file may have been edited by hand.
-  return BackUpSessionRoutingConfig(context.env->GetSessionRoutingConfigPath());
-}
-
-// GdmManagedHostType
-
-GdmManagedHostType::~GdmManagedHostType() = default;
-
-std::string_view GdmManagedHostType::name() const {
-  return "gdm-managed";
-}
-
-std::string_view GdmManagedHostType::description() const {
-  return "GDM-managed multi-process host. This host type only supports GNOME "
-         "49+ in Wayland mode. You will be presented with the login screen "
-         "the first time you connect. Note that it doesn't support running "
-         "multiple hosts for different users.";
-}
-
-bool GdmManagedHostType::requires_local_user() const {
-  return false;
-}
-
-bool GdmManagedHostType::SetUpState(const HostTypeContext& context) const {
-  if (!MultiProcessHostType::SetUpState(context)) {
-    return false;
-  }
-  // GDM only manages the sessions if the session routing config file doesn't
-  // exist. An existing file may have been edited by hand, so it is kept as a
-  // backup.
-  return BackUpSessionRoutingConfig(context.env->GetSessionRoutingConfigPath());
-}
-
 const SingleProcessHostType& GetSingleProcessHostType() {
   static const base::NoDestructor<SingleProcessHostType> instance;
-  return *instance;
-}
-
-const GdmManagedHostType& GetGdmManagedHostType() {
-  static const base::NoDestructor<GdmManagedHostType> instance;
   return *instance;
 }
 
@@ -491,6 +350,84 @@ bool HostType::SetUpState(const HostTypeContext& context) const {
 
 bool HostType::CleanUpState(const HostTypeContext& context) const {
   return true;
+}
+
+// static
+bool HostType::StartUnit(HostTypeEnvironment& env, std::string_view unit) {
+  std::cout << "Starting " << unit << ".\n";
+  if (!env.EnableAndStartUnit(std::string(unit))) {
+    std::cerr << "Failed to start " << unit << ".\n";
+    return false;
+  }
+  return true;
+}
+
+// static
+bool HostType::StopUnitsMatching(HostTypeEnvironment& env,
+                                 std::string_view pattern,
+                                 std::string_view active_unit_warning,
+                                 std::string_view except_unit) {
+  std::optional<std::vector<std::string>> units =
+      env.ListEnabledOrActiveUnits(pattern);
+  if (!units.has_value()) {
+    std::cerr << "Failed to list the units matching " << pattern << ".\n";
+    return false;
+  }
+  for (const std::string& unit : *units) {
+    if (unit != except_unit && !StopUnit(env, unit, active_unit_warning)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// MultiProcessHostType
+
+MultiProcessHostType::MultiProcessHostType() = default;
+
+MultiProcessHostType::~MultiProcessHostType() = default;
+
+// static
+bool MultiProcessHostType::StopAllSingleProcessUnits(HostTypeEnvironment& env) {
+  return StopUnitsMatching(env, GetSingleProcessUnit("*"),
+                           kSingleProcessUnitStopWarning);
+}
+
+// static
+bool MultiProcessHostType::DeleteSessionRoutingConfig(
+    HostTypeEnvironment& env) {
+  base::FilePath path = env.GetSessionRoutingConfigPath();
+  bool existed = FileOrSymlinkExists(path);
+  if (!base::DeleteFile(path)) {
+    std::cerr << "Failed to delete " << path << ".\n";
+    return false;
+  }
+  if (existed) {
+    std::cout << "Deleted the session routing config file " << path << ".\n";
+  }
+  return true;
+}
+
+bool MultiProcessHostType::is_multi_process() const {
+  return true;
+}
+
+bool MultiProcessHostType::StartHostUnit(const HostTypeContext& context) const {
+  return StartUnit(*context.env, kMultiProcessHostUnit);
+}
+
+bool MultiProcessHostType::StopHostUnit(const HostTypeContext& context) const {
+  return StopMultiProcessUnit(*context.env);
+}
+
+bool MultiProcessHostType::SetUpState(const HostTypeContext& context) const {
+  // All users' units are stopped, so that the local user isn't needed, e.g.
+  // after a single-process host was set up for a different user.
+  return StopAllSingleProcessUnits(*context.env);
+}
+
+bool MultiProcessHostType::CleanUpState(const HostTypeContext& context) const {
+  return DeleteSessionRoutingConfig(*context.env);
 }
 
 bool IsUserNameSafeForUnitName(std::string_view user_name) {

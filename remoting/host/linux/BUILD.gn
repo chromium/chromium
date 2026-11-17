@@ -194,6 +194,8 @@ static_library("utils") {
 
 source_set("host_types") {
   sources = [
+    "gdm_managed_host_type.cc",
+    "gdm_managed_host_type.h",
     "host_type_environment.cc",
     "host_type_environment.h",
     "host_types.cc",
