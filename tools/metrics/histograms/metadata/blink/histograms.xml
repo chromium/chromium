@@ -4010,7 +4010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy2.Preload.{ResourceType}"
-    enum="RevalidationPolicy" expires_after="2026-11-29">
+    enum="RevalidationPolicy" expires_after="2027-06-30">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
