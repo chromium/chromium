@@ -110,6 +110,9 @@
   _faviconLoader = nil;
   _impressionLimitService = nil;
   _impressionLimitServiceObserverBridge.reset();
+  _prefChangeRegistrar.Reset();
+  _prefObserverBridge.reset();
+  _prefService = nullptr;
 }
 
 - (void)reset {
