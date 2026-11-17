@@ -25,6 +25,7 @@
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/platform/text/character_emoji_data.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/east_asian_spacing_type.h"
@@ -115,10 +116,15 @@ class CharacterPropertyValues {
   // enters the emoji code path for text-default emoji in multi-codepoint
   // sequences.
   void SetIsCjkIdeographOrSymbolForEmoji() {
-    SetForUnicodePattern("[:Emoji_Presentation:]",
-                         [](CharacterProperty& property) {
-                           property.is_cjk_ideograph_or_symbol = true;
-                         });
+    const auto setter = [](CharacterProperty& property) {
+      property.is_cjk_ideograph_or_symbol = true;
+    };
+    if constexpr (kUseBlinkEmojiData) {
+      SetForRanges(kIsEmojiPresentationRanges, setter);
+      SetForValues(kIsEmojiPresentationArray, setter);
+    } else {
+      SetForUnicodePattern("[:Emoji_Presentation:]", setter);
+    }
     SetExtPictFromEmojiSequences(
         "[[:RGI_Emoji_ZWJ_Sequence:][:RGI_Emoji_Modifier_Sequence:]]");
   }
@@ -333,26 +339,87 @@ class CharacterPropertyValues {
   base::HeapArray<CharacterProperty> values_;
 };
 
-static void GenerateUTrieSerialized(FILE* fp,
-                                    size_t size,
-                                    base::span<uint8_t> array) {
-  fprintf(fp,
-          "#include <stdint.h>\n\n"
-          "namespace blink {\n\n"
-          "extern const int32_t kSerializedCharacterDataSize = %zu;\n"
-          // The utrie2_openFromSerialized function requires character data to
-          // be aligned to 4 bytes.
-          "alignas(4) extern const uint8_t kSerializedCharacterData[] = {",
-          size);
-  for (size_t i = 0; i < size;) {
+static base::HeapArray<uint8_t> SerializeTrie(UMutableCPTrie* trie,
+                                              UCPTrieValueWidth value_width) {
+  UErrorCode error = U_ZERO_ERROR;
+  std::unique_ptr<UCPTrie, decltype(&ucptrie_close)> immutable_trie(
+      umutablecptrie_buildImmutable(trie, UCPTrieType::UCPTRIE_TYPE_FAST,
+                                    value_width, &error),
+      ucptrie_close);
+  CHECK_U_ERROR(error, "umutablecptrie_buildImmutable");
+
+  int32_t serialized_size =
+      ucptrie_toBinary(immutable_trie.get(), nullptr, 0, &error);
+  CHECK_GE(serialized_size, 0);
+  error = U_ZERO_ERROR;
+
+  auto serialized =
+      base::HeapArray<uint8_t>::Uninit(static_cast<size_t>(serialized_size));
+  // Ensure 32-bit alignment, as ICU requires that to the ucptrie_toBinary call.
+  CHECK(!(reinterpret_cast<intptr_t>(serialized.data()) % 4));
+
+  serialized_size = ucptrie_toBinary(immutable_trie.get(), serialized.data(),
+                                     serialized.size(), &error);
+  CHECK_GE(serialized_size, 0);
+  CHECK_U_ERROR(error, "ucptrie_toBinary");
+  return serialized;
+}
+
+static void WriteSerializedBytes(FILE* fp, base::span<const uint8_t> array) {
+  for (size_t i = 0; i < array.size();) {
     fprintf(fp, "\n   ");
-    for (size_t col = 0; col < 16 && i < size; ++col, ++i) {
+    for (size_t col = 0; col < 16 && i < array.size(); ++col, ++i) {
       fprintf(fp, " 0x%02X,", array[i]);
     }
   }
-  fprintf(fp,
-          "\n};\n\n"
-          "} // namespace blink\n");
+  fprintf(fp, "\n};\n\n");
+}
+
+[[maybe_unused]] static base::HeapArray<uint8_t> BuildSerializedEmojiTrie() {
+  auto values =
+      base::HeapArray<uint8_t>::WithSize(CharacterPropertyValues::kSize);
+  auto set_bit = [&](base::span<const UChar32> ranges,
+                     base::span<const UChar32> singles, uint8_t bit) {
+    CHECK_EQ(ranges.size() % 2, 0u);
+    for (size_t i = 0; i < ranges.size(); i += 2) {
+      CHECK_LE(ranges[i], ranges[i + 1]);
+      CHECK_LE(ranges[i + 1], CharacterPropertyValues::kMaxCodepoint);
+      for (UChar32 c = ranges[i]; c <= ranges[i + 1]; ++c) {
+        values[c] |= bit;
+      }
+    }
+    for (UChar32 c : singles) {
+      CHECK_LE(c, CharacterPropertyValues::kMaxCodepoint);
+      values[c] |= bit;
+    }
+  };
+  set_bit(kIsEmojiRanges, kIsEmojiArray, kIsEmojiBit);
+  set_bit(kIsEmojiPresentationRanges, kIsEmojiPresentationArray,
+          kIsEmojiPresentationBit);
+  set_bit(kIsEmojiModifierBaseRanges, kIsEmojiModifierBaseArray,
+          kIsEmojiModifierBaseBit);
+
+  UErrorCode error = U_ZERO_ERROR;
+  std::unique_ptr<UMutableCPTrie, decltype(&umutablecptrie_close)> trie(
+      umutablecptrie_open(0, 0, &error), umutablecptrie_close);
+  CHECK_U_ERROR(error, "umutablecptrie_open");
+  UChar32 start = 0;
+  uint8_t value = values[0];
+  for (UChar32 c = 1;; c++) {
+    if (c < CharacterPropertyValues::kSize && values[c] == value) {
+      continue;
+    }
+    if (value) {
+      umutablecptrie_setRange(trie.get(), start, c - 1, value, &error);
+      CHECK_U_ERROR(error, "umutablecptrie_setRange");
+    }
+    if (c >= CharacterPropertyValues::kSize) {
+      break;
+    }
+    start = c;
+    value = values[start];
+  }
+  return SerializeTrie(trie.get(), UCPTrieValueWidth::UCPTRIE_VALUE_BITS_8);
 }
 
 static void GenerateCharacterPropertyData(FILE* fp) {
@@ -382,32 +449,28 @@ static void GenerateCharacterPropertyData(FILE* fp) {
     value = values[start];
   }
 
-  // Convert to immutable UCPTrie in order to be able to serialize.
   static_assert(sizeof(CharacterProperty) == 2);
-  std::unique_ptr<UCPTrie, decltype(&ucptrie_close)> immutable_trie(
-      umutablecptrie_buildImmutable(trie.get(), UCPTrieType::UCPTRIE_TYPE_FAST,
-                                    UCPTrieValueWidth::UCPTRIE_VALUE_BITS_16,
-                                    &error),
-      ucptrie_close);
-
-  assert(error == U_ZERO_ERROR);
-
-  int32_t serialized_size =
-      ucptrie_toBinary(immutable_trie.get(), nullptr, 0, &error);
-  CHECK_GE(serialized_size, 0);
-  error = U_ZERO_ERROR;
-
   auto serialized =
-      base::HeapArray<uint8_t>::Uninit(static_cast<size_t>(serialized_size));
-  // Ensure 32-bit alignment, as ICU requires that to the ucptrie_toBinary call.
-  CHECK(!(reinterpret_cast<intptr_t>(serialized.data()) % 4));
+      SerializeTrie(trie.get(), UCPTrieValueWidth::UCPTRIE_VALUE_BITS_16);
 
-  serialized_size = ucptrie_toBinary(immutable_trie.get(), serialized.data(),
-                                     serialized.size(), &error);
-  CHECK_GE(serialized_size, 0);
-  assert(error == U_ZERO_ERROR);
-
-  GenerateUTrieSerialized(fp, static_cast<size_t>(serialized_size), serialized);
+  fprintf(fp,
+          "#include <stdint.h>\n\n"
+          "namespace blink {\n\n"
+          "extern const int32_t kSerializedCharacterDataSize = %zu;\n"
+          // The ucptrie_openFromBinary function requires character data to
+          // be aligned to 4 bytes.
+          "alignas(4) extern const uint8_t kSerializedCharacterData[] = {",
+          serialized.size());
+  WriteSerializedBytes(fp, serialized);
+  if constexpr (kUseBlinkEmojiData) {
+    auto emoji_serialized = BuildSerializedEmojiTrie();
+    fprintf(fp,
+            "extern const int32_t kSerializedEmojiDataSize = %zu;\n"
+            "alignas(4) extern const uint8_t kSerializedEmojiData[] = {",
+            emoji_serialized.size());
+    WriteSerializedBytes(fp, emoji_serialized);
+  }
+  fprintf(fp, "} // namespace blink\n");
 }
 
 //

@@ -143,6 +143,7 @@ compiled_action("character_data") {
 
 executable("character_data_generator") {
   sources = [
+    "text/character_emoji_data.h",
     "text/character_property.h",
     "text/character_property_data.h",
     "text/character_property_data_generator.cc",
@@ -1547,6 +1548,7 @@ component("platform") {
     "text/character_break_iterator.cc",
     "text/character_break_iterator.h",
     "text/character_emoji.cc",
+    "text/character_emoji_data.h",
     "text/character_property.h",
     "text/character_property_data.h",
     "text/character_variation_sequences.cc",

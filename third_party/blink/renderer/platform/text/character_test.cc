@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/text/character.h"
 
 #include <ubidi_props.h>
+#include <unicode/ucptrie.h>
+#include <unicode/umutablecptrie.h>
 #include <unicode/uniset.h>
 #include <unicode/unistr.h>
 #include <unicode/uscript.h>
@@ -12,8 +14,12 @@
 #include <unicode/utypes.h>
 
 #include <algorithm>
+#include <memory>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/text/character_emoji_data.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category_inline_header.h"
@@ -902,6 +908,71 @@ TEST(CharacterTest, HasLikelyScriptIgnoresUnknownScript) {
   EXPECT_FALSE(HasLikelyScript(0xFE1A));
   EXPECT_TRUE(HasLikelyScript('A'));
   EXPECT_FALSE(HasLikelyScript(' '));
+}
+
+TEST(CharacterTest, EmojiData) {
+  static_assert(ParseUnicodeVersion("17.0") ==
+                std::array<uint8_t, 4>{17, 0, 0, 0});
+  static_assert(ParseUnicodeVersion("15.1") ==
+                std::array<uint8_t, 4>{15, 1, 0, 0});
+  static_assert(ParseUnicodeVersion("18.0") > ParseUnicodeVersion("17.0"));
+
+  constexpr UChar32 kSize = uchar::kMaxCodepoint + 1;
+  auto values = base::HeapArray<uint8_t>::WithSize(kSize);
+  auto set_bit = [&](base::span<const UChar32> ranges,
+                     base::span<const UChar32> singles, uint8_t bit) {
+    ASSERT_EQ(ranges.size() % 2, 0u);
+    for (size_t i = 0; i < ranges.size(); i += 2) {
+      ASSERT_LE(ranges[i], ranges[i + 1]);
+      ASSERT_LE(ranges[i + 1], uchar::kMaxCodepoint);
+      for (UChar32 c = ranges[i]; c <= ranges[i + 1]; ++c) {
+        values[c] |= bit;
+      }
+    }
+    for (UChar32 c : singles) {
+      ASSERT_LE(c, uchar::kMaxCodepoint);
+      values[c] |= bit;
+    }
+  };
+  set_bit(kIsEmojiRanges, kIsEmojiArray, kIsEmojiBit);
+  set_bit(kIsEmojiPresentationRanges, kIsEmojiPresentationArray,
+          kIsEmojiPresentationBit);
+  set_bit(kIsEmojiModifierBaseRanges, kIsEmojiModifierBaseArray,
+          kIsEmojiModifierBaseBit);
+
+  UErrorCode error = U_ZERO_ERROR;
+  std::unique_ptr<UMutableCPTrie, decltype(&umutablecptrie_close)> mutable_trie(
+      umutablecptrie_open(0, 0, &error), umutablecptrie_close);
+  ASSERT_EQ(error, U_ZERO_ERROR);
+  for (UChar32 c = 0; c < kSize; ++c) {
+    if (values[c]) {
+      umutablecptrie_set(mutable_trie.get(), c, values[c], &error);
+      ASSERT_EQ(error, U_ZERO_ERROR);
+    }
+  }
+  std::unique_ptr<UCPTrie, decltype(&ucptrie_close)> trie(
+      umutablecptrie_buildImmutable(mutable_trie.get(), UCPTRIE_TYPE_FAST,
+                                    UCPTRIE_VALUE_BITS_8, &error),
+      ucptrie_close);
+  ASSERT_EQ(error, U_ZERO_ERROR);
+
+  constexpr bool kMatchesIcuVersion =
+      kEmojiDataVersion == ParseUnicodeVersion(U_UNICODE_VERSION);
+  if constexpr (kUseBlinkEmojiData || kMatchesIcuVersion) {
+    for (UChar32 ch = 0; ch <= uchar::kMaxCodepoint; ++ch) {
+      const uint8_t bits = static_cast<uint8_t>(ucptrie_get(trie.get(), ch));
+      ASSERT_EQ(static_cast<bool>(bits & kIsEmojiBit), IsEmoji(ch)) << ch;
+      ASSERT_EQ((bits & (kIsEmojiBit | kIsEmojiPresentationBit)) == kIsEmojiBit,
+                IsEmojiTextDefault(ch))
+          << ch;
+      ASSERT_EQ(static_cast<bool>(bits & kIsEmojiPresentationBit),
+                IsEmojiEmojiDefault(ch))
+          << ch;
+      ASSERT_EQ(static_cast<bool>(bits & kIsEmojiModifierBaseBit),
+                IsEmojiModifierBase(ch))
+          << ch;
+    }
+  }
 }
 
 class CanReceiveTextEmphasisTest
