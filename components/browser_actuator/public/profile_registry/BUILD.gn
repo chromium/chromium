@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("profile_registry") {
+  sources = [
+    "profile_registry_entry_serializer.cc",
+    "profile_registry_entry_serializer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/public/profile_registry/proto",
+  ]
+
+  deps = [ "//third_party/protobuf:any_proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "profile_registry_entry_serializer_unittest.cc" ]
+
+  deps = [
+    ":profile_registry",
+    "//base",
+    "//components/browser_actuator/public/profile_registry/proto",
+    "//testing/gtest",
+    "//third_party/protobuf:any_proto",
+  ]
+}

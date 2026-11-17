@@ -1,0 +1,32 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package browser_actuator;
+
+// Discovery metadata for a signed-in Chrome profile, keyed externally by the
+// profile's sync `cache_guid`. Carried inside a `google.protobuf.Any` whose
+// `type_url` is
+// `"type.googleapis.com/browser_actuator.ChromeProfileRegistryEntry"`.
+message ChromeProfileRegistryEntry {
+  // Obfuscated GAIA ID of the profile's primary account
+  // (`signin::ConsentLevel::kSignin`).
+  string gaia_id = 1;
+
+  // Basename of the profile directory under the user data directory (for
+  // example, `"Default"` or `"Profile 1"`), as passed to
+  // `--profile-directory`.
+  string profile_dir = 2;
+
+  // macOS bundle identifier of the Chrome application that owns the profile
+  // (for example, `"com.google.Chrome"` or `"com.google.Chrome.canary"`).
+  string bundle_id = 3;
+
+  // Mach bootstrap service name for the owning Chrome instance's
+  // local-actuation server.
+  string mach_service_name = 4;
+}
