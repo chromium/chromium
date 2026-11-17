@@ -153,16 +153,34 @@ class WTF_EXPORT StringView {
   // NOLINTNEXTLINE(google-explicit-constructor)
   inline StringView(const AtomicString& string LIFETIME_BOUND);
 
-  // From a literal string or LChar buffer:
+  // Creates a StringView from an LChar buffer.
   explicit StringView(base::span<const LChar> chars)
       : impl_(const_cast<StringImpl*>(&StringImpl::g_global_empty)),
         bytes_(chars.data()),
         length_(base::checked_cast<size_type>(chars.size())) {}
+
+  // Creates a StringView from a string literal.
+  template <typename CharType,
+            size_t kLength,
+            typename = std::enable_if_t<std::is_same_v<CharType, const char>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  StringView(const char* chars)
+  StringView(CharType (&chars)[kLength])
       : impl_(const_cast<StringImpl*>(&StringImpl::g_global_empty)),
         bytes_(chars),
-        length_(chars ? base::checked_cast<size_type>(strlen(chars)) : 0) {}
+        length_(static_cast<size_type>(strlen(chars))) {
+    static_assert(kLength == 0 ||
+                  base::IsValueInRangeForNumericType<size_type>(kLength - 1));
+  }
+
+  // Creates a StringView from a c-style string.
+  template <typename T,
+            typename = std::enable_if_t<
+                std::is_convertible_v<const T&, const char*> &&
+                !(std::is_bounded_array_v<T> &&
+                  std::is_same_v<std::remove_extent_t<T>, const char>)>>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ALWAYS_INLINE StringView(const T& chars)
+      : StringView(static_cast<const char*>(chars), FromCStringTag{}) {}
 
   // From a wide literal string or UChar buffer.
   explicit StringView(base::span<const UChar> chars)
@@ -441,6 +459,9 @@ class WTF_EXPORT StringView {
   [[nodiscard]] String EncodeForDebugging() const;
 
  private:
+  struct FromCStringTag {};
+  NOINLINE StringView(const char* chars, FromCStringTag);
+
   void Set(const StringImpl&, size_type offset);
   void Set(const StringImpl&, size_type offset, size_type length);
 

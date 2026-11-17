@@ -33,6 +33,11 @@ int CodeUnitCompareIgnoringAsciiCase(base::span<const CharType1> c1,
 
 }  // namespace
 
+StringView::StringView(const char* chars, FromCStringTag)
+    : impl_(const_cast<StringImpl*>(&StringImpl::g_global_empty)),
+      bytes_(chars),
+      length_(chars ? base::checked_cast<size_type>(strlen(chars)) : 0) {}
+
 #if DCHECK_IS_ON()
 StringView::~StringView() {
   DCHECK(impl_);

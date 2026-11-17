@@ -349,12 +349,30 @@ TEST(StringViewTest, SubstringContainsOnlyWhitespaceOrEmpty) {
 }
 
 TEST(StringViewTest, ConstructionLiteral8) {
-  // StringView(const char* chars);
+  // StringView(const char (&chars)[kLength]);
   ASSERT_TRUE(StringView(kChars).Is8Bit());
   EXPECT_FALSE(StringView(kChars).IsNull());
   EXPECT_EQ(kChars8, Address8(StringView(kChars)));
   EXPECT_EQ(5u, StringView(kChars).length());
   EXPECT_EQ(kChars, StringView(kChars));
+
+  const char kPadded[10] = "123";
+  EXPECT_EQ(3u, StringView(kPadded).length());
+  EXPECT_EQ("123", StringView(kPadded));
+  EXPECT_EQ(2u, StringView("12\0"
+                           "34")
+                    .length());
+
+  // Dynamic C-string overloads (const char*, char*, char[N], nullptr):
+  const char* c_str = kChars;
+  EXPECT_EQ(5u, StringView(c_str).length());
+  EXPECT_EQ(kChars, StringView(c_str));
+  char mutable_buf[10] = "123";
+  char* mutable_ptr = mutable_buf;
+  EXPECT_EQ(3u, StringView(mutable_buf).length());
+  EXPECT_EQ("123", StringView(mutable_buf));
+  EXPECT_EQ(3u, StringView(mutable_ptr).length());
+  EXPECT_TRUE(StringView(nullptr).IsNull());
 
   // StringView(base::span<const LChar> chars);
   StringView view2(base::as_byte_span(kChars).first(2u));
