@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">パスワードが不正使用された場合はお知らせします</translation>
 <translation id="4489536976005181779">{count,plural, =1{アカウント「{email}」のリーディング リストにページを追加しました}other{アカウント「{email}」のリーディング リストにページを追加しました}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> でログインしています。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをパーソナライズすることがあります。</translation>
-<translation id="4495251723189610737">チャットは Gemini の履歴に保存されます。履歴には、音声、Gemini Live の動画と画面共有、Gemini と共有した内容（プロンプト、<ph name="BEGIN_LINK" />アップロード<ph name="END_LINK" />、<ph name="BEGIN_LINK" />画面<ph name="END_LINK" />など）、Gemini の回答、タスクとツールの呼び出し、フィードバック、Gemini でアクセスしたウェブサイトの情報、サービスの使用状況データ、デバイスのおおよその現在地、IP アドレス、Google アカウントの自宅や職場の住所が含まれます。また、Gemini に接続したアプリのデータも含まれる場合があります。</translation>
 <translation id="4502423230170890588">このデバイスから削除</translation>
 <translation id="4508486880075514067">全画面に展開</translation>
 <translation id="4508750114462689118">ログイン プロモーションを閉じる</translation>

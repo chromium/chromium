@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Pokud dojde k prolomení hesel, dáme vám vědět</translation>
 <translation id="4489536976005181779">{count,plural, =1{Stránka byla přidána do seznamu četby ve vašem účtu {email}}few{Stránky byly přidány do seznamu četby ve vašem účtu {email}}many{Stránky byly přidány do seznamu četby ve vašem účtu {email}}other{Stránky byly přidány do seznamu četby ve vašem účtu {email}}}</translation>
 <translation id="4493604894403585654">Jste přihlášeni jako <ph name="USER_EMAIL" /> Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
-<translation id="4495251723189610737">Vaše chaty se budou ukládat do historie Gemini. Historie zahrnuje zvuk, videa a sdílení obrazovky z Gemini Live, položky sdílené s Gemini (jako jsou prompty, <ph name="BEGIN_LINK" />nahrané soubory<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />obrazovky<ph name="END_LINK" />), odpovědi Gemini, úkoly a volání nástrojů, zpětnou vazbu, informace z webů navštívených s Gemini, údaje o využití služeb, obecnou polohu zařízení, IP adresu a adresu domů či do práce nastavenou v účtu Google. Může zahrnovat také data z aplikací, které s Gemini propojíte.</translation>
 <translation id="4502423230170890588">Odstranit z tohoto zařízení</translation>
 <translation id="4508486880075514067">Rozbalit na celou obrazovku</translation>
 <translation id="4508750114462689118">Zavřít propagační zprávu ohledně přihlášení</translation>

@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Avisarémoste se se vulneran os teus contrasinais</translation>
 <translation id="4489536976005181779">{count,plural, =1{Engadiuse a páxina á túa lista de lectura da conta {email}}other{Engadíronse as páxinas á túa lista de lectura da conta {email}}}</translation>
 <translation id="4493604894403585654">Tes a sesión iniciada como <ph name="USER_EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
-<translation id="4495251723189610737">Os teus chats gardaranse no teu historial de Gemini. Este inclúe o teu audio, as pantallas compartidas e os vídeos de Gemini Live, o que compartes con Gemini (como as solicitudes, as <ph name="BEGIN_LINK" />cousas que cargas<ph name="END_LINK" /> e as <ph name="BEGIN_LINK" />pantallas<ph name="END_LINK" />), as respostas de Gemini, as tarefas e as chamadas a ferramentas, os comentarios, a información dos sitios web que visitas con Gemini, os datos de uso de produtos, a localización xeral do teu dispositivo, o enderezo IP e os enderezos particular ou do traballo que teñas na túa Conta de Google. Así mesmo, pode abranguer datos das aplicacións que conectes a Gemini.</translation>
 <translation id="4502423230170890588">Quitar deste dispositivo</translation>
 <translation id="4508486880075514067">Despregar a pantalla completa</translation>
 <translation id="4508750114462689118">Pecha a promoción de inicio de sesión</translation>

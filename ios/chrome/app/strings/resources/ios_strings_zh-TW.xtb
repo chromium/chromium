@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">如果密碼外洩，我們會通知你</translation>
 <translation id="4489536976005181779">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將網頁新增至帳戶 {email} 的閱讀清單}}</translation>
 <translation id="4493604894403585654">目前登入的帳戶是 <ph name="USER_EMAIL" />。你隨時可以前往「設定」停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
-<translation id="4495251723189610737">你的對話內容會儲存在 Gemini 記錄。記錄內容包括音訊、Gemini Live 影片和螢幕分享畫面、你與 Gemini 分享的資訊 (例如提示詞、<ph name="BEGIN_LINK" />上傳內容<ph name="END_LINK" />和<ph name="BEGIN_LINK" />螢幕畫面<ph name="END_LINK" />)、Gemini 的回覆、任務和工具呼叫、意見回饋、你透過 Gemini 造訪的網站資訊、產品使用資料、裝置的大概位置、IP 位址，以及 Google 帳戶中的住家/公司地址；也可能包含連結至 Gemini 的應用程式資料。</translation>
 <translation id="4502423230170890588">從這個裝置中移除</translation>
 <translation id="4508486880075514067">開啟全螢幕模式</translation>
 <translation id="4508750114462689118">關閉登入提示</translation>

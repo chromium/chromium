@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Te vom anunța dacă îți sunt compromise parolele</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina a fost adăugată în lista de lecturi din contul tău, {email}}few{Paginile au fost adăugate în lista de lecturi din contul tău, {email}}other{Paginile au fost adăugate în lista de lecturi din contul tău, {email}}}</translation>
 <translation id="4493604894403585654">Te-ai conectat ca <ph name="USER_EMAIL" />. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
-<translation id="4495251723189610737">Chaturile tale vor fi salvate în Istoricul Gemini. Istoricul include conținutul audio, videoclipurile și înregistrările de ecran din Gemini Live, ce trimiți la Gemini (cum ar fi solicitările, <ph name="BEGIN_LINK" />încărcările<ph name="END_LINK" /> și <ph name="BEGIN_LINK" />ecranele<ph name="END_LINK" />), răspunsurile de la Gemini, sarcinile și apelurile de instrumente, feedbackul, informațiile de pe site-urile pe care le accesezi cu Gemini, datele privind folosirea produsului, locația aproximativă a dispozitivului, adresa IP și adresele de acasă sau de la serviciu din Contul Google. Poate include și date din aplicațiile pe care le conectezi la Gemini.</translation>
 <translation id="4502423230170890588">Elimină de pe acest dispozitiv</translation>
 <translation id="4508486880075514067">Extinde pe ecran complet</translation>
 <translation id="4508750114462689118">Închide mesajul promoțional de conectare</translation>

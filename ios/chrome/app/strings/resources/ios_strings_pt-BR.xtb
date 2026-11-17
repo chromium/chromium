@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Vamos avisar você se esse problema acontecer</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à Lista de leitura na sua conta {email}}one{Página adicionada à Lista de leitura na sua conta {email}}other{Páginas adicionadas à Lista de leitura na sua conta {email}}}</translation>
 <translation id="4493604894403585654">Você fez login como <ph name="USER_EMAIL" />. Você pode parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
-<translation id="4495251723189610737">Suas conversas serão salvas no Histórico do Gemini. O histórico inclui seus áudios, vídeos ao vivo e compartilhamentos de tela no Gemini Live, o que você compartilha com o Gemini (como comandos, <ph name="BEGIN_LINK" />uploads<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />telas<ph name="END_LINK" />), as respostas do Gemini, tarefas e chamadas de ferramenta, feedback, informações dos sites que você visita com o Gemini, dados de uso do produto, a região do seu dispositivo, o endereço IP e os endereços de casa ou trabalho na sua Conta do Google. Ele também pode incluir dados de apps que você conecta ao Gemini.</translation>
 <translation id="4502423230170890588">Remover deste dispositivo</translation>
 <translation id="4508486880075514067">Abrir em tela cheia</translation>
 <translation id="4508750114462689118">Fechar promoção de login</translation>

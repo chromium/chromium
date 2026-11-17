@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Parollar oshkor qilinsa, sizga xabar qilamiz</translation>
 <translation id="4489536976005181779">{count,plural, =1{Hisobingizdagi ({email}) mutolaa roʻyxatiga sahifa kiritildi.}other{Hisobingizdagi ({email}) mutolaa roʻyxatiga sahifalar kiritildi.}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> nomidan kirgansiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
-<translation id="4495251723189610737">Chatlaringiz Gemini tarixida saqlanadi. Tarixga audio, Gemini Live videolari va ekran namoyishlari, Gemini bilan ulashgan narsalaringiz (promptlar, <ph name="BEGIN_LINK" />yuklamalar<ph name="END_LINK" /> va <ph name="BEGIN_LINK" />ekranlar<ph name="END_LINK" /> kabi), Gemini javoblari, vazifalar va vosita chaqiruvlari, fikr-mulohazalar, Gemini bilan kirgan veb-saytlaringizdan olingan maʼlumotlar, mahsulotdan foydalanish maʼlumotlari, qurilmangizning umumiy joylashuvi, IP manzili hamda Google hisobingizdagi uy yoki ish manzillari kiradi. Shuningdek, unga Gemini bilan ulangan ilovalardagi maʼlumotlar ham kirishi mumkin.</translation>
 <translation id="4502423230170890588">Shu qurilmadan olib tashlash</translation>
 <translation id="4508486880075514067">Butun ekranga yoyish</translation>
 <translation id="4508750114462689118">Kirish reklamasini yopish</translation>

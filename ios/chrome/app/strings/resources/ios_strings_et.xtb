@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Kui teie paroolid on ohustatud, anname teile sellest teada</translation>
 <translation id="4489536976005181779">{count,plural, =1{Leht lisati teie kontol {email} lugemisloendisse}other{Lehed lisati teie kontol {email} lugemisloendisse}}</translation>
 <translation id="4493604894403585654">Olete logitud sisse kontole <ph name="USER_EMAIL" />. Sünkroonimise võite seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
-<translation id="4495251723189610737">Teie vestlused salvestatakse teie Gemini ajalukku. Ajalugu hõlmab teie heli, Gemini Live'i videoid ja ekraanijagamisi, seda, mida Geminiga jagate (nt päringud, <ph name="BEGIN_LINK" />üleslaadimised<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />ekraanikuvad<ph name="END_LINK" />), Gemini vastuseid, ülesandeid ja tööriistakutseid, tagasisidet, teavet veebisaitidelt, mida Geminiga külastate, teenuse kasutusandmeid, teie seadme ligikaudset asukohta, IP-aadressi ning teie Google'i kontol olevat kodust või töökoha aadressi. See võib hõlmata ka andmeid rakendustest, mille olete Geminiga ühendanud.</translation>
 <translation id="4502423230170890588">Eemalda sellest seadmest</translation>
 <translation id="4508486880075514067">Laienda täisekraanile</translation>
 <translation id="4508750114462689118">Sule sisselogimisviip</translation>

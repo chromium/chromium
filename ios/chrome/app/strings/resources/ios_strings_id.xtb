@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Jika sandi dibobol, kami akan memberi tahu Anda</translation>
 <translation id="4489536976005181779">{count,plural, =1{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}other{Halaman ditambahkan ke daftar bacaan di akun Anda, {email}}}</translation>
 <translation id="4493604894403585654">Anda login sebagai <ph name="USER_EMAIL" />. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
-<translation id="4495251723189610737">Percakapan Anda akan disimpan di Histori Gemini Anda. Histori mencakup audio, video dan aktivitas berbagi layar di Gemini Live, hal-hal yang Anda bagikan kepada Gemini (seperti perintah, <ph name="BEGIN_LINK" />upload<ph name="END_LINK" />, dan <ph name="BEGIN_LINK" />layar<ph name="END_LINK" />), respons Gemini, tugas dan panggilan alat, masukan, info dari situs yang Anda kunjungi dengan Gemini, data penggunaan produk, lokasi umum perangkat Anda, alamat IP, serta alamat Rumah atau Kantor di Akun Google Anda. Histori ini juga dapat mencakup data dari aplikasi yang Anda hubungkan ke Gemini.</translation>
 <translation id="4502423230170890588">Hapus dari perangkat ini</translation>
 <translation id="4508486880075514067">Luaskan ke Layar penuh</translation>
 <translation id="4508750114462689118">Tutup promo login</translation>

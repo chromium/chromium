@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Ha jelszavaihoz illetéktelenül hozzáférnek, értesítjük Önt</translation>
 <translation id="4489536976005181779">{count,plural, =1{Oldal hozzáadva a fiókjában található olvasólistához ({email})}other{Oldalak hozzáadva a fiókjában található olvasólistához ({email})}}</translation>
 <translation id="4493604894403585654">Ezzel a fiókkal jelentkezett be: <ph name="USER_EMAIL" />. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
-<translation id="4495251723189610737">A csevegéseit a rendszer a Gemini-előzmények közé menti. Az előzmények közé tartoznak a hangfelvételek, a Gemini Live-videók és -képernyőmegosztások, a Geminivel megosztott tartalmak (például utasítások, <ph name="BEGIN_LINK" />feltöltések<ph name="END_LINK" /> és <ph name="BEGIN_LINK" />képernyők<ph name="END_LINK" />), a Gemini válaszai, a feladatok és az eszközhívások, a visszajelzések, a Gemini segítségével felkeresett webhelyekről származó információk, a termékhasználati adatok, az eszköz hozzávetőleges helye, az IP-cím, valamint a Google-fiókban megadott otthoni és munkahelyi cím. Tartalmazhatja a Geminivel összekapcsolt alkalmazásokból származó adatokat is.</translation>
 <translation id="4502423230170890588">Eltávolítás az eszközről</translation>
 <translation id="4508486880075514067">Kibontás teljes képernyőre</translation>
 <translation id="4508750114462689118">Bejelentkezési promóció bezárása</translation>

@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Hvis dine adgangskoder kompromitteres, kontakter vi dig</translation>
 <translation id="4489536976005181779">{count,plural, =1{Siden blev føjet til din læseliste på kontoen {email}}one{Siden blev føjet til din læseliste på kontoen {email}}other{Siderne blev føjet til din læseliste på kontoen {email}}}</translation>
 <translation id="4493604894403585654">Du er logget ind som <ph name="USER_EMAIL" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
-<translation id="4495251723189610737">Dine chatsamtaler gemmes i din Gemini-historik. Historikken omfatter din lyd og dine Gemini Live-videoer og -skærmdelinger, det, du deler med Gemini (f.eks. prompter, <ph name="BEGIN_LINK" />uploads<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />skærme<ph name="END_LINK" />), Geminis svar, opgaver og værktøjskald, feedback, oplysninger fra websites, du besøger med Gemini, data om produktbrug, din enheds omtrentlige lokation, IP-adresse og hjemme- eller arbejdsadresse på din Google-konto. Den kan også omfatte data fra apps, du knytter til Gemini.</translation>
 <translation id="4502423230170890588">Fjern fra denne enhed</translation>
 <translation id="4508486880075514067">Udvid til fuld skærm</translation>
 <translation id="4508750114462689118">Luk loginkampagne</translation>

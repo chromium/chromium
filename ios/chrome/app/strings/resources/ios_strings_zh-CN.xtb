@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">如果您的密码遭泄露，我们会通知您</translation>
 <translation id="4489536976005181779">{count,plural, =1{网页已添加到您的以下账户的阅读清单中：{email}}other{网页已添加到您的以下账户的阅读清单中：{email}}}</translation>
 <translation id="4493604894403585654">您目前登录的账号是 <ph name="USER_EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据您的历史记录，在 Google 搜索及其他服务中提供个性化的体验。</translation>
-<translation id="4495251723189610737">您的对话会保存在 Gemini 历史记录中。历史记录包括您的音频、Gemini Live 视频和屏幕共享内容、您与 Gemini 共享的内容（例如提示词、<ph name="BEGIN_LINK" />上传内容<ph name="END_LINK" />和<ph name="BEGIN_LINK" />屏幕内容<ph name="END_LINK" />）、Gemini 的回答、任务和工具调用、反馈、您通过 Gemini 访问的网站中的信息、产品使用情况数据、设备的大致位置、IP 地址以及 Google 账号中的住址或工作地址。其中还可能包括您关联到 Gemini 的应用中的数据。</translation>
 <translation id="4502423230170890588">从此设备中移除</translation>
 <translation id="4508486880075514067">展开为全屏</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>

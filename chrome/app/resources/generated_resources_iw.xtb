@@ -329,6 +329,7 @@
 <translation id="1256143630373008432">הבדיקה העצמית נכשלה</translation>
 <translation id="1257336506558170607">ייצוא האישור שנבחר</translation>
 <translation id="1258491128795710625">מה חדש</translation>
+<translation id="1259453023447377372">קבוצת כרטיסיות שנשמרה</translation>
 <translation id="1260451001046713751">התרה תמיד של חלונות קופצים והפניות אוטומטיות מ-<ph name="HOST" /></translation>
 <translation id="1262395978737369974">‏תמיד יש הרשאה להשתמש באופטימיזציה של JavaScript</translation>
 <translation id="1262564987698748643">אתרים יכולים לבקש הרשאה לשנות את ברירת המחדל של קלט המקלדת</translation>
@@ -875,6 +876,7 @@
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
 <translation id="175196451752279553">פ&amp;תיחה מחדש של הכרטיסייה הסגורה</translation>
 <translation id="1753557900380512635">עיצוב פנים</translation>
+<translation id="1753621899753387273">‏פנייה ל-Gemini לגבי הדף הזה ולגבי "<ph name="SELECTION" />"</translation>
 <translation id="1753905327828125965">עם המבקרים הרבים ביותר</translation>
 <translation id="1755601632425835748">גודל טקסט</translation>
 <translation id="1756963401828337401">בחירת מסך לצילום</translation>
@@ -1851,6 +1853,7 @@
 <translation id="2610780100389066815">‏חתימת רשימת יחסי אמון של Microsoft</translation>
 <translation id="261114180663074524">‏צריך להיכנס לחשבון Microsoft ולנסות שוב</translation>
 <translation id="2611885296070244383">מיקרופון (פנימי)</translation>
+<translation id="2612346259364350954">שימוש בתוכן הדף כדי להסביר טקסט מודגש</translation>
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="261305050785128654">יש אפשרות להגדיר את השפות שדוברים כך שהן יהיו ידועות לאתרים. יוצג בהם תוכן בשפות האלה, כשהדבר יתאפשר.</translation>
 <translation id="2613210758071148851">אין לתת הרשאה לאף תוסף באתר <ph name="RESTRICTED_SITE" /></translation>
@@ -2151,6 +2154,7 @@
 <translation id="284884486564166077">‏חיפוש תמונה כלשהי באמצעות Lens</translation>
 <translation id="2849035674501872372">יש להרים את המבט</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">אפשרויות נוספות בשביל <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">סגורה</translation>
 <translation id="2851291081585704741">אין חיבור לאינטרנט</translation>
 <translation id="285237063405807022">(בטעינה)</translation>
@@ -2222,6 +2226,7 @@
 הודעת שרת: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">‏פתיחת קבצים של Word,‏ Excel ו-PowerPoint</translation>
 <translation id="2908162660801918428">הוספת גלריית מדיה לפי ספרייה</translation>
+<translation id="2909334296570021569">פתיחת קבוצת כרטיסיות</translation>
 <translation id="2909487040556589351">‏הורדת Chrome למכשיר הנייד</translation>
 <translation id="2910318910161511225">יש להתחבר לרשת ולנסות שוב</translation>
 <translation id="2910678330803525229">עכשיו אפשר להתחיל לגלוש</translation>
@@ -2387,6 +2392,7 @@
 <translation id="3042097545107738107">שינוי אסטרטגיית הטעינה האופטימלית.</translation>
 <translation id="3043016484125065343">צריך להיכנס לחשבון כדי לראות את הסימניות</translation>
 <translation id="3043581297103810752">מ-<ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">אפשרויות בשביל <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">‏שיפור באמצעות AI</translation>
 <translation id="3045447014237878114">האתר הזה הוריד קבצים מרובים באופן אוטומטי</translation>
 <translation id="304644035656848980">תצוגה מקדימה של המיקרופון</translation>
@@ -3233,6 +3239,7 @@
 <translation id="3748424433435232460">כבר שמורה במכשיר הזה סיסמה לחשבון הזה</translation>
 <translation id="3748466028423001972">החלפה עם התצוגה התחתונה</translation>
 <translation id="3748706263662799310">דיווח על באג</translation>
+<translation id="3750406842345107892">‏התוכן וכתובת ה-URL של הדף שבו נמצאים, והטקסט המודגש, נשלחים אל Google כדי ליצור הסבר</translation>
 <translation id="3752115502500640407">שיתוף עותק של הסיסמה שלך לאתר <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">פתיחת החלונית הצדדית</translation>
 <translation id="3753585830134123417">שינוי גודל החלונות לצד שמאל</translation>
@@ -4127,6 +4134,7 @@
 <translation id="4550926046134589611">חלק מהקישורים הנתמכים ימשיכו להיפתח ב-<ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">‏העיצובים האחרונים שיצרת באמצעות AI</translation>
 <translation id="4551763574344810652">אפשר לבטל את הפעולה בהקשה על <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
+<translation id="4552721860956824254">האודיו מושתק</translation>
 <translation id="4553526521109675518">‏כדי לשנות את שפת המכשיר, עליך להפעיל את Chromebook מחדש. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">צריך להתקין גרסה חדשה של האפליקציה הזו</translation>
 <translation id="4555769855065597957">צל</translation>
@@ -5074,6 +5082,7 @@
 <translation id="5379140238605961210">להמשיך לחסום גישה למיקרופון</translation>
 <translation id="5382591305415226340">ניהול קישורים נתמכים</translation>
 <translation id="5384401776498845256">מי יכול לשתף איתך</translation>
+<translation id="5386856927586721327">‏אפשר לשאול לגבי המסך באמצעות <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">עריכת <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">מדיניות הארגון השתנתה. כפתור הניסויים התווסף לסרגל הכלים. יש ללחוץ על הכפתור כדי לפתוח תיבת דו-שיח ולהפעיל ניסויים.</translation>
 <translation id="5388436023007579456">שירותי מערכת וגם אפליקציות ואתרים עם הרשאת גישה למצלמה יכולים להשתמש במצלמה. כדי להשתמש במצלמה, יכול להיות שצריך להפעיל מחדש את האפליקציה או לרענן את הדף.</translation>
@@ -7378,6 +7387,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> יופעל עם אתחול המערכת וימשיך לפעול ברקע גם כשסוגרים את כל החלונות האחרים של <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">התאמה אישית של הסנכרון</translation>
 <translation id="7399616692258236448">בקשות המיקום חסומות באופן אוטומטי בכל האתרים, מלבד האתרים שאישרת</translation>
+<translation id="7399746352569282594">סגירת התצוגה המפוצלת: <ph name="FIRST_TAB_TITLE" />, ‏<ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">בדיקת אבטחה</translation>
 <translation id="7400059772197434086">האתר לא יכול להשתמש במידע עליך בכתובות הבאות</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
@@ -8017,6 +8027,7 @@
 <translation id="7953955868932471628">ניהול קיצורי דרך</translation>
 <translation id="7955105108888461311">ביצוע בקשה פנים-אל-פנים</translation>
 <translation id="7955177647836564772">‏אם מצב Smart Lock מופעל והטלפון לא נעול, אין צורך להזין סיסמה או קוד אימות</translation>
+<translation id="7955672267519272700">סגירת <ph name="TAB_TITLE" /></translation>
 <translation id="7956373551960864128">מדפסות שמורות</translation>
 <translation id="7956918070009672177">אין קולות ב<ph name="LANGUAGE" /> במכשיר. צריך להתחבר לאינטרנט ולנסות שוב.</translation>
 <translation id="7957074856830851026">הצגה של פרטי המכשיר, כמו המספר הסידורי או מזהה הנכס שלו</translation>

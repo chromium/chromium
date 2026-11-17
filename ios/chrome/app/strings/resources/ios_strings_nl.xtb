@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Als je wachtwoorden zijn gehackt, laten we je dat weten</translation>
 <translation id="4489536976005181779">{count,plural, =1{Pagina toegevoegd aan je leeslijst in je account, {email}}other{Pagina's toegevoegd aan je leeslijst in je account, {email}}}</translation>
 <translation id="4493604894403585654">Je bent ingelogd als <ph name="USER_EMAIL" />. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
-<translation id="4495251723189610737">Je chats worden opgeslagen in je Gemini-geschiedenis. De geschiedenis omvat je audio, Gemini Live-video's en gedeelde schermen, wat je deelt met Gemini (zoals prompts, <ph name="BEGIN_LINK" />uploads<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />schermen<ph name="END_LINK" />), de reacties van Gemini, taken en tool-aanroepen, feedback, informatie van websites die je bezoekt met Gemini, gegevens over productgebruik, de algemene locatie van je apparaat, IP-adres en woon- of werkadressen in je Google-account. De geschiedenis kan ook gegevens bevatten van apps die je aan Gemini koppelt.</translation>
 <translation id="4502423230170890588">Verwijderen van dit apparaat</translation>
 <translation id="4508486880075514067">Uitvouwen naar volledig scherm</translation>
 <translation id="4508750114462689118">Inlogpromo sluiten</translation>

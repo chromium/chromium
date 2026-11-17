@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Við látum þig vita ef aðgangsorðin þín eru í hættu</translation>
 <translation id="4489536976005181779">{count,plural, =1{Síðu bætt við leslistann á reikningnum þínum, {email}}one{Síðum bætt við leslistann á reikningnum þínum, {email}}other{Síðum bætt við leslistann á reikningnum þínum, {email}}}</translation>
 <translation id="4493604894403585654">Þú ert skráð(ur) inn sem <ph name="USER_EMAIL" />. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
-<translation id="4495251723189610737">Spjallið þitt verður vistað í Gemini-ferlinum þínum. Ferillinn inniheldur hljóð, myndskeið og skjádeilingar úr raunspjalli við Gemini, það sem þú deilir með Gemini (eins og skipanir, <ph name="BEGIN_LINK" />upphleðslur<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />skjái<ph name="END_LINK" />), svör Gemini, verkefni og opnun verkfæra, ábendingar, upplýsingar af vefsvæðum sem þú skoðar með Gemini, vörunotkunargögn, námundaða staðsetningu tækisins þíns, IP-tölu og heimilisfang vinnu eða heimilis sem er skráð á Google-reikningnum þínum. Hann getur einnig innihaldið gögn úr forritum sem þú tengir við Gemini.</translation>
 <translation id="4502423230170890588">Fjarlægja úr þessu tæki?</translation>
 <translation id="4508486880075514067">Birta á öllum skjánum</translation>
 <translation id="4508750114462689118">Loka innskráningarkynningu</translation>

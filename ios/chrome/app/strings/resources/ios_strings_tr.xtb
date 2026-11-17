@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">Şifrelerinizin güvenliği ihlal edilirse size haber veririz</translation>
 <translation id="4489536976005181779">{count,plural, =1{Sayfa, {email} hesabınızdaki Okuma Listenize eklendi}other{Sayfalar, {email} hesabınızdaki Okuma Listenize eklendi}}</translation>
 <translation id="4493604894403585654"><ph name="USER_EMAIL" /> olarak oturum açtınız. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
-<translation id="4495251723189610737">Sohbetleriniz Gemini Geçmişinize kaydedilir. Geçmiş, ses kayıtlarınızı, Gemini Live videolarınızı ve ekran paylaşımlarınızı, Gemini ile paylaştığınız içerikleri (ör. istemler, <ph name="BEGIN_LINK" />yüklemeler<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />ekranlar<ph name="END_LINK" />), Gemini'ın yanıtlarını, görevleri ve araç çağrılarını, geri bildirimleri, Gemini ile ziyaret ettiğiniz web sitelerinden alınan bilgileri, ürün kullanım verilerini, cihazınızın yaklaşık konumunu, IP adresini ve Google Hesabınızdaki ev ya da iş adreslerini içerir. Gemini'a bağladığınız uygulamalardaki veriler de dahil edilebilir.</translation>
 <translation id="4502423230170890588">Bu cihazdan kaldır</translation>
 <translation id="4508486880075514067">Tam ekrana genişlet</translation>
 <translation id="4508750114462689118">Oturum açma tanıtımını kapat</translation>

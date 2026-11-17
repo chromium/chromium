@@ -18,7 +18,7 @@
 <translation id="1052916631016577720">Escaneig d'elements</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1056898198331236512">Advertiment</translation>
-<translation id="1058009965971887428">Envia suggeriments</translation>
+<translation id="1058009965971887428">Envia comentaris</translation>
 <translation id="1059120031266247284">Compartit amb tu</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> amb un botó de supressió</translation>
 <translation id="1062407476771304334">Substitueix</translation>
@@ -574,7 +574,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
 <translation id="2726420622004325180">El telèfon ha de tenir dades mòbils per proporcionar un punt d'accés</translation>
 <translation id="2727175239389218057">Respon</translation>
-<translation id="2727744317940422214">S'ha produït un error. Envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />. No s'ha pogut netejar, és possible que ho hagis de fer manualment.</translation>
+<translation id="2727744317940422214">S'ha produït un error. Envia comentaris amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />. No s'ha pogut netejar, és possible que ho hagis de fer manualment.</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
 <translation id="2741713322780029189">Obre el terminal de recuperació</translation>
 <translation id="274290345632688601">S'estan restaurant els fitxers i les aplicacions de Linux</translation>
@@ -663,7 +663,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2968761508099987738">La teva ubicació actual no s'admet en aquest moment.</translation>
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
 <translation id="2980700224869191055">Emoticona de <ph name="EMOTICON_NAME" /></translation>
-<translation id="2981033191524548279">S'ha produït un error. Envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />. És possible que això es corregeixi reiniciant i tornant-ho a provar.</translation>
+<translation id="2981033191524548279">S'ha produït un error. Envia comentaris amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />. És possible que això es corregeixi reiniciant i tornant-ho a provar.</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
 <translation id="2992272421330787632">Amaga tots els suggeriments de contingut multimèdia</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
@@ -1902,7 +1902,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6507618042428827377">Canvia al següent mètode d'introducció de text que estigui disponible</translation>
 <translation id="6508923215158854599">Assegura't que el Chromebook estigui connectat a la mateixa xarxa Wi-Fi que el dispositiu Chromecast.</translation>
 <translation id="6515727200518652613">S'ha perdut la càmera. S'està provant de tornar a connectar.</translation>
-<translation id="651753338596587143">Hi ha hagut un error en instal·lar les dependències de DLC. Prova de reiniciar i, si el problema continua, envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />.</translation>
+<translation id="651753338596587143">Hi ha hagut un error en instal·lar les dependències de DLC. Prova de reiniciar i, si el problema continua, envia comentaris amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selecciona la finestra que vols capturar</translation>
 <translation id="652139407789908527">Durant l'actualització, la pantalla es quedarà en blanc més temps del que és habitual (fins a un minut). No premis el botó d'engegada fins que no acabi.</translation>
 <translation id="65320610082834431">Emojis</translation>
@@ -2556,7 +2556,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> de l'<ph name="KEY_ONE" /> al <ph name="KEY_TWO" /></translation>
 <translation id="8429547770382807369">Desa el grup per a més tard</translation>
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
-<translation id="8437311513256731931">Obre l'eina de suggeriments</translation>
+<translation id="8437311513256731931">Obre l'eina de comentaris</translation>
 <translation id="8440630305826533614">Aplicacions per a Linux</translation>
 <translation id="8443879455002739353">"Copia"</translation>
 <translation id="8444246603146515890">L'escriptori <ph name="DESK_TITILE" /> està activat</translation>

@@ -1117,7 +1117,6 @@
 <translation id="4488754974567924717">የእርስዎ የይለፍ ቃላት ከተጠለፉ እናሳውቅዎታለን</translation>
 <translation id="4489536976005181779">{count,plural, =1{ገፅ ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክሏል፣ {email}}one{ገፅ ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክሏል፣ {email}}other{ገጾች ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክለዋል፣ {email}}}</translation>
 <translation id="4493604894403585654">እንደ <ph name="USER_EMAIL" /> በመለያ ገብተዋል። ቅንብሮች ውስጥ በማንኛውም ጊዜ መስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
-<translation id="4495251723189610737">ውይይቶችዎ በGemini ታሪክዎ ውስጥ ይቀመጣሉ። ታሪክ የእርስዎን ኦዲዮ፣ የGemini Live ቪድዮዎች እና የማያ ገጽ ማጋራቶች፣ ለGemini የሚያጋሩትን (እንደ ጥያቄዎች፣ <ph name="BEGIN_LINK" />ሰቀላዎች<ph name="END_LINK" /> እና <ph name="BEGIN_LINK" />ማያ ገጾች<ph name="END_LINK" /> ያሉ)፣ የGemini ምላሾች፣ ተግባራት እና የመሣሪያ ጥሪዎች፣ ግብረመልስ፣ በGemini ከሚጎበኟቸው ድር ጣቢያዎች የተገኘ መረጃ፣ የምርት አጠቃቀም ውሂብ፣ የመሣሪያዎ አጠቃላይ አካባቢ፣ የአይፒ አድራሻ እና በGoogle መለያዎ ውስጥ ያሉ የቤት ወይም የሥራ አድራሻዎችን ያካትታል። እንዲሁም ከGemini ጋር ከሚያገናኟቸው መተግበሪያዎች የመጣ ውሂብን ሊያካትት ይችላል።</translation>
 <translation id="4502423230170890588">ከዚህ መሣሪያ አስወግድ</translation>
 <translation id="4508486880075514067">ወደ ሙሉ ማያ ገጽ ዘርጋ</translation>
 <translation id="4508750114462689118">የመግቢያ ማስተዋወቂያን ዝጋ</translation>
