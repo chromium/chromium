@@ -46,6 +46,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -78,6 +79,7 @@
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/cache_type.h"
+#include "net/base/does_url_match_filter.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
@@ -4128,6 +4130,90 @@ std::vector<net::HttpCache::InvalidationFilter> LoadFiltersFromStore(
 }
 
 }  // namespace
+
+TEST_F(NetworkContextTest, LogicalClearHttpCacheDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(net::features::kLogicalClearHttpCache);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Write a persistent invalidation filter targeting stale.example.com to
+  // disk before constructing NetworkContext.
+  base::FilePath invalidation_file =
+      temp_dir.GetPath().AppendASCII("invalidation_filters");
+  net::HttpCache::InvalidationFilter persisted_filter;
+  persisted_filter.begin_time = base::Time();
+  persisted_filter.end_time = base::Time::Max();
+  persisted_filter.filter_type = net::UrlFilterType::kTrueIfMatches;
+  persisted_filter.origins.insert(
+      url::Origin::Create(GURL("https://stale.example.com")));
+  WritePickleFiltersToFile(invalidation_file, {persisted_filter});
+
+  base::HistogramTester histograms;
+
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->file_paths = mojom::NetworkContextFilePaths::New();
+  context_params->http_cache_enabled = true;
+  context_params->file_paths->logical_invalidation_directory =
+      temp_dir.GetPath();
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  net::HttpCache* cache = network_context->url_request_context()
+                              ->http_transaction_factory()
+                              ->GetCache();
+  ASSERT_TRUE(cache);
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
+  ASSERT_TRUE(backend);
+
+  std::string url1 = GetRequestCacheKey("https://stale.example.com/index.html");
+  std::string url2 = GetRequestCacheKey("https://fresh.example.com/index.html");
+  CreateCacheEntry(backend, url1);
+  CreateCacheEntry(backend, url2);
+
+  // Flush the thread pool and main thread sequence to ensure any startup task
+  // that would have been posted has completed.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop run_loop_load;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_load.QuitClosure());
+  run_loop_load.Run();
+
+  // When kLogicalClearHttpCache is disabled, LogicalInvalidationStore is not
+  // initialized, startup persistence histograms are not emitted, and the
+  // persisted filter on disk is ignored.
+  EXPECT_EQ(nullptr, network_context->logical_invalidation_store());
+  EXPECT_EQ(0u, cache->GetInvalidationFilterCountForTesting());
+  EXPECT_EQ(net::OK, OpenEntryError(backend, url1));
+  EXPECT_EQ(net::OK, OpenEntryError(backend, url2));
+  histograms.ExpectTotalCount(
+      "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration", 0);
+  histograms.ExpectTotalCount("Net.HttpCache.LogicalInvalidation.LoadResult",
+                              0);
+  histograms.ExpectTotalCount(
+      "Net.HttpCache.LogicalInvalidation.StartupSaveSkipped", 0);
+
+  // Calling ClearHttpCacheLogically() when the feature is disabled falls
+  // back to physically evicting matching entries and records
+  // ClearHttpCacheMode::kPhysical (0) without adding a logical filter.
+  auto clear_filter = mojom::ClearDataFilter::New();
+  clear_filter->type = mojom::ClearDataFilter::Type::DELETE_MATCHES;
+  clear_filter->origins.push_back(
+      url::Origin::Create(GURL("https://stale.example.com")));
+
+  base::test::TestFuture<void> future;
+  network_context->ClearHttpCacheLogically(base::Time(), base::Time::Max(),
+                                           std::move(clear_filter),
+                                           future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(0u, cache->GetInvalidationFilterCountForTesting());
+  EXPECT_EQ(net::ERR_FAILED, OpenEntryError(backend, url1));
+  EXPECT_EQ(net::OK, OpenEntryError(backend, url2));
+  histograms.ExpectUniqueSample("NetworkService.ClearHttpCacheMode", 0, 1);
+}
 
 TEST_F(NetworkContextTestWithMockTime, LogicalInvalidationStartupPurge) {
   base::HistogramTester histogram_tester;

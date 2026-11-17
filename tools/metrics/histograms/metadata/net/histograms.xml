@@ -4106,7 +4106,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of logical HTTP cache invalidation filters successfully loaded
     from persistent disk storage at startup. Recorded once at NetworkContext
-    startup when initializing the LogicalInvalidationStore.
+    startup when initializing the LogicalInvalidationStore. From M160, this
+    metric is only recorded when net::features::kLogicalClearHttpCache is
+    enabled.
   </summary>
 </histogram>
 
@@ -4118,7 +4120,8 @@ chromium-metrics-reviews@google.com.
     Records the result of loading the disk persistence file for logical HTTP
     cache invalidation filters (e.g. success, file not found, or corrupt).
     Recorded once at NetworkContext startup when initializing the
-    LogicalInvalidationStore.
+    LogicalInvalidationStore. From M160, this metric is only recorded when
+    net::features::kLogicalClearHttpCache is enabled.
   </summary>
 </histogram>
 
@@ -4143,7 +4146,8 @@ chromium-metrics-reviews@google.com.
     The time taken to asynchronously load and deserialize logical HTTP cache
     invalidation filters from persistent disk storage via background thread.
     Recorded once at NetworkContext startup when initializing the
-    LogicalInvalidationStore.
+    LogicalInvalidationStore. From M160, this metric is only recorded when
+    net::features::kLogicalClearHttpCache is enabled.
   </summary>
 </histogram>
 
@@ -4193,10 +4197,11 @@ chromium-metrics-reviews@google.com.
     Whether the save that follows the startup load of the logical HTTP cache
     invalidation filters was skipped because the stored list was already
     current. Recorded once per network context that has a persistence directory,
-    when the initial load completes. A save is only required when a filter was
-    added or removed while that load was still in flight, so this is expected to
-    be overwhelmingly &quot;Skipped&quot;; a low skip rate would mean the
-    startup write is not in fact avoidable.
+    when the initial load completes. From M160, this metric is only recorded
+    when net::features::kLogicalClearHttpCache is enabled. A save is only
+    required when a filter was added or removed while that load was still in
+    flight, so this is expected to be overwhelmingly &quot;Skipped&quot;; a low
+    skip rate would mean the startup write is not in fact avoidable.
   </summary>
 </histogram>
 

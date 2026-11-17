@@ -969,10 +969,10 @@ NetworkContext::NetworkContext(
       cookie_manager_.get());
 
   if (params_->file_paths &&
-      params_->file_paths->logical_invalidation_directory) {
+      params_->file_paths->logical_invalidation_directory &&
+      base::FeatureList::IsEnabled(net::features::kLogicalClearHttpCache)) {
     base::TaskPriority priority =
-        base::FeatureList::IsEnabled(net::features::kLogicalClearHttpCache) &&
-                net::features::kLogicalClearHttpCacheUserVisiblePriority.Get()
+        net::features::kLogicalClearHttpCacheUserVisiblePriority.Get()
             ? base::TaskPriority::USER_VISIBLE
             : base::TaskPriority::BEST_EFFORT;
     scoped_refptr<base::SequencedTaskRunner> file_task_runner =
@@ -1651,10 +1651,12 @@ void NetworkContext::ClearHttpCacheInternal(base::Time start_time,
                                             mojom::ClearDataFilterPtr filter,
                                             ClearHttpCacheMode mode,
                                             base::OnceClosure callback) {
+  if (!base::FeatureList::IsEnabled(net::features::kLogicalClearHttpCache)) {
+    mode = ClearHttpCacheMode::kPhysical;
+  }
   base::UmaHistogramEnumeration("NetworkService.ClearHttpCacheMode", mode);
 
-  if (mode == ClearHttpCacheMode::kLogical &&
-      base::FeatureList::IsEnabled(net::features::kLogicalClearHttpCache)) {
+  if (mode == ClearHttpCacheMode::kLogical) {
     net::HttpCache* cache =
         url_request_context_->http_transaction_factory()->GetCache();
     net::HttpCache::InvalidationFilter filter_for_callback;

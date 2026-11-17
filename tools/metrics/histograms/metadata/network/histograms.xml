@@ -5113,17 +5113,16 @@ chromium-metrics-reviews@google.com.
   <owner>deepakr@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
-    Whether an HTTP cache clearing request asked for physical eviction (entries
+    Whether an HTTP cache clearing request performed physical eviction (entries
     are removed from the disk cache immediately) or logical invalidation (an
     invalidation filter is registered and matching entries are doomed on
     access).
 
     Recorded once per call to NetworkContext::ClearHttpCache() or
-    NetworkContext::ClearHttpCacheLogically(). Note this is recorded before the
-    LogicalClearHttpCache feature state is consulted, so Logical is recorded
-    even when the feature is disabled and the request falls back to a physical
-    clear. This makes the Logical bucket a count of requests that opted in to
-    logical clearing, independent of experiment arm.
+    NetworkContext::ClearHttpCacheLogically(). From M160, when
+    net::features::kLogicalClearHttpCache is disabled, requests to
+    ClearHttpCacheLogically() fall back to a physical clear and record Physical
+    (prior to M160, Logical was recorded before consulting the feature flag).
   </summary>
 </histogram>
 
