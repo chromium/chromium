@@ -182,7 +182,9 @@ AXNode* AXNode::GetUnignoredChildAtIndexCrossingTreeBoundary(
 }
 
 AXNode* AXNode::GetParent() const {
-  CHECK(!tree_->GetTreeUpdateInProgressState(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585935998): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
   return parent_;
 }
 
