@@ -1881,6 +1881,7 @@ config("tot_warnings") {
 config("default_warnings") {
   cflags = []
   cflags_cc = []
+  cflags_objcc = []
   ldflags = []
   configs = []
 
@@ -1982,11 +1983,10 @@ config("default_warnings") {
       ]
     }
 
-    cflags_cc += [
-      # Disables for C++ only
-      "-Wno-invalid-offsetof",  # offsetof on non-standard-layout type
-                                # (crbug.com/40285259)
-    ]
+    # Offsetof on non-standard-layout type (see crbug.com/40285259).
+    # C++ and Objective-C++ only; GCC rejects this flag for C.
+    cflags_cc += [ "-Wno-invalid-offsetof" ]
+    cflags_objcc += [ "-Wno-invalid-offsetof" ]
   }
 
   if (is_clang) {
