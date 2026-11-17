@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks.bar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -19,6 +20,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -31,6 +33,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.ui.base.TestActivity;
@@ -49,6 +52,7 @@ public class BookmarkBarButtonTest {
 
     @Mock private ClickWithMetaStateCallback mClickCallback;
     @Mock private View.OnLongClickListener mLongClickListener;
+    @Mock private Callback<View> mDragStartCallback;
 
     private Activity mActivity;
     private BookmarkBarButton mButton;
@@ -250,5 +254,34 @@ public class BookmarkBarButtonTest {
 
         assertTrue(mButton.performLongClick());
         verify(mLongClickListener).onLongClick(mButton);
+    }
+
+    @Test
+    public void testDragStartCallbackProperty_PressAndMovePastTouchSlop() {
+        PropertyModel model =
+                new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
+                        .with(BookmarkBarButtonProperties.DRAG_START_CALLBACK, mDragStartCallback)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mButton, BookmarkBarButtonViewBinder::bind);
+        int touchSlop = ViewConfiguration.get(mActivity).getScaledTouchSlop();
+
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(downEvent.getX()).thenReturn(10f);
+        mButton.onTouchEvent(downEvent);
+
+        // Moving within touch slop doesn't start a drag.
+        MotionEvent smallMoveEvent = Mockito.mock(MotionEvent.class);
+        when(smallMoveEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_MOVE);
+        when(smallMoveEvent.getX()).thenReturn(10f + touchSlop);
+        mButton.onTouchEvent(smallMoveEvent);
+        verify(mDragStartCallback, never()).onResult(any());
+
+        // Moving past touch slop starts a drag.
+        MotionEvent moveEvent = Mockito.mock(MotionEvent.class);
+        when(moveEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_MOVE);
+        when(moveEvent.getX()).thenReturn(10f + touchSlop + 1);
+        mButton.onTouchEvent(moveEvent);
+        verify(mDragStartCallback).onResult(mButton);
     }
 }

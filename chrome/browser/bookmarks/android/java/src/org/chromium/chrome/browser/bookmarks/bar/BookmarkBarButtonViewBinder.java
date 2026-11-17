@@ -55,6 +55,8 @@ class BookmarkBarButtonViewBinder {
             view.setPointCallback(model.get(BookmarkBarButtonProperties.POINT_CALLBACK));
         } else if (key == BookmarkBarButtonProperties.LONG_CLICK_LISTENER) {
             view.setOnLongClickListener(model.get(BookmarkBarButtonProperties.LONG_CLICK_LISTENER));
+        } else if (key == BookmarkBarButtonProperties.DRAG_START_CALLBACK) {
+            view.setDragStartCallback(model.get(BookmarkBarButtonProperties.DRAG_START_CALLBACK));
         }
     }
 }

@@ -12,6 +12,7 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -83,6 +84,13 @@ class BookmarkBarButtonProperties {
     public static final WritableObjectPropertyKey<View.OnLongClickListener> LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * The callback to notify of bookmark bar button drag start events. The callback is provided the
+     * button being dragged. Null means the item is not draggable.
+     */
+    public static final WritableObjectPropertyKey<@Nullable Callback<View>> DRAG_START_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 CLICK_CALLBACK,
@@ -96,6 +104,7 @@ class BookmarkBarButtonProperties {
                 BOOKMARK_ITEM,
                 BACKGROUND_DRAWABLE_ID,
                 POINT_CALLBACK,
-                LONG_CLICK_LISTENER
+                LONG_CLICK_LISTENER,
+                DRAG_START_CALLBACK
             };
 }

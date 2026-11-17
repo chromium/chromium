@@ -15,6 +15,7 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,10 +44,14 @@ class BookmarkBarButton extends LinearLayout {
     private float mLastEventX;
     private float mLastEventY;
     private TextView mTitle;
+    private final int mTouchSlop;
+    private boolean mCanStartDrag;
+    private float mDragStartX;
 
     private @Nullable ClickWithMetaStateCallback mClickCallback;
     private @Nullable CallbackController mIconCallbackController;
     private @Nullable Callback<Point> mPointCallback;
+    private @Nullable Callback<View> mDragStartCallback;
 
     /**
      * Constructor that is called when inflating a bookmark bar button from XML.
@@ -56,6 +61,7 @@ class BookmarkBarButton extends LinearLayout {
      */
     public BookmarkBarButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     @Override
@@ -93,6 +99,23 @@ class BookmarkBarButton extends LinearLayout {
                 mLastEventButtonState = 0;
             }
             return true;
+        }
+
+        if (mDragStartCallback != null) {
+            if (action == MotionEvent.ACTION_DOWN) {
+                // Middle/right clicks were consumed above, so any remaining press can start a
+                // drag.
+                mCanStartDrag = true;
+                mDragStartX = event.getX();
+            } else if (action == MotionEvent.ACTION_MOVE && mCanStartDrag) {
+                // Use touch slop so a slightly shaky tap or click remains a click.
+                if (Math.abs(event.getX() - mDragStartX) > mTouchSlop) {
+                    mCanStartDrag = false;
+                    mDragStartCallback.onResult(this);
+                }
+            } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                mCanStartDrag = false;
+            }
         }
 
         return super.onTouchEvent(event);
@@ -142,6 +165,23 @@ class BookmarkBarButton extends LinearLayout {
      */
     public void setPointCallback(@Nullable Callback<Point> callback) {
         mPointCallback = callback;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mCanStartDrag = false;
+    }
+
+    /**
+     * Sets the callback to notify when a drag of this button should start, i.e. when a finger or
+     * primary mouse press on the button is followed by a move past touch slop.
+     *
+     * @param callback the callback to notify, provided this button. Null if not draggable.
+     */
+    public void setDragStartCallback(@Nullable Callback<View> callback) {
+        mDragStartCallback = callback;
+        if (callback == null) mCanStartDrag = false;
     }
 
     /**
