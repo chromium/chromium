@@ -3,7 +3,14 @@
 # found in the LICENSE file.
 
 config("cpu_features_config") {
-  cflags = [ "-Wno-unused-function" ]
+  cflags = [
+    "-Wno-unused-function",
+
+    # CpuFeatures_StringView_HasWord() ends with `return false;` after a
+    # `for (;;)` loop. In C23, `false` is a keyword rather than a macro from a
+    # system header, so clang no longer suppresses this warning.
+    "-Wno-unreachable-code-return",
+  ]
   defines = [
     "STACK_LINE_READER_BUFFER_SIZE=1024",
     "HAVE_STRONG_GETAUXVAL",
