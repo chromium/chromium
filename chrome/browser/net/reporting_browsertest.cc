@@ -1001,18 +1001,16 @@ IN_PROC_BROWSER_TEST_P(
   base::ListValue reports = WaitForReportUploads(/*expected_report_count=*/2);
   ASSERT_EQ(reports.size(), 2u);
 
-  for (size_t i = 0; i < 2; ++i) {
-    const base::DictValue& report = reports[i].GetDict();
-    const std::string* type = report.FindString("type");
-    const std::string* url = report.FindString("url");
-    const base::DictValue* body = report.FindDict("body");
+  for (const GURL& expected_url : {iframe1_url, iframe2_url}) {
+    const base::DictValue* report = FindReportByUrl(reports, expected_url);
+    ASSERT_NE(report, nullptr) << "Missing crash report for " << expected_url;
+    const std::string* type = report->FindString("type");
+    const base::DictValue* body = report->FindDict("body");
     ASSERT_NE(body, nullptr);
     const std::string* reason = body->FindString("reason");
 
     ASSERT_NE(type, nullptr);
     EXPECT_EQ(*type, "crash");
-    ASSERT_NE(url, nullptr);
-    EXPECT_EQ(*url, (i == 0 ? iframe1_url : iframe2_url).spec());
     ASSERT_NE(reason, nullptr);
     EXPECT_EQ(*reason, "unresponsive");
   }
