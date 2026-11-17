@@ -42994,6 +42994,62 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="VoiceTyping.ContextMenuInvocation">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <description>
+    Recorded when the user starts a Voice Typing session by clicking &quot;Talk
+    to type&quot; in the right-click context menu.
+  </description>
+</action>
+
+<action name="VoiceTyping.FirstRunExperience.Accepted">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <description>
+    Recorded when the user accepts the Voice Typing First Run Experience (FRE)
+    onboarding dialog.
+  </description>
+</action>
+
+<action name="VoiceTyping.FirstRunExperience.Dismissed">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <description>
+    Recorded when the user dismisses or cancels the Voice Typing First Run
+    Experience (FRE) onboarding dialog (e.g. clicking &quot;No thanks&quot;,
+    cancel, or pressing Esc).
+  </description>
+</action>
+
+<action name="VoiceTyping.HotkeyInvocation">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <description>
+    Recorded when the user starts a Voice Typing session using the keyboard
+    shortcut.
+  </description>
+</action>
+
+<action name="VoiceTyping.Stream.Cancelled">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <description>
+    Recorded when a Voice Typing stream ends before it starts listening
+    (transcribing), e.g. because the user cancelled, there was an error, or
+    focus changed.
+  </description>
+</action>
+
+<action name="VoiceTyping.Stream.Listening">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <description>
+    Recorded when a Voice Typing stream enters the transcribing state, meaning
+    the microphone is live and speech recognition is running.
+  </description>
+</action>
+
 <action name="VR.DOFF">
   <owner>billorr@chromium.org</owner>
   <description>

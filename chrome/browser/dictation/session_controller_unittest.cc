@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -1211,6 +1212,7 @@ TEST_F(DictationSessionControllerTest,
 // recorded.
 TEST_F(DictationSessionControllerTest, RecordsStreamStartLatency) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   auto mock_stream_provider =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
   MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
@@ -1222,12 +1224,15 @@ TEST_F(DictationSessionControllerTest, RecordsStreamStartLatency) {
                                     base::TimeTicks::Now());
   task_environment()->FastForwardBy(base::Milliseconds(350));
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamListeningActionName), 0);
 
   SimulateStreamTranscribing(*stream_provider_ptr);
   ASSERT_EQ(controller_->GetState(), SessionState::kTranscribing);
 
   histogram_tester.ExpectUniqueTimeSample(kStreamStartLatencyHistogramName,
                                           base::Milliseconds(350), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamListeningActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamCancelledActionName), 0);
 }
 
 // Test that the latency is measured from the provided trigger time rather than
@@ -1257,6 +1262,7 @@ TEST_F(DictationSessionControllerTest, StreamStartLatencyUsesTriggerTime) {
 TEST_F(DictationSessionControllerTest,
        RecordsStreamAbandonedBeforeListeningIfEndedBeforeTranscribing) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   auto mock_stream_provider =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
   MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
@@ -1272,6 +1278,8 @@ TEST_F(DictationSessionControllerTest,
 
   histogram_tester.ExpectUniqueTimeSample(
       kStreamAbandonedBeforeListeningHistogramName, base::Seconds(2), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamCancelledActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamListeningActionName), 0);
 
   // A late transcribing update from the now-finalizing provider must not
   // record anything further.
@@ -1280,6 +1288,8 @@ TEST_F(DictationSessionControllerTest,
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
   histogram_tester.ExpectTotalCount(
       kStreamAbandonedBeforeListeningHistogramName, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamListeningActionName), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamCancelledActionName), 1);
 }
 
 // Test that a stream that fails before it starts transcribing is recorded as
@@ -1287,6 +1297,7 @@ TEST_F(DictationSessionControllerTest,
 TEST_F(DictationSessionControllerTest,
        RecordsStreamAbandonedBeforeListeningOnFailure) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   auto mock_stream_provider =
       std::make_unique<testing::NiceMock<MockStreamProvider>>();
   MockStreamProvider* stream_provider_ptr = mock_stream_provider.get();
@@ -1307,6 +1318,8 @@ TEST_F(DictationSessionControllerTest,
   histogram_tester.ExpectUniqueTimeSample(
       kStreamAbandonedBeforeListeningHistogramName, base::Milliseconds(500), 1);
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamCancelledActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamListeningActionName), 0);
 }
 
 // Test that latency is recorded once per stream, using each stream's own start

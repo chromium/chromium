@@ -30,6 +30,21 @@ inline constexpr std::string_view kStreamStartLatencyHistogramName =
 inline constexpr std::string_view kStreamAbandonedBeforeListeningHistogramName =
     "VoiceTyping.StreamAbandonedBeforeListening";
 
+// User action names exposed for testing; base::UserMetricsAction requires
+// string literals.
+inline constexpr std::string_view kContextMenuInvocationActionName =
+    "VoiceTyping.ContextMenuInvocation";
+inline constexpr std::string_view kHotkeyInvocationActionName =
+    "VoiceTyping.HotkeyInvocation";
+inline constexpr std::string_view kFirstRunExperienceAcceptedActionName =
+    "VoiceTyping.FirstRunExperience.Accepted";
+inline constexpr std::string_view kFirstRunExperienceDismissedActionName =
+    "VoiceTyping.FirstRunExperience.Dismissed";
+inline constexpr std::string_view kStreamListeningActionName =
+    "VoiceTyping.Stream.Listening";
+inline constexpr std::string_view kStreamCancelledActionName =
+    "VoiceTyping.Stream.Cancelled";
+
 // Exit status of the Dictation First Run Experience (FRE) dialog.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

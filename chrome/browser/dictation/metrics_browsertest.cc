@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/dictation/dictation_bubble_ui.h"
 #include "chrome/common/extensions/api/dictation_private.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
@@ -44,6 +47,7 @@ class DictationMetricsBrowserTest : public DictationInteractiveBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordMetricsOnSessionStart) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
                                blink::DOMNodeIdType(123));
@@ -54,6 +58,31 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
   histogram_tester.ExpectUniqueSample(
       kStreamStartTriggerHistogramName,
       DictationStreamStartTrigger::kSessionStart, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kContextMenuInvocationActionName),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kHotkeyInvocationActionName), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordMetricsOnHotkeySessionStart) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
+  ASSERT_NE(tab, nullptr);
+  dictation_service().StartSessionForTesting(
+      *tab, DefaultInPageTarget(web_contents()),
+      DictationSessionEntryPoint::kHotkeyToggle);
+
+  histogram_tester.ExpectUniqueSample(kSessionStartSourceHistogramName,
+                                      DictationSessionEntryPoint::kHotkeyToggle,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kStreamStartTriggerHistogramName,
+      DictationStreamStartTrigger::kSessionStart, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kHotkeyInvocationActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kContextMenuInvocationActionName),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
@@ -194,12 +223,14 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordStreamStartLatencyOnTranscribing) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
                                blink::DOMNodeIdType(123));
   ExtensionWaitForStreamStart(profile(),
                               attached_stream()->stream_id_for_testing());
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamListeningActionName), 0);
 
   ExtensionSendStreamStateUpdate(
       profile(), attached_stream()->stream_id_for_testing(),
@@ -207,6 +238,8 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
   WaitForSessionState(SessionState::kTranscribing);
 
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamListeningActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamCancelledActionName), 0);
 
   // The recorded latency should be non-zero.
   std::vector<base::Bucket> buckets =
@@ -218,6 +251,7 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                        RecordStreamAbandonedBeforeListening) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
                                blink::DOMNodeIdType(123));
@@ -227,6 +261,8 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
   histogram_tester.ExpectTotalCount(
       kStreamAbandonedBeforeListeningHistogramName, 1);
   histogram_tester.ExpectTotalCount(kStreamStartLatencyHistogramName, 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamCancelledActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamListeningActionName), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
