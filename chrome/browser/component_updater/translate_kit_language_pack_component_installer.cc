@@ -76,6 +76,14 @@ bool TranslateKitLanguagePackComponentInstallerPolicy::
   return false;
 }
 
+bool TranslateKitLanguagePackComponentInstallerPolicy::AllowCachedCopies()
+    const {
+  // Language packs update rarely and quantized model weights diff poorly, so
+  // keeping ~58 MB cached CRX copies for differential updates costs disk space
+  // per installed pair for little download savings.
+  return false;
+}
+
 update_client::CrxInstaller::Result
 TranslateKitLanguagePackComponentInstallerPolicy::OnCustomInstall(
     const base::DictValue& manifest,

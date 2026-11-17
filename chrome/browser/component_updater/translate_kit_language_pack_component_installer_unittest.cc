@@ -125,6 +125,13 @@ TEST_F(TranslateKitLanguagePackComponentTest, ComponentRegistration) {
   on_ready_loop.Run();
 }
 
+TEST_F(TranslateKitLanguagePackComponentTest, AllowCachedCopies) {
+  TranslateKitLanguagePackComponentInstallerPolicy policy(
+      pref_service(), on_device_translation::LanguagePackKey::kEn_Es,
+      base::DoNothing());
+  EXPECT_FALSE(policy.AllowCachedCopies());
+}
+
 TEST_F(TranslateKitLanguagePackComponentTest,
        ComponentRegistrationAlreadyRegistered) {
   auto service = std::make_unique<MockComponentUpdateService>();
