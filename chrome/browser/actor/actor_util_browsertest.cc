@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest,
       glic::mojom::InvocationSource::kOsButton);
   options.fre_completion_wait_mode = glic::FreCompletionWaitMode::kNever;
   base::WeakPtr<glic::GlicInstance> instance =
-      glic_keyed_service()->Invoke(std::move(options));
+      glic_keyed_service()->Invoke(std::move(options)).instance();
   ASSERT_TRUE(instance);
 
   TaskId task_id = actor_keyed_service()->CreateTask(
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest,
       glic::mojom::InvocationSource::kOsButton);
   options.fre_completion_wait_mode = glic::FreCompletionWaitMode::kNever;
   base::WeakPtr<glic::GlicInstance> instance =
-      glic_keyed_service()->Invoke(std::move(options));
+      glic_keyed_service()->Invoke(std::move(options)).instance();
   ASSERT_TRUE(instance);
 
   TaskId task_id = actor_keyed_service()->CreateTask(
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest, GetGlicInstanceForTaskByTaskId) {
       glic::mojom::InvocationSource::kOsButton);
   options.fre_completion_wait_mode = glic::FreCompletionWaitMode::kNever;
   base::WeakPtr<glic::GlicInstance> instance =
-      glic_keyed_service()->Invoke(std::move(options));
+      glic_keyed_service()->Invoke(std::move(options)).instance();
   ASSERT_TRUE(instance);
   ASSERT_TRUE(instance->GetActorTaskManager());
 

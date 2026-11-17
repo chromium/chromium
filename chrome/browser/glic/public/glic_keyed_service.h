@@ -145,16 +145,16 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // Invokes Glic with the given options and automatically submits the prompt.
   // Access is restricted to authorized callers via InvokeWithAutoSubmitPasskey.
   // Virtual for testing.
-  virtual base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
+  virtual GlicInvocationHandle InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options);
 
-  virtual base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
+  virtual GlicInvocationHandle InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options);
 
-  virtual base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options);
+  virtual GlicInvocationHandle Invoke(GlicInvokeOptions options);
 
   // Close the active embedder and clear contents for an instance associated
   // with this render frame host.

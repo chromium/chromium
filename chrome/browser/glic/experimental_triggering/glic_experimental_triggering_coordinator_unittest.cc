@@ -3134,8 +3134,10 @@ struct SessionEndTestCase {
   // For End::kUpdate.
   mojom::ExperimentalTriggeringUpdateType type =
       mojom::ExperimentalTriggeringUpdateType::kUnknown;
+  bool create_actor_task = true;
   TaskUpdate::State expected_state;
   bool expect_cancel_task;
+  bool expect_cancel_invocation = true;
   GlicExperimentalTriggeringHandlerDestroyReason expected_destroy_reason;
 };
 
@@ -3147,15 +3149,37 @@ TEST_P(GlicExperimentalTriggeringCoordinatorSessionEndTest,
        StopsOwnedWorkAndEndsSession) {
   const SessionEndTestCase& test_case = GetParam();
   base::HistogramTester destroy_tester;
-  // An invocation is in progress on the instance. GlicInstance can't tell
-  // whether it is this handler's, so it is left alone.
+  // Instance-wide `CancelInvoke()` must stay unused so an unrelated invocation
+  // on the shared `GlicInstance` is left alone; only this handler's
+  // `GlicInvocationHandle` is cancelled when needed.
   ON_CALL(mock_glic_instance_, IsInvoking())
       .WillByDefault(testing::Return(true));
   EXPECT_CALL(mock_glic_instance_, CancelInvoke()).Times(0);
   EXPECT_CALL(mock_glic_instance_, CancelTask())
       .Times(test_case.expect_cancel_task ? 1 : 0);
+  int invocation_cancel_count = 0;
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([this, &invocation_cancel_count](
+                    InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        if (auto_submit_options.show_panel && options.on_panel_opened) {
+          std::move(options.on_panel_opened).Run();
+        }
+        if (options.on_client_connected) {
+          std::move(options.on_client_connected)
+              .Run(mock_glic_instance_.GetWeakPtr());
+        }
+        return GlicInvocationHandle(
+            mock_glic_instance_.GetWeakPtr(),
+            base::BindRepeating([](int* count) { ++(*count); },
+                                &invocation_cancel_count));
+      });
   StartSession();
-  CreateActorTask();
+  if (test_case.create_actor_task) {
+    CreateActorTask();
+  }
 
   switch (test_case.end) {
     case SessionEndTestCase::End::kUpdate:
@@ -3173,6 +3197,8 @@ TEST_P(GlicExperimentalTriggeringCoordinatorSessionEndTest,
       break;
   }
   ExpectNextUpdate(test_case.expected_state);
+  const int expected_cancel_count = test_case.expect_cancel_invocation ? 1 : 0;
+  EXPECT_EQ(invocation_cancel_count, expected_cancel_count);
   if (test_case.end != SessionEndTestCase::End::kDestroy) {
     ExpectSessionEnded();
     ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -3180,20 +3206,38 @@ TEST_P(GlicExperimentalTriggeringCoordinatorSessionEndTest,
     }));
   }
   ExpectHandlerDestroyed(destroy_tester, test_case.expected_destroy_reason);
+  EXPECT_EQ(invocation_cancel_count, expected_cancel_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     GlicExperimentalTriggeringCoordinatorSessionEndTest,
     testing::Values(
-        // After COMPLETE the web client stops its actor task itself.
+        // After COMPLETE with an actor task, the web client stops its actor
+        // task itself, which finishes `WaitForActuationTask` as `kSuccess`.
         SessionEndTestCase{
             .test_name = "TerminalCompletion",
             .end = SessionEndTestCase::End::kUpdate,
             .type =
                 mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion,
+            .create_actor_task = true,
             .expected_state = TaskUpdate::State::kComplete,
             .expect_cancel_task = false,
+            .expect_cancel_invocation = false,
+            .expected_destroy_reason =
+                GlicExperimentalTriggeringHandlerDestroyReason::
+                    kSessionComplete},
+        // On a text-only COMPLETE where no actor task was created, cancelling
+        // the handle unblocks `WaitForActuationTask` immediately.
+        SessionEndTestCase{
+            .test_name = "TerminalCompletionWithoutActorTask",
+            .end = SessionEndTestCase::End::kUpdate,
+            .type =
+                mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion,
+            .create_actor_task = false,
+            .expected_state = TaskUpdate::State::kComplete,
+            .expect_cancel_task = false,
+            .expect_cancel_invocation = true,
             .expected_destroy_reason =
                 GlicExperimentalTriggeringHandlerDestroyReason::
                     kSessionComplete},
@@ -3768,20 +3812,102 @@ INSTANTIATE_TEST_SUITE_P(,
                                              : "MissingPayload";
                          });
 
-// Known gap: before an actor task exists, there is nothing that Chrome can
-// cancel, so the invocation keeps running after the session ends
-// (b/582416328).
+// Before an actor task exists, a synchronous terminal failure cancels this
+// handler's in-flight `GlicInvocationHandle` without calling `CancelTask()` or
+// instance-wide `CancelInvoke()` (b/582416328).
 TEST_F(GlicExperimentalTriggeringCoordinatorSyncTerminalTest,
-       FailureBeforeActorTask_EndsSessionWithoutCancellingTask) {
+       FailureBeforeActorTask_CancelsInvocationWithoutCancellingTask) {
   EXPECT_CALL(mock_glic_instance_, CancelTask()).Times(0);
+  EXPECT_CALL(mock_glic_instance_, CancelInvoke()).Times(0);
+  int invocation_cancel_count = 0;
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([this, &invocation_cancel_count](
+                    InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        if (options.on_client_connected) {
+          std::move(options.on_client_connected)
+              .Run(mock_glic_instance_.GetWeakPtr());
+        }
+        return GlicInvocationHandle(
+            mock_glic_instance_.GetWeakPtr(),
+            base::BindRepeating([](int* count) { ++(*count); },
+                                &invocation_cancel_count));
+      });
   StartSession();
+  EXPECT_EQ(invocation_cancel_count, 0);
 
   ExpectFailedTaskUpdate(
       SendRequestWithCallback(CreateRequest(RequestPayloadNotSet{}),
                               updates_.GetRepeatingCallback()),
       "Received GlicExperimentalTriggering message with no actionable "
       "request.");
+  EXPECT_EQ(invocation_cancel_count, 1);
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
+       CompletedInvocationIsNotCancelledWhenSessionEnds) {
+  EXPECT_CALL(mock_glic_instance_, CancelInvoke()).Times(0);
+  EXPECT_CALL(mock_glic_instance_, CancelTask()).Times(1);
+  base::OnceClosure on_success;
+  int invocation_cancel_count = 0;
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([this, &on_success, &invocation_cancel_count](
+                    InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        if (options.on_client_connected) {
+          std::move(options.on_client_connected)
+              .Run(mock_glic_instance_.GetWeakPtr());
+        }
+        on_success = std::move(options.on_success);
+        return GlicInvocationHandle(
+            mock_glic_instance_.GetWeakPtr(),
+            base::BindRepeating([](int* count) { ++(*count); },
+                                &invocation_cancel_count));
+      });
+  StartSession();
+  CreateActorTask();
+  ASSERT_TRUE(on_success);
+  std::move(on_success).Run();
+
+  SendWebClientUpdate(
+      mojom::ExperimentalTriggeringUpdateType::kTerminalStopped);
+  ExpectNextUpdate(TaskUpdate::State::kStopped);
+  ExpectSessionEnded();
+  EXPECT_EQ(invocation_cancel_count, 0);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
+       RegistrationFailureDuringInvoke_CancelsReturnedHandle) {
+  ON_CALL(mock_glic_instance_, GetExperimentalTriggeringManager())
+      .WillByDefault(testing::Return(nullptr));
+  EXPECT_CALL(mock_glic_instance_, CancelInvoke()).Times(0);
+  EXPECT_CALL(mock_glic_instance_, CancelTask()).Times(0);
+  int invocation_cancel_count = 0;
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([this, &invocation_cancel_count](
+                    InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        if (options.on_client_connected) {
+          std::move(options.on_client_connected)
+              .Run(mock_glic_instance_.GetWeakPtr());
+        }
+        return GlicInvocationHandle(
+            mock_glic_instance_.GetWeakPtr(),
+            base::BindRepeating([](int* count) { ++(*count); },
+                                &invocation_cancel_count));
+      });
+
+  StartSession();
+  ExpectNextUpdate(TaskUpdate::State::kFailed);
+  EXPECT_EQ(invocation_cancel_count, 1);
+  ExpectSessionEnded();
 }
 
 // A duplicate start while the session runs is dropped with an empty reply,

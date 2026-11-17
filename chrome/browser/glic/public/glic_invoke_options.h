@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_INVOKE_OPTIONS_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_INVOKE_OPTIONS_H_
 
+#include <concepts>
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -497,6 +500,57 @@ struct GlicInvokeWithAutoSubmitOptions {
   // Whether or not to show the panel on invocation. Doesn't prevent the panel
   // from being shown later and has no impact if the panel is already showing.
   bool show_panel = true;
+};
+
+// Handle returned by `Invoke()` and `InvokeWithAutoSubmit()` representing an
+// accepted invocation and allowing the caller to cancel only that specific
+// invocation while it remains in flight.
+class GlicInvocationHandle {
+ public:
+  GlicInvocationHandle();
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  GlicInvocationHandle(std::nullptr_t);
+  // Implicit conversion from `base::WeakPtr<GlicInstance>` (or derived types
+  // such as `MockGlicInstance`) keeps test mocks returning
+  // `mock_instance.GetWeakPtr()` ergonomic without cancel plumbing.
+  // TODO(b/582416328): Replace implicit `WeakPtr` conversion with an explicit
+  // `ForTesting` factory once external mock callers are updated.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  GlicInvocationHandle(base::WeakPtr<GlicInstance> instance);
+  template <typename T>
+    requires(!std::same_as<T, GlicInstance> &&
+             std::convertible_to<T*, GlicInstance*>)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  GlicInvocationHandle(base::WeakPtr<T> instance)
+      : GlicInvocationHandle(base::WeakPtr<GlicInstance>(std::move(instance))) {
+  }
+  GlicInvocationHandle(base::WeakPtr<GlicInstance> instance,
+                       base::RepeatingClosure cancel_closure);
+  // Copyable so gMock `testing::Return(mock_instance.GetWeakPtr())` satisfies
+  // `WillByDefault()` / `WillRepeatedly()`. `Cancel()` consumes this handle's
+  // closure and synchronously destroys the underlying `GlicInvokeHandler`,
+  // making any subsequent `Cancel()` on copies a no-op as well.
+  GlicInvocationHandle(const GlicInvocationHandle&);
+  GlicInvocationHandle& operator=(const GlicInvocationHandle&);
+  GlicInvocationHandle(GlicInvocationHandle&&) noexcept;
+  GlicInvocationHandle& operator=(GlicInvocationHandle&&) noexcept;
+  ~GlicInvocationHandle();
+
+  // Returns true if the invocation was routed to a live instance; it may
+  // already have finished.
+  explicit operator bool() const { return static_cast<bool>(instance_); }
+
+  base::WeakPtr<GlicInstance> instance() const { return instance_; }
+
+  // Cancels this specific invocation with `GlicInvokeError::kCancelled` if it
+  // is still in flight; no-op once the invocation has finished, been
+  // superseded, or already been cancelled. Destroying the handle without
+  // calling `Cancel()` leaves an in-flight invocation running.
+  void Cancel();
+
+ private:
+  base::WeakPtr<GlicInstance> instance_;
+  base::RepeatingClosure cancel_closure_;
 };
 
 }  // namespace glic

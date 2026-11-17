@@ -112,6 +112,10 @@ class GlicInvokeHandler {
   // The metrics invocation ID for this invocation.
   uint64_t invocation_id() const { return metrics_->GetInvocationId(); }
 
+  base::WeakPtr<GlicInvokeHandler> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // Describes the actor surface in `options_.target.actuation_target`.
   struct ActuationSurface {

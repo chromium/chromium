@@ -1004,11 +1004,14 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
     if (mojo_options->show_panel.has_value()) {
       auto_submit_options.show_panel = mojo_options->show_panel.value();
     }
-    active_test_instance_ = service->InvokeWithAutoSubmit(
-        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options),
-        std::move(auto_submit_options));
+    active_test_instance_ =
+        service
+            ->InvokeWithAutoSubmit(
+                InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+                std::move(options), std::move(auto_submit_options))
+            .instance();
   } else {
-    active_test_instance_ = service->Invoke(std::move(options));
+    active_test_instance_ = service->Invoke(std::move(options)).instance();
   }
 }
 

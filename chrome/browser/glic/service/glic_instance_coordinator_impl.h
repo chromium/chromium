@@ -181,11 +181,11 @@ class GlicInstanceCoordinatorImpl
   // embedders (side panels across all windows/tabs and floating panels), and
   // hibernates all instances when entering locked fullscreen mode.
   void CloseAllForLockedFullscreen();
-  base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options) override;
-  base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
+  GlicInvocationHandle Invoke(GlicInvokeOptions options) override;
+  GlicInvocationHandle InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options);
-  base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
+  GlicInvocationHandle InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options);
@@ -240,7 +240,7 @@ class GlicInstanceCoordinatorImpl
   // recorded on the invocation's structured metrics, and the toggle path
   // skips the check for a conflicting in-progress client invoke.
   // `cui_tracker`, if any, is resolved with the invocation's outcome.
-  base::WeakPtr<GlicInstanceImpl> InvokeInternal(
+  GlicInvocationHandle InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options,

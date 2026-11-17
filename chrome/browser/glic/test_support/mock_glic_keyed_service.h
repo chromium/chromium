@@ -27,10 +27,7 @@ class MockGlicKeyedService : public GlicKeyedService {
                        actor::ActorKeyedService* actor_keyed_service);
   ~MockGlicKeyedService() override;
 
-  MOCK_METHOD(base::WeakPtr<GlicInstance>,
-              Invoke,
-              (GlicInvokeOptions),
-              (override));
+  MOCK_METHOD(GlicInvocationHandle, Invoke, (GlicInvokeOptions), (override));
   MOCK_METHOD(void,
               ShowUI,
               (BrowserWindowInterface*, mojom::InvocationSource),
@@ -47,11 +44,11 @@ class MockGlicKeyedService : public GlicKeyedService {
               IsPanelShowingForBrowser,
               (const BrowserWindowInterface&),
               (const, override));
-  MOCK_METHOD(base::WeakPtr<GlicInstance>,
+  MOCK_METHOD(GlicInvocationHandle,
               InvokeWithAutoSubmit,
               (InvokeWithAutoSubmitPasskey, GlicInvokeOptions),
               (override));
-  MOCK_METHOD(base::WeakPtr<GlicInstance>,
+  MOCK_METHOD(GlicInvocationHandle,
               InvokeWithAutoSubmit,
               (InvokeWithAutoSubmitPasskey,
                GlicInvokeOptions,

@@ -711,14 +711,14 @@ void GlicInstanceCoordinatorImpl::RemoveAllInstances(
   }
 }
 
-base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::Invoke(
+GlicInvocationHandle GlicInstanceCoordinatorImpl::Invoke(
     GlicInvokeOptions options) {
   return InvokeInternal(std::nullopt, std::move(options),
                         GlicInvokeWithAutoSubmitOptions(),
                         GlicInvokeEntryPath::kInvoke);
 }
 
-base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
+GlicInvocationHandle GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
     GlicInvokeOptions options) {
   return InvokeInternal(auto_submit_passkey, std::move(options),
@@ -726,7 +726,7 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
                         GlicInvokeEntryPath::kInvokeWithAutoSubmit);
 }
 
-base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
+GlicInvocationHandle GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options) {
@@ -735,7 +735,7 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
                         GlicInvokeEntryPath::kInvokeWithAutoSubmit);
 }
 
-base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
+GlicInvocationHandle GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options,
@@ -982,10 +982,15 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
                      base::Unretained(this)));
   GlicInvokeHandler* handler_ptr = handler.get();
+  base::WeakPtr<GlicInstance> weak_instance = instance->GetWeakPtr();
+  base::RepeatingClosure cancel_closure =
+      base::BindRepeating(&GlicInvokeHandler::Cancel, handler_ptr->GetWeakPtr(),
+                          GlicInvokeError::kCancelled);
   invoke_handlers_.emplace(instance, std::move(handler));
   handler_ptr->Invoke();
 
-  return instance->GetWeakPtr();
+  return GlicInvocationHandle(std::move(weak_instance),
+                              std::move(cancel_closure));
 }
 
 GlicInvokeHandler* GlicInstanceCoordinatorImpl::FindClientInvokeHandler(
@@ -1319,13 +1324,14 @@ void GlicInstanceCoordinatorImpl::InvokeAndLogToggle(
   if (ShouldUseTrustFirstInlineFre(profile_)) {
     invoke_options.fre_override = mojom::FreOverride::kTrustFirstInline;
   }
-  auto weak_instance = InvokeInternal(std::nullopt, std::move(invoke_options),
-                                      GlicInvokeWithAutoSubmitOptions(),
-                                      GlicInvokeEntryPath::kToggle,
-                                      std::move(invocation_tracker));
-  if (weak_instance) {
-    weak_instance->instance_metrics().OnToggle(source, key,
-                                               /*is_showing=*/false);
+  GlicInvocationHandle handle = InvokeInternal(
+      std::nullopt, std::move(invoke_options),
+      GlicInvokeWithAutoSubmitOptions(), GlicInvokeEntryPath::kToggle,
+      std::move(invocation_tracker));
+  if (auto* instance =
+          static_cast<GlicInstanceImpl*>(handle.instance().get())) {
+    instance->instance_metrics().OnToggle(source, key,
+                                          /*is_showing=*/false);
   }
 }
 

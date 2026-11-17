@@ -2211,8 +2211,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   GlicInvokeWithAutoSubmitOptions auto_submit_options;
   auto_submit_options.show_panel = false;
 
-  auto instance_wp = coordinator().InvokeWithAutoSubmit(
-      GetPassKey(), std::move(options), std::move(auto_submit_options));
+  auto instance_wp = coordinator()
+                         .InvokeWithAutoSubmit(GetPassKey(), std::move(options),
+                                               std::move(auto_submit_options))
+                         .instance();
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kCancelled);
 

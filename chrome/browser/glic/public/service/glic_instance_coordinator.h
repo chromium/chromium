@@ -90,7 +90,7 @@ class GlicInstanceCoordinator {
       base::span<const tabs::TabHandle> tab_handles,
       GlicUnpinTrigger trigger) = 0;
 
-  virtual base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options) = 0;
+  virtual GlicInvocationHandle Invoke(GlicInvokeOptions options) = 0;
 
   // Show, summon, or activate the panel if needed.
   virtual void Show(BrowserWindowInterface* browser,

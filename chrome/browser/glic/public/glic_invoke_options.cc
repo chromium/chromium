@@ -4,7 +4,9 @@
 
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
+#include <cstddef>
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -164,6 +166,31 @@ GlicInvokeWithAutoSubmitOptions::GlicInvokeWithAutoSubmitOptions(
     GlicInvokeWithAutoSubmitOptions&&) = default;
 GlicInvokeWithAutoSubmitOptions& GlicInvokeWithAutoSubmitOptions::operator=(
     GlicInvokeWithAutoSubmitOptions&&) = default;
+
+GlicInvocationHandle::GlicInvocationHandle() = default;
+GlicInvocationHandle::GlicInvocationHandle(std::nullptr_t) {}
+GlicInvocationHandle::GlicInvocationHandle(base::WeakPtr<GlicInstance> instance)
+    : instance_(std::move(instance)) {}
+GlicInvocationHandle::GlicInvocationHandle(
+    base::WeakPtr<GlicInstance> instance,
+    base::RepeatingClosure cancel_closure)
+    : instance_(std::move(instance)),
+      cancel_closure_(std::move(cancel_closure)) {}
+GlicInvocationHandle::GlicInvocationHandle(const GlicInvocationHandle&) =
+    default;
+GlicInvocationHandle& GlicInvocationHandle::operator=(
+    const GlicInvocationHandle&) = default;
+GlicInvocationHandle::GlicInvocationHandle(GlicInvocationHandle&&) noexcept =
+    default;
+GlicInvocationHandle& GlicInvocationHandle::operator=(
+    GlicInvocationHandle&&) noexcept = default;
+GlicInvocationHandle::~GlicInvocationHandle() = default;
+
+void GlicInvocationHandle::Cancel() {
+  if (cancel_closure_) {
+    std::move(cancel_closure_).Run();
+  }
+}
 
 // LINT.IfChange(GlicInvokeErrorToString)
 std::string_view GlicInvokeErrorToString(GlicInvokeError error) {

@@ -249,9 +249,12 @@ void GlicPasswordChangeActuator::Start() {
                      weak_ptr_factory_.GetWeakPtr());
   glic::GlicInvokeWithAutoSubmitOptions auto_submit_options;
   auto_submit_options.show_panel = false;
-  glic_instance_ = glic_service->InvokeWithAutoSubmit(
-      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-      std::move(options), std::move(auto_submit_options));
+  glic_instance_ =
+      glic_service
+          ->InvokeWithAutoSubmit(
+              glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+              std::move(options), std::move(auto_submit_options))
+          .instance();
 
   actuation_web_contents_ = new_contents->GetWeakPtr();
   if (auto logger = GetLoggerIfAvailable(originator_.get())) {

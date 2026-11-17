@@ -232,7 +232,8 @@ void GlicShareImageHandler::OnReceivedImage(
       &GlicShareImageHandler::OnInvokeError, weak_ptr_factory_.GetWeakPtr());
   invoke_options.on_success = base::BindOnce(
       &GlicShareImageHandler::OnInvokeSuccess, weak_ptr_factory_.GetWeakPtr());
-  current_invocation_instance_ = service_->Invoke(std::move(invoke_options));
+  current_invocation_instance_ =
+      service_->Invoke(std::move(invoke_options)).instance();
   StopObservingNavigation();
 }
 

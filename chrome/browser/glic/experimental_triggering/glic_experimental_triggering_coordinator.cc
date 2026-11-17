@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -483,7 +483,7 @@ class ExperimentalTriggeringUpdatesHandler
         .has_instance = static_cast<bool>(instance_),
         .has_actions_runner = static_cast<bool>(actions_runner_),
         .awaiting_opt_in = awaiting_opt_in_ || IsWaitingForBackgroundOptIn(),
-        .pending_invoke_count = pending_invoke_ids_.size(),
+        .pending_invoke_count = pending_invocations_.size(),
         .is_actuation_started = is_actuation_started_,
         .terminal_update_sent = terminal_update_sent_,
     };
@@ -504,6 +504,7 @@ class ExperimentalTriggeringUpdatesHandler
                           kDestroyedBeforeCompletion);
       }
     }
+    CancelPendingInvocations();
     metric_reporter_.RecordEnumeration(
         "ExperimentalTriggering.UpdatesHandlerDestroyed", destroy_reason);
     LogGlicExperimentalTriggeringHandlerDestroyed(journal_.get(), context_id_,
@@ -612,7 +613,7 @@ class ExperimentalTriggeringUpdatesHandler
   // now". A terminal update ends the session (see HandleTerminalUpdate()).
   bool HasLiveWork() const {
     return instance_ || actions_runner_ || awaiting_opt_in_ ||
-           IsWaitingForBackgroundOptIn() || !pending_invoke_ids_.empty();
+           IsWaitingForBackgroundOptIn() || !pending_invocations_.empty();
   }
 
   base::WeakPtr<ExperimentalTriggeringUpdatesHandler> GetWeakPtr() {
@@ -962,14 +963,14 @@ class ExperimentalTriggeringUpdatesHandler
   // own context id, so such a request is a duplicate. A Continue is valid while
   // a Glic instance exists (after a YIELD), so only a running action execution
   // makes it a duplicate. An invocation that has not produced an instance yet
-  // is in `pending_invoke_ids_`.
+  // is in `pending_invocations_`.
   bool IsDuplicateStart(const ExperimentalTriggeringRequest& request) const {
     if (std::holds_alternative<ContinueActuationRequest>(request.payload)) {
       return !!actions_runner_;
     }
     if (std::holds_alternative<TriggerActuationRequest>(request.payload) ||
         std::holds_alternative<ExecuteActionsRequest>(request.payload)) {
-      return actions_runner_ || instance_ || !pending_invoke_ids_.empty();
+      return actions_runner_ || instance_ || !pending_invocations_.empty();
     }
     return false;
   }
@@ -1142,10 +1143,28 @@ class ExperimentalTriggeringUpdatesHandler
                           WithActuationDiagnosticMetadata(std::move(metadata)));
   }
 
+  // After COMPLETE when an actor task was created, `WaitForActuationTask` stays
+  // running until the web client stops that actor task
+  // (`OnActuatingChanged(false)`), so pending handles must be dropped without
+  // cancelling to let the invocation finish as `kSuccess` rather than
+  // `GlicInvokeError::kCancelled`.
+  bool ShouldLetInvocationsFinish() const {
+    return end_session_reason_ ==
+               GlicExperimentalTriggeringHandlerDestroyReason::
+                   kSessionComplete &&
+           task_created_;
+  }
+
+  void CancelPendingInvocations() {
+    for (auto& [invoke_id, handle] : std::exchange(pending_invocations_, {})) {
+      handle.Cancel();
+    }
+  }
+
   // Stops the work that this handler started and that may still be running:
-  // its direct action execution, and, if `cancel_actor_task`, the actor task
-  // that was created after its trigger. Cancelling the actor task also ends an
-  // invocation that waits for it. Must only be called once the task is over.
+  // its direct action execution, any in-flight Glic invocations, and, if
+  // `cancel_actor_task`, the actor task that was created after its trigger.
+  // Must only be called once the task is over.
   void StopOwnedLiveWork(bool cancel_actor_task) {
     StopWaitingForBackgroundOptIn();
     // The task is over, so it is no longer pending. Don't wait for the posted
@@ -1154,6 +1173,11 @@ class ExperimentalTriggeringUpdatesHandler
     RemovePendingTask();
     actions_timeout_timer_.Stop();
     actions_runner_.reset();
+    if (ShouldLetInvocationsFinish()) {
+      pending_invocations_.clear();
+    } else {
+      CancelPendingInvocations();
+    }
     if (!instance_) {
       return;
     }
@@ -1189,19 +1213,19 @@ class ExperimentalTriggeringUpdatesHandler
     SubscribeForTriggeringUpdates(std::move(instance));
   }
 
-  void OnInvokeSuccess(int invoke_id) { pending_invoke_ids_.erase(invoke_id); }
+  void OnInvokeSuccess(int invoke_id) { pending_invocations_.erase(invoke_id); }
 
   void OnInvokeError(int invoke_id,
                      GlicInvokeError error,
                      std::string diagnostic_info) {
-    pending_invoke_ids_.erase(invoke_id);
+    pending_invocations_.erase(invoke_id);
     if (error == GlicInvokeError::kSuperseded) {
       // Handlers are shared per context id, so a continuation or reconnect
       // request invokes on the same handler that owns the in-flight invocation
       // it supersedes. If this handler has already started a newer invocation
       // (whether still pending or already succeeded), that newer invocation is
       // responsible for this handler, so it must not be torn down.
-      if (!pending_invoke_ids_.empty() || invoke_id + 1 < next_invoke_id_) {
+      if (!pending_invocations_.empty() || invoke_id + 1 < next_invoke_id_) {
         return;
       }
       // Superseded by some other (non experimental triggering) invocation.
@@ -1288,7 +1312,7 @@ class ExperimentalTriggeringUpdatesHandler
         base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnClientConnected,
                        weak_ptr_factory_.GetWeakPtr());
     const int invoke_id = next_invoke_id_++;
-    pending_invoke_ids_.insert(invoke_id);
+    pending_invocations_.emplace(invoke_id, GlicInvocationHandle());
     options.on_success =
         base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeSuccess,
                        weak_ptr_factory_.GetWeakPtr(), invoke_id);
@@ -1321,9 +1345,20 @@ class ExperimentalTriggeringUpdatesHandler
 #endif
 
     auto weak_this = weak_ptr_factory_.GetWeakPtr();
-    auto instance = glic_service->InvokeWithAutoSubmit(
+    GlicInvocationHandle handle = glic_service->InvokeWithAutoSubmit(
         passkey_, std::move(options), std::move(auto_submit_options));
+    base::WeakPtr<GlicInstance> instance = handle.instance();
     if (weak_this) {
+      if (auto it = weak_this->pending_invocations_.find(invoke_id);
+          it != weak_this->pending_invocations_.end()) {
+        it->second = std::move(handle);
+      } else if (weak_this->terminal_update_sent_ &&
+                 !weak_this->ShouldLetInvocationsFinish()) {
+        // The session ended synchronously inside `InvokeWithAutoSubmit()` (for
+        // example when updates registration fails in `OnClientConnected()`),
+        // before `handle` was stored in `pending_invocations_`.
+        handle.Cancel();
+      }
 #if BUILDFLAG(IS_ANDROID)
       const bool has_invoked_instance = static_cast<bool>(instance);
 #endif
@@ -1331,7 +1366,8 @@ class ExperimentalTriggeringUpdatesHandler
         weak_this->instance_ = std::move(instance);
       }
       weak_this->BindInstanceSessionState();
-      bool should_observe_task_creation = !is_continuation && !is_reconnect;
+      bool should_observe_task_creation = !weak_this->terminal_update_sent_ &&
+                                          !is_continuation && !is_reconnect;
 #if BUILDFLAG(IS_ANDROID)
       if (!is_reconnect && is_continuation && is_chrome_in_background &&
           !weak_this->terminal_update_sent_ && weak_this->coordinator_ &&
@@ -1347,6 +1383,8 @@ class ExperimentalTriggeringUpdatesHandler
       if (should_observe_task_creation) {
         weak_this->ObserveActorTaskCreation();
       }
+    } else {
+      handle.Cancel();
     }
   }
 
@@ -2444,9 +2482,9 @@ class ExperimentalTriggeringUpdatesHandler
   base::CallbackListSubscription opt_in_subscription_;
   base::WallClockTimer opt_in_foreground_timeout_timer_;
 #endif
-  // Ids of invocations started by this handler that have neither succeeded nor
-  // failed yet.
-  base::flat_set<int> pending_invoke_ids_;
+  // Handles of invocations started by this handler that have neither succeeded
+  // nor failed yet, keyed by invoke id.
+  base::flat_map<int, GlicInvocationHandle> pending_invocations_;
   int next_invoke_id_ = 0;
   base::TimeTicks task_start_time_;
   base::TimeTicks turn_start_time_;
