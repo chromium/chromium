@@ -34,9 +34,8 @@
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic_mojom_traits.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_api_metrics.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -1159,8 +1158,6 @@ void GlicActorClientSession::GetContextForActorFromTab(
     GetContextForActorFromTabCallback callback) {
   callback = WrapCallbackToLogApiRequestWithLatency(
       GlicHostApiRequestId::kGetContextForActorFromTab, std::move(callback));
-  GlicKeyedService* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(manager_->profile());
   manager_->sharing_manager_->GetContextForActorFromTab(
       tabs::TabHandle(tab_id), *options,
       base::BindOnce(
@@ -1175,8 +1172,9 @@ void GlicActorClientSession::GetContextForActorFromTab(
               std::move(callback).Run(std::move(result.value()));
             }
           },
-          base::BindOnce(&GlicMetrics::LogGetContextForActorFromTabError,
-                         base::Unretained(glic_service->metrics())),
+          base::BindOnce(
+              &GlicInstanceMetrics::LogGetContextForActorFromTabError,
+              instance_metrics().GetWeakPtr()),
           std::move(callback)));
 }
 

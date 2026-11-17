@@ -398,16 +398,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Api.GetImageBytesFromTab.Error"
-    enum="GlicGetContextFromTabError" expires_after="2026-11-29">
-  <owner>linnan@chromium.org</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <summary>
-    Records errors that occurred while attempting to retrieve image bytes from
-    an arbitrary tab.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Api.RequestCounts.{ApiRequestType}"
     enum="GlicRequestEvent" expires_after="2027-04-11">
 <!-- Allowed unsplittable: recorded on every API call across many
@@ -478,28 +468,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     Records a use counter histogram. Each sample represents a single
     RecordUseCounter call the front end has made.
   </summary>
-</histogram>
-
-<histogram name="Glic.Api.{TabContextOperation}.Error.{Mode}"
-    enum="GlicGetContextFromTabError" expires_after="2027-04-11">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>birnie@google.com</owner>
-  <owner>bokan@chromium.org</owner>
-  <summary>
-    Records errors that occurred while attempting to extract tab context using
-    {TabContextOperation} while the web client was in {Mode}.
-  </summary>
-  <token key="TabContextOperation">
-    <variant name="GetContextForActorFromTab"
-        summary="GetContextForActorFromTab (context from an arbitrary tab for
-                 an actor)"/>
-    <variant name="GetContextFromFocusedTab"
-        summary="GetContextFromFocusedTab (context from the focused tab)"/>
-    <variant name="GetContextFromTab"
-        summary="GetContextFromTab (context from an arbitrary tab)"/>
-  </token>
-  <token key="Mode" variants="WebClientMode"/>
 </histogram>
 
 <histogram name="Glic.Auth.CheckAuthBeforeLoadOutcome"
@@ -2056,6 +2024,17 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Api.GetImageBytesFromTab.Error"
+    enum="GlicGetContextFromTabError" expires_after="2026-11-29">
+  <owner>linnan@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    Records errors that occurred while attempting to retrieve image bytes from
+    an arbitrary tab. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Api.NotifyPanelWillOpen"
     enum="GlicWebClientMode" expires_after="2027-04-11">
   <owner>carlosk@chromium.org</owner>
@@ -2089,6 +2068,30 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     actually shown. Recorded after all filtering (URL matching,
     show_interstitial check, and allowlist check) has passed.
   </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Api.{TabContextOperation}.Error.{Mode}"
+    enum="GlicGetContextFromTabError" expires_after="2027-04-11">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <owner>bokan@chromium.org</owner>
+  <summary>
+    Records errors that occurred while attempting to extract tab context using
+    {TabContextOperation} while the web client was in {Mode}. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="TabContextOperation">
+    <variant name="GetContextForActorFromTab"
+        summary="GetContextForActorFromTab (context from an arbitrary tab for
+                 an actor)"/>
+    <variant name="GetContextFromFocusedTab"
+        summary="GetContextFromFocusedTab (context from the focused tab)"/>
+    <variant name="GetContextFromTab"
+        summary="GetContextFromTab (context from an arbitrary tab)"/>
+  </token>
+  <token key="Mode" variants="WebClientMode"/>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 

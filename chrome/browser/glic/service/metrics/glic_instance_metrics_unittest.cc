@@ -4909,4 +4909,174 @@ TEST_F(GlicInstanceMetricsTurnEventsTest, RejectedInputIsNotATurn) {
 
 #endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
+TEST_F(GlicInstanceMetricsTest, LogGetContextFromFocusedTabError_UnknownMode) {
+  metrics_.LogGetContextFromFocusedTabError(
+      GlicGetContextFromTabError::kTabNotFound);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, LogGetContextFromTabError_UnknownMode) {
+  metrics_.LogGetContextFromTabError(GlicGetContextFromTabError::kTabNotFound);
+
+  histogram_tester_.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text",
+                                     0);
+  histogram_tester_.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Audio",
+                                     0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Api.GetContextFromTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, LogGetContextForActorFromTabError_UnknownMode) {
+  metrics_.LogGetContextForActorFromTabError(
+      GlicGetContextFromTabError::kTabNotFound);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextForActorFromTab.Error.Text", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextForActorFromTab.Error.Audio", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextForActorFromTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Api.GetContextForActorFromTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       LogGetContextFromFocusedTabError_ChangingModes) {
+  metrics_.SetWebClientMode(mojom::WebClientMode::kText);
+  metrics_.LogGetContextFromFocusedTabError(
+      GlicGetContextFromTabError::kWebContentsChanged);
+  metrics_.SetWebClientMode(mojom::WebClientMode::kAudio);
+  metrics_.LogGetContextFromFocusedTabError(
+      GlicGetContextFromTabError::kPermissionDenied);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text",
+      GlicGetContextFromTabError::kWebContentsChanged, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio",
+      GlicGetContextFromTabError::kPermissionDenied, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Api.GetContextFromFocusedTab.Error.Text",
+      GlicGetContextFromTabError::kWebContentsChanged, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Api.GetContextFromFocusedTab.Error.Audio",
+      GlicGetContextFromTabError::kPermissionDenied, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, LogGetImageBytesFromTabError) {
+  metrics_.LogGetImageBytesFromTabError(
+      GlicGetContextFromTabError::kTabNotFound);
+
+  histogram_tester_.ExpectUniqueSample("Glic.Api.GetImageBytesFromTab.Error",
+                                       GlicGetContextFromTabError::kTabNotFound,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Api.GetImageBytesFromTab.Error",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, OnWebClientCleared_ResetsWebClientMode) {
+  metrics_.SetWebClientMode(mojom::WebClientMode::kAudio);
+  metrics_.OnWebClientCleared();
+  metrics_.LogGetContextFromFocusedTabError(
+      GlicGetContextFromTabError::kTabNotFound);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Api.GetContextFromFocusedTab.Error.Unknown",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, WebClientModeAndTurnInputModeAreIndependent) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+
+  metrics_.SetWebClientMode(mojom::WebClientMode::kText);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
+
+  // Switching web client mode mid-turn updates GetContext*.Error suffixes
+  // without changing the turn's InputMode histogram.
+  metrics_.SetWebClientMode(mojom::WebClientMode::kAudio);
+  metrics_.LogGetContextFromFocusedTabError(
+      GlicGetContextFromTabError::kTabNotFound);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio",
+      GlicGetContextFromTabError::kTabNotFound, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Turn.ResponseStartTime.InputMode.Text", base::Milliseconds(200), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Turn.ResponseStartTime.InputMode.Audio", 0);
+
+  // Submitting a new turn with a different mode does not overwrite
+  // `web_client_mode_`.
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kUnspecified);
+  metrics_.LogGetContextFromTabError(
+      GlicGetContextFromTabError::kPermissionDenied);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromTab.Error.Audio",
+      GlicGetContextFromTabError::kPermissionDenied, 1);
+  histogram_tester_.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text",
+                                     0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       ConcurrentInstancesMaintainSeparateWebClientModes) {
+  GlicInstanceMetrics second_metrics(&profile_metrics_service_, &profile_);
+
+  metrics_.SetWebClientMode(mojom::WebClientMode::kText);
+  second_metrics.SetWebClientMode(mojom::WebClientMode::kAudio);
+
+  metrics_.LogGetContextForActorFromTabError(
+      GlicGetContextFromTabError::kWebContentsChanged);
+  second_metrics.LogGetContextFromTabError(
+      GlicGetContextFromTabError::kPermissionDenied);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextForActorFromTab.Error.Text",
+      GlicGetContextFromTabError::kWebContentsChanged, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Api.GetContextForActorFromTab.Error.Audio", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Api.GetContextForActorFromTab.Error.Text",
+      GlicGetContextFromTabError::kWebContentsChanged, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Api.GetContextFromTab.Error.Audio",
+      GlicGetContextFromTabError::kPermissionDenied, 1);
+  histogram_tester_.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text",
+                                     0);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Api.GetContextFromTab.Error.Audio",
+      GlicGetContextFromTabError::kPermissionDenied, 1);
+}
+
 }  // namespace glic

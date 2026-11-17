@@ -930,6 +930,7 @@ void GlicInstanceImpl::OnResponseStopped(mojom::ResponseStopCause cause) {
 
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   interaction_mode_ = new_mode;
+  instance_metrics_.SetWebClientMode(new_mode);
   sharing_manager_coordinator_.UpdateState(GetPanelState()->kind,
                                            interaction_mode_);
   ContextAccessIndicatorChanged(host().IsContextAccessIndicatorEnabled());

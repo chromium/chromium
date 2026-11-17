@@ -4,14 +4,10 @@
 
 #include "chrome/browser/glic/glic_metrics.h"
 
-#include <string>
-#include <string_view>
-
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -41,17 +37,6 @@ namespace {
 
 bool CheckFreStatus(GlicEnabling* enabling, prefs::FreStatus status) {
   return enabling->GetCompletedFre() == status;
-}
-
-std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
-  switch (input_mode) {
-    case mojom::WebClientMode::kText:
-      return "Text";
-    case mojom::WebClientMode::kAudio:
-      return "Audio";
-    case mojom::WebClientMode::kUnknown:
-      return "Unknown";
-  }
 }
 
 }  // namespace
@@ -329,33 +314,6 @@ void GlicMetrics::LogClosedCaptionsShown() {
   base::UmaHistogramBoolean("Glic.Response.ClosedCaptionsShown", pref_enabled);
 }
 
-void GlicMetrics::LogGetContextFromFocusedTabError(
-    GlicGetContextFromTabError error) {
-  std::string_view mode_string = GetInputModeString(input_mode_);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Glic.Api.GetContextFromFocusedTab.Error.", mode_string}),
-      error);
-}
-
-void GlicMetrics::LogGetContextFromTabError(GlicGetContextFromTabError error) {
-  std::string_view mode_string = GetInputModeString(input_mode_);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Glic.Api.GetContextFromTab.Error.", mode_string}), error);
-}
-
-void GlicMetrics::LogGetContextForActorFromTabError(
-    GlicGetContextFromTabError error) {
-  std::string_view mode_string = GetInputModeString(input_mode_);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Glic.Api.GetContextForActorFromTab.Error.", mode_string}),
-      error);
-}
-
-void GlicMetrics::LogGetImageBytesFromTabError(
-    GlicGetContextFromTabError error) {
-  base::UmaHistogramEnumeration("Glic.Api.GetImageBytesFromTab.Error", error);
-}
-
 void GlicMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
   const actor::ActorTask* task =
       actor::ActorKeyedService::Get(profile_)->GetTaskFromTab(*tab);
@@ -364,10 +322,6 @@ void GlicMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
     base::RecordAction(
         base::UserMetricsAction("Glic.Instance.TaskTabForegrounded"));
   }
-}
-
-void GlicMetrics::SetWebClientMode(mojom::WebClientMode mode) {
-  input_mode_ = mode;
 }
 
 void GlicMetrics::OnImpressionTimerFired() {

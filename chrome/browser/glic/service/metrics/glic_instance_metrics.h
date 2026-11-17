@@ -332,6 +332,17 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   void OnZoomLevelChange();
 
+  // Sets the input mode of the web client. Called when the web client reports
+  // its mode as the panel opens, and on every subsequent mode change.
+  void SetWebClientMode(mojom::WebClientMode mode);
+
+  // Logs errors that occurred while trying to get context or image bytes from
+  // a tab.
+  void LogGetContextFromFocusedTabError(GlicGetContextFromTabError error);
+  void LogGetContextFromTabError(GlicGetContextFromTabError error);
+  void LogGetContextForActorFromTabError(GlicGetContextFromTabError error);
+  void LogGetImageBytesFromTabError(GlicGetContextFromTabError error);
+
   // Records the number of tabs attached as context for a Glic response.
   void RecordAttachedContextTabCount(int tab_count);
 
@@ -581,6 +592,12 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Number of turns submitted to this instance so far.
   int turn_count_ = 0;
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
+  // The current web client input mode, as last reported via
+  // SetWebClientMode() (reset to kUnknown in OnWebClientCleared()). Kept
+  // separate from `input_mode_` so panel-open and mid-turn mode updates do
+  // not alter turn metrics; used to suffix Glic.Api.GetContext*.Error
+  // histograms.
+  mojom::WebClientMode web_client_mode_ = mojom::WebClientMode::kUnknown;
   base::EnumSet<mojom::WebClientMode> inputs_modes_used_;
 
   // The last web ui state received.

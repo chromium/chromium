@@ -836,7 +836,6 @@ class GlicWebClientHandler
 
   void OnModeChange(glic::mojom::WebClientMode new_mode) override {
     LogApiRequest(GlicHostApiRequestId::kOnModeChange);
-    glic_service_->metrics()->SetWebClientMode(new_mode);
     host().OnInteractionModeChange(new_mode);
   }
 
@@ -874,7 +873,7 @@ class GlicWebClientHandler
     if (ftd.unfocused_tab()) {
       CHECK(!ftd.focus());
       // Fail early if the active tab is un-focusable.
-      glic_service_->metrics()->LogGetContextFromFocusedTabError(
+      host().instance_metrics().LogGetContextFromFocusedTabError(
           GlicGetContextFromTabError::kPermissionDenied);
       std::move(callback).Run(
           mojom::GetContextResult::NewErrorReason("permission denied"));
@@ -890,8 +889,9 @@ class GlicWebClientHandler
         tab_handle, *options,
         base::BindOnce(
             &LogErrorAndUnwrapContextResult,
-            base::BindOnce(&GlicMetrics::LogGetContextFromFocusedTabError,
-                           base::Unretained(glic_service_->metrics())))
+            base::BindOnce(
+                &GlicInstanceMetrics::LogGetContextFromFocusedTabError,
+                host().instance_metrics().GetWeakPtr()))
             .Then(std::move(callback)));
   }
 
@@ -906,8 +906,8 @@ class GlicWebClientHandler
         tabs::TabHandle(tab_id), *options,
         base::BindOnce(
             &LogErrorAndUnwrapContextResult,
-            base::BindOnce(&GlicMetrics::LogGetContextFromTabError,
-                           base::Unretained(glic_service_->metrics())))
+            base::BindOnce(&GlicInstanceMetrics::LogGetContextFromTabError,
+                           host().instance_metrics().GetWeakPtr()))
             .Then(std::move(callback)));
   }
 
@@ -921,8 +921,8 @@ class GlicWebClientHandler
         tabs::TabHandle(tab_id), document_id, dom_node_id,
         base::BindOnce(
             &LogErrorAndUnwrapImageBytesResult,
-            base::BindOnce(&GlicMetrics::LogGetImageBytesFromTabError,
-                           base::Unretained(glic_service_->metrics())))
+            base::BindOnce(&GlicInstanceMetrics::LogGetImageBytesFromTabError,
+                           host().instance_metrics().GetWeakPtr()))
             .Then(std::move(callback)));
   }
 
@@ -1702,13 +1702,17 @@ class GlicWebClientHandler
         std::move(panel_opening_data),
         base::BindOnce(
             [](GlicMetricReporter reporter, PanelWillOpenCallback done,
-               GlicMetrics* metrics, glic::mojom::OpenPanelInfoPtr info) {
+               base::WeakPtr<GlicInstanceMetrics> instance_metrics,
+               glic::mojom::OpenPanelInfoPtr info) {
               reporter.RecordEnumeration("Api.NotifyPanelWillOpen",
                                          info->web_client_mode);
-              metrics->SetWebClientMode(info->web_client_mode);
+              if (instance_metrics) {
+                instance_metrics->SetWebClientMode(info->web_client_mode);
+              }
               std::move(done).Run(std::move(info));
             },
-            metric_reporter_, std::move(done), glic_service_->metrics()));
+            metric_reporter_, std::move(done),
+            host().instance_metrics().GetWeakPtr()));
     host().instance_delegate().skills_manager().NotifyPanelOpenedOrActivated();
   }
 

@@ -118,29 +118,9 @@ class GlicMetrics {
   // Called when a tab is activated via the glic page.
   void OnActivateTabFromInstance(tabs::TabInterface* tab);
 
-  // Logs an error that occurred while trying to get context from the focused
-  // tab.
-  void LogGetContextFromFocusedTabError(GlicGetContextFromTabError error);
-
-  // Logs an error that occurred while trying to get context from an arbitrary
-  // tab.
-  void LogGetContextFromTabError(GlicGetContextFromTabError error);
-
-  // Logs an error that occurred while an actor tried to get context from an
-  // arbitrary tab.
-  void LogGetContextForActorFromTabError(GlicGetContextFromTabError error);
-
-  // Logs an error that occurred while trying to get image bytes from an
-  // arbitrary tab.
-  void LogGetImageBytesFromTabError(GlicGetContextFromTabError error);
-
   // Records user preferences for the profile. Called when the GlicKeyedService
   // for each profile is created.
   void RecordGlicProfilePreferences();
-
-  // Sets the input mode of the web client. Called when the web client reports
-  // its mode as the panel opens, and on every subsequent mode change.
-  void SetWebClientMode(mojom::WebClientMode mode);
 
  private:
   // Called from OnGlicWindowStartedOpening(). If consent has not been given
@@ -172,11 +152,6 @@ class GlicMetrics {
   // after the Glic.Fre.FirstResponse* metrics are recorded in
   // OnResponseStopped(); null otherwise.
   base::TimeTicks first_query_after_fre_time_;
-
-  // The current web client input mode, as last reported via
-  // SetWebClientMode(). Used to suffix the Glic.Api.GetContext*.Error
-  // histograms.
-  mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
 
   // Invocation source passed to the most recent OnGlicWindowStartedOpening()
   // call, so it is stored on every initial show of an embedder of any

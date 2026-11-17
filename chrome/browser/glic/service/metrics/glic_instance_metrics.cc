@@ -1519,6 +1519,7 @@ void GlicInstanceMetrics::RecordPanelPresentationTime(
 }
 
 void GlicInstanceMetrics::OnWebClientCleared() {
+  web_client_mode_ = mojom::WebClientMode::kUnknown;
   tooltip_currently_visible_ = false;
   last_tooltip_impression_time_ = base::TimeTicks();
   tooltip_shown_in_session_ = false;
@@ -2181,6 +2182,38 @@ void GlicInstanceMetrics::OnSessionFinished() {
 
 void GlicInstanceMetrics::OnZoomLevelChange() {
   ++zoom_change_count_;
+}
+
+void GlicInstanceMetrics::SetWebClientMode(mojom::WebClientMode mode) {
+  web_client_mode_ = mode;
+}
+
+void GlicInstanceMetrics::LogGetContextFromFocusedTabError(
+    GlicGetContextFromTabError error) {
+  std::string_view mode_string = GetInputModeString(web_client_mode_);
+  metric_reporter_.RecordEnumeration(
+      base::StrCat({"Api.GetContextFromFocusedTab.Error.", mode_string}),
+      error);
+}
+
+void GlicInstanceMetrics::LogGetContextFromTabError(
+    GlicGetContextFromTabError error) {
+  std::string_view mode_string = GetInputModeString(web_client_mode_);
+  metric_reporter_.RecordEnumeration(
+      base::StrCat({"Api.GetContextFromTab.Error.", mode_string}), error);
+}
+
+void GlicInstanceMetrics::LogGetContextForActorFromTabError(
+    GlicGetContextFromTabError error) {
+  std::string_view mode_string = GetInputModeString(web_client_mode_);
+  metric_reporter_.RecordEnumeration(
+      base::StrCat({"Api.GetContextForActorFromTab.Error.", mode_string}),
+      error);
+}
+
+void GlicInstanceMetrics::LogGetImageBytesFromTabError(
+    GlicGetContextFromTabError error) {
+  metric_reporter_.RecordEnumeration("Api.GetImageBytesFromTab.Error", error);
 }
 
 void GlicInstanceMetrics::RecordAttachedContextTabCount(int tab_count) {
