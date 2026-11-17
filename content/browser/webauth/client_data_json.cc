@@ -4,8 +4,8 @@
 
 #include "content/browser/webauth/client_data_json.h"
 
+#include "base/base64url.h"
 #include "base/check.h"
-#include "components/webauthn/core/browser/common_utils.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 using webauthn::ToJSONString;
@@ -94,16 +94,18 @@ std::string BuildClientDataJsonWithPayment(
     payment_json.append("}");
     if (payment_options->browser_bound_public_key.has_value()) {
       payment_json.append(R"(,"browserBoundPublicKey":)");
-      payment_json.append(ToJSONString(webauthn::Base64UrlEncodeOmitPadding(
-          *payment_options->browser_bound_public_key)));
+      payment_json.append(ToJSONString(
+          base::Base64UrlEncode(*payment_options->browser_bound_public_key,
+                                base::Base64UrlEncodePolicy::OMIT_PADDING)));
     }
     payment_json.append("}");
   } else if (payment_options &&
              payment_options->browser_bound_public_key.has_value() &&
              params.type == webauthn::ClientDataRequestType::kWebAuthnCreate) {
     payment_json.append(R"(,"payment":{"browserBoundPublicKey":)");
-    payment_json.append(ToJSONString(webauthn::Base64UrlEncodeOmitPadding(
-        *payment_options->browser_bound_public_key)));
+    payment_json.append(ToJSONString(
+        base::Base64UrlEncode(*payment_options->browser_bound_public_key,
+                              base::Base64UrlEncodePolicy::OMIT_PADDING)));
     payment_json.append("}");
   }
 

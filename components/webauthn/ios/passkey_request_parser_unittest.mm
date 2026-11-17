@@ -98,10 +98,8 @@ std::string BuildLargeBase64String() {
 
 // Encodes a byte vector to base 64 URL encoded string.
 std::string Base64UrlEncode(base::span<const uint8_t> input) {
-  std::string output;
-  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
+  return base::Base64UrlEncode(input,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 // Decodes a base 64 URL encoded string to byte vector.

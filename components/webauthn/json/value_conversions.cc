@@ -38,10 +38,8 @@ namespace {
 std::string Base64UrlEncode(base::span<const uint8_t> input) {
   // Byte strings, which appear in the WebAuthn IDL as ArrayBuffer or
   // ByteSource, are base64url-encoded without trailing '=' padding.
-  std::string output;
-  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
+  return base::Base64UrlEncode(input,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 bool Base64UrlDecode(std::string_view input, std::string* output) {

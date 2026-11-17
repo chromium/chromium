@@ -6,12 +6,12 @@
 
 #include <string_view>
 
+#include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "components/webauthn/core/browser/common_utils.h"
 
 namespace webauthn {
 
@@ -93,8 +93,8 @@ std::string BuildClientDataJson(ClientDataJsonParams params,
   }
 
   ret.append(R"(,"challenge":)");
-  ret.append(
-      ToJSONString(webauthn::Base64UrlEncodeOmitPadding(*params.challenge)));
+  ret.append(ToJSONString(base::Base64UrlEncode(
+      *params.challenge, base::Base64UrlEncodePolicy::OMIT_PADDING)));
 
   ret.append(R"(,"origin":)");
   ret.append(ToJSONString(params.origin.Serialize()));

@@ -100,7 +100,6 @@ source_set("client_data") {
     "client_data_json.h",
   ]
   deps = [
-    ":common_utils",
     "//base",
     "//url",
   ]
@@ -108,8 +107,6 @@ source_set("client_data") {
 
 source_set("common_utils") {
   sources = [
-    "common_utils.cc",
-    "common_utils.h",
     "remote_validation.cc",
     "remote_validation.h",
     "webauthn_security_utils.cc",

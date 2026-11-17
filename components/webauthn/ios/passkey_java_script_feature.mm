@@ -71,22 +71,18 @@ GetPlaceholderReplacements() {
 
 // Encodes a byte vector to base 64 URL encoded string.
 std::string Base64UrlEncode(base::span<const uint8_t> input) {
-  std::string output;
   // Omit padding, according to the spec. See:
   // https://w3c.github.io/webauthn/#base64url-encoding
-  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
+  return base::Base64UrlEncode(input,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 // Encodes a string to a base 64 URL encoded string.
 std::string Base64UrlEncode(std::string_view input) {
-  std::string output;
   // Omit padding, according to the spec. See:
   // https://w3c.github.io/webauthn/#base64url-encoding
-  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
+  return base::Base64UrlEncode(input,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 // Validates whether the given passkey registration (create) request is

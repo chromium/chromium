@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/base64url.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
@@ -44,7 +45,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/webauthn/core/browser/common_utils.h"
 #include "components/webauthn/core/browser/remote_validation.h"
 #include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "components/webauthn/json/value_conversions.h"
@@ -3144,7 +3144,8 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
   common_info->client_data_json.assign(req_state_->client_data_json.begin(),
                                        req_state_->client_data_json.end());
   common_info->raw_id = response_data.attestation_object.GetCredentialId();
-  common_info->id = webauthn::Base64UrlEncodeOmitPadding(common_info->raw_id);
+  common_info->id = base::Base64UrlEncode(
+      common_info->raw_id, base::Base64UrlEncodePolicy::OMIT_PADDING);
 
   response->authenticator_attachment =
       response_data.transport_used
@@ -3357,7 +3358,8 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
   common_info->client_data_json.assign(req_state_->client_data_json.begin(),
                                        req_state_->client_data_json.end());
   common_info->raw_id = response_data.credential->id;
-  common_info->id = webauthn::Base64UrlEncodeOmitPadding(common_info->raw_id);
+  common_info->id = base::Base64UrlEncode(
+      common_info->raw_id, base::Base64UrlEncodePolicy::OMIT_PADDING);
   response->info = std::move(common_info);
   response->info->authenticator_data =
       response_data.authenticator_data.SerializeToByteArray();
