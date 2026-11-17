@@ -60,7 +60,6 @@ external/wpt/css/css-layout-api/fallback-intrinsic-sizes/constructor-error.https
 external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html
 external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.html
 external/wpt/css/css-overflow/line-clamp/block-ellipsis-bidi-002.html
-external/wpt/css/css-pseudo/active-selection-014.html
 external/wpt/css/css-pseudo/first-letter-001.html
 external/wpt/css/css-pseudo/highlight-cascade/highlight-cascade-008.html
 external/wpt/css/css-pseudo/highlight-cascade/highlight-currentcolor-painting-properties-001.html
