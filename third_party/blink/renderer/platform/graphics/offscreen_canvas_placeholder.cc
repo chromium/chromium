@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
@@ -21,6 +22,7 @@ namespace {
 typedef HashMap<int, OffscreenCanvasPlaceholder*> PlaceholderIdMap;
 
 PlaceholderIdMap& placeholderRegistry() {
+  DCHECK(IsMainThread());
   static base::NoDestructor<PlaceholderIdMap> s_placeholder_registry;
   return *s_placeholder_registry;
 }

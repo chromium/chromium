@@ -20,9 +20,11 @@
 #include "third_party/skia/include/core/SkTextBlob.h"
 
 #if DCHECK_IS_ON()
+#include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
 #include "components/crash/core/common/crash_key.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #endif
 
 namespace blink {
@@ -463,6 +465,7 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
 
 #if DCHECK_IS_ON()
   if (display_item.IsCacheable()) {
+    DCHECK(IsMainThread());
     static std::optional<PaintChunk::Id> last_duplicated_id;
     static std::optional<base::debug::StackTrace> previous_stack;
     auto id = display_item.GetId();
@@ -558,6 +561,7 @@ void PaintController::CheckNewChunkId(const PaintChunk::Id& id) {
   if (DisplayItem::IsForeignLayerType(id.type))
     return;
 
+  DCHECK(IsMainThread());
   static std::optional<PaintChunk::Id> last_duplicated_id;
   static std::optional<base::debug::StackTrace> previous_stack;
   if (id == last_duplicated_id) {

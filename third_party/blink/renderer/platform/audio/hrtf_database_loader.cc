@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 
+#include "base/check.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
@@ -44,6 +45,7 @@ using LoaderMap = HashMap<double, HRTFDatabaseLoader*>;
 // getLoaderMap() returns the static hash map that contains the mapping between
 // the sample rate and the corresponding HRTF database.
 static LoaderMap& GetLoaderMap() {
+  DCHECK(IsMainThread());
   static base::NoDestructor<LoaderMap> map;
   return *map;
 }

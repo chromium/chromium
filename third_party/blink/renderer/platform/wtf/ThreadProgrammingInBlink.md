@@ -360,6 +360,54 @@ void Document::UpdateStyle() {
   };
   ```
 
+### Function-Local Statics (`base::NoDestructor<T>`)
+
+To avoid static initializers and exit-time destructors, Blink uses C++11
+function-local `static` variables—wrapped in `base::NoDestructor<T>` when `T` is
+not trivially destructible. While C++11 guarantees thread-safe
+**initialization** of function-local statics, it does **not** synchronize
+subsequent accesses or assert thread affinity:
+
+* **Prefer `const` for immutable statics**: Mark statics that are never mutated
+  after initialization as `const` (`static constexpr`, `static const T` for
+  trivially destructible types, or `static const base::NoDestructor<T>`). Ensure
+  `T` itself is safe to read from all calling threads (for example,
+  `blink::RefCounted<T>` and Oilpan `Persistent<T>` remain bound to a single
+  thread even when `const`).
+* **Assert thread affinity on mutable single-thread statics**: If a
+  function-local static is mutated after initialization (such as a main-thread
+  registry or cache), explicitly assert thread affinity in the accessor using
+  `CHECK(IsMainThread())` (or `DCHECK(IsMainThread())` on hot paths), or
+  `SEQUENCE_CHECKER` for sequence-bound statics:
+  ```cpp
+  #include "base/check.h"
+  #include "base/no_destructor.h"
+  #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+  #include "third_party/blink/renderer/platform/wtf/wtf.h"
+
+  HashMap<int, Widget*>& GetWidgetRegistry() {
+    CHECK(IsMainThread());
+    static base::NoDestructor<HashMap<int, Widget*>> registry;
+    return *registry;
+  }
+  ```
+* **Use `ThreadSpecific<T>` for per-thread state**: When multiple threads each
+  need mutable static state, wrap the object in `ThreadSpecific<T>` (below)
+  rather than sharing an unsynchronized mutable static across threads.
+* **Wrap Oilpan roots in `Persistent<T>`**: Never instantiate
+  `base::NoDestructor<T>` directly with a `GarbageCollected` type.
+  * **Main-thread roots**: Use `static base::NoDestructor<Persistent<T>>` and
+    assert `CHECK(IsMainThread())`. Never use a plain static `Persistent<T>` on
+    a worker or worklet thread: `Persistent<T>` is bound to a single thread's
+    Oilpan heap, and a `NoDestructor<Persistent<T>>` would outlive a terminating
+    worker thread's heap.
+  * **Non-main-thread / per-thread roots**: Use
+    `static base::NoDestructor<ThreadSpecific<Persistent<T>>>` so each
+    Oilpan-attached thread gets its own `Persistent<T>` root in its own heap
+    (cleared and destroyed when a worker thread detaches and exits). Ensure the
+    accessor is only called on threads attached to Oilpan (`ThreadState`), never
+    on unattached threads such as `base::ThreadPool`, compositor, or IO threads.
+
 ### Thread-Local Storage: `ThreadSpecific<T>`
 
 When state must be stored on a per-thread basis without creating global lock
@@ -402,3 +450,4 @@ void IncrementLocal() {
 | **Minimize `AtomicString` allocation off-thread** | `AtomicStringTable` is thread-safe but internally locked; minimize off-thread allocations to avoid lock contention. |
 | **Use `worker_pool::PostTask` for background tasks** | Do not spawn dedicated OS threads for asynchronous background computations. |
 | **Assert thread affinity** | Use `CHECK(IsMainThread())` (or `DCHECK` on hot paths) or `SEQUENCE_CHECKER` to enforce execution thread expectations. |
+| **Guard mutable function-local statics** | C++11 only synchronizes static initialization, not subsequent access; prefer `const` statics, assert `CHECK(IsMainThread())` on main-thread mutable statics, or use `ThreadSpecific<T>` for per-thread state. |
