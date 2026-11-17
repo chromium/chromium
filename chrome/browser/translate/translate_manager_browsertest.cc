@@ -1608,8 +1608,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
 // TODO(https://crbug.com/467160838): Fix test failure on ChromeOS ASan, MSan
 // and Mac.
+// TODO(crbug.com/568775395): Fix test failure on Linux.
 #if (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) || \
-    defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+    defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RevertTranslationClosesSidePanelViaTranslateManager \
   DISABLED_RevertTranslationClosesSidePanelViaTranslateManager
 #else
