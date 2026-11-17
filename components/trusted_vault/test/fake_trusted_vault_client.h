@@ -81,9 +81,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   int fetch_count() const { return fetch_count_; }
 
   // Exposes the total number of calls to MarkLocalKeysAsStale().
-  bool keys_marked_as_stale_count() const {
-    return keys_marked_as_stale_count_;
-  }
+  int keys_marked_as_stale_count() const { return keys_marked_as_stale_count_; }
 
   // Exposes the total number of calls to the server's RequestKeysFromServer().
   int server_request_count() const { return server_request_count_; }

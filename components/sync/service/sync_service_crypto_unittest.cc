@@ -700,7 +700,7 @@ TEST_F(SyncServiceCryptoTest, ShouldReadInvalidTrustedVaultKeysFromClient) {
   std::move(add_keys_cb).Run();
 
   EXPECT_TRUE(crypto_.IsTrustedVaultKeyRequired());
-  EXPECT_THAT(trusted_vault_client_.keys_marked_as_stale_count(), Eq(1));
+  EXPECT_THAT(trusted_vault_client_.keys_marked_as_stale_count(), Eq(2));
   EXPECT_THAT(trusted_vault_client_.fetch_count(), Eq(2));
 }
 
@@ -806,7 +806,7 @@ TEST_F(SyncServiceCryptoTest, ShouldRefetchTrustedVaultKeysWhenChangeObserved) {
   ASSERT_THAT(trusted_vault_client_.keys_marked_as_stale_count(), Eq(1));
   ASSERT_THAT(trusted_vault_client_.fetch_count(), Eq(2));
   ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
-  ASSERT_THAT(trusted_vault_client_.keys_marked_as_stale_count(), Eq(1));
+  ASSERT_THAT(trusted_vault_client_.keys_marked_as_stale_count(), Eq(2));
   ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequired());
 
   // Mimic server-side key reset and a new retrieval.
@@ -819,7 +819,7 @@ TEST_F(SyncServiceCryptoTest, ShouldRefetchTrustedVaultKeysWhenChangeObserved) {
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto());
   EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
   EXPECT_FALSE(crypto_.IsTrustedVaultKeyRequired());
-  EXPECT_THAT(trusted_vault_client_.keys_marked_as_stale_count(), Eq(1));
+  EXPECT_THAT(trusted_vault_client_.keys_marked_as_stale_count(), Eq(2));
 }
 
 // Same as above but the new keys become available during an ongoing FetchKeys()
