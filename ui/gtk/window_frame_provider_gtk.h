@@ -5,9 +5,11 @@
 #ifndef UI_GTK_WINDOW_FRAME_PROVIDER_GTK_H_
 #define UI_GTK_WINDOW_FRAME_PROVIDER_GTK_H_
 
+#include <map>
 #include <optional>
 
-#include "base/containers/flat_map.h"
+#include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gfx/geometry/insets.h"
@@ -18,7 +20,8 @@ typedef struct _GtkSettings GtkSettings;
 
 namespace gtk {
 
-class WindowFrameProviderGtk : public ui::WindowFrameProvider {
+class COMPONENT_EXPORT(GTK) WindowFrameProviderGtk
+    : public ui::WindowFrameProvider {
  public:
   WindowFrameProviderGtk(ui::FrameType type,
                          bool solid_frame,
@@ -44,6 +47,9 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
                         const gfx::Insets& input_insets) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WindowFrameProviderGtkTest,
+                           AssetReferencesStayValid);
+
   // Data and metrics that depend on the scale.
   struct Asset {
     Asset();
@@ -82,8 +88,9 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
   std::optional<gfx::Insets> top_area_padding_dip_;
   std::optional<gfx::Insets> top_area_border_dip_;
 
-  // Cached bitmaps and metrics.
-  base::flat_map<float, Asset> assets_;
+  // Cached bitmaps and metrics. A node-based map keeps references returned by
+  // GetOrCreateAsset() valid when other scales are added.
+  std::map<float, Asset> assets_;
 
   // These signals invalidate the cache on change.
   ScopedGSignal theme_name_signal_;
