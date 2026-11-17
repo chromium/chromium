@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -21,5 +24,30 @@ public class DriveAttachmentMetadata {
         this.resourceKey = resourceKey;
         this.title = title;
         this.mimeType = mimeType;
+    }
+
+    // Getters called by native FromJniType<DriveUploadParams>.
+    @CalledByNative
+    @JniType("std::string")
+    String getDriveId() {
+        return driveId;
+    }
+
+    @CalledByNative
+    @JniType("std::optional<std::string>")
+    @Nullable String getResourceKey() {
+        return resourceKey;
+    }
+
+    @CalledByNative
+    @JniType("std::string")
+    String getTitle() {
+        return title;
+    }
+
+    @CalledByNative
+    @JniType("std::string")
+    String getMimeType() {
+        return mimeType;
     }
 }
