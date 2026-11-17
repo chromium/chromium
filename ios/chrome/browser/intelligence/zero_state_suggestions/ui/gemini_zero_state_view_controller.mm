@@ -27,12 +27,15 @@ constexpr CGFloat kContainerTopPadding = 36.0;
 constexpr CGFloat kLogoToGreetingSpacing = 16.0;
 constexpr CGFloat kCloseButtonSize = 44.0;
 constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
+constexpr NSTimeInterval kHeaderFadeAnimationDuration = 0.2;
 
 }  // namespace
 
 @implementation GeminiZeroStateViewController {
   // Stack view containing chip button items.
   UIStackView* _suggestionsStack;
+  // Stack view containing the Gemini logo and the greeting label.
+  UIStackView* _headerStack;
   // Image view displaying the Gemini logo.
   UIImageView* _logoImageView;
   // Label containing the greeting text.
@@ -56,6 +59,7 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
   headerStack.axis = UILayoutConstraintAxisVertical;
   headerStack.spacing = kLogoToGreetingSpacing;
   [self.view addSubview:headerStack];
+  _headerStack = headerStack;
 
   _logoImageView = [[UIImageView alloc] init];
   _logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -155,6 +159,11 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
   ]];
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [self updateHeaderVisibility];
+}
+
 #pragma mark - GeminiZeroStateConsumer
 
 - (void)setZeroStateSuggestions:(NSArray<ZeroStateSuggestion*>*)suggestions {
@@ -203,6 +212,33 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
 }
 
 #pragma mark - Private
+
+// Fades out `_headerStack` when the view is too short to show it unclipped
+// above the suggestion chips (e.g. in landscape or when the keyboard is shown).
+// `alpha` is used instead of `hidden` so the header keeps contributing to the
+// content height, which drives the container's medium detent height. Otherwise
+// the detent would shrink and the header would never fit again.
+- (void)updateHeaderVisibility {
+  CGFloat requiredHeight =
+      kContainerTopPadding + _headerStack.frame.size.height +
+      kContainerTopPadding + _suggestionsStack.frame.size.height;
+  BOOL headerFits = self.view.bounds.size.height >= requiredHeight;
+  CGFloat targetAlpha = headerFits ? 1.0 : 0.0;
+  if (_headerStack.alpha == targetAlpha) {
+    return;
+  }
+
+  _headerStack.accessibilityElementsHidden = !headerFits;
+  if (!self.view.window) {
+    _headerStack.alpha = targetAlpha;
+    return;
+  }
+  __weak UIView* headerStack = _headerStack;
+  [UIView animateWithDuration:kHeaderFadeAnimationDuration
+                   animations:^{
+                     headerStack.alpha = targetAlpha;
+                   }];
+}
 
 // Updates the greeting label text based on the first name provided by the
 // mutator.
