@@ -5300,6 +5300,38 @@ TEST_F(ShellSurfaceTest, TinyOpaqueMaximizedSurfaceFalselyOccludesUnderlying) {
   EXPECT_EQ(gfx::SizeF(kTinyBuffer), attacker->root_surface()->content_size());
 }
 
+// A frameless opaque ShellSurface with a small alpha shape exposes underlying
+// windows outside that shape and must not mark them as OCCLUDED.
+TEST_F(ShellSurfaceTest, ShapedOpaqueSurfaceDoesNotOccludeUnderlying) {
+  const gfx::Rect work_area =
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
+
+  std::unique_ptr<aura::Window> victim = CreateToplevelTestWindow(work_area);
+  victim->TrackOcclusionState();
+  ASSERT_EQ(aura::Window::OcclusionState::VISIBLE, victim->GetOcclusionState());
+
+  std::unique_ptr<ShellSurface> attacker =
+      test::ShellSurfaceBuilder(work_area.size())
+          .SetRootFormat(kOpaqueFormat)
+          .BuildShellSurface();
+  ASSERT_TRUE(attacker->root_surface()->FillsBoundsOpaquely());
+
+  attacker->Maximize();
+  EXPECT_EQ(aura::Window::OcclusionState::OCCLUDED,
+            victim->GetOcclusionState());
+
+  // Applying a small shape exposes the underlying window outside the shape.
+  attacker->SetShape(cc::Region(gfx::Rect(0, 0, 4, 4)));
+  attacker->root_surface()->Commit();
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE, victim->GetOcclusionState());
+
+  // Clearing the shape restores full-window opaque occlusion.
+  attacker->SetShape(std::nullopt);
+  attacker->root_surface()->Commit();
+  EXPECT_EQ(aura::Window::OcclusionState::OCCLUDED,
+            victim->GetOcclusionState());
+}
+
 TEST_F(ShellSurfaceTest, GetWidgetHitTestMask) {
   auto shell_surface = test::ShellSurfaceBuilder({256, 256})
                            .SetOrigin({100, 100})

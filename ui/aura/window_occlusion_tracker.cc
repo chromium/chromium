@@ -574,11 +574,16 @@ bool WindowOcclusionTracker::VisibleWindowCanOccludeOtherWindows(
                                          : layer->background_color();
     combined_opacity *= color.fA;
   }
-  return (!window->GetTransparent() && WindowHasContent(window) &&
-          combined_opacity == 1.0f &&
-          // For simplicity, a shaped window is not considered opaque.
-          !WindowOrParentHasShape(window)) ||
-         WindowHasOpaqueRegionsForOcclusion(window);
+  return ((!window->GetTransparent() && WindowHasContent(window) &&
+           combined_opacity == 1.0f) ||
+          WindowHasOpaqueRegionsForOcclusion(window)) &&
+         // A shaped window or a descendant of a shaped window is masked by the
+         // alpha shape filter, so neither its bounds nor its explicit opaque
+         // regions are guaranteed to be opaque.
+         // TODO(crbug.com/586931032): Merge alpha shape handling with
+         // `opaque_regions_for_occlusion` logic so shaped windows can still
+         // occlude within their opaque shaped region.
+         !WindowOrParentHasShape(window);
 }
 
 bool WindowOcclusionTracker::WindowHasContent(const Window* window) const {
