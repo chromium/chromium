@@ -27,7 +27,7 @@ ci/android-16-x64-dbg-tests
 ci/android-16-x64-fyi-rel
 ci/android-16-x64-leakcanary-rel
 ci/android-16-x64-rel
-ci/android-17-x64-fyi-rel
+ci/android-17-x64-rel
 ci/android-archive-rel
 ci/android-arm64-proguard-rel
 ci/android-bfcache-rel
@@ -77,7 +77,7 @@ try/android-16-x64-dbg
 try/android-16-x64-fyi-rel
 try/android-16-x64-leakcanary-rel
 try/android-16-x64-rel
-try/android-17-x64-fyi-rel
+try/android-17-x64-rel
 try/android-arm-compile-dbg
 try/android-arm64-compile-dbg
 try/android-arm64-rel

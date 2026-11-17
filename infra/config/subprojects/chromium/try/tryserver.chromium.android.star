@@ -429,20 +429,21 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-17-x64-fyi-rel",
+    name = "android-17-x64-rel",
+    # TODO(crbug.com/558813685): Enable when green.
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Chromium tests on Android 17 emulator.",
     mirrors = [
-        "ci/android-17-x64-fyi-rel",
+        "ci/android-17-x64-rel",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/android-17-x64-fyi-rel",
+            "ci/android-17-x64-rel",
             "release_try_builder",
         ],
     ),
     ssd = True,
     contact_team_email = "clank-engprod@google.com",
-    experiments = {
-    },
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

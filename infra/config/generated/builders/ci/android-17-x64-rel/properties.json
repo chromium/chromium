@@ -2,18 +2,18 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/android-17-x64-fyi-rel/gn-args.json"
+        "infra/config/generated/builders/ci/android-17-x64-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-17-x64-fyi-rel",
+              "builder": "android-17-x64-rel",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.android.fyi",
+              "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
                 "config": "base_config"
@@ -41,29 +41,33 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-17-x64-fyi-rel",
+          "builder": "android-17-x64-rel",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-17-x64-fyi-rel",
+          "builder": "android-17-x64-rel",
           "group": "tryserver.chromium.android"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/android-17-x64-fyi-rel/targets"
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
+      "targets_spec_directory": "infra/config/generated/builders/ci/android-17-x64-rel/targets"
     }
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "output_local_strategy": "greedy",
     "profile_mode": "cloud",
     "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "remote_jobs": 500
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -72,6 +76,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android.fyi",
+  "builder_group": "chromium.android",
   "recipe": "chromium"
 }

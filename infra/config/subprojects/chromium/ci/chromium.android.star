@@ -4299,6 +4299,142 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-17-x64-rel",
+    # TODO(crbug.com/558813685): Enable when green.
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run chromium tests on Android 17 emulators.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "main_builder",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "base_config",
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder_with_dchecks",
+            "remoteexec",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_debug_package_name",
+            "webview_shell",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_emulator_fyi_gtests",
+            "android_fyi_isolated_scripts",
+        ],
+        mixins = [
+            "17-x64-emulator",
+            "emulator-8-cores",
+            "has_native_resultdb_integration",
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--emulator-debug-tags=all",
+                ],
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
+            ),
+            "base_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter;../../testing/buildbot/filters/android.emulator_17.base_unittests.filter",
+                ],
+            ),
+            "cc_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/558813685): Remove once emulator is updated past 37.1.11
+                    # with the Gfxstream VK_EXT_host_image_copy fix.
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.cc_unittests.filter",
+                ],
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
+            ),
+            "content_shell_crash_test": targets.remove(
+                reason = "crbug.com/40131701",
+            ),
+            "content_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
+                ],
+            ),
+            "gwp_asan_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
+                ],
+            ),
+            "media_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter;../../testing/buildbot/filters/android.emulator_17.media_unittests.filter",
+                ],
+            ),
+            "perfetto_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/40201873): Fix ScopedDirTest.CloseOutOfScope.
+                    # TODO(crbug.com/579554079): Fix PosixSharedMemoryTest.CreateAndMap.
+                    "--gtest_filter=-ScopedDirTest.CloseOutOfScope:PosixSharedMemoryTest.CreateAndMap",
+                ],
+            ),
+            "viz_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/558813685): Remove once emulator is updated past 37.1.11
+                    # with the Gfxstream VK_EXT_host_image_copy fix.
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.viz_unittests.filter",
+                ],
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    ssd = None,
+    gardener_rotations = args.ignore_default(None),
+    # TODO(crbug.com/558813685): Enable when green.
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "emulator|x64|rel",
+        short_name = "17",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 4 * time.hour,
+)
+
+ci.builder(
     name = "android-16-x64-leakcanary-rel",
     description_html = "Runs Java instrumentation tests with LeakCanary enabled.",
     builder_spec = builder_config.builder_spec(
