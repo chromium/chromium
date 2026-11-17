@@ -817,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiEagerPopupInteractiveTest,
                                        submit_visible_and_layout_settled)),
       PrepareWebUiForPixelTest(kAimPopupWebView),
       InAnyContext(Screenshot(kAimPopupWebView, "AimPopupQueryWithTabContext",
-                              "8616998")),
+                              "8802716")),
       ClickAimSubmit(kAimPopupWebView),
 
       // Verify navigation to Google Search with the query.

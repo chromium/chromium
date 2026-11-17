@@ -438,6 +438,8 @@ cr-icon-button {
 
 .pill-button {
   --cr-composebox-entrypoint-background-color: var(--color-composebox-context-entrypoint-hover-background, rgba(0, 0, 0, 0.05));
+  /* Match the icon button variant, which embedders size with this variable. */
+  height: var(--cr-composebox-entrypoint-height, var(--cr-button-height));
   min-width: auto;
   padding: 0 10px 0 8px;
 }

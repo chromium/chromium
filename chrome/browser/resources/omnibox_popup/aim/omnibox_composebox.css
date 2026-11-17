@@ -380,10 +380,14 @@ cr-composebox-tool-chip {
   top: 14px;
 }
 
+/* The tab favicon pill only has the 'entrypoint-button' part. */
+:host([energy-effect-enabled]) #contextEntrypoint::part(entrypoint-button) {
+  --cr-composebox-entrypoint-height: 32px;
+}
+
 :host([energy-effect-enabled]) #contextEntrypoint::part(context-menu-entrypoint-icon) {
   --cr-composebox-entrypoint-background-color: var(--color-omnibox-composebox-context-entrypoint-background);
   --cr-composebox-entrypoint-border-radius: 100px;
-  --cr-composebox-entrypoint-height: 32px;
   --cr-composebox-entrypoint-width: 40px;
   --cr-icon-button-icon-size: 20px;
 }
