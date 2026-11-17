@@ -8,9 +8,11 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/discardable_memory.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace base {
 namespace {
@@ -60,8 +62,17 @@ TestDiscardableMemoryAllocator::AllocateLockedDiscardableMemory(size_t size) {
   return std::make_unique<DiscardableMemoryImpl>(size);
 }
 
+std::unique_ptr<DiscardableMemory>
+TestDiscardableMemoryAllocator::AllocateLockedDiscardableMemory(ByteSize size) {
+  return AllocateLockedDiscardableMemory(checked_cast<size_t>(size.InBytes()));
+}
+
 size_t TestDiscardableMemoryAllocator::GetBytesAllocated() const {
-  return 0U;
+  return checked_cast<size_t>(GetAllocatedSize().InBytes());
+}
+
+ByteSize TestDiscardableMemoryAllocator::GetAllocatedSize() const {
+  return ByteSize(0);
 }
 
 }  // namespace base
