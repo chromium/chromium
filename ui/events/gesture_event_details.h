@@ -317,7 +317,9 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
   }
 
   void set_scale(float scale) {
-    CHECK_GE(scale, 0.0f, base::NotFatalUntil::M163);
+    // TODO(crbug.com/586005430): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_GE(scale, 0.0f);
     CHECK_EQ(type_, EventType::kGesturePinchUpdate, base::NotFatalUntil::M163);
     data_.pinch_update.scale = scale;
   }
