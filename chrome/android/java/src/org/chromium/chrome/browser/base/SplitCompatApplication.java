@@ -357,7 +357,8 @@ public class SplitCompatApplication extends Application {
         // Child processes set their own process type when bound.
         String processName = ContextUtils.getProcessName();
         if (processName.contains("privileged_process")
-                || processName.contains("sandboxed_process")) {
+                || processName.contains("sandboxed_process")
+                || processName.contains("sandboxed_gpu_process")) {
             return;
         }
 
