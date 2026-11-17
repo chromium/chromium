@@ -94,7 +94,9 @@ struct BitSet32 {
   // Gets the index of the specified bit in the set, which is the number of
   // marked bits that appear before the specified bit.
   inline uint32_t get_index_of_bit(uint32_t n) const {
-    CHECK_LE(n, 31U, base::NotFatalUntil::M163);
+    // TODO(crbug.com/585290595): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_LE(n, 31U);
     return popcnt(value & ~(0xffffffffUL >> n));
   }
 
