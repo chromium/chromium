@@ -177,6 +177,45 @@ TEST_F(AccessibilityTest, NativeLabelNameStripsLeadingAndTrailingWhitespace) {
   ExpectNativeLabelNameAndSourceText(internal, "ok go");
 }
 
+// An unplayable media element (here: no source, so networkState is
+// NETWORK_EMPTY) takes its name from the author like any other element,
+// instead of a hardcoded playback error string. It stays disabled.
+TEST_F(AccessibilityTest, UnplayableMediaElementNameComesFromAuthor) {
+  SetBodyInnerHTML(R"HTML(
+      <span id="label1">Label one</span>
+      <span id="label2">Label two</span>
+      <video id="labelledby" aria-labelledby="label1 label2"></video>
+      <video id="label" aria-label="Product demo" title="Hover text"></video>
+      <video id="title" title="Video title"></video>
+      <video id="bare"></video>
+      <a id="link" href="#"><video></video>Watch</a>)HTML");
+
+  const AXObject* labelledby = GetAXObjectByElementId("labelledby");
+  ASSERT_NE(nullptr, labelledby);
+  EXPECT_EQ(ax::mojom::Role::kVideo, labelledby->RoleValue());
+  EXPECT_EQ("Label one Label two", labelledby->ComputedName());
+  EXPECT_EQ(kRestrictionDisabled, labelledby->Restriction());
+
+  const AXObject* label = GetAXObjectByElementId("label");
+  ASSERT_NE(nullptr, label);
+  EXPECT_EQ("Product demo", label->ComputedName());
+
+  const AXObject* title = GetAXObjectByElementId("title");
+  ASSERT_NE(nullptr, title);
+  EXPECT_EQ("Video title", title->ComputedName());
+
+  const AXObject* bare = GetAXObjectByElementId("bare");
+  ASSERT_NE(nullptr, bare);
+  EXPECT_EQ("", bare->ComputedName());
+  EXPECT_EQ(kRestrictionDisabled, bare->Restriction());
+
+  // The media element's name must not leak into an ancestor whose name is
+  // computed from its contents.
+  const AXObject* link = GetAXObjectByElementId("link");
+  ASSERT_NE(nullptr, link);
+  EXPECT_EQ("Watch", link->ComputedName());
+}
+
 TEST_F(AccessibilityTest, NativeLabelNameStripsASCIIWhitespace) {
   SetBodyInnerHTML(R"HTML(
       <label><input id="input">&#9;&#10;&#12;&#13;foo&#9;&#10;&#12;&#13;</label>

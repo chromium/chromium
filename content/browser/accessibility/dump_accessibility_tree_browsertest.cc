@@ -4462,6 +4462,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("no-source-video.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityNoSourceVideoAuthorName) {
+#if BUILDFLAG(IS_MAC)
+  // The /blink test pass is different on macOS than on other platforms. See
+  // https://crbug.com/1314896.
+  if (GetParam() == ui::AXApiType::kBlink) {
+    return;
+  }
+#endif
+  RunHtmlTest(FILE_PATH_LITERAL("no-source-video-author-name.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityVideoControls) {
 #if BUILDFLAG(IS_MAC)
   // The /blink test pass is different on macOS than on other platforms. See

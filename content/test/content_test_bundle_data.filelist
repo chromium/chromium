@@ -6168,6 +6168,12 @@ data/accessibility/html/next-and-previous-on-line-id-expected-blink.txt
 data/accessibility/html/next-and-previous-on-line-id.html
 data/accessibility/html/next-on-line-empty-list-item-expected-blink.txt
 data/accessibility/html/next-on-line-empty-list-item.html
+data/accessibility/html/no-source-video-author-name-expected-auralinux.txt
+data/accessibility/html/no-source-video-author-name-expected-blink.txt
+data/accessibility/html/no-source-video-author-name-expected-mac.txt
+data/accessibility/html/no-source-video-author-name-expected-uia-win.txt
+data/accessibility/html/no-source-video-author-name-expected-win.txt
+data/accessibility/html/no-source-video-author-name.html
 data/accessibility/html/no-source-video-expected-android.txt
 data/accessibility/html/no-source-video-expected-auralinux.txt
 data/accessibility/html/no-source-video-expected-blink.txt

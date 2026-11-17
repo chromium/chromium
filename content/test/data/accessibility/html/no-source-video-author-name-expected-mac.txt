@@ -1,0 +1,19 @@
+AXWebArea
+++AXGroup
+++++AXGroup
+++++++AXStaticText AXValue='Label one'
+++++AXStaticText AXValue=' '
+++++AXGroup
+++++++AXStaticText AXValue='Label two'
+++++AXStaticText AXValue=' '
+++++AXGroup AXSubrole=AXEmptyGroup AXTitle='Label one Label two'
+++++AXStaticText AXValue=' '
+++++AXGroup AXSubrole=AXEmptyGroup AXDescription='Product demo' AXTitle='Product demo'
+++++AXStaticText AXValue=' '
+++++AXGroup AXSubrole=AXEmptyGroup AXDescription='Video title' AXTitle='Video title'
+++++AXStaticText AXValue=' '
+++++AXGroup AXSubrole=AXEmptyGroup
+++++AXStaticText AXValue=' '
+++++AXLink AXDescription='Watch' AXTitle='Watch'
+++++++AXGroup AXSubrole=AXEmptyGroup
+++++++AXStaticText AXValue='Watch'

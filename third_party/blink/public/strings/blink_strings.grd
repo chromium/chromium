@@ -599,10 +599,6 @@ below:
         Couldn't load plugin.
       </message>
 
-      <message name="IDS_MEDIA_PLAYBACK_ERROR" desc="Message informing that the user that there were issues playing back their media.">
-        Unable to play media.
-      </message>
-
       <!-- XSLT deprecation banner -->
       <message name="IDS_XSLT_DEPRECATION_BANNER_TEXT" desc="Text of a banner shown at the top of a web page that was generated using XSLT, a technology that is being removed from the browser. The two placeholders are the texts of links: the first points to documentation about the removal, and the second points to browser extensions that restore the functionality.">
         This site uses XSLT; that functionality is being <ph name="REMOVAL_LINK">$1<ex>removed from this browser very soon</ex></ph>. When that happens, this page will likely no longer display correctly. You might be able to <ph name="EXTENSION_LINK">$2<ex>install a browser extension</ex></ph> that allows you to continue viewing it. Otherwise, you should contact the maintainer of the site for further information.

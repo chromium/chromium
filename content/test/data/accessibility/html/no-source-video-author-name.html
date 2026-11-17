@@ -1,0 +1,18 @@
+<!--
+Unplayable media elements (no source, so networkState is NETWORK_EMPTY) must
+take their accessible name from the author like any other element:
+aria-labelledby, then aria-label, then title, else no name. The disabled
+state still signals that the media cannot be played.
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<span id="label1">Label one</span>
+<span id="label2">Label two</span>
+<video aria-labelledby="label1 label2"></video>
+<video aria-label="Product demo" title="Hover text"></video>
+<video title="Video title"></video>
+<video></video>
+<a href="#"><video></video>Watch</a>
+</body>
+</html>

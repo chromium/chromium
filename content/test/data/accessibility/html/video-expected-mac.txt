@@ -1,6 +1,6 @@
 AXWebArea
 ++AXGroup
-++++AXGroup AXDescription='Unable to play media.'
+++++AXGroup
 ++++++AXGroup AXSubrole=AXApplicationGroup AXDescription='buffering'
 ++++++++AXGroup
 ++++++++++AXGroup

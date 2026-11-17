@@ -1,7 +1,7 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
-++++++UNKNOWN label='Unable to play media.'
+++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
@@ -39,7 +39,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN hidden
 ++++++STATIC_TEXT label=' '
 ++++++++UNKNOWN label=' '
-++++++UNKNOWN label='Unable to play media.'
+++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden

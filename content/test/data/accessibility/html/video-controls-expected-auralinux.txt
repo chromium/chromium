@@ -1,6 +1,6 @@
 [document web]
 ++[section]
-++++[video] name='Unable to play media.'
+++++[video]
 ++++++[section]
 ++++++[section]
 ++++++++[push button] name='play'

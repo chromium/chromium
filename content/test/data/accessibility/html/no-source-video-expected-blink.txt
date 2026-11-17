@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++video name='Unable to play media.' restriction=disabled
+++++++video restriction=disabled
 ++++++++genericContainer ignored
 ++++++++++group ignored invisible
 ++++++++++genericContainer

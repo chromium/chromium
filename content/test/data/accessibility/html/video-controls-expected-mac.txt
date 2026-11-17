@@ -1,6 +1,6 @@
 AXWebArea
 ++AXGroup
-++++AXGroup AXDescription='Unable to play media.' AXTitle='Unable to play media.'
+++++AXGroup
 ++++++AXGroup AXSubrole=AXEmptyGroup
 ++++++AXGroup
 ++++++++AXButton AXDescription='play' AXTitle='play'

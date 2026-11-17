@@ -1,6 +1,6 @@
 Document
 ++Group IsControlElement=false
-++++Group Name='Unable to play media.' IsEnabled=false
+++++Group IsEnabled=false
 ++++++Group IsControlElement=false
 ++++++Group IsControlElement=false
 ++++++++Button Name='play' IsEnabled=false

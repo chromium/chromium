@@ -8,7 +8,7 @@
 ++[separator] horizontal multi-line current=0.000000 minimum=0.000000 maximum=0.000000
 ++[image] name='To get missing image descriptions, open the context menu.' multi-line
 ++[static] name=' '
-++[video] name='Unable to play media.' multi-line
+++[video] multi-line
 ++++[section]
 ++++[section]
 ++++++[push button] name='play'

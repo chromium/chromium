@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.view.View role_description='video' disabled focusable name='Unable to play media.'
+++++android.view.View role_description='video' disabled focusable
 ++++++android.widget.TextView
 ++++++android.widget.Button clickable focusable name='play'
 ++++++android.view.View

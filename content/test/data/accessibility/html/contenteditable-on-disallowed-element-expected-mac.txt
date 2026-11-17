@@ -6,7 +6,7 @@ AXWebArea
 ++AXTextArea
 ++AXTextArea AXDescription='To get missing image descriptions, open the context menu.' AXTitle='To get missing image descriptions, open the context menu.'
 ++AXStaticText AXValue=' '
-++AXTextArea AXDescription='Unable to play media.' AXTitle='Unable to play media.'
+++AXTextArea
 ++++AXGroup AXSubrole=AXEmptyGroup
 ++++AXGroup
 ++++++AXButton AXDescription='play' AXTitle='play'

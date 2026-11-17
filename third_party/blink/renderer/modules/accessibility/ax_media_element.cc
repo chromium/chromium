@@ -4,11 +4,9 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_media_element.h"
 
-#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
-#include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
 
@@ -25,25 +23,6 @@ AccessibilityMediaElement::AccessibilityMediaElement(
     LayoutObject* layout_object,
     AXObjectCacheImpl& ax_object_cache)
     : AXNodeObject(layout_object, ax_object_cache) {}
-
-String AccessibilityMediaElement::TextAlternative(
-    bool recursive,
-    const AXObject* aria_label_or_description_root,
-    AXObjectSet& visited,
-    ax::mojom::NameFrom& name_from,
-    AXRelatedObjectVector* related_objects,
-    NameSources* name_sources) const {
-  if (IsDetached())
-    return String();
-
-  if (IsUnplayable()) {
-    auto* element = To<HTMLMediaElement>(GetNode());
-    return element->GetLocale().QueryString(IDS_MEDIA_PLAYBACK_ERROR);
-  }
-  return AXNodeObject::TextAlternative(
-      recursive, aria_label_or_description_root, visited, name_from,
-      related_objects, name_sources);
-}
 
 bool AccessibilityMediaElement::CanHaveChildren() const {
   return true;

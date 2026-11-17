@@ -24,12 +24,6 @@ class AccessibilityMediaElement : public AXNodeObject {
   ~AccessibilityMediaElement() override = default;
 
   // AXNodeObject overrides.
-  String TextAlternative(bool recursive,
-                         const AXObject* aria_label_or_description_root,
-                         AXObjectSet& visited,
-                         ax::mojom::NameFrom&,
-                         AXRelatedObjectVector*,
-                         NameSources*) const override;
   bool CanHaveChildren() const override;
   AXRestriction Restriction() const override;
 
