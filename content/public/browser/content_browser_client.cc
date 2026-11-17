@@ -346,13 +346,6 @@ void ContentBrowserClient::EnsureRequiredHeadersForIsolatedApp(
     network::mojom::URLResponseHead* response_head,
     const std::optional<FrameTreeNodeId>& frame_tree_node) {}
 
-bool ContentBrowserClient::ShouldTryToUseExistingProcessHost(
-    BrowserContext* browser_context,
-    const GURL& url) {
-  DCHECK(browser_context);
-  return false;
-}
-
 bool ContentBrowserClient::ShouldEmbeddedFramesTryToReuseExistingProcess(
     RenderFrameHost* outermost_main_frame) {
   return true;

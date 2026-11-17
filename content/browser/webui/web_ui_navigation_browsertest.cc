@@ -761,11 +761,11 @@ void OpenUrlViaClickTarget(const ToRenderFrameHost& adapter, const GURL& url) {
                                   url.spec() + "\");"));
 }
 
-// Verify that two WebUIs with a shared process lock host have different
-// SiteInstance and BrowsingInstance even when the WebUI is opened from the
-// other WebUI. Even though they share a process lock host, their hosts are
-// different, so they have different WebUI types which triggers a
-// BrowsingInstance swap.
+// Verify that two WebUIs with a shared process lock host reuse the same
+// renderer process while still having different SiteInstance and
+// BrowsingInstance even when the WebUI is opened from the other WebUI. Even
+// though they share a process lock host, their hosts are different, so they
+// have different WebUI types which triggers a BrowsingInstance swap.
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        SharedProcessLockDifferentSiteInstanceNavigation) {
   ScopedWebUIConfigRegistration foo_config_registration(
@@ -806,20 +806,20 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                 ->GetSiteInfo()
                 .GetProcessLockURL());
 
-  // The 2nd WebUI page should swap to a different process, SiteInstance,
-  // and BrowsingInstance.
-  EXPECT_NE(process1_id, process2_id);
+  // The 2nd WebUI page should reuse the shared process while swapping to a
+  // different SiteInstance, SiteInstanceGroup, and BrowsingInstance.
+  EXPECT_EQ(process1_id, process2_id);
   EXPECT_NE(site_instance2, site_instance1);
   EXPECT_NE(static_cast<SiteInstanceImpl*>(site_instance2)->group(),
             static_cast<SiteInstanceImpl*>(site_instance1)->group());
   EXPECT_FALSE(site_instance2->IsRelatedSiteInstance(site_instance1));
 }
 
-// Verify that two WebUIs with a shared process lock host have different
-// SiteInstance and BrowsingInstance even when the WebUI is opened from the
-// other WebUI. Even though they share a process lock host, their hosts are
-// different, so they have different WebUI types which triggers a
-// BrowsingInstance swap.
+// Verify that two WebUIs with a shared process lock host reuse the same
+// renderer process while still having different SiteInstance and
+// BrowsingInstance even when the WebUI is opened from the other WebUI in a new
+// tab. Even though they share a process lock host, their hosts are different,
+// so they have different WebUI types which triggers a BrowsingInstance swap.
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        SharedProcessLockDifferentSiteInstanceUrlClick) {
   ScopedWebUIConfigRegistration foo_config_registration(
@@ -863,9 +863,9 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                 ->GetSiteInfo()
                 .GetProcessLockURL());
 
-  // The 2nd WebUI page should swap to a different process, SiteInstance,
-  // and BrowsingInstance.
-  EXPECT_NE(process1_id, process2_id);
+  // The 2nd WebUI page should reuse the shared process while swapping to a
+  // different SiteInstance, SiteInstanceGroup, and BrowsingInstance.
+  EXPECT_EQ(process1_id, process2_id);
   EXPECT_NE(site_instance2, site_instance1);
   EXPECT_NE(static_cast<SiteInstanceImpl*>(site_instance2)->group(),
             static_cast<SiteInstanceImpl*>(site_instance1)->group());
@@ -918,6 +918,45 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
             site_instance2->GetSiteInfo().GetProcessLockURL());
 
   // The two instances should not share a process.
+  EXPECT_NE(site_instance1->GetProcess()->GetID(),
+            site_instance2->GetProcess()->GetID());
+}
+
+// Verify that two WebUIs whose WebUIConfigs specify different process lock
+// hosts do not share a renderer process.
+IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
+                       DifferentProcessLockHostsDoNotShareProcess) {
+  ScopedWebUIConfigRegistration foo_config_registration(
+      std::make_unique<TestWebUIConfig>("foo.web-ui-a", "web-ui-a"));
+  ScopedWebUIConfigRegistration bar_config_registration(
+      std::make_unique<TestWebUIConfig>("bar.web-ui-b", "web-ui-b"));
+
+  GURL url1(
+      "chrome://foo.web-ui-a/title1.html?bindings=" +
+      base::NumberToString(
+          BindingsPolicySet({BindingsPolicyValue::kWebUi}).ToEnumBitmask()));
+  GURL url2(
+      "chrome://bar.web-ui-b/title1.html?bindings=" +
+      base::NumberToString(
+          BindingsPolicySet({BindingsPolicyValue::kWebUi}).ToEnumBitmask()));
+
+  // Visit the two WebUI pages in separate windows.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  Shell* new_shell = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(new_shell, url2));
+
+  auto* site_instance1 = static_cast<SiteInstanceImpl*>(
+      shell()->web_contents()->GetSiteInstance());
+  auto* site_instance2 = static_cast<SiteInstanceImpl*>(
+      new_shell->web_contents()->GetSiteInstance());
+
+  // Each WebUI is locked to its own process lock host.
+  EXPECT_EQ(GURL("chrome://web-ui-a/"),
+            site_instance1->GetSiteInfo().GetProcessLockURL());
+  EXPECT_EQ(GURL("chrome://web-ui-b/"),
+            site_instance2->GetSiteInfo().GetProcessLockURL());
+
+  // The two WebUIs should not share a process.
   EXPECT_NE(site_instance1->GetProcess()->GetID(),
             site_instance2->GetProcess()->GetID());
 }

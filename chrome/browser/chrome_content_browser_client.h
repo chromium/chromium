@@ -303,9 +303,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url,
       network::mojom::URLResponseHead* response_head,
       const std::optional<content::FrameTreeNodeId>& frame_tree_node) override;
-  bool ShouldTryToUseExistingProcessHost(
-      content::BrowserContext* browser_context,
-      const GURL& url) override;
   bool ShouldEmbeddedFramesTryToReuseExistingProcess(
       content::RenderFrameHost* outermost_main_frame) override;
   void SiteInstanceGotProcessAndSite(

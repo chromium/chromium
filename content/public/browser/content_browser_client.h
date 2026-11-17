@@ -754,13 +754,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       network::mojom::URLResponseHead* response_head,
       const std::optional<FrameTreeNodeId>& frame_tree_node);
 
-  // Returns whether a new process should be created or an existing one should
-  // be reused based on the URL we want to load. This should return false,
-  // unless there is a good reason otherwise.
-  virtual bool ShouldTryToUseExistingProcessHost(
-      BrowserContext* browser_context,
-      const GURL& url);
-
   // Returns whether or not embedded frames (subframes or embedded main frames)
   // of |outermost_main_frame| should try to aggressively reuse existing
   // processes, even when below process limit.  This gets called when navigating
@@ -895,8 +888,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allow the embedder to control the maximum renderer process count. Only
   // applies if it is set to a non-zero value.  Once this limit is exceeded,
-  // existing processes will be reused whenever possible, see
-  // `ShouldTryToUseExistingProcessHost()`.
+  // existing processes will be reused whenever possible.
   virtual size_t GetMaxRendererProcessCountOverride();
 
   // Indicates whether a file path should be accessible via file URL given a

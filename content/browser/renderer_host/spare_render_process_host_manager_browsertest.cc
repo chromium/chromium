@@ -22,6 +22,8 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -38,6 +40,8 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -577,7 +581,7 @@ class SpareRendererContentBrowserClient
 };
 
 // A mock ContentBrowserClient that only considers a non-spare renderer to be a
-// suitable host, but otherwise tries to reuse processes.
+// suitable host, and uses process-per-site to reuse existing processes.
 class NonSpareRendererContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
@@ -593,8 +597,9 @@ class NonSpareRendererContentBrowserClient
     return !process_host->IsSpare();
   }
 
-  bool ShouldTryToUseExistingProcessHost(BrowserContext* context,
-                                         const GURL& url) override {
+  bool ShouldUseProcessPerSite(
+      BrowserContext* browser_context,
+      const SecurityPrincipal& security_principal) override {
     return true;
   }
 
@@ -784,6 +789,8 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   NonSpareRendererContentBrowserClient browser_client;
+  GURL test_url = embedded_test_server()->GetURL("/simple_page.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   spare_manager.WarmupSpare(browser_context());
@@ -792,7 +799,10 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   EXPECT_NE(nullptr, spare_renderer);
 
   // This should reuse the existing process.
-  Shell* new_browser = CreateBrowser();
+  Shell* new_browser = Shell::CreateNewWindow(
+      browser_context(), test_url,
+      SiteInstance::CreateForURL(browser_context(), test_url), gfx::Size());
+  EXPECT_TRUE(WaitForLoadStop(new_browser->web_contents()));
   EXPECT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
             new_browser->web_contents()->GetPrimaryMainFrame()->GetProcess());
   EXPECT_NE(spare_renderer,

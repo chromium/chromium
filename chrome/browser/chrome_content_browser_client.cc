@@ -2559,17 +2559,6 @@ void ChromeContentBrowserClient::EnsureRequiredHeadersForIsolatedApp(
 #endif
 }
 
-bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  // WebUIs whose WebUIConfig specifies a `process_lock_host()` (e.g. Top Chrome
-  // WebUIs) should try to share a RenderProcessHost with other existing WebUIs
-  // that use the same process lock host.
-  return content::WebUIConfigMap::GetInstance()
-      .GetProcessLockHost(url)
-      .has_value();
-}
-
 bool ChromeContentBrowserClient::ShouldEmbeddedFramesTryToReuseExistingProcess(
     content::RenderFrameHost* outermost_main_frame) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

@@ -5,8 +5,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -16,7 +19,9 @@
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 // Tests embedder specific behavior of WebUIs.
@@ -104,4 +109,47 @@ IN_PROC_BROWSER_TEST_F(
   // Retrieve the RenderFrameHost again since it might have been swapped.
   child = content::ChildFrameAt(main_frame, 0);
   EXPECT_EQ(content::kBlockedURL, child->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebUINavigationBrowserTest,
+                       ShouldReuseRendererWhenTopChromePagesPresent) {
+  const GURL top_chrome_url1(chrome::kChromeUITabSearchURL);
+  const GURL top_chrome_url2(chrome::kChromeUIReadLaterURL);
+  const GURL non_top_chrome_url(chrome::kChromeUIVersionURL);
+
+  content::RenderFrameHost* top_chrome_rfh1 =
+      ui_test_utils::NavigateToURL(browser(), top_chrome_url1);
+  ASSERT_TRUE(top_chrome_rfh1);
+  content::RenderFrameHost* top_chrome_rfh2 =
+      ui_test_utils::NavigateToURLWithDisposition(
+          browser(), top_chrome_url2, WindowOpenDisposition::kNewForegroundTab,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(top_chrome_rfh2);
+  content::RenderFrameHost* non_top_chrome_rfh1 =
+      ui_test_utils::NavigateToURLWithDisposition(
+          browser(), non_top_chrome_url,
+          WindowOpenDisposition::kNewForegroundTab,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(non_top_chrome_rfh1);
+  content::RenderFrameHost* non_top_chrome_rfh2 =
+      ui_test_utils::NavigateToURLWithDisposition(
+          browser(), non_top_chrome_url,
+          WindowOpenDisposition::kNewForegroundTab,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(non_top_chrome_rfh2);
+
+  content::RenderProcessHost* top_chrome_process =
+      top_chrome_rfh1->GetProcess();
+  content::RenderProcessHost* non_top_chrome_process1 =
+      non_top_chrome_rfh1->GetProcess();
+  content::RenderProcessHost* non_top_chrome_process2 =
+      non_top_chrome_rfh2->GetProcess();
+
+  // Top Chrome WebUIs share the same renderer process, while non-Top Chrome
+  // WebUI tabs neither share the Top Chrome process nor share a process with
+  // each other.
+  EXPECT_EQ(top_chrome_process, top_chrome_rfh2->GetProcess());
+  EXPECT_NE(top_chrome_process, non_top_chrome_process1);
+  EXPECT_NE(top_chrome_process, non_top_chrome_process2);
+  EXPECT_NE(non_top_chrome_process1, non_top_chrome_process2);
 }

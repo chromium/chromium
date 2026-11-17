@@ -859,7 +859,8 @@ bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
   // Returns true if we should use the process-per-site model.  This will be
   // the case if the --process-per-site switch is specified, or in
   // process-per-site-instance for particular sites (e.g., NTP). Note that
-  // --single-process is handled in ShouldTryToUseExistingProcessHost.
+  // --single-process is handled in
+  // `RenderProcessHost::IsProcessLimitReached()`.
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kProcessPerSite)) {

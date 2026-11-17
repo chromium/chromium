@@ -166,6 +166,7 @@
 #include "content/public/browser/tracing_support.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/webrtc_log.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -5529,20 +5530,17 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
         FindEmptyBackgroundHostForReuse(browser_context, site_instance);
   }
 
+  // WebUIs that specify a shared process lock host should try to share an
+  // existing RenderProcessHost with other WebUIs using the same lock host.
+  if (!render_process_host && WebUIConfigMap::GetInstance()
+                                  .GetProcessLockHost(site_info.site_url())
+                                  .has_value()) {
+    render_process_host = GetExistingProcessHost(site_instance);
+  }
+
   if (render_process_host) {
     site_instance->set_process_assignment(
         SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS);
-  }
-
-  // See if the embedder prefers using an existing process.
-  if (!render_process_host &&
-      GetContentClient()->browser()->ShouldTryToUseExistingProcessHost(
-          browser_context, site_info.site_url())) {
-    render_process_host = GetExistingProcessHost(site_instance);
-    if (render_process_host) {
-      site_instance->set_process_assignment(
-          SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS);
-    }
   }
 
   // If not (or if none found), see if the spare RenderProcessHost can be used.

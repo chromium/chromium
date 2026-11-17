@@ -2427,55 +2427,6 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientClipboardTest,
   EXPECT_TRUE(web_contents->HasRecentInteraction());
 }
 
-class TopChromeChromeContentBrowserClientTest
-    : public ChromeContentBrowserClientBrowserTest {
- public:
-  // ChromeContentBrowserClientBrowserTest:
-  void SetUpOnMainThread() override {
-    ChromeContentBrowserClientBrowserTest::SetUpOnMainThread();
-    client_ = static_cast<ChromeContentBrowserClient*>(
-        content::GetContentClientForTesting()->browser());
-  }
-
-  ChromeContentBrowserClient* client() { return client_; }
-
- private:
-  raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
-                       ShouldReuseRendererWhenTopChromePagesPresent) {
-  const GURL top_chrome_url(chrome::kChromeUITabSearchURL);
-  const GURL top_chrome_url2(chrome::kChromeUIReadLaterURL);
-  const GURL random_url(GURL("www.google.com"));
-
-  const auto navigate_browser = [&](const GURL& url, int index) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    content::NavigationEntry* entry = browser()
-                                          ->tab_strip_model()
-                                          ->GetWebContentsAt(index)
-                                          ->GetController()
-                                          .GetLastCommittedEntry();
-    ASSERT_NE(nullptr, entry);
-    EXPECT_EQ(url, entry->GetURL());
-    EXPECT_EQ(url, entry->GetVirtualURL());
-  };
-
-  // Navigate to a top chrome URL.
-  navigate_browser(top_chrome_url, 0);
-
-  // The browser now hosts a top chrome page and the client should return true
-  // to reuse the current renderer Host for the other Top Chrome UI pages.
-  EXPECT_TRUE(client()->ShouldTryToUseExistingProcessHost(
-      browser()->GetProfile(), top_chrome_url2));
-
-  // Should not reuse existing process host for pages that are not Top Chrome
-  // UI.
-  EXPECT_FALSE(client()->ShouldTryToUseExistingProcessHost(
-      browser()->GetProfile(), random_url));
-}
-
 class BundledCodeCacheChromeContentBrowserClientTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {
