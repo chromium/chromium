@@ -80,15 +80,14 @@ std::string PendingNetworkConfigurationTrackerImpl::TrackPendingUpdate(
   else
     CHECK(specifics->SerializeToString(&serialized_specifics));
 
-  // base::Value only allows UTF8 encoded strings.
-  std::string encoded_specifics;
-  base::Base64UrlEncode(serialized_specifics,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_specifics);
   std::string change_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   dict_.SetByDottedPath(GeneratePath(id, kChangeGuidKey), change_guid);
-  dict_.SetByDottedPath(GeneratePath(id, kSpecificsKey), encoded_specifics);
+  // base::Value only allows UTF8 encoded strings.
+  dict_.SetByDottedPath(
+      GeneratePath(id, kSpecificsKey),
+      base::Base64UrlEncode(serialized_specifics,
+                            base::Base64UrlEncodePolicy::INCLUDE_PADDING));
   dict_.SetByDottedPath(GeneratePath(id, kCompletedAttemptsKey), 0);
   pref_service_->SetDict(kPendingNetworkConfigurationsPref, dict_.Clone());
 

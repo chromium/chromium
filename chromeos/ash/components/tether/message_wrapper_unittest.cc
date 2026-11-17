@@ -120,10 +120,9 @@ TEST_F(MessageWrapperTest, TestHandleInvalidJson) {
 
 TEST_F(MessageWrapperTest, TestHandleJsonWithoutType) {
   ConnectTetheringRequest request;
-  std::string encoded_message;
-  base::Base64UrlEncode(request.SerializeAsString(),
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_message);
+  std::string encoded_message =
+      base::Base64UrlEncode(request.SerializeAsString(),
+                            base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 
   std::stringstream ss;
   ss << "{\"data\": \"" << encoded_message << "\"}";
@@ -168,10 +167,9 @@ TEST_F(MessageWrapperTest, TestFromRawMessage_StringLiteral) {
 
 TEST_F(MessageWrapperTest, TestFromRawMessage_ExtraJsonKeyValuePair) {
   TetherAvailabilityResponse response = CreateTetherAvailabilityResponse();
-  std::string response_string_base64;
-  base::Base64UrlEncode(response.SerializeAsString(),
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &response_string_base64);
+  std::string response_string_base64 =
+      base::Base64UrlEncode(response.SerializeAsString(),
+                            base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 
   std::stringstream ss;
   ss << "{\"type\":"

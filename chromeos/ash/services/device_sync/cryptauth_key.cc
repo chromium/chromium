@@ -22,10 +22,8 @@ const char kPrivateKeyDictKey[] = "private_key";
 
 // Returns the base64url-encoded SHA256 hash of the input string.
 std::string CreateHandle(std::string_view str) {
-  std::string handle;
-  base::Base64UrlEncode(crypto::hash::Sha256(base::as_byte_span(str)),
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING, &handle);
-  return handle;
+  return base::Base64UrlEncode(crypto::hash::Sha256(base::as_byte_span(str)),
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 bool IsSymmetricKeyType(cryptauthv2::KeyType type) {

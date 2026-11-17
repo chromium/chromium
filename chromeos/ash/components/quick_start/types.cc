@@ -14,14 +14,13 @@
 namespace ash::quick_start {
 
 Base64UrlString Base64UrlEncode(const std::vector<uint8_t>& data) {
-  Base64UrlString result;
-  base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &(result.value()));
-  return result;
+  return Base64UrlString(
+      base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING));
 }
 
 Base64UrlString Base64UrlEncode(const std::string& data) {
-  return Base64UrlEncode(std::vector<uint8_t>(data.begin(), data.end()));
+  return Base64UrlString(
+      base::Base64UrlEncode(data, base::Base64UrlEncodePolicy::OMIT_PADDING));
 }
 
 std::optional<Base64UrlString> Base64UrlTranscode(const Base64String& data) {

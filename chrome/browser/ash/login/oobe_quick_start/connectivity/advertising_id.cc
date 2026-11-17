@@ -53,12 +53,8 @@ AdvertisingId::AdvertisingId(base::span<const uint8_t, kLength> bytes) {
 }
 
 std::string AdvertisingId::ToString() const {
-  std::string advertising_id_bytes(bytes_.begin(), bytes_.end());
-  std::string advertising_id_base64;
-  base::Base64UrlEncode(advertising_id_bytes,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &advertising_id_base64);
-  return advertising_id_base64;
+  return base::Base64UrlEncode(bytes_,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::string AdvertisingId::GetDisplayCode() const {

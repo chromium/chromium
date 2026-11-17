@@ -6,9 +6,7 @@
 
 #include <map>
 #include <string>
-#include <string_view>
 
-#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/strings/string_number_conversions.h"
 
@@ -45,12 +43,8 @@ std::string InstanceIdFromInt64(int64_t number) {
   bytes[0] &= 0x0f;
   bytes[0] |= 0x70;
 
-  std::string iid;
-  base::Base64UrlEncode(
-      std::string_view(reinterpret_cast<const char*>(bytes), sizeof(bytes)),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &iid);
-
-  return iid;
+  return base::Base64UrlEncode(bytes,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 }  // namespace

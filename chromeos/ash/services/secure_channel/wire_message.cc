@@ -193,12 +193,9 @@ std::string WireMessage::Serialize() const {
 
     // Create JSON body containing feature and payload.
     base::DictValue body;
-
-    std::string base64_payload;
-    base::Base64UrlEncode(payload_,
-                          base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &base64_payload);
-    body.Set(kPayloadKey, base64_payload);
+    body.Set(kPayloadKey,
+             base::Base64UrlEncode(
+                 payload_, base::Base64UrlEncodePolicy::INCLUDE_PADDING));
     body.Set(kFeatureKey, feature_);
 
     if (!base::JSONWriter::Write(body, &json_body)) {

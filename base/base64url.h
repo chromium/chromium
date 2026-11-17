@@ -5,6 +5,8 @@
 #ifndef BASE_BASE64URL_H_
 #define BASE_BASE64URL_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>
@@ -36,6 +38,14 @@ BASE_EXPORT void Base64UrlEncode(span<const uint8_t> input,
 BASE_EXPORT void Base64UrlEncode(std::string_view input,
                                  Base64UrlEncodePolicy policy,
                                  std::string* output);
+
+// Same as the previous functions, but returning the encoded string.
+[[nodiscard]] BASE_EXPORT std::string Base64UrlEncode(
+    span<const uint8_t> input,
+    Base64UrlEncodePolicy policy);
+[[nodiscard]] BASE_EXPORT std::string Base64UrlEncode(
+    std::string_view input,
+    Base64UrlEncodePolicy policy);
 
 // Same as Base64UrlEncode(), but does not access any base::Feature.
 // This is only necessary for code that runs at early startup before

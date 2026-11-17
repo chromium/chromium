@@ -14,12 +14,8 @@ namespace device_sync {
 namespace util {
 
 std::string EncodeAsString(const std::string& unencoded_string) {
-  std::string encoded_string;
-  base::Base64UrlEncode(unencoded_string,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_string);
-
-  return encoded_string;
+  return base::Base64UrlEncode(unencoded_string,
+                               base::Base64UrlEncodePolicy::INCLUDE_PADDING);
 }
 
 std::optional<std::string> DecodeFromString(const std::string& encoded_string) {

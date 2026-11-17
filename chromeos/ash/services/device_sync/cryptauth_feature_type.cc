@@ -287,12 +287,8 @@ std::string CryptAuthFeatureTypeToGcmHash(CryptAuthFeatureType feature_type) {
   auto hash = crypto::hash::Sha256(
       base::as_byte_span(CryptAuthFeatureTypeToString(feature_type)));
 
-  std::string hash_base64url;
-  base::Base64UrlEncode(base::span(hash).first(8u),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &hash_base64url);
-
-  return hash_base64url;
+  return base::Base64UrlEncode(base::span(hash).first(8u),
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
 }
 
 std::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromGcmHash(

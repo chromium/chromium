@@ -158,14 +158,12 @@ MessageType MessageWrapper::GetMessageType() const {
 }
 
 std::string MessageWrapper::ToRawMessage() const {
-  std::string encoded_message;
-  base::Base64UrlEncode(proto_->SerializeAsString(),
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_message);
-
   base::DictValue json_dictionary;
   json_dictionary.Set(kJsonTypeKey, static_cast<int>(type_));
-  json_dictionary.Set(kJsonDataKey, encoded_message);
+  json_dictionary.Set(
+      kJsonDataKey,
+      base::Base64UrlEncode(proto_->SerializeAsString(),
+                            base::Base64UrlEncodePolicy::INCLUDE_PADDING));
 
   return base::WriteJson(json_dictionary).value_or("");
 }

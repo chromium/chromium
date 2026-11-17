@@ -163,18 +163,18 @@ std::string FuseBoxSubdirADP(const std::string& authority,
   std::string hash = crypto::SHA256HashString(
       arc::GetDocumentsProviderMountPathSuffix(authority, root_id)
           .AsUTF8Unsafe());
-  std::string b64;
-  base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
-  return base::StrCat({util::kFuseBoxSubdirPrefixADP, b64});
+  return base::StrCat(
+      {util::kFuseBoxSubdirPrefixADP,
+       base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING)});
 }
 
 std::string FuseBoxSubdirFSP(
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info) {
   std::string hash =
       crypto::SHA256HashString(file_system_info.mount_path().value());
-  std::string b64;
-  base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
-  return base::StrCat({util::kFuseBoxSubdirPrefixFSP, b64});
+  return base::StrCat(
+      {util::kFuseBoxSubdirPrefixFSP,
+       base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING)});
 }
 
 std::string FuseBoxSubdirMTP(const std::string& device_id) {
@@ -182,9 +182,9 @@ std::string FuseBoxSubdirMTP(const std::string& device_id) {
   // unplugging and replugging a phone). It's a hash of the ID, not the ID
   // itself, to avoid sharing the device's unique ID in the file system.
   std::string hash = crypto::SHA256HashString(device_id);
-  std::string b64;
-  base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
-  return base::StrCat({util::kFuseBoxSubdirPrefixMTP, b64});
+  return base::StrCat(
+      {util::kFuseBoxSubdirPrefixMTP,
+       base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING)});
 }
 
 std::string GetMountPointNameForMediaStorage(
