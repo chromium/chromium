@@ -24,6 +24,7 @@
 #import "base/values.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/web/common/features.h"
+#import "ios/web/js_messaging/java_script_content_world_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
@@ -166,7 +167,9 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
       web_frame.CallJavaScriptFunction("functionName", function_params));
   EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", [])",
               last_received_script_);
-  EXPECT_NSEQ(WKContentWorld.defaultClientWorld, last_received_content_world_);
+  EXPECT_NSEQ(
+      WKContentWorldForContentWorldIdentifier(ContentWorld::kIsolatedWorld),
+      last_received_content_world_);
 
   function_params.Append("param1");
   EXPECT_TRUE(
@@ -174,7 +177,9 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
   EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", "
               @"[\"param1\"])",
               last_received_script_);
-  EXPECT_NSEQ(WKContentWorld.defaultClientWorld, last_received_content_world_);
+  EXPECT_NSEQ(
+      WKContentWorldForContentWorldIdentifier(ContentWorld::kIsolatedWorld),
+      last_received_content_world_);
 
   function_params.Append(true);
   function_params.Append(27);
@@ -184,7 +189,9 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrame) {
   EXPECT_NSEQ(@"__gCrWeb.callFunctionInGcrWeb(\"\", \"functionName\", "
               @"[\"param1\",true,27,3.14])",
               last_received_script_);
-  EXPECT_NSEQ(WKContentWorld.defaultClientWorld, last_received_content_world_);
+  EXPECT_NSEQ(
+      WKContentWorldForContentWorldIdentifier(ContentWorld::kIsolatedWorld),
+      last_received_content_world_);
 }
 
 // Tests that the WebFrame properly creates JavaScript for the main frame for
@@ -261,7 +268,9 @@ TEST_F(WebFrameImplTest, CallAsyncJavaScriptFunctionIFrame) {
   EXPECT_NSEQ(@"return __gCrWeb.callFunctionInGcrWeb('api', 'functionName', "
               @"[crw_args]);",
               received_script);
-  EXPECT_NSEQ(WKContentWorld.defaultClientWorld, received_world);
+  EXPECT_NSEQ(
+      WKContentWorldForContentWorldIdentifier(ContentWorld::kIsolatedWorld),
+      received_world);
   ASSERT_TRUE(received_arguments);
   EXPECT_TRUE(
       [received_arguments[@"crw_args"] isKindOfClass:[NSDictionary class]]);

@@ -9,6 +9,7 @@
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
 #import "base/notreached.h"
+#import "ios/web/js_messaging/java_script_content_world_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -67,7 +68,8 @@ void JavaScriptFeatureManager::ConfigureFeatures(
       browser_state_, WKContentWorld.pageWorld);
 
   isolated_world_ = std::make_unique<JavaScriptContentWorld>(
-      browser_state_, WKContentWorld.defaultClientWorld);
+      browser_state_,
+      WKContentWorldForContentWorldIdentifier(ContentWorld::kIsolatedWorld));
 
   for (JavaScriptFeature* feature : features) {
     switch (feature->GetSupportedContentWorld()) {
