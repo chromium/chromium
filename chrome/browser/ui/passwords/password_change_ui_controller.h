@@ -92,8 +92,9 @@ class PasswordChangeUIController {
   void NavigateToPasswordChangeSettings();
   void RetryLoginCheck();
 
-  // Closes the dialog or widget and logs the `reason`.
-  // TODO(crbug.com/407504591): Actually log the reason.
+  // Closes the dialog or toast widget. Passed to `MakeCloseSynchronous()`,
+  // hence the unused `reason`. User interactions are logged by the button
+  // handlers instead (see `LogDialogAction()` and `LogToastEvent()`).
   void CloseDialogWidget(views::Widget::ClosedReason reason);
   void CloseToastWidget(views::Widget::ClosedReason reason);
 
