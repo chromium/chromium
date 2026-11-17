@@ -12,6 +12,7 @@
 
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_delegating_sharing_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -32,6 +33,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/metrics/field_trial.h"
+#include "base/test/scoped_command_line.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/common/chrome_switches.h"
+#endif
 
 namespace glic {
 
@@ -244,6 +252,44 @@ TEST_F(GlicInvokePreparationTest, HasSpecialCaseWebFre) {
     EXPECT_TRUE(HasSpecialCaseWebFre(default_options));
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(GlicInvokePreparationTest, CanUseNativeFre_QueriesFeatureLast) {
+  GlicEnabling::ScopedBypassEnablementChecksForTesting bypass_enablement;
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kGlicDev);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicNativeFreAndroid, {}}},
+      {features::kGlicMessageFirstFre, features::kGlicActionFirstFRE});
+
+  base::FieldTrial* trial =
+      base::FeatureList::GetFieldTrial(features::kGlicNativeFreAndroid);
+  ASSERT_TRUE(trial);
+  ASSERT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  EXPECT_FALSE(CanUseNativeFre(options, &profile_));
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      static_cast<int>(prefs::FreStatus::kNotStarted));
+
+  GlicInvokeOptions override_options(mojom::InvocationSource::kOsButton);
+  override_options.fre_override = mojom::FreOverride::kTrustFirstInline;
+  EXPECT_FALSE(CanUseNativeFre(override_options, &profile_));
+  EXPECT_FALSE(CanUseNativeFre(
+      GlicInvokeOptions(mojom::InvocationSource::kUniversalCart), &profile_));
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+
+  EXPECT_TRUE(CanUseNativeFre(options, &profile_));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class FakeSharingManager : public GlicDelegatingSharingManagerBase {
  public:

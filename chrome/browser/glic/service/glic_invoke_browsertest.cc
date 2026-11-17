@@ -3298,9 +3298,8 @@ class GlicInvokeNativeFreAndroidBrowserTest : public GlicInvokeBrowserTest {
  public:
   GlicInvokeNativeFreAndroidBrowserTest() {
     SetGlicPagePath("/glic/test_client/index.html");
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicNativeFreAndroid,
-                               {{"enabled_countries", "*"}}}},
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicNativeFreAndroid},
         /*disabled_features=*/{features::kGlicMessageFirstFre,
                                features::kGlicActionFirstFRE});
   }

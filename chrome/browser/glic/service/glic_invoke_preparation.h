@@ -41,8 +41,8 @@ bool ShouldUseTrustFirstInlineFre(Profile* profile);
 bool HasSpecialCaseWebFre(const GlicInvokeOptions& options);
 
 // Returns whether an invocation should open in Android native FRE mode.
-// Eligible profiles get the native FRE when no entry point or experiment asked
-// for a specific web FRE.
+// Unconsented, eligible profiles get the native FRE when no entry point or
+// experiment asked for a specific web FRE.
 bool CanUseNativeFre(const GlicInvokeOptions& options, Profile* profile);
 
 // Expands `options.tab_sharing` to pin all multi-selected tabs (plus the active

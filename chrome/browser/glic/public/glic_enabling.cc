@@ -248,30 +248,6 @@ bool IsCountryInList(
   });
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// IsCountryInList() with the current variations countries.
-bool IsCurrentCountryInList(base::span<const std::string> country_list) {
-  return IsCountryInList(country_list, GetVariationsPermanentCountryCode(),
-                         GetVariationsSessionCountryCode());
-}
-
-// Native FRE is restricted to the `enabled_countries` param of
-// kGlicNativeFreAndroid; other regions use Web FRE.
-bool IsCountryEligibleForNativeFre() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev)) {
-    return true;
-  }
-  const std::vector<std::string> enabled_countries =
-      GetFieldTrialParamAsSplitString(features::kGlicNativeFreAndroid,
-                                      "enabled_countries",
-                                      kDefaultEnabledCountries);
-  if (enabled_countries.size() == 1 && enabled_countries[0] == "*") {
-    return true;
-  }
-  return IsCurrentCountryInList(enabled_countries);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Evaluates the enabled/disabled country lists configured via the params of
 // `feature`. Assumes that `feature` is enabled. The result is recorded to
 // `histogram_name`.
@@ -1798,10 +1774,6 @@ bool GlicEnabling::IsProfileEligibleForNativeFre(Profile* profile) {
 #if !BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  if (!base::FeatureList::IsEnabled(features::kGlicNativeFreAndroid)) {
-    return false;
-  }
-
   if (!profile || !profile->IsRegularProfile() || !IsReadyForProfile(profile)) {
     return false;
   }
@@ -1829,7 +1801,8 @@ bool GlicEnabling::IsProfileEligibleForNativeFre(Profile* profile) {
     }
   }
 
-  return IsCountryEligibleForNativeFre();
+  // Query last: this activates the Finch study.
+  return base::FeatureList::IsEnabled(features::kGlicNativeFreAndroid);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

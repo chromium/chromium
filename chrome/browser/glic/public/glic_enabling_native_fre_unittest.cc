@@ -9,6 +9,7 @@
 #include "base/android/android_info.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,15 +25,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/metrics/metrics_state_manager.h"
-#include "components/metrics/startup_visibility.h"
-#include "components/metrics/test/test_enabled_state_provider.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/variations/pref_names.h"
-#include "components/variations/service/test_variations_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,16 +73,6 @@ class GlicEnablingNativeFreTest : public testing::Test {
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
-
-    variations::TestVariationsService::RegisterPrefs(local_state_.registry());
-    metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &local_state_, &enabled_state_provider_, std::wstring(),
-        base::FilePath(), metrics::StartupVisibility::kUnknown);
-    variations_service_ = std::make_unique<variations::TestVariationsService>(
-        &local_state_, metrics_state_manager_.get());
-    variations_service_->OverrideStoredPermanentCountry("us");
-    TestingBrowserProcess::GetGlobal()->SetVariationsService(
-        variations_service_.get());
   }
 
   void TearDown() override {
@@ -96,9 +81,6 @@ class GlicEnablingNativeFreTest : public testing::Test {
       testing::Test::TearDown();
       return;
     }
-    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
-    variations_service_.reset();
-    metrics_state_manager_.reset();
     identity_test_env_adaptor_.reset();
     profile_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
@@ -109,10 +91,6 @@ class GlicEnablingNativeFreTest : public testing::Test {
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
-  }
-
-  variations::TestVariationsService* variations_service() {
-    return variations_service_.get();
   }
 
   void SignInAsAdult() {
@@ -144,12 +122,6 @@ class GlicEnablingNativeFreTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  TestingPrefServiceSimple local_state_;
-  metrics::TestEnabledStateProvider enabled_state_provider_{/*consent=*/false,
-                                                            /*enabled=*/false};
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-  std::unique_ptr<variations::TestVariationsService> variations_service_;
 
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
@@ -208,59 +180,25 @@ TEST_F(GlicEnablingNativeFreTest, AccountCapabilitiesAndEnterprise) {
   EXPECT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
 }
 
-TEST_F(GlicEnablingNativeFreTest, CountryFiltering) {
-  SignInAsAdult();
+TEST_F(GlicEnablingNativeFreTest, FeatureTrialActivatesOnlyWhenEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGlicNativeFreAndroid, {}}}, {});
+  base::FieldTrial* trial =
+      base::FeatureList::GetFieldTrial(features::kGlicNativeFreAndroid);
+  ASSERT_TRUE(trial);
+  ASSERT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
 
-  // Default enabled_countries ("us,in") matches case-insensitively.
-  variations_service()->OverrideStoredPermanentCountry("us");
-  EXPECT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
-  variations_service()->OverrideStoredPermanentCountry("IN");
-  EXPECT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
-  variations_service()->OverrideStoredPermanentCountry("kr");
   EXPECT_FALSE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
+  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
 
-  // Session country is ignored when kGlicUseSessionCountryForFiltering is off,
-  // and OR'd with permanent country when on.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kGlicUseSessionCountryForFiltering);
-    variations_service()->OverrideStoredPermanentCountry("kr");
-    local_state_.SetString(variations::prefs::kVariationsCountry, "us");
-    EXPECT_FALSE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kGlicUseSessionCountryForFiltering);
-    variations_service()->OverrideStoredPermanentCountry("kr");
-    local_state_.SetString(variations::prefs::kVariationsCountry, "IN");
-    EXPECT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
-    local_state_.SetString(variations::prefs::kVariationsCountry, "");
-  }
-
-  // Custom enabled_countries param and "*" wildcard.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kGlicNativeFreAndroid, {{"enabled_countries", "gb,DE"}});
-    variations_service()->OverrideStoredPermanentCountry("de");
-    EXPECT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
-    variations_service()->OverrideStoredPermanentCountry("us");
-    EXPECT_FALSE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kGlicNativeFreAndroid, {{"enabled_countries", "*"}});
-    variations_service()->OverrideStoredPermanentCountry("kr");
-    EXPECT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
-  }
+  SignInAsAdult();
+  EXPECT_TRUE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial->trial_name()));
 }
 
-TEST_F(GlicEnablingNativeFreTest, GlicDevBypassesAdultAndCountryChecks) {
+TEST_F(GlicEnablingNativeFreTest, GlicDevBypassesAdultCheck) {
   SignInAsMinor();
-  variations_service()->OverrideStoredPermanentCountry("kr");
   EXPECT_FALSE(GlicEnabling::IsProfileEligibleForNativeFre(profile()));
 
   base::test::ScopedCommandLine scoped_command_line;
