@@ -148,11 +148,8 @@ external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversa
 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt/004.html
 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt-and-unload-script-closeable.html
 external/wpt/html/browsers/origin/cross-origin-objects/cross-origin-objects.html
-external/wpt/html/browsers/the-window-object/open-close/open-features-is-popup-condition.html*
-external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html
-external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-innerwidth.html
-external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization*
-external/wpt/html/browsers/the-window-object/window-open-popup-behavior.html
+external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-screenx-screeny.html
+external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-top-left.html
 external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.dropShadow.tentative.html
 external/wpt/html/canvas/element/filters/2d.filter.layers.dropShadow.tentative.html
 external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html
