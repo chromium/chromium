@@ -227,7 +227,7 @@ constexpr base::FeatureParam<int> kCsdForceRequestDelayMs{
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kClientSideDetectionServerModelForScamDetectionDesktop,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int>
     kClientSideDetectionServerModelMaxScansPerDayDesktop{
         &kClientSideDetectionServerModelForScamDetectionDesktop,

@@ -730,7 +730,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled,
 
   EXPECT_EQ(delegate_->GetIntelligentScanModelType(
                 /*log_failed_eligibility_reason=*/true),
-            ModelType::kNotSupportedOnDevice);
+            ModelType::kNotSupportedServerSide);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled,
