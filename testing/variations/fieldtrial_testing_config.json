@@ -9697,6 +9697,28 @@
             ]
         }
     ],
+    "GlicColdWarmingAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_300s_20261027",
+                    "params": {
+                        "glic-warming-delay-ms": "300000"
+                    },
+                    "enable_features": [
+                        "GlicWarming"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicColdWarmingInitiallyHidden": [
         {
             "platforms": [
