@@ -4431,26 +4431,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.SystemTray.BlockedNotifiersAfterUpdate"
-    units="notifiers" expires_after="2023-05-10">
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <summary>
-    Tracks the number of blocked notifiers in the system tray after the user
-    blocks one or multiple notifiers. Note that this metric records the number
-    of blocked notifiers *after* the update.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.SystemTray.BlockedNotifiersOnOpen" units="notifiers"
-    expires_after="2023-05-10">
-  <owner>amehfooz@chromium.org</owner>
-  <owner>cros-status-area@google.com</owner>
-  <summary>
-    Tracks the number of blocked notifiers in the system tray when it is opened.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.SystemTray.FirstInteraction"
     enum="CrosSystemTrayFirstInteraction" expires_after="2025-07-13">
   <owner>amehfooz@chromium.org</owner>
