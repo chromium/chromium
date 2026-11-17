@@ -151,6 +151,7 @@ ActorKeyedServiceProtoWrapper::BuildActionsResult(
     response.set_index_of_failed_action(*index_of_failed_action);
   }
   CopyScriptToolResults(response, action_results);
+  CopyExecuteJsResults(response, action_results);
 
   for (const auto& action_result : action_results) {
     if (IsOk(*action_result.result)) {

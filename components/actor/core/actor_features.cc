@@ -194,6 +194,8 @@ BASE_FEATURE(kActorScriptToolTransientUserActivation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorScriptToolIdValidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kActorExecuteJsTool, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kActorRecordInvocationSourceCompletionMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

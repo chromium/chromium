@@ -192,6 +192,28 @@ void CopyScriptToolResults(
   }
 }
 
+// Copies ExecuteJS action results in `action_results` to the input proto. For a
+// failed action, copies the JavaScript error the renderer reported, if any.
+template <typename T>
+void CopyExecuteJsResults(
+    T& proto,
+    const std::vector<ActionResultWithLatencyInfo>& action_results) {
+  for (size_t i = 0; i < action_results.size(); ++i) {
+    const mojom::ActionResult& result = *action_results[i].result;
+    const auto& response = result.execute_js_response;
+    if (IsOk(result) && response) {
+      auto* execute_js_result = proto.add_execute_js_results();
+      execute_js_result->set_index_of_execute_js_action(i);
+      execute_js_result->set_result(response->result);
+      execute_js_result->set_truncated(response->truncated);
+    } else if (response && response->js_error_message) {
+      auto* execute_js_result = proto.add_execute_js_results();
+      execute_js_result->set_index_of_execute_js_action(i);
+      execute_js_result->set_js_error_message(*response->js_error_message);
+    }
+  }
+}
+
 // Creates a FetchPageProgressListener that logs events to the journal.
 std::unique_ptr<page_content_annotations::FetchPageProgressListener>
 CreateActorJournalFetchPageProgressListener(

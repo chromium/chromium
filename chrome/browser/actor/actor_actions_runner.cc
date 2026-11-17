@@ -114,6 +114,11 @@ void SetTabIdIfMissing(optimization_guide::proto::Action& action,
         action.mutable_script_tool()->set_tab_id(tab_id);
       }
       break;
+    case optimization_guide::proto::Action::kExecuteJs:
+      if (!action.execute_js().has_tab_id()) {
+        action.mutable_execute_js()->set_tab_id(tab_id);
+      }
+      break;
     case optimization_guide::proto::Action::kScrollTo:
       if (!action.scroll_to().has_tab_id()) {
         action.mutable_scroll_to()->set_tab_id(tab_id);
