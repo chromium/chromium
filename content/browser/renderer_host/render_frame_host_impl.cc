@@ -19,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -16797,19 +16798,36 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       SCOPED_CRASH_KEY_STRING256("SameDocIRP", "url", params->url.spec());
       SCOPED_CRASH_KEY_STRING256("SameDocIRP", "origin",
                                  GetLastCommittedOrigin().GetDebugString());
-      // TODO(crbug.com/549229687): Collect data on the mismatch before
-      // enforcing. The root cause is not yet identified — keeping as
-      // DumpWithoutCrashing to gather crash reports without killing the
-      // renderer.
+      // TODO(crbug.com/40580002): Replace with a renderer kill after confirming
+      // that the insecure request state fixes have addressed the mismatches.
       base::debug::DumpWithoutCrashing();
     }
 
     if (params->insecure_navigations_set !=
         frame_tree_node_->current_replication_state()
             .insecure_navigations_set) {
-      bad_message::ReceivedBadMessage(
-          GetProcess(), bad_message::RFH_SAME_DOC_INSECURE_NAV_SET_CHANGE);
-      return false;
+      SCOPED_CRASH_KEY_NUMBER("SameDocINS", "renderer_set_size",
+                              params->insecure_navigations_set.size());
+      SCOPED_CRASH_KEY_NUMBER("SameDocINS", "browser_set_size",
+                              frame_tree_node_->current_replication_state()
+                                  .insecure_navigations_set.size());
+      SCOPED_CRASH_KEY_STRING256(
+          "SameDocINS", "renderer_set",
+          base::ToString(base::span(params->insecure_navigations_set)));
+      SCOPED_CRASH_KEY_STRING256(
+          "SameDocINS", "browser_set",
+          base::ToString(
+              base::span(frame_tree_node_->current_replication_state()
+                             .insecure_navigations_set)));
+      SCOPED_CRASH_KEY_BOOL("SameDocINS", "is_main_frame", !GetParent());
+      SCOPED_CRASH_KEY_NUMBER("SameDocINS", "lifecycle",
+                              static_cast<int>(lifecycle_state()));
+      SCOPED_CRASH_KEY_STRING256("SameDocINS", "url", params->url.spec());
+      SCOPED_CRASH_KEY_STRING256("SameDocINS", "origin",
+                                 GetLastCommittedOrigin().GetDebugString());
+      // TODO(crbug.com/40580002): Replace with a renderer kill after confirming
+      // that the insecure request state fixes have addressed the mismatches.
+      base::debug::DumpWithoutCrashing();
     }
   }
 
