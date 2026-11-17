@@ -4393,6 +4393,35 @@ const FeatureEntry::FeatureVariation kMagiChromePasskeySignInVariations[] = {
      kMagiChromePasskeySignInPromoPhoneNoBodyTextRmGuestQRHint, nullptr},
     {"RemoveGuest", kMagiChromePasskeySignInRemoveGuest, nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kEnableAccountPreviewSwitchingAccountInProfileSwitchParams[] = {
+        {"AccountPreviewSwitchingAccountDesktopArm", "in_profile_switch"}};
+const FeatureEntry::FeatureParam
+    kEnableAccountPreviewSwitchingAccountInProfileSwitchSkipCooldownParams[] = {
+        {"AccountPreviewSwitchingAccountDesktopArm", "in_profile_switch"},
+        {"SkipCooldown", "true"}};
+const FeatureEntry::FeatureParam
+    kEnableAccountPreviewSwitchingAccountNewProfileParams[] = {
+        {"AccountPreviewSwitchingAccountDesktopArm", "new_profile"}};
+const FeatureEntry::FeatureParam
+    kEnableAccountPreviewSwitchingAccountNewProfileSkipCooldownParams[] = {
+        {"AccountPreviewSwitchingAccountDesktopArm", "new_profile"},
+        {"SkipCooldown", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kEnableAccountPreviewSwitchingAccountVariations[] = {
+        {"In-profile switch",
+         kEnableAccountPreviewSwitchingAccountInProfileSwitchParams, nullptr},
+        {"In-profile switch (Skip Cooldown)",
+         kEnableAccountPreviewSwitchingAccountInProfileSwitchSkipCooldownParams,
+         nullptr},
+        {"New profile", kEnableAccountPreviewSwitchingAccountNewProfileParams,
+         nullptr},
+        {"New profile (Skip Cooldown)",
+         kEnableAccountPreviewSwitchingAccountNewProfileSkipCooldownParams,
+         nullptr},
+};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -13417,7 +13446,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAccountPreviewSwitchingAccountName,
      flag_descriptions::kEnableAccountPreviewSwitchingAccountDescription,
      kOsAll,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         switches::kEnableAccountPreviewSwitchingAccount,
+         kEnableAccountPreviewSwitchingAccountVariations,
+         "EnableAccountPreviewSwitchingAccount")},
+#else
      FEATURE_VALUE_TYPE(switches::kEnableAccountPreviewSwitchingAccount)},
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-account-preview-use-app-account",

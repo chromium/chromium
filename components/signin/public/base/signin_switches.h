@@ -425,6 +425,20 @@ BASE_DECLARE_FEATURE(kEnableAccountPreviewSwitchingAccount);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(bool,
                            kEnableAccountPreviewSwitchingAccountSkipCooldown);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Experiment arm for Desktop Smart Account Switching, controlling the behavior
+// when the user accepts the startup switching prompt.
+enum class AccountPreviewSwitchingAccountDesktopArm {
+  // Arm 1: Switch the current profile's primary account in place (with a 7-day
+  // switch-back option in the Profile Menu).
+  kInProfileSwitch,
+  // Arm 2: Create a new Chrome profile signed into the target account.
+  kNewProfile,
+};
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(AccountPreviewSwitchingAccountDesktopArm,
+                           kAccountPreviewSwitchingAccountDesktopArm);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables the use of 1P app account information on Android in preferred account

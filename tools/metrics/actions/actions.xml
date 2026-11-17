@@ -37088,6 +37088,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromAccountSwitchingPromo">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kAccountSwitchingPromo.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromAddressBubble">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -37481,6 +37490,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kProfileMenuPrimaryButton.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromProfileMenuSwitchAccount">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kProfileMenuSwitchAccount.
   </description>
 </action>
 

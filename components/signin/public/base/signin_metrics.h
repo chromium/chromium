@@ -389,10 +389,15 @@ enum class AccessPoint : int {
   // Triggered from the "Sync history to see other device tabs" item in the
   // "Other device tabs" app menu. Desktop only.
   kOtherDeviceTabsMenu = 116,
+  // Triggered when accepting the Smart Account Switching startup promo.
+  kAccountSwitchingPromo = 117,
+  // Triggered from the temporary account switching row in the Profile Menu.
+  // Desktop only.
+  kProfileMenuSwitchAccount = 118,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kOtherDeviceTabsMenu,  // This must be last.
+  kMaxValue = kProfileMenuSwitchAccount,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

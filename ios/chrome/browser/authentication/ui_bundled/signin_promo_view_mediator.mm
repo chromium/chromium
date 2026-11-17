@@ -156,6 +156,8 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kPasswordManagerCard:
     case signin_metrics::AccessPoint::kEnterpriseProxy:
     case signin_metrics::AccessPoint::kOtherDeviceTabsMenu:
+    case signin_metrics::AccessPoint::kAccountSwitchingPromo:
+    case signin_metrics::AccessPoint::kProfileMenuSwitchAccount:
       return false;
   }
 }
@@ -279,6 +281,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kPasswordManagerCard:
     case signin_metrics::AccessPoint::kEnterpriseProxy:
     case signin_metrics::AccessPoint::kOtherDeviceTabsMenu:
+    case signin_metrics::AccessPoint::kAccountSwitchingPromo:
+    case signin_metrics::AccessPoint::kProfileMenuSwitchAccount:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -403,6 +407,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kPasswordManagerCard:
     case signin_metrics::AccessPoint::kEnterpriseProxy:
     case signin_metrics::AccessPoint::kOtherDeviceTabsMenu:
+    case signin_metrics::AccessPoint::kAccountSwitchingPromo:
+    case signin_metrics::AccessPoint::kProfileMenuSwitchAccount:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
   }
@@ -512,6 +518,8 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kPasswordManagerCard:
     case signin_metrics::AccessPoint::kEnterpriseProxy:
     case signin_metrics::AccessPoint::kOtherDeviceTabsMenu:
+    case signin_metrics::AccessPoint::kAccountSwitchingPromo:
+    case signin_metrics::AccessPoint::kProfileMenuSwitchAccount:
       return nullptr;
   }
 }
@@ -620,6 +628,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kPasswordManagerCard:
     case signin_metrics::AccessPoint::kEnterpriseProxy:
     case signin_metrics::AccessPoint::kOtherDeviceTabsMenu:
+    case signin_metrics::AccessPoint::kAccountSwitchingPromo:
+    case signin_metrics::AccessPoint::kProfileMenuSwitchAccount:
       return nullptr;
   }
 }

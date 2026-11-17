@@ -497,6 +497,8 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case signin_metrics::AccessPoint::kPasswordManagerCard:
     case signin_metrics::AccessPoint::kEnterpriseProxy:
     case signin_metrics::AccessPoint::kOtherDeviceTabsMenu:
+    case signin_metrics::AccessPoint::kAccountSwitchingPromo:
+    case signin_metrics::AccessPoint::kProfileMenuSwitchAccount:
       return true;
   }
 }

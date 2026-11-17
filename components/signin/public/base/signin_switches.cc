@@ -467,6 +467,20 @@ BASE_FEATURE_PARAM(bool,
                    &kEnableAccountPreviewSwitchingAccount,
                    "SkipCooldown",
                    false);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+constexpr base::FeatureParam<AccountPreviewSwitchingAccountDesktopArm>::Option
+    kAccountPreviewSwitchingAccountDesktopArmOptions[] = {
+        {AccountPreviewSwitchingAccountDesktopArm::kInProfileSwitch,
+         "in_profile_switch"},
+        {AccountPreviewSwitchingAccountDesktopArm::kNewProfile, "new_profile"},
+};
+BASE_FEATURE_ENUM_PARAM(
+    AccountPreviewSwitchingAccountDesktopArm,
+    kAccountPreviewSwitchingAccountDesktopArm,
+    &kEnableAccountPreviewSwitchingAccount,
+    AccountPreviewSwitchingAccountDesktopArm::kInProfileSwitch,
+    &kAccountPreviewSwitchingAccountDesktopArmOptions);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag controls whether the CCT captures the account name of the 1p app

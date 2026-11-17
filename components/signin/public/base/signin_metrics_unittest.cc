@@ -58,6 +58,8 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kSkills,
     AccessPoint::kPasswordManagerCard,
     AccessPoint::kOtherDeviceTabsMenu,
+    AccessPoint::kAccountSwitchingPromo,
+    AccessPoint::kProfileMenuSwitchAccount,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -282,6 +284,10 @@ class SigninMetricsTest : public ::testing::Test {
         return "EnterpriseProxy";
       case AccessPoint::kOtherDeviceTabsMenu:
         return "OtherDeviceTabsMenu";
+      case AccessPoint::kAccountSwitchingPromo:
+        return "AccountSwitchingPromo";
+      case AccessPoint::kProfileMenuSwitchAccount:
+        return "ProfileMenuSwitchAccount";
     }
   }
 };

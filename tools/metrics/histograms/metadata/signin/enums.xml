@@ -1417,6 +1417,8 @@ chromium-metrics-reviews@google.com.
   <int value="114" label="Password Manager card (Desktop only)"/>
   <int value="115" label="Enterprise proxy (iOS only)"/>
   <int value="116" label="Other device tabs menu (Desktop only)"/>
+  <int value="117" label="Account switching promo"/>
+  <int value="118" label="Profile menu switch account (Desktop only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
