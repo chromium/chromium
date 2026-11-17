@@ -1001,4 +1001,24 @@ TEST_F(CRWWebViewScrollViewProxyTest, DontPreserveBackgroundColor) {
   EXPECT_EQ(UIColor.blackColor, underlying_scroll_view2.backgroundColor);
 }
 
+// Tests that `adjustedContentInset` is implemented directly on
+// `CRWWebViewScrollViewProxy` and forwards to the underlying scroll view.
+TEST_F(CRWWebViewScrollViewProxyTest, AdjustedContentInsetForwardsDirectly) {
+  EXPECT_TRUE([CRWWebViewScrollViewProxy
+      instancesRespondToSelector:@selector(adjustedContentInset)]);
+
+  UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
+  underlying_scroll_view.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentNever;
+  const UIEdgeInsets kExpectedInsets = UIEdgeInsetsMake(64, 0, 44, 0);
+  underlying_scroll_view.contentInset = kExpectedInsets;
+  [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
+
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+      kExpectedInsets, web_view_scroll_view_proxy_.adjustedContentInset));
+  EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+      kExpectedInsets,
+      [web_view_scroll_view_proxy_ asUIScrollView].adjustedContentInset));
+}
+
 }  // namespace

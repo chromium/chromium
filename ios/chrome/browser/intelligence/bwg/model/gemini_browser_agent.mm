@@ -1626,8 +1626,6 @@ void GeminiBrowserAgent::OnGeminiTabHelperDestroyed(
 void GeminiBrowserAgent::FullscreenProgressUpdated(
     FullscreenController* controller,
     CGFloat progress) {
-  UpdateGeminiLiveIconVisibility();
-
   if (!is_floaty_invoked_ || is_floaty_temporarily_hidden_) {
     return;
   }

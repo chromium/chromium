@@ -9,12 +9,30 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@implementation ToolbarConfiguration
+@implementation ToolbarConfiguration {
+  // Location bar background colors, resolved once because fullscreen progress
+  // updates request them on every scroll frame.
+  UIColor* _locationBarBackgroundColor;
+  UIColor* _hiddenLocationBarBackgroundColor;
+}
 
 - (instancetype)initWithStyle:(ToolbarStyle)style {
   self = [super init];
   if (self) {
     _style = style;
+    // For the omnibox specifically, the background should be different in
+    // incognito compared to dark mode.
+    switch (style) {
+      case ToolbarStyle::kNormal:
+        _locationBarBackgroundColor =
+            [UIColor colorNamed:kTextfieldBackgroundColor];
+        break;
+      case ToolbarStyle::kIncognito:
+        _locationBarBackgroundColor = [UIColor colorNamed:kStaticGrey900Color];
+        break;
+    }
+    _hiddenLocationBarBackgroundColor =
+        [_locationBarBackgroundColor colorWithAlphaComponent:0.0];
   }
   return self;
 }
@@ -52,16 +70,13 @@
 }
 
 - (UIColor*)locationBarBackgroundColorWithVisibility:(CGFloat)visibilityFactor {
-  // For the omnibox specifically, the background should be different in
-  // incognito compared to dark mode.
-  switch (self.style) {
-    case ToolbarStyle::kNormal:
-      return [[UIColor colorNamed:kTextfieldBackgroundColor]
-          colorWithAlphaComponent:visibilityFactor];
-    case ToolbarStyle::kIncognito:
-      return [[UIColor colorNamed:kStaticGrey900Color]
-          colorWithAlphaComponent:visibilityFactor];
+  if (visibilityFactor <= 0.0) {
+    return _hiddenLocationBarBackgroundColor;
   }
+  if (visibilityFactor >= 1.0) {
+    return _locationBarBackgroundColor;
+  }
+  return [_locationBarBackgroundColor colorWithAlphaComponent:visibilityFactor];
 }
 
 - (NSString*)accessibilityLabelForOpenNewTabButtonInGroup:(BOOL)inGroup {

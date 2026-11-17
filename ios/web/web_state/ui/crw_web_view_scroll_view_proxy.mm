@@ -305,6 +305,10 @@ static int gAnyContext = 0;
   self.underlyingScrollView.contentInset = contentInset;
 }
 
+- (UIEdgeInsets)adjustedContentInset {
+  return self.underlyingScrollView.adjustedContentInset;
+}
+
 - (BOOL)isDecelerating {
   return self.underlyingScrollView.decelerating;
 }

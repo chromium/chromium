@@ -24,6 +24,7 @@
 
 @property(nonatomic, assign) CGPoint contentOffset;
 @property(nonatomic, assign) UIEdgeInsets contentInset;
+@property(nonatomic, readonly) UIEdgeInsets adjustedContentInset;
 @property(nonatomic, readonly, getter=isDecelerating) BOOL decelerating;
 @property(nonatomic, readonly, getter=isDragging) BOOL dragging;
 @property(nonatomic, readonly, getter=isTracking) BOOL tracking;
@@ -67,7 +68,6 @@
 @property(nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property(nonatomic, assign) BOOL bounces;
 @property(nonatomic, assign) BOOL scrollsToTop;
-@property(nonatomic, readonly) UIEdgeInsets adjustedContentInset;
 // Returns the scrollview's gesture recognizers.
 @property(weak, nonatomic, readonly) NSArray* gestureRecognizers;
 
