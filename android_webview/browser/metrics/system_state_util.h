@@ -27,7 +27,6 @@ MultipleUserProfilesState GetMultipleUserProfilesState();
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. See PrimaryCpuAbiBitness in
 // enums.xml.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
 enum class PrimaryCpuAbiBitness {
   kUnknown = 0,
   k32bit = 1,
@@ -39,7 +38,6 @@ PrimaryCpuAbiBitness GetPrimaryCpuAbiBitness();
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. See AgsaProcessName in enums.xml.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
 enum class AgsaProcessName {
   kGoogleApp = 0,
   kSearch = 1,

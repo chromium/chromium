@@ -5,7 +5,6 @@
 package org.chromium.android_webview;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.UserHandle;
 import android.os.UserManager;
 
@@ -13,12 +12,10 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
-import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Utility class to fetch information about system, or system-level information about the bundle.
@@ -44,20 +41,6 @@ public class SystemStateUtil {
             // there are. See https://crbug.com/332989719 for reference.
             return MultipleUserProfilesState.UNKNOWN;
         }
-    }
-
-    @CalledByNative
-    public static @PrimaryCpuAbiBitness int getPrimaryCpuAbiBitness() {
-        String primaryCpuAbi = ApkInfo.getPrimaryCpuAbi();
-        if (primaryCpuAbi == null) {
-            return PrimaryCpuAbiBitness.UNKNOWN;
-        }
-        if (Set.of(Build.SUPPORTED_32_BIT_ABIS).contains(primaryCpuAbi)) {
-            return PrimaryCpuAbiBitness.k32bit;
-        } else if (Set.of(Build.SUPPORTED_64_BIT_ABIS).contains(primaryCpuAbi)) {
-            return PrimaryCpuAbiBitness.k64bit;
-        }
-        return PrimaryCpuAbiBitness.UNKNOWN;
     }
 
     @CalledByNative
