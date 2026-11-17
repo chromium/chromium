@@ -133,6 +133,7 @@ class NavigatorDelegate;
 class PrefetchedSignedExchangeCache;
 class PrerenderHostRegistry;
 class RenderFrameHostCSPContext;
+class ServiceWorkerClient;
 class ServiceWorkerMainResourceHandle;
 class SubframeHistoryNavigationThrottle;
 
@@ -1049,6 +1050,11 @@ class CONTENT_EXPORT NavigationRequest
   //
   // Must only be called after ReadyToCommitNavigation().
   blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
+
+  // Returns the ServiceWorkerClient committed for this navigation, or nullptr
+  // if no ServiceWorkerClient was committed (e.g. for error pages, sandboxed
+  // documents, or non-eligible schemes).
+  base::WeakPtr<ServiceWorkerClient> GetCommittedServiceWorkerClient() const;
 
   // Returns a new refptr to this navigation's PolicyContainerHost.
   //

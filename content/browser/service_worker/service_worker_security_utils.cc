@@ -51,12 +51,17 @@ bool IsWebSecurityDisabled() {
       switches::kDisableWebSecurity);
 }
 
+bool AreOriginsCompatibleForServiceWorkerClient(const url::Origin& origin1,
+                                                const url::Origin& origin2) {
+  return (origin1.opaque() && origin2.opaque()) ||
+         origin1.IsSameOriginWith(origin2);
+}
+
 void CheckOnUpdateUrls(const GURL& url, const blink::StorageKey& key) {
-#if DCHECK_IS_ON()
-  const url::Origin origin_to_dcheck = url::Origin::Create(url);
-  DCHECK((origin_to_dcheck.opaque() && key.origin().opaque()) ||
-         origin_to_dcheck.IsSameOriginWith(key.origin()))
-      << origin_to_dcheck << " and " << key.origin() << " should be equal.";
+  const url::Origin origin_to_check = url::Origin::Create(url);
+  CHECK(
+      AreOriginsCompatibleForServiceWorkerClient(origin_to_check, key.origin()))
+      << origin_to_check << " and " << key.origin() << " should be equal.";
   // TODO(crbug.com/40251360): verify that `top_frame_origin` matches the
   // `top_level_site` of `storage_key`, in most cases.
   //
@@ -65,15 +70,14 @@ void CheckOnUpdateUrls(const GURL& url, const blink::StorageKey& key) {
   //    top-level site is actually an extension.
   //  - The storage key has a nonce, in which case its `top_level_site` will be
   //    for the frame that introduced the nonce (such as a fenced frame) and not
-  //    the same as `top_level_site`.
+  //    the same as `top_frame_origin`.
   //  - The storage key was generated without third-party storage partitioning.
   //    This may be the case even when 3PSP is enabled, due to enterprise policy
   //    or deprecation trials.
   //
-  // Consider adding a DHCECK here once the last of those conditions is
+  // Consider adding a DCHECK here once the last of those conditions is
   // resolved. See
   // https://chromium-review.googlesource.com/c/chromium/src/+/4378900/4.
-#endif
 }
 
 blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
