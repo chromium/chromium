@@ -1181,21 +1181,19 @@ BrowserCreatedObserver::~BrowserCreatedObserver() = default;
 
 BrowserWindowInterface* BrowserCreatedObserver::Wait() {
   if (!browser_) {
-    run_loop_.Run();
+    run_loop_.emplace(base::RunLoop::Type::kNestableTasksAllowed);
+    run_loop_->Run();
+    run_loop_.reset();
   }
   CHECK(browser_);
-  return browser_;
+  return std::exchange(browser_, nullptr).get();
 }
 
 void BrowserCreatedObserver::OnBrowserCreated(BrowserWindowInterface* browser) {
-  browser_ = browser;
-  run_loop_.Quit();
-}
-
-void BrowserCreatedObserver::OnBrowserClosed(BrowserWindowInterface* browser) {
-  // Clear `browser_` in the event of a removal to mitigate the risk of dangling
-  // refs.
-  browser_ = nullptr;
+  browser_ = browser->GetWeakPtr();
+  if (run_loop_) {
+    run_loop_->Quit();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

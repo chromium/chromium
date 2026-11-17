@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -82,4 +84,58 @@ IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, FindMatchingBrowsers) {
   EXPECT_EQ(2u, regular_browsers.size());
   EXPECT_TRUE(std::ranges::contains(regular_browsers, regular_browser1));
   EXPECT_TRUE(std::ranges::contains(regular_browsers, regular_browser2));
+}
+
+// Verifies that BrowserCreatedObserver:
+// - keeps the observed browser when an unrelated pre-existing browser closes
+//   before Wait(),
+// - returns the most recently created browser when multiple browsers open
+//   before Wait(),
+// - supports multiple sequential Wait() calls (both synchronous and
+//   asynchronous), and
+// - avoids dangling pointers when observed browsers close before the observer
+//   leaves scope.
+IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, BrowserCreatedObserver) {
+  Profile* const profile = GetProfile();
+  BrowserWindowInterface* const initial_browser = browser();
+
+  // Closing an unrelated pre-existing browser before Wait() must not clear the
+  // observed browser.
+  {
+    ui_test_utils::BrowserCreatedObserver observer;
+    BrowserWindowInterface* const first_created = CreateBrowser(profile);
+    CloseBrowserSynchronously(initial_browser);
+    EXPECT_EQ(first_created, observer.Wait());
+  }
+
+  // Opening multiple browsers before Wait() returns the most recently created
+  // browser, and reusing the same observer for subsequent synchronous or
+  // asynchronous creations returns each newly created browser without dangling
+  // pointer failures when browsers close before `observer` is destroyed.
+  {
+    ui_test_utils::BrowserCreatedObserver observer;
+    BrowserWindowInterface* const second_created = CreateBrowser(profile);
+    BrowserWindowInterface* const third_created = CreateBrowser(profile);
+    EXPECT_EQ(third_created, observer.Wait());
+
+    BrowserWindowInterface* const fourth_created = CreateBrowser(profile);
+    EXPECT_EQ(fourth_created, observer.Wait());
+
+    BrowserWindowInterface* fifth_created = nullptr;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting(
+                       [&]() { fifth_created = CreateBrowser(profile); }));
+    BrowserWindowInterface* const waited_fifth = observer.Wait();
+    EXPECT_NE(nullptr, fifth_created);
+    EXPECT_EQ(fifth_created, waited_fifth);
+
+    // Also create and close an extra unwaited browser while `observer` is still
+    // alive to ensure `observer` holds no dangling reference on destruction.
+    BrowserWindowInterface* const sixth_created = CreateBrowser(profile);
+    CloseBrowserSynchronously(sixth_created);
+    CloseBrowserSynchronously(fifth_created);
+    CloseBrowserSynchronously(fourth_created);
+    CloseBrowserSynchronously(third_created);
+    EXPECT_NE(nullptr, second_created);
+  }
 }

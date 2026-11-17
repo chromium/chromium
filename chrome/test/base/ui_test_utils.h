@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_UI_TEST_UTILS_H_
 #define CHROME_TEST_BASE_UI_TEST_UTILS_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -12,6 +13,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -649,8 +651,8 @@ class BrowserDestroyedObserver : public BrowserCollectionObserver {
       browser_collection_observation_{this};
 };
 
-// Waits for the creation of `browser`. If `browser` is null will wait on the
-// creation of any Browser.
+// Waits for the creation of a Browser. If multiple browsers are created before
+// `Wait()` is called, returns the most recently created live browser.
 class BrowserCreatedObserver : public BrowserCollectionObserver {
  public:
   BrowserCreatedObserver();
@@ -662,11 +664,10 @@ class BrowserCreatedObserver : public BrowserCollectionObserver {
 
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
-  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
-  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+  base::WeakPtr<BrowserWindowInterface> browser_;
+  std::optional<base::RunLoop> run_loop_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 };
