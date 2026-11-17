@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
@@ -35,7 +36,6 @@ namespace glic {
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
-
 
 }  // namespace
 
@@ -71,7 +71,6 @@ class GlicIphControllerTestBase : public TestBase {
     return test_url.ReplaceComponents(replacements);
   }
 
-
   auto ShowPromoForTest() {
     return Do([&]() {
       glic::GlicIphController::From(browser())->MaybeShowPromoForTest();
@@ -101,7 +100,6 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
   ~GlicIphControllerTestClassic() override = default;
 };
 
-
 // Confirms that the promo is not shown if the user's profile has a signed-in
 // account that needs to be re-authenticated.
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic,
@@ -122,8 +120,7 @@ IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic,
 class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
  public:
   GlicIphControllerTestTryIt()
-      : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {
-  }
+      : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {}
 
   ~GlicIphControllerTestTryIt() override = default;
 };
@@ -147,8 +144,14 @@ class GlicIphControllerTestPromoDisabled : public GlicIphControllerTestBase {
   ~GlicIphControllerTestPromoDisabled() override = default;
 };
 
+// TODO(crbug.com/587051239): Re-enable on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ShowPromoWithCtaEndsInGlic DISABLED_ShowPromoWithCtaEndsInGlic
+#else
+#define MAYBE_ShowPromoWithCtaEndsInGlic ShowPromoWithCtaEndsInGlic
+#endif
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestPromoDisabled,
-                       ShowPromoWithCtaEndsInGlic) {
+                       MAYBE_ShowPromoWithCtaEndsInGlic) {
   SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
