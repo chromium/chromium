@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
@@ -25,15 +26,23 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/display/display.h"
+#include "ui/display/display_list.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/aura/test/aura_test_helper.h"
+#include "ui/aura/test/test_screen.h"
+#endif
 
 namespace {
 
@@ -140,11 +149,13 @@ class DrivePickerHostControllerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void ShowDrivePickerHost() {
+  void ShowDrivePickerHost(
+      DrivePickerHostView::Style style = DrivePickerHostView::Style::kDefault) {
     auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
         drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
         mojo::PendingRemote<
             drive_picker_host::mojom::DrivePickerResultHandler>());
+    request->set_style(style);
     controller_->ShowDrivePickerHost(std::move(request));
 
     ASSERT_TRUE(base::test::RunUntil(
@@ -297,9 +308,298 @@ TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostWithAnchorWidget) {
   views::Widget* picker_widget = anchor_controller->GetWidgetForTesting();
   ASSERT_TRUE(picker_widget);
   EXPECT_TRUE(picker_widget->IsVisible());
+  // Non-Glic anchoring keeps the default (non-desktop) widget selection.
+  EXPECT_FALSE(picker_widget->widget_delegate()->use_desktop_widget_override());
 
   // Closing the anchor widget (Loomnibox) should automatically reset the
   // controller and close the picker.
   anchor_widget.CloseNow();
   EXPECT_FALSE(anchor_controller->GetWidgetForTesting());
 }
+
+// Verifies that when `omnibox::kOmniboxEverywhere` is enabled and
+// `features::kGlicDrivePicker` is disabled (the base fixture default), a
+// request with `Style::kGlic` anchors to the browser window's `dialog_host`
+// with standard non-Glic sizing and widget behavior.
+TEST_F(DrivePickerHostControllerTest,
+       GlicFlagDisabledWithOmniboxEverywhereUsesNonGlicBehavior) {
+  views::Widget anchor_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = parent_widget()->GetNativeWindow();
+  anchor_widget.Init(std::move(params));
+  anchor_widget.Show();
+
+  auto anchor_controller = std::make_unique<DrivePickerHostController>(
+      profile(), browser_window_interface(), &anchor_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  anchor_controller->ShowDrivePickerHost(std::move(request));
+
+  views::Widget* picker_widget = anchor_controller->GetWidgetForTesting();
+  ASSERT_TRUE(picker_widget);
+  EXPECT_EQ(picker_widget->parent(), parent_widget());
+  EXPECT_FALSE(picker_widget->widget_delegate()->use_desktop_widget_override());
+  EXPECT_EQ(anchor_controller->GetViewForTesting()->GetPreferredSize(),
+            DrivePickerHostView::kPickerDialogSize);
+
+  ViewDestroyedWaiter waiter(anchor_controller->GetViewForTesting());
+  anchor_controller->ResetControllerStateForTesting();
+  waiter.Wait();
+  anchor_widget.CloseNow();
+}
+
+// Verifies that when only `features::kGlicDrivePicker` is enabled (and
+// `omnibox::kOmniboxEverywhere` is disabled), a Glic request with no normal
+// browser window anchors to `anchor_widget` as a top-level desktop widget.
+TEST_F(DrivePickerHostControllerTest,
+       GlicPickerAnchorsToFloatyWhenNoBrowserWindow) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kGlicDrivePicker},
+                            {omnibox::kOmniboxEverywhere});
+
+  views::Widget floaty_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = parent_widget()->GetNativeWindow();
+  floaty_widget.Init(std::move(params));
+  floaty_widget.Show();
+
+  auto glic_controller = std::make_unique<DrivePickerHostController>(
+      profile(), /*browser_window_interface=*/nullptr, &floaty_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  glic_controller->ShowDrivePickerHost(std::move(request));
+
+  views::Widget* picker_widget = glic_controller->GetWidgetForTesting();
+  ASSERT_TRUE(picker_widget);
+  EXPECT_TRUE(picker_widget->IsVisible());
+  // The picker must be a top-level desktop widget rather than a child of the
+  // (much smaller) floaty window, otherwise it would be clipped to its bounds.
+  EXPECT_TRUE(picker_widget->widget_delegate()->use_desktop_widget_override());
+  EXPECT_EQ(glic_controller->GetViewForTesting()->GetPreferredSize(),
+            DrivePickerHostView::kGlicPickerDialogSize);
+
+  ViewDestroyedWaiter waiter(glic_controller->GetViewForTesting());
+  floaty_widget.CloseNow();
+  waiter.Wait();
+  EXPECT_FALSE(glic_controller->GetWidgetForTesting());
+}
+
+// Verifies that enabling `features::kGlicDrivePicker` alone (with
+// `omnibox::kOmniboxEverywhere` disabled) does not allow non-Glic requests to
+// open without a browser window.
+TEST_F(DrivePickerHostControllerTest,
+       NonGlicPickerRejectedWithoutBrowserWindowWhenOnlyGlicFeatureEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kGlicDrivePicker},
+                            {omnibox::kOmniboxEverywhere});
+
+  views::Widget anchor_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = parent_widget()->GetNativeWindow();
+  anchor_widget.Init(std::move(params));
+  anchor_widget.Show();
+
+  auto anchor_controller = std::make_unique<DrivePickerHostController>(
+      profile(), /*browser_window_interface=*/nullptr, &anchor_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  anchor_controller->ShowDrivePickerHost(std::move(request));
+
+  EXPECT_FALSE(anchor_controller->GetWidgetForTesting());
+  anchor_widget.CloseNow();
+}
+
+// Verifies that when both a browser window (`dialog_host`) and `anchor_widget`
+// are present (matching how `GlicWebClientHandler` always passes both), a Glic
+// picker anchors to `dialog_host` rather than using floaty desktop-widget mode,
+// even with `omnibox::kOmniboxEverywhere` enabled (the base fixture default).
+TEST_F(DrivePickerHostControllerTest,
+       GlicPickerPrefersBrowserDialogHostOverAnchorWidget) {
+  base::test::ScopedFeatureList enable_glic_drive_picker(
+      features::kGlicDrivePicker);
+
+  views::Widget floaty_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = parent_widget()->GetNativeWindow();
+  floaty_widget.Init(std::move(params));
+  floaty_widget.Show();
+
+  auto glic_controller = std::make_unique<DrivePickerHostController>(
+      profile(), browser_window_interface(), &floaty_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  glic_controller->ShowDrivePickerHost(std::move(request));
+
+  views::Widget* picker_widget = glic_controller->GetWidgetForTesting();
+  ASSERT_TRUE(picker_widget);
+  EXPECT_TRUE(picker_widget->IsVisible());
+  EXPECT_EQ(picker_widget->parent(), parent_widget());
+  EXPECT_FALSE(picker_widget->widget_delegate()->use_desktop_widget_override());
+  EXPECT_EQ(glic_controller->GetViewForTesting()->GetPreferredSize(),
+            DrivePickerHostView::kGlicPickerDialogSize);
+
+  // Closing the floaty while the picker is modal to the browser window must
+  // leave the picker open without leaving a dangling `anchor_widget_`.
+  floaty_widget.CloseNow();
+  EXPECT_TRUE(picker_widget->IsVisible());
+
+  ViewDestroyedWaiter waiter(glic_controller->GetViewForTesting());
+  glic_controller->ResetControllerStateForTesting();
+  waiter.Wait();
+}
+
+// Verifies that a Glic request with no browser window is rejected when
+// `features::kGlicDrivePicker` is disabled, even with
+// `omnibox::kOmniboxEverywhere` enabled (the base fixture default).
+TEST_F(DrivePickerHostControllerTest,
+       GlicPickerFloatyAnchoringRequiresGlicDrivePickerFeature) {
+  base::test::ScopedFeatureList disable_glic_drive_picker;
+  disable_glic_drive_picker.InitAndDisableFeature(features::kGlicDrivePicker);
+
+  views::Widget floaty_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = parent_widget()->GetNativeWindow();
+  floaty_widget.Init(std::move(params));
+  floaty_widget.Show();
+
+  auto glic_controller = std::make_unique<DrivePickerHostController>(
+      profile(), /*browser_window_interface=*/nullptr, &floaty_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  glic_controller->ShowDrivePickerHost(std::move(request));
+
+  EXPECT_FALSE(glic_controller->GetWidgetForTesting());
+  floaty_widget.CloseNow();
+}
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+// Verifies that when a top-level desktop picker widget (`1050x650`) is anchored
+// to a smaller detached floaty near the edges of the display work area, the
+// picker is clamped inside the work area on open, when the floaty moves
+// (`OnWidgetBoundsChanged`), and across view size transitions.
+TEST_F(DrivePickerHostControllerTest,
+       GlicPickerAnchoredToEdgeFloatyStaysWithinDisplayWorkArea) {
+  base::test::ScopedFeatureList enable_glic_drive_picker(
+      features::kGlicDrivePicker);
+
+  // In production, `ChromeViewsDelegate` selects `DesktopNativeWidgetAura` when
+  // `use_desktop_widget_override()` is set. Mirror that in `TestViewsDelegate`.
+  test_views_delegate()->set_use_desktop_native_widgets(true);
+
+  // `AuraTestHelper` initializes an 800x600 `aura::TestScreen`, which is
+  // smaller than `kGlicPickerDialogSize` (1050x650). Update `TestScreen`'s
+  // primary display directly to 1920x1080 (resizing the root `WindowTreeHost`
+  // instead would go through `WinWindow`'s `WS_OVERLAPPEDWINDOW` on Windows and
+  // get clamped to `SM_CXMAXTRACK` on 1024x768 Swarming bots).
+  aura::TestScreen* test_screen =
+      aura::test::AuraTestHelper::GetInstance()->GetTestScreen();
+  display::Display display = test_screen->GetPrimaryDisplay();
+  display.SetScaleAndBounds(1.0f, gfx::Rect(0, 0, 1920, 1080));
+  test_screen->display_list().UpdateDisplay(display);
+
+  const gfx::Rect work_area =
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
+  ASSERT_GE(work_area.width(),
+            DrivePickerHostView::kGlicPickerDialogSize.width())
+      << work_area.ToString();
+  ASSERT_GE(work_area.height(),
+            DrivePickerHostView::kGlicPickerDialogSize.height())
+      << work_area.ToString();
+
+  views::Widget floaty_widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  constexpr gfx::Size kFloatySize{400, 400};
+  params.bounds = gfx::Rect(work_area.right() - kFloatySize.width(),
+                            work_area.bottom() - kFloatySize.height(),
+                            kFloatySize.width(), kFloatySize.height());
+  floaty_widget.Init(std::move(params));
+  floaty_widget.Show();
+  base::RunLoop().RunUntilIdle();
+
+  auto glic_controller = std::make_unique<DrivePickerHostController>(
+      profile(), /*browser_window_interface=*/nullptr, &floaty_widget);
+
+  auto request = std::make_unique<drive_picker_host::DrivePickerHostRequest>(
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      mojo::PendingRemote<
+          drive_picker_host::mojom::DrivePickerResultHandler>());
+  request->set_style(drive_picker_host::DrivePickerHostRequest::Style::kGlic);
+  glic_controller->ShowDrivePickerHost(std::move(request));
+  base::RunLoop().RunUntilIdle();
+
+  views::Widget* picker_widget = glic_controller->GetWidgetForTesting();
+  DrivePickerHostView* picker_view = glic_controller->GetViewForTesting();
+  ASSERT_TRUE(picker_widget);
+  ASSERT_TRUE(picker_view);
+
+  EXPECT_TRUE(work_area.Contains(picker_widget->GetWindowBoundsInScreen()))
+      << "work_area=" << work_area.ToString()
+      << " picker=" << picker_widget->GetWindowBoundsInScreen().ToString();
+
+  // Moving the floaty to the top-left corner triggers `OnWidgetBoundsChanged`
+  // and must keep the picker inside `work_area`.
+  floaty_widget.SetBounds(gfx::Rect(work_area.origin(), kFloatySize));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(work_area.Contains(picker_widget->GetWindowBoundsInScreen()))
+      << "work_area=" << work_area.ToString()
+      << " picker=" << picker_widget->GetWindowBoundsInScreen().ToString();
+
+  // View UI transitions (`CenterInWidget`) near the bottom-right corner must
+  // also stay clamped within `work_area`.
+  floaty_widget.SetBounds(gfx::Rect(work_area.right() - kFloatySize.width(),
+                                    work_area.bottom() - kFloatySize.height(),
+                                    kFloatySize.width(), kFloatySize.height()));
+  picker_view->OnTransitionToError();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(work_area.Contains(picker_widget->GetWindowBoundsInScreen()))
+      << "work_area=" << work_area.ToString()
+      << " picker=" << picker_widget->GetWindowBoundsInScreen().ToString();
+
+  picker_view->OnTransitionToConsent();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(work_area.Contains(picker_widget->GetWindowBoundsInScreen()))
+      << "work_area=" << work_area.ToString()
+      << " picker=" << picker_widget->GetWindowBoundsInScreen().ToString();
+
+  picker_view->OnTransitionToPicker();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(work_area.Contains(picker_widget->GetWindowBoundsInScreen()))
+      << "work_area=" << work_area.ToString()
+      << " picker=" << picker_widget->GetWindowBoundsInScreen().ToString();
+
+  ViewDestroyedWaiter waiter(picker_view);
+  floaty_widget.CloseNow();
+  waiter.Wait();
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)

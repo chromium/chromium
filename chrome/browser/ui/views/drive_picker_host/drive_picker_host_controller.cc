@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
@@ -36,8 +38,14 @@
 // and enforces client widget ownership for asynchronous lifetime management.
 class DrivePickerDialogDelegate : public views::DialogDelegate {
  public:
-  explicit DrivePickerDialogDelegate(
-      std::unique_ptr<views::View> contents_view) {
+  // `use_desktop_widget` requests a top-level desktop widget on Desktop Aura
+  // platforms (Windows and Linux), where `ChromeViewsDelegate` would otherwise
+  // create a `NativeWidgetAura` child clipped to a smaller non-browser anchor
+  // window (e.g. the detached Glic floaty). On macOS (`NativeWidgetMac`) and
+  // ChromeOS Ash, dialogs are already unclipped top-level `NSWindow`s or
+  // display-root children, so this override is a no-op there.
+  explicit DrivePickerDialogDelegate(std::unique_ptr<views::View> contents_view,
+                                     bool use_desktop_widget = false) {
     SetModalType(ui::mojom::ModalType::kWindow);
     SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     SetShowCloseButton(false);
@@ -45,6 +53,7 @@ class DrivePickerDialogDelegate : public views::DialogDelegate {
     set_margins(gfx::Insets());
     SetContentsView(std::move(contents_view));
     SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    set_use_desktop_widget_override(use_desktop_widget);
   }
 
   std::unique_ptr<views::FrameView> CreateFrameView(
@@ -66,7 +75,7 @@ DrivePickerHostController::DrivePickerHostController(
     views::Widget* anchor_widget)
     : profile_(profile),
       browser_window_interface_(browser_window_interface),
-      anchor_widget_(anchor_widget),
+      anchor_widget_(anchor_widget ? anchor_widget->GetWeakPtr() : nullptr),
       is_standalone_popup_(anchor_widget != nullptr) {}
 
 DrivePickerHostController::~DrivePickerHostController() {
@@ -92,30 +101,51 @@ void DrivePickerHostController::ShowDrivePickerHost(
         browser_window_interface_->GetWebContentsModalDialogHostForWindow();
   }
 
-  // Under standard Chrome conditions, a valid active modal dialog host must be
-  // resolved to anchor the dialog modal. However, under the Loomnibox
-  // feature flag (omnibox::kOmniboxEverywhere), if no active browser window
-  // exists (e.g. Chrome running in background), we bypass this restriction to
-  // show the Drive picker as a parentless, top-level standalone widget.
-  if (!dialog_host &&
-      !base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere)) {
+  const bool is_omnibox_everywhere =
+      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere);
+  const bool is_glic_request =
+      request->style() ==
+      drive_picker_host::DrivePickerHostRequest::Style::kGlic;
+  const bool is_glic = is_glic_request &&
+                       base::FeatureList::IsEnabled(features::kGlicDrivePicker);
+
+  // Loomnibox (`kOmniboxEverywhere`) anchors directly to its standalone popup
+  // `anchor_widget_` when present (or opens unparented if no browser window
+  // exists). Glic always passes its panel/floaty widget as `anchor_widget_`, so
+  // it prefers the active browser window's `dialog_host` and only falls back to
+  // `anchor_widget_` when no browser window is open (`!dialog_host`). Glic
+  // requests never use Loomnibox anchoring, whatever the state of
+  // `kOmniboxEverywhere`.
+  const bool use_loomnibox_anchoring = !is_glic_request &&
+                                       is_standalone_popup_ &&
+                                       is_omnibox_everywhere && anchor_widget_;
+  const bool use_glic_floaty_anchoring =
+      !dialog_host && is_glic && anchor_widget_;
+  const bool use_anchor_widget =
+      use_loomnibox_anchoring || use_glic_floaty_anchoring;
+
+  const bool allows_no_dialog_host =
+      is_glic_request ? use_glic_floaty_anchoring : is_omnibox_everywhere;
+  if (!dialog_host && !allows_no_dialog_host) {
     SendErrorToRequest(
         std::move(request),
         drive_picker_host::mojom::DrivePickerError::kWindowNotFound);
     return;
   }
 
-  bool use_loomnibox_anchoring =
-      is_standalone_popup_ &&
-      base::FeatureList::IsEnabled(omnibox::kOmniboxEverywhere) &&
-      anchor_widget_;
-
   auto view = std::make_unique<DrivePickerHostView>(
-      profile_, browser_window_interface_, request->type());
+      profile_, browser_window_interface_, request->type(),
+      is_glic ? DrivePickerHostView::Style::kGlic
+              : DrivePickerHostView::Style::kDefault);
   DrivePickerHostView* view_ptr = view.get();
   picker_view_ = view.get();
 
-  auto delegate = std::make_unique<DrivePickerDialogDelegate>(std::move(view));
+  // A Glic picker anchored to the floaty must not be clipped to the floaty's
+  // (much smaller) window on Desktop Aura platforms, so it is created as a
+  // top-level desktop widget.
+  const bool use_desktop_widget = use_glic_floaty_anchoring;
+  auto delegate = std::make_unique<DrivePickerDialogDelegate>(
+      std::move(view), use_desktop_widget);
   delegate->RegisterWindowClosingCallback(
       base::BindOnce(&DrivePickerHostController::ResetControllerState,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -125,9 +155,9 @@ void DrivePickerHostController::ShowDrivePickerHost(
   views::Widget* widget = nullptr;
   gfx::NativeView parent_view = gfx::NativeView();
   views::Widget* parent_widget = nullptr;
-  if (use_loomnibox_anchoring) {
+  if (use_anchor_widget) {
     parent_view = anchor_widget_->GetNativeView();
-    parent_widget = anchor_widget_;
+    parent_widget = anchor_widget_.get();
   } else if (dialog_host) {
     parent_view = dialog_host->GetHostView();
     parent_widget = views::Widget::GetWidgetForNativeView(parent_view);
@@ -147,7 +177,8 @@ void DrivePickerHostController::ShowDrivePickerHost(
   }
 
   picker_widget_->Show();
-  picker_widget_->CenterWindow(picker_view_->GetPreferredSize());
+  DrivePickerHostView::CenterPickerWidget(picker_widget_.get(),
+                                          picker_view_->GetPreferredSize());
   picker_widget_observation_.Observe(picker_widget_.get());
 
   // Explicitly request focus on the newly shown picker view to immediately
@@ -223,7 +254,8 @@ void DrivePickerHostController::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
   if (widget != picker_widget_.get() && picker_widget_) {
-    picker_widget_->CenterWindow(
+    DrivePickerHostView::CenterPickerWidget(
+        picker_widget_.get(),
         picker_widget_->GetContentsView()->GetPreferredSize({}));
   }
 }

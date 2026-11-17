@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -23,22 +24,33 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/aura/window.h"
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#endif
+
 DrivePickerHostView::DrivePickerHostView(
     Profile* profile,
     BrowserWindowInterface* browser_window_interface,
-    drive_picker_host::DrivePickerHostRequest::RequestType initial_ui_type)
+    drive_picker_host::DrivePickerHostRequest::RequestType initial_ui_type,
+    Style style)
     : browser_window_interface_(browser_window_interface),
-      current_ui_type_(initial_ui_type) {
+      current_ui_type_(initial_ui_type),
+      style_(style) {
   // Set the view to paint to a layer so that the view can be transparent over
   // the web contents. This allows the web contents to appear like a floating
   // dialog over the browser window.
@@ -94,38 +106,29 @@ content::WebContents* DrivePickerHostView::GetWebContents() {
 
 gfx::Size DrivePickerHostView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  gfx::Size size;
   if (current_ui_type_ ==
       drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog) {
-    // Tight fit for the Google ConsentKit card
-    size = gfx::Size(520, 580);
-  } else if (current_ui_type_ == drive_picker_host::DrivePickerHostRequest::
-                                     RequestType::kErrorDialog) {
-    // Small size for the error dialog
-    size = gfx::Size(512, 180);
-  } else {
-    // Standard size for the Google Drive Picker UI
-    size = gfx::Size(830, 600);
+    return kConsentDialogSize;
   }
-  return size;
+  if (current_ui_type_ ==
+      drive_picker_host::DrivePickerHostRequest::RequestType::kErrorDialog) {
+    return kErrorDialogSize;
+  }
+  return style_ == Style::kGlic ? kGlicPickerDialogSize : kPickerDialogSize;
 }
 
 void DrivePickerHostView::OnTransitionToPicker() {
   current_ui_type_ =
       drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi;
   PreferredSizeChanged();
-  if (GetWidget()) {
-    GetWidget()->CenterWindow(GetPreferredSize());
-  }
+  CenterInWidget();
 }
 
 void DrivePickerHostView::OnTransitionToError() {
   current_ui_type_ =
       drive_picker_host::DrivePickerHostRequest::RequestType::kErrorDialog;
   PreferredSizeChanged();
-  if (GetWidget()) {
-    GetWidget()->CenterWindow(GetPreferredSize());
-  }
+  CenterInWidget();
 }
 
 void DrivePickerHostView::OnTransitionToConsent() {
@@ -136,9 +139,51 @@ void DrivePickerHostView::OnTransitionToConsent() {
   current_ui_type_ =
       drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog;
   PreferredSizeChanged();
-  if (GetWidget()) {
-    GetWidget()->CenterWindow(GetPreferredSize());
+  CenterInWidget();
+}
+
+// static
+void DrivePickerHostView::CenterPickerWidget(views::Widget* widget,
+                                             const gfx::Size& size) {
+  if (!widget) {
+    return;
   }
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  // On Desktop Aura (Windows and Linux), when `widget` is a top-level
+  // `DesktopNativeWidgetAura` (e.g. a Glic picker anchored to the smaller
+  // detached floaty, or any `TYPE_WINDOW_FRAMELESS` dialog on Windows),
+  // `HWNDMessageHandler::CenterWindow()` aligns a wider dialog's left edge
+  // with its owner instead of centering and skips monitor clamping whenever an
+  // owner `HWND` exists. Center over the parent widget (if any) and clamp to
+  // the parent's display work area.
+  aura::Window* window = widget->GetNativeWindow();
+  if (window && window->GetRootWindow() &&
+      views::DesktopNativeWidgetAura::ForWindow(window->GetRootWindow()) ==
+          widget->native_widget_private()) {
+    const gfx::Rect reference_bounds =
+        widget->parent() ? widget->parent()->GetWindowBoundsInScreen()
+                         : widget->GetWindowBoundsInScreen();
+    const gfx::Rect work_area = display::Screen::Get()
+                                    ->GetDisplayMatching(reference_bounds)
+                                    .work_area();
+    const gfx::Point center = !reference_bounds.IsEmpty()
+                                  ? reference_bounds.CenterPoint()
+                                  : work_area.CenterPoint();
+    gfx::Rect bounds(center.x() - size.width() / 2,
+                     center.y() - size.height() / 2, size.width(),
+                     size.height());
+    if (!work_area.IsEmpty()) {
+      bounds.AdjustToFit(work_area);
+    }
+    widget->SetBoundsConstrained(bounds);
+    return;
+  }
+#endif
+  widget->CenterWindow(size);
+}
+
+void DrivePickerHostView::CenterInWidget() {
+  CenterPickerWidget(GetWidget(), GetPreferredSize());
 }
 
 void DrivePickerHostView::RequestFocus() {
@@ -157,11 +202,19 @@ void DrivePickerHostView::AddedToWidget() {
   views::WebView* web_view =
       views::AsViewClass<views::WebView>(view_tracker_.view());
   if (web_view) {
-    // Remove rounded corners to align with the Drive Picker's rectangular look.
-    web_view->holder()->SetNativeViewCornerRadii(gfx::RoundedCornersF(0));
-
-    // Also ensure this view's layer is rectangular.
-    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(0));
+#if BUILDFLAG(IS_MAC)
+    // On Mac, `ModalType::kWindow` dialogs are presented as native AppKit
+    // sheets (`IsWindowModalSheet()`), which force an opaque `NSWindow`
+    // background and apply AppKit's own sheet corner radius
+    // (crbug.com/40144839). Leave the view unclipped so OnePick's surface fills
+    // the native sheet corner-to-corner without exposing the white `NSWindow`.
+    const gfx::RoundedCornersF radii(0);
+#else
+    const gfx::RoundedCornersF radii(style_ == Style::kGlic ? kGlicCornerRadius
+                                                            : 0);
+#endif
+    web_view->holder()->SetNativeViewCornerRadii(radii);
+    layer()->SetRoundedCornerRadius(radii);
   }
 }
 
@@ -181,9 +234,7 @@ void DrivePickerHostView::TriggerDrivePickerHostUi(
     std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request) {
   current_ui_type_ = request->type();
   PreferredSizeChanged();
-  if (GetWidget()) {
-    GetWidget()->CenterWindow(GetPreferredSize());
-  }
+  CenterInWidget();
 
   if (!view_tracker_.view()) {
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(!is_android)
@@ -28,6 +29,7 @@ source_set("drive_picker_host") {
   ]
   deps = [
     "//chrome/browser:primitives",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/browser_window",
@@ -46,9 +48,14 @@ source_set("drive_picker_host") {
     "//ui/base",
     "//ui/base/metadata",
     "//ui/compositor",
+    "//ui/display",
     "//ui/gfx",
+    "//ui/views:buildflags",
     "//ui/views/controls/webview",
   ]
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -60,6 +67,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":drive_picker_host",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/prefs",
@@ -73,6 +81,11 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//ui/compositor",
+    "//ui/display",
+    "//ui/views:buildflags",
     "//ui/views:test_support",
   ]
+  if (use_aura) {
+    deps += [ "//ui/aura:test_support" ]
+  }
 }

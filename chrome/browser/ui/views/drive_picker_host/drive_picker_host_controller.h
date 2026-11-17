@@ -93,7 +93,7 @@ class DrivePickerHostController : public content::WebContentsObserver,
 
   raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
-  raw_ptr<views::Widget> anchor_widget_ = nullptr;
+  base::WeakPtr<views::Widget> anchor_widget_;
   bool is_standalone_popup_ = false;
   raw_ptr<DrivePickerHostView> picker_view_ = nullptr;
   std::unique_ptr<views::Widget> picker_widget_;

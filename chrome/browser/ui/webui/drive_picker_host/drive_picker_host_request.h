@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_DRIVE_PICKER_HOST_DRIVE_PICKER_HOST_REQUEST_H_
 
 #include <optional>
+#include <utility>
 
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host.mojom.h"
@@ -22,6 +23,7 @@ namespace drive_picker_host {
 class DrivePickerHostRequest {
  public:
   enum class RequestType { kConsentDialog, kPickerUi, kErrorDialog };
+  enum class Style { kDefault, kGlic };
 
   DrivePickerHostRequest(
       RequestType type,
@@ -36,6 +38,9 @@ class DrivePickerHostRequest {
 
   RequestType type() const { return type_; }
 
+  void set_style(Style style) { style_ = style; }
+  Style style() const { return style_; }
+
   bool has_result_handler() const { return !!result_handler_; }
 
   mojo::PendingRemote<mojom::DrivePickerResultHandler> TakeResultHandler() {
@@ -45,6 +50,9 @@ class DrivePickerHostRequest {
  private:
   // The type of request (e.g., show consent dialog or picker UI).
   RequestType type_;
+
+  // Selects the dialog sizing, corner radius, anchoring, and Picker tab layout.
+  Style style_ = Style::kDefault;
 
   // Handle to receive the results of the Drive Picker or disclaimer dialog
   // (selected files, cancellation, or errors).

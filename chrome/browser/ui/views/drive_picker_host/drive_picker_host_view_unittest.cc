@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
@@ -177,6 +179,40 @@ TEST_F(DrivePickerHostViewTest, SetsCornerRadiusOnAddedToWidget) {
   // Verify that the corner radii were set to 0 on the view's layer.
   gfx::RoundedCornersF view_radii = view_ptr->layer()->rounded_corner_radii();
   EXPECT_TRUE(view_radii.IsEmpty());
+  EXPECT_EQ(view_ptr->GetPreferredSize(),
+            DrivePickerHostView::kPickerDialogSize);
+}
+
+TEST_F(DrivePickerHostViewTest, SetsGlicCornerRadiusAndSizeWhenIsGlic) {
+  auto view = std::make_unique<DrivePickerHostView>(
+      profile(), browser_window_interface(),
+      drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi,
+      DrivePickerHostView::Style::kGlic);
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.context = GetContext();
+  widget->Init(std::move(params));
+
+  DrivePickerHostView* view_ptr = view.get();
+  widget->SetContentsView(std::move(view));
+
+  views::WebView* web_view =
+      views::AsViewClass<views::WebView>(view_ptr->view_tracker_.view());
+  ASSERT_TRUE(web_view);
+
+#if BUILDFLAG(IS_MAC)
+  const gfx::RoundedCornersF expected_radii(0);
+#else
+  const gfx::RoundedCornersF expected_radii(
+      DrivePickerHostView::kGlicCornerRadius);
+#endif
+  EXPECT_EQ(web_view->holder()->GetNativeViewCornerRadii(), expected_radii);
+  EXPECT_EQ(view_ptr->layer()->rounded_corner_radii(), expected_radii);
+  EXPECT_EQ(view_ptr->GetPreferredSize(),
+            DrivePickerHostView::kGlicPickerDialogSize);
 }
 
 TEST_F(DrivePickerHostViewTest, EscapeAcceleratorClosesWidget) {

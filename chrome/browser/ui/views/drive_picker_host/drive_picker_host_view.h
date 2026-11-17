@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -49,10 +50,20 @@ class DrivePickerHostView
   METADATA_HEADER(DrivePickerHostView, views::View)
 
  public:
+  static constexpr gfx::Size kConsentDialogSize{520, 580};
+  static constexpr gfx::Size kErrorDialogSize{512, 180};
+  static constexpr gfx::Size kPickerDialogSize{830, 600};
+  static constexpr gfx::Size kGlicPickerDialogSize{1050, 650};
+  static constexpr float kGlicCornerRadius = 28.0f;
+
+  // Selects the dialog size and corner radius of the picker.
+  using Style = drive_picker_host::DrivePickerHostRequest::Style;
+
   explicit DrivePickerHostView(
       Profile* profile,
       BrowserWindowInterface* browser_window_interface,
-      drive_picker_host::DrivePickerHostRequest::RequestType initial_ui_type);
+      drive_picker_host::DrivePickerHostRequest::RequestType initial_ui_type,
+      Style style = Style::kDefault);
   DrivePickerHostView(const DrivePickerHostView&) = delete;
   DrivePickerHostView& operator=(const DrivePickerHostView&) = delete;
   ~DrivePickerHostView() override;
@@ -64,6 +75,10 @@ class DrivePickerHostView
   // the provided result handler.
   void TriggerDrivePickerHostUi(
       std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request);
+
+  // Centers `widget` at `size` over its parent widget (if any) while keeping
+  // top-level desktop widgets clamped within the display work area.
+  static void CenterPickerWidget(views::Widget* widget, const gfx::Size& size);
 
   // `views::View`:
   gfx::Size CalculatePreferredSize(
@@ -97,6 +112,11 @@ class DrivePickerHostView
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, TriggerDrivePickerHostUi);
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest,
                            SetsCornerRadiusOnAddedToWidget);
+  FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest,
+                           SetsGlicCornerRadiusAndSizeWhenIsGlic);
+
+  // Centers the hosting widget at this view's preferred size.
+  void CenterInWidget();
 
   // Reports an error back to the result handler in the request.
   void SendErrorToRequest(
@@ -107,6 +127,7 @@ class DrivePickerHostView
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   drive_picker_host::DrivePickerHostRequest::RequestType current_ui_type_ =
       drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi;
+  Style style_ = Style::kDefault;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DRIVE_PICKER_HOST_DRIVE_PICKER_HOST_VIEW_H_
