@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -303,6 +304,9 @@ class TabsCaptureVisibleTabFunction
   ~TabsCaptureVisibleTabFunction() override = default;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ExtensionTabsTest,
+                           TabsCaptureVisibleTab_ResolvesStandaloneActiveTab);
+
   ChromeExtensionFunctionDetails chrome_details_;
 
   content::WebContents* GetWebContentsForID(int window_id, std::string* error);

@@ -2675,23 +2675,15 @@ content::WebContents* TabsCaptureVisibleTabFunction::GetWebContentsForID(
     return nullptr;
   }
 
-  BrowserWindowInterface* browser =
-      window_controller->GetBrowserWindowInterface();
-  if (!browser) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*window_controller->profile())) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return nullptr;
   }
-  TabListInterface* tab_list = ExtensionTabUtil::GetEditableTabList(*browser);
-  if (!tab_list) {
-    *error = ExtensionTabUtil::kTabStripNotEditableError;
-    return nullptr;
-  }
-  ::tabs::TabInterface* tab = tab_list->GetActiveTab();
-  if (!tab) {
+  content::WebContents* contents = window_controller->GetActiveTab();
+  if (!contents) {
     *error = "No active web contents to capture";
     return nullptr;
   }
-  content::WebContents* contents = tab->GetContents();
 
   if (!extension()->permissions_data()->CanCaptureVisiblePage(
           contents->GetLastCommittedURL(),

@@ -1286,6 +1286,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps,
   CloseAppWindow(app_window);
 }
 
+// Verifies that tabs.captureVisibleTab() targeting a Chrome App window, whose
+// WindowController exposes no active tab, returns an active-web-contents error.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps,
+                       CannotCaptureVisibleTabInAppWindow) {
+  std::string error = RunFunctionTargetingAppWindow(
+      base::MakeRefCounted<TabsCaptureVisibleTabFunction>(), R"([$1])");
+  EXPECT_EQ("No active web contents to capture", error);
+}
+
 // Crashes on Mac/Win only.  http://crbug.com/40514319
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FilteredEvents DISABLED_FilteredEvents
@@ -6041,6 +6050,43 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   base::ListValue normal_tabs =
       RunQueryFunction(extension.get(), R"([{"windowType": "normal"}])");
   EXPECT_FALSE(contains_standalone_tab(normal_tabs));
+}
+
+// Verifies that TabsCaptureVisibleTabFunction::GetWebContentsForID resolves the
+// active WebContents of a standalone WindowController that has no
+// BrowserWindowInterface.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsCaptureVisibleTab_ResolvesStandaloneActiveTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  content::NavigationController::LoadURLParams load_params(
+      embedded_test_server()->GetURL("/empty.html"));
+  web_contents->GetController().LoadURLWithParams(load_params);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents.get()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("CaptureStandaloneTest")
+          .AddHostPermission("<all_urls>")
+          .Build();
+  auto function = base::MakeRefCounted<TabsCaptureVisibleTabFunction>();
+  function->set_extension(extension.get());
+  function->SetBrowserContextForTesting(profile());
+
+  std::string error;
+  EXPECT_EQ(web_contents.get(),
+            function->GetWebContentsForID(standalone_window_id.id(), &error));
+  EXPECT_TRUE(error.empty());
 }
 
 }  // namespace extensions
