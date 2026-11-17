@@ -275,8 +275,6 @@ suite('PasswordsImporterTest', function() {
 
     assertTrue(
         isChildVisible(dialog, '#deleteFileOption', /*checkLightDom=*/ true));
-
-    assertFalse(isChildVisible(dialog, '#tipBox', /*checkLightDom=*/ true));
     assertFalse(
         isChildVisible(dialog, '#failuresSummary', /*checkLightDom=*/ true));
 
@@ -713,8 +711,6 @@ suite('PasswordsImporterTest', function() {
     assertVisibleTextContent(
         dialog, '#title', importer.i18n('importPasswordsCompleteTitle'));
 
-    // Success tip should not be visible.
-    assertFalse(isChildVisible(dialog, '#tipBox', /*checkLightDom=*/ true));
     assertFalse(
         isChildVisible(dialog, '#deleteFileOption', /*checkLightDom=*/ true));
 

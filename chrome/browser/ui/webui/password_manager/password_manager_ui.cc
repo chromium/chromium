@@ -310,7 +310,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_IMPORT_COMPLETE_TITLE},
       {"importPasswordsSuccessTitle",
        IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TITLE},
-      {"importPasswordsSuccessTip", IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TIP},
       {"importPasswordsDeleteFileOption",
        IDS_PASSWORD_MANAGER_UI_IMPORT_DELETE_FILE_OPTION},
       {"importPasswordsDescriptionAccount",
