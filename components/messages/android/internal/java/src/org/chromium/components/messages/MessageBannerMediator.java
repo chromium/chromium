@@ -10,7 +10,7 @@ import static org.chromium.components.messages.MessageBannerProperties.CONTENT_A
 import static org.chromium.components.messages.MessageBannerProperties.ENABLE_CLOSE_BUTTON;
 import static org.chromium.components.messages.MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER;
 import static org.chromium.components.messages.MessageBannerProperties.MARGIN_TOP;
-import static org.chromium.components.messages.MessageBannerProperties.TAP_PROTECTION_RESETTING_KEYS;
+import static org.chromium.components.messages.MessageBannerProperties.TAP_PROTECTION_RESETTING_KEY_SET;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
 import static org.chromium.components.messages.MessageBannerProperties.VISUAL_HEIGHT;
@@ -45,7 +45,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /** Mediator responsible for the business logic in a message banner. */
@@ -64,9 +63,6 @@ class MessageBannerMediator implements SwipeHandler {
         // User gesture
         int GESTURE = 3;
     }
-
-    private static final Set<PropertyKey> sTapProtectionResettingKeys =
-            Set.of(TAP_PROTECTION_RESETTING_KEYS);
 
     private static final long TAP_PROTECTION_DURATION_MS = 500;
 
@@ -447,7 +443,8 @@ class MessageBannerMediator implements SwipeHandler {
         // A null propertyKey indicates a bulk update where multiple properties changed at once.
         // Re-arm tap protection for safety on bulk updates as well as key-specific mutations.
         if (!mInFront
-                || (propertyKey != null && !sTapProtectionResettingKeys.contains(propertyKey))) {
+                || (propertyKey != null
+                        && !TAP_PROTECTION_RESETTING_KEY_SET.contains(propertyKey))) {
             return;
         }
 

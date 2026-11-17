@@ -25,6 +25,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 
 import androidx.test.filters.MediumTest;
 
@@ -44,6 +45,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -57,6 +59,7 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -1177,6 +1180,289 @@ public class MessageBannerViewTest {
                                 mMessageBannerView, clickCount));
     }
 
+    /**
+     * Tests that mutating a tap-protection-resetting property dismisses an open single-item
+     * secondary menu, while mutating a non-resetting property keeps it open.
+     */
+    @Test
+    @MediumTest
+    public void testResettingPropertyMutationDismissesOpenSecondaryMenu() {
+        PopupMenuShownListener listener = Mockito.mock(PopupMenuShownListener.class);
+        PropertyModel model =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            PropertyModel propertyModel =
+                                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                            .with(
+                                                    MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                                    MessageIdentifier.TEST_MESSAGE)
+                                            .with(
+                                                    MessageBannerProperties
+                                                            .SECONDARY_ICON_RESOURCE_ID,
+                                                    android.R.drawable.ic_menu_add)
+                                            .with(
+                                                    MessageBannerProperties
+                                                            .SECONDARY_BUTTON_MENU_TEXT,
+                                                    SECONDARY_BUTTON_MENU_TEXT)
+                                            .with(
+                                                    MessageBannerProperties
+                                                            .ON_SECONDARY_BUTTON_CLICK,
+                                                    mSecondaryActionCallback)
+                                            .build();
+                            PropertyModelChangeProcessor.create(
+                                    propertyModel,
+                                    mMessageBannerView,
+                                    MessageBannerViewBinder::bind);
+                            mMessageBannerView.setPopupMenuShownListener(listener);
+                            return propertyModel;
+                        });
+
+        // Open the single-item secondary menu and verify that the shown listener fires.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mMessageBannerView.getSecondaryButtonForTesting().performClick());
+        Mockito.verify(listener).onPopupMenuShown();
+
+        // Mutate a tap-protection-resetting property and verify that the open menu is dismissed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(MessageBannerProperties.DESCRIPTION, "Updated description"));
+        Mockito.verify(listener).onPopupMenuDismissed();
+
+        // Reopen the secondary menu and mutate a non-resetting property to verify that the menu
+        // remains open.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mMessageBannerView.getSecondaryButtonForTesting().performClick());
+        Mockito.verify(listener, Mockito.times(2)).onPopupMenuShown();
+        ThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.ELEVATION, 1f));
+        Mockito.verify(listener).onPopupMenuDismissed();
+        ThreadUtils.runOnUiThreadBlocking(() -> mMessageBannerView.dismissSecondaryMenuIfShown());
+    }
+
+    /**
+     * Tests that mutating a tap-protection-resetting property dismisses an open secondary menu
+     * backed by a custom {@link ListMenuDelegate}.
+     */
+    @Test
+    @MediumTest
+    public void testResettingPropertyMutationDismissesOpenCustomSecondaryMenu() {
+        PopupMenuShownListener listener = Mockito.mock(PopupMenuShownListener.class);
+        PropertyModel model =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
+                            menuItems.add(
+                                    new ListItemBuilder()
+                                            .withTitle(SECONDARY_BUTTON_MENU_TEXT)
+                                            .build());
+                            BasicListMenu listMenu =
+                                    BrowserUiListMenuUtils.getBasicListMenu(
+                                            sActivity,
+                                            menuItems,
+                                            (PropertyModel menuItem, View view) -> {});
+                            PropertyModel propertyModel =
+                                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                            .with(
+                                                    MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                                    MessageIdentifier.TEST_MESSAGE)
+                                            .with(
+                                                    MessageBannerProperties
+                                                            .SECONDARY_ICON_RESOURCE_ID,
+                                                    android.R.drawable.ic_menu_add)
+                                            .with(
+                                                    MessageBannerProperties
+                                                            .SECONDARY_MENU_BUTTON_DELEGATE,
+                                                    new ListMenuDelegate() {
+                                                        @Override
+                                                        public ListMenu getListMenu() {
+                                                            return listMenu;
+                                                        }
+                                                    })
+                                            .build();
+                            PropertyModelChangeProcessor.create(
+                                    propertyModel,
+                                    mMessageBannerView,
+                                    MessageBannerViewBinder::bind);
+                            mMessageBannerView.setPopupMenuShownListener(listener);
+                            return propertyModel;
+                        });
+
+        // Open the custom secondary menu and verify that the shown listener fires.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mMessageBannerView.getSecondaryButtonForTesting().performClick());
+        Mockito.verify(listener).onPopupMenuShown();
+
+        // Mutate TITLE and verify that the open custom secondary menu is dismissed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(MessageBannerProperties.TITLE, "Updated title"));
+        Mockito.verify(listener).onPopupMenuDismissed();
+    }
+
+    /**
+     * Tests that selecting an item in the single-item secondary menu is ignored during the tap
+     * protection period and invokes the secondary action callback once tap protection expires.
+     */
+    @Test
+    @MediumTest
+    public void testSecondaryMenuItemSelectionBlockedDuringTapProtection() {
+        AtomicBoolean isProtected = new AtomicBoolean();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(
+                                            MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                            android.R.drawable.ic_menu_add)
+                                    .with(
+                                            MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
+                                            SECONDARY_BUTTON_MENU_TEXT)
+                                    .with(
+                                            MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK,
+                                            mSecondaryActionCallback)
+                                    .with(
+                                            MessageBannerProperties
+                                                    .IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER,
+                                            isProtected::get)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+                });
+
+        // Open the secondary menu while tap protection is inactive, then activate tap protection
+        // before selecting the menu item and verify that the menu dismisses without running the
+        // callback.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mMessageBannerView.getSecondaryButtonForTesting().performClick());
+        isProtected.set(true);
+        clickSecondaryMenuItem();
+        Mockito.verify(mSecondaryActionCallback, Mockito.never()).run();
+
+        // Deactivate tap protection, reopen the menu, select the item, and verify that the callback
+        // runs.
+        isProtected.set(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mMessageBannerView.getSecondaryButtonForTesting().performClick());
+        clickSecondaryMenuItem();
+        Mockito.verify(mSecondaryActionCallback).run();
+    }
+
+    /**
+     * Tests that clicking the secondary button remains blocked during tap protection even after the
+     * secondary menu has been shown and dismissed once.
+     */
+    @Test
+    @MediumTest
+    public void testSecondaryButtonClickBlockedDuringTapProtectionAfterMenuWasShown() {
+        AtomicBoolean isProtected = new AtomicBoolean();
+        PopupMenuShownListener listener = Mockito.mock(PopupMenuShownListener.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(
+                                            MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                            android.R.drawable.ic_menu_add)
+                                    .with(
+                                            MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
+                                            SECONDARY_BUTTON_MENU_TEXT)
+                                    .with(
+                                            MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK,
+                                            mSecondaryActionCallback)
+                                    .with(
+                                            MessageBannerProperties
+                                                    .IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER,
+                                            isProtected::get)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+                    mMessageBannerView.setPopupMenuShownListener(listener);
+                });
+
+        // Open and dismiss the secondary menu once while tap protection is inactive.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMessageBannerView.getSecondaryButtonForTesting().performClick();
+                    mMessageBannerView.dismissSecondaryMenuIfShown();
+                });
+        Mockito.verify(listener).onPopupMenuShown();
+
+        // Activate tap protection and verify that clicking the secondary button does not reopen
+        // the menu or invoke the callback.
+        isProtected.set(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mMessageBannerView.getSecondaryButtonForTesting().performClick());
+        Mockito.verify(listener).onPopupMenuShown();
+        Mockito.verify(mSecondaryActionCallback, Mockito.never()).run();
+
+        // Deactivate tap protection and verify that clicking the secondary button opens the menu
+        // again.
+        isProtected.set(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMessageBannerView.getSecondaryButtonForTesting().performClick();
+                    mMessageBannerView.dismissSecondaryMenuIfShown();
+                });
+        Mockito.verify(listener, Mockito.times(2)).onPopupMenuShown();
+    }
+
+    /**
+     * Tests that replacing the {@link PopupMenuShownListener} unregisters the previous listener so
+     * subsequent menu show and dismiss events only notify the new listener.
+     */
+    @Test
+    @MediumTest
+    public void testPopupMenuShownListenerReplacementUnregistersPreviousListener() {
+        PopupMenuShownListener firstListener = Mockito.mock(PopupMenuShownListener.class);
+        PopupMenuShownListener secondListener = Mockito.mock(PopupMenuShownListener.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(
+                                            MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                            android.R.drawable.ic_menu_add)
+                                    .with(
+                                            MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
+                                            SECONDARY_BUTTON_MENU_TEXT)
+                                    .with(
+                                            MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK,
+                                            mSecondaryActionCallback)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+                    mMessageBannerView.setPopupMenuShownListener(firstListener);
+                });
+
+        // Open and dismiss the menu with the first listener installed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMessageBannerView.getSecondaryButtonForTesting().performClick();
+                    mMessageBannerView.dismissSecondaryMenuIfShown();
+                });
+        Mockito.verify(firstListener).onPopupMenuShown();
+        Mockito.verify(firstListener).onPopupMenuDismissed();
+
+        // Replace with the second listener, open and dismiss the menu again, and verify that only
+        // the second listener receives the new events.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMessageBannerView.setPopupMenuShownListener(secondListener);
+                    mMessageBannerView.getSecondaryButtonForTesting().performClick();
+                    mMessageBannerView.dismissSecondaryMenuIfShown();
+                });
+        Mockito.verify(firstListener).onPopupMenuShown();
+        Mockito.verify(firstListener).onPopupMenuDismissed();
+        Mockito.verify(secondListener).onPopupMenuShown();
+        Mockito.verify(secondListener).onPopupMenuDismissed();
+    }
+
     private void assertNoClickListenersFiredDuringTapProtection(
             View root, AtomicInteger clickCount) {
         if (root.hasOnClickListeners()) {
@@ -1193,6 +1479,40 @@ public class MessageBannerViewTest {
                 assertNoClickListenersFiredDuringTapProtection(group.getChildAt(i), clickCount);
             }
         }
+    }
+
+    private void clickSecondaryMenuItem() {
+        ListMenuButton secondaryButton = mMessageBannerView.getSecondaryButtonForTesting();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    if (!secondaryButton.getHost().isMenuShowing()) return false;
+                    AnchoredPopupWindow popup =
+                            secondaryButton
+                                    .getHost()
+                                    .getHierarchicalMenuController()
+                                    .getFlyoutController()
+                                    .getMainPopup();
+                    View contentView = popup.getContentView();
+                    if (contentView == null) return false;
+                    ListView listView = contentView.findViewById(R.id.menu_list);
+                    return listView != null && listView.getChildCount() > 0;
+                },
+                "Timed out waiting for secondary menu item to be laid out.");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View contentView =
+                            secondaryButton
+                                    .getHost()
+                                    .getHierarchicalMenuController()
+                                    .getFlyoutController()
+                                    .getMainPopup()
+                                    .getContentView();
+                    Assert.assertNotNull(contentView);
+                    ListView listView = contentView.findViewById(R.id.menu_list);
+                    Assert.assertTrue(listView.getChildCount() > 0);
+                    Assert.assertTrue(listView.getChildAt(0).performClick());
+                    Assert.assertFalse(secondaryButton.getHost().isMenuShowing());
+                });
     }
 
     private void assertIsLoading(boolean isLoading) {

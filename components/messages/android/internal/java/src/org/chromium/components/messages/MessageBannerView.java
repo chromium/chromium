@@ -322,7 +322,11 @@ public class MessageBannerView extends RelativeLayout {
     }
 
     void setPopupMenuShownListener(PopupMenuShownListener popupMenuShownListener) {
+        if (mPopupMenuShownListener != null) {
+            mSecondaryButton.removePopupListener(mPopupMenuShownListener);
+        }
         mPopupMenuShownListener = popupMenuShownListener;
+        mSecondaryButton.addPopupListener(popupMenuShownListener);
     }
 
     // TODO(crbug.com/40740070): For the M88 experiment we decided to display single item menu in
@@ -336,14 +340,13 @@ public class MessageBannerView extends RelativeLayout {
             return;
         }
 
+        // Avoid overriding the existing tap-protected click listener installed in
+        // onFinishInflate(); the one-arg overload would replace it with an unprotected one.
         mSecondaryButton.setDelegate(
                 mSecondaryMenuButtonDelegate != null
                         ? mSecondaryMenuButtonDelegate
-                        : buildDelegateForSingleMenuItem());
-
-        if (mPopupMenuShownListener != null) {
-            mSecondaryButton.addPopupListener(mPopupMenuShownListener);
-        }
+                        : buildDelegateForSingleMenuItem(),
+                /* overrideOnClickListener= */ false);
         mSecondaryButton.showMenu();
     }
 
@@ -459,6 +462,9 @@ public class MessageBannerView extends RelativeLayout {
         ListMenu.Delegate listMenuDelegate =
                 (PropertyModel menuItem, View view) -> {
                     assert menuItem == listItem.model;
+                    // The popup lives outside the banner's view tree, so item taps bypass
+                    // onInterceptTouchEvent() and dispatchKeyEvent().
+                    if (isWithinTapProtectionPeriod()) return;
                     // There is only one menu item in the menu.
                     if (mSecondaryActionCallback != null) {
                         mSecondaryActionCallback.run();

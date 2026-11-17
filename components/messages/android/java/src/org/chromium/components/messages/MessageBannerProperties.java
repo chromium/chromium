@@ -22,6 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 /** Properties of message banner. */
@@ -193,6 +194,10 @@ public class MessageBannerProperties {
                 SECONDARY_MENU_BUTTON_DELEGATE,
                 SECONDARY_MENU_MAX_SIZE
             };
+
+    /** Set view of {@link #TAP_PROTECTION_RESETTING_KEYS} for membership checks. */
+    static final Set<PropertyKey> TAP_PROTECTION_RESETTING_KEY_SET =
+            Set.of(TAP_PROTECTION_RESETTING_KEYS);
 
     /**
      * Keys related to gestures, layout animations, lifetime callbacks, and internal component

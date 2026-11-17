@@ -13,6 +13,8 @@ import static org.robolectric.Shadows.shadowOf;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
@@ -54,8 +56,13 @@ public class MessageBannerCoordinatorUnitTest {
 
     @Test
     public void testSendPaneChangeAccessibilityEvent() {
-        Context context = ContextUtils.getApplicationContext();
-        MessageBannerView view = new MessageBannerView(context, null);
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        MessageBannerView view =
+                (MessageBannerView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.message_banner_view, /* root= */ null);
         PropertyModel model = new PropertyModel(MessageBannerProperties.ALL_KEYS);
         View parentView = new View(context);
         Resources resources = mock(Resources.class);

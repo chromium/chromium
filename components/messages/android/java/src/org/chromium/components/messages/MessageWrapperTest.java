@@ -133,12 +133,18 @@ public class MessageWrapperTest {
     @Test
     public void testDestroyedMessageWrapperCallbacks() {
         PropertyModel messageProperties = mMessage.getMessageProperties();
+        PropertyModel item =
+                mMessage.addSecondaryMenuItem(
+                        /* itemId= */ 1, /* resourceId= */ 0, /* itemText= */ "Item 1");
 
         mMessage.clearNativePtr();
         var _ = messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         Mockito.verify(mNativeMock, never()).handleActionClick(Mockito.any());
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock, never()).handleSecondaryActionClick(Mockito.any());
+        mMessage.onItemSelected(item, /* view= */ null);
+        Mockito.verify(mNativeMock, never())
+                .handleSecondaryMenuItemSelected(Mockito.any(), Mockito.anyInt());
         messageProperties
                 .get(MessageBannerProperties.ON_DISMISSED)
                 .onResult(DismissReason.PRIMARY_ACTION);
@@ -175,6 +181,28 @@ public class MessageWrapperTest {
         mMessage.clearSecondaryMenuItems();
         Assert.assertEquals(
                 "Secondary menu is not cleared.", 0, messageSecondaryMenuItems.mMenuItems.size());
+    }
+
+    /** Tests that secondary menu item selections are ignored during the tap-protection period. */
+    @Test
+    public void testSecondaryMenuItemSelectionBlockedDuringTapProtection() {
+        PropertyModel messageProperties = mMessage.getMessageProperties();
+        PropertyModel item =
+                mMessage.addSecondaryMenuItem(
+                        /* itemId= */ 1, /* resourceId= */ 0, /* itemText= */ "Item 1");
+
+        // Simulate selecting a secondary menu item while tap protection is active.
+        messageProperties.set(
+                MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER, () -> true);
+        mMessage.onItemSelected(item, /* view= */ null);
+        Mockito.verify(mNativeMock, never())
+                .handleSecondaryMenuItemSelected(Mockito.any(), Mockito.anyInt());
+
+        // Once tap protection expires, selecting the menu item should notify native.
+        messageProperties.set(
+                MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER, () -> false);
+        mMessage.onItemSelected(item, /* view= */ null);
+        Mockito.verify(mNativeMock).handleSecondaryMenuItemSelected(mNativePtr, /* itemId= */ 1);
     }
 
     /** Tests that setPrimaryWidgetAppearance updates the message's primary widget appearance. */

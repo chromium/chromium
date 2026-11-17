@@ -31,6 +31,7 @@ import static org.chromium.components.messages.MessageBannerProperties.SECONDARY
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_MENU_MAX_SIZE;
+import static org.chromium.components.messages.MessageBannerProperties.TAP_PROTECTION_RESETTING_KEY_SET;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE_CONTENT_DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
@@ -53,6 +54,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MessageBannerViewBinder {
     @SuppressLint("ClickableViewAccessibility")
     public static void bind(PropertyModel model, MessageBannerView view, PropertyKey propertyKey) {
+        // Every key that re-arms tap protection also invalidates an open secondary menu: the
+        // popup window is outside the banner's view tree, so its events bypass the banner's
+        // tap-protection checks.
+        if (TAP_PROTECTION_RESETTING_KEY_SET.contains(propertyKey)) {
+            view.dismissSecondaryMenuIfShown();
+        }
         if (propertyKey == PRIMARY_WIDGET_APPEARANCE) {
             view.setPrimaryWidgetAppearance(model.get(PRIMARY_WIDGET_APPEARANCE));
         } else if (propertyKey == PRIMARY_BUTTON_TEXT) {

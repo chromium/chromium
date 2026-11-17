@@ -29,6 +29,8 @@ import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.function.Supplier;
+
 /** Java side of native MessageWrapper class that represents a message for native features. */
 @JNINamespace("messages")
 @NullMarked
@@ -304,6 +306,15 @@ public final class MessageWrapper implements ListMenu.Delegate {
     public void onItemSelected(PropertyModel item, @Nullable View view) {
         assert item.getAllSetProperties().contains(ListMenuItemProperties.MENU_ITEM_ID);
         if (mNativeMessageWrapper == null) return;
+        // The secondary menu popup is outside the banner's view tree, so it isn't covered by
+        // MessageBannerView's tap-protection checks.
+        Supplier<Boolean> isWithinTapProtectionPeriod =
+                mMessageProperties.get(
+                        MessageBannerProperties.IS_WITHIN_TAP_PROTECTION_PERIOD_SUPPLIER);
+        if (isWithinTapProtectionPeriod != null
+                && Boolean.TRUE.equals(isWithinTapProtectionPeriod.get())) {
+            return;
+        }
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
         MessageWrapperJni.get().handleSecondaryMenuItemSelected(mNativeMessageWrapper, itemId);
     }
