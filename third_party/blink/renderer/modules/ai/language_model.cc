@@ -996,13 +996,18 @@ ScriptPromise<IDLDouble> LanguageModel::measureContextUsage(
     return EmptyPromise();
   }
 
+  on_device_model::mojom::blink::ResponseConstraintPtr constraint;
+  if (!ParseConstraint(script_state, options, exception_state, constraint)) {
+    return EmptyPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
       script_state, signal);
   auto promise = resolver->Promise();
 
+  String json_schema = GetSchemaForInput(constraint, options);
   ConvertPromptInputsToMojo(
-      script_state, signal, input, info_,
-      /*json_schema=*/"",
+      script_state, signal, input, info_, json_schema,
       BindOnce(&LanguageModel::ExecuteMeasureInputUsage, WrapPersistent(this),
                WrapPersistent(resolver)),
       BindOnce(&ResolverWithAbortSignal<IDLDouble>::Reject<const ScriptValue&>,

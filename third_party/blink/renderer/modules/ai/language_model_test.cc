@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-test-utils.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
@@ -80,6 +81,8 @@ class MockAILanguageModel : public mojom::blink::AILanguageModel {
   }
   void MeasureInputUsage(Vector<mojom::blink::AILanguageModelPromptPtr> prompt,
                          MeasureInputUsageCallback callback) override {
+    last_prompts_ = std::move(prompt);
+    call_count_++;
     if (reset_client_on_call_) {
       receiver_.reset();
     } else {
@@ -621,6 +624,103 @@ TEST_F(LanguageModelTest, SamplingModeTakesPrecedenceOverLegacyParams) {
 
   scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::AIManager::Name_, {});
+}
+
+TEST_F(LanguageModelTest, MeasureContextUsageResponseConstraint) {
+  ScopedAIPromptAPIStructuredOutputForTest scoped_structured_output(true);
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+  v8::Local<v8::Context> context = scope.GetContext();
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext());
+
+  v8::Local<v8::Object> schema_obj =
+      v8::JSON::Parse(context, V8String(isolate, R"({"type":"string"})"))
+          .ToLocalChecked()
+          .As<v8::Object>();
+
+  // JSON schema constraint appends schema instructions by default.
+  {
+    auto* options = LanguageModelPromptOptions::Create();
+    options->setResponseConstraint(ScriptObject(isolate, schema_obj));
+    DummyExceptionStateForTesting exception_state;
+    auto promise = language_model->measureContextUsage(
+        script_state, CreateStringPrompt("Hello"), options, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_EQ(mock_remote_->call_count_, 1);
+    ASSERT_EQ(mock_remote_->last_prompts_.size(), 1u);
+    EXPECT_EQ(mock_remote_->last_prompts_[0]->role,
+              mojom::blink::AILanguageModelPromptRole::kUser);
+    ASSERT_EQ(mock_remote_->last_prompts_[0]->content.size(), 2u);
+    EXPECT_EQ(mock_remote_->last_prompts_[0]->content[0]->get_text(), "Hello");
+    EXPECT_EQ(mock_remote_->last_prompts_[0]->content[1]->get_text(),
+              "\n\nRemember to respond in JSON that follows this \"JSON "
+              "Schema\" specification:\n{\"type\":\"string\"}");
+  }
+
+  // omitResponseConstraintInput: true omits schema instructions.
+  {
+    mock_remote_->last_prompts_.clear();
+    auto* options = LanguageModelPromptOptions::Create();
+    options->setResponseConstraint(ScriptObject(isolate, schema_obj));
+    options->setOmitResponseConstraintInput(true);
+    DummyExceptionStateForTesting exception_state;
+    auto promise = language_model->measureContextUsage(
+        script_state, CreateStringPrompt("Hello"), options, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_EQ(mock_remote_->call_count_, 2);
+    ASSERT_EQ(mock_remote_->last_prompts_.size(), 1u);
+    ASSERT_EQ(mock_remote_->last_prompts_[0]->content.size(), 1u);
+    EXPECT_EQ(mock_remote_->last_prompts_[0]->content[0]->get_text(), "Hello");
+  }
+
+  // RegExp constraint does not append schema instructions.
+  {
+    mock_remote_->last_prompts_.clear();
+    v8::Local<v8::RegExp> regex_obj =
+        v8::RegExp::New(context, V8String(isolate, "[a-z]+"), v8::RegExp::kNone)
+            .ToLocalChecked();
+    auto* options = LanguageModelPromptOptions::Create();
+    options->setResponseConstraint(ScriptObject(isolate, regex_obj));
+    DummyExceptionStateForTesting exception_state;
+    auto promise = language_model->measureContextUsage(
+        script_state, CreateStringPrompt("Hello"), options, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_EQ(mock_remote_->call_count_, 3);
+    ASSERT_EQ(mock_remote_->last_prompts_.size(), 1u);
+    ASSERT_EQ(mock_remote_->last_prompts_[0]->content.size(), 1u);
+    EXPECT_EQ(mock_remote_->last_prompts_[0]->content[0]->get_text(), "Hello");
+  }
+
+  // Circular reference in responseConstraint throws NotSupportedError.
+  {
+    v8::Local<v8::Object> circular_obj = v8::Object::New(isolate);
+    ASSERT_TRUE(
+        circular_obj->Set(context, V8String(isolate, "self"), circular_obj)
+            .FromJust());
+    auto* options = LanguageModelPromptOptions::Create();
+    options->setResponseConstraint(ScriptObject(isolate, circular_obj));
+    DummyExceptionStateForTesting exception_state;
+    language_model->measureContextUsage(
+        script_state, CreateStringPrompt("Hello"), options, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kNotSupportedError);
+    EXPECT_EQ(mock_remote_->call_count_, 3);
+  }
 }
 
 }  // namespace blink
