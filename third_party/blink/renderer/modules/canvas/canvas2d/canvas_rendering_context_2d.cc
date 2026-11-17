@@ -1130,18 +1130,6 @@ bool CanvasRenderingContext2D::IsBackingValid() const {
   return canvas() && BaseRenderingContext2D::IsBackingValid();
 }
 
-bool CanvasRenderingContext2D::IsBackingAccelerated() const {
-  return BaseRenderingContext2D::IsBackingAccelerated();
-}
-
-bool CanvasRenderingContext2D::HasBacking() const {
-  return BaseRenderingContext2D::HasBacking();
-}
-
-scoped_refptr<StaticBitmapImage> CanvasRenderingContext2D::Snapshot() {
-  return BaseRenderingContext2D::Snapshot();
-}
-
 bool CanvasRenderingContext2D::InitializeBacking() {
   HTMLCanvasElement* const element = canvas();
   if (!element) [[unlikely]] {

@@ -156,9 +156,13 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool ShouldDisableAccelerationBecauseOfReadback() const override;
 
   // CanvasHibernationHandler::Delegate implementation
-  bool HasBacking() const override;
+  bool HasBacking() const override {
+    return BaseRenderingContext2D::HasBacking();
+  }
   bool IsBackingValid() const override;
-  bool IsBackingAccelerated() const override;
+  bool IsBackingAccelerated() const override {
+    return BaseRenderingContext2D::IsBackingAccelerated();
+  }
   bool IsContextLost() const override { return isContextLost(); }
   bool IsPageVisible() const override {
     return canvas() && canvas()->IsPageVisible();
@@ -174,7 +178,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
       canvas()->ClearCanvas2DLayerTexture();
     }
   }
-  scoped_refptr<StaticBitmapImage> Snapshot() override;
+  scoped_refptr<StaticBitmapImage> Snapshot() override {
+    return BaseRenderingContext2D::Snapshot();
+  }
 
   // CanvasRenderingContext implementation
   bool IsComposited() const override;
