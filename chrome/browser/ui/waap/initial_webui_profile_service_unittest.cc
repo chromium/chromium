@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -39,9 +40,13 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/test/test_layout_provider.h"
 
@@ -55,8 +60,53 @@ using TakeResult = WebUIContentsPrerenderer::TakeResult;
 constexpr base::TimeDelta kPaintDeadline = base::Seconds(4);
 constexpr base::TimeDelta kRefillDelay = base::Milliseconds(500);
 
+class FakeBaseWindow : public ui::BaseWindow {
+ public:
+  void set_active(bool active) { active_ = active; }
+
+  // ui::BaseWindow:
+  bool IsActive() const override { return active_; }
+  bool IsMaximized() const override { return false; }
+  bool IsMinimized() const override { return false; }
+  bool IsFullscreen() const override { return false; }
+  gfx::NativeWindow GetNativeWindow() const override {
+    return gfx::NativeWindow();
+  }
+  gfx::Rect GetRestoredBounds() const override { return gfx::Rect(); }
+  ui::mojom::WindowShowState GetRestoredState() const override {
+    return ui::mojom::WindowShowState::kDefault;
+  }
+  gfx::Rect GetBounds() const override { return gfx::Rect(); }
+  void Show() override {}
+  void Hide() override {}
+  bool IsVisible() const override { return true; }
+  void ShowInactive() override {}
+  void Close() override {}
+  void Activate() override { active_ = true; }
+  void Deactivate() override { active_ = false; }
+  void Maximize() override {}
+  void Minimize() override {}
+  void Restore() override {}
+  void SetBounds(const gfx::Rect& bounds) override {}
+  void FlashFrame(bool flash) override {}
+  ui::ZOrderLevel GetZOrderLevel() const override {
+    return ui::ZOrderLevel::kNormal;
+  }
+  void SetZOrderLevel(ui::ZOrderLevel order) override {}
+
+ private:
+  bool active_ = false;
+};
+
 // A mock browser window that the browser collections track.
 struct TestBrowser {
+  TestBrowser() {
+    ON_CALL(window, GetWindow()).WillByDefault(testing::Return(&base_window));
+    ON_CALL(std::as_const(window), GetWindow())
+        .WillByDefault(testing::Return(&base_window));
+  }
+
+  FakeBaseWindow base_window;
   testing::NiceMock<MockBrowserWindowInterface> window;
   BrowserWindowInterface::DidBecomeActiveCallback activate_callback;
   BrowserWindowInterface::BrowserDidCloseCallback close_callback;
@@ -530,10 +580,12 @@ class InitialWebUIProfileServiceUnboundTest
 
   void ActivateBrowser(TestBrowser& browser) {
     ASSERT_TRUE(browser.activate_callback);
+    browser.base_window.set_active(true);
     browser.activate_callback.Run(&browser.window);
   }
 
   void CloseBrowser(TestBrowser& browser) {
+    browser.base_window.set_active(false);
     if (browser.close_callback) {
       std::move(browser.close_callback).Run(&browser.window);
     }
