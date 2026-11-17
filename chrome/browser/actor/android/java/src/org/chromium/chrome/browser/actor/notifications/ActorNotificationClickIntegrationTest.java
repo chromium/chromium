@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -25,6 +26,7 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,13 +39,16 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceControllerImpl;
@@ -61,14 +66,20 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
+import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,6 +90,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Tests intent handling which involves activity startup.")
 public class ActorNotificationClickIntegrationTest {
+    private static final int ROUTED_TASK_ID = 301;
+    private static final String GLIC_CONVERSATION_ID = "notification-conversation";
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -88,6 +102,7 @@ public class ActorNotificationClickIntegrationTest {
 
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private ActorTask.Natives mActorTaskJni;
+    @Mock private ActorTask mRoutedTask;
     @Mock private GlicKeyedService mGlicKeyedService;
 
     private Context mContext;
@@ -149,6 +164,68 @@ public class ActorNotificationClickIntegrationTest {
                 () -> mActivityTestRule.getActivity().onNewIntent(intent));
 
         watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    public void testNotificationClickWarmStart_FocusesTaskTabAndInvokesGlic() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        Tab otherTab = mActivityTestRule.getActivityTab();
+        Tab taskTab =
+                mActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+
+        LayoutManager layoutManager = activity.getLayoutManager();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel model = activity.getTabModelSelector().getModel(false);
+                    TabModelUtils.setIndex(model, model.indexOf(otherTab));
+                    layoutManager.showLayout(LayoutType.HUB, /* animate= */ false);
+                });
+        CriteriaHelper.pollUiThread(() -> layoutManager.isLayoutVisible(LayoutType.HUB));
+
+        Intent intent = createNotificationIntentForTab(ROUTED_TASK_ID, taskTab.getId());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onNewIntent(intent));
+
+        waitForTabFocusedInBrowsingLayout(activity, taskTab.getId());
+        verifyGlicInvokedForTab(taskTab.getId());
+    }
+
+    /**
+     * On cold start the task's tab is only known by ID until tab state restoration adds it, so
+     * focusing it and invoking Glic must wait for the restored tab rather than act on whatever tab
+     * happens to be current.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    public void testNotificationClickColdStart_FocusesRestoredTaskTabAndInvokesGlic()
+            throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        ChromeTabbedActivity previousActivity = mActivityTestRule.getActivity();
+        Tab otherTab = mActivityTestRule.getActivityTab();
+        int taskTabId =
+                mActivityTestRule
+                        .loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
+                        .getId();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel model = previousActivity.getTabModelSelector().getModel(false);
+                    TabModelUtils.setIndex(model, model.indexOf(otherTab));
+                    previousActivity.saveState();
+                });
+        ApplicationTestUtils.finishActivity(previousActivity);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+
+        mActivityTestRule.startMainActivityFromIntent(
+                createNotificationIntentForTab(ROUTED_TASK_ID, taskTabId), null);
+
+        waitForTabFocusedInBrowsingLayout(mActivityTestRule.getActivity(), taskTabId);
+        verifyGlicInvokedForTab(taskTabId);
     }
 
     @Test
@@ -647,5 +724,42 @@ public class ActorNotificationClickIntegrationTest {
         verify(mGlicKeyedService, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .invokeWithConversation(
                         tab, ROUTED_CONVERSATION_ID, GlicInvocationSource.TOOLBAR_BUTTON);
+    }
+
+    /** Builds the intent a notification tap delivers, via the production intent factory. */
+    private Intent createNotificationIntentForTab(int taskId, int tabId) {
+        when(mRoutedTask.getId()).thenReturn(taskId);
+        when(mRoutedTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
+        when(mRoutedTask.getTargetTabId()).thenReturn(tabId);
+        when(mRoutedTask.getGlicConversationId()).thenReturn(GLIC_CONVERSATION_ID);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        new ActorForegroundServiceControllerImpl()
+                                .createTrustedBringTabToFrontIntent(mRoutedTask));
+    }
+
+    private static void waitForTabFocusedInBrowsingLayout(
+            ChromeTabbedActivity activity, int expectedTabId) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab currentTab = activity.getActivityTab();
+                    Criteria.checkThat(
+                            currentTab == null ? Tab.INVALID_TAB_ID : currentTab.getId(),
+                            Matchers.is(expectedTabId));
+                    LayoutManager layoutManager = activity.getLayoutManager();
+                    Criteria.checkThat(
+                            layoutManager.isLayoutVisible(LayoutType.HUB), Matchers.is(false));
+                    Criteria.checkThat(
+                            layoutManager.isLayoutVisible(LayoutType.BROWSING), Matchers.is(true));
+                });
+    }
+
+    private void verifyGlicInvokedForTab(int taskTabId) {
+        verify(mGlicKeyedService, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .invokeWithConversation(
+                        argThat(tab -> tab != null && tab.getId() == taskTabId),
+                        eq(GLIC_CONVERSATION_ID),
+                        anyInt());
+        verify(mGlicKeyedService).invokeWithConversation(any(), any(), anyInt());
     }
 }
