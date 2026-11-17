@@ -2594,8 +2594,12 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     if (RunningTransition* running = transitions_.Take(property)) {
       Animation* animation = running->animation;
       // Transition must be downgraded
-      if (auto* effect = DynamicTo<KeyframeEffect>(animation->effect()))
+      if (auto* effect = DynamicTo<KeyframeEffect>(animation->effect())) {
         effect->DowngradeToNormal();
+      }
+      if (!animation->Inactive() && animation->TimelineInternal()) {
+        animation->TimelineInternal()->ScheduleServiceOnNextFrame();
+      }
     }
   }
 
@@ -2746,10 +2750,21 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
               *running_transition->to)) {
         return;
       }
-      state.update.CancelTransition(property);
-      DCHECK(!state.animating_element.GetElementAnimations() ||
-             !state.animating_element.GetElementAnimations()
-                  ->IsAnimationStyleChange());
+      if (running_transition->animation->CalculateAnimationPlayState() ==
+          V8AnimationPlayState::Enum::kFinished) {
+        // The previous transition has already completed (it may still be in
+        // `active_transitions` awaiting removal in `MaybeApplyPendingUpdate()`
+        // or awaiting an animation frame after an on-demand timing update).
+        // Finish it rather than canceling it, and do not treat it as an
+        // interrupted running transition.
+        state.update.FinishTransition(property);
+        running_transition = nullptr;
+      } else {
+        state.update.CancelTransition(property);
+        DCHECK(!state.animating_element.GetElementAnimations() ||
+               !state.animating_element.GetElementAnimations()
+                    ->IsAnimationStyleChange());
+      }
     }
   }
 
@@ -3206,10 +3221,15 @@ void CSSAnimations::CalculateTransitionUpdate(
   if (active_transitions) {
     for (const auto& entry : *active_transitions) {
       const PropertyHandle& property = entry.key;
-      if (!any_transition_had_transition_all && !animation_style_recalc &&
-          !listed_properties.Contains(property)) {
+      Animation* animation = entry.value->animation;
+      if (animation->CalculateAnimationPlayState() ==
+          V8AnimationPlayState::Enum::kFinished) {
+        update.FinishTransition(property);
+      } else if (!any_transition_had_transition_all &&
+                 !animation_style_recalc &&
+                 !listed_properties.Contains(property)) {
         update.CancelTransition(property);
-      } else if (entry.value->animation->Inactive()) {
+      } else if (animation->Inactive()) {
         update.FinishTransition(property);
       }
     }
@@ -3477,13 +3497,45 @@ void CSSAnimations::Cancel(const Document& document) {
   CHECK(!style_engine.InApplyAnimationUpdate());
 
   for (const auto& running_animation : running_animations_) {
-    running_animation->animation->cancel();
-    running_animation->animation->Update(kTimingUpdateOnDemand);
+    Animation* animation = running_animation->animation;
+    // If a CSS animation with no active fill (e.g., animating `display` on an
+    // element whose base style is `display: none`) has already reached the
+    // finished state, avoid canceling it so it remains finished and any
+    // pending finish notification or `animationend` event can complete.
+    // TODO(crbug.com/386304676): Investigate the edge case where a finished
+    // CSS animation with a forwards fill (`IsInEffect()`) is canceled before
+    // its finished promise has resolved (e.g. during an on-demand style update
+    // under `ScriptForbiddenScope`).
+    if (animation->CalculateAnimationPlayState() ==
+            V8AnimationPlayState::Enum::kFinished &&
+        (!animation->effect() || !animation->effect()->IsInEffect())) {
+      if (!animation->Inactive() && animation->TimelineInternal()) {
+        animation->TimelineInternal()->ScheduleServiceOnNextFrame();
+      }
+      continue;
+    }
+    animation->cancel();
+    animation->Update(kTimingUpdateOnDemand);
   }
 
   for (const auto& entry : transitions_) {
-    entry.value->animation->cancel();
-    entry.value->animation->Update(kTimingUpdateOnDemand);
+    Animation* animation = entry.value->animation;
+    if (animation->CalculateAnimationPlayState() ==
+        V8AnimationPlayState::Enum::kFinished) {
+      // A transition that has already reached its end (either finished on the
+      // animation frame and still awaiting removal in
+      // `MaybeApplyPendingUpdate()`, or advanced to the after phase during an
+      // on-demand timing update) has completed and must not be canceled.
+      if (auto* effect = DynamicTo<KeyframeEffect>(animation->effect())) {
+        effect->DowngradeToNormal();
+      }
+      if (!animation->Inactive() && animation->TimelineInternal()) {
+        animation->TimelineInternal()->ScheduleServiceOnNextFrame();
+      }
+    } else {
+      animation->cancel();
+      animation->Update(kTimingUpdateOnDemand);
+    }
   }
 
   for (auto [attaching_timeline, deferred_timeline] :
@@ -3640,8 +3692,23 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
       active_interpolations_for_transitions);
 }
 
+CSSAnimations::AnimationEventDelegate::AnimationEventDelegate(
+    Element* animation_target,
+    const AtomicString& name,
+    Timing::Phase previous_phase,
+    std::optional<double> previous_iteration)
+    : animation_target_(animation_target),
+      event_target_(
+          &EventPath::EventTargetRespectingTargetRules(*animation_target)),
+      name_(name),
+      previous_phase_(previous_phase),
+      previous_iteration_(previous_iteration) {}
+
 EventTarget* CSSAnimations::AnimationEventDelegate::GetEventTarget() const {
-  return &EventPath::EventTargetRespectingTargetRules(*animation_target_);
+  DCHECK(!animation_target_->isConnected() ||
+         event_target_.Get() ==
+             &EventPath::EventTargetRespectingTargetRules(*animation_target_));
+  return event_target_.Get();
 }
 
 void CSSAnimations::AnimationEventDelegate::MaybeDispatch(
@@ -3752,11 +3819,25 @@ void CSSAnimations::AnimationEventDelegate::OnEventCondition(
 
 void CSSAnimations::AnimationEventDelegate::Trace(Visitor* visitor) const {
   visitor->Trace(animation_target_);
+  visitor->Trace(event_target_);
   AnimationEffect::EventDelegate::Trace(visitor);
 }
 
+CSSAnimations::TransitionEventDelegate::TransitionEventDelegate(
+    Element* transition_target,
+    const PropertyHandle& property,
+    Timing::Phase previous_phase)
+    : property_(property),
+      transition_target_(transition_target),
+      event_target_(
+          &EventPath::EventTargetRespectingTargetRules(*transition_target)),
+      previous_phase_(previous_phase) {}
+
 EventTarget* CSSAnimations::TransitionEventDelegate::GetEventTarget() const {
-  return &EventPath::EventTargetRespectingTargetRules(*transition_target_);
+  DCHECK(!transition_target_->isConnected() ||
+         event_target_.Get() ==
+             &EventPath::EventTargetRespectingTargetRules(*transition_target_));
+  return event_target_.Get();
 }
 
 void CSSAnimations::TransitionEventDelegate::OnEventCondition(
@@ -3857,6 +3938,7 @@ void CSSAnimations::TransitionEventDelegate::EnqueueEvent(
 
 void CSSAnimations::TransitionEventDelegate::Trace(Visitor* visitor) const {
   visitor->Trace(transition_target_);
+  visitor->Trace(event_target_);
   AnimationEffect::EventDelegate::Trace(visitor);
 }
 

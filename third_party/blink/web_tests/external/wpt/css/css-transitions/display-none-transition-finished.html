@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Completed display:none transitions finish instead of canceling</title>
+<link rel="help" href="https://drafts.csswg.org/css-transitions-2/#transition-lifecycle">
+<link rel="help" href="https://drafts.csswg.org/css-display-4/#display-animation">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
+
+<style>
+  dialog.closing-test {
+    opacity: 0;
+    scale: 0.9;
+    transition:
+      display var(--dur) allow-discrete,
+      opacity var(--dur),
+      overlay var(--dur) allow-discrete,
+      scale var(--dur);
+  }
+  dialog.closing-test[open] {
+    opacity: 1;
+    scale: 1;
+  }
+  dialog.closing-test::backdrop {
+    opacity: 0;
+    transition:
+      display var(--dur) allow-discrete,
+      opacity var(--dur),
+      overlay var(--dur) allow-discrete;
+  }
+  dialog.closing-test[open]::backdrop {
+    opacity: 1;
+  }
+
+  .partial-box {
+    display: block;
+    opacity: 1;
+    transition:
+      display 100s allow-discrete,
+      opacity 100s;
+  }
+  .partial-box.hidden {
+    display: none;
+    opacity: 0;
+  }
+
+  .fade-box {
+    opacity: 1;
+    transition: opacity 100s;
+  }
+</style>
+
+<body>
+<script>
+function keyForAnimation(anim) {
+  return `${anim.effect.pseudoElement || ''}:${anim.transitionProperty}`;
+}
+
+function createDialog(t, duration) {
+  const dialog = document.createElement('dialog');
+  dialog.className = 'closing-test';
+  dialog.style.setProperty('--dur', duration);
+  dialog.textContent = 'Dialog content';
+  document.body.appendChild(dialog);
+  t.add_cleanup(() => dialog.remove());
+  return dialog;
+}
+
+promise_test(async (t) => {
+  const dialog = createDialog(t, '50ms');
+  const transitionend = [];
+  const transitioncancel = [];
+  const finish = [];
+  const cancel = [];
+
+  dialog.addEventListener('transitionend', (e) => {
+    transitionend.push(`${e.pseudoElement}:${e.propertyName}`);
+  });
+  dialog.addEventListener('transitioncancel', (e) => {
+    transitioncancel.push(`${e.pseudoElement}:${e.propertyName}`);
+  });
+
+  dialog.showModal();
+  await waitForAnimationFrames(2);
+
+  dialog.close();
+  const anims = dialog.getAnimations({ subtree: true });
+  assert_equals(anims.length, 5, 'Expected 5 closing transitions');
+
+  for (const anim of anims) {
+    const key = keyForAnimation(anim);
+    anim.addEventListener('finish', () => finish.push(key));
+    anim.addEventListener('cancel', () => cancel.push(key));
+  }
+
+  await Promise.all(anims.map((a) => a.finished));
+  await waitForAnimationFrames(2);
+
+  const expected = [
+    '::backdrop:opacity',
+    ':display',
+    ':opacity',
+    ':overlay',
+    ':scale',
+  ];
+  assert_equals(getComputedStyle(dialog).display, 'none');
+  assert_array_equals(transitioncancel, [], 'No transitioncancel events');
+  assert_array_equals(cancel, [], 'No animation cancel events');
+  assert_array_equals(transitionend.sort(), expected, 'All transitionend events');
+  assert_array_equals(finish.sort(), expected, 'All animation finish events');
+  for (const anim of anims) {
+    assert_equals(anim.playState, 'finished',
+                  `${keyForAnimation(anim)} should remain finished`);
+  }
+}, 'Closing dialog allow-discrete transitions finish cleanly without canceling');
+
+promise_test(async (t) => {
+  const dialog = createDialog(t, '100s');
+  const transitionend = [];
+  const transitioncancel = [];
+  const finish = [];
+  const cancel = [];
+
+  dialog.addEventListener('transitionend', (e) => {
+    transitionend.push(`${e.pseudoElement}:${e.propertyName}`);
+  });
+  dialog.addEventListener('transitioncancel', (e) => {
+    transitioncancel.push(`${e.pseudoElement}:${e.propertyName}`);
+  });
+
+  dialog.showModal();
+  await waitForAnimationFrames(2);
+
+  dialog.close();
+  const anims = dialog.getAnimations({ subtree: true });
+  assert_equals(anims.length, 5, 'Expected 5 closing transitions');
+
+  for (const anim of anims) {
+    const key = keyForAnimation(anim);
+    anim.addEventListener('finish', () => finish.push(key));
+    anim.addEventListener('cancel', () => cancel.push(key));
+  }
+
+  await Promise.all(anims.map((a) => a.ready));
+  await waitForAnimationFrames(1);
+
+  // Advance all transitions to their end time and immediately force an
+  // on-demand style update before microtasks or an animation frame run.
+  for (const anim of anims) {
+    anim.currentTime = 100000;
+  }
+  assert_equals(getComputedStyle(dialog).display, 'none',
+                'On-demand style update resolves display: none');
+
+  await Promise.all(anims.map((a) => a.finished));
+  await waitForAnimationFrames(2);
+
+  const expected = [
+    '::backdrop:opacity',
+    ':display',
+    ':opacity',
+    ':overlay',
+    ':scale',
+  ];
+  assert_array_equals(transitioncancel, [], 'No transitioncancel events');
+  assert_array_equals(cancel, [], 'No animation cancel events');
+  assert_array_equals(transitionend.sort(), expected, 'All transitionend events');
+  assert_array_equals(finish.sort(), expected, 'All animation finish events');
+  for (const anim of anims) {
+    assert_equals(anim.playState, 'finished',
+                  `${keyForAnimation(anim)} should remain finished`);
+  }
+}, 'On-demand style flush to display:none after transitions reach end does not cancel them');
+
+promise_test(async (t) => {
+  const el = document.createElement('div');
+  el.className = 'partial-box';
+  el.textContent = 'Box';
+  document.body.appendChild(el);
+  t.add_cleanup(() => el.remove());
+
+  const transitionend = [];
+  const transitioncancel = [];
+  el.addEventListener('transitionend', (e) => transitionend.push(e.propertyName));
+  el.addEventListener('transitioncancel', (e) => transitioncancel.push(e.propertyName));
+
+  await waitForAnimationFrames(2);
+  el.classList.add('hidden');
+
+  const anims = el.getAnimations();
+  assert_equals(anims.length, 2);
+  const displayAnim = anims.find((a) => a.transitionProperty === 'display');
+  const opacityAnim = anims.find((a) => a.transitionProperty === 'opacity');
+  assert_true(Boolean(displayAnim && opacityAnim));
+
+  await Promise.all(anims.map((a) => a.ready));
+  await waitForAnimationFrames(1);
+
+  // Only finish the display transition, leaving opacity still running.
+  displayAnim.currentTime = 100000;
+  const opacityFinished = promise_rejects_dom(t, 'AbortError', opacityAnim.finished);
+  assert_equals(getComputedStyle(el).display, 'none');
+
+  await displayAnim.finished;
+  await opacityFinished;
+  await waitForAnimationFrames(2);
+
+  assert_array_equals(transitionend, ['display']);
+  assert_array_equals(transitioncancel, ['opacity']);
+  assert_equals(displayAnim.playState, 'finished');
+  assert_equals(opacityAnim.playState, 'idle');
+}, 'Completed display transition finishes while still-running sibling transition cancels');
+
+promise_test(async (t) => {
+  for (const mode of ['remove-property', 'retarget']) {
+    const el = document.createElement('div');
+    el.className = 'fade-box';
+    el.textContent = 'Fade';
+    document.body.appendChild(el);
+    t.add_cleanup(() => el.remove());
+
+    const transitionend = [];
+    const transitioncancel = [];
+    el.addEventListener('transitionend', (e) => transitionend.push(e.propertyName));
+    el.addEventListener('transitioncancel', (e) => transitioncancel.push(e.propertyName));
+
+    await waitForAnimationFrames(2);
+    el.style.opacity = '0';
+
+    const anim = el.getAnimations()[0];
+    assert_equals(anim.transitionProperty, 'opacity');
+    await anim.ready;
+    await waitForAnimationFrames(1);
+
+    anim.currentTime = 100000;
+    if (mode === 'remove-property') {
+      el.style.transitionProperty = 'none';
+    } else {
+      el.style.opacity = '0.5';
+    }
+    getComputedStyle(el).opacity;
+
+    await anim.finished;
+    await waitForAnimationFrames(2);
+
+    assert_array_equals(transitionend, ['opacity'], `${mode}: transitionend`);
+    assert_array_equals(transitioncancel, [], `${mode}: no transitioncancel`);
+    assert_equals(anim.playState, 'finished', `${mode}: playState`);
+  }
+}, 'Retargeting or removing transition-property after transition reaches end finishes cleanly');
+</script>
+</body>

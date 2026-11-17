@@ -520,11 +520,7 @@ class CORE_EXPORT CSSAnimations final {
         Element* animation_target,
         const AtomicString& name,
         Timing::Phase previous_phase = Timing::kPhaseNone,
-        std::optional<double> previous_iteration = std::nullopt)
-        : animation_target_(animation_target),
-          name_(name),
-          previous_phase_(previous_phase),
-          previous_iteration_(previous_iteration) {}
+        std::optional<double> previous_iteration = std::nullopt);
     bool RequiresIterationEvents(const AnimationEffect&) override;
     void OnEventCondition(const AnimationEffect&, Timing::Phase) override;
 
@@ -546,6 +542,7 @@ class CORE_EXPORT CSSAnimations final {
                        const AnimationTimeDelta& elapsed_time,
                        Animation* animation);
     Member<Element> animation_target_;
+    Member<EventTarget> event_target_;
     const AtomicString name_;
     Timing::Phase previous_phase_;
     std::optional<double> previous_iteration_;
@@ -555,10 +552,7 @@ class CORE_EXPORT CSSAnimations final {
    public:
     TransitionEventDelegate(Element* transition_target,
                             const PropertyHandle& property,
-                            Timing::Phase previous_phase = Timing::kPhaseNone)
-        : property_(property),
-          transition_target_(transition_target),
-          previous_phase_(previous_phase) {}
+                            Timing::Phase previous_phase = Timing::kPhaseNone);
     bool RequiresIterationEvents(const AnimationEffect&) override {
       return false;
     }
@@ -579,6 +573,7 @@ class CORE_EXPORT CSSAnimations final {
 
     PropertyHandle property_;
     Member<Element> transition_target_;
+    Member<EventTarget> event_target_;
     Timing::Phase previous_phase_;
   };
 };
