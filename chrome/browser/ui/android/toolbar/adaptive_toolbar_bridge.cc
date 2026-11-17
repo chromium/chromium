@@ -108,8 +108,9 @@ void RunGetSelectedSegmentCallback(
 void RunGetClassificationSingleResultCallback(
     const base::android::JavaRef<jobject>& j_callback,
     const segmentation_platform::ClassificationResult& result) {
-  std::string button_to_show =
-      result.ordered_labels.empty() ? "" : result.ordered_labels[0];
+  std::string_view button_to_show = result.ordered_labels.empty()
+                                        ? std::string_view()
+                                        : result.ordered_labels[0];
 
   bool is_ready =
       result.status == segmentation_platform::PredictionStatus::kSucceeded;
@@ -130,7 +131,7 @@ void RunGetClassificationMultipleResultCallback(
   bool is_ready =
       result.status == segmentation_platform::PredictionStatus::kSucceeded;
 
-  for (std::string label : result.ordered_labels) {
+  for (std::string_view label : result.ordered_labels) {
     ranked_buttons.emplace_back(
         static_cast<int32_t>(ActionLabelToAdaptiveToolbarButtonVariant(label)));
   }
@@ -161,9 +162,8 @@ void RunGetAnnotatedNumericResultCallback(
 
   std::vector<int> sorted_buttons;
   sorted_buttons.reserve(sorted_button_scores.size());
-  for (std::pair<float, AdaptiveToolbarButtonVariant> score_button :
-       sorted_button_scores) {
-    sorted_buttons.emplace_back(static_cast<int32_t>(score_button.second));
+  for (const auto& [score, variant] : sorted_button_scores) {
+    sorted_buttons.emplace_back(static_cast<int32_t>(variant));
   }
   if (sorted_buttons.empty()) {
     sorted_buttons.emplace_back(
