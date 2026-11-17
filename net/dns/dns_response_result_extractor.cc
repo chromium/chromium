@@ -592,8 +592,6 @@ ResultsOrError ExtractHttpsResults(const DnsResponse& response,
 
     metadata.target_name = std::move(target_name);
 
-    metadata.trust_anchor_ids = service->trust_anchor_ids();
-
     metadatas.emplace(service->priority(), std::move(metadata));
 
     min_ttl = std::min(ttl, min_ttl.value_or(base::TimeDelta::Max()));
