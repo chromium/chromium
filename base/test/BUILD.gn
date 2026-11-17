@@ -798,102 +798,14 @@ if (!is_component_build && is_mac) {
 }
 
 if (is_android) {
-  android_library("public_transit_java") {
+  java_group("public_transit_java") {
     testonly = true
-
-    deps = [
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//build/android:build_java",
-      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-      "//third_party/android_deps:espresso_java",
-      "//third_party/android_deps:guava_android_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_fragment_fragment_java",
-      "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
-      "//third_party/hamcrest:hamcrest_java",
-      "//third_party/junit",
-    ]
-
-    sources = [
-      "android/javatests/src/org/chromium/base/test/transit/ActivityElement.java",
-      "android/javatests/src/org/chromium/base/test/transit/BaseElements.java",
-      "android/javatests/src/org/chromium/base/test/transit/BatchedPublicTransitRule.java",
-      "android/javatests/src/org/chromium/base/test/transit/CallbackCondition.java",
-      "android/javatests/src/org/chromium/base/test/transit/Condition.java",
-      "android/javatests/src/org/chromium/base/test/transit/ConditionStatus.java",
-      "android/javatests/src/org/chromium/base/test/transit/ConditionStatusWithResult.java",
-      "android/javatests/src/org/chromium/base/test/transit/ConditionWaiter.java",
-      "android/javatests/src/org/chromium/base/test/transit/ConditionWithResult.java",
-      "android/javatests/src/org/chromium/base/test/transit/ConditionalState.java",
-      "android/javatests/src/org/chromium/base/test/transit/DisplayedCondition.java",
-      "android/javatests/src/org/chromium/base/test/transit/DisplayedPortion.java",
-      "android/javatests/src/org/chromium/base/test/transit/Element.java",
-      "android/javatests/src/org/chromium/base/test/transit/ElementFactory.java",
-      "android/javatests/src/org/chromium/base/test/transit/Elements.java",
-      "android/javatests/src/org/chromium/base/test/transit/EntryPointSentinelStation.java",
-      "android/javatests/src/org/chromium/base/test/transit/Facility.java",
-      "android/javatests/src/org/chromium/base/test/transit/FragmentElement.java",
-      "android/javatests/src/org/chromium/base/test/transit/InstrumentationThreadCondition.java",
-      "android/javatests/src/org/chromium/base/test/transit/InternalViewFinder.java",
-      "android/javatests/src/org/chromium/base/test/transit/LogicalElement.java",
-      "android/javatests/src/org/chromium/base/test/transit/MoreViewConditions.java",
-      "android/javatests/src/org/chromium/base/test/transit/MoreViewMatchers.java",
-      "android/javatests/src/org/chromium/base/test/transit/NotDisplayedAnymoreCondition.java",
-      "android/javatests/src/org/chromium/base/test/transit/OptionalViewElement.java",
-      "android/javatests/src/org/chromium/base/test/transit/Outcome.java",
-      "android/javatests/src/org/chromium/base/test/transit/PayloadCallbackCondition.java",
-      "android/javatests/src/org/chromium/base/test/transit/PublicTransitConfig.java",
-      "android/javatests/src/org/chromium/base/test/transit/RootSpec.java",
-      "android/javatests/src/org/chromium/base/test/transit/ScrollableFacility.java",
-      "android/javatests/src/org/chromium/base/test/transit/SimpleConditions.java",
-      "android/javatests/src/org/chromium/base/test/transit/State.java",
-      "android/javatests/src/org/chromium/base/test/transit/Station.java",
-      "android/javatests/src/org/chromium/base/test/transit/StatusStore.java",
-      "android/javatests/src/org/chromium/base/test/transit/TrafficControl.java",
-      "android/javatests/src/org/chromium/base/test/transit/TransitAsserts.java",
-      "android/javatests/src/org/chromium/base/test/transit/Transition.java",
-      "android/javatests/src/org/chromium/base/test/transit/TravelException.java",
-      "android/javatests/src/org/chromium/base/test/transit/Triggers.java",
-      "android/javatests/src/org/chromium/base/test/transit/Trip.java",
-      "android/javatests/src/org/chromium/base/test/transit/TripBuilder.java",
-      "android/javatests/src/org/chromium/base/test/transit/UiThreadCondition.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewAndRoot.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewConditions.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewElement.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewElementMatchesCondition.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewFinder.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewInterface.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewPresence.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewSettled.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewSpec.java",
-    ]
+    deps = [ "//base/test/android/javatests/src/org/chromium/base/test/transit:public_transit_java" ]
   }
 
-  robolectric_library("public_transit_robolectric_tests_java") {
-    deps = [
-      ":public_transit_java",
-      "//base:base_java_test_support",
-      "//base:base_junit_test_support",
-      "//base:callback_java",
-      "//base:log_java",
-      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-      "//third_party/google-truth:google_truth_java",
-      "//third_party/junit",
-    ]
-
-    sources = [
-      "android/javatests/src/org/chromium/base/test/transit/ConditionsSummaryUnitTest.java",
-      "android/javatests/src/org/chromium/base/test/transit/DefaultFacilitiesUnitTest.java",
-      "android/javatests/src/org/chromium/base/test/transit/ElementFactoryUnitTest.java",
-      "android/javatests/src/org/chromium/base/test/transit/HopOnOffUnitTest.java",
-      "android/javatests/src/org/chromium/base/test/transit/OutcomeUnitTest.java",
-      "android/javatests/src/org/chromium/base/test/transit/ParentStateUnitTest.java",
-      "android/javatests/src/org/chromium/base/test/transit/PublicTransitUnitTestRule.java",
-      "android/javatests/src/org/chromium/base/test/transit/TransitionTimeoutUnitTest.java",
-    ]
+  java_group("public_transit_robolectric_tests_java") {
+    testonly = true
+    deps = [ "//base/test/android/javatests/src/org/chromium/base/test/transit:public_transit_robolectric_tests_java" ]
   }
 }
 
