@@ -133,4 +133,6 @@ message CTLogList {
   repeated LogOperator operators = 5;
   // Contains all known logs.
   repeated CTLog logs = 6;
+  // Field 7 is used internally and not shipped.
+  reserved 7;
 }
