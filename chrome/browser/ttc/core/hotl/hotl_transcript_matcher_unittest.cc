@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ttc/core/hotl/hotl_transcript_matcher.h"
 
+#include <string_view>
+
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,20 +64,56 @@ TEST(HotlTranscriptMatcherTest, MatchesNonAsciiLabelsCaseInsensitively) {
   // Case folding, unlike lowercasing, maps sharp s and "SS" to the same text.
   EXPECT_EQ(MatchHotlTranscript(u"GROSS", u"Gro\u00df", u"Klein"),
             HotlMatchResult::kYes);
-  EXPECT_EQ(MatchHotlTranscript(
-                u"\u306f\u3044\u3001\u304a\u9858\u3044\u3057\u307e\u3059",
-                u"\u306f\u3044", u"\u3044\u3044\u3048"),
+}
+
+TEST(HotlTranscriptMatcherTest, MatchesSpanishTokens) {
+  constexpr std::u16string_view kYes = u"Sí";
+  constexpr std::u16string_view kNo = u"No";
+
+  EXPECT_EQ(MatchHotlTranscript(u"¡Sí, haz clic!", kYes, kNo),
             HotlMatchResult::kYes);
-  EXPECT_EQ(
-      MatchHotlTranscript(u"\u3044\u3044\u3048\u3001\u9055\u3044\u307e\u3059",
-                          u"\u306f\u3044", u"\u3044\u3044\u3048"),
-      HotlMatchResult::kNo);
+  EXPECT_EQ(MatchHotlTranscript(u"sí por favor", kYes, kNo),
+            HotlMatchResult::kYes);
+  EXPECT_EQ(MatchHotlTranscript(u"¡No, espera!", kYes, kNo),
+            HotlMatchResult::kNo);
+
+  // Substrings and unaccented "si" ("if") must not approve the action.
+  EXPECT_EQ(MatchHotlTranscript(u"sigue adelante", kYes, kNo),
+            HotlMatchResult::kAmbiguous);
+  EXPECT_EQ(MatchHotlTranscript(u"esta noche", kYes, kNo),
+            HotlMatchResult::kAmbiguous);
+  EXPECT_EQ(MatchHotlTranscript(u"si quieres", kYes, kNo),
+            HotlMatchResult::kAmbiguous);
+  EXPECT_EQ(MatchHotlTranscript(u"Sí, espera, no", kYes, kNo),
+            HotlMatchResult::kAmbiguous);
+}
+
+TEST(HotlTranscriptMatcherTest, MatchesCjkTokens) {
+  constexpr std::u16string_view kYes = u"はい";
+  constexpr std::u16string_view kNo = u"いいえ";
+
+  // Punctuated Japanese phrases segment identically on all platforms.
+  EXPECT_EQ(MatchHotlTranscript(u"はい、お願いします", kYes, kNo),
+            HotlMatchResult::kYes);
+  EXPECT_EQ(MatchHotlTranscript(u"いいえ、違います", kYes, kNo),
+            HotlMatchResult::kNo);
+
 #if !BUILDFLAG(IS_ANDROID)
-  // Android builds omit the CJK BreakIterator dictionary.
-  EXPECT_EQ(
-      MatchHotlTranscript(u"\u306f\u3044\u304a\u9858\u3044\u3057\u307e\u3059",
-                          u"\u306f\u3044", u"\u3044\u3044\u3048"),
-      HotlMatchResult::kYes);
+  // Android builds omit the CJK BreakIterator dictionary, so unspaced phrases
+  // require non-Android dictionary segmentation.
+  EXPECT_EQ(MatchHotlTranscript(u"はいお願いします", kYes, kNo),
+            HotlMatchResult::kYes);
+  EXPECT_EQ(MatchHotlTranscript(u"はいどうぞ", kYes, kNo),
+            HotlMatchResult::kYes);
+  EXPECT_EQ(MatchHotlTranscript(u"いいえ違います", kYes, kNo),
+            HotlMatchResult::kNo);
+
+  // "はいる" ("to enter") does not segment into "はい" + "る", and
+  // contradictory YES+NO phrases fail closed.
+  EXPECT_EQ(MatchHotlTranscript(u"はいる", kYes, kNo),
+            HotlMatchResult::kAmbiguous);
+  EXPECT_EQ(MatchHotlTranscript(u"はいやっぱりいいえ", kYes, kNo),
+            HotlMatchResult::kAmbiguous);
 #endif
 }
 
