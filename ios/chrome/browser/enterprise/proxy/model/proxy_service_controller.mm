@@ -44,6 +44,10 @@ constexpr char kRoutingMatchDomainCountHistogram[] =
     "Enterprise.SecureGateway.Routing.MatchDomainCount";
 constexpr char kRoutingUnsupportedRuleCountHistogram[] =
     "Enterprise.SecureGateway.Routing.UnsupportedRuleCount";
+constexpr char kRoutingApplyTimeHistogram[] =
+    "Enterprise.SecureGateway.Routing.ApplyTime";
+constexpr char kRoutingNativeConfigCountHistogram[] =
+    "Enterprise.SecureGateway.Routing.NativeConfigCount";
 
 // Navigation ID reported for challenges that are not attributed to a
 // navigation. `EnterpriseProxyErrorService` records no error for it.
@@ -168,6 +172,13 @@ ProxyServiceController::ProxyServiceController(
   CHECK(enterprise_proxy_error_service_);
   CHECK(proxy_configuration_provider_);
   scoped_observation_.Observe(enterprise_proxy_service_);
+  // `base::Unretained()` is safe: the subscription, owned by `this`, removes
+  // the callback when destroyed.
+  proxy_configurations_applied_subscription_ =
+      proxy_configuration_provider_->RegisterProxyConfigurationsAppliedCallback(
+          base::BindRepeating(
+              &ProxyServiceController::OnProxyConfigurationsApplied,
+              base::Unretained(this)));
   OnDynamicProxyConfigsStatusChanged();
 }
 
@@ -222,6 +233,7 @@ bool ProxyServiceController::MaybeHandleProxyAuthChallenge(
 
 void ProxyServiceController::Shutdown() {
   scoped_observation_.Reset();
+  proxy_configurations_applied_subscription_ = {};
   enterprise_proxy_service_ = nullptr;
   enterprise_proxy_error_service_ = nullptr;
   proxy_configuration_provider_ = nullptr;
@@ -237,6 +249,7 @@ void ProxyServiceController::OnDynamicProxyConfigsStatusChanged() {
   if (!@available(iOS 18.1, *)) {
     return;
   }
+  const base::TimeTicks update_time = base::TimeTicks::Now();
   const net::ProxyConfig::DynamicRoutingConfig routing_config =
       enterprise_proxy_service_->GetDynamicRoutingConfig();
   std::vector<web::ProxyRule> rules =
@@ -249,10 +262,32 @@ void ProxyServiceController::OnDynamicProxyConfigsStatusChanged() {
   // Both start empty, so nothing is recorded for a profile without routes. The
   // rules left out are compared too, so that a config where WebKit supports
   // none of the rules is recorded.
-  if (rules != rules_ || unsupported_rule_count != unsupported_rule_count_) {
+  const bool rules_changed = rules != rules_;
+  if (rules_changed) {
+    rules_change_time_ = update_time;
+  }
+  if (rules_changed || unsupported_rule_count != unsupported_rule_count_) {
     RecordRoutingRules(rules, unsupported_rule_count);
     rules_ = rules;
     unsupported_rule_count_ = unsupported_rule_count;
   }
-  proxy_configuration_provider_->UpdateProxyConfiguration(std::move(rules));
+  last_request_id_ =
+      proxy_configuration_provider_->UpdateProxyConfiguration(std::move(rules));
+}
+
+void ProxyServiceController::OnProxyConfigurationsApplied(
+    web::ProxyConfigurationProvider::RequestId request_id,
+    size_t config_count) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Configurations set for another caller don't reflect `rules_`.
+  // `rules_change_time_` is unset when the rules are set again without having
+  // changed.
+  if (request_id != last_request_id_ || !rules_change_time_.has_value()) {
+    return;
+  }
+  base::UmaHistogramTimes(kRoutingApplyTimeHistogram,
+                          base::TimeTicks::Now() - *rules_change_time_);
+  base::UmaHistogramCounts10000(kRoutingNativeConfigCountHistogram,
+                                base::saturated_cast<int>(config_count));
+  rules_change_time_.reset();
 }

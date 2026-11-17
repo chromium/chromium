@@ -5034,6 +5034,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.SecureGateway.Routing.ApplyTime" units="ms"
+    expires_after="2027-11-01">
+  <owner>dmytriievd@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the time from a change of the Secure Gateway routing rules given to
+    WebKit's proxy configuration until the resulting proxy configurations are
+    set on WebKit's website data store, which includes translating the rules and
+    mapping them to native proxy configurations on a background thread. Not
+    recorded for rules replaced by a newer change before being set, nor when the
+    rules are set again without having changed. Only recorded on iOS.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SecureGateway.Routing.MatchDomainCount"
     units="matchers" expires_after="2027-11-01">
   <owner>dmytriievd@google.com</owner>
@@ -5043,6 +5057,22 @@ chromium-metrics-reviews@google.com.
     subnets) of the Secure Gateway routing rules given to WebKit's proxy
     configuration. Recorded with Enterprise.SecureGateway.Routing.RuleCount.
     Only recorded on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SecureGateway.Routing.NativeConfigCount"
+    units="configurations" expires_after="2027-11-01">
+  <owner>dmytriievd@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records the number of native proxy configurations set on WebKit's website
+    data store for the Secure Gateway routing rules, once they are set after the
+    rules change. There is one configuration per rule with a proxy: the rules
+    connecting directly only exclude their domains from the configurations of
+    the rules after them, so 0 means that no traffic goes through Secure
+    Gateway. Not recorded for rules replaced by a newer change before being set,
+    nor when the rules are set again without having changed. Only recorded on
+    iOS.
   </summary>
 </histogram>
 

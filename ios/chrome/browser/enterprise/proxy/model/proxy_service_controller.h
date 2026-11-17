@@ -6,14 +6,18 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_PROXY_SERVICE_CONTROLLER_H_
 
 #import <cstddef>
+#import <optional>
 #import <vector>
 
+#import "base/callback_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
+#import "base/time/time.h"
 #import "components/enterprise/net/core/enterprise_proxy_service.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/web/public/proxy/proxy_config.h"
+#import "ios/web/public/proxy/proxy_configuration_provider.h"
 #import "ios/web/public/web_state_delegate.h"
 
 @class NSURLProtectionSpace;
@@ -26,10 +30,6 @@ class EnterpriseProxyErrorService;
 
 namespace web {
 class WebState;
-}  // namespace web
-
-namespace web {
-class ProxyConfigurationProvider;
 }  // namespace web
 
 // Profile-scoped `KeyedService` responsible for managing web-layer proxy
@@ -93,6 +93,14 @@ class ProxyServiceController
   void OnDynamicProxyConfigsStatusChanged() override;
 
  private:
+  // Called once the `config_count` native configurations of the
+  // `UpdateProxyConfiguration()` call `request_id` are set on the data store.
+  // For the latest call by `this`, records the time until changed rules are
+  // set, and `config_count`.
+  void OnProxyConfigurationsApplied(
+      web::ProxyConfigurationProvider::RequestId request_id,
+      size_t config_count);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Observed and cleared on destruction or `Shutdown()`.
@@ -111,10 +119,18 @@ class ProxyServiceController
   // rules, so the routing metrics are only recorded when these change.
   std::vector<web::ProxyRule> rules_;
   size_t unsupported_rule_count_ = 0;
+  // When `rules_` last changed, until the resulting configurations are set on
+  // the data store.
+  std::optional<base::TimeTicks> rules_change_time_;
+  // ID of the latest `UpdateProxyConfiguration()` call by `this`, null before
+  // the first one.
+  web::ProxyConfigurationProvider::RequestId last_request_id_;
 
   base::ScopedObservation<enterprise_net::EnterpriseProxyService,
                           enterprise_net::EnterpriseProxyService::Observer>
       scoped_observation_{this};
+  // Runs `OnProxyConfigurationsApplied()` until destruction or `Shutdown()`.
+  base::CallbackListSubscription proxy_configurations_applied_subscription_;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_PROXY_SERVICE_CONTROLLER_H_
