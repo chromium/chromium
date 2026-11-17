@@ -2546,7 +2546,7 @@ void BaseRenderingContext2D::setFontVariantCaps(
 }
 
 UniqueFontSelector* BaseRenderingContext2D::GetFontSelector() const {
-  return nullptr;
+  return Host()->GetFontSelector();
 }
 int BaseRenderingContext2D::LayerCount() const {
   return Canvas2DRecorderContext::LayerCount();

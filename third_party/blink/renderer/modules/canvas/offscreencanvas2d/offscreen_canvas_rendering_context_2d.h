@@ -109,7 +109,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
  protected:
   OffscreenCanvas* HostAsOffscreenCanvas() const final;
-  UniqueFontSelector* GetFontSelector() const final;
 
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,

@@ -239,7 +239,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
-  UniqueFontSelector* GetFontSelector() const final;
 
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,

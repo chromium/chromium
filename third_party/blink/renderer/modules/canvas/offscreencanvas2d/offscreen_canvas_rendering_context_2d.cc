@@ -467,8 +467,4 @@ OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()
   return static_cast<OffscreenCanvas*>(Host());
 }
 
-UniqueFontSelector* OffscreenCanvasRenderingContext2D::GetFontSelector() const {
-  return Host()->GetFontSelector();
-}
-
 }  // namespace blink

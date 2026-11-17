@@ -362,7 +362,7 @@ class MODULES_EXPORT BaseRenderingContext2D
       const CanvasContextCreationAttributesCore& attrs,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  virtual UniqueFontSelector* GetFontSelector() const;
+  UniqueFontSelector* GetFontSelector() const;
 
   virtual bool WillSetFont() const;
   virtual bool ResolveFont(const String& new_font) = 0;

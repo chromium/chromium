@@ -1010,10 +1010,6 @@ HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
   return canvas();
 }
 
-UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
-  return canvas()->GetFontSelector();
-}
-
 void CanvasRenderingContext2D::Reshape(gfx::Size old_size, gfx::Size new_size) {
   if (old_size == new_size) {
     ResetInternal();
