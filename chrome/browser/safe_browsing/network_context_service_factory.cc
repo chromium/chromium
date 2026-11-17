@@ -6,6 +6,11 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
+#include "components/enterprise/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENTERPRISE_PROXY)
+#include "chrome/browser/enterprise/net/enterprise_proxy_service_factory.h"
+#endif
 
 namespace safe_browsing {
 
@@ -33,7 +38,11 @@ NetworkContextServiceFactory::NetworkContextServiceFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {}
+              .Build()) {
+#if BUILDFLAG(ENTERPRISE_PROXY)
+  DependsOn(EnterpriseProxyServiceFactory::GetInstance());
+#endif
+}
 
 NetworkContextServiceFactory::~NetworkContextServiceFactory() = default;
 
