@@ -11,19 +11,49 @@ export function getHtml(this: LhsGhostLoaderElement) {
   return html`<!--_html_template_start_-->
 <div class="ghost-header" aria-hidden="true">
   <div class="ghost-logo">
-    <div class="ghost-wordmark"></div>
+    <div class="ghost-wordmark">
+      ${this.shimmerDelaysMs_.logo.map(delay => html`
+        <div class="ghost-shimmer"
+            style="--loading-bar-delay: ${delay}ms;">
+        </div>`)}
+    </div>
   </div>
   <div class="ghost-close-button">
-    <div class="ghost-icon"></div>
+    <div class="ghost-icon">
+      ${this.shimmerDelaysMs_.logo.map(delay => html`
+        <div class="ghost-shimmer"
+            style="--loading-bar-delay: ${delay}ms;">
+        </div>`)}
+    </div>
   </div>
   <div class="ghost-actions">
     <div class="ghost-button">
-      <div class="ghost-icon"></div>
-      <div class="ghost-label new-thread"></div>
+      <div class="ghost-icon">
+        ${this.shimmerDelaysMs_.newThread.map(delay => html`
+          <div class="ghost-shimmer"
+              style="--loading-bar-delay: ${delay}ms;">
+          </div>`)}
+      </div>
+      <div class="ghost-label new-thread">
+        ${this.shimmerDelaysMs_.newThread.map(delay => html`
+          <div class="ghost-shimmer"
+              style="--loading-bar-delay: ${delay}ms;">
+          </div>`)}
+      </div>
     </div>
     <div class="ghost-button">
-      <div class="ghost-icon"></div>
-      <div class="ghost-label search-threads"></div>
+      <div class="ghost-icon">
+        ${this.shimmerDelaysMs_.searchThreads.map(delay => html`
+          <div class="ghost-shimmer"
+              style="--loading-bar-delay: ${delay}ms;">
+          </div>`)}
+      </div>
+      <div class="ghost-label search-threads">
+        ${this.shimmerDelaysMs_.searchThreads.map(delay => html`
+          <div class="ghost-shimmer"
+              style="--loading-bar-delay: ${delay}ms;">
+          </div>`)}
+      </div>
     </div>
   </div>
 </div>
@@ -43,8 +73,18 @@ export function getHtml(this: LhsGhostLoaderElement) {
 </div>
 <div class="ghost-footer" aria-hidden="true">
   <div class="ghost-button">
-    <div class="ghost-icon"></div>
-    <div class="ghost-label settings"></div>
+    <div class="ghost-icon">
+      ${this.shimmerDelaysMs_.settings.map(delay => html`
+        <div class="ghost-shimmer"
+            style="--loading-bar-delay: ${delay}ms;">
+        </div>`)}
+    </div>
+    <div class="ghost-label settings">
+      ${this.shimmerDelaysMs_.settings.map(delay => html`
+        <div class="ghost-shimmer"
+            style="--loading-bar-delay: ${delay}ms;">
+        </div>`)}
+    </div>
   </div>
 </div>
 <!--_html_template_end_-->`;
