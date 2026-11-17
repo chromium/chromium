@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_feature.h"
@@ -38,6 +39,11 @@
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/base_window.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
+#include "chrome/browser/ui/waap/waap_utils.h"  // nogncheck
+#endif
 
 namespace glic {
 
@@ -143,11 +149,13 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
         BrowserWindowInterface::Type::TYPE_NORMAL, *profile_,
         /*from_user_gesture=*/true);
 
+    const base::TimeTicks creation_time = base::TimeTicks::Now();
     CreateBrowserWindow(
         std::move(create_params),
         base::BindOnce(&GlicSkillsManagerImpl::OnBrowserWindowCreatedForSkills,
                        weak_ptr_factory_.GetWeakPtr(), std::move(skill),
-                       dialog_type, skills_url, std::move(callback)));
+                       dialog_type, skills_url, std::move(callback),
+                       creation_time));
     return;
   }
 
@@ -160,11 +168,18 @@ void GlicSkillsManagerImpl::OnBrowserWindowCreatedForSkills(
     skills::mojom::SkillsDialogType dialog_type,
     const GURL& url,
     base::OnceCallback<void(bool)> callback,
+    [[maybe_unused]] base::TimeTicks creation_time,
     BrowserWindowInterface* browser_window) {
   if (!browser_window) {
     std::move(callback).Run(false);
     return;
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_window)) {
+    manager->SetWindowCreationInfo(
+        waap::NewWindowCreationSource::kNewEmptyWindow, creation_time);
+  }
+#endif
   browser_window->GetWindow()->Show();
   auto* tab_list = TabListInterface::From(browser_window);
   if (!tab_list) {
@@ -260,18 +275,28 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
         BrowserWindowInterface::Type::TYPE_NORMAL, *profile_,
         /*from_user_gesture=*/true);
 
+    const base::TimeTicks creation_time = base::TimeTicks::Now();
     CreateBrowserWindow(
         std::move(create_params),
         base::BindOnce(
-            [](const GURL& url, BrowserWindowInterface* browser_window) {
+            [](const GURL& url, [[maybe_unused]] base::TimeTicks creation_time,
+               BrowserWindowInterface* browser_window) {
               if (browser_window) {
+#if !BUILDFLAG(IS_ANDROID)
+                if (auto* manager = InitialWebUIWindowMetricsManager::From(
+                        browser_window)) {
+                  manager->SetWindowCreationInfo(
+                      waap::NewWindowCreationSource::kNewEmptyWindow,
+                      creation_time);
+                }
+#endif
                 browser_window->GetWindow()->Show();
                 if (auto* tab_list = TabListInterface::From(browser_window)) {
                   tab_list->OpenTab(url, /*index=*/-1);
                 }
               }
             },
-            skills_url));
+            skills_url, creation_time));
   }
 }
 

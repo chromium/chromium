@@ -30,6 +30,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -76,8 +77,10 @@ std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
       // handles having an empty ExtensionInstallPrompt.
       return nullptr;
 #else
-      browser = CreateBrowserWindow(BrowserWindowCreateParams(
-          BrowserWindowInterface::TYPE_NORMAL, profile, true));
+      browser = waap::CreateBrowserWindowAndRecordCreationSource(
+          BrowserWindowCreateParams(BrowserWindowInterface::TYPE_NORMAL,
+                                    profile, true),
+          waap::NewWindowCreationSource::kNewEmptyWindow);
 #endif
     }
     TabListInterface* tab_list = TabListInterface::From(browser);

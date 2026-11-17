@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
@@ -83,11 +84,14 @@ class GlicSkillsManagerImpl : public GlicSkillsManager {
  private:
   tabs::TabInterface* EnsureTabForSkills();
   void ShowSkillsUiAtRelativePath(const std::string& path);
+  // Opens `url` and launches the skills dialog once `browser_window` is
+  // created, recording `creation_time` for new-window metrics.
   void OnBrowserWindowCreatedForSkills(
       skills::Skill skill,
       skills::mojom::SkillsDialogType dialog_type,
       const GURL& url,
       base::OnceCallback<void(bool)> callback,
+      base::TimeTicks creation_time,
       BrowserWindowInterface* browser_window);
   void LaunchSkillsDialogWithTab(tabs::TabInterface* target_tab,
                                  skills::Skill skill,

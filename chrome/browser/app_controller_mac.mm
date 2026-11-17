@@ -109,6 +109,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/channel_info.h"
@@ -1497,8 +1498,9 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
         ProfileBrowserCollection::GetForProfile(profile.get())
             ->GetLastActiveBrowser();
     if (!browser) {
-      browser = CreateBrowserWindow(
-          BrowserWindowCreateParams(profile.get(), /*user_gesture=*/true));
+      browser = waap::CreateBrowserWindowAndRecordCreationSource(
+          BrowserWindowCreateParams(profile.get(), /*user_gesture=*/true),
+          waap::NewWindowCreationSource::kNewEmptyWindow);
       browser->GetWindow()->Show();
     }
 
@@ -2667,7 +2669,9 @@ void OpenStartupTabsInBrowserWithProfile(const StartupTabs& tabs,
     startupContent = browser->GetTabStripModel()->GetActiveWebContents();
   } else if (!browser) {
     // if no browser window exists then create one with no tabs to be filled in.
-    browser = CreateBrowserWindow(BrowserWindowCreateParams(profile, true));
+    browser = waap::CreateBrowserWindowAndRecordCreationSource(
+        BrowserWindowCreateParams(profile, true),
+        waap::NewWindowCreationSource::kLaunch);
     browser->GetWindow()->Show();
   }
 

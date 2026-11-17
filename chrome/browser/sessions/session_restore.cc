@@ -482,9 +482,12 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         disposition == ui::mojom::WindowOpenDisposition::kNewWindow;
 
     BrowserWindowInterface* browser =
-        use_new_window ? CreateBrowserWindow(BrowserWindowCreateParams(
-                             profile_, /* from_user_gesture = */ true))
-                       : browser_.get();
+        use_new_window
+            ? waap::CreateBrowserWindowAndRecordCreationSource(
+                  BrowserWindowCreateParams(profile_,
+                                            /* from_user_gesture = */ true),
+                  waap::NewWindowCreationSource::kSessionRestore)
+            : browser_.get();
     CHECK(browser);
     RecordAppLaunchForTab(browser, tab, selected_index);
 
@@ -1494,7 +1497,9 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       params.creation_source =
           BrowserWindowCreateParams::CreationSource::kLastAndUrlsStartupPref;
       BrowserWindowInterface* new_browser =
-          CreateBrowserWindow(std::move(params));
+          waap::CreateBrowserWindowAndRecordCreationSource(
+              std::move(params),
+              waap::NewWindowCreationSource::kSessionRestore);
       AppendURLsToBrowser(new_browser, startup_tabs_from_last_and_urls_pref);
       new_browser->GetWindow()->Show();
       browser_to_activate = new_browser;

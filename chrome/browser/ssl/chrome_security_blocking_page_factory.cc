@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "net/base/net_errors.h"
@@ -474,7 +475,8 @@ void ChromeSecurityBlockingPageFactory::
     if (!browser && GetBrowserWindowCreationStatusForProfile(*profile) ==
                         BrowserWindowInterface::CreationStatus::kOk) {
       BrowserWindowCreateParams params(profile, /*from_user_gesture=*/true);
-      browser = CreateBrowserWindow(std::move(params));
+      browser = waap::CreateBrowserWindowAndRecordCreationSource(
+          std::move(params), waap::NewWindowCreationSource::kNewEmptyWindow);
     }
 
     if (browser && browser->GetWindow()) {

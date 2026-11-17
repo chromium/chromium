@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/waap/window_creation.h"
 #include "url/url_constants.h"
 #endif
 
@@ -135,7 +136,10 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
           base::BindOnce(&WindowManagementTool::OnBrowserWindowCreated,
                          weak_ptr_factory_.GetWeakPtr()));
 #else
-      BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+      BrowserWindowInterface* browser =
+          waap::CreateBrowserWindowAndRecordCreationSource(
+              std::move(params),
+              waap::NewWindowCreationSource::kNewEmptyWindow);
       content::WebContents* web_contents =
           chrome::AddAndReturnTabAt(browser, GURL(url::kAboutBlankURL),
                                     /*index=*/-1, /*foreground=*/true);
