@@ -39,6 +39,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.interpolators.Interpolators;
@@ -73,8 +74,13 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private final View mRootContentView;
     private final NonNullObservableSupplier<Boolean> mIsFullscreenSupplier;
     private final Callback<Boolean> mIsFullscreenObserver = (ignored) -> adjustViewPosition();
-    private final KeyboardVisibilityDelegate.KeyboardVisibilityListener
-            mKeyboardVisibilityListener = (isShowing) -> adjustViewPosition();
+    private final KeyboardVisibilityListener mKeyboardVisibilityListener =
+            new KeyboardVisibilityListener() {
+                @Override
+                public void keyboardObscuringChanged(boolean isObscuring) {
+                    adjustViewPosition();
+                }
+            };
     private @ColorInt int mBackgroundColor;
     private boolean mIsBeingDragged;
     private boolean mIsAnimating;
@@ -488,9 +494,9 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     }
 
     /**
-     * Starts the {@link Animator} with {@link SurfaceView} optimization disabled. If a
-     * {@link SurfaceView} is not present (mWindowAndroid is null), start the {@link Animator}
-     * in the normal way.
+     * Starts the {@link Animator} with {@link SurfaceView} optimization disabled. If a {@link
+     * SurfaceView} is not present (mWindowAndroid is null), start the {@link Animator} in the
+     * normal way.
      */
     private void startAnimatorOnSurfaceView(Animator animator) {
         if (mWindowAndroid != null) {

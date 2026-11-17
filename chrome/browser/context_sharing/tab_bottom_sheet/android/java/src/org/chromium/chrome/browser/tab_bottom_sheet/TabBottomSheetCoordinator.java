@@ -589,13 +589,14 @@ public class TabBottomSheetCoordinator {
     }
 
     private KeyboardVisibilityListener buildKeyboardVisibilityListener() {
-        return isShowing -> {
-            mCoBrowseViews.setIgnoreClearFocus(isShowing);
-            if (isShowing
-                    && mIsShowingTabBottomSheet
-                    && mContentView != null
-                    && !mContentView.hasFocus()) {
-                collapseSheet();
+        return new KeyboardVisibilityListener() {
+            @Override
+            public void keyboardObscuringChanged(boolean isObscuring) {
+                mCoBrowseViews.setIgnoreClearFocus(isObscuring);
+                if (mContentView == null) return;
+                if (isObscuring && mIsShowingTabBottomSheet && !mContentView.hasFocus()) {
+                    collapseSheet();
+                }
             }
         };
     }

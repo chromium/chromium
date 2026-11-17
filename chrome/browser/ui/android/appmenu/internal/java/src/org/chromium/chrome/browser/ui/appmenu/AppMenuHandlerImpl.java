@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
@@ -123,8 +124,7 @@ class AppMenuHandlerImpl
     private final SubmenuHeaderFactory mSubmenuHeaderFactory;
     private final ListObserver<Void> mListObserver;
     private @Nullable Callback<Integer> mTestOptionsItemSelectedListener;
-    private @MonotonicNonNull KeyboardVisibilityDelegate.KeyboardVisibilityListener
-            mKeyboardVisibilityListener;
+    private @MonotonicNonNull KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     /**
      * The resource id of the menu item to highlight when the menu next opens. A value of {@code
@@ -419,27 +419,15 @@ class AppMenuHandlerImpl
                 keyboardVisibilityDelegate.removeKeyboardVisibilityListener(
                         mKeyboardVisibilityListener);
             }
-            View finalAnchorView = anchorView;
-            boolean finalIsByPermanentButton = isByPermanentButton;
             mKeyboardVisibilityListener =
-                    isShowing -> {
-                        if (!isShowing) {
-                            assert mAppMenu != null;
-                            setDisplayAndShowAppMenu(
-                                    wrapper,
-                                    finalAnchorView,
-                                    finalIsByPermanentButton,
-                                    rotation,
-                                    mAppRect.get(),
-                                    startDragging,
-                                    isFromBottomBar,
-                                    isFromPointer);
-                            // https://github.com/uber/NullAway/issues/1190
-                            assumeNonNull(mKeyboardVisibilityListener);
-                            keyboardVisibilityDelegate.removeKeyboardVisibilityListener(
-                                    mKeyboardVisibilityListener);
-                        }
-                    };
+                    createKeyboardVisibilityListener(
+                            wrapper,
+                            anchorView,
+                            isByPermanentButton,
+                            rotation,
+                            startDragging,
+                            isFromBottomBar,
+                            isFromPointer);
             keyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
             keyboardVisibilityDelegate.hideKeyboard(anchorView);
         } else {
@@ -487,6 +475,36 @@ class AppMenuHandlerImpl
         if (mAppMenu != null && mAppMenu.isShowing()) {
             mAppMenu.dismiss();
         }
+    }
+
+    private KeyboardVisibilityListener createKeyboardVisibilityListener(
+            ContextThemeWrapper wrapper,
+            View anchorView,
+            boolean isByPermanentButton,
+            int rotation,
+            boolean startDragging,
+            boolean isFromBottomBar,
+            boolean isFromPointer) {
+        KeyboardVisibilityDelegate keyboardVisibilityDelegate =
+                mWindowAndroid.getKeyboardDelegate();
+        return new KeyboardVisibilityListener() {
+            @Override
+            public void keyboardObscuringChanged(boolean isObscuring) {
+                if (!isObscuring) {
+                    assert mAppMenu != null;
+                    setDisplayAndShowAppMenu(
+                            wrapper,
+                            anchorView,
+                            isByPermanentButton,
+                            rotation,
+                            mAppRect.get(),
+                            startDragging,
+                            isFromBottomBar,
+                            isFromPointer);
+                    keyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
+                }
+            }
+        };
     }
 
     @Override

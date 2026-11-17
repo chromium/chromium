@@ -287,7 +287,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsFindInPageShowingObserver = (showing) -> updateCurrentPosition();
         mIsPictureInPictureShowingObserver = (showing) -> updateCurrentPosition();
         mKeyboardVisibilityListener =
-                (showing) -> updateCurrentPosition(/* prefStateChanged= */ false);
+                new KeyboardVisibilityListener() {
+                    @Override
+                    public void keyboardObscuringChanged(boolean isObscuring) {
+                        updateCurrentPosition(/* prefStateChanged= */ false);
+                    }
+                };
 
         mIsNtpWithFakeboxShowingSupplier.addSyncObserverAndPostIfNonNull(mIsNtpShowingObserver);
         mIsTabSwitcherFinishedShowingSupplier.addSyncObserverAndPostIfNonNull(
@@ -391,7 +396,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mKeyboardHeightProgressBarCallback =
                 (height) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer);
         mKeyboardVisibilityViewOffsetCallback =
-                (showing) -> updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
+                new KeyboardVisibilityListener() {
+                    @Override
+                    public void keyboardObscuringChanged(boolean isObscuring) {
+                        updateViewOffset(mBottomToolbarLayer, mControlContainer.getView());
+                    }
+                };
         mFormFieldViewOffsetCallback =
                 (focused) -> updateViewOffset(mProgressBarLayer, mToolbarProgressBarContainer);
         mControlContainerTranslationCallback =

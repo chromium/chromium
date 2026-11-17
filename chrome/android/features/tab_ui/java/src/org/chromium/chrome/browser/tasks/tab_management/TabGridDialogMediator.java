@@ -113,6 +113,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -274,7 +275,7 @@ public class TabGridDialogMediator
     private LazyOneshotSupplier<TabListEditorController> mTabListEditorControllerSupplier;
     private @Nullable TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     private boolean mTabListEditorSetup;
-    private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private KeyboardVisibilityListener mKeyboardVisibilityListener;
     private boolean mIsUpdatingTitle;
     private long mTitleFocusGainedTimeMs;
     private @Nullable String mCurrentGroupModifiedTitle;
@@ -996,24 +997,28 @@ public class TabGridDialogMediator
     @EnsuresNonNull("mKeyboardVisibilityListener")
     private void setupToolbarEditText() {
         mKeyboardVisibilityListener =
-                isShowing -> {
-                    if (isShowing) {
-                        mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
-                        return;
+                new KeyboardVisibilityListener() {
+                    @Override
+                    public void keyboardObscuringChanged(boolean isObscuring) {
+                        if (isObscuring) {
+                            mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
+                            return;
+                        }
+                        long remainingMs =
+                                mTitleFocusGainedTimeMs
+                                        + KEYBOARD_SHOW_SETTLE_MS
+                                        - SystemClock.uptimeMillis();
+                        if (mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED)
+                                && remainingMs > 0) {
+                            // Likely a transient hide while the IME is still starting; re-check
+                            // once
+                            // the settle window has elapsed. See KEYBOARD_SHOW_SETTLE_MS.
+                            mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
+                            mHandler.postDelayed(mDeferredKeyboardHiddenRunnable, remainingMs);
+                            return;
+                        }
+                        onKeyboardHidden();
                     }
-                    long remainingMs =
-                            mTitleFocusGainedTimeMs
-                                    + KEYBOARD_SHOW_SETTLE_MS
-                                    - SystemClock.uptimeMillis();
-                    if (mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED)
-                            && remainingMs > 0) {
-                        // Likely a transient hide while the IME is still starting; re-check once
-                        // the settle window has elapsed. See KEYBOARD_SHOW_SETTLE_MS.
-                        mHandler.removeCallbacks(mDeferredKeyboardHiddenRunnable);
-                        mHandler.postDelayed(mDeferredKeyboardHiddenRunnable, remainingMs);
-                        return;
-                    }
-                    onKeyboardHidden();
                 };
         KeyboardVisibilityDelegate.getInstance()
                 .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
@@ -1478,8 +1483,7 @@ public class TabGridDialogMediator
         ResettersForTesting.register(() -> mCurrentTabGroupId = oldValue);
     }
 
-    KeyboardVisibilityDelegate.KeyboardVisibilityListener
-            getKeyboardVisibilityListenerForTesting() {
+    KeyboardVisibilityListener getKeyboardVisibilityListenerForTesting() {
         return mKeyboardVisibilityListener;
     }
 

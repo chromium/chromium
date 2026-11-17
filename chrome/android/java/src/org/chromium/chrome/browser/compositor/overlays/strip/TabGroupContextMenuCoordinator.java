@@ -88,7 +88,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
-import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -130,7 +130,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     private final WindowAndroid mWindowAndroid;
     private final @TabStripLayoutType int mTabStripLayout;
     private @Nullable Runnable mOnMenuDismissedCallback;
-    private final KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private final KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     @SuppressWarnings("HidingField")
     protected CollaborationService mCollaborationService;
@@ -201,25 +201,31 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         mTabStripLayout = tabStripLayout;
         mOnMenuDismissedCallback = onMenuDismissedCallback;
         mKeyboardVisibilityListener =
-                isShowing -> {
-                    if (!isShowing) {
-                        updateTabGroupTitle();
-                    }
+                new KeyboardVisibilityListener() {
+                    @Override
+                    public void keyboardObscuringChanged(boolean isObscuring) {
+                        if (!isObscuring) {
+                            updateTabGroupTitle();
+                        }
 
-                    // Determine whether to update the menu layout based on visibility and layout
-                    // type. Only update on menu show for vertical tabs; re-laying out on hide
-                    // causes vertical tabs to flip-flop above/below the anchor and jump jarringly.
-                    boolean shouldUpdateLayout =
-                            !isShowing
-                                    ? mTabStripLayout == TabStripLayoutType.HORIZONTAL
-                                    : isMenuShowing();
+                        // Determine whether to update the menu layout based on visibility and
+                        // layout
+                        // type. Only update on menu show for vertical tabs; re-laying out on hide
+                        // causes vertical tabs to flip-flop above/below the anchor and jump
+                        // jarringly.
+                        boolean shouldUpdateLayout =
+                                !isObscuring
+                                        ? mTabStripLayout == TabStripLayoutType.HORIZONTAL
+                                        : isMenuShowing();
 
-                    if (shouldUpdateLayout) {
-                        // Using .post() to ensure the Android OS has finished resizing the
-                        // window (shrinking the visible viewport) to accommodate the keyboard
-                        // before we calculate the menu's new positioning coordinates (layout
-                        // pass).
-                        assumeNonNull(mContentView).post(this::updateMenuLayout);
+                        if (shouldUpdateLayout) {
+                            // Using .post() to ensure the Android OS has finished resizing the
+                            // window (shrinking the visible viewport) to accommodate the keyboard
+                            // before we calculate the menu's new positioning coordinates (layout
+                            // pass).
+                            assumeNonNull(mContentView)
+                                    .post(TabGroupContextMenuCoordinator.this::updateMenuLayout);
+                        }
                     }
                 };
         getTabModel().addTabGroupObserver(mTabGroupObserver);
@@ -972,8 +978,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         return mTabGroupColorPickerCoordinator;
     }
 
-    KeyboardVisibilityDelegate.KeyboardVisibilityListener
-            getKeyboardVisibilityListenerForTesting() {
+    KeyboardVisibilityListener getKeyboardVisibilityListenerForTesting() {
         return mKeyboardVisibilityListener;
     }
 

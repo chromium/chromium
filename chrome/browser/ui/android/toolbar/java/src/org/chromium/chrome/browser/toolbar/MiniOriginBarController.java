@@ -218,12 +218,15 @@ public class MiniOriginBarController implements Observer {
                                     : MiniOriginEvent.FORM_FIELD_LOST_FOCUS);
                 };
         mKeyboardVisibilityObserver =
-                (showing) -> {
-                    if (mIsOmniboxFocusedSupplier.getAsBoolean()) return;
-                    updateMiniOriginBarState(
-                            showing
-                                    ? MiniOriginEvent.KEYBOARD_APPEARED
-                                    : MiniOriginEvent.KEYBOARD_DISAPPEARED);
+                new KeyboardVisibilityListener() {
+                    @Override
+                    public void keyboardObscuringChanged(boolean isObscuring) {
+                        if (mIsOmniboxFocusedSupplier.getAsBoolean()) return;
+                        updateMiniOriginBarState(
+                                isObscuring
+                                        ? MiniOriginEvent.KEYBOARD_APPEARED
+                                        : MiniOriginEvent.KEYBOARD_DISAPPEARED);
+                    }
                 };
 
         mIsFormFieldFocusedSupplier
