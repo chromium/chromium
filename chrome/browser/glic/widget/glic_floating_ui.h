@@ -84,6 +84,8 @@ class GlicFloatingUi : public GlicUiEmbedder,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
   void ClosePanel() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override;
+  bool ShouldRestoreFocusAfterReload() override;
+  void RestoreFocusAfterReload() override;
 
   // Host::Observer:
   void ActiveWebContentsChanged(content::WebContents* new_contents) override;

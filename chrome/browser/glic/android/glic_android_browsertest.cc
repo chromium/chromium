@@ -8,11 +8,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/escape.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
@@ -22,6 +24,7 @@
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -295,6 +298,111 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidMojoBrowserTest,
       [this]() { return GetOnlyGlicInstance()->host().IsWebClientConnected(); },
       "Mojo connection disconnected post-rotation restore"));
 }
+
+class GlicAndroidReloadFocusBrowserTest
+    : public GlicAndroidMojoBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GlicAndroidReloadFocusBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kGlicNativeLoadingPlaceholder, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test for b/583963962. Reloading an open Glic panel on Android
+// preserves focus when Glic held focus, and does not steal focus if the tab
+// takes focus either mid-reload or prior to reload.
+IN_PROC_BROWSER_TEST_P(GlicAndroidReloadFocusBrowserTest,
+                       testFocusPreservedOnReload) {
+  content::WebContents* tab_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(tab_contents);
+  ASSERT_TRUE(content::NavigateToURL(tab_contents, GetTestUrl("page.html")));
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitUntilGuestIsShowing(instance));
+
+  // Wait for `#inputBox` autofocus without synthesizing sticky user activation
+  // (`ExecuteJsTest()` uses default `EvalJs` options which set user activation
+  // and cause a concurrent `FlushAutofocusCandidates()` frame to request the
+  // Android soft keyboard, collapsing `TabBottomSheetCoordinator` if focus
+  // leaves the bottom sheet while the IME animation is in flight).
+  auto prepare_guest_input_without_ime = [&]() {
+    content::RenderFrameHost* guest_frame =
+        instance->host().GetGuestMainFrame();
+    ASSERT_TRUE(guest_frame);
+    ASSERT_EQ(true, content::EvalJs(guest_frame,
+                                    R"js(new Promise(resolve => {
+                          const check = () => {
+                            const input = document.getElementById('inputBox');
+                            if (input) {
+                              input.inputMode = 'none';
+                            }
+                            if (document.activeElement?.id === 'inputBox') {
+                              resolve(true);
+                            } else {
+                              requestAnimationFrame(check);
+                            }
+                          };
+                          check();
+                        }))js",
+                                    content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  };
+
+  // Reloading while the tab holds focus must not steal focus into Glic.
+  tab_contents->Focus();
+  ASSERT_OK(RunUntilEqual<bool>([&]() { return instance->HasFocus(); }, false,
+                                "Expected Glic not to hold focus"));
+  instance->host().Reload();
+  ASSERT_OK(WaitUntilGuestIsShowing(instance));
+  EXPECT_FALSE(instance->HasFocus());
+
+  // Reloading while Glic holds focus must preserve focus in the replacement
+  // guest.
+  ASSERT_NO_FATAL_FAILURE(prepare_guest_input_without_ime());
+  ASSERT_OK(FocusGlic(instance));
+  ExecuteJsTest();
+
+  instance->host().Reload();
+  ASSERT_OK(WaitUntilGuestIsShowing(instance));
+  ASSERT_NO_FATAL_FAILURE(prepare_guest_input_without_ime());
+  ExecuteJsTest();
+
+  // Focusing the tab mid-reload (while loading overlay or native placeholder
+  // is active) must not be clobbered when the replacement guest finishes
+  // loading.
+  instance->host().Reload();
+  EXPECT_TRUE(instance->HasFocus());
+  tab_contents->Focus();
+  EXPECT_FALSE(instance->HasFocus());
+  ASSERT_OK(WaitUntilGuestIsShowing(instance));
+  EXPECT_FALSE(instance->HasFocus());
+
+  // Re-focus Glic, then reload and move focus onto a native Android View
+  // outside the Glic container mid-reload (modeling browser toolbar / UI
+  // controls that do not fire Tab WebContents focus notifications). The slow
+  // reload completion must not steal focus back into Glic.
+  ASSERT_NO_FATAL_FAILURE(prepare_guest_input_without_ime());
+  ASSERT_OK(FocusGlic(instance));
+  ExecuteJsTest();
+
+  instance->host().Reload();
+  ASSERT_TRUE(FocusExternalAndroidViewForTesting(tab_contents));
+  EXPECT_FALSE(instance->HasFocus());
+  ASSERT_OK(WaitUntilGuestIsShowing(instance));
+  EXPECT_FALSE(instance->HasFocus());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicAndroidReloadFocusBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NativePlaceholder"
+                                             : "WebUiLoader";
+                         });
 
 }  // namespace
 
