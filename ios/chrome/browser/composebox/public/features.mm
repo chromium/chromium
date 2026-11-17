@@ -92,8 +92,7 @@ bool IsComposeboxPhysicalKeyboardReturnKeysEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxPhysicalKeyboardReturnKeys);
 }
 
-BASE_FEATURE(kComposeboxAimRichAPCExtraction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxAimRichAPCExtraction, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsComposeboxAimRichAPCExtractionEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxAimRichAPCExtraction);
