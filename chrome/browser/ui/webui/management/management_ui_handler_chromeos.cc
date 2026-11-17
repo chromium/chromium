@@ -792,12 +792,13 @@ void ManagementUIHandlerChromeOS::HandleGetLocalTrustRootsInfo(
 
 std::u16string ManagementUIHandlerChromeOS::GetFilesUploadToCloudInfo(
     Profile* profile) {
+  const PrefService& profile_prefs = *profile->GetPrefs();
   FileSaveDestination camera_destination =
-      policy::local_user_files::GetCameraDestination(profile);
+      policy::local_user_files::GetCameraDestination(profile_prefs);
   FileSaveDestination download_destination =
-      policy::local_user_files::GetDownloadsDestination(profile);
+      policy::local_user_files::GetDownloadsDestination(profile_prefs);
   FileSaveDestination screenshot_destination =
-      policy::local_user_files::GetScreenCaptureDestination(profile);
+      policy::local_user_files::GetScreenCaptureDestination(profile_prefs);
   const bool is_camera_gdrive =
       camera_destination == FileSaveDestination::kGoogleDrive;
   const bool is_downloads_gdrive =

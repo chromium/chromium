@@ -142,7 +142,8 @@ std::string StateToString(State state) {
 }
 
 // Records histograms related to SkyVault local storage settings.
-void LocalStorageHistograms(Profile* profile, bool local_user_files_allowed) {
+void LocalStorageHistograms(const PrefService& profile_prefs,
+                            bool local_user_files_allowed) {
   SkyVaultLocalStorageEnabledHistogram(local_user_files_allowed);
 
   if (local_user_files_allowed) {
@@ -150,7 +151,8 @@ void LocalStorageHistograms(Profile* profile, bool local_user_files_allowed) {
   }
 
   // If local files are disallowed, check if Downloads are misconfigured.
-  FileSaveDestination downloads_destination = GetDownloadsDestination(profile);
+  FileSaveDestination downloads_destination =
+      GetDownloadsDestination(profile_prefs);
   if (downloads_destination == FileSaveDestination::kDownloads ||
       downloads_destination == FileSaveDestination::kNotSpecified) {
     SkyVaultLocalStorageMisconfiguredHistogram(true);
@@ -305,7 +307,7 @@ void LocalFilesMigrationManager::InitializeFromPrefs() {
     SetState(State::kCleanup);
   }
 
-  LocalStorageHistograms(profile, local_user_files_allowed_);
+  LocalStorageHistograms(*profile_prefs_, local_user_files_allowed_);
 
   if (local_user_files_allowed_ ||
       !IsMigrationEnabled(migration_destination_)) {
@@ -371,11 +373,10 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     return;
   }
 
-  Profile* profile = Profile::FromBrowserContext(context_);
   user_manager::User& user = CHECK_DEREF(
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_));
 
-  LocalStorageHistograms(profile, local_user_files_allowed_);
+  LocalStorageHistograms(*profile_prefs_, local_user_files_allowed_);
 
   if (local_user_files_allowed_ ||
       !IsMigrationEnabled(migration_destination_)) {

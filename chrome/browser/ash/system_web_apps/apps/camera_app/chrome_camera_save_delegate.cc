@@ -32,7 +32,7 @@ ChromeCameraSaveDelegate::ChromeCameraSaveDelegate(
     content::BrowserContext* context)
     : context_(context),
       destination_(policy::local_user_files::GetCameraDestination(
-          Profile::FromBrowserContext(context_))),
+          *Profile::FromBrowserContext(context_)->GetPrefs())),
       path_from_pref_(GetPathFromPref(context_)) {}
 
 ChromeCameraSaveDelegate::~ChromeCameraSaveDelegate() = default;

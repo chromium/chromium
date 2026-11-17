@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy::local_user_files {
@@ -21,11 +20,10 @@ namespace policy::local_user_files {
 namespace {
 
 FileSaveDestination GetDestinationForPref(
-    Profile* profile,
+    const PrefService& profile_prefs,
     const std::string& pref_name,
     FileSaveDestination fallback = FileSaveDestination::kDownloads) {
-  CHECK(profile, base::NotFatalUntil::M160);
-  auto* pref = profile->GetPrefs()->FindPreference(pref_name);
+  auto* pref = profile_prefs.FindPreference(pref_name);
   if (!pref || !pref->GetValue() || !pref->IsManaged()) {
     return FileSaveDestination::kNotSpecified;
   }
@@ -87,32 +85,35 @@ bool IsCloudDestination(MigrationDestination destination) {
          destination == MigrationDestination::kOneDrive;
 }
 
-FileSaveDestination GetDownloadsDestination(Profile* profile) {
-  return GetDestinationForPref(profile,
+FileSaveDestination GetDownloadsDestination(const PrefService& profile_prefs) {
+  return GetDestinationForPref(profile_prefs,
                                ash::chrome_prefs::kDownloadDefaultDirectory);
 }
 
-FileSaveDestination GetScreenCaptureDestination(Profile* profile) {
-  return GetDestinationForPref(profile, ash::prefs::kCaptureModePolicySavePath);
+FileSaveDestination GetScreenCaptureDestination(
+    const PrefService& profile_prefs) {
+  return GetDestinationForPref(profile_prefs,
+                               ash::prefs::kCaptureModePolicySavePath);
 }
 
-FileSaveDestination GetCameraDestination(Profile* profile) {
-  return GetDestinationForPref(profile, ash::prefs::kCameraSaveLocation,
+FileSaveDestination GetCameraDestination(const PrefService& profile_prefs) {
+  return GetDestinationForPref(profile_prefs, ash::prefs::kCameraSaveLocation,
                                FileSaveDestination::kNotSpecified);
 }
 
-bool DownloadToTemp(Profile* profile) {
+bool DownloadToTemp(const PrefService& profile_prefs) {
   return base::FeatureList::IsEnabled(ash::features::kSkyVault) &&
-         GetDownloadsDestination(profile) == FileSaveDestination::kOneDrive;
+         GetDownloadsDestination(profile_prefs) ==
+             FileSaveDestination::kOneDrive;
 }
 
-std::optional<base::Time> GetMigrationStartTime(Profile* profile) {
+std::optional<base::Time> GetMigrationStartTime(
+    const PrefService& profile_prefs) {
   if (!base::FeatureList::IsEnabled(ash::features::kSkyVaultV3)) {
     return std::nullopt;
   }
-  PrefService* pref_service = profile->GetPrefs();
   base::Time scheduled_start_time =
-      pref_service->GetTime(ash::prefs::kSkyVaultMigrationScheduledStartTime);
+      profile_prefs.GetTime(ash::prefs::kSkyVaultMigrationScheduledStartTime);
   if (scheduled_start_time.is_null()) {
     LOG(ERROR) << "Migration/deletion start time cannot be determined.";
     return std::nullopt;
