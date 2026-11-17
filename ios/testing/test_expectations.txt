@@ -751,3 +751,4 @@ crbug.com/585110131 [ Device ] ComposeboxEligiblityTestCase/testTabPickerScrolls
 
 # Gardening suppression 2026-11-17
 crbug.com/584310068 [ iOS26 iOS27 Simulator ] HistoryUITestCase/testContextMenuRepeatedShare [ Pass Failure ]
+crbug.com/586829581 [ Device ] ContentSuggestionsTestCase/testMagicStackCompactedSetUpListCompleteAllItems [ Failure ]
