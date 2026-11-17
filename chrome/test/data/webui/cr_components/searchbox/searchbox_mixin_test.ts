@@ -1775,6 +1775,115 @@ suite('SearchboxMixinTest', () => {
             0, testProxy.handler.getCallCount('openAutocompleteMatch'));
       });
 
+  test('pressing Enter on input too quickly then typing', async () => {
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, 'hello');
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'hello',
+      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+    }));
+    await microtasksFinished();
+    assertTrue(element.dropdownIsVisible);
+
+    // Press Enter before the 'hello world' matches arrive, then keep typing.
+    await simulateUserTextInput(mockInput, 'hello world');
+    const staleQueryId = element.activeQueryId;
+    const enter = createKeyboardEvent('Enter');
+    mockInput.inputElement.dispatchEvent(enter);
+    assertTrue(enter.defaultPrevented);
+    await simulateUserTextInput(mockInput, 'hello world!');
+
+    // Neither the discarded 'hello world' matches nor the 'hello world!'
+    // matches navigate, since Enter wasn't pressed for 'hello world!'.
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: staleQueryId,
+      input: 'hello world',
+      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+    }));
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'hello world!',
+      matches: [createUrlMatch({allowedToBeDefaultMatch: true})],
+    }));
+    await microtasksFinished();
+    assertTrue(element.dropdownIsVisible);
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
+
+  test(
+      'pressing Enter on input too quickly then deleting a match', async () => {
+        const mockInput = element.getInputElement();
+        const matches = await showDeletableMatches(element);
+        assertEquals(0, element.selectedMatchIndex);
+
+        // Press Enter before the 'https://local.' matches arrive, then delete
+        // the first match.
+        await simulateUserTextInput(mockInput, 'https://local.');
+        const enter = createKeyboardEvent('Enter');
+        mockInput.inputElement.dispatchEvent(enter);
+        assertTrue(enter.defaultPrevented);
+        const matchEls =
+            element.getDropdownElement().shadowRoot.querySelectorAll(
+                'cr-searchbox-match');
+        matchEls[0]!.$.remove.click();
+        const args =
+            await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+        assertEquals(0, args.line);
+        assertEquals(matches[0]!.destinationUrl, args.url);
+
+        // Deleting a match after pressing Enter cancels the Enter, so the
+        // post-deletion matches don't navigate.
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'https://local.',
+          matches: [createUrlMatch({allowedToBeDefaultMatch: true})],
+        }));
+        await microtasksFinished();
+        assertTrue(element.dropdownIsVisible);
+        assertEquals(
+            0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+      });
+
+  test(
+      'pressing Enter on input too quickly only waits for the first results',
+      async () => {
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'hello');
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'hello',
+          matches:
+              [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+        }));
+        await microtasksFinished();
+        assertTrue(element.dropdownIsVisible);
+
+        // Press Enter before the 'hello world' matches arrive.
+        await simulateUserTextInput(mockInput, 'hello world');
+        const enter = createKeyboardEvent('Enter');
+        mockInput.inputElement.dispatchEvent(enter);
+        assertTrue(enter.defaultPrevented);
+
+        // The first 'hello world' matches have no default match, so Enter does
+        // nothing. A later update for the same query doesn't navigate either.
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'hello world',
+          matches: [createSearchMatchForTesting()],
+        }));
+        await microtasksFinished();
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'hello world',
+          matches: [createUrlMatch({allowedToBeDefaultMatch: true})],
+        }));
+        await microtasksFinished();
+        assertTrue(element.dropdownIsVisible);
+        assertEquals(
+            0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+      });
+
   test('pressing Enter on input too quickly', async () => {
     const mockInput = element.getInputElement();
     await simulateUserTextInput(mockInput, 'hello');
