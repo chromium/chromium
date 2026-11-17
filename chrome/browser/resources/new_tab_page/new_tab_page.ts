@@ -30,7 +30,7 @@ export {BackgroundManager} from './background_manager.js';
 export {CustomizeDialogPage} from './customize_dialog_types.js';
 export {C2PA_MARKER, hasC2paMetadata, MAX_C2PA_PIXELS, MAX_C2PA_SEARCH_BYTES, processFile, SUPPORTED_C2PA_FILE_TYPES} from './image_processor.js';
 export type {ProcessedFile} from './image_processor.js';
-export {LeftHandSideElement, NtpLhsMessageType} from './left_hand_side.js';
+export {LeftHandSideElement, NtpLhsMessageType, ThreadsRailExpandedAction} from './left_hand_side.js';
 export {LogoElement} from './logo.js';
 export {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash, recordVoiceAction, VoiceAction, VoiceError} from './metrics_utils.js';
 export {NtpSearchboxElement} from './ntp_searchbox.js';
