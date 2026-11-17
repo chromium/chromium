@@ -384,8 +384,10 @@ LayoutUnit ContributionSizeForVirtualItem(
     GridItemData* virtual_item);
 
 // Appends items from any subgridded children to `grid_items`.
-template <typename NodeType>
-void AppendSubgriddedItems(const NodeType& node, GridItems* grid_items) {
+template <typename NodeType, typename CallbackFunc>
+void AppendSubgriddedItems(const NodeType& node,
+                           GridItems* grid_items,
+                           const CallbackFunc& callback_func) {
   DCHECK(grid_items);
 
   const auto& root_grid_style = node.Style();
@@ -435,6 +437,7 @@ void AppendSubgriddedItems(const NodeType& node, GridItems* grid_items) {
 
       node.AdjustSubgriddedItemSpan(current_item, subgridded_item);
     }
+    callback_func(current_item, subgridded_items);
     grid_items->Append(subgridded_items);
   }
 }

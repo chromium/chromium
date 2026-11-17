@@ -144,6 +144,13 @@ class CORE_EXPORT GridSizingTree {
     return At(index).virtual_items->item_groups;
   }
 
+  const GridLanesSubgriddedItemGroups& GetGridLanesSubgriddedItemGroups(
+      wtf_size_t index = 0) const {
+    CHECK(At(index).virtual_items);
+    CHECK(At(index).virtual_items->subgridded_item_groups);
+    return *At(index).virtual_items->subgridded_item_groups;
+  }
+
   GridLayoutData& LayoutData(wtf_size_t index = 0) {
     return *At(index).layout_data;
   }
@@ -311,6 +318,11 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
 
   const GridLanesItemGroups& GetVirtualItemGroups() const {
     return SizingTree().GetVirtualItemGroups(subtree_root_);
+  }
+
+  const GridLanesSubgriddedItemGroups& GetGridLanesSubgriddedItemGroups()
+      const {
+    return SizingTree().GetGridLanesSubgriddedItemGroups(subtree_root_);
   }
 
   GridLayoutData& LayoutData() const {

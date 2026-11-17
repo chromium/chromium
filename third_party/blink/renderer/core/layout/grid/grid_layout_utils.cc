@@ -857,6 +857,128 @@ GridArea SubgriddedAreaInParent(const SubgriddedItemData& opt_subgrid_data) {
   return subgridded_area_in_parent;
 }
 
+void CollectAndPrepareGridLanesSubgridItems(
+    const GridLineResolver& parent_line_resolver,
+    const GridItemData& parent_subgrid_item,
+    GridItems* subgridded_items,
+    GridLanesSubgriddedItemGroupMap& column_group_map,
+    GridLanesSubgriddedItemGroupMap& row_group_map) {
+  CHECK(subgridded_items);
+  for (const auto direction : {kForColumns, kForRows}) {
+    const auto& bounds = parent_subgrid_item.Span(direction);
+    if (!parent_line_resolver.HasStandaloneAxis(direction) ||
+        !parent_subgrid_item.MustConsiderGridItemsForSizing(direction) ||
+        !bounds.IsTranslatedDefinite()) {
+      continue;
+    }
+
+    auto& group_map =
+        direction == kForColumns ? column_group_map : row_group_map;
+    for (auto& subgridded_item : *subgridded_items) {
+      auto item_span = subgridded_item.Span(direction);
+      if (item_span.IsIndefinite()) {
+        // Indefinite span lengths are clamped to the parent span size,
+        // preserving auto-placement for grouping.
+        const auto span_size =
+            std::min(item_span.IndefiniteSpanSize(), bounds.SpanSize());
+        CHECK_GT(span_size, 0u);
+        item_span = GridSpan::IndefiniteGridSpan(span_size);
+      } else {
+        // Definite spans were already translated into the parent grid's tracks.
+        CHECK(item_span.IsTranslatedDefinite());
+      }
+
+      if (subgridded_item.IsConsideredForSizing(direction)) {
+        const GridLanesSubgriddedItemGroupProperties properties(
+            item_span, bounds, direction, subgridded_item);
+        auto result =
+            group_map.insert(properties, GridItems::GridItemDataVector());
+        result.stored_value->value.push_back(&subgridded_item);
+        // Let virtual items contribute in this axis instead of real members.
+        // Keep members in their groups for measurement on each sizing pass.
+        if (direction == kForColumns) {
+          subgridded_item.is_considered_for_column_sizing = false;
+        } else {
+          subgridded_item.is_considered_for_row_sizing = false;
+        }
+      }
+
+      // Items excluded from grouping still need a definite span to size nested
+      // subgrids. Use the start of the parent bounds as a temporary position;
+      // final placement is resolved later.
+      if (item_span.IsIndefinite()) {
+        subgridded_item.resolved_position.SetSpan(
+            GridSpan::TranslatedDefiniteGridSpan(
+                bounds.StartLine(), bounds.StartLine() + item_span.SpanSize()),
+            direction);
+      }
+    }
+  }
+}
+
+VirtualItems* BuildGridLanesSubgridVirtualItems(
+    GridLanesSubgriddedItemGroupMap&& column_group_map,
+    GridLanesSubgriddedItemGroupMap&& row_group_map) {
+  const auto group_count = column_group_map.size() + row_group_map.size();
+  if (!group_count) {
+    return nullptr;
+  }
+
+  auto* virtual_items = MakeGarbageCollected<VirtualItems>();
+  virtual_items->subgridded_item_groups =
+      MakeGarbageCollected<GridLanesSubgriddedItemGroups>();
+  virtual_items->subgridded_item_groups->ReserveInitialCapacity(group_count);
+  virtual_items->items->ReserveInitialCapacity(group_count);
+  for (const auto direction : {kForColumns, kForRows}) {
+    auto& group_map =
+        direction == kForColumns ? column_group_map : row_group_map;
+    for (auto& [properties, members] : group_map) {
+      auto* group = MakeGarbageCollected<GridLanesSubgriddedItemGroup>(
+          std::move(members), direction);
+      virtual_items->subgridded_item_groups->push_back(group);
+      const auto& item_span = properties.Span();
+      const auto& bounds =
+          item_span.IsIndefinite() ? properties.CandidateBounds() : item_span;
+      const auto span_size = item_span.SpanSize();
+      const auto& representative = *group->items.front();
+
+      auto* base_virtual_item = MakeGarbageCollected<GridItemData>();
+      // Virtual sizing only needs effective alignment and the baseline group.
+      if (direction == kForColumns) {
+        base_virtual_item->column_alignment =
+            representative.Alignment(direction);
+        base_virtual_item->column_baseline_group =
+            representative.BaselineGroup(direction);
+      } else {
+        base_virtual_item->row_alignment = representative.Alignment(direction);
+        base_virtual_item->row_baseline_group =
+            representative.BaselineGroup(direction);
+      }
+      base_virtual_item->is_considered_for_column_sizing =
+          direction == kForColumns;
+      base_virtual_item->is_considered_for_row_sizing = direction == kForRows;
+      base_virtual_item->contribution_sizes = group->contribution_sizes;
+
+      // For items with an automatic grid position, place hypothetical copies of
+      // the virtual grid item in every position within the tracks spanned by
+      // the grid-lanes subgrid. Items with a definite grid position contribute
+      // only to their actual parent grid tracks. All copies share the item
+      // group's intrinsic size contributions.
+      for (auto start = bounds.StartLine(), end = start + span_size;
+           end <= bounds.EndLine(); ++start, ++end) {
+        auto* entry =
+            start == bounds.StartLine()
+                ? base_virtual_item
+                : MakeGarbageCollected<GridItemData>(*base_virtual_item);
+        entry->resolved_position.SetSpan(
+            GridSpan::TranslatedDefiniteGridSpan(start, end), direction);
+        virtual_items->items->Append(entry);
+      }
+    }
+  }
+  return virtual_items;
+}
+
 }  // namespace
 
 template <typename LayoutAlgorithmType>
@@ -993,7 +1115,31 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     grid_item.ResetPlacementIndices();
   }
 
-  AppendSubgriddedItems(node, grid_items);
+  // A regular grid sizes its grid-lanes subgrids' children using virtual item
+  // groups. Grid-lanes containers already build virtual items through their own
+  // sizing path.
+  if (node.IsGrid()) {
+    GridLanesSubgriddedItemGroupMap column_group_map;
+    GridLanesSubgriddedItemGroupMap row_group_map;
+    // Process children of grid-lanes subgrids while their parent's resolved
+    // placement is available.
+    AppendSubgriddedItems(node, grid_items,
+                          [&](const GridItemData& parent_subgrid_item,
+                              GridItems* subgridded_items) {
+                            if (!parent_subgrid_item.node.IsGridLanes()) {
+                              return;
+                            }
+                            CollectAndPrepareGridLanesSubgridItems(
+                                line_resolver, parent_subgrid_item,
+                                subgridded_items, column_group_map,
+                                row_group_map);
+                          });
+    virtual_items = BuildGridLanesSubgridVirtualItems(
+        std::move(column_group_map), std::move(row_group_map));
+  } else {
+    AppendSubgriddedItems(node, grid_items,
+                          [](const GridItemData&, GridItems*) {});
+  }
 
   // We need to recreate the track builder collections to ensure track coverage
   // for subgridded items; it would be ideal to have them accounted for already,
