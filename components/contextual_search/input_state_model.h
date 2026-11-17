@@ -96,7 +96,8 @@ class InputStateModel {
   // were notified.
   bool UpdateConfig(const omnibox::SearchboxConfig& config);
 
-  // Updates the identity state and re-evaluates allowed and disabled inputs.
+  // Updates the identity state and re-evaluates allowed and disabled inputs
+  // as well as the placeholder hint text.
   void SetIdentityState(bool is_signed_in,
                         bool browser_identity_matches_aim_identity);
 
@@ -217,6 +218,10 @@ class InputStateModel {
   // Rebuilds allowed input types based on config, sharing, and drive status.
   void RebuildAllowedInputTypes();
 
+  // Sets `state_.hint_text` to `personalized_hint_text_` when the browser
+  // identity matches the AIM identity, or to `default_hint_text_` otherwise.
+  void UpdateHintText();
+
   // Returns the rule for a given `model`.
   const omnibox::ModelRule* GetModelRule(ModelMode model) const;
 
@@ -243,6 +248,9 @@ class InputStateModel {
   const bool is_off_the_record_;
   bool is_signed_in_;
   bool browser_identity_matches_aim_identity_;
+  // Default and personalized hint texts from the `SearchboxConfig`.
+  std::string default_hint_text_;
+  std::string personalized_hint_text_;
   bool has_valid_config_ = false;
   GURL current_url_;
 
@@ -255,7 +263,6 @@ class InputStateModel {
   // Stores input_types that are permanently disabled by an external trigger and
   // must persist through state updates. Persists after Initialize() is called.
   std::vector<InputType> permanently_disabled_input_types_;
-
 
   bool is_smart_tab_sharing_active_ = false;
 

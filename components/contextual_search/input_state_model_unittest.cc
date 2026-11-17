@@ -5,8 +5,10 @@
 #include "components/contextual_search/input_state_model.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +18,7 @@
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -2319,6 +2322,131 @@ TEST_F(InputStateModelDynamicAimTest, CopyDoesNotKeepOptIn) {
   InputStateModel copy(*input_state_model_, session_handle_);
   EXPECT_FALSE(copy.dynamic_aim_fulfillment_enabled());
   EXPECT_TRUE(copy.GetInputState().will_fulfill_in_aim);
+}
+
+class InputStateModelHintTextTest : public InputStateModelTest {
+ protected:
+  static constexpr char kHintText[] = "What's on your mind?";
+  static constexpr char kPersonalizedHintText[] =
+      "Hi Camille, what's on your mind?";
+
+  void SetUp() override {
+    InputStateModelTest::SetUp();
+    config_.mutable_rule_set();
+    config_.set_hint_text(kHintText);
+    config_.set_personalized_hint_text(kPersonalizedHintText);
+  }
+
+  std::unique_ptr<InputStateModel> CreateModel(
+      bool is_off_the_record,
+      bool is_signed_in,
+      bool browser_identity_matches_aim_identity) {
+    return std::make_unique<InputStateModel>(
+        session_handle_, config_, active_url_, is_off_the_record, is_signed_in,
+        browser_identity_matches_aim_identity);
+  }
+};
+
+TEST_F(InputStateModelHintTextTest,
+       UsesPersonalizedHintTextWhenIdentityMatches) {
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kComposeboxPersonalizedHintText);
+
+  std::unique_ptr<InputStateModel> model = CreateModel(
+      /*is_off_the_record=*/false, /*is_signed_in=*/true,
+      /*browser_identity_matches_aim_identity=*/true);
+  EXPECT_EQ(kPersonalizedHintText, model->GetInputState().hint_text);
+
+  InputStateModel copied_model(*model, session_handle_);
+  EXPECT_EQ(kPersonalizedHintText, copied_model.GetInputState().hint_text);
+}
+
+TEST_F(InputStateModelHintTextTest,
+       UsesDefaultHintTextWhenIdentityMismatchOrSignedOutOrOffTheRecord) {
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kComposeboxPersonalizedHintText);
+
+  EXPECT_EQ(kHintText,
+            CreateModel(/*is_off_the_record=*/false, /*is_signed_in=*/true,
+                        /*browser_identity_matches_aim_identity=*/false)
+                ->GetInputState()
+                .hint_text);
+  EXPECT_EQ(kHintText,
+            CreateModel(/*is_off_the_record=*/false, /*is_signed_in=*/false,
+                        /*browser_identity_matches_aim_identity=*/false)
+                ->GetInputState()
+                .hint_text);
+  EXPECT_EQ(kHintText,
+            CreateModel(/*is_off_the_record=*/true, /*is_signed_in=*/true,
+                        /*browser_identity_matches_aim_identity=*/true)
+                ->GetInputState()
+                .hint_text);
+}
+
+TEST_F(InputStateModelHintTextTest,
+       UsesDefaultHintTextWhenPersonalizedHintTextIsEmpty) {
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kComposeboxPersonalizedHintText);
+  config_.clear_personalized_hint_text();
+
+  std::unique_ptr<InputStateModel> model = CreateModel(
+      /*is_off_the_record=*/false, /*is_signed_in=*/true,
+      /*browser_identity_matches_aim_identity=*/true);
+  EXPECT_EQ(kHintText, model->GetInputState().hint_text);
+}
+
+TEST_F(InputStateModelHintTextTest, UsesDefaultHintTextWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kComposeboxPersonalizedHintText);
+
+  std::unique_ptr<InputStateModel> model = CreateModel(
+      /*is_off_the_record=*/false, /*is_signed_in=*/true,
+      /*browser_identity_matches_aim_identity=*/true);
+  EXPECT_EQ(kHintText, model->GetInputState().hint_text);
+}
+
+TEST_F(InputStateModelHintTextTest,
+       SetIdentityStateUpdatesHintTextAndNotifiesSubscribers) {
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kComposeboxPersonalizedHintText);
+
+  std::unique_ptr<InputStateModel> model = CreateModel(
+      /*is_off_the_record=*/false, /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  EXPECT_EQ(kHintText, model->GetInputState().hint_text);
+
+  int notify_count = 0;
+  std::string last_notified_hint_text;
+  auto subscription = model->Subscribe(base::BindRepeating(
+      [](int* count, std::string* last_hint, const InputState& state) {
+        (*count)++;
+        *last_hint = state.hint_text;
+      },
+      &notify_count, &last_notified_hint_text));
+
+  model->SetIdentityState(/*is_signed_in=*/true,
+                          /*browser_identity_matches_aim_identity=*/true);
+  EXPECT_EQ(1, notify_count);
+  EXPECT_EQ(kPersonalizedHintText, last_notified_hint_text);
+
+  model->SetIdentityState(/*is_signed_in=*/true,
+                          /*browser_identity_matches_aim_identity=*/false);
+  EXPECT_EQ(2, notify_count);
+  EXPECT_EQ(kHintText, last_notified_hint_text);
+}
+
+TEST_F(InputStateModelHintTextTest, UpdateConfigUpdatesPersonalizedHintText) {
+  base::test::ScopedFeatureList feature_list(
+      omnibox::kComposeboxPersonalizedHintText);
+
+  std::unique_ptr<InputStateModel> model = CreateModel(
+      /*is_off_the_record=*/false, /*is_signed_in=*/true,
+      /*browser_identity_matches_aim_identity=*/true);
+  ASSERT_EQ(kPersonalizedHintText, model->GetInputState().hint_text);
+
+  config_.set_personalized_hint_text("Hi Alex, what's on your mind?");
+  EXPECT_TRUE(model->UpdateConfig(config_));
+  EXPECT_EQ("Hi Alex, what's on your mind?", model->GetInputState().hint_text);
 }
 
 }  // namespace contextual_search
