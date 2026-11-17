@@ -17,6 +17,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
@@ -62,8 +63,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const GlanceablesClassroomCourseWorkItem* lhs,
       const GlanceablesClassroomCourseWorkItem* rhs)>;
 
-  // `app_registry_cache` is null if the AppService is not available for the
-  // user. Otherwise it must outlive `this`.
+  // `app_registry_cache` must not be null, and must outlive `this`.
   GlanceablesClassroomClientImpl(
       PrefService* pref_service,
       apps::AppRegistryCache* app_registry_cache,
@@ -401,7 +401,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   google_apis::RequestSender* GetRequestSender();
 
   const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<apps::AppRegistryCache> app_registry_cache_;
+  const raw_ref<apps::AppRegistryCache> app_registry_cache_;
   const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
   // Clock to be used to retrieve current time - expected to be default clock in

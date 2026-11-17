@@ -53,8 +53,7 @@ class GlanceablesClassroomClientImpl;
 // support is needed.
 class GlanceablesKeyedService : public KeyedService {
  public:
-  // `app_registry_cache` is null if the AppService is not available for the
-  // user. Otherwise it must outlive `this`.
+  // `app_registry_cache` must not be null, and must outlive `this`.
   // LINT.IfChange(Deps)
   GlanceablesKeyedService(
       const AccountId& account_id,

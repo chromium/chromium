@@ -20,6 +20,7 @@
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -209,7 +210,7 @@ GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
     const GlanceablesClassroomClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback)
     : pref_service_(pref_service),
-      app_registry_cache_(app_registry_cache),
+      app_registry_cache_(CHECK_DEREF(app_registry_cache)),
       policy_blocklist_service_(policy_blocklist_service),
       clock_(clock),
       create_request_sender_callback_(create_request_sender_callback),
@@ -229,9 +230,6 @@ bool GlanceablesClassroomClientImpl::IsDisabledByAdmin() const {
   }
 
   // 2) Check if the Classroom app is disabled by policy.
-  if (!app_registry_cache_) {
-    return true;
-  }
   auto classroom_app_readiness = apps::Readiness::kUnknown;
   app_registry_cache_->ForOneApp(
       ash::kGoogleClassroomAppId,

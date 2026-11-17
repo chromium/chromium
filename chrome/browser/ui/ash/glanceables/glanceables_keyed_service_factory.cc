@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -66,7 +67,7 @@ GlanceablesKeyedServiceFactory::GlanceablesKeyedServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   // LINT.IfChange(Deps)
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
@@ -86,16 +87,16 @@ std::unique_ptr<KeyedService>
 GlanceablesKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  apps::AppRegistryCache* app_registry_cache =
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
-          ? &apps::AppServiceProxyFactory::GetForProfile(profile)
-                 ->AppRegistryCache()
-          : nullptr;
+  // The service is created only for the regular user's original Profile
+  // (Guest Profiles, both original and OTR, are excluded by the default
+  // ProfileSelections), so AppService is always available.
+  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
   return std::make_unique<GlanceablesKeyedService>(
       BrowserContextHelper::Get()
           ->GetUserByBrowserContext(profile)
           ->GetAccountId(),
-      profile->GetPrefs(), app_registry_cache,
+      profile->GetPrefs(),
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache(),
       AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       profile->GetURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile));
