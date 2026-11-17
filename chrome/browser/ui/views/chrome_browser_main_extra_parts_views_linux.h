@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "build/build_config.h"
 #include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
@@ -53,6 +54,7 @@ class ChromeBrowserMainExtraPartsViewsLinux
   std::optional<display::ScopedDisplayObserver> display_observer_;
 
   std::unique_ptr<ChromeLinuxUiGetter> linux_ui_getter_;
+  base::CallbackListSubscription default_font_changed_subscription_;
 #if BUILDFLAG(USE_DBUS)
   std::unique_ptr<ui::PortalSettingsLinux> portal_settings_;
 #endif

@@ -207,6 +207,7 @@ if (use_gtk) {
 
     sources = [
       "gtk_color_mixers_unittest.cc",
+      "gtk_ui_unittest.cc",
       "gtk_util_unittest.cc",
       "native_theme_gtk_unittest.cc",
       "nav_button_provider_gtk_unittest.cc",

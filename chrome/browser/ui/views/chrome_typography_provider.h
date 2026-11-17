@@ -16,6 +16,10 @@ class ChromeTypographyProvider : public views::TypographyProvider {
   ChromeTypographyProvider(const ChromeTypographyProvider&) = delete;
   ChromeTypographyProvider& operator=(const ChromeTypographyProvider&) = delete;
 
+  // Clears the line heights cached from the default UI font. Call after
+  // ui::ResourceBundle::ReloadFonts().
+  static void ResetCachedLineHeights();
+
  protected:
   // TypographyProvider:
   bool StyleAllowedForContext(int context, int style) const override;

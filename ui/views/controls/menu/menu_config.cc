@@ -19,6 +19,15 @@
 
 namespace views {
 
+namespace {
+
+MenuConfig& GetMutableInstance() {
+  static base::NoDestructor<MenuConfig> instance;
+  return *instance;
+}
+
+}  // namespace
+
 MenuConfig::MenuConfig() {
   InitCommon();
   InitPlatform();
@@ -97,8 +106,12 @@ void MenuConfig::InitCommon() {
 
 // static
 const MenuConfig& MenuConfig::instance() {
-  static base::NoDestructor<MenuConfig> instance;
-  return *instance;
+  return GetMutableInstance();
+}
+
+// static
+void MenuConfig::ReloadInstance() {
+  GetMutableInstance() = MenuConfig();
 }
 
 }  // namespace views

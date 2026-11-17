@@ -9,15 +9,19 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/themes/chrome_linux_ui_getter.h"
 #include "chrome/browser/themes/theme_service_aura_linux.h"
+#include "chrome/browser/ui/views/chrome_typography_provider.h"
 #include "chrome/browser/ui/views/theme_profile_key.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/platform_font_skia.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/controls/menu/menu_config.h"
 
 #if BUILDFLAG(USE_DBUS)
 #include "ui/linux/portal_settings_linux.h"
@@ -44,6 +48,15 @@ class LinuxUiGetterImpl : public ChromeLinuxUiGetter {
   }
 };
 
+// Reloads the fonts cached from the toolkit's default UI font, so that UI
+// created from now on uses the new font.
+void OnDefaultFontChanged() {
+  gfx::PlatformFontSkia::ReloadDefaultFont();
+  ui::ResourceBundle::GetSharedInstance().ReloadFonts();
+  ChromeTypographyProvider::ResetCachedLineHeights();
+  views::MenuConfig::ReloadInstance();
+}
+
 }  // namespace
 
 ChromeBrowserMainExtraPartsViewsLinux::ChromeBrowserMainExtraPartsViewsLinux() =
@@ -62,6 +75,10 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
     // Cursor theme changes are tracked by LinuxUI (via a CursorThemeManager
     // implementation). Start observing them once it's initialized.
     ui::CursorFactory::GetInstance()->ObserveThemeChanges();
+
+    default_font_changed_subscription_ =
+        linux_ui->RegisterDefaultFontChangedCallback(
+            base::BindRepeating(&OnDefaultFontChanged));
   }
 
 #if BUILDFLAG(ENABLE_PRINTING)

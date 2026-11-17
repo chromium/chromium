@@ -94,6 +94,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
     int style = 0;
     // A standard font weight as used in Pango.  Must be a value in [1, 999].
     int weight = 0;
+
+    friend bool operator==(const FontSettings&, const FontSettings&) = default;
   };
 
   LinuxUi(const LinuxUi&) = delete;
@@ -140,6 +142,11 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
   // Returns details about the default UI font.
   FontSettings GetDefaultFontDescription();
+
+  // Registers a callback to be invoked when the default UI font returned by
+  // GetDefaultFontDescription() changes.
+  base::CallbackListSubscription RegisterDefaultFontChangedCallback(
+      base::RepeatingClosure callback);
 
   // Determines the device scale factor for all screens.
   const display::DisplayConfig& display_config() const {
@@ -277,6 +284,11 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
     default_font_settings_ = default_font_settings;
   }
 
+  // Re-queries the default UI font after the toolkit's font setting changed.
+  // Runs the default font changed callbacks and returns true if the font is
+  // different from the one previously returned by GetDefaultFontDescription().
+  bool UpdateDefaultFont();
+
  private:
   // Objects to notify when the device scale factor changes.
   base::ObserverList<DeviceScaleFactorObserver>::Unchecked
@@ -291,6 +303,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   display::DisplayConfig display_config_;
 
   std::optional<FontSettings> default_font_settings_;
+
+  base::RepeatingClosureList default_font_changed_callbacks_;
 };
 
 class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {

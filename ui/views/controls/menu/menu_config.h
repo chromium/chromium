@@ -33,6 +33,10 @@ struct VIEWS_EXPORT MenuConfig {
 
   static const MenuConfig& instance();
 
+  // Recomputes the values of instance(), e.g. after the default UI font
+  // changed.
+  static void ReloadInstance();
+
   // Helper methods to simplify access to MenuConfig:
   // Returns the appropriate corner radius for the menu controlled by
   // |controller|, or the default corner radius if |controller| is nullptr.

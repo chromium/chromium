@@ -127,6 +127,8 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   void OnPrimaryPasteChanged(GtkSettings* settings, GtkParamSpec* param);
 
+  void OnFontNameChanged(GtkSettings* settings, GtkParamSpec* param);
+
   void OnGtkXftDpiChanged(GtkSettings* settings, GParamSpec* param);
 
   void OnScreenResolutionChanged(GdkScreen* screen, GParamSpec* param);

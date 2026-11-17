@@ -298,6 +298,7 @@ bool GtkUi::Initialize() {
           &GtkUi::OnEnableAnimationsChanged);
   connect(settings, "notify::gtk-enable-primary-paste",
           &GtkUi::OnPrimaryPasteChanged);
+  connect(settings, "notify::gtk-font-name", &GtkUi::OnFontNameChanged);
 
   // Listen for DPI changes, if supported.  GdkScreen was removed in GTK4, so
   // `gtk-xft-dpi` is the only DPI source there, even if it's currently unset
@@ -841,6 +842,14 @@ void GtkUi::OnEnableAnimationsChanged(GtkSettings* settings,
 void GtkUi::OnPrimaryPasteChanged(GtkSettings* settings, GtkParamSpec* param) {
   primary_paste_observers().Notify(
       &ui::PrimaryPastePrefObserver::OnPrimaryPastePrefChanged);
+}
+
+void GtkUi::OnFontNameChanged(GtkSettings* settings, GtkParamSpec* param) {
+  // Callbacks reload the cached fonts first, so that observers of the native
+  // theme pick up the new font.
+  if (UpdateDefaultFont()) {
+    native_theme_->NotifyOnNativeThemeUpdated();
+  }
 }
 
 void GtkUi::OnGtkXftDpiChanged(GtkSettings* settings, GParamSpec* param) {

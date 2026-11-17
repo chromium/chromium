@@ -106,6 +106,25 @@ LinuxUi::FontSettings LinuxUi::GetDefaultFontDescription() {
   return *default_font_settings_;
 }
 
+base::CallbackListSubscription LinuxUi::RegisterDefaultFontChangedCallback(
+    base::RepeatingClosure callback) {
+  return default_font_changed_callbacks_.Add(std::move(callback));
+}
+
+bool LinuxUi::UpdateDefaultFont() {
+  std::optional<FontSettings> old_settings =
+      std::exchange(default_font_settings_, std::nullopt);
+  // Nothing has used the old font yet, so there is nothing to update.
+  if (!old_settings.has_value()) {
+    return false;
+  }
+  if (GetDefaultFontDescription() == *old_settings) {
+    return false;
+  }
+  default_font_changed_callbacks_.Notify();
+  return true;
+}
+
 // static
 LinuxUi::CmdLineArgs LinuxUi::CopyCmdLine(
     const base::CommandLine& command_line) {

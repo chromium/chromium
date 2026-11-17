@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -22,11 +24,31 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include <optional>
-
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/ash_typography.h"  // nogncheck
 #endif
+
+namespace {
+
+// Line heights derived from the default UI font.
+struct LineHeights {
+  int title = 0;
+  int body_large = 0;
+  int control = 0;
+  int default_height = 0;
+};
+
+std::optional<LineHeights>& GetCachedLineHeights() {
+  static std::optional<LineHeights> line_heights;
+  return line_heights;
+}
+
+}  // namespace
+
+// static
+void ChromeTypographyProvider::ResetCachedLineHeights() {
+  GetCachedLineHeights().reset();
+}
 
 bool ChromeTypographyProvider::StyleAllowedForContext(int context,
                                                       int style) const {
@@ -220,36 +242,41 @@ int ChromeTypographyProvider::GetLineHeightImpl(int context, int style) const {
   // The style of the system font used to determine line heights.
   constexpr int kTemplateStyle = views::style::STYLE_PRIMARY;
 
-  // TODO(tapted): These statics should be cleared out when something invokes
-  // ui::ResourceBundle::ReloadFonts(). Currently that only happens on ChromeOS.
-  // See http://crbug.com/41311615.
-  static const int title_height =
-      GetFont(views::style::CONTEXT_DIALOG_TITLE, kTemplateStyle).GetHeight() -
-      kTitlePlatformHeight + kTitleHeight;
-  static const int body_large_height =
-      GetFont(views::style::CONTEXT_DIALOG_BODY_TEXT, kTemplateStyle)
-          .GetHeight() -
-      kBodyTextLargePlatformHeight + kBodyHeight;
-  static const int control_height =
-      GetFont(CONTEXT_DIALOG_BODY_TEXT_SMALL, kTemplateStyle).GetHeight() -
-      kBodyTextSmallPlatformHeight + kControlHeight;
-  static const int default_height =
-      GetFont(CONTEXT_DIALOG_BODY_TEXT_SMALL, kTemplateStyle).GetHeight() -
-      kBodyTextSmallPlatformHeight + kBodyHeight;
+  // The cache is cleared by ResetCachedLineHeights() when the default UI font
+  // changes.
+  std::optional<LineHeights>& heights = GetCachedLineHeights();
+  if (!heights.has_value()) {
+    heights = LineHeights{
+        .title = GetFont(views::style::CONTEXT_DIALOG_TITLE, kTemplateStyle)
+                     .GetHeight() -
+                 kTitlePlatformHeight + kTitleHeight,
+        .body_large =
+            GetFont(views::style::CONTEXT_DIALOG_BODY_TEXT, kTemplateStyle)
+                .GetHeight() -
+            kBodyTextLargePlatformHeight + kBodyHeight,
+        .control = GetFont(CONTEXT_DIALOG_BODY_TEXT_SMALL, kTemplateStyle)
+                       .GetHeight() -
+                   kBodyTextSmallPlatformHeight + kControlHeight,
+        .default_height =
+            GetFont(CONTEXT_DIALOG_BODY_TEXT_SMALL, kTemplateStyle)
+                .GetHeight() -
+            kBodyTextSmallPlatformHeight + kBodyHeight,
+    };
+  }
 
   switch (context) {
     case views::style::CONTEXT_BUTTON:
     case views::style::CONTEXT_BUTTON_MD:
     case views::style::CONTEXT_TEXTFIELD:
     case CONTEXT_TOOLBAR_BUTTON:
-      return control_height;
+      return heights->control;
     case views::style::CONTEXT_DIALOG_TITLE:
-      return title_height;
+      return heights->title;
     case views::style::CONTEXT_DIALOG_BODY_TEXT:
     case views::style::CONTEXT_TABLE_ROW:
     case CONTEXT_TAB_HOVER_CARD_TITLE:
-      return body_large_height;
+      return heights->body_large;
     default:
-      return default_height;
+      return heights->default_height;
   }
 }
