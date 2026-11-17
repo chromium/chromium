@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_allocator.h"
@@ -42,6 +43,6 @@ SkDiscardableMemory* SkDiscardableMemory::Create(size_t bytes) {
   // and do not die when the allocation fails.
   auto discardable = base::DiscardableMemoryAllocator::GetInstance()
                          ->AllocateLockedDiscardableMemoryWithRetryOrDie(
-                             bytes, base::DoNothing());
+                             base::ByteSize(bytes), base::DoNothing());
   return new SkDiscardableMemoryChrome(std::move(discardable));
 }
