@@ -17,3 +17,10 @@ PREFIX="$2"
 mv raw_source_0.tar.gz $PACKAGE_NAME.pkg
 pkgutil --expand-full $PACKAGE_NAME.pkg output
 cp -R output/$PACKAGE_NAME-package.pkg/Payload/* "$PREFIX"
+
+# Write a VERSION file so GN can read the toolchain version directly.
+VERSION="${_3PP_VERSION:?}"
+if [[ -n "${_3PP_PATCH_VERSION:-}" ]]; then
+  VERSION="${VERSION}.${_3PP_PATCH_VERSION}"
+fi
+printf '%s\n' "$VERSION" > "$PREFIX/VERSION"

@@ -21,3 +21,10 @@ cp -R "$PACKAGE_NAME"/* "$PREFIX"
 # package small: the Embedded Swift stdlib (~725 MB) and LLDB (~365 MB).
 rm -rf "$PREFIX/usr/lib/swift/embedded"
 rm -f "$PREFIX"/usr/bin/lldb* "$PREFIX"/usr/lib/liblldb.so*
+
+# Write a VERSION file so GN can read the toolchain version directly.
+VERSION="${_3PP_VERSION:?}"
+if [[ -n "${_3PP_PATCH_VERSION:-}" ]]; then
+  VERSION="${VERSION}.${_3PP_PATCH_VERSION}"
+fi
+printf '%s\n' "$VERSION" > "$PREFIX/VERSION"
