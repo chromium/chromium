@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -42,6 +43,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -163,6 +165,9 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -6834,6 +6839,139 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(popup_bindings);
   EXPECT_FALSE(popup_bindings->has_frontend_host_for_testing());
   EXPECT_FALSE(popup_bindings->IsTrustedLocalFrontend());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
+                       CaretBlinkIntervalHostConfigAndLiveUpdate) {
+  ui::MockOsSettingsProvider os_settings_provider;
+  base::ScopedClosureRunner reset_caret_blink(base::BindLambdaForTesting([&]() {
+    os_settings_provider.SetCaretBlinkInterval(
+        ui::OsSettingsProvider::kDefaultCaretBlinkInterval);
+  }));
+  os_settings_provider.SetCaretBlinkInterval(base::Milliseconds(750));
+
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
+  WebContents* wc = main_web_contents();
+
+  const auto initial_config = content::EvalJs(wc, R"(
+    new Promise(resolve => {
+      Host.InspectorFrontendHost.getHostConfig(resolve);
+    });
+  )")
+                                  .TakeValue()
+                                  .TakeDict();
+  EXPECT_THAT(initial_config.FindInt("caretBlinkInterval"),
+              testing::Optional(750));
+
+  ASSERT_TRUE(content::ExecJs(wc, R"(
+    window.__receivedCaretBlinkIntervals = [];
+    const originalHandler = window.DevToolsAPI.caretBlinkIntervalChanged;
+    window.DevToolsAPI.caretBlinkIntervalChanged = value => {
+      window.__receivedCaretBlinkIntervals.push(value);
+      if (typeof originalHandler === 'function') {
+        originalHandler.call(window.DevToolsAPI, value);
+      }
+    };
+  )"));
+
+  os_settings_provider.SetCaretBlinkInterval(base::TimeDelta());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(wc, "window.__receivedCaretBlinkIntervals.length")
+               .ExtractInt() >= 1;
+  }));
+  EXPECT_EQ(content::EvalJs(wc, "window.__receivedCaretBlinkIntervals[0]")
+                .ExtractInt(),
+            0);
+
+  os_settings_provider.SetCaretBlinkInterval(base::Milliseconds(600));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(wc, "window.__receivedCaretBlinkIntervals.length")
+               .ExtractInt() >= 2;
+  }));
+  EXPECT_EQ(content::EvalJs(wc, "window.__receivedCaretBlinkIntervals[1]")
+                .ExtractInt(),
+            600);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
+                       CaretBlinkIntervalMissingFrontendApiDoesNotThrow) {
+  ui::MockOsSettingsProvider os_settings_provider;
+  base::ScopedClosureRunner reset_caret_blink(base::BindLambdaForTesting([&]() {
+    os_settings_provider.SetCaretBlinkInterval(
+        ui::OsSettingsProvider::kDefaultCaretBlinkInterval);
+  }));
+
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  LoadLegacyFilesInFrontend(window_);
+  WebContents* wc = main_web_contents();
+
+  ASSERT_TRUE(content::ExecJs(wc, R"(
+    window.__unhandledCaretErrors = [];
+    window.addEventListener('error', e => {
+      window.__unhandledCaretErrors.push(String(e.message || e.error));
+    });
+  )"));
+
+  // Live updates before DevToolsAPI.caretBlinkIntervalChanged is supported by
+  // the frontend must not throw or crash the renderer.
+  ASSERT_TRUE(content::ExecJs(wc, R"(
+    window.__savedDevToolsApiCaretBlink = null;
+    if (window.DevToolsAPI) {
+      const proto = Object.getPrototypeOf(window.DevToolsAPI);
+      const target =
+          Object.hasOwn(window.DevToolsAPI, 'caretBlinkIntervalChanged')
+              ? window.DevToolsAPI
+              : (proto && Object.hasOwn(proto, 'caretBlinkIntervalChanged')
+                     ? proto
+                     : null);
+      if (target) {
+        window.__savedDevToolsApiCaretBlink = {
+          target,
+          descriptor: Object.getOwnPropertyDescriptor(
+              target, 'caretBlinkIntervalChanged'),
+        };
+        delete target.caretBlinkIntervalChanged;
+      }
+    }
+  )"));
+  os_settings_provider.SetCaretBlinkInterval(base::TimeDelta());
+  // Fence on the same main frame so any queued ExecuteJavaScriptMethod IPC
+  // settles before verifying unhandled errors and restoring the handler.
+  EXPECT_EQ(true, content::EvalJs(wc, "true"));
+  EXPECT_EQ(0, content::EvalJs(wc, "window.__unhandledCaretErrors.length"));
+  ASSERT_TRUE(content::ExecJs(wc, R"(
+    if (window.__savedDevToolsApiCaretBlink) {
+      Object.defineProperty(
+          window.__savedDevToolsApiCaretBlink.target,
+          'caretBlinkIntervalChanged',
+          window.__savedDevToolsApiCaretBlink.descriptor);
+    }
+    delete window.__savedDevToolsApiCaretBlink;
+  )"));
+
+  // Older remote frontends may lack
+  // InspectorFrontendAPI.caretBlinkIntervalChanged; invoking
+  // DevToolsAPI.caretBlinkIntervalChanged(0) must not throw.
+  EXPECT_EQ(true, content::EvalJs(wc, R"(
+    (() => {
+      if (typeof window.DevToolsAPI?.caretBlinkIntervalChanged !== 'function') {
+        return true;
+      }
+      const api = window.InspectorFrontendAPI;
+      if (!api || typeof api.caretBlinkIntervalChanged !== 'function') {
+        return false;
+      }
+      const saved = api.caretBlinkIntervalChanged;
+      delete api.caretBlinkIntervalChanged;
+      try {
+        window.DevToolsAPI.caretBlinkIntervalChanged(0);
+        return window.__unhandledCaretErrors.length === 0;
+      } finally {
+        api.caretBlinkIntervalChanged = saved;
+      }
+    })();
+  )"));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

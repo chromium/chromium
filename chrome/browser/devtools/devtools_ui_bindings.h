@@ -35,6 +35,8 @@
 #include "content/public/browser/devtools_frontend_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service_observer.h"
@@ -79,6 +81,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            public DevToolsAndroidBridge::DeviceCountListener,
                            public content::DevToolsAgentHostClient,
                            public TemplateURLServiceObserver,
+                           public ui::NativeThemeObserver,
 #if !BUILDFLAG(IS_ANDROID)
                            public ThemeServiceObserver,
 #endif
@@ -481,6 +484,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // extensions::ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -552,6 +558,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   base::UnguessableToken session_id_for_logging_;
   bool is_local_frontend_ = false;
   bool has_previous_frontend_host_ = false;
+  std::optional<int> last_sent_caret_blink_interval_ms_;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
 };
 

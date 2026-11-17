@@ -13,11 +13,13 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
@@ -37,7 +39,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/web_contents_tester.h"
@@ -53,6 +57,9 @@
 #include "ui/base/models/dialog_model_host.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/test/test_dialog_model_host.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1607,6 +1614,44 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigBasic) {
   EXPECT_TRUE(result.FindDict("devToolsConsoleInsights"));
 }
 
+TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigCaretBlinkInterval) {
+  ui::MockOsSettingsProvider os_settings_provider;
+  base::ScopedClosureRunner reset_caret_blink(base::BindLambdaForTesting([&]() {
+    os_settings_provider.SetCaretBlinkInterval(
+        ui::OsSettingsProvider::kDefaultCaretBlinkInterval);
+  }));
+
+  os_settings_provider.SetCaretBlinkInterval(base::Milliseconds(500));
+  EXPECT_THAT(DevToolsUIBindings::GetHostConfigDictionary(profile_.get())
+                  .FindInt("caretBlinkInterval"),
+              testing::Optional(500));
+
+  os_settings_provider.SetCaretBlinkInterval(base::Milliseconds(750));
+  EXPECT_THAT(DevToolsUIBindings::GetHostConfigDictionary(profile_.get())
+                  .FindInt("caretBlinkInterval"),
+              testing::Optional(750));
+
+  os_settings_provider.SetCaretBlinkInterval(base::TimeDelta());
+  EXPECT_THAT(DevToolsUIBindings::GetHostConfigDictionary(profile_.get())
+                  .FindInt("caretBlinkInterval"),
+              testing::Optional(0));
+
+  os_settings_provider.SetCaretBlinkInterval(base::Milliseconds(-5));
+  EXPECT_THAT(DevToolsUIBindings::GetHostConfigDictionary(profile_.get())
+                  .FindInt("caretBlinkInterval"),
+              testing::Optional(0));
+
+  os_settings_provider.SetCaretBlinkInterval(base::Microseconds(500));
+  EXPECT_THAT(DevToolsUIBindings::GetHostConfigDictionary(profile_.get())
+                  .FindInt("caretBlinkInterval"),
+              testing::Optional(1));
+
+  os_settings_provider.SetCaretBlinkInterval(base::TimeDelta::Max());
+  EXPECT_THAT(DevToolsUIBindings::GetHostConfigDictionary(profile_.get())
+                  .FindInt("caretBlinkInterval"),
+              testing::Optional(0));
+}
+
 TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   // Verify initial state of features.
   base::DictValue initial_config =
@@ -2107,6 +2152,170 @@ TEST_F(DevToolsUIBindingsThemeTest,
   theme_service()->UseDefaultTheme();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class DevToolsUIBindingsCaretBlinkTest : public testing::Test {
+ public:
+  void SetUp() override {
+    os_settings_provider_.SetCaretBlinkInterval(
+        ui::OsSettingsProvider::kDefaultCaretBlinkInterval);
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents_, GURL("devtools://devtools/bundled/devtools_app.html"));
+    bindings_ = std::make_unique<testing::NiceMock<TestDevToolsUIBindings>>(
+        web_contents_);
+    CommitLocalFrontendNavigation(*bindings_, web_contents_);
+  }
+
+  void TearDown() override {
+    bindings_.reset();
+    os_settings_provider_.SetPreferredColorScheme(
+        ui::NativeTheme::PreferredColorScheme::kLight);
+    os_settings_provider_.SetPrefersReducedTransparency(false);
+    os_settings_provider_.SetCaretBlinkInterval(
+        ui::OsSettingsProvider::kDefaultCaretBlinkInterval);
+  }
+
+  void CommitLocalFrontendNavigation(DevToolsUIBindings& bindings,
+                                     content::WebContents* web_contents) {
+    content::RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
+        ->InitializeRenderFrameIfNeeded();
+    content::MockNavigationHandle handle(
+        GURL("devtools://devtools/bundled/devtools_app.html"),
+        web_contents->GetPrimaryMainFrame());
+    handle.set_is_in_primary_main_frame(true);
+    handle.set_is_renderer_initiated(false);
+    bindings.ReadyToCommitNavigationForTesting(&handle);
+    ASSERT_TRUE(bindings.has_frontend_host_for_testing());
+    ASSERT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  }
+
+  base::DictValue CallGetHostConfig(TestDevToolsUIBindings& bindings) {
+    base::DictValue config;
+    static_cast<DevToolsEmbedderMessageDispatcher::Delegate*>(&bindings)
+        ->GetHostConfig(
+            base::BindLambdaForTesting([&](const base::Value* value) {
+              ASSERT_TRUE(value);
+              ASSERT_TRUE(value->is_dict());
+              config = value->GetDict().Clone();
+            }));
+    return config;
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  ui::MockOsSettingsProvider os_settings_provider_;
+  std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  std::unique_ptr<testing::NiceMock<TestDevToolsUIBindings>> bindings_;
+};
+
+TEST_F(DevToolsUIBindingsCaretBlinkTest,
+       LiveCaretBlinkIntervalChangesNotifyAndDeduplicate) {
+  EXPECT_CALL(*bindings_,
+              CallClientMethodImpl("DevToolsAPI", "caretBlinkIntervalChanged",
+                                   _, _, _, _))
+      .WillOnce([](const std::string& object_name,
+                   const std::string& method_name, base::Value arg1,
+                   base::Value arg2, base::Value arg3,
+                   base::OnceCallback<void(base::Value)> completion_callback) {
+        ASSERT_TRUE(arg1.is_int());
+        EXPECT_EQ(arg1.GetInt(), 0);
+        EXPECT_TRUE(arg2.is_none());
+        EXPECT_TRUE(arg3.is_none());
+      });
+  os_settings_provider_.SetCaretBlinkInterval(base::TimeDelta());
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+
+  // Unrelated NativeTheme updates do not re-emit caretBlinkIntervalChanged.
+  EXPECT_CALL(*bindings_,
+              CallClientMethodImpl("DevToolsAPI", "caretBlinkIntervalChanged",
+                                   _, _, _, _))
+      .Times(0);
+  os_settings_provider_.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
+  os_settings_provider_.SetPrefersReducedTransparency(true);
+  os_settings_provider_.SetCaretBlinkInterval(base::Milliseconds(-10));
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+
+  EXPECT_CALL(*bindings_,
+              CallClientMethodImpl("DevToolsAPI", "caretBlinkIntervalChanged",
+                                   _, _, _, _))
+      .WillOnce([](const std::string& object_name,
+                   const std::string& method_name, base::Value arg1,
+                   base::Value arg2, base::Value arg3,
+                   base::OnceCallback<void(base::Value)> completion_callback) {
+        ASSERT_TRUE(arg1.is_int());
+        EXPECT_EQ(arg1.GetInt(), 600);
+        EXPECT_TRUE(arg2.is_none());
+        EXPECT_TRUE(arg3.is_none());
+      });
+  os_settings_provider_.SetCaretBlinkInterval(base::Milliseconds(600));
+  testing::Mock::VerifyAndClearExpectations(bindings_.get());
+}
+
+TEST_F(DevToolsUIBindingsCaretBlinkTest,
+       SkipsNotificationWhenFrontendNotReadyAndSyncsOnGetHostConfig) {
+  content::WebContents* unnavigated_web_contents =
+      web_contents_factory_.CreateWebContents(profile_.get());
+  auto unready_bindings =
+      std::make_unique<testing::NiceMock<TestDevToolsUIBindings>>(
+          unnavigated_web_contents);
+  ASSERT_FALSE(unready_bindings->has_frontend_host_for_testing());
+
+  // Notifications while frontend_host_ is null are dropped without updating
+  // last_sent_caret_blink_interval_ms_.
+  EXPECT_CALL(*unready_bindings,
+              CallClientMethodImpl("DevToolsAPI", "caretBlinkIntervalChanged",
+                                   _, _, _, _))
+      .Times(0);
+  os_settings_provider_.SetCaretBlinkInterval(base::TimeDelta());
+  testing::Mock::VerifyAndClearExpectations(unready_bindings.get());
+
+  // Once the frontend commits and fetches host config, the synced value
+  // reflects 0 and returning to 500ms emits the change.
+  CommitLocalFrontendNavigation(*unready_bindings, unnavigated_web_contents);
+  base::DictValue config = CallGetHostConfig(*unready_bindings);
+  EXPECT_THAT(config.FindInt("caretBlinkInterval"), testing::Optional(0));
+
+  EXPECT_CALL(*unready_bindings,
+              CallClientMethodImpl("DevToolsAPI", "caretBlinkIntervalChanged",
+                                   _, _, _, _))
+      .WillOnce([](const std::string& object_name,
+                   const std::string& method_name, base::Value arg1,
+                   base::Value arg2, base::Value arg3,
+                   base::OnceCallback<void(base::Value)> completion_callback) {
+        ASSERT_TRUE(arg1.is_int());
+        EXPECT_EQ(arg1.GetInt(), 500);
+        EXPECT_TRUE(arg2.is_none());
+        EXPECT_TRUE(arg3.is_none());
+      });
+  os_settings_provider_.SetCaretBlinkInterval(base::Milliseconds(500));
+  testing::Mock::VerifyAndClearExpectations(unready_bindings.get());
+
+  // Notifications while primary main frame renderer is not live are also
+  // skipped.
+  static_cast<content::MockRenderProcessHost*>(
+      unnavigated_web_contents->GetPrimaryMainFrame()->GetProcess())
+      ->SimulateCrash();
+  ASSERT_FALSE(
+      unnavigated_web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_CALL(*unready_bindings,
+              CallClientMethodImpl("DevToolsAPI", "caretBlinkIntervalChanged",
+                                   _, _, _, _))
+      .Times(0);
+  os_settings_provider_.SetCaretBlinkInterval(base::TimeDelta());
+  testing::Mock::VerifyAndClearExpectations(unready_bindings.get());
+}
+
+TEST_F(DevToolsUIBindingsCaretBlinkTest,
+       DestroyingBindingsUnregistersNativeThemeObserver) {
+  bindings_.reset();
+
+  os_settings_provider_.SetCaretBlinkInterval(base::TimeDelta());
+  os_settings_provider_.SetCaretBlinkInterval(base::Milliseconds(600));
+}
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class DevToolsUIBindingsExtensionsTest : public testing::Test {

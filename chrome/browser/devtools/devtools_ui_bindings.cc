@@ -25,6 +25,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -214,6 +215,21 @@ std::string_view GetUserColorSource(Profile* profile) {
   }
 #endif
   return "baseline-default";
+}
+
+std::optional<int> GetCaretBlinkIntervalMs(
+    const ui::NativeTheme* native_theme) {
+  if (!native_theme) {
+    native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  }
+  if (!native_theme) {
+    return std::nullopt;
+  }
+  const base::TimeDelta interval = native_theme->caret_blink_interval();
+  if (!interval.is_positive() || interval.is_max()) {
+    return 0;
+  }
+  return base::saturated_cast<int>(interval.InMillisecondsRoundedUp());
 }
 
 base::DictValue CreateFileSystemValue(
@@ -913,6 +929,10 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
               profile_->GetOriginalProfile())) {
     template_url_service_observation_.Observe(template_url_service);
   }
+  if (auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi()) {
+    native_theme_observation_.Observe(native_theme);
+    last_sent_caret_blink_interval_ms_ = GetCaretBlinkIntervalMs(native_theme);
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (auto* registry = extensions::ExtensionRegistry::Get(profile_)) {
     extension_registry_observation_.Observe(registry);
@@ -928,6 +948,7 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
 }
 
 DevToolsUIBindings::~DevToolsUIBindings() {
+  native_theme_observation_.Reset();
   if (!session_id_for_logging_.is_empty()) {
     metrics::structured::StructuredMetricsClient::Record(
         metrics::structured::events::v2::dev_tools::SessionEnd()
@@ -2167,6 +2188,11 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
 
   response_dict.Set("isOffTheRecord", profile->IsOffTheRecord());
   response_dict.Set("userColorSource", GetUserColorSource(profile));
+  if (const std::optional<int> caret_blink_interval_ms =
+          GetCaretBlinkIntervalMs(ui::NativeTheme::GetInstanceForNativeUi());
+      caret_blink_interval_ms.has_value()) {
+    response_dict.Set("caretBlinkInterval", *caret_blink_interval_ms);
+  }
 
   base::DictValue origin_bound_cookies_dict;
   origin_bound_cookies_dict.Set(
@@ -2382,7 +2408,12 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
 }
 
 void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
-  base::Value response(GetHostConfigDictionary(profile_));
+  base::DictValue config = GetHostConfigDictionary(profile_);
+  if (std::optional<int> caret_blink_interval_ms =
+          config.FindInt("caretBlinkInterval")) {
+    last_sent_caret_blink_interval_ms_ = *caret_blink_interval_ms;
+  }
+  base::Value response(std::move(config));
   std::move(callback).Run(&response);
 }
 
@@ -3244,6 +3275,22 @@ void DevToolsUIBindings::OnThemeChanged() {
                    base::Value(GetUserColorSource(profile_)));
 }
 #endif
+
+void DevToolsUIBindings::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  if (!frontend_host_ ||
+      !web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    return;
+  }
+  const std::optional<int> caret_blink_interval_ms =
+      GetCaretBlinkIntervalMs(observed_theme);
+  if (!caret_blink_interval_ms.has_value() ||
+      last_sent_caret_blink_interval_ms_ == caret_blink_interval_ms) {
+    return;
+  }
+  last_sent_caret_blink_interval_ms_ = caret_blink_interval_ms;
+  CallClientMethod("DevToolsAPI", "caretBlinkIntervalChanged",
+                   base::Value(*caret_blink_interval_ms));
+}
 
 void DevToolsUIBindings::CallClientMethod(
     const std::string& object_name,

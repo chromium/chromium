@@ -261,7 +261,10 @@ static_library("devtools") {
       "//ui/base/mojom:ui_base_types",
       "//ui/shell_dialogs",
     ]
-    public_deps += [ "//chrome/browser/themes" ]
+    public_deps += [
+      "//chrome/browser/themes",
+      "//ui/native_theme",
+    ]
     if (!is_android) {
       deps += [
         "//chrome/browser:certificate_viewer",
@@ -629,6 +632,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:test_support",
+    "//ui/native_theme",
+    "//ui/native_theme:test_support",
   ]
 
   if (enable_devtools_frontend) {
@@ -766,6 +771,8 @@ if (enable_devtools_frontend) {
       "//content/test:test_support",
       "//testing/gtest",
       "//ui/compositor",
+      "//ui/native_theme",
+      "//ui/native_theme:test_support",
     ]
 
     if (!is_android) {
