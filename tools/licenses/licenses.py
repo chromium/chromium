@@ -89,6 +89,7 @@ PRUNE_PATHS = set(
     # Only README.md, not third-party code.
     os.path.join('third_party', 'crubit'),
     # Build files only, not third-party code.
+    os.path.join('third_party', 'tink', 'src', 'third_party', 'wycheproof'),
     os.path.join('third_party', 'widevine'),
     # Only binaries, used during development.
     os.path.join('third_party', 'valgrind'),

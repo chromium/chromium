@@ -2062,6 +2062,9 @@ deps = {
   'src/third_party/anonymous_tokens/src':
     Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + '1ae8df5e40bab28959cc182c2c0d88923059e278',
 
+  'src/third_party/tink/src':
+    Var('chromium_git') + '/external/github.com/tink-crypto/tink-cc.git' + '@' + '113291f16bfd99127332ece4928878cff70e940e',
+
 
     'src/third_party/blink/renderer/core/css/perftest_data': {
       'dep_type': 'gcs',

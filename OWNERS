@@ -291,6 +291,7 @@ per-file third_party/sqlite/src=*
 per-file third_party/swiftshader=*
 per-file third_party/text-fragments-polyfill/src=*
 per-file third_party/tflite/src=*
+per-file third_party/tink/src=*
 per-file third_party/ukey2/src=*
 per-file third_party/vulkan-deps=*
 per-file third_party/vulkan-headers/src=*
