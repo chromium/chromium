@@ -139,6 +139,11 @@ import("//build/rust/gni_impl/rust_target.gni")
 #         experimental Crubit features - see
 #         https://github.com/google/crubit/blob/main/features/README.md
 #
+#       visibility (optional)
+#         `visibility` of the C++ `source_set` that provides the bindings (see
+#         `target_name` above).  This is independent from the `visibility` of
+#         the Rust crate.
+#
 #   allow_circular_includes_from (optional)
 #     If cxx_bindings is present, this will allow the generated cxx bindings to
 #     include headers from the listed targets. Generally, this should only be

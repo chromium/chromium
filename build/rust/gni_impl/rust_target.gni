@@ -813,6 +813,8 @@ template("rust_target") {
         cpp_api_from_rust(_cpp_api_from_rust_target_name) {
           forward_variables_from(_secondary_rust_compiler_attrs,
                                  _SECONDARY_RUST_COMPILER_ATTR_NAMES)
+          forward_variables_from(_cpp_api_from_rust_attributes,
+                                 [ "visibility" ])
 
           # `:${_target_name}` (rather than `:${_main_target_name}`), so that
           # dependents of the bindings also get the `data_deps` of the group

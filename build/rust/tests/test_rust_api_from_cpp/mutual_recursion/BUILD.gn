@@ -83,6 +83,9 @@ rust_static_library("is_odd") {
   cpp_api_from_rust = {
     target_name = "is_odd_cpp_api"
     cpp_namespace = "is_odd"
+
+    # Same reason as for the `visibility` of `:parity_headers`.
+    visibility = [ ":*" ]
   }
 
   # Same reason as for the `visibility` of `:parity_headers`.

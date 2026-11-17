@@ -53,6 +53,7 @@ rust_static_library("is_odd") {
   cpp_api_from_rust = {
     target_name = "is_odd_cpp_api"
     cpp_namespace = "is_odd"
+    visibility = [ ":*" ]
   }
   visibility = [ ":*" ]
 }
@@ -75,7 +76,7 @@ Notes:
   to depend on `:parity` (see `:rust_unittests` in `BUILD.gn`).  A target that
   depends only on `:parity_headers` would compile, but would fail to link.
   Therefore `visibility` of `:parity_headers` and of all targets between
-  `:parity` and `:parity_headers` (e.g. `:is_odd` and
+  `:parity` and `:parity_headers` (e.g. `:is_odd_cpp_api`, `:is_odd`, and
   `:parity_headers_rs_api`) should be limited to `:parity` and to the targets
   that `:parity` depends on.
 * A big target may build its `sources` list in many steps (e.g. in many `if`
