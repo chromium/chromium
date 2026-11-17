@@ -10,7 +10,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink::cssvalue {
@@ -22,6 +26,12 @@ const CSSPrimitiveValue* ToCSSPercentage(std::optional<double> percent) {
   return percent ? CSSNumericLiteralValue::Create(
                        *percent, CSSPrimitiveValue::UnitType::kPercentage)
                  : nullptr;
+}
+
+const CSSValue* ParseColor(const char* text) {
+  return CSSParser::ParseSingleValue(
+      CSSPropertyID::kColor, String(text),
+      StrictCSSParserContext(SecureContextMode::kInsecureContext));
 }
 
 // Lists of two percentages are tested by TwoItemsMatchTwoColorNormalization,
@@ -166,6 +176,15 @@ TEST(CSSColorMixValueTest, PercentageValuesForSerialization) {
           << "item " << i << " of a list of " << test.input.size();
     }
   }
+}
+
+TEST(CSSColorMixValueTest, OneOrMoreColorsDisabled) {
+  ScopedCSSColorMixVariadicForTest scoped_feature(false);
+  EXPECT_FALSE(ParseColor("color-mix(in srgb, red)"));
+  EXPECT_FALSE(ParseColor("color-mix(red)"));
+  EXPECT_FALSE(ParseColor("color-mix(in srgb, red, green, blue)"));
+  EXPECT_TRUE(ParseColor("color-mix(in srgb, red, blue)"));
+  EXPECT_TRUE(ParseColor("color-mix(red 20%, blue)"));
 }
 
 }  // namespace

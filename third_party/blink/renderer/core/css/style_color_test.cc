@@ -259,6 +259,45 @@ TEST_F(StyleColorTest, UnresolvedColorMix_ToCSSValue) {
             "color-mix(in srgb, currentcolor 75%, rgb(255, 0, 0) 25%)");
 }
 
+TEST_F(StyleColorTest, UnresolvedColorMix_MultipleColors) {
+  using UnresolvedColorMix = StyleColor::UnresolvedColorMix;
+  StyleColor currentcolor;
+  StyleColor red(Color(255, 0, 0));
+  StyleColor blue(Color(0, 0, 255));
+  auto make_mix = [](UnresolvedColorMix::ItemVector items,
+                     double alpha_multiplier) {
+    return MakeGarbageCollected<UnresolvedColorMix>(
+        Color::ColorSpace::kSRGB, Color::HueInterpolationMethod::kShorter,
+        std::move(items), alpha_multiplier);
+  };
+
+  const UnresolvedColorMix* mix =
+      make_mix({{currentcolor, 0.5}, {red, 0.3}, {blue, 0.2}}, 1.0);
+  EXPECT_EQ(*mix,
+            *make_mix({{currentcolor, 0.5}, {red, 0.3}, {blue, 0.2}}, 1.0));
+  EXPECT_NE(*mix,
+            *make_mix({{red, 0.3}, {currentcolor, 0.5}, {blue, 0.2}}, 1.0));
+  EXPECT_NE(*mix, *make_mix({{currentcolor, 0.5}, {red, 0.5}}, 1.0));
+
+  // Mixing white with red at 3/8, then with blue at 1/5.
+  const Color resolved = mix->Resolve(Color(255, 255, 255));
+  EXPECT_EQ(resolved.GetColorSpace(), Color::ColorSpace::kSRGB);
+  EXPECT_NEAR(resolved.Param0(), 0.8f, 1e-6);
+  EXPECT_NEAR(resolved.Param1(), 0.5f, 1e-6);
+  EXPECT_NEAR(resolved.Param2(), 0.7f, 1e-6);
+  EXPECT_NEAR(resolved.Alpha(), 1.0f, 1e-6);
+
+  EXPECT_EQ(
+      make_mix({{currentcolor, 1.0 / 3}, {red, 1.0 / 3}, {blue, 1.0 / 3}}, 1.0)
+          ->ToCSSValue()
+          ->CssText(),
+      "color-mix(in srgb, currentcolor, rgb(255, 0, 0), rgb(0, 0, 255))");
+  EXPECT_EQ(make_mix({{currentcolor, 0.5}}, 0.5)->ToCSSValue()->CssText(),
+            "color-mix(in srgb, currentcolor 50%)");
+  EXPECT_EQ(make_mix({{currentcolor, 1.0}}, 1.0)->ToCSSValue()->CssText(),
+            "color-mix(in srgb, currentcolor)");
+}
+
 TEST_F(StyleColorTest, UnresolvedRelativeColor_ToCSSValue) {
   StyleColor currentcolor;
 

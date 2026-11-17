@@ -321,6 +321,8 @@ TEST(CSSParsingUtilsTest, InternalColorsOnlyAllowedInUaMode) {
 TEST(CSSParsingUtilsTest, ConsumeColorRangePreservation) {
   const char* tests[] = {
       "color-mix(42deg)",
+      "color-mix(in srgb, red,)",
+      "color-mix(red, blue, 42deg)",
       "contrast-color(42deg)",
   };
   for (const char*& test : tests) {

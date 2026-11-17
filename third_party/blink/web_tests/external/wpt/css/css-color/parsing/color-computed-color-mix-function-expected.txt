@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'color-mix(in hsl, lch(0.1 0 0), hsl(11 33 44))'
   Colors do not match.\nActual:   color(srgb 0.225056 0.257157 0.184273)\nExpected: color(srgb 0.25713316 0.19765042 0.18429716).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.25713316 +/- 0.01, expected 0.25713316 but got 0.225056
 [FAIL] Property color value 'color-mix(in lch shorter hue, red, white)'
@@ -44,37 +44,5 @@ Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   oklch(0.725991 0.156605 312.025)\nExpected: oklch(0.726 0.15661 312.026).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 312.026 +/- 0.001, expected 312.026 but got 312.025
 [FAIL] Property color value 'color-mix(in lch, color-mix(in lch longer hue, hsl(50deg 0% 50%), hsl(50deg 0% 50%)), lch(50% 100% 180deg))'
   Colors do not match.\nActual:   lch(51.6941 75.0056 180)\nExpected: lch(51.69448237 75 180).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 75 +/- 0.001, expected 75 but got 75.0056
-[FAIL] Property color value 'color-mix(in srgb, red)'
-  assert_true: 'color-mix(in srgb, red)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 50%)'
-  assert_true: 'color-mix(in srgb, red 50%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red, green, blue)'
-  assert_true: 'color-mix(in srgb, red, green, blue)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 50%, green 30%, blue 20%)'
-  assert_true: 'color-mix(in srgb, red 50%, green 30%, blue 20%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 30%, green 60%, blue 90%)'
-  assert_true: 'color-mix(in srgb, red 30%, green 60%, blue 90%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 60%, green, blue 50%)'
-  assert_true: 'color-mix(in srgb, red 60%, green, blue 50%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 60%, green, white, blue 50%)'
-  assert_true: 'color-mix(in srgb, red 60%, green, white, blue 50%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red calc(60%), green, blue 50%)'
-  assert_true: 'color-mix(in srgb, red calc(60%), green, blue 50%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red calc(60%), green, white, blue 50%)'
-  assert_true: 'color-mix(in srgb, red calc(60%), green, white, blue 50%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 60%, green, blue 40%)'
-  assert_true: 'color-mix(in srgb, red 60%, green, blue 40%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red calc(60%), green, blue 40%)'
-  assert_true: 'color-mix(in srgb, red calc(60%), green, blue 40%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red, green, blue, white)'
-  assert_true: 'color-mix(in srgb, red, green, blue, white)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 0%)'
-  assert_true: 'color-mix(in srgb, red 0%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 0%, green 0%, blue 0%)'
-  assert_true: 'color-mix(in srgb, red 0%, green 0%, blue 0%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 0%, green 0%, blue 100%)'
-  assert_true: 'color-mix(in srgb, red 0%, green 0%, blue 100%)' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, red 0%, green 0%, blue 50%)'
-  assert_true: 'color-mix(in srgb, red 0%, green 0%, blue 50%)' is a supported value for color. expected true got false
 Harness: the test ran to completion.
 

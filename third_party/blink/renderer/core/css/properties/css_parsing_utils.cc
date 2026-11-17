@@ -2185,21 +2185,22 @@ CSSValue* ConsumeColorMixFunction(
       return nullptr;
     }
 
+    const bool variadic_enabled =
+        RuntimeEnabledFeatures::CSSColorMixVariadicEnabled();
+    const wtf_size_t min_items = variadic_enabled ? 1 : 2;
+    const wtf_size_t max_items =
+        variadic_enabled ? std::numeric_limits<wtf_size_t>::max() : 2;
     cssvalue::CSSColorMixValue::ItemVector items;
     items.reserve(2);
-    if (!ConsumeColorMixItem(stream, context, local_context,
-                             color_parser_context, items)) {
-      return nullptr;
-    }
-    if (!ConsumeCommaIncludingWhitespace(stream)) {
-      return nullptr;
-    }
-    if (!ConsumeColorMixItem(stream, context, local_context,
-                             color_parser_context, items)) {
-      return nullptr;
-    }
+    do {
+      if (!ConsumeColorMixItem(stream, context, local_context,
+                               color_parser_context, items)) {
+        return nullptr;
+      }
+    } while (items.size() < max_items &&
+             ConsumeCommaIncludingWhitespace(stream));
 
-    if (!stream.AtEnd()) {
+    if (!stream.AtEnd() || items.size() < min_items) {
       return nullptr;
     }
 

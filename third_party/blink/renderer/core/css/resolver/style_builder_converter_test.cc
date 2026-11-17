@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
@@ -82,6 +83,63 @@ TEST(StyleBuilderConverterTest,
       .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
       .text_link_colors = TextLinkColors()};
   EXPECT_EQ(ResolveColorValue(*color_mix_value, context), expected);
+}
+
+TEST(StyleBuilderConverterTest, ResolveColorValue_SingleColorMix) {
+  const ResolveColorValueContext context{
+      .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
+      .text_link_colors = TextLinkColors()};
+  auto make_mix = [](const Color& color) {
+    return MakeGarbageCollected<cssvalue::CSSColorMixValue>(
+        cssvalue::CSSColorMixValue::ItemVector{
+            {cssvalue::CSSColor::Create(color), nullptr}},
+        Color::ColorSpace::kHSL, Color::HueInterpolationMethod::kShorter);
+  };
+
+  // color-mix(in hsl, hsl(0 50% 50%)) is converted to hsl, then serialized
+  // in sRGB since it has no missing components.
+  const Color color =
+      ResolveColorValue(*make_mix(Color::FromHSLA(0.0f, 0.5f, 0.5f, 1.0f)),
+                        context)
+          .GetColor();
+  EXPECT_EQ(color.GetColorSpace(), Color::ColorSpace::kSRGB);
+  EXPECT_NEAR(color.Param0(), 0.75f, 1e-6);
+  EXPECT_NEAR(color.Param1(), 0.25f, 1e-6);
+  EXPECT_NEAR(color.Param2(), 0.25f, 1e-6);
+
+  // color-mix(in hsl, hsl(none 50% 50%)) keeps its missing hue.
+  const Color color_with_none =
+      ResolveColorValue(
+          *make_mix(Color::FromHSLA(std::nullopt, 0.5f, 0.5f, 1.0f)), context)
+          .GetColor();
+  EXPECT_EQ(color_with_none.GetColorSpace(), Color::ColorSpace::kHSL);
+  EXPECT_TRUE(color_with_none.Param0IsNone());
+}
+
+TEST(StyleBuilderConverterTest, ResolveColorValue_MultipleColorsMix) {
+  const auto* color_mix_value =
+      MakeGarbageCollected<cssvalue::CSSColorMixValue>(
+          cssvalue::CSSColorMixValue::ItemVector{
+              {CSSIdentifierValue::Create(CSSValueID::kCurrentcolor), nullptr},
+              {CSSIdentifierValue::Create(CSSValueID::kRed), nullptr},
+              {CSSIdentifierValue::Create(CSSValueID::kBlue), nullptr}},
+          Color::ColorSpace::kSRGB, Color::HueInterpolationMethod::kShorter);
+
+  const ResolveColorValueContext context{
+      .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
+      .text_link_colors = TextLinkColors()};
+  const StyleColor result = ResolveColorValue(*color_mix_value, context);
+  ASSERT_TRUE(result.IsUnresolvedColorFunction());
+  EXPECT_EQ(result.ToCSSValue()->CssText(),
+            "color-mix(in srgb, currentcolor, rgb(255, 0, 0), rgb(0, 0, 255))");
+
+  // With a white current color: (1, 1, 1), then (1, 0.5, 0.5), then
+  // (2/3, 1/3, 2/3).
+  const Color resolved = result.Resolve(Color::FromRGB(255, 255, 255),
+                                        mojom::blink::ColorScheme::kLight);
+  EXPECT_NEAR(resolved.Param0(), 2.0f / 3, 1e-6);
+  EXPECT_NEAR(resolved.Param1(), 1.0f / 3, 1e-6);
+  EXPECT_NEAR(resolved.Param2(), 2.0f / 3, 1e-6);
 }
 
 TEST(StyleBuilderConverterTest, ResolveColorValue_ZeroCombinedPercentage) {

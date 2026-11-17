@@ -1777,6 +1777,13 @@
       status: "test",
     },
     {
+      // color-mix() with one color, or with more than two colors.
+      // https://drafts.csswg.org/css-color-5/#color-mix
+      // https://crbug.com/407806416
+      name: "CSSColorMixVariadic",
+      status: "experimental",
+    },
+    {
       name: "CSSColorTypedOM",
       status: "experimental",
     },

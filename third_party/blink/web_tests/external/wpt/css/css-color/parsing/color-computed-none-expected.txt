@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 258 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'hsl(from lch(20 none 180) h s l)'
   Colors do not match.\nActual:   hsl(161.878 none 18.9367%)\nExpected: hsl(none none 18.93757452%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 1 got 2
 [FAIL] Property color value 'hsl(from lch(20 20 none) h s l)'
@@ -20,94 +20,22 @@ Found 258 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.32701 0.418529 0.210838)\nExpected: color(srgb 0.41853487 0.24891811 0.21084087).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.41853487 +/- 0.01, expected 0.41853487 but got 0.32701
 [FAIL] Property color value 'color-mix(in hsl, oklch(0.2 none 180), hsl(11 33 44))'
   Colors do not match.\nActual:   color(srgb 0.239684 0.349857 0.176244)\nExpected: color(srgb 0.3498593 0.20807421 0.17624491).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.3498593 +/- 0.01, expected 0.3498593 but got 0.239684
-[FAIL] Property color value 'color-mix(in hsl, hsl(none 50% 50%))'
-  assert_true: 'color-mix(in hsl, hsl(none 50% 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hsl(180 none 50%))'
-  assert_true: 'color-mix(in hsl, hsl(180 none 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hsl(180 50% none))'
-  assert_true: 'color-mix(in hsl, hsl(180 50% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hsl(none none 50%))'
-  assert_true: 'color-mix(in hsl, hsl(none none 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hsl(180 none none))'
-  assert_true: 'color-mix(in hsl, hsl(180 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hsl(none 50% none))'
-  assert_true: 'color-mix(in hsl, hsl(none 50% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hsl(none none none))'
-  assert_true: 'color-mix(in hsl, hsl(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hwb(none 25% 25%))'
-  assert_true: 'color-mix(in hsl, hwb(none 25% 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hwb(180 none 25%))'
-  assert_true: 'color-mix(in hsl, hwb(180 none 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hwb(180 25% none))'
-  assert_true: 'color-mix(in hsl, hwb(180 25% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hwb(none none 25%))'
-  assert_true: 'color-mix(in hsl, hwb(none none 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hwb(180 none none))'
-  assert_true: 'color-mix(in hsl, hwb(180 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hwb(none 25% none))'
-  assert_true: 'color-mix(in hsl, hwb(none 25% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, hwb(none none none))'
-  assert_true: 'color-mix(in hsl, hwb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lch(none 20 180))'
-  assert_true: 'color-mix(in hsl, lch(none 20 180))' is a supported value for color. expected true got false
 [FAIL] Property color value 'color-mix(in hsl, lch(20 none 180))'
-  assert_true: 'color-mix(in hsl, lch(20 none 180))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   hsl(161.878 none 18.9367%)\nExpected: hsl(none none 18.93757452%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 1 got 2
 [FAIL] Property color value 'color-mix(in hsl, lch(20 20 none))'
-  assert_true: 'color-mix(in hsl, lch(20 20 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lch(none none 180))'
-  assert_true: 'color-mix(in hsl, lch(none none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lch(20 none none))'
-  assert_true: 'color-mix(in hsl, lch(20 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lch(none 20 none))'
-  assert_true: 'color-mix(in hsl, lch(none 20 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lch(none none none))'
-  assert_true: 'color-mix(in hsl, lch(none none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   hsl(none 35.0441% 21.6476%)\nExpected: hsl(none 35.05613281% 21.64776943%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 35.05613281 +/- 0.01, expected 35.05613281 but got 35.0441
 [FAIL] Property color value 'color-mix(in hsl, oklch(none 0.2 180))'
-  assert_true: 'color-mix(in hsl, oklch(none 0.2 180))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   hsl(345.652 193.099% none)\nExpected: hsl(345.65323987 193.08743918% none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 193.08743918 +/- 0.01, expected 193.08743918 but got 193.099
 [FAIL] Property color value 'color-mix(in hsl, oklch(0.2 none 180))'
-  assert_true: 'color-mix(in hsl, oklch(0.2 none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklch(0.2 0.2 none))'
-  assert_true: 'color-mix(in hsl, oklch(0.2 0.2 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklch(none none 180))'
-  assert_true: 'color-mix(in hsl, oklch(none none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklch(0.2 none none))'
-  assert_true: 'color-mix(in hsl, oklch(0.2 none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   hsl(185.15 none 8.61002%)\nExpected: hsl(none none 8.61042044%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 1 got 2
 [FAIL] Property color value 'color-mix(in hsl, oklch(none 0.2 none))'
-  assert_true: 'color-mix(in hsl, oklch(none 0.2 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklch(none none none))'
-  assert_true: 'color-mix(in hsl, oklch(none none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   hsl(none 193.099% none)\nExpected: hsl(none 193.08743918% none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 193.08743918 +/- 0.01, expected 193.08743918 but got 193.099
 [FAIL] Property color value 'color-mix(in hsl, lab(none 10 10))'
-  assert_true: 'color-mix(in hsl, lab(none 10 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lab(50 none 10))'
-  assert_true: 'color-mix(in hsl, lab(50 none 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lab(50 10 none))'
-  assert_true: 'color-mix(in hsl, lab(50 10 none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   hsl(15.4205 846.43% none)\nExpected: hsl(15.41935071 846.24593338% none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 846.24593338 +/- 0.01, expected 846.24593338 but got 846.43
 [FAIL] Property color value 'color-mix(in hsl, lab(none none 10))'
-  assert_true: 'color-mix(in hsl, lab(none none 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lab(50 none none))'
-  assert_true: 'color-mix(in hsl, lab(50 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lab(none 10 none))'
-  assert_true: 'color-mix(in hsl, lab(none 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, lab(none none none))'
-  assert_true: 'color-mix(in hsl, lab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklab(none 0.1 0.1))'
-  assert_true: 'color-mix(in hsl, oklab(none 0.1 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklab(0.5 none 0.1))'
-  assert_true: 'color-mix(in hsl, oklab(0.5 none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklab(0.5 0.1 none))'
-  assert_true: 'color-mix(in hsl, oklab(0.5 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklab(none none 0.1))'
-  assert_true: 'color-mix(in hsl, oklab(none none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklab(0.5 none none))'
-  assert_true: 'color-mix(in hsl, oklab(0.5 none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   hsl(221.369 238.886% none)\nExpected: hsl(221.36868606 238.90028442% none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 238.90028442 +/- 0.01, expected 238.90028442 but got 238.886
 [FAIL] Property color value 'color-mix(in hsl, oklab(none 0.1 none))'
-  assert_true: 'color-mix(in hsl, oklab(none 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, oklab(none none none))'
-  assert_true: 'color-mix(in hsl, oklab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, rgb(none none none))'
-  assert_true: 'color-mix(in hsl, rgb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hsl, color(display-p3 none none none))'
-  assert_true: 'color-mix(in hsl, color(display-p3 none none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   hsl(345.652 193.099% none)\nExpected: hsl(345.65323987 193.08743918% none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 193.08743918 +/- 0.01, expected 193.08743918 but got 193.099
 [FAIL] Property color value 'hwb(from lch(20 none 180) h w b)'
   Colors do not match.\nActual:   color(srgb 0.189345 0.18939 0.189376)\nExpected: hwb(none 18.93757452% 81.06242548%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'hwb(from lch(none 20 none) h w b)'
@@ -130,94 +58,20 @@ Found 258 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.462487 0.513178 0.39813)\nExpected: color(srgb 0.5131633 0.41924664 0.3981633).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.5131633 +/- 0.01, expected 0.5131633 but got 0.462487
 [FAIL] Property color value 'color-mix(in hwb, oklab(0.5 none none), hwb(11 33 44))'
   Colors do not match.\nActual:   color(srgb 0.40131 0.474301 0.359259)\nExpected: color(srgb 0.47428643 0.38036976 0.35928643).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.47428643 +/- 0.01, expected 0.47428643 but got 0.40131
-[FAIL] Property color value 'color-mix(in hwb, hsl(none 50% 50%))'
-  assert_true: 'color-mix(in hwb, hsl(none 50% 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hsl(180 none 50%))'
-  assert_true: 'color-mix(in hwb, hsl(180 none 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hsl(180 50% none))'
-  assert_true: 'color-mix(in hwb, hsl(180 50% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hsl(none none 50%))'
-  assert_true: 'color-mix(in hwb, hsl(none none 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hsl(180 none none))'
-  assert_true: 'color-mix(in hwb, hsl(180 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hsl(none 50% none))'
-  assert_true: 'color-mix(in hwb, hsl(none 50% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hsl(none none none))'
-  assert_true: 'color-mix(in hwb, hsl(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hwb(none 25% 25%))'
-  assert_true: 'color-mix(in hwb, hwb(none 25% 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hwb(180 none 25%))'
-  assert_true: 'color-mix(in hwb, hwb(180 none 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hwb(180 25% none))'
-  assert_true: 'color-mix(in hwb, hwb(180 25% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hwb(none none 25%))'
-  assert_true: 'color-mix(in hwb, hwb(none none 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hwb(180 none none))'
-  assert_true: 'color-mix(in hwb, hwb(180 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hwb(none 25% none))'
-  assert_true: 'color-mix(in hwb, hwb(none 25% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, hwb(none none none))'
-  assert_true: 'color-mix(in hwb, hwb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lch(none 20 180))'
-  assert_true: 'color-mix(in hwb, lch(none 20 180))' is a supported value for color. expected true got false
 [FAIL] Property color value 'color-mix(in hwb, lch(20 none 180))'
-  assert_true: 'color-mix(in hwb, lch(20 none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lch(20 20 none))'
-  assert_true: 'color-mix(in hwb, lch(20 20 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lch(none none 180))'
-  assert_true: 'color-mix(in hwb, lch(none none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lch(20 none none))'
-  assert_true: 'color-mix(in hwb, lch(20 none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   color(srgb 0.189345 0.18939 0.189376)\nExpected: hwb(none 18.93757452% 81.06242548%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'color-mix(in hwb, lch(none 20 none))'
-  assert_true: 'color-mix(in hwb, lch(none 20 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lch(none none none))'
-  assert_true: 'color-mix(in hwb, lch(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklch(none 0.2 180))'
-  assert_true: 'color-mix(in hwb, oklch(none 0.2 180))' is a supported value for color. expected true got false
+  assert_equals: computed value should round-trip expected "hwb(none -5.95237% 86.901%)" but got "hwb(none 0% 86.901%)"
 [FAIL] Property color value 'color-mix(in hwb, oklch(0.2 none 180))'
-  assert_true: 'color-mix(in hwb, oklch(0.2 none 180))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   color(srgb 0.0860868 0.0861112 0.0861136)\nExpected: hwb(none 8.61042044% 91.38957956%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'color-mix(in hwb, oklch(0.2 0.2 none))'
-  assert_true: 'color-mix(in hwb, oklch(0.2 0.2 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklch(none none 180))'
-  assert_true: 'color-mix(in hwb, oklch(none none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklch(0.2 none none))'
-  assert_true: 'color-mix(in hwb, oklch(0.2 none none))' is a supported value for color. expected true got false
+  assert_equals: computed value should round-trip expected "hwb(none -12.7066% 70.4055%)" but got "hwb(none 0% 70.4055%)"
 [FAIL] Property color value 'color-mix(in hwb, oklch(none 0.2 none))'
-  assert_true: 'color-mix(in hwb, oklch(none 0.2 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklch(none none none))'
-  assert_true: 'color-mix(in hwb, oklch(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lab(none 10 10))'
-  assert_true: 'color-mix(in hwb, lab(none 10 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lab(50 none 10))'
-  assert_true: 'color-mix(in hwb, lab(50 none 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lab(50 10 none))'
-  assert_true: 'color-mix(in hwb, lab(50 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lab(none none 10))'
-  assert_true: 'color-mix(in hwb, lab(none none 10))' is a supported value for color. expected true got false
+  assert_equals: computed value should round-trip expected "hwb(none -0.845472% 97.3382%)" but got "hwb(none 0% 97.3382%)"
 [FAIL] Property color value 'color-mix(in hwb, lab(50 none none))'
-  assert_true: 'color-mix(in hwb, lab(50 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lab(none 10 none))'
-  assert_true: 'color-mix(in hwb, lab(none 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, lab(none none none))'
-  assert_true: 'color-mix(in hwb, lab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklab(none 0.1 0.1))'
-  assert_true: 'color-mix(in hwb, oklab(none 0.1 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklab(0.5 none 0.1))'
-  assert_true: 'color-mix(in hwb, oklab(0.5 none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklab(0.5 0.1 none))'
-  assert_true: 'color-mix(in hwb, oklab(0.5 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklab(none none 0.1))'
-  assert_true: 'color-mix(in hwb, oklab(none none 0.1))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   color(srgb 0.466261 0.466356 0.466327)\nExpected: hwb(none 46.63266093% 53.36733907%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'color-mix(in hwb, oklab(0.5 none none))'
-  assert_true: 'color-mix(in hwb, oklab(0.5 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklab(none 0.1 none))'
-  assert_true: 'color-mix(in hwb, oklab(none 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, oklab(none none none))'
-  assert_true: 'color-mix(in hwb, oklab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, rgb(none none none))'
-  assert_true: 'color-mix(in hwb, rgb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in hwb, color(display-p3 none none none))'
-  assert_true: 'color-mix(in hwb, color(display-p3 none none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   color(srgb 0.388518 0.388595 0.388602)\nExpected: hwb(none 38.8572859% 61.1427141%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'lch(from hsl(none 50% 50%) l c h)'
   Colors do not match.\nActual:   lch(46.4199 59.7579 none)\nExpected: lch(46.42043661 59.74639249 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 59.74639249 +/- 0.01, expected 59.74639249 but got 59.7579
 [FAIL] Property color value 'lch(from hwb(none 25% 25%) l c h)'
@@ -231,93 +85,17 @@ Found 258 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'lch(from hwb(none 25% none) l c h)'
   Colors do not match.\nActual:   lch(58.2305 85.5067 none)\nExpected: lch(58.23109529 85.49243054 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 85.49243054 +/- 0.01, expected 85.49243054 but got 85.5067
 [FAIL] Property color value 'color-mix(in lch, hsl(none 50% 50%))'
-  assert_true: 'color-mix(in lch, hsl(none 50% 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, hsl(180 none 50%))'
-  assert_true: 'color-mix(in lch, hsl(180 none 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, hsl(180 50% none))'
-  assert_true: 'color-mix(in lch, hsl(180 50% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, hsl(none none 50%))'
-  assert_true: 'color-mix(in lch, hsl(none none 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, hsl(180 none none))'
-  assert_true: 'color-mix(in lch, hsl(180 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, hsl(none 50% none))'
-  assert_true: 'color-mix(in lch, hsl(none 50% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, hsl(none none none))'
-  assert_true: 'color-mix(in lch, hsl(none none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   lch(46.4199 59.7579 none)\nExpected: lch(46.42043661 59.74639249 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 59.74639249 +/- 0.01, expected 59.74639249 but got 59.7579
 [FAIL] Property color value 'color-mix(in lch, hwb(none 25% 25%))'
-  assert_true: 'color-mix(in lch, hwb(none 25% 25%))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   lch(46.4199 59.7579 none)\nExpected: lch(46.42043661 59.74639249 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 59.74639249 +/- 0.01, expected 59.74639249 but got 59.7579
 [FAIL] Property color value 'color-mix(in lch, hwb(180 none 25%))'
-  assert_true: 'color-mix(in lch, hwb(180 none 25%))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   lch(69.9124 42.5327 196.461)\nExpected: lch(69.91337803 42.54334477 196.45478916).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 42.54334477 +/- 0.01, expected 42.54334477 but got 42.5327
 [FAIL] Property color value 'color-mix(in lch, hwb(180 25% none))'
-  assert_true: 'color-mix(in lch, hwb(180 25% none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   lch(91.18 49.2832 196.665)\nExpected: lch(91.18116399 49.29673753 196.65803824).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 49.29673753 +/- 0.01, expected 49.29673753 but got 49.2832
 [FAIL] Property color value 'color-mix(in lch, hwb(none none 25%))'
-  assert_true: 'color-mix(in lch, hwb(none none 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, hwb(180 none none))'
-  assert_true: 'color-mix(in lch, hwb(180 none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   lch(40.6146 86.0648 none)\nExpected: lch(40.61501478 86.05118759 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 86.05118759 +/- 0.01, expected 86.05118759 but got 86.0648
 [FAIL] Property color value 'color-mix(in lch, hwb(none 25% none))'
-  assert_true: 'color-mix(in lch, hwb(none 25% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, hwb(none none none))'
-  assert_true: 'color-mix(in lch, hwb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lch(none 20 180))'
-  assert_true: 'color-mix(in lch, lch(none 20 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lch(20 none 180))'
-  assert_true: 'color-mix(in lch, lch(20 none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lch(20 20 none))'
-  assert_true: 'color-mix(in lch, lch(20 20 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lch(none none 180))'
-  assert_true: 'color-mix(in lch, lch(none none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lch(20 none none))'
-  assert_true: 'color-mix(in lch, lch(20 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lch(none 20 none))'
-  assert_true: 'color-mix(in lch, lch(none 20 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lch(none none none))'
-  assert_true: 'color-mix(in lch, lch(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklch(none 0.2 180))'
-  assert_true: 'color-mix(in lch, oklch(none 0.2 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklch(0.2 none 180))'
-  assert_true: 'color-mix(in lch, oklch(0.2 none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklch(0.2 0.2 none))'
-  assert_true: 'color-mix(in lch, oklch(0.2 0.2 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklch(none none 180))'
-  assert_true: 'color-mix(in lch, oklch(none none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklch(0.2 none none))'
-  assert_true: 'color-mix(in lch, oklch(0.2 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklch(none 0.2 none))'
-  assert_true: 'color-mix(in lch, oklch(none 0.2 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklch(none none none))'
-  assert_true: 'color-mix(in lch, oklch(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lab(none 10 10))'
-  assert_true: 'color-mix(in lch, lab(none 10 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lab(50 none 10))'
-  assert_true: 'color-mix(in lch, lab(50 none 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lab(50 10 none))'
-  assert_true: 'color-mix(in lch, lab(50 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lab(none none 10))'
-  assert_true: 'color-mix(in lch, lab(none none 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lab(50 none none))'
-  assert_true: 'color-mix(in lch, lab(50 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lab(none 10 none))'
-  assert_true: 'color-mix(in lch, lab(none 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, lab(none none none))'
-  assert_true: 'color-mix(in lch, lab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklab(none 0.1 0.1))'
-  assert_true: 'color-mix(in lch, oklab(none 0.1 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklab(0.5 none 0.1))'
-  assert_true: 'color-mix(in lch, oklab(0.5 none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklab(0.5 0.1 none))'
-  assert_true: 'color-mix(in lch, oklab(0.5 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklab(none none 0.1))'
-  assert_true: 'color-mix(in lch, oklab(none none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklab(0.5 none none))'
-  assert_true: 'color-mix(in lch, oklab(0.5 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklab(none 0.1 none))'
-  assert_true: 'color-mix(in lch, oklab(none 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, oklab(none none none))'
-  assert_true: 'color-mix(in lch, oklab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, rgb(none none none))'
-  assert_true: 'color-mix(in lch, rgb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lch, color(display-p3 none none none))'
-  assert_true: 'color-mix(in lch, color(display-p3 none none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   lch(58.2305 85.5067 none)\nExpected: lch(58.23109529 85.49243054 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 85.49243054 +/- 0.01, expected 85.49243054 but got 85.5067
 [FAIL] Property color value 'oklch(from lch(none 20 180) l c h)'
   Colors do not match.\nActual:   oklch(none 0.263895 175.282)\nExpected: oklch(none 0.26412556 175.27132911).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 175.27132911 +/- 0.01, expected 175.27132911 but got 175.282
 [FAIL] Property color value 'oklch(from lab(50 none 10) l c h)'
@@ -328,193 +106,13 @@ Found 258 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   oklch(none 0.209454 355.282)\nExpected: oklch(none 0.2096366 355.27132911).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 355.27132911 +/- 0.01, expected 355.27132911 but got 355.282
 [FAIL] Property color value 'color-mix(in oklch, lab(50 10 none), oklch(0.11 0.33 44))'
   Colors do not match.\nActual:   oklch(0.341103 0.179898 21.7525)\nExpected: oklch(0.34110296 0.1799018 21.73922447).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 21.73922447 +/- 0.01, expected 21.73922447 but got 21.7525
-[FAIL] Property color value 'color-mix(in oklch, hsl(none 50% 50%))'
-  assert_true: 'color-mix(in oklch, hsl(none 50% 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hsl(180 none 50%))'
-  assert_true: 'color-mix(in oklch, hsl(180 none 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hsl(180 50% none))'
-  assert_true: 'color-mix(in oklch, hsl(180 50% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hsl(none none 50%))'
-  assert_true: 'color-mix(in oklch, hsl(none none 50%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hsl(180 none none))'
-  assert_true: 'color-mix(in oklch, hsl(180 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hsl(none 50% none))'
-  assert_true: 'color-mix(in oklch, hsl(none 50% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hsl(none none none))'
-  assert_true: 'color-mix(in oklch, hsl(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hwb(none 25% 25%))'
-  assert_true: 'color-mix(in oklch, hwb(none 25% 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hwb(180 none 25%))'
-  assert_true: 'color-mix(in oklch, hwb(180 none 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hwb(180 25% none))'
-  assert_true: 'color-mix(in oklch, hwb(180 25% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hwb(none none 25%))'
-  assert_true: 'color-mix(in oklch, hwb(none none 25%))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hwb(180 none none))'
-  assert_true: 'color-mix(in oklch, hwb(180 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hwb(none 25% none))'
-  assert_true: 'color-mix(in oklch, hwb(none 25% none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, hwb(none none none))'
-  assert_true: 'color-mix(in oklch, hwb(none none none))' is a supported value for color. expected true got false
 [FAIL] Property color value 'color-mix(in oklch, lch(none 20 180))'
-  assert_true: 'color-mix(in oklch, lch(none 20 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lch(20 none 180))'
-  assert_true: 'color-mix(in oklch, lch(20 none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lch(20 20 none))'
-  assert_true: 'color-mix(in oklch, lch(20 20 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lch(none none 180))'
-  assert_true: 'color-mix(in oklch, lch(none none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lch(20 none none))'
-  assert_true: 'color-mix(in oklch, lch(20 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lch(none 20 none))'
-  assert_true: 'color-mix(in oklch, lch(none 20 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lch(none none none))'
-  assert_true: 'color-mix(in oklch, lch(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklch(none 0.2 180))'
-  assert_true: 'color-mix(in oklch, oklch(none 0.2 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklch(0.2 none 180))'
-  assert_true: 'color-mix(in oklch, oklch(0.2 none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklch(0.2 0.2 none))'
-  assert_true: 'color-mix(in oklch, oklch(0.2 0.2 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklch(none none 180))'
-  assert_true: 'color-mix(in oklch, oklch(none none 180))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklch(0.2 none none))'
-  assert_true: 'color-mix(in oklch, oklch(0.2 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklch(none 0.2 none))'
-  assert_true: 'color-mix(in oklch, oklch(none 0.2 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklch(none none none))'
-  assert_true: 'color-mix(in oklch, oklch(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lab(none 10 10))'
-  assert_true: 'color-mix(in oklch, lab(none 10 10))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   oklch(none 0.263895 175.282)\nExpected: oklch(none 0.26412556 175.27132911).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 175.27132911 +/- 0.01, expected 175.27132911 but got 175.282
 [FAIL] Property color value 'color-mix(in oklch, lab(50 none 10))'
-  assert_true: 'color-mix(in oklch, lab(50 none 10))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   oklch(0.567889 0.0256665 91.4902)\nExpected: oklch(0.56788978 0.02565454 91.47921894).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 91.47921894 +/- 0.01, expected 91.47921894 but got 91.4902
 [FAIL] Property color value 'color-mix(in oklch, lab(50 10 none))'
-  assert_true: 'color-mix(in oklch, lab(50 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lab(none none 10))'
-  assert_true: 'color-mix(in oklch, lab(none none 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lab(50 none none))'
-  assert_true: 'color-mix(in oklch, lab(50 none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   oklch(0.572205 0.0297953 359.505)\nExpected: oklch(0.57220592 0.02980361 359.47844895).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 359.47844895 +/- 0.01, expected 359.47844895 but got 359.505
 [FAIL] Property color value 'color-mix(in oklch, lab(none 10 none))'
-  assert_true: 'color-mix(in oklch, lab(none 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, lab(none none none))'
-  assert_true: 'color-mix(in oklch, lab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklab(none 0.1 0.1))'
-  assert_true: 'color-mix(in oklch, oklab(none 0.1 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklab(0.5 none 0.1))'
-  assert_true: 'color-mix(in oklch, oklab(0.5 none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklab(0.5 0.1 none))'
-  assert_true: 'color-mix(in oklch, oklab(0.5 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklab(none none 0.1))'
-  assert_true: 'color-mix(in oklch, oklab(none none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklab(0.5 none none))'
-  assert_true: 'color-mix(in oklch, oklab(0.5 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklab(none 0.1 none))'
-  assert_true: 'color-mix(in oklch, oklab(none 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, oklab(none none none))'
-  assert_true: 'color-mix(in oklch, oklab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, rgb(none none none))'
-  assert_true: 'color-mix(in oklch, rgb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in oklch, color(display-p3 none none none))'
-  assert_true: 'color-mix(in oklch, color(display-p3 none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, rgb(none 50 100))'
-  assert_true: 'color-mix(in srgb, rgb(none 50 100))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, rgb(25 none 100))'
-  assert_true: 'color-mix(in srgb, rgb(25 none 100))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, rgb(25 50 none))'
-  assert_true: 'color-mix(in srgb, rgb(25 50 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, rgb(none none 100))'
-  assert_true: 'color-mix(in srgb, rgb(none none 100))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, rgb(25 none none))'
-  assert_true: 'color-mix(in srgb, rgb(25 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, rgb(none 50 none))'
-  assert_true: 'color-mix(in srgb, rgb(none 50 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, rgb(none none none))'
-  assert_true: 'color-mix(in srgb, rgb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(display-p3 none 0.5 1))'
-  assert_true: 'color-mix(in srgb, color(display-p3 none 0.5 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(display-p3 0.25 none 1))'
-  assert_true: 'color-mix(in srgb, color(display-p3 0.25 none 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(display-p3 0.25 0.5 none))'
-  assert_true: 'color-mix(in srgb, color(display-p3 0.25 0.5 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(display-p3 none none 1))'
-  assert_true: 'color-mix(in srgb, color(display-p3 none none 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(display-p3 0.25 none none))'
-  assert_true: 'color-mix(in srgb, color(display-p3 0.25 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(display-p3 none 0.5 none))'
-  assert_true: 'color-mix(in srgb, color(display-p3 none 0.5 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(display-p3 none none none))'
-  assert_true: 'color-mix(in srgb, color(display-p3 none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz none 0.5 1))'
-  assert_true: 'color-mix(in srgb, color(xyz none 0.5 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz 0.25 none 1))'
-  assert_true: 'color-mix(in srgb, color(xyz 0.25 none 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz 0.25 0.5 none))'
-  assert_true: 'color-mix(in srgb, color(xyz 0.25 0.5 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz none none 1))'
-  assert_true: 'color-mix(in srgb, color(xyz none none 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz 0.25 none none))'
-  assert_true: 'color-mix(in srgb, color(xyz 0.25 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz none 0.5 none))'
-  assert_true: 'color-mix(in srgb, color(xyz none 0.5 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz none none none))'
-  assert_true: 'color-mix(in srgb, color(xyz none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz-d50 none 0.5 1))'
-  assert_true: 'color-mix(in srgb, color(xyz-d50 none 0.5 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz-d50 0.25 none 1))'
-  assert_true: 'color-mix(in srgb, color(xyz-d50 0.25 none 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz-d50 0.25 0.5 none))'
-  assert_true: 'color-mix(in srgb, color(xyz-d50 0.25 0.5 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz-d50 none none 1))'
-  assert_true: 'color-mix(in srgb, color(xyz-d50 none none 1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz-d50 0.25 none none))'
-  assert_true: 'color-mix(in srgb, color(xyz-d50 0.25 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz-d50 none 0.5 none))'
-  assert_true: 'color-mix(in srgb, color(xyz-d50 none 0.5 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, color(xyz-d50 none none none))'
-  assert_true: 'color-mix(in srgb, color(xyz-d50 none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, hwb(none none none))'
-  assert_true: 'color-mix(in srgb, hwb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, hsl(none none none))'
-  assert_true: 'color-mix(in srgb, hsl(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, lab(none none none))'
-  assert_true: 'color-mix(in srgb, lab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in srgb, oklab(none none none))'
-  assert_true: 'color-mix(in srgb, oklab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, lab(none 10 10))'
-  assert_true: 'color-mix(in lab, lab(none 10 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, lab(50 none 10))'
-  assert_true: 'color-mix(in lab, lab(50 none 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, lab(50 10 none))'
-  assert_true: 'color-mix(in lab, lab(50 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, lab(none none 10))'
-  assert_true: 'color-mix(in lab, lab(none none 10))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, lab(50 none none))'
-  assert_true: 'color-mix(in lab, lab(50 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, lab(none 10 none))'
-  assert_true: 'color-mix(in lab, lab(none 10 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, lab(none none none))'
-  assert_true: 'color-mix(in lab, lab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, oklab(none 0.1 0.1))'
-  assert_true: 'color-mix(in lab, oklab(none 0.1 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, oklab(0.5 none 0.1))'
-  assert_true: 'color-mix(in lab, oklab(0.5 none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, oklab(0.5 0.1 none))'
-  assert_true: 'color-mix(in lab, oklab(0.5 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, oklab(none none 0.1))'
-  assert_true: 'color-mix(in lab, oklab(none none 0.1))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, oklab(0.5 none none))'
-  assert_true: 'color-mix(in lab, oklab(0.5 none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, oklab(none 0.1 none))'
-  assert_true: 'color-mix(in lab, oklab(none 0.1 none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, oklab(none none none))'
-  assert_true: 'color-mix(in lab, oklab(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, hwb(none none none))'
-  assert_true: 'color-mix(in lab, hwb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, hsl(none none none))'
-  assert_true: 'color-mix(in lab, hsl(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, rgb(none none none))'
-  assert_true: 'color-mix(in lab, rgb(none none none))' is a supported value for color. expected true got false
-[FAIL] Property color value 'color-mix(in lab, color(display-p3 none none none))'
-  assert_true: 'color-mix(in lab, color(display-p3 none none none))' is a supported value for color. expected true got false
+  Colors do not match.\nActual:   oklch(none 0.209454 355.282)\nExpected: oklch(none 0.2096366 355.27132911).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 355.27132911 +/- 0.01, expected 355.27132911 but got 355.282
 Harness: the test ran to completion.
 
