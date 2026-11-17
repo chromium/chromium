@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/launchpad/features.h"
 #include "chrome/browser/launchpad/launchpad_service.h"
+#include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
@@ -31,7 +32,9 @@ LaunchpadServiceFactory::LaunchpadServiceFactory()
           "LaunchpadService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(PersonalContextServiceFactory::GetInstance());
+}
 
 LaunchpadServiceFactory::~LaunchpadServiceFactory() = default;
 
@@ -41,5 +44,12 @@ LaunchpadServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(launchpad::features::kLaunchpad)) {
     return nullptr;
   }
-  return std::make_unique<launchpad::LaunchpadService>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  personal_context::PersonalContextService* personal_context_service =
+      PersonalContextServiceFactory::GetForProfile(profile);
+  if (!personal_context_service) {
+    return nullptr;
+  }
+  return std::make_unique<launchpad::LaunchpadService>(
+      personal_context_service);
 }
