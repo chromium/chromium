@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <ostream>
+
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/protocol/client_commands.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
@@ -26,6 +30,34 @@ using testing::Ge;
 using testing::Le;
 
 namespace {
+
+class PollSyncCycleChecker : public SingleClientStatusChangeChecker {
+ public:
+  // `service` must not be null and must outlive this object.
+  explicit PollSyncCycleChecker(syncer::SyncServiceImpl* service)
+      : SingleClientStatusChangeChecker(service) {}
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for a periodic poll sync cycle";
+    return poll_cycle_completed_;
+  }
+
+  // syncer::SyncServiceObserver implementation.
+  void OnSyncCycleCompleted(syncer::SyncService* sync) override {
+    const syncer::SyncCycleSnapshot& snap =
+        service()->GetLastCycleSnapshotForDebugging();
+    if (snap.is_initialized() &&
+        snap.get_updates_origin() == sync_pb::SyncEnums::PERIODIC &&
+        !snap.poll_finish_time().is_null()) {
+      poll_cycle_completed_ = true;
+    }
+    CheckExitCondition();
+  }
+
+ private:
+  bool poll_cycle_completed_ = false;
+};
 
 class SingleClientPollingSyncTest
     : public SyncTest,
@@ -148,6 +180,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
                        ShouldPollWhenIntervalExpiredAcrossRestarts) {
   ASSERT_TRUE(SetupClients());
+  PollSyncCycleChecker poll_checker(GetSyncService(0));
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   syncer::SyncTransportDataPrefs remote_prefs(
@@ -155,11 +188,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPollingSyncTest,
       GetClient(0)->GetGaiaIdHashForPrimaryAccount());
   ASSERT_FALSE(remote_prefs.GetLastPollTime().is_null());
 
-  // After restart, the last sync cycle snapshot should be empty.
-  // Once a sync request happened (e.g. by a poll), that snapshot is populated.
-  // We use the following checker to simply wait for an non-empty snapshot.
-  EXPECT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
+  // Wait for a periodic poll sync cycle to occur upon startup.
+  EXPECT_TRUE(poll_checker.Wait());
 }
 
 }  // namespace
