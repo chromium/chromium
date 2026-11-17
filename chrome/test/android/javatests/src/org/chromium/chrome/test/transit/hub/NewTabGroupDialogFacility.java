@@ -15,8 +15,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.base.test.transit.ViewElement.inDialogOption;
-import static org.chromium.base.test.transit.ViewElement.newOptions;
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
+import static org.chromium.base.test.transit.ViewElement.unscopedOption;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.content.Context;
@@ -100,18 +100,15 @@ public class NewTabGroupDialogFacility<
         if (mTabIdsToGroup == null) {
             initTabGroupCreatedCondition();
         } else {
-            titleInputElement = declareView(createTitleViewSpec(), inDialogOption());
+            titleInputElement = declareView(createTitleViewSpec());
             declareEnterCondition(
                     new TabGroupExistsCondition(getHostStation().tabModelElement, mTabIdsToGroup));
         }
 
         dialogElement =
-                declareView(
-                        withId(R.id.visual_data_dialog_layout),
-                        newOptions().inDialog().displayingAtLeast(80).build());
+                declareView(withId(R.id.visual_data_dialog_layout), displayingAtLeastOption(80));
         declareView(
-                viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group"))),
-                inDialogOption());
+                viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group"))));
 
         // TODO(crbug.com/346377124): Partially cut off in android_30_google_apis_x86.textpb
         colorPickerElement = declareView(withId(R.id.color_picker_container));
@@ -125,10 +122,10 @@ public class NewTabGroupDialogFacility<
                             colorPickerIconSpec(
                                     color,
                                     mSelectedColor != null ? color.equals(mSelectedColor) : null),
-                            ViewElement.newOptions().inDialog().unscoped().build());
+                            unscopedOption());
         }
 
-        doneButtonElement = declareView(withId(R.id.positive_button), inDialogOption());
+        doneButtonElement = declareView(withId(R.id.positive_button));
     }
 
     private ViewSpec<View> createTitleViewSpec() {
@@ -150,8 +147,7 @@ public class NewTabGroupDialogFacility<
                                     () -> tabModel.getTabsInGroup(tabGroupIdElement.value()));
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
-                    titleInputElement =
-                            delayedElements.declareView(createTitleViewSpec(), inDialogOption());
+                    titleInputElement = delayedElements.declareView(createTitleViewSpec());
                 });
     }
 

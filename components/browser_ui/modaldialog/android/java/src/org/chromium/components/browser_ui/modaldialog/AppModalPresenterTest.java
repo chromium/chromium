@@ -50,7 +50,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -153,7 +152,7 @@ public class AppModalPresenterTest {
         showDialogInRoot(mManager, dialog1, ModalDialogType.APP);
         showDialogInRoot(mManager, dialog2, ModalDialogType.APP);
         checkPendingSize(mManager, ModalDialogType.APP, 1);
-        ViewFinder.waitForView(withText("1"), ViewElement.inDialogOption());
+        ViewFinder.waitForView(withText("1"));
         checkCurrentPresenter(mManager, ModalDialogType.APP);
 
         // Perform back press. The first app modal dialog should be dismissed, and the second one
@@ -162,7 +161,7 @@ public class AppModalPresenterTest {
         Espresso.pressBack();
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         ViewFinder.waitForNoView(withText("1"));
-        ViewFinder.waitForView(withText("2"), ViewElement.inDialogOption());
+        ViewFinder.waitForView(withText("2"));
         checkCurrentPresenter(mManager, ModalDialogType.APP);
 
         // Perform a second back press. The second app modal dialog should be dismissed.

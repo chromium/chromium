@@ -324,11 +324,6 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
                 return this;
             }
 
-            /** Expect the View to be in a dialog root. */
-            public Builder inDialog() {
-                return rootSpec(RootSpec.dialogRoot());
-            }
-
             /**
              * Expect the View to be disabled instead of enabled.
              *
@@ -406,11 +401,6 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> implements V
     /** Convenience {@link Options} setting unscoped(). */
     public static Options unscopedOption() {
         return newOptions().unscoped().build();
-    }
-
-    /** Convenience {@link Options} setting inDialog(). */
-    public static Options inDialogOption() {
-        return newOptions().inDialog().build();
     }
 
     /** Convenience {@link Options} setting expectDisabled(). */

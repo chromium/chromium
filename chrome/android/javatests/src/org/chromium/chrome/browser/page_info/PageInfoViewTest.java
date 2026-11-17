@@ -268,9 +268,7 @@ public class PageInfoViewTest {
                                     ChromePageInfoHighlight.highlightPermission(
                                             highlightedPermission));
                 });
-        waitForView(
-                withId(R.id.page_info_url_wrapper),
-                ViewElement.newOptions().inDialog().allowDisabled().build());
+        waitForView(withId(R.id.page_info_url_wrapper), ViewElement.allowDisabledOption());
     }
 
     private static class TestChromePageInfoControllerDelegate
@@ -330,9 +328,7 @@ public class PageInfoViewTest {
                             ChromePageInfoHighlight.noHighlight(),
                             Gravity.TOP);
                 });
-        waitForView(
-                withId(R.id.page_info_url_wrapper),
-                ViewElement.newOptions().inDialog().allowDisabled().build());
+        waitForView(withId(R.id.page_info_url_wrapper), ViewElement.allowDisabledOption());
         return delegateHolder[0];
     }
 

@@ -24,7 +24,6 @@ import androidx.annotation.Nullable;
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -196,10 +195,7 @@ public class ModalDialogTestUtils {
     public static void showDialogInRoot(
             ModalDialogManager manager, PropertyModel model, @ModalDialogType int dialogType) {
         ThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
-        ViewFinder.waitForView(
-                ModalDialogView.class,
-                withId(R.id.modal_dialog_view),
-                ViewElement.inDialogOption());
+        ViewFinder.waitForView(ModalDialogView.class, withId(R.id.modal_dialog_view));
     }
 
     /** Checks whether the number of pending dialogs of a specified type is as expected. */
