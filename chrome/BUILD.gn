@@ -208,7 +208,6 @@ if (!is_android && !is_mac) {
         ":chrome_dll",
         ":chrome_exe_version",
         ":copy_first_run",
-        ":copy_minibranch",
         ":visual_elements_resources",
         "//base",
         "//build:branding_buildflags",
@@ -496,13 +495,6 @@ if (is_win) {
       sources = [ compatible_versions_file ]
       outputs = [ "$root_out_dir/COMPATIBLE_VERSIONS" ]
     }
-  }
-
-  # TODO(crbug.com/562102239): Remove along with //build/util/MINIBRANCH.dummy
-  # once src-internal archives COMPATIBLE_VERSIONS instead of MINIBRANCH.
-  copy("copy_minibranch") {
-    sources = [ "//build/util/MINIBRANCH.dummy" ]
-    outputs = [ "$root_out_dir/MINIBRANCH" ]
   }
 } else if (is_mac) {
   chrome_helper_name = chrome_product_full_name + " Helper"
