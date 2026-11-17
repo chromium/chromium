@@ -4,8 +4,10 @@
 
 #include "components/page_image_service/image_service_impl.h"
 
+#include <algorithm>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -168,23 +170,28 @@ void ImageServiceImpl::FetchSuggestImage(const TemplateURL* template_url,
   auto fetcher = std::make_unique<SuggestEntityImageURLFetcher>(
       *autocomplete_scheme_classifier_, client_id, search_query, entity_id);
 
-  // Use a raw pointer temporary so we can give ownership of the unique_ptr to
-  // the callback and have a well defined SuggestEntityImageURLFetcher lifetime.
   auto* fetcher_raw_ptr = fetcher.get();
+  pending_suggest_fetchers_.push_back(std::move(fetcher));
   fetcher_raw_ptr->Start(
       template_url, search_terms_data, remote_suggestions_service_,
       base::BindOnce(&ImageServiceImpl::OnSuggestImageFetched,
-                     weak_factory_.GetWeakPtr(), std::move(fetcher),
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(),
+                     base::Unretained(fetcher_raw_ptr), std::move(callback)));
 }
 
 void ImageServiceImpl::OnSuggestImageFetched(
-    std::unique_ptr<SuggestEntityImageURLFetcher> fetcher,
+    SuggestEntityImageURLFetcher* fetcher,
     ResultCallback callback,
     const GURL& image_url) {
+  // The callback may destroy this service, so release the completed fetcher
+  // while its scheme classifier is still alive and do not access members after
+  // running the callback.
+  CHECK_EQ(std::erase_if(pending_suggest_fetchers_,
+                         [fetcher](const auto& pending) {
+                           return pending.get() == fetcher;
+                         }),
+           1u);
   std::move(callback).Run(image_url);
-
-  // `fetcher` is owned by this method and will be deleted now.
 }
 
 void ImageServiceImpl::FetchOptimizationGuideImage(mojom::ClientId client_id,

@@ -4,14 +4,19 @@
 
 #include "components/page_image_service/image_service_impl.h"
 
+#include <initializer_list>
 #include <memory>
+#include <string>
 
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -326,6 +331,106 @@ TEST_F(ImageServiceImplTest, SuggestBackendEndToEnd) {
                 "PageImageService.Backend.Suggest.Result.Journeys",
                 PageImageServiceResult::kSuccess),
             1);
+}
+
+TEST_F(ImageServiceImplTest, DestructionCancelsPendingSuggestRequests) {
+  mojom::Options options;
+  options.suggest_images = true;
+  int callback_count = 0;
+  for (const char* query : {"santa+monica", "los+angeles"}) {
+    image_service_->FetchImageFor(
+        mojom::ClientId::Journeys,
+        GURL(std::string("https://www.google.com/search?q=") + query), options,
+        base::BindLambdaForTesting([&](const GURL&) { ++callback_count; }));
+  }
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 2);
+  base::test::TestFuture<void> first_disconnected;
+  base::test::TestFuture<void> second_disconnected;
+  test_url_loader_factory_.GetPendingRequest(0)->client.set_disconnect_handler(
+      first_disconnected.GetCallback());
+  test_url_loader_factory_.GetPendingRequest(1)->client.set_disconnect_handler(
+      second_disconnected.GetCallback());
+
+  image_service_.reset();
+
+  ASSERT_TRUE(first_disconnected.Wait());
+  ASSERT_TRUE(second_disconnected.Wait());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(callback_count, 0);
+  histogram_tester_.ExpectTotalCount("PageImageService.Backend.Suggest.Result",
+                                     0);
+}
+
+TEST_F(ImageServiceImplTest, SuggestCallbackCanDestroyService) {
+  mojom::Options options;
+  options.suggest_images = true;
+  base::test::TestFuture<void> completed;
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys,
+      GURL("https://www.google.com/search?q=santa+monica"), options,
+      base::BindLambdaForTesting([&](const GURL& url) {
+        EXPECT_TRUE(url.is_empty());
+        image_service_.reset();
+        completed.SetValue();
+      }));
+  int pending_callback_count = 0;
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys,
+      GURL("https://www.google.com/search?q=los+angeles"), options,
+      base::BindLambdaForTesting(
+          [&](const GURL&) { ++pending_callback_count; }));
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 2);
+  const GURL request_url =
+      test_url_loader_factory_.GetPendingRequest(0)->request.url;
+  base::test::TestFuture<void> disconnected;
+  test_url_loader_factory_.GetPendingRequest(1)->client.set_disconnect_handler(
+      disconnected.GetCallback());
+
+  test_url_loader_factory_.AddResponse(request_url.spec(),
+                                       R"(["santa monica", ["santa monica"]])");
+
+  ASSERT_TRUE(completed.Wait());
+  ASSERT_TRUE(disconnected.Wait());
+  EXPECT_FALSE(image_service_);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(pending_callback_count, 0);
+  histogram_tester_.ExpectUniqueSample(
+      "PageImageService.Backend.Suggest.Result",
+      PageImageServiceResult::kNoImage, 1);
+}
+
+TEST_F(ImageServiceImplTest, DestructionBeforePostedSuggestCompletion) {
+  TemplateURLService* template_url_service =
+      search_engines_test_environment_.template_url_service();
+  template_url_service->Load();
+  TemplateURLData data;
+  data.SetShortName(u"Google without suggest");
+  data.SetKeyword(u"nosuggest");
+  data.SetURL("https://www.google.co.uk/search?q={searchTerms}");
+  ASSERT_TRUE(template_url_service->Add(std::make_unique<TemplateURL>(data)));
+
+  mojom::Options options;
+  options.suggest_images = true;
+  int callback_count = 0;
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys,
+      GURL("https://www.google.co.uk/search?q=santa+monica"), options,
+      base::BindLambdaForTesting([&](const GURL&) { ++callback_count; }));
+  EXPECT_EQ(callback_count, 0);
+  // Confirm the request reached the no-suggestions-URL path before teardown.
+  histogram_tester_.ExpectUniqueSample(
+      "PageImageService.Backend.Suggest.Result",
+      PageImageServiceResult::kResponseMissing, 1);
+
+  image_service_.reset();
+  // Wait past the completion already posted on this sequence.
+  base::test::TestFuture<void> drained;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, drained.GetCallback());
+  ASSERT_TRUE(drained.Wait());
+
+  EXPECT_EQ(callback_count, 0);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
 // Regression test for crbug.com/577867847. If the TemplateURL matched for a

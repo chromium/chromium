@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -109,10 +110,9 @@ class ImageServiceImpl : public ImageService {
                          ResultCallback callback);
 
   // Callback for `FetchSuggestImage`.
-  void OnSuggestImageFetched(
-      std::unique_ptr<SuggestEntityImageURLFetcher> fetcher,
-      ResultCallback callback,
-      const GURL& image_url);
+  void OnSuggestImageFetched(SuggestEntityImageURLFetcher* fetcher,
+                             ResultCallback callback,
+                             const GURL& image_url);
 
   // Fetches an image from Optimization Guide appropriate for the parameters.
   // This internally puts the request into a queue for batching purposes.
@@ -148,6 +148,11 @@ class ImageServiceImpl : public ImageService {
 
   // Used to make proper suggest requests.
   std::unique_ptr<AutocompleteSchemeClassifier> autocomplete_scheme_classifier_;
+
+  // Destroy pending requests before their scheme classifier. Completion removes
+  // the fetcher from this collection before invoking the caller's callback.
+  std::vector<std::unique_ptr<SuggestEntityImageURLFetcher>>
+      pending_suggest_fetchers_;
 
   base::flat_map<mojom::ClientId, OptGuideClientState>
       opt_guide_client_states_;

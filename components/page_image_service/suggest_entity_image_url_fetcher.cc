@@ -59,8 +59,8 @@ void SuggestEntityImageURLFetcher::Start(
                      weak_factory_.GetWeakPtr()));
 
   // No request is started if `template_url` has no valid suggestions URL.
-  // Still notify the caller. Post the callback, because it owns this fetcher
-  // (see ImageServiceImpl::FetchSuggestImage()).
+  // Still notify the caller. Post the callback because it may destroy this
+  // fetcher, and Start() must finish before that happens.
   if (!loader_) {
     UmaHistogramEnumerationForClient(kBackendSuggestResultHistogramName,
                                      PageImageServiceResult::kResponseMissing,
