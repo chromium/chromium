@@ -25,6 +25,8 @@ source_set("organizer_panel") {
   sources = [
     "foreign_tabs_page_handler.cc",
     "foreign_tabs_page_handler.h",
+    "organizer_panel_handler_utils.cc",
+    "organizer_panel_handler_utils.h",
     "organizer_panel_page_handler.cc",
     "organizer_panel_page_handler.h",
     "organizer_panel_ui.cc",

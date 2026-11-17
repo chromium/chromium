@@ -18,6 +18,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/webui/organizer_panel/organizer_panel_handler_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
@@ -27,7 +28,6 @@
 #include "components/sync_sessions/synced_session.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/time_format.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -40,13 +40,6 @@
 #endif
 
 namespace {
-
-std::string GetLastActiveElapsedText(const base::Time& last_active_time) {
-  const base::TimeDelta elapsed =
-      std::max(base::TimeDelta(), base::Time::Now() - last_active_time);
-  return base::UTF16ToUTF8(ui::TimeFormat::Simple(
-      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT, elapsed));
-}
 
 base::Time GetTabTimestamp(const sessions::SessionTab& tab) {
   if (!tab.timestamp.is_null()) {
@@ -188,10 +181,9 @@ void ForeignTabsPageHandler::GetForeignTabs(GetForeignTabsCallback callback) {
     }
     tab_mojom->title = title;
     tab_mojom->url = current_navigation.virtual_url();
-    base::Time timestamp = GetTabTimestamp(*session_tab);
-    if (!timestamp.is_null()) {
-      tab_mojom->last_active_elapsed_text = GetLastActiveElapsedText(timestamp);
-    }
+    tab_mojom->last_active_elapsed_text =
+        organizer_panel::GetLastActiveElapsedText(
+            GetTabTimestamp(*session_tab));
     tab_mojom->device_name = data.device_name;
 
     result.push_back(std::move(tab_mojom));
