@@ -166,13 +166,8 @@ external/wpt/html/interaction/focus/the-autofocus-attribute/first-reconnected.ht
 external/wpt/html/interaction/focus/the-autofocus-attribute/not-on-first-task.html
 external/wpt/html/interaction/focus/the-autofocus-attribute/queue-non-focusable.html
 external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html
-external/wpt/html/rendering/non-replaced-elements/form-controls/select-sizing-001.html
-external/wpt/html/rendering/non-replaced-elements/form-controls/text-transform.html
-external/wpt/html/rendering/pixel-length-attributes.html
 external/wpt/html/rendering/widgets/baseline-alignment-and-overflow.tentative.html
 external/wpt/html/rendering/widgets/input-time-content-size.html
-external/wpt/html/rendering/widgets/textarea-scrollbar-sizing-*
-external/wpt/html/rendering/widgets/the-select-element/option-empty-label-to-empty-string.html
 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-iframe-loading-lazy-nav-form-submit.html
 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-iframe-loading-lazy-nav-link-click-fragment.html
 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-iframe-loading-lazy-nav-meta-refresh.optional.html
