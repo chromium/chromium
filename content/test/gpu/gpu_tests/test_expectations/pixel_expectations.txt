@@ -553,6 +553,8 @@ crbug.com/466128059 [ mac apple-angle-metal-renderer:-apple-m3 no-clang-coverage
 crbug.com/466128059 [ mac apple-angle-metal-renderer:-apple-m3 no-clang-coverage no-asan release ] Pixel_MeetEffects_web_gpu_background_blur_gpu_mid [ RetryOnFailure Slow ]
 crbug.com/545524954 [ win target-cpu-32 ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure ]
 crbug.com/579078928 [ win target-cpu-32 ] Pixel_MeetEffects_web_gpu_background_blur_gpu_mid [ Failure ]
+crbug.com/579078928 [ win target-cpu-32 ] Pixel_MeetEffects_center_me [ RetryOnFailure ]
+crbug.com/579078928 [ win target-cpu-32 ] Pixel_MeetEffects_background_replace_modern_indian_living_room [ RetryOnFailure ]
 
 # Mac AMD flaky directory failures
 crbug.com/444653106 [ mac amd-0x7340 renderer-graphite-dawn-metal ] Pixel_CSSFilterEffects [ Slow ]
