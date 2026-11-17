@@ -206,45 +206,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.InputEventPrediction.Scroll.Frame{ScoreType}"
-    units="pixels" expires_after="2024-12-30">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    NOTE: this metric was expired from M97 to 2023-03-14. Overshoot distance in
-    pixels between a predicted scroll position and the corresponding
-    interpolated real scroll position that occurred at the frame time.
-
-    The difference between {ScoreType} and Frame{ScoreType} is the former uses
-    prediction time and the later uses frame time.
-
-    Team: input-dev@chromium.org.
-  </summary>
-  <token key="ScoreType">
-    <variant name="OverPrediction" summary="Positive score values"/>
-    <variant name="PredictionScore" summary="Score abolute value"/>
-    <variant name="UnderPrediction" summary="Negative score values"/>
-  </token>
-</histogram>
-
-<histogram name="Event.InputEventPrediction.Scroll.{ScoreType}" units="pixels"
-    expires_after="2025-01-26">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    NOTE: this metric was expired from M97 to 2023-03-14. Overshoot distance in
-    pixels between a predicted scroll position and the corresponding
-    interpolated real scroll position that occurred at the frame time.
-
-    Team: input-dev@chromium.org.
-  </summary>
-  <token key="ScoreType">
-    <variant name="OverPrediction" summary="Positive score values"/>
-    <variant name="PredictionScore" summary="Score abolute value"/>
-    <variant name="UnderPrediction" summary="Negative score values"/>
-  </token>
-</histogram>
-
 <histogram name="Event.InputEventPrediction.{InteractionType}.PredictionJitter"
     units="pixels" expires_after="2027-05-09">
   <owner>amanvr@google.com</owner>

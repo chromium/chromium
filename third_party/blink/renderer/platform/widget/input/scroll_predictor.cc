@@ -20,7 +20,8 @@ namespace blink {
 using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
 
 ScrollPredictor::ScrollPredictor()
-    : metrics_handler_("Event.InputEventPrediction.Scroll"),
+    : metrics_handler_("Event.InputEventPrediction.Scroll",
+                       /*report_score_metrics=*/false),
       fling_metrics_handler_("Event.InputEventPrediction.Fling",
                              /*report_score_metrics=*/false) {
   // Get the predictor from feature flags
