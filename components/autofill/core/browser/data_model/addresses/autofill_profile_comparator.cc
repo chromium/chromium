@@ -477,7 +477,7 @@ std::set<std::u16string_view> AutofillProfileComparator::UniqueTokens(
 AutofillProfileComparator::CompareTokensResult
 AutofillProfileComparator::CompareTokens(std::u16string_view s1,
                                          std::u16string_view s2) {
-  // Note: std::include() expects the items in each range to be in sorted order,
+  // Note: std::includes() expects the items in each range to be in sorted order,
   // hence the use of std::set<>.
   std::set<std::u16string_view> t1 = UniqueTokens(s1);
   std::set<std::u16string_view> t2 = UniqueTokens(s2);
