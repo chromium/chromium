@@ -765,6 +765,132 @@ TEST_F(WaylandInputMethodContextV3Test,
   });
 }
 
+// Bubbles are wl_subsurfaces, so zwp_text_input_v3.enter is only received for
+// their root window. Text input must still be enabled for a focused text input
+// client in a bubble when the root window has text input focus.
+TEST_F(WaylandInputMethodContextV3Test, ActivateDeactivateInBubble) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  auto bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 50, 50), &bubble_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->AsWaylandBubble());
+
+  TestInputMethodContextDelegate bubble_ime_delegate(bubble->GetWidget());
+  TestKeyboardDelegate bubble_keyboard_delegate;
+  auto bubble_context = std::make_unique<WaylandInputMethodContext>(
+      connection_.get(), &bubble_keyboard_delegate, &bubble_ime_delegate);
+  bubble_context->SetTextInputV3ForTesting(text_input_v3_.get());
+  bubble_context->SetDesktopEnvironmentForTesting(
+      base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
+
+  // Scenario 1: the root window already has text input focus when the text
+  // input client in the bubble is focused.
+  connection_->window_manager()->SetTextInputFocusedWindow(window_.get());
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(0);
+  });
+  LinuxInputMethodContext::TextInputClientAttributes attributes;
+  attributes.input_type = TEXT_INPUT_TYPE_TEXT;
+  bubble_context->UpdateFocus(true, TEXT_INPUT_TYPE_NONE, attributes,
+                              ui::TextInputClient::FOCUS_REASON_OTHER);
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    Mock::VerifyAndClearExpectations(zwp_text_input);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(0);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
+  });
+
+  // Losing text input focus on the root window disables text input.
+  connection_->window_manager()->SetTextInputFocusedWindow(nullptr);
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    Mock::VerifyAndClearExpectations(zwp_text_input);
+    // Scenario 2: the root window regains text input focus while the text
+    // input client in the bubble is focused.
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(0);
+  });
+  connection_->window_manager()->SetTextInputFocusedWindow(window_.get());
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    Mock::VerifyAndClearExpectations(zwp_text_input);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(0);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
+  });
+
+  // Blurring the text input client in the bubble disables text input.
+  attributes.input_type = TEXT_INPUT_TYPE_NONE;
+  bubble_context->UpdateFocus(true, TEXT_INPUT_TYPE_TEXT, attributes,
+                              ui::TextInputClient::FOCUS_REASON_NONE);
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->text_input_manager_v3()->text_input());
+  });
+}
+
+// zwp_text_input_v3.enter is received for an xdg_popup's own surface, so a
+// bubble parented to a popup must follow the popup's text input focus rather
+// than the root window's.
+TEST_F(WaylandInputMethodContextV3Test, ActivateDeactivateInBubbleOfPopup) {
+  MockWaylandPlatformWindowDelegate popup_delegate(connection_.get());
+  auto popup = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, gfx::Rect(10, 10, 100, 100), &popup_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(popup);
+  ASSERT_TRUE(popup->AsWaylandPopup());
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  auto bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 50, 50), &bubble_delegate,
+      popup->GetWidget());
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->AsWaylandBubble());
+
+  TestInputMethodContextDelegate bubble_ime_delegate(bubble->GetWidget());
+  TestKeyboardDelegate bubble_keyboard_delegate;
+  auto bubble_context = std::make_unique<WaylandInputMethodContext>(
+      connection_.get(), &bubble_keyboard_delegate, &bubble_ime_delegate);
+  bubble_context->SetTextInputV3ForTesting(text_input_v3_.get());
+  bubble_context->SetDesktopEnvironmentForTesting(
+      base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
+
+  // The popup has text input focus: text input is enabled for the bubble.
+  connection_->window_manager()->SetTextInputFocusedWindow(popup.get());
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(0);
+  });
+  LinuxInputMethodContext::TextInputClientAttributes attributes;
+  attributes.input_type = TEXT_INPUT_TYPE_TEXT;
+  bubble_context->UpdateFocus(true, TEXT_INPUT_TYPE_NONE, attributes,
+                              ui::TextInputClient::FOCUS_REASON_OTHER);
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    Mock::VerifyAndClearExpectations(zwp_text_input);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(0);
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
+  });
+
+  // Text input focus moves to the root window: text input is disabled for the
+  // bubble.
+  connection_->window_manager()->SetTextInputFocusedWindow(window_.get());
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->text_input_manager_v3()->text_input());
+  });
+}
+
 TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   // Activate is called only when both InputMethod's TextInputClient focus and
   // Wayland's keyboard focus is met.

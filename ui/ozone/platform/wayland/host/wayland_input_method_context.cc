@@ -907,7 +907,6 @@ void WaylandInputMethodContext::OnModifiersMap(
 
 void WaylandInputMethodContext::OnTextInputFocusChanged(bool focused) {
   CHECK(text_input_v3_);
-  window_focused_ = focused;
   MaybeUpdateActivated(false);
 }
 
@@ -918,6 +917,20 @@ void WaylandInputMethodContext::OnKeyboardFocusChanged(bool focused) {
   }
   window_focused_ = focused;
   MaybeUpdateActivated(false);
+}
+
+bool WaylandInputMethodContext::WindowHasTextInputFocusForTextInputV3() const {
+  if (!text_input_v3_ || !window_) {
+    return false;
+  }
+  // Bubbles are wl_subsurfaces, so zwp_text_input_v3.enter is received for the
+  // surface of their closest xdg_toplevel or xdg_popup ancestor instead.
+  WaylandWindow* target = window_->AsWaylandBubble()
+                              ? window_->GetXdgParentWindow()
+                              : window_.get();
+  auto* focused_window =
+      connection_->window_manager()->GetCurrentTextInputFocusedWindow();
+  return focused_window && focused_window == target;
 }
 
 bool WaylandInputMethodContext::WindowIsActiveForTextInputV1() const {
@@ -941,10 +954,11 @@ void WaylandInputMethodContext::MaybeUpdateActivated(
 
   // Activate Wayland IME only if the following conditions are met:
   // 1) InputMethod has some TextInputClient connected.
-  // 2) The associated window for this context is focused, or there is an
-  //    active window for text-input-v1.
-  bool activated =
-      focused_ && (window_focused_ || WindowIsActiveForTextInputV1());
+  // 2) The associated window for this context (or, for text-input-v3 in a
+  //    bubble, its xdg parent window) is focused, or there is an active window
+  //    for text-input-v1.
+  bool activated = focused_ && (WindowHasTextInputFocusForTextInputV3() ||
+                                WindowIsActiveForTextInputV1());
   if (activated_ == activated)
     return;
 

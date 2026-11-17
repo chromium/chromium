@@ -460,6 +460,10 @@ void WaylandWindow::OnTextInputFocusChanged(bool focused) {
   if (focus_client_) {
     focus_client_->OnTextInputFocusChanged(focused);
   }
+  // Bubbles share the text input focus of their xdg parent window.
+  for (auto bubble : child_bubbles_) {
+    bubble->OnTextInputFocusChanged(focused);
+  }
 }
 
 bool WaylandWindow::HasPointerFocus() const {

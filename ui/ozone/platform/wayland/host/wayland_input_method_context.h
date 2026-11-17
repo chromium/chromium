@@ -117,6 +117,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void Focus(bool skip_virtual_keyboard_update);
   void Blur(bool skip_virtual_keyboard_update);
   void UpdatePreeditText(const std::u16string& preedit_text);
+  bool WindowHasTextInputFocusForTextInputV3() const;
   bool WindowIsActiveForTextInputV1() const;
   // If |skip_virtual_keyboard_update| is true, no virtual keyboard show/hide
   // requests will be sent. This is used to prevent flickering the virtual
@@ -154,7 +155,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // Tracks whether InputMethod in Chrome has some focus.
   bool focused_ = false;
 
-  // Tracks whether the window associated with the input method is focused.
+  // Tracks whether the window associated with the input method has keyboard
+  // focus. Only used for text-input-v1.
   bool window_focused_ = false;
 
   // Tracks whether a request to activate InputMethod is sent to wayland
