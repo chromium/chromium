@@ -34,11 +34,11 @@
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include "components/upload_list/crash_upload_list.h"
-#include "components/version_info/version_info.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/debug/dump_without_crashing.h"
+#include "components/version_info/version_info.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -49,6 +49,10 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "build/util/LASTCHANGE_commit_position.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#include "base/rand_util.h"
 #endif
 
 namespace {
@@ -233,14 +237,33 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
 // ChromeOS relies on the system crash_reporter (via kernel core_pattern) to
 // catch chrome_crashpad_handler crashes, so it uses the base class default
 // (false) instead of spawning a second --monitor-self handler process.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 bool ChromeCrashReporterClient::ShouldMonitorCrashHandlerExpensively() {
-  // TODO(jperaza): Turn this on less frequently for stable channels when
-  // Crashpad is always enabled on Linux. Consider combining with the
-  // macOS implementation.
-  return true;
+  // This mechanism dedicates a process to be crashpad_handler's own
+  // crashpad_handler. In Google Chrome, scale back on this in the more stable
+  // channels. Other builds are of more of a developmental nature, so always
+  // enable the additional crash reporting.
+  double probability;
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::STABLE:
+      probability = 0.01;
+      break;
+
+    case version_info::Channel::BETA:
+      probability = 0.1;
+      break;
+
+    case version_info::Channel::DEV:
+      probability = 0.25;
+      break;
+
+    default:
+      return true;
+  }
+
+  return base::RandDouble() < probability;
 }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 bool ChromeCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
