@@ -1,0 +1,6 @@
+Tests that DOM.getTopLayerElements handles the top layer changing while it pushes nodes to the frontend.
+Top layer elements:
+DIALOG#outer
+::backdrop
+DIALOG#inner
+

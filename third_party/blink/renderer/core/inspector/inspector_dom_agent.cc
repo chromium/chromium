@@ -1046,11 +1046,28 @@ protocol::Response InspectorDOMAgent::getTopLayerElements(
     return protocol::Response::ServerError("DOM agent hasn't been enabled");
 
   *result = std::make_unique<protocol::Array<int>>();
-  for (const auto& document : Documents()) {
+  const HeapVector<Member<Document>> documents = Documents();
+  // Pushing a node to the frontend can serialize <slot> elements, which
+  // recalculates the slot assignment. That can remove elements from the top
+  // layer, e.g. the ::backdrop of a dialog that is no longer slotted. So push
+  // from a copy of each list, and do it for all documents before collecting
+  // any ids, since pushing a node in a subframe also serializes its ancestors
+  // in the parent document.
+  for (const auto& document : documents) {
+    const HeapVector<Member<Element>> elements = document->TopLayerElements();
+    for (const auto& element : elements) {
+      if (element->IsInTopLayer()) {
+        PushNodePathToFrontend(element);
+      }
+    }
+  }
+  // Report the elements that are in the top layer now. Looking up a bound id
+  // has no side effects, so the lists cannot change during this pass.
+  for (const auto& document : documents) {
     for (const auto& element : document->TopLayerElements()) {
-      int node_id = PushNodePathToFrontend(element);
-      if (node_id)
+      if (int node_id = BoundNodeId(element)) {
         (*result)->emplace_back(node_id);
+      }
     }
   }
 
