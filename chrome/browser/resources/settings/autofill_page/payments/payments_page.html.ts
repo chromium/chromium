@@ -191,10 +191,19 @@ export function getHtml(this: SettingsPaymentsPageElement) {
     </cr-lazy-render-lit>
 
     ${this.showCreditCardDialog_ ? html`
-      <settings-credit-card-edit-dialog .creditCard="${this.activeCreditCard_!}"
-          @close="${this.onCreditCardDialogClose_}"
-          @save-credit-card="${this.onSaveCreditCard_}">
-      </settings-credit-card-edit-dialog>
+      ${this.settingsRefresh2026Enabled_ ? html`
+        <settings-credit-card-edit-dialog-v2
+            .creditCard="${this.activeCreditCard_!}"
+            @close="${this.onCreditCardDialogClose_}"
+            @save-credit-card="${this.onSaveCreditCard_}">
+        </settings-credit-card-edit-dialog-v2>
+      ` : html`
+        <settings-credit-card-edit-dialog
+            .creditCard="${this.activeCreditCard_!}"
+            @close="${this.onCreditCardDialogClose_}"
+            @save-credit-card="${this.onSaveCreditCard_}">
+        </settings-credit-card-edit-dialog>
+      `}
     ` : ''}
     ${this.showIbanDialog_ ? html`
       <settings-iban-edit-dialog .iban="${this.activeIban_}"
@@ -237,7 +246,6 @@ export function getHtml(this: SettingsPaymentsPageElement) {
           @close="${this.onShowBulkRemoveCvcConfirmationDialogClose_}">
       </settings-simple-confirmation-dialog>
     ` : ''}
-
   </div>
 
 </settings-subpage>

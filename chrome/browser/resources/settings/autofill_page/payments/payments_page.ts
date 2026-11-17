@@ -16,6 +16,7 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_subpage.js';
 import '../../simple_confirmation_dialog.js';
 import './credit_card_edit_dialog.js';
+import './credit_card_edit_dialog_v2.js';
 import './iban_edit_dialog.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
@@ -171,6 +172,8 @@ export class SettingsPaymentsPageElement extends
       shouldShowPayOverTimeSettings_: {type: Boolean},
 
       prefsInitialized_: {type: Boolean},
+
+      settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
 
@@ -205,6 +208,8 @@ export class SettingsPaymentsPageElement extends
   protected accessor shouldShowPayOverTimeSettings_: boolean =
       loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
   private accessor prefsInitialized_: boolean = false;
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();

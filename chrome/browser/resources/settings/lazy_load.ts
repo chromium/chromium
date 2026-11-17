@@ -198,6 +198,7 @@ export type {Passkey, PasskeysBrowserProxy} from './autofill_page/passwords/pass
 export {SettingsPasskeysPageElement} from './autofill_page/passwords/passkeys_page.js';
 // </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/payments/credit_card_edit_dialog.js';
+export {SettingsCreditCardEditDialogV2Element} from './autofill_page/payments/credit_card_edit_dialog_v2.js';
 export {SettingsCreditCardListEntryElement} from './autofill_page/payments/credit_card_list_entry.js';
 export {SettingsIbanEditDialogElement} from './autofill_page/payments/iban_edit_dialog.js';
 export {SettingsIbanListEntryElement} from './autofill_page/payments/iban_list_entry.js';
