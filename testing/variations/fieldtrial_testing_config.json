@@ -994,6 +994,23 @@
             ]
         }
     ],
+    "AndroidSystemFontPrewarming": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidSystemFontPrewarming"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidTabDeclutterIPH": [
         {
             "platforms": [
