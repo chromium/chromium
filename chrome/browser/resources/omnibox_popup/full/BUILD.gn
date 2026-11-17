@@ -14,12 +14,10 @@ build_webui("build") {
   ts_files = [
     "full_app.html.ts",
     "full_app.ts",
-    "lazy_load.ts",
     "omnibox_popup_full.ts",
     "omnibox_popup_searchbox.html.ts",
     "omnibox_popup_searchbox.ts",
     "textfield_model.ts",
-    "window_proxy.ts",
   ]
   css_files = [ "omnibox_popup_searchbox.css" ]
   ts_composite = true
@@ -44,10 +42,7 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "omnibox-popup.top-chrome"
-    optimize_webui_in_files = [
-      "lazy_load.js",
-      "omnibox_popup_full.js",
-    ]
+    optimize_webui_in_files = [ "omnibox_popup_full.js" ]
     optimize_webui_excludes = [
       "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",

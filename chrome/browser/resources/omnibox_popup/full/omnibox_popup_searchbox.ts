@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// LINT.IfChange(LazyLoadedModules)
 import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 import '//resources/cr_components/searchbox/searchbox_compose_button.js';
-
-// LINT.ThenChange(
-//     //chrome/browser/resources/omnibox_popup/full/lazy_load.ts:LazyLoadedModules,
-//     //chrome/test/data/webui/omnibox_popup/lazy_load_test.ts:LazyLoadedModules
-// )
+import 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint.js';
 
 import type {ComposeboxLensSearchElement} from '//resources/cr_components/composebox/composebox_lens_search.js';
 import type {CurrentTabChipElement} from '//resources/cr_components/composebox/current_tab_chip.js';
@@ -43,7 +38,6 @@ import {getCss} from './omnibox_popup_searchbox.css.js';
 import {getHtml} from './omnibox_popup_searchbox.html.js';
 import {TextfieldModel} from './textfield_model.js';
 import type {SelectionRange} from './textfield_model.js';
-import {WindowProxy} from './window_proxy.js';
 
 /**
  * Focus actions deferred when `document.visibilityState` is hidden.
@@ -294,12 +288,6 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
-      isAimPopupEligible_: {
-        type: Boolean,
-      },
-      isContentSharingEnabled_: {
-        type: Boolean,
-      },
       isLensSearchEligible_: {
         type: Boolean,
       },
@@ -309,9 +297,6 @@ export class OmniboxPopupSearchboxElement extends
       unboundedSupported_: {
         type: Boolean,
         reflect: true,
-      },
-      lazyRender_: {
-        type: Boolean,
       },
     };
   }
@@ -329,10 +314,7 @@ export class OmniboxPopupSearchboxElement extends
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
   accessor isLogicallyFocused_: boolean = false;
-  protected accessor isAimPopupEligible_: boolean = false;
-  protected accessor isContentSharingEnabled_: boolean = false;
   accessor isLensSearchEligible_: boolean = false;
-  protected accessor lazyRender_: boolean = false;
   accessor hasInputSelection_: boolean = false;
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
@@ -352,8 +334,6 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('searchboxLensSearch');
   private isComposeboxChipEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowChip');
-  private isLensIconEnabled_: boolean =
-      loadTimeData.getBoolean('composeboxShowLensIcon');
   protected accessor useWebkitSearchIcons_: boolean = false;
   override accessor multiLineEnabled: boolean =
       loadTimeData.getBoolean('searchboxMultiline');
@@ -376,22 +356,6 @@ export class OmniboxPopupSearchboxElement extends
     a11yLabel: '',
     icon: '',
   };
-
-  // `<omnibox-popup-contextual-entrypoint>` is lazily rendered and may miss the
-  // initial eligibility Mojo pushes, so this element tracks them and forwards
-  // them via property bindings. Must mirror the child's own listener logic.
-  // TODO(b/576749830): Drop this mirror by having the child fetch these values
-  // on connect, together with a pipe for later changes, like
-  // ToolbarUIService.Bind().
-  // LINT.IfChange(EligibilityGating)
-  protected computeIsLensSearchEligible_(): boolean {
-    return this.isComposeboxChipEnabled_ && this.isLensSearchEligible_;
-  }
-
-  protected computeIsLensIconEligible_(): boolean {
-    return this.isLensIconEnabled_ && this.isLensSearchEligible_;
-  }
-  // LINT.ThenChange(//chrome/browser/resources/omnibox_popup/shared/omnibox_popup_contextual_entrypoint.ts:EligibilityListeners)
 
   private getContextualEntrypoint_(): OmniboxPopupContextualEntrypointElement
       |null {
@@ -577,7 +541,6 @@ export class OmniboxPopupSearchboxElement extends
               icon: iconUrl,
             };
           }),
-      // LINT.IfChange(EligibilityListeners)
       this.searchboxCallbackRouter_.updateLensSearchEligibility.addListener(
           (eligible: boolean) => {
             this.isLensSearchEligible_ = eligible;
@@ -585,22 +548,10 @@ export class OmniboxPopupSearchboxElement extends
               this.updateDropdownVisibility();
             }
           }),
-      this.searchboxCallbackRouter_.updateContentSharingPolicy.addListener(
-          (enabled: boolean) => {
-            this.isContentSharingEnabled_ = enabled;
-          }),
-      this.searchboxCallbackRouter_.updateAimPopupEligibility.addListener(
-          (eligible: boolean) => {
-            this.isAimPopupEligible_ = eligible;
-          }),
-      // LINT.ThenChange(//chrome/browser/resources/omnibox_popup/shared/omnibox_popup_contextual_entrypoint.ts:EligibilityListeners)
     ];
     this.popupListenerIds_ = [
       this.popupCallbackRouter_.setInputState.addListener(
           this.onSetInputState_.bind(this)),
-      // Skip the idle wait if the popup is shown before lazy rendering starts.
-      this.popupCallbackRouter_.onShow.addListener(
-          this.startLazyRender_.bind(this)),
       this.popupCallbackRouter_.setPrefersUrlInput.addListener(
           (prefersUrlInput: boolean) => {
             this.textInputType_ = prefersUrlInput ? 'url' : 'search';
@@ -703,22 +654,6 @@ export class OmniboxPopupSearchboxElement extends
     if (changedProperties.has('searchboxChromeRefreshTheming')) {
       this.useWebkitSearchIcons_ = this.searchboxChromeRefreshTheming;
     }
-  }
-
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    WindowProxy.getInstance().waitForLazyRender().then(
-        () => this.startLazyRender_());
-  }
-
-  // Waits for lazy_load.js to execute so that
-  // <omnibox-popup-contextual-entrypoint> is registered and upgrades
-  // synchronously when inserted into the DOM. `ensureLazyLoaded()` caches its
-  // promise, so this is safe to call from both the idle and `onShow` paths.
-  private startLazyRender_() {
-    WindowProxy.getInstance().ensureLazyLoaded().then(() => {
-      this.lazyRender_ = true;
-    });
   }
 
   getContextualEntrypointButton(): OmniboxPopupContextualEntrypointButtonElement

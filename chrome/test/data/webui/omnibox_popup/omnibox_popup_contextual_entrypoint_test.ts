@@ -102,8 +102,6 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
   });
 
   test('OnShowRefreshesCurrentTab', async () => {
-    // Ignore the `getRecentTabs` call made when `element` was connected.
-    testProxy.handler.resetResolver('getRecentTabs');
     testProxy.handler.setPromiseResolveFor<'getRecentTabs'>('getRecentTabs', {
       tabs: [{
         tabId: 456,
@@ -117,54 +115,6 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
     await testProxy.handler.whenCalled('getRecentTabs');
 
     assertEquals(1, testProxy.handler.getCallCount('getRecentTabs'));
-  });
-
-  test('ConnectRefreshesCurrentTabWhenVisible', async () => {
-    testProxy.handler.resetResolver('getRecentTabs');
-    testProxy.handler.setPromiseResolveFor<'getRecentTabs'>('getRecentTabs', {
-      tabs: [{
-        tabId: 789,
-        title: 'Tab 789',
-        url: 'https://example.com',
-        showInCurrentTabChip: true,
-      }],
-    });
-
-    // Connecting while the page is visible fetches the current tab without
-    // waiting for an `onShow` push, which a late-connected element may have
-    // missed.
-    const newElement =
-        document.createElement('omnibox-popup-contextual-entrypoint');
-    newElement.inputState = createDefaultInputState();
-    newElement.isAimPopupEligible = true;
-    newElement.isContentSharingEnabled = true;
-    newElement.isLensSearchEligible = true;
-    document.body.appendChild(newElement);
-    await testProxy.handler.whenCalled('getRecentTabs');
-    await microtasksFinished();
-
-    assertEquals(1, testProxy.handler.getCallCount('getRecentTabs'));
-    assertTrue(!!$$(newElement, '#currentTabChip'));
-  });
-
-  test('ConnectSkipsCurrentTabRefreshWhenHidden', async () => {
-    testProxy.handler.resetResolver('getRecentTabs');
-
-    // A pre-warmed page that stamps the element while hidden waits for the
-    // `onShow` push instead of fetching on connect.
-    Object.defineProperty(
-        document, 'visibilityState', {value: 'hidden', configurable: true});
-    try {
-      const newElement =
-          document.createElement('omnibox-popup-contextual-entrypoint');
-      newElement.inputState = createDefaultInputState();
-      document.body.appendChild(newElement);
-      await microtasksFinished();
-
-      assertEquals(0, testProxy.handler.getCallCount('getRecentTabs'));
-    } finally {
-      delete (document as {visibilityState?: string}).visibilityState;
-    }
   });
 
   test('CompactModeHidesEntrypointButton', async () => {

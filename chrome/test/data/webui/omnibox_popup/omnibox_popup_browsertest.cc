@@ -64,10 +64,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, App) {
   RunTest("omnibox_popup/full_app_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, LazyLoad) {
-  RunTest("omnibox_popup/lazy_load_test.js", "mocha.run();");
-}
-
 IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, Searchbox) {
   RunTest("omnibox_popup/omnibox_popup_searchbox_test.js", "mocha.run();");
 }

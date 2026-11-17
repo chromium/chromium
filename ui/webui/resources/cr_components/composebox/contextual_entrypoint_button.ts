@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import './composebox_tab_favicon.js';
 import './composebox_favicon_group.js';
+import './contextual_action_menu.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
