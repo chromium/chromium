@@ -825,6 +825,21 @@ TEST_F(OriginTest, IsSameOriginWith) {
   EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL("about:blank")));
   EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL()));  // Invalid GURL.
   EXPECT_TRUE(foo_origin.IsSameOriginWith(GURL("blob:https://foo.com/guid")));
+
+  // `file:` origins preserve their host in the tuple, even though they all
+  // serialize as "file://".
+  GURL local_file_url("file:///etc/passwd");
+  GURL remote_file_url("file://example.com/etc/passwd");
+  url::Origin local_file_origin = url::Origin::Create(local_file_url);
+  url::Origin remote_file_origin = url::Origin::Create(remote_file_url);
+  EXPECT_EQ("", local_file_origin.host());
+  EXPECT_EQ("example.com", remote_file_origin.host());
+  EXPECT_EQ("file://", local_file_origin.Serialize());
+  EXPECT_EQ("file://", remote_file_origin.Serialize());
+  EXPECT_TRUE(local_file_origin.IsSameOriginWith(local_file_url));
+  EXPECT_TRUE(remote_file_origin.IsSameOriginWith(remote_file_url));
+  EXPECT_FALSE(local_file_origin.IsSameOriginWith(remote_file_origin));
+  EXPECT_FALSE(local_file_origin.IsSameOriginWith(remote_file_url));
 }
 
 TEST_F(OriginTest, IsSameOriginLocalNonStandardScheme) {

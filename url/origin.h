@@ -118,8 +118,12 @@ class OriginDataView;
 //   internals of the URL. That is, 'filesystem:https://example.com/temporary/f'
 //   is parsed as ('https', 'example.com', 443).
 //
-// * GURLs with a 'file' scheme are tricky. They are parsed as ('file', '', 0),
-//   but their behavior may differ from embedder to embedder.
+// * GURLs with a 'file' scheme are tricky. They preserve any host component in
+//   their tuple as ('file', host, 0) (for example, ('file', '', 0) for
+//   'file:///etc/passwd', or ('file', 'example.com', 0) for
+//   'file://example.com/etc/passwd'), though `Serialize()` always returns
+//   "file://" and `GetURL()` always returns `GURL("file:///")`. Their
+//   behavior may also differ from embedder to embedder.
 //   TODO(dcheng): This behavior is not consistent with Blink's notion of file
 //   URLs, which always creates an opaque origin.
 //
@@ -155,7 +159,8 @@ class CRUBIT_UNSAFE_BITWISE_RELOCATABLE COMPONENT_EXPORT(URL) Origin {
   // 1. If `url` is invalid or non-standard, an opaque Origin is constructed.
   // 2. 'filesystem' URLs behave as 'blob' URLs (that is, the origin is parsed
   //    out of everything in the URL which follows the scheme).
-  // 3. 'file' URLs all parse as ("file", "", 0).
+  // 3. 'file' URLs parse as ("file", host, 0), preserving any host component
+  //    in the tuple while serializing as "file://".
   //
   // WARNING: `url::Origin::Create(url)` can give unexpected results if:
   // 1) `url` is "about:blank", or "about:srcdoc" (returning unique, opaque
