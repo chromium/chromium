@@ -219,8 +219,7 @@ bool FilePathToString16(const base::FilePath& path, std::u16string* converted) {
   return true;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   std::string component8 = path.AsUTF8Unsafe();
-  return !component8.empty() &&
-         base::UTF8ToUTF16(component8.c_str(), component8.size(), converted);
+  return !component8.empty() && base::UTF8ToUTF16(component8, converted);
 #endif
 }
 
