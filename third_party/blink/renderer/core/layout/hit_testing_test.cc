@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
@@ -927,6 +929,120 @@ TEST_F(HitTestingTest, FirstLineBoxDecorationVariantsAndEdgeCases) {
   Element* filter_target = GetElementById("filter-target");
   Element* filter_occluder = GetElementById("filter-occluder");
   EXPECT_EQ(HitTestForOcclusion(*filter_target).InnerNode(), filter_occluder);
+}
+
+TEST_F(HitTestingTest, DynamicFirstLineInvalidation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        position: absolute;
+        left: 20px;
+        top: 40px;
+        width: 100px;
+        height: 40px;
+      }
+      #occluder {
+        position: absolute;
+        left: 0;
+        top: 120px;
+        width: 300px;
+        line-height: 2px;
+        z-index: 10;
+        --first-line-bg: #000000;
+        --first-line-shadow: none;
+      }
+      #occluder::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background-color: var(--first-line-bg);
+        box-shadow: var(--first-line-shadow);
+      }
+      #nested-target {
+        position: absolute;
+        left: 340px;
+        top: 40px;
+        width: 80px;
+        height: 30px;
+      }
+      #outer {
+        position: absolute;
+        left: 320px;
+        top: 120px;
+        width: 200px;
+        z-index: 10;
+        --outer-shadow: none;
+      }
+      #outer::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background-color: inherit;
+        box-shadow: var(--outer-shadow);
+      }
+      #inner {
+        line-height: 2px;
+        background-color: transparent;
+      }
+    </style>
+    <div id="target"></div>
+    <div id="occluder"><span style="display:inline-block;width:300px;height:2px;vertical-align:top"></span></div>
+    <div id="nested-target"></div>
+    <div id="outer">
+      <div style="position:absolute"></div>
+      <div id="inner"><span style="display:inline-block;width:200px;height:2px;vertical-align:top"></span></div>
+    </div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  Element* occluder = GetElementById("occluder");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(occluder);
+  EXPECT_EQ(HitTestForOcclusion(*target).InnerNode(), occluder);
+
+  // Dynamic paint-only ::first-line mutation: clearing background without
+  // layout removes occlusion.
+  occluder->setAttribute(html_names::kStyleAttr,
+                         AtomicString("--first-line-bg: transparent"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(HitTestForOcclusion(*target).InnerNode(), target);
+
+  // Dynamic ::first-line box-shadow with transparent background occludes
+  // #target in visual-overflow hit-testing while keeping pointer events on
+  // #target.
+  occluder->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("--first-line-bg: transparent; "
+                   "--first-line-shadow: 0 -60px 0 30px #000000"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(HitTestForOcclusion(*target).InnerNode(), occluder);
+  EXPECT_EQ(GetDocument().ElementFromPoint(60, 60), target);
+
+  Element* nested_target = GetElementById("nested-target");
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
+  ASSERT_TRUE(nested_target);
+  ASSERT_TRUE(outer);
+  ASSERT_TRUE(inner);
+  EXPECT_EQ(HitTestForOcclusion(*nested_target).InnerNode(), nested_target);
+
+  // Exercise getComputedStyle(inner, "::first-line") (IsEnsuredInDisplayNone)
+  // followed by mutating #inner's inherited background-color.
+  GetDocument().domWindow()->getComputedStyle(inner,
+                                              AtomicString("::first-line"));
+  inner->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "#000000");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(HitTestForOcclusion(*nested_target).InnerNode(), inner);
+
+  inner->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "transparent");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(HitTestForOcclusion(*nested_target).InnerNode(), nested_target);
+
+  // Mutating #outer's custom property past a leading out-of-flow sibling
+  // invalidates #inner's ::first-line visual overflow.
+  outer->setAttribute(html_names::kStyleAttr,
+                      AtomicString("--outer-shadow: 0 -60px 0 30px #000000;"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(HitTestForOcclusion(*nested_target).InnerNode(), inner);
 }
 
 }  // namespace blink

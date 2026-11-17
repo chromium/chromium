@@ -3816,6 +3816,24 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
       old_style && old_style->HasPseudoElementStyle(kPseudoIdFirstLine);
   bool has_new_first_line_style =
       Style().HasPseudoElementStyle(kPseudoIdFirstLine);
+  const LayoutBlock* ancestor_first_line_block = nullptr;
+  if (!has_old_first_line_style && !has_new_first_line_style && old_style &&
+      Parent() && ChildrenInline() && CanHaveFirstLineOrLetter() &&
+      GetDocument().GetStyleEngine().UsesFirstLineRules() &&
+      RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled()) {
+    for (const LayoutBlock* block =
+             To<LayoutBlock>(this)->FirstLineStyleParentBlock();
+         block; block = block->FirstLineStyleParentBlock()) {
+      if (block->Style().HasPseudoElementStyle(kPseudoIdFirstLine)) {
+        ancestor_first_line_block = block;
+        break;
+      }
+    }
+    if (ancestor_first_line_block) {
+      has_old_first_line_style = true;
+      has_new_first_line_style = true;
+    }
+  }
   if (!has_old_first_line_style && !has_new_first_line_style)
     return;
 
@@ -3823,13 +3841,26 @@ void LayoutObject::ApplyFirstLineChanges(const ComputedStyle* old_style) {
   bool has_diff = false;
   bool first_line_highlight_changed = false;
   if (Parent() && has_old_first_line_style && has_new_first_line_style) {
-    if (const auto* old_first_line_style =
-            old_style->GetCachedPseudoElementStyle(kPseudoIdFirstLine)) {
+    const ComputedStyle* old_first_line_style =
+        old_style->GetCachedPseudoElementStyle(kPseudoIdFirstLine);
+    if (ancestor_first_line_block &&
+        (!old_first_line_style ||
+         old_first_line_style->IsEnsuredInDisplayNone())) {
+      old_first_line_style =
+          ancestor_first_line_block->GetUncachedPseudoElementStyle(
+              StyleRequest(kPseudoIdFirstLine, old_style));
+    }
+    if (old_first_line_style) {
       if (const auto* new_first_line_style = FirstLineStyleWithoutFallback()) {
         diff = old_first_line_style->VisualInvalidationDiff(
             GetDocument(), *new_first_line_style);
         diff = AdjustForCompositableAnimationPaint(
             old_first_line_style, new_first_line_style, GetNode(), diff);
+        if (diff.background_color_changed &&
+            RuntimeEnabledFeatures::
+                FirstLineBoxDecorationInkOverflowEnabled()) {
+          diff.SetNeedsNormalPaintInvalidation();
+        }
         // Highlight pseudo styles are stored  in StyleHighlightData and are
         // intentionally ignored by VisualInvalidationDiff, because highlight
         // repaints are normally driven by HighlightRegistry.

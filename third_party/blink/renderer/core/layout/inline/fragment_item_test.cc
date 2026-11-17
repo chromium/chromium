@@ -1138,4 +1138,64 @@ TEST_F(FragmentItemTest, FirstLineBoxDecorationInkOverflowSvgAndEmptyLine) {
   EXPECT_EQ(empty_bii_v->VisualOverflowRect(), PhysicalRect(0, 0, 150, 10));
 }
 
+TEST_F(FragmentItemTest, FirstLineBoxDecorationInkOverflowDynamic) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; font-family: Ahem; }
+      #box { width: 300px; line-height: 2px; }
+      #box::first-line {
+        font-size: 200px;
+        line-height: 2px;
+        background: black;
+        box-shadow: 0 -20px 0 10px black;
+      }
+    </style>
+    <div id="box"><span style="display:inline-block;width:300px;height:2px;vertical-align:top"></span></div>
+  )HTML");
+
+  LayoutBlockFlow* box = GetLayoutBlockFlowByElementId("box");
+  ASSERT_NE(box, nullptr);
+  EXPECT_EQ(box->VisualOverflowRect(), PhysicalRect(-10, -129, 320, 230));
+
+  // Dynamic ::first-line style change without layout invalidates visual
+  // overflow when removing decorations.
+  Element* style_sheet = GetDocument().QuerySelector(AtomicString("style"));
+  ASSERT_NE(style_sheet, nullptr);
+  style_sheet->setTextContent(R"CSS(
+    body { margin: 0; font-family: Ahem; }
+    #box { width: 300px; line-height: 2px; }
+    #box::first-line { font-size: 200px; line-height: 2px; }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  InlineCursor removed_cursor(*box);
+  removed_cursor.MoveToFirstLine();
+  ASSERT_TRUE(removed_cursor);
+  EXPECT_EQ(removed_cursor.Current().Item()->SelfInkOverflowRect(),
+            PhysicalRect(0, 0, 300, 2));
+  EXPECT_EQ(box->VisualOverflowRect(), PhysicalRect(0, 0, 300, 2));
+
+  // Re-adding ::first-line decorations without layout recomputes visual
+  // overflow.
+  style_sheet->setTextContent(R"CSS(
+    body { margin: 0; font-family: Ahem; }
+    #box { width: 300px; line-height: 2px; }
+    #box::first-line {
+      font-size: 200px;
+      line-height: 2px;
+      background: black;
+      box-shadow: 0 -20px 0 10px black;
+    }
+  )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  InlineCursor added_cursor(*box);
+  added_cursor.MoveToFirstLine();
+  ASSERT_TRUE(added_cursor);
+  EXPECT_EQ(added_cursor.Current().Item()->SelfInkOverflowRect(),
+            PhysicalRect(-10, -129, 320, 230));
+  EXPECT_EQ(box->VisualOverflowRect(), PhysicalRect(-10, -129, 320, 230));
+}
+
 }  // namespace blink

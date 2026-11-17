@@ -402,14 +402,31 @@ LayoutBlockFlow* LayoutBlock::NearestInnerBlockWithFirstLine() {
   NOT_DESTROYED();
   if (ChildrenInline())
     return To<LayoutBlockFlow>(this);
-  for (LayoutObject* child = FirstChild();
-       child && !child->IsFloatingOrOutOfFlowPositioned() &&
-       child->IsLayoutBlockFlow();
-       child = To<LayoutBlock>(child)->FirstChild()) {
-    if (child->ChildrenInline())
-      return To<LayoutBlockFlow>(child);
+  if (!RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled()) {
+    for (LayoutObject* child = FirstChild();
+         child && !child->IsFloatingOrOutOfFlowPositioned() &&
+         child->IsLayoutBlockFlow();
+         child = To<LayoutBlock>(child)->FirstChild()) {
+      if (child->ChildrenInline()) {
+        return To<LayoutBlockFlow>(child);
+      }
+    }
+    return nullptr;
   }
-  return nullptr;
+  for (const LayoutBlock* block = this;;) {
+    LayoutObject* child = block->FirstChild();
+    while (child && (child->IsFloatingOrOutOfFlowPositioned() ||
+                     child->IsListMarker())) {
+      child = child->NextSibling();
+    }
+    if (!child || !child->CanHaveFirstLineOrLetter()) {
+      return nullptr;
+    }
+    if (child->ChildrenInline()) {
+      return To<LayoutBlockFlow>(child);
+    }
+    block = To<LayoutBlock>(child);
+  }
 }
 
 // An inline-block uses its inlineBox as the inlineBoxWrapper,

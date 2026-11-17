@@ -712,16 +712,29 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   if (fragments.empty()) {
     return;
   }
+  bool invalidated = false;
+  bool invalidate_line_overflow = false;
   for (const PhysicalBoxFragment& fragment : fragments) {
     InlineCursor first_line(fragment);
     if (!first_line) {
       continue;
     }
     first_line.MoveToFirstLine();
-    if (!first_line) {
+    if (!first_line || !first_line.Current().UsesFirstLineStyle()) {
       continue;
     }
-    if (first_line.Current().UsesFirstLineStyle()) {
+    if (!invalidated) {
+      invalidated = true;
+      invalidate_line_overflow =
+          RuntimeEnabledFeatures::FirstLineBoxDecorationInkOverflowEnabled();
+    }
+    do {
+      if (invalidate_line_overflow) {
+        first_line.Current()
+            .Item()
+            ->GetMutableForPainting()
+            .InvalidateInkOverflow();
+      }
       // Mark all descendants of the first line if first-line style.
       for (InlineCursor descendants = first_line.CursorForDescendants();
            descendants; descendants.MoveToNext()) {
@@ -736,10 +749,24 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
         item->GetMutableForPainting().InvalidateInkOverflow();
         layout_object->SetShouldDoFullPaintInvalidation();
       }
-      Style().ClearCachedPseudoElementStyles();
-      SetShouldDoFullPaintInvalidation();
-      return;
+      if (!invalidate_line_overflow) {
+        break;
+      }
+      first_line.MoveToNextLine();
+    } while (first_line && first_line.Current().UsesFirstLineStyle());
+    if (!invalidate_line_overflow) {
+      break;
     }
+  }
+  if (invalidated) {
+    Style().ClearCachedPseudoElementStyles();
+    if (invalidate_line_overflow) {
+      InvalidateVisualOverflow();
+#if DCHECK_IS_ON()
+      InvalidateVisualOverflowForDCheck();
+#endif
+    }
+    SetShouldDoFullPaintInvalidation();
   }
 }
 
