@@ -60,6 +60,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -125,7 +126,7 @@ autofill::UserInfo TranslateCredentials(const UiCredential& credential,
       AccessorySheetField::Builder()
           .SetSuggestionType(
               autofill::AccessorySuggestionType::kCredentialPassword)
-          .SetDisplayText(credential.password())
+          .SetDisplayText(credential.password().value())
           .SetA11yDescription(l10n_util::GetStringFUTF16(
               IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, username))
           .SetIsObfuscated(true)
@@ -188,8 +189,9 @@ base::span<const UiCredential>::iterator GetUiCredentialForSelection(
     base::span<const UiCredential> matching_creds,
     const AccessorySheetField& suggestion) {
   return std::ranges::find_if(matching_creds, [&](const auto& cred) {
-    return suggestion.display_text() ==
-           (suggestion.is_obfuscated() ? cred.password() : cred.username());
+    return suggestion.is_obfuscated()
+               ? cred.password() == suggestion.display_text()
+               : cred.username() == suggestion.display_text();
   });
 }
 

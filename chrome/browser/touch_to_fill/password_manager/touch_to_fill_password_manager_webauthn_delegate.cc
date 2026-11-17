@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -118,7 +119,7 @@ void TouchToFillPasswordManagerWebAuthnDelegate::FillCredential(
     const password_manager::UiCredential& credential) {
   if (credential_receiver_) {
     credential_receiver_->OnPasswordCredentialSelected(
-        {credential.username(), credential.password()});
+        {credential.username(), credential.password().value()});
   }
 }
 

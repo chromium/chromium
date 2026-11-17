@@ -17,6 +17,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_controller.h"  // nogncheck
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -42,7 +43,8 @@ UiCredential ConvertJavaCredential(JNIEnv* env,
                                    const JavaRef<jobject>& credential) {
   return UiCredential(
       Java_Credential_getUsername(env, credential),
-      Java_Credential_getPassword(env, credential),
+      password_manager::PasswordString(
+          Java_Credential_getPassword(env, credential)),
       url::Origin::Create(GURL(Java_Credential_getOriginUrl(env, credential))),
       Java_Credential_getDisplayName(env, credential),
       static_cast<password_manager_util::GetLoginMatchType>(
@@ -106,7 +108,7 @@ bool TouchToFillPasswordManagerViewImpl::Show(
             std::get_if<password_manager::UiCredential>(&credentials[i])) {
       Java_TouchToFillPasswordManagerBridge_insertCredential(
           env, credential_array, i, credential->username(),
-          credential->password(), GetDisplayUsername(*credential),
+          credential->password().value(), GetDisplayUsername(*credential),
           credential->origin().Serialize(), credential->display_name(),
           static_cast<int>(credential->match_type()),
           credential->last_used().InMillisecondsSinceUnixEpoch(),

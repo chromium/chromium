@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -128,7 +129,8 @@ struct MakeUiCredentialParams {
 
 UiCredential MakeUiCredential(MakeUiCredentialParams params) {
   return UiCredential(
-      base::UTF8ToUTF16(params.username), base::UTF8ToUTF16(params.password),
+      base::UTF8ToUTF16(params.username),
+      password_manager::PasswordString(base::UTF8ToUTF16(params.password)),
       url::Origin::Create(GURL(params.origin)), std::string(params.origin),
       params.match_type, base::Time::Now() - params.time_since_last_use,
       params.backup);
@@ -905,7 +907,7 @@ TEST_F(TouchToFillControllerAutofillTest,
   // Test multiple credentials with one of them being an Android credential.
   std::string display_name = "Example android app";
   auto credential = UiCredential(
-      /*username=*/u"bob", /*password=*/u"s3cr3t",
+      /*username=*/u"bob", password_manager::PasswordString(u"s3cr3t"),
       url::Origin::Create(GURL("")), display_name,
       password_manager_util::GetLoginMatchType::kGrouped,
       base::Time::Now() - base::Minutes(3), IsBackupCredential(false));

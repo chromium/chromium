@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -323,7 +324,7 @@ void TouchToFillPasswordManagerCredentialDelegate::FillCredential(
     const UiCredential& credential) {
   filler_->UpdateTriggerSubmission(ShouldTriggerSubmission());
   filler_->FillUsernameAndPassword(
-      credential.username(), credential.password(),
+      credential.username(), credential.password().value(),
       base::BindOnce(&TouchToFillPasswordManagerCredentialDelegate::
                          OnFillingCredentialComplete,
                      base::Unretained(this), credential.username()));

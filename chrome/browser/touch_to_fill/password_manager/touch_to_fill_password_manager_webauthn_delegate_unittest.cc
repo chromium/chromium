@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -107,8 +108,9 @@ UiCredential CreatePasswordCredential(
     std::u16string password = kPassword,
     std::string origin = kExampleCom,
     std::optional<base::Time> last_used = std::nullopt) {
-  return UiCredential(username, password, url::Origin::Create(GURL(origin)),
-                      std::string(origin),
+  return UiCredential(username,
+                      password_manager::PasswordString(std::move(password)),
+                      url::Origin::Create(GURL(origin)), std::string(origin),
                       password_manager_util::GetLoginMatchType::kExact,
                       last_used.value_or(base::Time::Now() - base::Minutes(2)),
                       UiCredential::IsBackupCredential(false));

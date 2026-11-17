@@ -10,7 +10,9 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/affiliations/core/browser/match_type.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -39,10 +41,10 @@ UiCredential MakeUiCredential(
     password_manager_util::GetLoginMatchType match_type =
         password_manager_util::GetLoginMatchType::kExact,
     IsBackupCredential is_backup_credential = IsBackupCredential(false)) {
-  return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
-                      url::Origin::Create(GURL(origin)),
-                      std::string(display_name), match_type, base::Time(),
-                      is_backup_credential);
+  return UiCredential(
+      base::UTF8ToUTF16(username), PasswordString(base::UTF8ToUTF16(password)),
+      url::Origin::Create(GURL(origin)), std::string(display_name), match_type,
+      base::Time(), is_backup_credential);
 }
 
 password_manager::PasswordForm CreateTestPasswordForm(int index = 0) {
@@ -84,6 +86,27 @@ TEST_F(OriginCredentialStoreTest, StoresUnnotifiedSharedCredentials) {
   EXPECT_THAT(
       store()->GetUnnotifiedSharedCredentials(),
       ElementsAre(CreateTestPasswordForm(1), CreateTestPasswordForm(2)));
+}
+
+TEST_F(OriginCredentialStoreTest, StoresProtectedPasswordFromForm) {
+  for (bool use_process_bound_backing : {false, true}) {
+    SCOPED_TRACE(use_process_bound_backing);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(features::kUseProcessBoundPasswordString,
+                                      use_process_bound_backing);
+
+    PasswordForm form = CreateTestPasswordForm();
+    form.match_type = affiliations::MatchType::kExact;
+    const PasswordString expected(std::u16string(u"p\u00e4ss\0word", 9));
+    form.password_value = expected;
+    store()->SaveCredentials({UiCredential(form, store()->origin())});
+    form.password_value.clear();
+
+    ASSERT_EQ(store()->GetCredentials().size(), 1u);
+    const PasswordString& password =
+        store()->GetCredentials().front().password();
+    EXPECT_EQ(password, expected);
+  }
 }
 
 TEST_F(OriginCredentialStoreTest, StoresOnlyNormalizedOrigins) {

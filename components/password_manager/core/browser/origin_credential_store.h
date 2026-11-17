@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -26,7 +27,7 @@ class UiCredential {
       base::StrongAlias<class IsBackupCredentialTag, bool>;
 
   UiCredential(std::u16string username,
-               std::u16string password,
+               PasswordString password,
                url::Origin origin,
                std::string display_name,
                password_manager_util::GetLoginMatchType match_type,
@@ -44,7 +45,7 @@ class UiCredential {
 
   const std::u16string& username() const { return username_; }
 
-  const std::u16string& password() const { return password_; }
+  const PasswordString& password() const { return password_; }
 
   const url::Origin& origin() const { return origin_; }
 
@@ -75,7 +76,7 @@ class UiCredential {
 
  private:
   std::u16string username_;
-  std::u16string password_;
+  PasswordString password_;
   url::Origin origin_;
   std::string display_name_;
   password_manager_util::GetLoginMatchType match_type_;

@@ -23,7 +23,7 @@ namespace password_manager {
 using BlocklistedStatus = OriginCredentialStore::BlocklistedStatus;
 
 UiCredential::UiCredential(std::u16string username,
-                           std::u16string password,
+                           PasswordString password,
                            url::Origin origin,
                            std::string display_name,
                            password_manager_util::GetLoginMatchType match_type,
@@ -40,7 +40,7 @@ UiCredential::UiCredential(std::u16string username,
 UiCredential::UiCredential(const PasswordForm& form,
                            const url::Origin& affiliated_origin)
     : username_(form.username_value),
-      password_(form.password_value.value()),
+      password_(form.password_value),
       match_type_(password_manager_util::GetMatchType(form)),
       last_used_(form.date_last_used),
       is_shared_(form.type == PasswordForm::Type::kReceivedViaSharing),
@@ -106,7 +106,7 @@ std::ostream& operator<<(std::ostream& os, const UiCredential& credential) {
       break;
   }
   return os << "(user: \"" << credential.username() << "\", " << "pwd: \""
-            << credential.password() << "\", " << "origin: \""
+            << credential.password().value() << "\", " << "origin: \""
             << credential.origin() << "\", " << match_type << ", "
             << "last_used: " << credential.last_used() << ", "
             << "is_shared: " << credential.is_shared() << ", "

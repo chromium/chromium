@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -45,7 +46,8 @@ UiCredential MakeUiCredential(
     password_manager_util::GetLoginMatchType match_type =
         password_manager_util::GetLoginMatchType::kExact,
     IsBackupCredential is_backup_credential = IsBackupCredential(false)) {
-  return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
+  return UiCredential(base::UTF8ToUTF16(username),
+                      PasswordString(base::UTF8ToUTF16(password)),
                       Origin::Create(GURL(origin)), std::string(display_name),
                       match_type, base::Time(), is_backup_credential);
 }

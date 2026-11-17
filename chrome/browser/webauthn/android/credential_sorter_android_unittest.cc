@@ -9,6 +9,7 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_password_manager_view.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_string.h"
 #include "components/webauthn/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -37,7 +38,7 @@ PasskeyCredential CreatePasskey(const std::string& username,
 
 UiCredential CreatePassword(const std::u16string& user_name,
                             base::Time last_used_time) {
-  return UiCredential(user_name, /*password=*/u"hunter2",
+  return UiCredential(user_name, password_manager::PasswordString(u"hunter2"),
                       url::Origin::Create(GURL("")), "display_name",
                       password_manager_util::GetLoginMatchType::kGrouped,
                       last_used_time, UiCredential::IsBackupCredential(false));
