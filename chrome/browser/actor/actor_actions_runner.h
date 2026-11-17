@@ -30,7 +30,7 @@ namespace actor {
 class ActorTask;
 class EnterprisePolicyChecker;
 class TabObservationStrategy;
-struct ActionResultWithLatencyInfo;
+struct ToolResultWithLatencyInfo;
 
 // Executes a batch of actions from `optimization_guide::proto::Actions` within
 // a transient `ActorTask`.
@@ -111,11 +111,11 @@ class ActorActionsRunner {
       bool skip_async_observation_collection,
       std::optional<page_content_annotations::ScreenshotOptions::
                         ScreenshotCollectionOptions> screenshot_options,
-      std::vector<ActionResultWithLatencyInfo> action_results,
+      std::vector<ToolResultWithLatencyInfo> action_results,
       TabObservationStrategy observation_strategy);
   void OnActionsResultBuilt(
       base::TimeTicks start_time,
-      std::vector<ActionResultWithLatencyInfo> action_results,
+      std::vector<ToolResultWithLatencyInfo> action_results,
       TaskId task_id,
       bool skip_async_observation_information,
       std::optional<page_content_annotations::ScreenshotOptions::

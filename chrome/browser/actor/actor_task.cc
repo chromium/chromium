@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -434,12 +435,12 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
 }
 
 void ActorTask::OnFinishedAct(
-    std::vector<ActionResultWithLatencyInfo> action_results,
+    std::vector<ToolResultWithLatencyInfo> action_results,
     TabObservationStrategy observation_strategy) {
   mojom::ActionResultPtr result = MakeOkResult();
   for (const auto& action_result : action_results) {
-    if (!IsOk(action_result.result->code)) {
-      result = action_result.result->Clone();
+    if (!action_result.tool_result.Ok()) {
+      result = action_result.tool_result.deprecated_action_result()->Clone();
       break;
     }
   }

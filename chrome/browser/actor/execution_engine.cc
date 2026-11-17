@@ -545,7 +545,7 @@ RenderFrameHost* GetPrimaryMainFrame(
 
 void PostTaskForActCallback(
     ActorTask::ActCallback callback,
-    std::vector<ActionResultWithLatencyInfo> action_results,
+    std::vector<ToolResultWithLatencyInfo> action_results,
     TabObservationStrategy observation_strategy) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(action_results),
@@ -578,6 +578,18 @@ void MergeActionResult(mojom::ActionResult& target,
   if (followup->attempt_login_status.has_value()) {
     target.attempt_login_status = followup->attempt_login_status;
   }
+}
+
+// Merges a follow-up or subsequent stage `ToolResult` into `target`, combining
+// their `ActionResult` fields via `MergeActionResult` and replacing `target`
+// with `followup`.
+void MergeToolResult(ToolResult& target, ToolResult followup) {
+  mojom::ActionResultPtr merged_result =
+      std::move(target.deprecated_action_result());
+  MergeActionResult(*merged_result,
+                    std::move(followup.deprecated_action_result()));
+  followup.set_deprecated_action_result(std::move(merged_result));
+  target = std::move(followup);
 }
 
 // When operating on an opaque site, we choose to use the precursor's origin
@@ -1699,9 +1711,9 @@ void ExecutionEngine::FinishedToolInvoke(ToolResult tool_result) {
     return;
   }
 
-  mojom::ActionResultPtr& result = tool_result.deprecated_action_result();
+  const mojom::ActionResultPtr& result = tool_result.deprecated_action_result();
   if (!tool_result.Ok()) {
-    CompleteActions(std::move(result), InProgressActionIndex());
+    CompleteActions(std::move(tool_result), InProgressActionIndex());
     return;
   }
 
@@ -1737,12 +1749,12 @@ void ExecutionEngine::FinishedToolInvoke(ToolResult tool_result) {
 
   if (current_action.IsFollowup()) {
     CHECK(!action_results_.empty());
-    ActionResultWithLatencyInfo& action_result = action_results_.back();
-    MergeActionResult(*action_result.result, std::move(result));
+    ToolResultWithLatencyInfo& action_result = action_results_.back();
+    MergeToolResult(action_result.tool_result, std::move(tool_result));
     action_result.end_time = end_time;
   } else {
     action_results_.emplace_back(action_start_time_, end_time,
-                                 std::move(result));
+                                 std::move(tool_result));
   }
 
   SetState(State::kUiPostInvoke);
@@ -1773,9 +1785,21 @@ void ExecutionEngine::FinishedUiPostInvoke(mojom::ActionResultPtr result) {
 
 void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
                                       std::optional<size_t> action_index) {
+  CompleteActions(ToolResult::FromDeprecatedActionResult(std::move(result)),
+                  action_index);
+}
+
+void ExecutionEngine::CompleteActions(ToolResult tool_result,
+                                      std::optional<size_t> action_index) {
   TRACE_EVENT0("actor", "ExecutionEngine::CompleteActions");
   CHECK(!action_sequence_.empty());
   CHECK(act_callback_);
+
+  const mojom::ActionResultPtr& result = tool_result.deprecated_action_result();
+  const bool is_ok = tool_result.Ok();
+  const mojom::ActionResultCode result_code = result->code;
+  const std::string error_debug_string =
+      is_ok ? std::string() : ToDebugString(*result);
 
   // If we have not yet appended the action_results for the failed index,
   // append it now.
@@ -1783,40 +1807,37 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
     size_t result_index = GetResultIndexForAction(*action_index);
     if (action_results_.size() == result_index) {
       action_results_.emplace_back(action_start_time_, base::TimeTicks::Now(),
-                                   result->Clone());
+                                   std::move(tool_result));
     } else if (action_results_.size() > result_index &&
-               (!IsOk(*result) ||
-                action_sequence_[*action_index]->IsFollowup())) {
+               (!is_ok || action_sequence_[*action_index]->IsFollowup())) {
       // If we already have a result for this action, and the new result is an
       // error, merge it. This can happen if a tool invocation succeeds
       // but a subsequent UI post-invoke stage fails, or for follow up tools
       // that fail.
-      ActionResultWithLatencyInfo& action_result =
-          action_results_[result_index];
-      MergeActionResult(*action_result.result, result->Clone());
+      ToolResultWithLatencyInfo& action_result = action_results_[result_index];
+      MergeToolResult(action_result.tool_result, std::move(tool_result));
       action_result.end_time = base::TimeTicks::Now();
     }
-  } else if (!IsOk(*result)) {
+  } else if (!is_ok) {
     // If it's a general error, we still want it in action_results.
     action_results_.emplace_back(action_start_time_, base::TimeTicks::Now(),
-                                 result->Clone());
+                                 std::move(tool_result));
   }
 
   SetState(State::kComplete);
 
-  action_sequence_ended_callbacks_.Notify(IsOk(*result));
+  action_sequence_ended_callbacks_.Notify(is_ok);
 
-  if (!IsOk(*result)) {
+  if (!is_ok) {
     GURL url;
     if (action_index) {
       url = action_sequence_[*action_index]->GetURLForJournal();
     }
-    journal_->Log(
-        url, task_->id(), "Act Failed",
-        JournalDetailsBuilder().AddError(ToDebugString(*result)).Build());
+    journal_->Log(url, task_->id(), "Act Failed",
+                  JournalDetailsBuilder().AddError(error_debug_string).Build());
   }
 
-  RecordActionResultCode(result->code);
+  RecordActionResultCode(result_code);
   observation_strategy_.Lock();
   PostTaskForActCallback(std::move(act_callback_), std::move(action_results_),
                          std::move(observation_strategy_));

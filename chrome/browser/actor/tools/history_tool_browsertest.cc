@@ -752,7 +752,8 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackFromPOST) {
     // error.
     const auto& action_results = fut.Get();
     ASSERT_EQ(action_results.size(), 1u);
-    const mojom::ActionResultPtr& result = action_results[0].result;
+    const mojom::ActionResultPtr& result =
+        action_results[0].tool_result.deprecated_action_result();
     EXPECT_EQ(result->code, mojom::ActionResultCode::kHistoryErrorPage);
     EXPECT_THAT(result->message, testing::HasSubstr("ERR_CACHE_MISS"));
 
@@ -821,7 +822,8 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
     // error.
     const auto& action_results = fut.Get();
     ASSERT_EQ(action_results.size(), 1u);
-    const mojom::ActionResultPtr& result = action_results[0].result;
+    const mojom::ActionResultPtr& result =
+        action_results[0].tool_result.deprecated_action_result();
     EXPECT_EQ(result->code, mojom::ActionResultCode::kHistoryErrorPage);
     EXPECT_THAT(result->message, testing::HasSubstr("ERR_CACHE_MISS"));
 
@@ -893,7 +895,8 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
     // error.
     const auto& action_results = fut.Get();
     ASSERT_EQ(action_results.size(), 1u);
-    const mojom::ActionResultPtr& result = action_results[0].result;
+    const mojom::ActionResultPtr& result =
+        action_results[0].tool_result.deprecated_action_result();
     EXPECT_EQ(result->code, mojom::ActionResultCode::kHistoryErrorPage);
     EXPECT_THAT(result->message, testing::HasSubstr("ERR_CACHE_MISS"));
 

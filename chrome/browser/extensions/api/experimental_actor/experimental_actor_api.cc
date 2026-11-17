@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -293,7 +294,7 @@ ExperimentalActorPerformActionsFunction::Run() {
       actions.has_skip_async_observation_collection() &&
       actions.skip_async_observation_collection();
   if (!requests.has_value()) {
-    std::vector<actor::ActionResultWithLatencyInfo> action_results;
+    std::vector<actor::ToolResultWithLatencyInfo> action_results;
     action_results.emplace_back(
         base::TimeTicks::Now(), base::TimeTicks::Now(),
         actor::MakeResult(actor::mojom::ActionResultCode::kArgumentsInvalid,
@@ -326,7 +327,7 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
     std::optional<page_content_annotations::ScreenshotOptions::
                       ScreenshotCollectionOptions>
         screenshot_collection_options,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    std::vector<actor::ToolResultWithLatencyInfo> action_results,
     actor::TabObservationStrategy observation_strategy) {
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
   actor::ActorTask* task = actor_service->GetTask(task_id);
@@ -351,13 +352,8 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
   actor::mojom::ActionResultCode result_code =
       actor::mojom::ActionResultCode::kOk;
   std::optional<size_t> index_of_failed_action;
-  for (size_t i = 0; i < action_results.size(); ++i) {
-    if (!actor::IsOk(action_results[i].result->code)) {
-      result_code = action_results[i].result->code;
-      index_of_failed_action = i;
-      break;
-    }
-  }
+  actor::ExtractErrorResult(action_results, result_code,
+                            index_of_failed_action);
 
   if (result_code == actor::mojom::ActionResultCode::kTaskPaused) {
     auto response = std::make_unique<optimization_guide::proto::ActionsResult>(
@@ -384,7 +380,7 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
 
 void ExperimentalActorPerformActionsFunction::OnObservationResult(
     base::TimeTicks start_time,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    std::vector<actor::ToolResultWithLatencyInfo> action_results,
     actor::TaskId task_id,
     bool skip_async_observation_information,
     std::optional<page_content_annotations::ScreenshotOptions::

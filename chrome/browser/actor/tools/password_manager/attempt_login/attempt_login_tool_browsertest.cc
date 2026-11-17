@@ -260,7 +260,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
-  EXPECT_TRUE(RequiresPageStabilization(*result.Get().back().result));
+  EXPECT_TRUE(RequiresPageStabilization(
+      *result.Get().back().tool_result.deprecated_action_result()));
 
   const auto& last_credential_used =
       mock_login_service().last_credential_used();
@@ -487,7 +488,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyUsernameFilled) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
-  EXPECT_TRUE(RequiresPageStabilization(*result.Get().back().result));
+  EXPECT_TRUE(RequiresPageStabilization(
+      *result.Get().back().tool_result.deprecated_action_result()));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
@@ -505,7 +507,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
-  EXPECT_TRUE(RequiresPageStabilization(*result.Get().back().result));
+  EXPECT_TRUE(RequiresPageStabilization(
+      *result.Get().back().tool_result.deprecated_action_result()));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,

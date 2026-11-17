@@ -77,12 +77,12 @@ class Origin;
 
 namespace actor {
 
-struct ActionResultWithLatencyInfo;
 class ActorSurface;
 class ActorTask;
 class AutofillSelectionDialogEventHandler;
 class ToolRequest;
 class ToolResult;
+struct ToolResultWithLatencyInfo;
 namespace ui {
 class UiEventDispatcher;
 }
@@ -218,7 +218,7 @@ class ExecutionEngine : public ToolDelegate,
 
   // Performs the given tool actions and invokes the callback when completed.
   using ActCallback =
-      base::OnceCallback<void(std::vector<ActionResultWithLatencyInfo>,
+      base::OnceCallback<void(std::vector<ToolResultWithLatencyInfo>,
                               TabObservationStrategy)>;
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
@@ -396,6 +396,8 @@ class ExecutionEngine : public ToolDelegate,
 
   void CompleteActions(mojom::ActionResultPtr result,
                        std::optional<size_t> action_index);
+  void CompleteActions(ToolResult tool_result,
+                       std::optional<size_t> action_index);
 
   // Returns the next action that will be started when ExecuteNextAction is
   // reached.
@@ -524,7 +526,7 @@ class ExecutionEngine : public ToolDelegate,
   std::optional<mojom::ActionResultCode> external_tool_failure_reason_;
 
   // The results for actions so far.
-  std::vector<ActionResultWithLatencyInfo> action_results_;
+  std::vector<ToolResultWithLatencyInfo> action_results_;
 
   // Manages the registration lifetime of this engine's OriginGatingChecker with
   // the OriginGatingService. Automatically unregisters the checker upon

@@ -116,6 +116,17 @@ std::vector<ToolResultWithLatencyInfo> MakeResultVector(
   return results;
 }
 
+std::vector<ToolResultWithLatencyInfo> MakeResultVector(
+    mojom::ActionResultPtr result) {
+  return MakeResultVector(
+      ToolResult::FromDeprecatedActionResult(std::move(result)));
+}
+
+std::vector<ToolResultWithLatencyInfo> MakeResultVector(
+    mojom::ActionResultCode code) {
+  return MakeResultVector(MakeResult(code));
+}
+
 void ExtractErrorResult(base::span<const ToolResultWithLatencyInfo> results,
                         mojom::ActionResultCode& error_code,
                         std::optional<size_t>& index_of_failed_action) {

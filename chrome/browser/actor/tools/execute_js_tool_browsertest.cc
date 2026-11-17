@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/execute_js_tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -106,12 +107,13 @@ class ActorToolsExecuteJsTest : public ActorToolsTest {
     ActResultFuture result;
     actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
     const auto& action_results = result.Get();
-    if (action_results.size() != 1u || !action_results[0].result) {
+    if (action_results.size() != 1u ||
+        !action_results[0].tool_result.deprecated_action_result()) {
       ADD_FAILURE() << "Expected exactly one action result, got "
                     << action_results.size();
       return nullptr;
     }
-    return action_results[0].result->Clone();
+    return action_results[0].tool_result.deprecated_action_result()->Clone();
   }
 
   mojom::ActionResultPtr RunExecuteJsTool(const std::string& script_code,
@@ -440,8 +442,12 @@ IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, MultipleScriptsInOneAct) {
                    result.GetCallback());
   const auto& action_results = result.Get();
   ASSERT_EQ(action_results.size(), 2u);
-  EXPECT_EQ(GetResponse(*action_results[0].result), "1");
-  EXPECT_EQ(GetResponse(*action_results[1].result), "\"two\"");
+  EXPECT_EQ(
+      GetResponse(*action_results[0].tool_result.deprecated_action_result()),
+      "1");
+  EXPECT_EQ(
+      GetResponse(*action_results[1].tool_result.deprecated_action_result()),
+      "\"two\"");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, ScriptNavigatesPage) {

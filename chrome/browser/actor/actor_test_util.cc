@@ -40,6 +40,7 @@
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
@@ -887,7 +888,7 @@ void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
 void ExpectOkResult(ActResultFuture& future) {
   const auto& action_results = future.Get();
   for (const auto& action_result : action_results) {
-    ExpectOkResult(*action_result.result);
+    ExpectOkResult(*action_result.tool_result.deprecated_action_result());
   }
 }
 
@@ -895,8 +896,9 @@ void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code) {
   const auto& action_results = future.Get();
   for (const auto& action_result : action_results) {
-    if (!IsOk(*action_result.result)) {
-      EXPECT_EQ(action_result.result->code, expected_code);
+    if (!IsOk(*action_result.tool_result.deprecated_action_result())) {
+      EXPECT_EQ(action_result.tool_result.deprecated_action_result()->code,
+                expected_code);
       return;
     }
   }
@@ -910,7 +912,8 @@ void ExpectElementDisabledResultWithReason(ActResultFuture& future,
   ASSERT_EQ(1u, action_results.size());
 
   // The actor layer uses one result for one requested action.
-  const mojom::ActionResultPtr& result = action_results[0].result;
+  const mojom::ActionResultPtr& result =
+      action_results[0].tool_result.deprecated_action_result();
   EXPECT_EQ(mojom::ActionResultCode::kElementDisabled, result->code);
   EXPECT_FALSE(result->requires_page_stabilization);
 

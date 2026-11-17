@@ -25,6 +25,7 @@ namespace actor {
 class ActorKeyedService;
 struct ObservationResult;
 class TabObservationController;
+struct ToolResultWithLatencyInfo;
 
 // Wraps `ActorKeyedService` to convert and execute an
 // `optimization_guide::proto::Actions` request and collect post-action tab and
@@ -54,7 +55,7 @@ class ActorKeyedServiceProtoWrapper {
 
   static optimization_guide::proto::ActionsResult BuildActionsResult(
       base::TimeTicks start_time,
-      const std::vector<ActionResultWithLatencyInfo>& action_results,
+      const std::vector<ToolResultWithLatencyInfo>& action_results,
       ObservationResult& observation_result);
 
   void OnPerformActionsFinished(
@@ -65,7 +66,7 @@ class ActorKeyedServiceProtoWrapper {
       std::optional<page_content_annotations::ScreenshotOptions::
                         ScreenshotCollectionOptions>
           screenshot_collection_options,
-      std::vector<ActionResultWithLatencyInfo> action_results,
+      std::vector<ToolResultWithLatencyInfo> action_results,
       TabObservationStrategy observation_strategy);
 
   void StartTabObservation(
@@ -76,14 +77,14 @@ class ActorKeyedServiceProtoWrapper {
       std::optional<page_content_annotations::ScreenshotOptions::
                         ScreenshotCollectionOptions>
           screenshot_collection_options,
-      std::vector<ActionResultWithLatencyInfo> action_results,
+      std::vector<ToolResultWithLatencyInfo> action_results,
       TabObservationStrategy observation_strategy,
       mojom::ActionResultCode result_code);
 
   void OnTabObservationComplete(
       PerformActionsCallback callback,
       base::TimeTicks start_time,
-      std::vector<ActionResultWithLatencyInfo> action_results,
+      std::vector<ToolResultWithLatencyInfo> action_results,
       std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
       TabObservationController* controller_ptr,
       std::unique_ptr<ObservationResult> result);

@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/safe_ref.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -105,7 +106,7 @@ bool PopulateTabIdsForScriptToolActions(
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     base::TimeTicks start_time,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    std::vector<actor::ToolResultWithLatencyInfo> action_results,
     const ActorTask& task,
     bool skip_async_observation_information,
     std::optional<page_content_annotations::ScreenshotOptions::
@@ -113,7 +114,7 @@ void BuildActionsResultWithObservations(
         screenshot_collection_options,
     base::OnceCallback<
         void(base::TimeTicks start_time,
-             std::vector<actor::ActionResultWithLatencyInfo> action_results,
+             std::vector<actor::ToolResultWithLatencyInfo> action_results,
              actor::TaskId task_id,
              bool skip_async_observation_information,
              std::optional<page_content_annotations::ScreenshotOptions::
@@ -169,9 +170,11 @@ optimization_guide::proto::TabObservation::ScreenshotResult ToScreenshotResult(
 template <typename T>
 void CopyScriptToolResults(
     T& proto,
-    const std::vector<ActionResultWithLatencyInfo>& action_results) {
+    const std::vector<ToolResultWithLatencyInfo>& action_results) {
   for (size_t i = 0; i < action_results.size(); ++i) {
-    const auto& response = action_results[i].result->script_tool_response;
+    const auto& response = action_results[i]
+                               .tool_result.deprecated_action_result()
+                               ->script_tool_response;
     if (response && response->result) {
       auto* script_tool_result = proto.add_script_tool_results();
       script_tool_result->set_index_of_script_tool_action(i);
@@ -197,9 +200,10 @@ void CopyScriptToolResults(
 template <typename T>
 void CopyExecuteJsResults(
     T& proto,
-    const std::vector<ActionResultWithLatencyInfo>& action_results) {
+    const std::vector<ToolResultWithLatencyInfo>& action_results) {
   for (size_t i = 0; i < action_results.size(); ++i) {
-    const mojom::ActionResult& result = *action_results[i].result;
+    const mojom::ActionResult& result =
+        *action_results[i].tool_result.deprecated_action_result();
     const auto& response = result.execute_js_response;
     if (IsOk(result) && response) {
       auto* execute_js_result = proto.add_execute_js_results();

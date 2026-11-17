@@ -1290,7 +1290,7 @@ class ExecutionEngineUrlGatingBrowserTest : public InProcessBrowserTest {
     // The result should not be provided synchronously.
     EXPECT_FALSE(result.IsReady());
     ASSERT_EQ(result.Get().size(), 1u);
-    EXPECT_THAT(result.Get()[0].result->code,
+    EXPECT_THAT(result.Get()[0].tool_result.deprecated_action_result()->code,
                 Conditional(expected_allowed, mojom::ActionResultCode::kOk,
                             Not(mojom::ActionResultCode::kOk)));
   }

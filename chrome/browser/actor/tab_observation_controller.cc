@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/actor/core/actor_features.h"
@@ -91,10 +92,11 @@ ToTabObservationResult(page_content_annotations::FetchPageContextError error) {
 }
 
 bool HasScriptToolResults(
-    const std::vector<actor::ActionResultWithLatencyInfo>& action_results) {
+    const std::vector<actor::ToolResultWithLatencyInfo>& action_results) {
   for (const auto& res : action_results) {
-    if (res.result && res.result->script_tool_response &&
-        res.result->script_tool_response->result) {
+    const auto& action_result = res.tool_result.deprecated_action_result();
+    if (action_result && action_result->script_tool_response &&
+        action_result->script_tool_response->result) {
       return true;
     }
   }
@@ -111,7 +113,7 @@ TabObservationController::TabObservationController(
     TaskId task_id,
     base::TimeTicks start_time,
     bool skip_async_observation_information,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    std::vector<actor::ToolResultWithLatencyInfo> action_results,
     TabObservationStrategy observation_strategy,
     DoneCallback done_callback)
     : profile_(profile),

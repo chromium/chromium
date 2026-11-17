@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/actor_tab_close_skip_beforeunload_user_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -122,7 +123,7 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
       ActResultFuture& result_future,
       base::span<const ExpectedTabObservation> expected_tab_observations) {
     base::test::TestFuture<
-        base::TimeTicks, std::vector<actor::ActionResultWithLatencyInfo>,
+        base::TimeTicks, std::vector<actor::ToolResultWithLatencyInfo>,
         actor::TaskId, bool,
         std::optional<page_content_annotations::ScreenshotOptions::
                           ScreenshotCollectionOptions>,
@@ -130,7 +131,7 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
         std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
         future;
 
-    const std::vector<actor::ActionResultWithLatencyInfo>& action_results =
+    const std::vector<actor::ToolResultWithLatencyInfo>& action_results =
         result_future.Get();
     actor::BuildActionsResultWithObservations(
         *browser()->GetProfile(), /*start_time=*/base::TimeTicks::Now(),

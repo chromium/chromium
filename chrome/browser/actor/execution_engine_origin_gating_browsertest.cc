@@ -3070,7 +3070,7 @@ IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
     ASSERT_EQ(result.Get().size(), 1u);
     // The action and the out-of-turn navigation race, so we handle multiple
     // outcomes below.
-    if (IsOk(*result.Get()[0].result)) {
+    if (IsOk(*result.Get()[0].tool_result.deprecated_action_result())) {
       // The click was not interrupted by the navigation committing before
       // time-of-use validation, and returned kOk.
       if (param.ui_prompt_type == UiPromptType::kNone) {
@@ -3554,7 +3554,7 @@ class ExecutionEngineSubframeGatingDryRunBrowserTest
     ActResultFuture result;
     actor_task().Act(ToRequestList(click), result.GetCallback());
     EXPECT_EQ(result.Get().size(), 1u);
-    return result.Get()[0].result->code;
+    return result.Get()[0].tool_result.deprecated_action_result()->code;
   }
 
   // Makes page-action gating explicitly allow a.com and explicitly block b.com

@@ -54,7 +54,7 @@ class TabObservationStrategy;
 namespace ui {
 class UiEventDispatcher;
 }
-struct ActionResultWithLatencyInfo;
+struct ToolResultWithLatencyInfo;
 
 // Represents a task that Chrome is executing on behalf of the user.
 //
@@ -72,7 +72,7 @@ struct ActionResultWithLatencyInfo;
 class ActorTask : public base::SupportsUserData {
  public:
   using ActCallback =
-      base::OnceCallback<void(std::vector<ActionResultWithLatencyInfo>,
+      base::OnceCallback<void(std::vector<ToolResultWithLatencyInfo>,
                               TabObservationStrategy)>;
 
   using AllowedSchemes = ExecutionEngine::AllowedSchemes;
@@ -428,7 +428,7 @@ class ActorTask : public base::SupportsUserData {
                              content::WebContents* old_contents,
                              content::WebContents* new_contents);
 
-  void OnFinishedAct(std::vector<ActionResultWithLatencyInfo> action_results,
+  void OnFinishedAct(std::vector<ToolResultWithLatencyInfo> action_results,
                      TabObservationStrategy observation_strategy);
 
   void ResetToObserveTabsSet();

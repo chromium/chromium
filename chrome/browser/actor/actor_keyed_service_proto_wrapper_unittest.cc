@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_controller.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/testing_profile.h"
@@ -41,7 +42,7 @@ class ActorKeyedServiceProtoWrapperTest : public testing::Test {
 
   static optimization_guide::proto::ActionsResult BuildActionsResult(
       base::TimeTicks start_time,
-      const std::vector<ActionResultWithLatencyInfo>& action_results,
+      const std::vector<ToolResultWithLatencyInfo>& action_results,
       ObservationResult& observation_result) {
     return ActorKeyedServiceProtoWrapper::BuildActionsResult(
         start_time, action_results, observation_result);
@@ -130,7 +131,7 @@ TEST_F(ActorKeyedServiceProtoWrapperTest,
       MakeOkResultWithMessage(/*requires_page_stabilization=*/true, "done");
   ok_result->execution_end_time = start_time + base::Milliseconds(25);
 
-  std::vector<ActionResultWithLatencyInfo> action_results;
+  std::vector<ToolResultWithLatencyInfo> action_results;
   action_results.emplace_back(start_time + base::Milliseconds(5),
                               start_time + base::Milliseconds(40),
                               std::move(ok_result));
@@ -197,7 +198,7 @@ TEST_F(ActorKeyedServiceProtoWrapperTest,
                  /*requires_page_stabilization=*/false, "tab closed");
   err_result->execution_end_time = start_time + base::Milliseconds(10);
 
-  std::vector<ActionResultWithLatencyInfo> action_results;
+  std::vector<ToolResultWithLatencyInfo> action_results;
   action_results.emplace_back(start_time, start_time + base::Milliseconds(10),
                               std::move(err_result));
 

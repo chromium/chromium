@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -82,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
   EXPECT_EQ(
-      result.Get()[0].result->message,
+      result.Get()[0].tool_result.deprecated_action_result()->message,
       absl::StrFormat(
           "Filled old password into field with id %d and new generated "
           "password into field with id %d and confirmation password into field "
@@ -122,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
   EXPECT_EQ(
-      result.Get()[0].result->message,
+      result.Get()[0].tool_result.deprecated_action_result()->message,
       absl::StrFormat("Filled new generated password into field with id %d.",
                       new_password_node->node_id));
 
@@ -159,7 +160,8 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message, "Found no eligible form to fill.");
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
+            "Found no eligible form to fill.");
 }
 
 IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
@@ -191,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message,
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
             absl::StrFormat("Filled old password into field with id %d. Failed "
                             "to fill new generated password into field with id "
                             "%d.",
@@ -234,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
                     mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   ASSERT_EQ(result.Get().size(), 1u);
   EXPECT_EQ(
-      result.Get()[0].result->message,
+      result.Get()[0].tool_result.deprecated_action_result()->message,
       absl::StrFormat(
           "Filled old password into field with id %d. Failed to fill new "
           "generated password into field with id %d and confirmation password "
@@ -268,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message,
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
             absl::StrFormat(
                 "Failed to fill new generated password into field with id %d.",
                 new_password_node->node_id));
@@ -297,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message,
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
             absl::StrFormat(
                 "Filled new generated password into field with id %d. "
                 "Triggered click on confirm button with id %d.",
@@ -337,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
   EXPECT_EQ(
-      result.Get()[0].result->message,
+      result.Get()[0].tool_result.deprecated_action_result()->message,
       absl::StrFormat(
           "Filled old password into field with id %d and new generated "
           "password into field with id %d and confirmation password into field "
@@ -380,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message,
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
             absl::StrFormat(
                 "Filled new generated password into field with id %d. "
                 "Triggered click on confirm button %s.",
@@ -419,7 +421,8 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message, "Found no eligible form to fill.");
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
+            "Found no eligible form to fill.");
   EXPECT_EQ("", EvalJs(main_frame(), "getStableEventLog()"));
 }
 
@@ -517,11 +520,11 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
                     mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   ASSERT_EQ(result.Get().size(), 1u);
   EXPECT_EQ(
-      result.Get()[0].result->message,
+      result.Get()[0].tool_result.deprecated_action_result()->message,
       absl::StrFormat(
           "Target field is not a valid password field: new_password_field "
           "(id %d).",
-                      select_node->node_id));
+          select_node->node_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
@@ -551,11 +554,11 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
                     mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   ASSERT_EQ(result.Get().size(), 1u);
   EXPECT_EQ(
-      result.Get()[0].result->message,
+      result.Get()[0].tool_result.deprecated_action_result()->message,
       absl::StrFormat(
           "Target field is not a valid password field: new_password_field "
           "(id %d).",
-                      username_node->node_id));
+          username_node->node_id));
   EXPECT_EQ("",
             EvalJs(main_frame(), "document.getElementById('password').value"));
   EXPECT_EQ("",

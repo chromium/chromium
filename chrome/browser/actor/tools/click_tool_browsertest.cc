@@ -1397,12 +1397,13 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
 
   const auto& action_results = result.Get();
   ASSERT_EQ(1u, action_results.size());
-  ASSERT_TRUE(action_results[0].result);
-  EXPECT_EQ(mojom::ActionResultCode::kInvalidDomNodeId,
-            action_results[0].result->code)
-      << ToDebugString(*action_results[0].result);
+  const auto& act_result =
+      action_results[0].tool_result.deprecated_action_result();
+  ASSERT_TRUE(act_result);
+  EXPECT_EQ(mojom::ActionResultCode::kInvalidDomNodeId, act_result->code)
+      << ToDebugString(*act_result);
   EXPECT_EQ("The target was not found in the last APC snapshot.",
-            action_results[0].result->message);
+            act_result->message);
   EXPECT_THAT(EvalJs(web_contents(), "click_log.join(',')").ExtractString(),
               testing::IsEmpty());
 }

@@ -149,10 +149,9 @@ class ToolController {
   void PerformAction(std::unique_ptr<actor::ToolRequest> action,
                      ToolResponseCallback callback);
 
-  void OnActionsFinished(
-      ToolResponseCallback callback,
-      std::vector<actor::ActionResultWithLatencyInfo> results,
-      actor::TabObservationStrategy strategy);
+  void OnActionsFinished(ToolResponseCallback callback,
+                         std::vector<actor::ToolResultWithLatencyInfo> results,
+                         actor::TabObservationStrategy strategy);
 
   // Owns this object.
   const raw_ref<SessionControllerImpl> session_controller_;

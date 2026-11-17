@@ -41,6 +41,7 @@
 #include "chrome/browser/actor/headless_web_contents_manager.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/transport/chrome_actuation_transport_handler_factory.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -1104,7 +1105,7 @@ void ActorKeyedService::AssignAgentContainerConfig(
 
 void ActorKeyedService::OnActionsFinished(
     PerformActionsCallback callback,
-    std::vector<ActionResultWithLatencyInfo> action_results,
+    std::vector<ToolResultWithLatencyInfo> action_results,
     TabObservationStrategy observation_strategy) {
   TRACE_EVENT0("actor", "ActorKeyedService::OnActionsFinished");
 

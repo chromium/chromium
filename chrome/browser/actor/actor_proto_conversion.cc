@@ -54,6 +54,7 @@
 #include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
@@ -1478,17 +1479,16 @@ apc::TabObservation::TabObservationResult ToTabObservationResult(
   }
 }
 
-void FetchCallback(
-    ActorSurfaceHandle actor_surface_handle,
-    base::WeakPtr<Profile> profile,
-    TaskId task_id,
-    base::RepeatingClosure barrier,
-    apc::TabObservation* tab_observation,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results,
-    base::TimeTicks start_time,
-    base::TimeTicks fetch_context_time,
-    apc::ActionsResult_LatencyInformation* latency_info,
-    ActorKeyedService::TabObservationResult result) {
+void FetchCallback(ActorSurfaceHandle actor_surface_handle,
+                   base::WeakPtr<Profile> profile,
+                   TaskId task_id,
+                   base::RepeatingClosure barrier,
+                   apc::TabObservation* tab_observation,
+                   std::vector<actor::ToolResultWithLatencyInfo> action_results,
+                   base::TimeTicks start_time,
+                   base::TimeTicks fetch_context_time,
+                   apc::ActionsResult_LatencyInformation* latency_info,
+                   ActorKeyedService::TabObservationResult result) {
   TRACE_EVENT0("actor", "FetchCallback");
   CHECK(tab_observation);
   CHECK(latency_info);
@@ -1748,7 +1748,7 @@ GetScreenshotCollectionOptions(
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     base::TimeTicks actions_start_time,
-    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    std::vector<actor::ToolResultWithLatencyInfo> action_results,
     const ActorTask& task,
     bool skip_async_observation_information,
     std::optional<page_content_annotations::ScreenshotOptions::
@@ -1756,7 +1756,7 @@ void BuildActionsResultWithObservations(
         screenshot_collection_options,
     base::OnceCallback<
         void(base::TimeTicks actions_start_time,
-             std::vector<actor::ActionResultWithLatencyInfo> action_results,
+             std::vector<actor::ToolResultWithLatencyInfo> action_results,
              actor::TaskId task_id,
              bool skip_async_observation_information,
              std::optional<page_content_annotations::ScreenshotOptions::
@@ -1772,7 +1772,7 @@ void BuildActionsResultWithObservations(
 
   mojom::ActionResultCode result_code = mojom::ActionResultCode::kOk;
   std::optional<size_t> index_of_failed_action;
-  ExtractErrorResult(action_results, &result_code, index_of_failed_action);
+  ExtractErrorResult(action_results, result_code, index_of_failed_action);
 
   std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry =
       actor_service->GetJournal().CreatePendingAsyncEntry(
@@ -1799,8 +1799,10 @@ void BuildActionsResultWithObservations(
   CopyExecuteJsResults(*response, action_results);
 
   for (const auto& action_result : action_results) {
-    if (IsOk(*action_result.result)) {
-      response->add_extra_information(action_result.result->message);
+    const mojom::ActionResult& result =
+        *action_result.tool_result.deprecated_action_result();
+    if (action_result.tool_result.Ok()) {
+      response->add_extra_information(result.message);
     } else {
       // In case of an error, the message is copied to `error_message` instead.
       response->add_extra_information(std::string());
@@ -1811,7 +1813,9 @@ void BuildActionsResultWithObservations(
       response->mutable_latency_information();
   for (size_t i = 0; i < action_results.size(); ++i) {
     auto& action_result = action_results.at(i);
-    CHECK(action_result.result->execution_end_time);
+    const mojom::ActionResult& result =
+        *action_result.tool_result.deprecated_action_result();
+    CHECK(result.execution_end_time);
     {
       apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
           latency_info->add_latency_steps();
@@ -1819,24 +1823,22 @@ void BuildActionsResultWithObservations(
       latency_step->set_latency_start_ms(
           (action_result.start_time - actions_start_time).InMilliseconds());
       latency_step->set_latency_stop_ms(
-          (*action_result.result->execution_end_time - actions_start_time)
-              .InMilliseconds());
+          (*result.execution_end_time - actions_start_time).InMilliseconds());
     }
     // Don't report a page stabilization time if the start and end
     // are the same. Not every tool needs stabilization.
-    if (*action_result.result->execution_end_time != action_result.end_time) {
+    if (*result.execution_end_time != action_result.end_time) {
       apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
           latency_info->add_latency_steps();
       latency_step->mutable_page_stabilization()->set_action_index(i);
       latency_step->set_latency_start_ms(
-          (*action_result.result->execution_end_time - actions_start_time)
-              .InMilliseconds());
+          (*result.execution_end_time - actions_start_time).InMilliseconds());
       latency_step->set_latency_stop_ms(
           (action_result.end_time - actions_start_time).InMilliseconds());
     }
-    if (!actor::IsOk(*action_result.result)) {
+    if (!action_result.tool_result.Ok()) {
       CHECK_EQ(*index_of_failed_action, i);
-      response->set_error_message(action_result.result->message);
+      response->set_error_message(result.message);
     }
   }
 

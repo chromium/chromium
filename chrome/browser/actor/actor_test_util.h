@@ -30,6 +30,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -73,22 +74,22 @@ auto UiEventDispatcherCallback(
 }
 
 class ActResultFuture
-    : public base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
+    : public base::test::TestFuture<std::vector<ToolResultWithLatencyInfo>,
                                     TabObservationStrategy> {
  public:
-  const std::vector<ActionResultWithLatencyInfo>& Get() {
+  const std::vector<ToolResultWithLatencyInfo>& Get() {
     return std::get<0>(
-        base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
+        base::test::TestFuture<std::vector<ToolResultWithLatencyInfo>,
                                TabObservationStrategy>::Get());
   }
-  std::vector<ActionResultWithLatencyInfo> Take() {
+  std::vector<ToolResultWithLatencyInfo> Take() {
     return std::get<0>(
-        base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
+        base::test::TestFuture<std::vector<ToolResultWithLatencyInfo>,
                                TabObservationStrategy>::Take());
   }
   const TabObservationStrategy& GetStrategy() {
     return std::get<1>(
-        base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>,
+        base::test::TestFuture<std::vector<ToolResultWithLatencyInfo>,
                                TabObservationStrategy>::Get());
   }
 };

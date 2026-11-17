@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
@@ -396,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   actor::AddTabToTask(*active_tab(), *task);
 
   TestFuture<base::TimeTicks /*start_time*/,
-             std::vector<actor::ActionResultWithLatencyInfo>, actor::TaskId,
+             std::vector<actor::ToolResultWithLatencyInfo>, actor::TaskId,
              bool /*skip_async_observation_information*/,
              std::optional<page_content_annotations::ScreenshotOptions::
                                ScreenshotCollectionOptions>,
@@ -405,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       future;
   actor::BuildActionsResultWithObservations(
       *GetProfile(), base::TimeTicks::Now(),
-      std::vector<actor::ActionResultWithLatencyInfo>(), *task, true,
+      std::vector<actor::ToolResultWithLatencyInfo>(), *task, true,
       std::nullopt, future.GetCallback());
   const std::unique_ptr<optimization_guide::proto::ActionsResult>&
       actions_result = future.Get<5>();
@@ -425,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
 
-  std::vector<actor::ActionResultWithLatencyInfo> action_results;
+  std::vector<actor::ToolResultWithLatencyInfo> action_results;
 
   // Add a successful result with an extra_information message
   // "Some extra info".
@@ -445,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       /*attempt_login_status=*/std::nullopt);
   action_results.emplace_back(now, now, std::move(fail_result));
 
-  TestFuture<base::TimeTicks, std::vector<actor::ActionResultWithLatencyInfo>,
+  TestFuture<base::TimeTicks, std::vector<actor::ToolResultWithLatencyInfo>,
              actor::TaskId, bool,
              std::optional<page_content_annotations::ScreenshotOptions::
                                ScreenshotCollectionOptions>,

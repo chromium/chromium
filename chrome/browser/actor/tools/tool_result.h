@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/tool_result_data.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 
 namespace actor {
 
@@ -124,6 +125,18 @@ struct ToolResultWithLatencyInfo {
 // TODO(crbug.com/584876714): Remove once `ToolResultWithLatencyInfo` is
 // replaced with `actor::ActionResult` and `actor::ActionsResult`.
 std::vector<ToolResultWithLatencyInfo> MakeResultVector(ToolResult tool_result);
+
+// Returns a singleton result vector using the given `result`.
+// TODO(crbug.com/574534362): Remove once all tools migrate off
+// mojom::ActionResult.
+std::vector<ToolResultWithLatencyInfo> MakeResultVector(
+    mojom::ActionResultPtr result);
+
+// Returns a singleton result vector using the given `code`.
+// TODO(crbug.com/574534362): Remove once all tools migrate off
+// mojom::ActionResult.
+std::vector<ToolResultWithLatencyInfo> MakeResultVector(
+    mojom::ActionResultCode code);
 
 // Assigns `error_code` and `index_of_failed_action` to the first member of
 // `results` with a non-Ok result, if any.

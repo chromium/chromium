@@ -23,6 +23,7 @@
 #include "chrome/browser/actor/tools/script_tool_host.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -81,10 +82,12 @@ class ActorToolsTestScriptTool : public ActorToolsTest {
 
     const auto& action_results = result.Get();
     EXPECT_EQ(action_results.size(), 1u);
-    EXPECT_TRUE(action_results.at(0).result);
-    mojom::ActionResultPtr action_result = action_results.at(0).result->Clone();
+    const auto& act_result =
+        action_results.at(0).tool_result.deprecated_action_result();
+    EXPECT_TRUE(act_result);
+    mojom::ActionResultPtr action_result = act_result->Clone();
     actor::mojom::ScriptToolResponsePtr response =
-        std::move(action_results.at(0).result->script_tool_response);
+        std::move(action_result->script_tool_response);
     EXPECT_TRUE(response);
     return {std::move(action_result), std::move(response)};
   }
@@ -116,7 +119,7 @@ class ActorToolsTestScriptTool : public ActorToolsTest {
     EXPECT_TRUE(nav_observer.last_navigation_succeeded());
 
     auto response = result.Get();
-    ExpectOkResult(*response[0].result);
+    ExpectOkResult(*response[0].tool_result.deprecated_action_result());
   }
 
   content::RenderFrameHost& NavigateSubframe(
@@ -317,9 +320,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolNoTimeout,
 
   const auto& action_results = result.Get();
   ASSERT_EQ(action_results.size(), 1u);
-  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
-  base::Value actual_json = base::test::ParseJson(
-      *action_results.at(0).result->script_tool_response->result);
+  const auto& act_result =
+      action_results.at(0).tool_result.deprecated_action_result();
+  ASSERT_TRUE(act_result->script_tool_response);
+  base::Value actual_json =
+      base::test::ParseJson(*act_result->script_tool_response->result);
 
   base::Value expected_json = base::test::ParseJson(R"JSON(
   [
@@ -496,7 +501,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenTopLevelNavigate) {
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
 
   auto results = result.Get();
-  EXPECT_EQ(results[0].result->script_tool_response->result, "opened");
+  EXPECT_EQ(results[0]
+                .tool_result.deprecated_action_result()
+                ->script_tool_response->result,
+            "opened");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenSucceeds) {
@@ -527,12 +535,15 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, WindowOpenSucceeds) {
   nav_observer.Wait();
 
   auto results = result.Get();
-  EXPECT_EQ(results[0].result->script_tool_response->result, "opened");
+  EXPECT_EQ(results[0]
+                .tool_result.deprecated_action_result()
+                ->script_tool_response->result,
+            "opened");
 
   // Validate the newly opened window is not included in the observation's tab
   // list, but is included in the window observations.
   base::test::TestFuture<
-      base::TimeTicks, std::vector<actor::ActionResultWithLatencyInfo>,
+      base::TimeTicks, std::vector<actor::ToolResultWithLatencyInfo>,
       actor::TaskId, bool,
       std::optional<page_content_annotations::ScreenshotOptions::
                         ScreenshotCollectionOptions>,
@@ -591,7 +602,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   nav_observer.Wait();
 
   auto results = result.Get();
-  EXPECT_EQ(results[0].result->script_tool_response->result,
+  EXPECT_EQ(results[0]
+                .tool_result.deprecated_action_result()
+                ->script_tool_response->result,
             R"({"first":"opened","second":"blocked"})");
 }
 
@@ -688,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   auto response = result.Get();
-  ExpectOkResult(*response[0].result);
+  ExpectOkResult(*response[0].tool_result.deprecated_action_result());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
@@ -708,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   auto response = result.Get();
-  ExpectOkResult(*response[0].result);
+  ExpectOkResult(*response[0].tool_result.deprecated_action_result());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
@@ -916,8 +929,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ToolReentrantExecution) {
 
   auto response1 = result1.Get();
   auto response2 = result2.Get();
-  EXPECT_TRUE(response1[0].result);
-  EXPECT_TRUE(response2[0].result);
+  EXPECT_TRUE(response1[0].tool_result.deprecated_action_result());
+  EXPECT_TRUE(response2[0].tool_result.deprecated_action_result());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -999,7 +1012,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolSkipVoting, SkipVoting) {
   EXPECT_EQ(strategy.GetPageContentExtractionPolicy(
                 ActorSurfaceHandle::From(active_tab()->GetHandle())),
             PageContentExtractionPolicy::kSkipped);
-  EXPECT_FALSE(result.Get().at(0).result->requires_page_stabilization);
+  EXPECT_FALSE(result.Get()
+                   .at(0)
+                   .tool_result.deprecated_action_result()
+                   ->requires_page_stabilization);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, PermissionsPolicyDisabled) {
@@ -1292,7 +1308,10 @@ IN_PROC_BROWSER_TEST_F(
   content::ExecuteScriptAsync(web_contents(), "finishAsyncWork()");
 
   ExpectOkResult(result);
-  EXPECT_EQ(result.Get().at(0).result->script_tool_response->result,
+  EXPECT_EQ(result.Get()
+                .at(0)
+                .tool_result.deprecated_action_result()
+                ->script_tool_response->result,
             "trigger_tool result");
   EXPECT_THAT(GetObservedToolNames(),
               testing::UnorderedElementsAre("trigger_tool", "deferred_tool"));
@@ -1325,7 +1344,10 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectOkResult(result);
   EXPECT_EQ(
-      result.Get().at(0).result->script_tool_response->result,
+      result.Get()
+          .at(0)
+          .tool_result.deprecated_action_result()
+          ->script_tool_response->result,
       R"([{"@context":"https://schema.org","@type":"Message","text":"navigated"}])");
   EXPECT_THAT(GetObservedToolNames(),
               testing::UnorderedElementsAre("deferred_tool"));

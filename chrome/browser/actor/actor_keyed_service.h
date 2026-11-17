@@ -31,6 +31,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -179,7 +180,7 @@ class ActorKeyedService : public KeyedService,
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.
   using PerformActionsCallback = base::OnceCallback<void(
-      std::vector<ActionResultWithLatencyInfo> /* action_results */,
+      std::vector<ToolResultWithLatencyInfo> /* action_results */,
       TabObservationStrategy /* observation_strategy */)>;
   void PerformActions(TaskId task_id,
                       std::vector<std::unique_ptr<ToolRequest>>&& actions,
@@ -453,10 +454,9 @@ class ActorKeyedService : public KeyedService,
           agent_container_config);
 
   // The callback used for ExecutorEngine::Act.
-  void OnActionsFinished(
-      PerformActionsCallback callback,
-      std::vector<ActionResultWithLatencyInfo> action_results,
-      TabObservationStrategy observation_strategy);
+  void OnActionsFinished(PerformActionsCallback callback,
+                         std::vector<ToolResultWithLatencyInfo> action_results,
+                         TabObservationStrategy observation_strategy);
 
   // The jounrnal should be last in destruction order since other things like
   // ActorTask might be using a SafeRef to this object.

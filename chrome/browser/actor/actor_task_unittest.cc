@@ -627,7 +627,8 @@ TEST_F(ActorTaskTest, CancelOngoingActions) {
 
   // Verify the callback was invoked with task paused result.
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get()[0].result->code, mojom::ActionResultCode::kTaskPaused);
+  EXPECT_EQ(future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kTaskPaused);
 }
 
 TEST_F(ActorTaskTest, ActEdgeCases) {
@@ -640,7 +641,7 @@ TEST_F(ActorTaskTest, ActEdgeCases) {
   ActResultFuture future_paused;
   task_->Act(std::move(actions), future_paused.GetCallback());
   ASSERT_TRUE(future_paused.Wait());
-  EXPECT_EQ(future_paused.Get()[0].result->code,
+  EXPECT_EQ(future_paused.Get()[0].tool_result.deprecated_action_result()->code,
             mojom::ActionResultCode::kTaskPaused);
 
   // Resume so we can stop it.
@@ -655,8 +656,9 @@ TEST_F(ActorTaskTest, ActEdgeCases) {
   ActResultFuture future_completed;
   task_->Act(std::move(actions_completed), future_completed.GetCallback());
   ASSERT_TRUE(future_completed.Wait());
-  EXPECT_EQ(future_completed.Get()[0].result->code,
-            mojom::ActionResultCode::kTaskWentAway);
+  EXPECT_EQ(
+      future_completed.Get()[0].tool_result.deprecated_action_result()->code,
+      mojom::ActionResultCode::kTaskWentAway);
 }
 
 TEST_F(ActorTaskTest, PauseEdgeCases) {
@@ -722,8 +724,10 @@ TEST_F(ActorTaskTest, MultipleActions) {
   // Verify the callback was invoked and both actions succeeded.
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get().size(), 2u);
-  EXPECT_EQ(future.Get()[0].result->code, mojom::ActionResultCode::kOk);
-  EXPECT_EQ(future.Get()[1].result->code, mojom::ActionResultCode::kOk);
+  EXPECT_EQ(future.Get()[0].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+  EXPECT_EQ(future.Get()[1].tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
 }
 
 class ActorTaskCompletionMetricsTest : public testing::Test {

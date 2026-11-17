@@ -1092,7 +1092,7 @@ TEST_F(ActorProtoConversionTest, BuildToolRequest_Navigate_MissingUrlFails) {
 }
 
 TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_PopulatesProto) {
-  std::vector<ActionResultWithLatencyInfo> action_results;
+  std::vector<ToolResultWithLatencyInfo> action_results;
   base::TimeTicks now = base::TimeTicks::Now();
   mojom::ActionResultPtr result = MakeOkResult();
   result->execute_js_response =
@@ -1112,7 +1112,7 @@ TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_PopulatesProto) {
 }
 
 TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_KeepsJsErrorMessage) {
-  std::vector<ActionResultWithLatencyInfo> action_results;
+  std::vector<ToolResultWithLatencyInfo> action_results;
   base::TimeTicks now = base::TimeTicks::Now();
   mojom::ActionResultPtr result =
       MakeResult(mojom::ActionResultCode::kExecuteJsScriptFailed,
@@ -1137,7 +1137,7 @@ TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_KeepsJsErrorMessage) {
 // reports, aren't ExecuteJs results, even with a partial response.
 TEST_F(ActorProtoConversionTest,
        CopyExecuteJsResults_IgnoresFailuresWithoutJsError) {
-  std::vector<ActionResultWithLatencyInfo> action_results;
+  std::vector<ToolResultWithLatencyInfo> action_results;
   base::TimeTicks now = base::TimeTicks::Now();
   mojom::ActionResultPtr result =
       MakeResult(mojom::ActionResultCode::kExecuteJsScriptFailed,
@@ -1153,7 +1153,7 @@ TEST_F(ActorProtoConversionTest,
 }
 
 TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_IndexesByAction) {
-  std::vector<ActionResultWithLatencyInfo> action_results;
+  std::vector<ToolResultWithLatencyInfo> action_results;
   base::TimeTicks now = base::TimeTicks::Now();
   // An action that isn't ExecuteJs, followed by two ExecuteJs actions.
   action_results.emplace_back(now, now, MakeOkResult());

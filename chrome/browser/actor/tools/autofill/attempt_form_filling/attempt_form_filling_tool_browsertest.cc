@@ -376,9 +376,10 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
   const auto& action_results = result.Get();
   ASSERT_EQ(action_results.size(), 1u);
   const auto& action_result = action_results[0];
-  ExpectOkResult(*action_result.result);
+  ExpectOkResult(*action_result.tool_result.deprecated_action_result());
 
-  EXPECT_EQ(action_result.result->message, expected_info);
+  EXPECT_EQ(action_result.tool_result.deprecated_action_result()->message,
+            expected_info);
 }
 // Test that dialog events are forwarded to the form filling service.
 IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
@@ -1051,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
   const auto& action_results = result.Get();
   ASSERT_EQ(action_results.size(), 1u);
-  EXPECT_EQ(action_results[0].result->message,
+  EXPECT_EQ(action_results[0].tool_result.deprecated_action_result()->message,
             "Credit card opaque token cannot be combined with address "
             "requests.");
 }

@@ -6,6 +6,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "components/actor/core/actor_features.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -125,11 +126,12 @@ class DevToolsScriptToolTest : public actor::ActorToolsTest,
 
     const auto& action_results = result.Get();
     EXPECT_EQ(action_results.size(), 1u);
-    EXPECT_TRUE(action_results.at(0).result);
-    actor::mojom::ActionResultPtr action_result =
-        action_results.at(0).result->Clone();
+    const auto& act_result =
+        action_results.at(0).tool_result.deprecated_action_result();
+    EXPECT_TRUE(act_result);
+    actor::mojom::ActionResultPtr action_result = act_result->Clone();
     actor::mojom::ScriptToolResponsePtr response =
-        std::move(action_results.at(0).result->script_tool_response);
+        std::move(action_result->script_tool_response);
     EXPECT_TRUE(response);
     return {std::move(action_result), std::move(response)};
   }

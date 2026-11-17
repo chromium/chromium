@@ -519,7 +519,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
     actor_task().Act(ToRequestList(action), future.GetCallback());
     const auto& action_results = future.Get();
     ASSERT_EQ(action_results.size(), 1u);
-    const mojom::ActionResult& result = *action_results[0].result;
+    const mojom::ActionResult& result =
+        *action_results[0].tool_result.deprecated_action_result();
     ASSERT_EQ(result.code, mojom::ActionResultCode::kElementDisabled);
     ASSERT_FALSE(result.requires_page_stabilization);
     ASSERT_EQ(EvalJs(web_contents(), "window.scrollY"), scroll_before);
@@ -537,7 +538,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
     actor_task().Act(ToRequestList(action), future.GetCallback());
     const auto& action_results = future.Get();
     ASSERT_EQ(action_results.size(), 1u);
-    const mojom::ActionResult& result = *action_results[0].result;
+    const mojom::ActionResult& result =
+        *action_results[0].tool_result.deprecated_action_result();
     ASSERT_EQ(result.code, mojom::ActionResultCode::kElementDisabled);
     ASSERT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
 

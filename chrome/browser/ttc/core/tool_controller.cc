@@ -44,6 +44,7 @@
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
@@ -1212,12 +1213,13 @@ void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,
 
 void ToolController::OnActionsFinished(
     ToolResponseCallback callback,
-    std::vector<actor::ActionResultWithLatencyInfo> results,
+    std::vector<actor::ToolResultWithLatencyInfo> results,
     actor::TabObservationStrategy strategy) {
   CHECK(!results.empty());
 
-  const actor::mojom::ActionResult& result = *results[0].result;
-  if (!actor::IsOk(result)) {
+  const actor::mojom::ActionResult& result =
+      *results[0].tool_result.deprecated_action_result();
+  if (!results[0].tool_result.Ok()) {
     std::move(callback).Run(ToolResponse::Error(result.code, result.message));
     return;
   }

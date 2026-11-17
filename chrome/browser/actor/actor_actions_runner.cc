@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -273,7 +274,7 @@ void ActorActionsRunner::OnActionsPerformed(
     bool skip_async_observation_collection,
     std::optional<page_content_annotations::ScreenshotOptions::
                       ScreenshotCollectionOptions> screenshot_options,
-    std::vector<ActionResultWithLatencyInfo> action_results,
+    std::vector<ToolResultWithLatencyInfo> action_results,
     TabObservationStrategy observation_strategy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* actor_service = ActorKeyedService::Get(&profile_.get());
@@ -295,7 +296,7 @@ void ActorActionsRunner::OnActionsPerformed(
 
 void ActorActionsRunner::OnActionsResultBuilt(
     base::TimeTicks start_time,
-    std::vector<ActionResultWithLatencyInfo> action_results,
+    std::vector<ToolResultWithLatencyInfo> action_results,
     TaskId task_id,
     bool skip_async_observation_information,
     std::optional<page_content_annotations::ScreenshotOptions::

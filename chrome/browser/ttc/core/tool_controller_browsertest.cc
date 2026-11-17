@@ -43,6 +43,7 @@
 #include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
@@ -3439,14 +3440,15 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   actions.push_back(std::make_unique<actor::NavigateToolRequest>(
       actor::ActorSurfaceHandle::From(tab->GetHandle()),
       embedded_https_test_server().GetURL("example.com", "/title2.html")));
-  base::test::TestFuture<std::vector<actor::ActionResultWithLatencyInfo>,
+  base::test::TestFuture<std::vector<actor::ToolResultWithLatencyInfo>,
                          actor::TabObservationStrategy>
       actions_result;
   actor_service->PerformActions(control_task_id, std::move(actions),
                                 actor::ActorTaskMetadata(),
                                 actions_result.GetCallback());
   ASSERT_TRUE(actions_result.Wait());
-  ASSERT_TRUE(actor::IsOk(*actions_result.Get<0>()[0].result));
+  ASSERT_TRUE(actor::IsOk(
+      *actions_result.Get<0>()[0].tool_result.deprecated_action_result()));
 
   // There should be actor UI showing now.
   EXPECT_NE(tab_controller->GetCurrentUiTabState(), actor::ui::UiTabState());

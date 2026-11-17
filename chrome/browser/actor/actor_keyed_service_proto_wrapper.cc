@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/tab_observation_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "url/gurl.h"
@@ -98,11 +99,11 @@ void ActorKeyedServiceProtoWrapper::OnPerformActionsFinished(
     std::optional<page_content_annotations::ScreenshotOptions::
                       ScreenshotCollectionOptions>
         screenshot_collection_options,
-    std::vector<ActionResultWithLatencyInfo> action_results,
+    std::vector<ToolResultWithLatencyInfo> action_results,
     TabObservationStrategy observation_strategy) {
   mojom::ActionResultCode result_code = mojom::ActionResultCode::kOk;
   std::optional<size_t> index_of_failed_action;
-  ExtractErrorResult(action_results, &result_code, index_of_failed_action);
+  ExtractErrorResult(action_results, result_code, index_of_failed_action);
   actor_service_->GetJournal().Log(
       GURL::EmptyGURL(), task_id, "PerformActionsFinished",
       JournalDetailsBuilder()
@@ -138,7 +139,7 @@ void ActorKeyedServiceProtoWrapper::StartTabObservation(
     std::optional<page_content_annotations::ScreenshotOptions::
                       ScreenshotCollectionOptions>
         screenshot_collection_options,
-    std::vector<ActionResultWithLatencyInfo> action_results,
+    std::vector<ToolResultWithLatencyInfo> action_results,
     TabObservationStrategy observation_strategy,
     mojom::ActionResultCode result_code) {
   auto journal_entry = actor_service_->GetJournal().CreatePendingAsyncEntry(
@@ -173,13 +174,13 @@ void ActorKeyedServiceProtoWrapper::StartTabObservation(
 optimization_guide::proto::ActionsResult
 ActorKeyedServiceProtoWrapper::BuildActionsResult(
     base::TimeTicks start_time,
-    const std::vector<ActionResultWithLatencyInfo>& action_results,
+    const std::vector<ToolResultWithLatencyInfo>& action_results,
     ObservationResult& observation_result) {
   optimization_guide::proto::ActionsResult response;
 
   mojom::ActionResultCode result_code = mojom::ActionResultCode::kOk;
   std::optional<size_t> index_of_failed_action;
-  ExtractErrorResult(action_results, &result_code, index_of_failed_action);
+  ExtractErrorResult(action_results, result_code, index_of_failed_action);
 
   response.set_action_result(static_cast<int32_t>(result_code));
   if (index_of_failed_action) {
@@ -189,8 +190,10 @@ ActorKeyedServiceProtoWrapper::BuildActionsResult(
   CopyExecuteJsResults(response, action_results);
 
   for (const auto& action_result : action_results) {
-    if (IsOk(*action_result.result)) {
-      response.add_extra_information(action_result.result->message);
+    const mojom::ActionResult& act_result =
+        *action_result.tool_result.deprecated_action_result();
+    if (action_result.tool_result.Ok()) {
+      response.add_extra_information(act_result.message);
     } else {
       // In case of an error, the message is copied to `error_message` instead.
       response.add_extra_information(std::string());
@@ -200,30 +203,30 @@ ActorKeyedServiceProtoWrapper::BuildActionsResult(
   auto* latency_info = response.mutable_latency_information();
   for (size_t i = 0; i < action_results.size(); ++i) {
     const auto& action_result = action_results.at(i);
-    CHECK(action_result.result->execution_end_time);
+    const mojom::ActionResult& act_result =
+        *action_result.tool_result.deprecated_action_result();
+    CHECK(act_result.execution_end_time);
     {
       auto* latency_step = latency_info->add_latency_steps();
       latency_step->mutable_action()->set_action_index(i);
       latency_step->set_latency_start_ms(
           (action_result.start_time - start_time).InMilliseconds());
       latency_step->set_latency_stop_ms(
-          (*action_result.result->execution_end_time - start_time)
-              .InMilliseconds());
+          (*act_result.execution_end_time - start_time).InMilliseconds());
     }
     // Don't report a page stabilization time if the start and end are the same.
     // Not every tool needs stabilization.
-    if (*action_result.result->execution_end_time != action_result.end_time) {
+    if (*act_result.execution_end_time != action_result.end_time) {
       auto* latency_step = latency_info->add_latency_steps();
       latency_step->mutable_page_stabilization()->set_action_index(i);
       latency_step->set_latency_start_ms(
-          (*action_result.result->execution_end_time - start_time)
-              .InMilliseconds());
+          (*act_result.execution_end_time - start_time).InMilliseconds());
       latency_step->set_latency_stop_ms(
           (action_result.end_time - start_time).InMilliseconds());
     }
-    if (!IsOk(*action_result.result)) {
+    if (!action_result.tool_result.Ok()) {
       CHECK_EQ(*index_of_failed_action, i);
-      response.set_error_message(action_result.result->message);
+      response.set_error_message(act_result.message);
     }
   }
 
@@ -247,7 +250,7 @@ ActorKeyedServiceProtoWrapper::BuildActionsResult(
 void ActorKeyedServiceProtoWrapper::OnTabObservationComplete(
     PerformActionsCallback callback,
     base::TimeTicks start_time,
-    std::vector<ActionResultWithLatencyInfo> action_results,
+    std::vector<ToolResultWithLatencyInfo> action_results,
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
     TabObservationController* controller_ptr,
     std::unique_ptr<ObservationResult> result) {

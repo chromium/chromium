@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
@@ -67,7 +68,7 @@ class TabObservationController {
       TaskId task_id,
       base::TimeTicks start_time,
       bool skip_async_observation_information,
-      std::vector<actor::ActionResultWithLatencyInfo> action_results,
+      std::vector<actor::ToolResultWithLatencyInfo> action_results,
       TabObservationStrategy observation_strategy,
       DoneCallback done_callback);
 
@@ -133,7 +134,7 @@ class TabObservationController {
   TaskId task_id_;
   base::TimeTicks start_time_;
   bool skip_async_observation_information_;
-  std::vector<actor::ActionResultWithLatencyInfo> action_results_;
+  std::vector<actor::ToolResultWithLatencyInfo> action_results_;
   TabObservationStrategy observation_strategy_;
   DoneCallback done_callback_;
 

@@ -103,7 +103,8 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, Click) {
     actor_task().Act(ToRequestList(action), future.GetCallback());
     const auto& action_results = future.Get();
     ASSERT_EQ(action_results.size(), 1u);
-    const auto& result = *action_results[0].result;
+    const auto& result =
+        *action_results[0].tool_result.deprecated_action_result();
 
     if (BypassTOUValidationForGuestView()) {
       if (IsOk(result)) {

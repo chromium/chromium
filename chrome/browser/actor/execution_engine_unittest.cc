@@ -313,7 +313,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     task_->Act(ToRequestList(std::move(action)), success.GetCallback());
     const auto& action_results = success.Get();
     for (const auto& action_result : action_results) {
-      if (!IsOk(*action_result.result)) {
+      if (!IsOk(*action_result.tool_result.deprecated_action_result())) {
         return false;
       }
     }
@@ -503,7 +503,7 @@ TEST_F(ExecutionEngineTest,
   const auto& action_results = result.Get();
   ASSERT_FALSE(action_results.empty());
   for (const auto& action_result : action_results) {
-    EXPECT_NE(action_result.result->code,
+    EXPECT_NE(action_result.tool_result.deprecated_action_result()->code,
               mojom::ActionResultCode::kRendererCrashed);
   }
 }
@@ -607,7 +607,8 @@ TEST_F(ExecutionEngineTest,
   task_->Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message, "Parent message.");
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
+            "Parent message.");
 }
 
 // TODO(crbug.com/480230075): Crashing on Android.
@@ -642,7 +643,8 @@ TEST_F(ExecutionEngineTest, MAYBE_FollowupActionSetsMessageWhenParentEmpty) {
   task_->Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message, "Followup message.");
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
+            "Followup message.");
 }
 
 // TODO(crbug.com/480230075): Crashing on Android.
@@ -678,7 +680,8 @@ TEST_F(ExecutionEngineTest,
   task_->Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message, "Followup message.");
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
+            "Followup message.");
 }
 
 // TODO(crbug.com/480230075): Crashing on Android.
@@ -714,7 +717,8 @@ TEST_F(ExecutionEngineTest,
   task_->Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message, "Followup failed.");
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
+            "Followup failed.");
 }
 
 // TODO(crbug.com/480230075): Crashing on Android.
@@ -749,7 +753,8 @@ TEST_F(ExecutionEngineTest,
   task_->Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kElementDisabled);
   ASSERT_EQ(result.Get().size(), 1u);
-  EXPECT_EQ(result.Get()[0].result->message, "");
+  EXPECT_EQ(result.Get()[0].tool_result.deprecated_action_result()->message,
+            "");
 }
 
 // TODO(crbug.com/480230075): Crashing on Android.
@@ -788,7 +793,8 @@ TEST_F(ExecutionEngineTest, MAYBE_FollowupActionPreservesParentMetadata) {
   task_->Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
   ASSERT_EQ(result.Get().size(), 1u);
-  const mojom::ActionResult& final_result = *result.Get()[0].result;
+  const mojom::ActionResult& final_result =
+      *result.Get()[0].tool_result.deprecated_action_result();
   EXPECT_TRUE(final_result.requires_page_stabilization);
   EXPECT_EQ(final_result.attempt_login_status,
             mojom::AttemptLoginStatus::kPasswordManager);
@@ -1052,7 +1058,7 @@ TEST_F(ExecutionEngineTest, MAYBE_LatencyInfoAndActionDurationHistogram) {
   ASSERT_TRUE(result.Wait());
   const auto& action_results = result.Get();
   for (const auto& action_result : action_results) {
-    EXPECT_TRUE(IsOk(*action_result.result));
+    EXPECT_TRUE(IsOk(*action_result.tool_result.deprecated_action_result()));
   }
 
   const auto& actions_result = action_results;
@@ -1330,7 +1336,14 @@ TEST_F(ExecutionEngineTest, ToolResultSuccessWithData) {
   ASSERT_TRUE(result.Wait());
   const auto& action_results = result.Get();
   ASSERT_EQ(action_results.size(), 1u);
-  EXPECT_TRUE(IsOk(*action_results[0].result));
+  EXPECT_TRUE(action_results[0].tool_result.Ok());
+  ASSERT_TRUE(action_results[0].tool_result.deprecated_action_result());
+  EXPECT_TRUE(IsOk(*action_results[0].tool_result.deprecated_action_result()));
+  ASSERT_NE(action_results[0].tool_result.data(), nullptr);
+  const TestToolData* data =
+      action_results[0].tool_result.data()->As<TestToolData>();
+  ASSERT_NE(data, nullptr);
+  EXPECT_EQ(data->value, 42);
 }
 
 TEST_F(ExecutionEngineTest, ToolResultError) {
@@ -1344,10 +1357,16 @@ TEST_F(ExecutionEngineTest, ToolResultError) {
   ASSERT_TRUE(result.Wait());
   const auto& action_results = result.Get();
   ASSERT_EQ(action_results.size(), 1u);
-  EXPECT_FALSE(IsOk(*action_results[0].result));
-  EXPECT_EQ(action_results[0].result->code,
+  EXPECT_FALSE(action_results[0].tool_result.Ok());
+  ASSERT_TRUE(action_results[0].tool_result.deprecated_action_result());
+  EXPECT_EQ(action_results[0].tool_result.deprecated_action_result()->code,
             mojom::ActionResultCode::kTabWentAway);
-  EXPECT_EQ(action_results[0].result->message, "No matching tab");
+  EXPECT_EQ(action_results[0].tool_result.deprecated_action_result()->message,
+            "No matching tab");
+  ASSERT_TRUE(action_results[0].tool_result.error().has_value());
+  EXPECT_EQ(action_results[0].tool_result.error()->code,
+            mojom::ActionResultCode::kTabWentAway);
+  EXPECT_EQ(action_results[0].tool_result.error()->message, "No matching tab");
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1522,7 +1541,7 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
     // The result should not be provided synchronously.
     EXPECT_FALSE(result.IsReady());
     ASSERT_EQ(result.Get().size(), 1u);
-    EXPECT_THAT(result.Get()[0].result->code,
+    EXPECT_THAT(result.Get()[0].tool_result.deprecated_action_result()->code,
                 Conditional(expected_allowed, mojom::ActionResultCode::kOk,
                             Not(mojom::ActionResultCode::kOk)));
   }

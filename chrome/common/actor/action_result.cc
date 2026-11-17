@@ -12,24 +12,6 @@
 
 namespace actor {
 
-ActionResultWithLatencyInfo::ActionResultWithLatencyInfo(
-    base::TimeTicks start_time,
-    base::TimeTicks end_time,
-    mojom::ActionResultPtr result)
-    : start_time(start_time), end_time(end_time), result(std::move(result)) {
-  DCHECK(!start_time.is_null());
-  DCHECK(!end_time.is_null());
-  DCHECK_LE(start_time, end_time);
-}
-ActionResultWithLatencyInfo::ActionResultWithLatencyInfo(
-    const ActionResultWithLatencyInfo& other)
-    : start_time(other.start_time),
-      end_time(other.end_time),
-      result(other.result.Clone()) {}
-ActionResultWithLatencyInfo::~ActionResultWithLatencyInfo() = default;
-ActionResultWithLatencyInfo::ActionResultWithLatencyInfo(
-    ActionResultWithLatencyInfo&&) = default;
-
 bool IsOk(const mojom::ActionResult& result) {
   return IsOk(result.code);
 }
@@ -71,18 +53,6 @@ mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
       mojom::ScreenshotPolicy::kRequested,
       mojom::PageContentExtractionPolicy::kRequested,
       /*attempt_login_status=*/std::nullopt);
-}
-
-std::vector<ActionResultWithLatencyInfo> MakeResultVector(
-    mojom::ActionResultPtr result) {
-  const auto now = base::TimeTicks::Now();
-  return std::vector<ActionResultWithLatencyInfo>(
-      {ActionResultWithLatencyInfo(now, now, std::move(result))});
-}
-
-std::vector<ActionResultWithLatencyInfo> MakeResultVector(
-    mojom::ActionResultCode code) {
-  return MakeResultVector(MakeResult(code));
 }
 
 std::string ToDebugString(const mojom::ActionResult& result) {
