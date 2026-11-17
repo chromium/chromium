@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import type {LhsRailConfig, ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
-import {ComposeboxWindowProxy, LhsClientAction} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxWindowProxy, LhsClientAction, ThreadsRailAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -18,6 +20,7 @@ const GOOGLE_BASE_URL = 'https://www.google.com/';
 suite('NewTabPageThreadsRailTest', () => {
   let threadsRailElement: ThreadsRailElement;
   let windowProxy: TestMock<ComposeboxWindowProxy>;
+  let metrics: MetricsTracker;
 
   async function createThreadsRail(config: LhsRailConfig = {items: []}) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -28,12 +31,17 @@ suite('NewTabPageThreadsRailTest', () => {
   }
 
   setup(async () => {
+    metrics = fakeMetricsPrivate();
     windowProxy = installMock(ComposeboxWindowProxy);
     loadTimeData.overrideValues({
       aimThreadsGoogleSearchLabel: AIM_THREADS_GOOGLE_SEARCH_LABEL,
       googleBaseUrl: GOOGLE_BASE_URL,
     });
     await createThreadsRail();
+  });
+
+  test('records shown metric when attached to DOM', () => {
+    assertEquals(1, metrics.count('NewTabPage.ThreadsRail.Shown', true));
   });
 
   test(
@@ -84,6 +92,11 @@ suite('NewTabPageThreadsRailTest', () => {
     assertEquals(1, args.length);
     assertEquals(GOOGLE_BASE_URL, args[0]);
     assertFalse(hostClicked);
+    assertEquals(1, metrics.count('NewTabPage.ThreadsRail.Action'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.Action', ThreadsRailAction.LOGO_CLICKED));
   });
 
   test('renders items and tooltips from lhsRailConfig', async () => {
@@ -174,7 +187,8 @@ suite('NewTabPageThreadsRailTest', () => {
 
   test('handles click actions for configured rail items', async () => {
     const tasksUrl = 'https://www.google.com/search?udm=50&tasks=1';
-    const fallbackUrl = 'https://www.google.com/search?udm=50&creations=1';
+    const unspecifiedUrl = 'https://www.google.com/search?udm=50&creations=1';
+    const unknownActionUrl = 'https://www.google.com/search?udm=50&future=1';
     await createThreadsRail({
       items: [
         {
@@ -196,9 +210,15 @@ suite('NewTabPageThreadsRailTest', () => {
         },
         {
           iconSvg: '<svg></svg>',
-          name: 'Future Action',
+          name: 'Unspecified Action',
           clientAction: LhsClientAction.UNSPECIFIED,
-          targetUrl: fallbackUrl,
+          targetUrl: unspecifiedUrl,
+        },
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Future Action',
+          clientAction: 99 as LhsClientAction,
+          targetUrl: unknownActionUrl,
         },
       ],
     });
@@ -217,6 +237,12 @@ suite('NewTabPageThreadsRailTest', () => {
     await whenExpandRail;
     assertEquals(0, windowProxy.getCallCount('navigate'));
     assertFalse(hostClicked);
+    assertEquals(1, metrics.count('NewTabPage.ThreadsRail.Action'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.Action',
+            ThreadsRailAction.EXPAND_RAIL_ITEM_CLICKED));
 
     // 2. FOCUS_REALBOX_AIM dispatches open-composebox without navigating.
     const newSearchButton =
@@ -228,6 +254,12 @@ suite('NewTabPageThreadsRailTest', () => {
     await whenOpenComposebox;
     assertEquals(0, windowProxy.getCallCount('navigate'));
     assertFalse(hostClicked);
+    assertEquals(2, metrics.count('NewTabPage.ThreadsRail.Action'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.Action',
+            ThreadsRailAction.FOCUS_REALBOX_AIM_ITEM_CLICKED));
 
     // 3. NAVIGATE navigates to targetUrl.
     const tasksButton =
@@ -237,15 +269,44 @@ suite('NewTabPageThreadsRailTest', () => {
     assertEquals(1, windowProxy.getCallCount('navigate'));
     assertEquals(tasksUrl, windowProxy.getArgs('navigate')[0]);
     assertFalse(hostClicked);
+    assertEquals(3, metrics.count('NewTabPage.ThreadsRail.Action'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.Action',
+            ThreadsRailAction.NAVIGATE_ITEM_CLICKED));
 
-    // 4. UNSPECIFIED falls back to targetUrl when present.
-    const fallbackButton =
+    // 4. UNSPECIFIED navigates to targetUrl and records
+    // UNSPECIFIED_NAVIGATE_ITEM_CLICKED.
+    const unspecifiedButton =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-3');
-    assertTrue(!!fallbackButton);
-    fallbackButton.click();
+    assertTrue(!!unspecifiedButton);
+    unspecifiedButton.click();
     assertEquals(2, windowProxy.getCallCount('navigate'));
-    assertEquals(fallbackUrl, windowProxy.getArgs('navigate')[1]);
+    assertEquals(unspecifiedUrl, windowProxy.getArgs('navigate')[1]);
     assertFalse(hostClicked);
+    assertEquals(4, metrics.count('NewTabPage.ThreadsRail.Action'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.Action',
+            ThreadsRailAction.UNSPECIFIED_NAVIGATE_ITEM_CLICKED));
+
+    // 5. Unrecognized future ClientAction values fall back to targetUrl and
+    // record FALLBACK_NAVIGATE_ITEM_CLICKED.
+    const unknownActionButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-4');
+    assertTrue(!!unknownActionButton);
+    unknownActionButton.click();
+    assertEquals(3, windowProxy.getCallCount('navigate'));
+    assertEquals(unknownActionUrl, windowProxy.getArgs('navigate')[2]);
+    assertFalse(hostClicked);
+    assertEquals(5, metrics.count('NewTabPage.ThreadsRail.Action'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.Action',
+            ThreadsRailAction.FALLBACK_NAVIGATE_ITEM_CLICKED));
   });
 
   test('does not navigate when targetUrl is missing', async () => {
@@ -261,16 +322,22 @@ suite('NewTabPageThreadsRailTest', () => {
           name: 'Unspecified Missing URL',
           clientAction: LhsClientAction.UNSPECIFIED,
         },
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Unknown Action Missing URL',
+          clientAction: 99 as LhsClientAction,
+        },
       ],
     });
 
     const buttons = threadsRailElement.shadowRoot.querySelectorAll<HTMLElement>(
         '#iconsContainer cr-icon-button');
-    assertEquals(2, buttons.length);
+    assertEquals(3, buttons.length);
     for (const button of buttons) {
       button.click();
     }
     assertEquals(0, windowProxy.getCallCount('navigate'));
+    assertEquals(0, metrics.count('NewTabPage.ThreadsRail.Action'));
   });
 
   test('only propagates clicks directly on #rail', async () => {
@@ -300,12 +367,19 @@ suite('NewTabPageThreadsRailTest', () => {
       child.click();
       assertEquals(0, hostClickCount);
     }
+    assertEquals(0, metrics.count('NewTabPage.ThreadsRail.Action'));
 
     const rail =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>('#rail');
     assertTrue(!!rail);
     rail.click();
     assertEquals(1, hostClickCount);
+    assertEquals(1, metrics.count('NewTabPage.ThreadsRail.Action'));
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.ThreadsRail.Action',
+            ThreadsRailAction.RAIL_BACKGROUND_CLICKED));
   });
 
   test(
