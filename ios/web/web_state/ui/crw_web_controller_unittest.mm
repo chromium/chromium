@@ -42,6 +42,8 @@
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/fakes/fake_web_state_policy_decider.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/webui/web_ui_ios_controller.h"
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
@@ -2581,6 +2583,26 @@ TEST_F(CRWWebControllerTitleTest, FragmentChangeNavigationsUsePreviousTitle) {
   }));
   ExecuteJavaScript(@"window.location.hash = '#1'");
   EXPECT_EQ(u"Title1", web_state()->GetTitle());
+}
+
+typedef WebTestWithWebState CRWWebControllerObscuredInsetsTest;
+
+// Tests that obscured insets are not reset when a cross-document navigation
+// commits. Resetting them, even briefly, visibly shifts the page content by the
+// top inset (crbug.com/585623239).
+TEST_F(CRWWebControllerObscuredInsetsTest, PreservedAcrossNavigation) {
+  if (!@available(iOS 26, *)) {
+    GTEST_SKIP() << "kContentInset mode is only supported on iOS 26+";
+  }
+  LoadHtml(@"<p>Page1</p>", GURL("https://chromium.test/1"));
+  id<CRWWebViewProxy> web_view_proxy = web_state()->GetWebViewProxy();
+  const UIEdgeInsets obscured_insets = UIEdgeInsetsMake(100, 0, 50, 0);
+  web_view_proxy.obscuredInsets = obscured_insets;
+  CRWWebViewScrollViewProxy* scroll_view_proxy = web_view_proxy.scrollViewProxy;
+  ASSERT_EQ(obscured_insets.top, scroll_view_proxy.contentInset.top);
+
+  LoadHtml(@"<p>Page2</p>", GURL("https://chromium.test/2"));
+  EXPECT_EQ(obscured_insets.top, scroll_view_proxy.contentInset.top);
 }
 
 // Test fixture for JavaScript execution.
