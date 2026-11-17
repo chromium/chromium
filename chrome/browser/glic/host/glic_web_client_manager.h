@@ -82,7 +82,7 @@ class GlicWebClientManager : public content::WebContentsObserver {
   void AttachToHost(Host* host);
 
   // Sets whether the guest WebContents is currently shown in the panel, used
-  // to know when an actionable guest is on screen.
+  // to know when an actionable or submittable guest is on screen.
   void SetGuestMounted(bool mounted);
 
   // Called when a guest navigation is cancelled before it commits. `page_type`

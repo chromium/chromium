@@ -13,9 +13,12 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/glic_histogram_tester.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -25,6 +28,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -594,6 +599,54 @@ IN_PROC_BROWSER_TEST_P(
   } else {
     ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(GlicWebClientManagerBrowserTest, TimeToSubmittable) {
+  GlicHistogramTester histogram_tester;
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  PreventBlankDeletionOnClose(instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  // `minimal_client.ts` emits `performance.mark('gemini.interactive')` on
+  // module evaluation and `performance.mark('gemini.submittable')` inside
+  // `initialize()`. Both milestones must be presented once.
+  ASSERT_OK(histogram_tester.WaitForTotalCount(
+      "Glic.Instance.TimeToActionable.SidePanel", 1));
+  ASSERT_OK(histogram_tester.WaitForTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 1));
+
+  // Closing and reopening the same guest while keeping it alive does not record
+  // a duplicate sample even after the reopened guest renders a frame.
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * reopened_instance,
+                       OpenGlicForActiveTab());
+  EXPECT_EQ(instance, reopened_instance);
+  {
+    content::RenderFrameHost* reopened_rfh =
+        reopened_instance->host().GetGuestMainFrame();
+    ASSERT_TRUE(reopened_rfh);
+    ASSERT_TRUE(reopened_rfh->IsRenderFrameLive());
+    base::test::TestFuture<bool> reopen_frame_future;
+    reopened_rfh->InsertVisualStateCallback(reopen_frame_future.GetCallback());
+    ASSERT_TRUE(reopen_frame_future.Get());
+  }
+  histogram_tester.ExpectTotalCount("Glic.Instance.TimeToSubmittable.SidePanel",
+                                    1);
+
+  // Reloading the host resets presentation state so the next open records a
+  // new sample.
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  GlicClientConnectionObserver connection_observer(instance);
+  instance->host().Reload();
+  ASSERT_OK(connection_observer.WaitForDisconnected());
+  histogram_tester.ExpectTotalCount("Glic.Instance.TimeToSubmittable.SidePanel",
+                                    1);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * post_reload_instance,
+                       OpenGlicForActiveTab());
+  EXPECT_EQ(instance, post_reload_instance);
+  ASSERT_OK(WaitForGlicClient(instance));
+  ASSERT_OK(histogram_tester.WaitForTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 2));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

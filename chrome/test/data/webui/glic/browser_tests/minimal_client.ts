@@ -18,6 +18,7 @@ const kWebClientModeText = 0 as WebClientMode;
 class WebClient implements GlicWebClient {
   async initialize(_browser: GlicBrowserHost): Promise<void> {
     performance.mark('glic-client-initialized');
+    performance.mark('gemini.submittable');
   }
 
   async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData&PanelState):

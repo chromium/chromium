@@ -1549,7 +1549,8 @@ TEST_F(GlicInstanceMetricsTest,
        TimeToActionable_WarmedGuest_WaitsForPresentedFrame) {
   // Guest emits actionability mark while warming in the background before any
   // panel open. Must not mark the guest as presented yet.
-  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
   task_environment_.FastForwardBy(base::Seconds(2));
 
   ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
@@ -1562,7 +1563,8 @@ TEST_F(GlicInstanceMetricsTest,
 
   // Rendered frame is presented 25ms after open.
   task_environment_.FastForwardBy(base::Milliseconds(25));
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(25), 1);
@@ -1576,9 +1578,10 @@ TEST_F(GlicInstanceMetricsTest,
 
   // Actionability mark and client ready arrive while visible. Legacy
   // PanelPresentationTime records on OnClientReady(), while TimeToActionable
-  // waits for the submitted frame (OnGuestFrameSubmitted).
+  // waits for the submitted frame (OnGuestMilestoneFrameSubmitted).
   task_environment_.FastForwardBy(base::Milliseconds(300));
-  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
   metrics_.OnClientReady();
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.Instance.PanelPresentationTime.SidePanel", base::Milliseconds(300),
@@ -1588,7 +1591,8 @@ TEST_F(GlicInstanceMetricsTest,
 
   // Visual frame callback completes 20ms later (total 320ms).
   task_environment_.FastForwardBy(base::Milliseconds(20));
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(320), 1);
@@ -1600,8 +1604,10 @@ TEST_F(GlicInstanceMetricsTest,
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnVisibilityChanged(true);
   task_environment_.FastForwardBy(base::Milliseconds(200));
-  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(200), 1);
@@ -1612,7 +1618,8 @@ TEST_F(GlicInstanceMetricsTest,
   task_environment_.FastForwardBy(base::Seconds(1));
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
                                      1);
@@ -1621,14 +1628,17 @@ TEST_F(GlicInstanceMetricsTest,
   // guest as presented without emitting a histogram sample, so closing and
   // reopening later does not record a stale sample.
   metrics_.OnGuestReset();
-  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
   metrics_.OnVisibilityChanged(false);
   metrics_.OnClose();
   task_environment_.FastForwardBy(base::Minutes(5));
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
   histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
                                      1);
 
@@ -1641,8 +1651,10 @@ TEST_F(GlicInstanceMetricsTest,
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnVisibilityChanged(true);
   task_environment_.FastForwardBy(base::Milliseconds(120));
-  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
                                      2);
@@ -1667,9 +1679,11 @@ TEST_F(GlicInstanceMetricsTest,
   // Mark, client readiness, or a late visual callback arriving while
   // closed/hidden must not log TimeToActionable or latch `recorded`.
   task_environment_.FastForwardBy(base::Milliseconds(100));
-  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
   metrics_.OnClientReady();
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
   histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
                                      0);
   histogram_tester_.ExpectTotalCount(
@@ -1681,7 +1695,8 @@ TEST_F(GlicInstanceMetricsTest,
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnVisibilityChanged(true);
   task_environment_.FastForwardBy(base::Milliseconds(10));
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(10), 1);
@@ -1702,7 +1717,8 @@ TEST_F(GlicInstanceMetricsTest,
 
   // Guest emits actionability mark 250ms later (total 350ms) while hidden.
   task_environment_.FastForwardBy(base::Milliseconds(250));
-  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
 
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.Instance.TimeToActionable.Inactive.SidePanel",
@@ -1713,7 +1729,8 @@ TEST_F(GlicInstanceMetricsTest,
   // Returning 10 minutes later must not record an additional/inflated sample.
   task_environment_.FastForwardBy(base::Minutes(10));
   metrics_.OnVisibilityChanged(true);
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
   histogram_tester_.ExpectTotalCount(
       "Glic.Instance.TimeToActionable.Inactive.SidePanel", 1);
   histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
@@ -1724,7 +1741,8 @@ TEST_F(GlicInstanceMetricsTest,
        TimeToActionable_WarmedGuest_HiddenBeforeFrameRecordsWhenShown) {
   // Guest emits actionability mark while warming in the background 2s before
   // open.
-  metrics_.OnGuestActionableMarkObserved(base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
   task_environment_.FastForwardBy(base::Seconds(2));
 
   ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
@@ -1737,7 +1755,8 @@ TEST_F(GlicInstanceMetricsTest,
   // record an Inactive sample, and remembers that the frame was submitted so
   // showing the panel again records the active metric.
   metrics_.OnVisibilityChanged(false);
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
                                      0);
@@ -1755,6 +1774,573 @@ TEST_F(GlicInstanceMetricsTest,
   histogram_tester_.ExpectUniqueTimeSample(
       "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(25), 1);
 }
+
+TEST_F(GlicInstanceMetricsTest, TimeToSubmittable_TwoStageColdOpen) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+
+  task_environment_.FastForwardBy(base::Milliseconds(130));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(150), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+  EXPECT_FALSE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kActionable));
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+
+  task_environment_.FastForwardBy(base::Milliseconds(230));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(150), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(400), 1);
+  EXPECT_FALSE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_MarkArrivesWhileActionableFramePending) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kActionable));
+
+  // Submittable mark arrives before actionable's visual state callback fires.
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+
+  // Actionable frame completes first at 175ms; submittable still waits for its
+  // own compositor frame at 220ms.
+  task_environment_.FastForwardBy(base::Milliseconds(25));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(175), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+
+  task_environment_.FastForwardBy(base::Milliseconds(45));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(220), 1);
+  EXPECT_FALSE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_WarmedGuest_WaitsForPresentedFrame) {
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel", 0);
+
+  task_environment_.FastForwardBy(base::Milliseconds(35));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(35), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_OnlyRecordedOncePerGuestUntilReset) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(200), 1);
+
+  // Closing and reopening the same guest must not record a second sample.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnClose();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 1);
+
+  // In-place guest reload while open marks the reloaded guest presented
+  // without emitting a sample, so reopening later does not emit a stale one.
+  metrics_.OnGuestReset();
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnClose();
+  task_environment_.FastForwardBy(base::Minutes(5));
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 1);
+
+  // After a guest reset while closed (e.g. hibernate), the next open records
+  // once upon presentation.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnClose();
+  metrics_.OnGuestReset();
+
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(120));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 2);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(120), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_ClosedBeforePresentationLogsOnNextOpen) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+
+  metrics_.OnClose();
+  metrics_.OnVisibilityChanged(false);
+
+  // Mark or visual callback arriving while closed/hidden must not log
+  // TimeToSubmittable or latch `recorded`.
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel", 0);
+
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(10), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_InactiveFlow_HiddenDuringLoad) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+
+  metrics_.OnVisibilityChanged(false);
+
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel",
+      base::Milliseconds(350), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+
+  // Returning 10 minutes later must not record an additional/inflated sample.
+  task_environment_.FastForwardBy(base::Minutes(10));
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_WarmedGuest_HiddenBeforeFrameRecordsWhenShown) {
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(5));
+
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel", 0);
+
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  metrics_.OnVisibilityChanged(true);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(25), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_GuestResetWhileHiddenClearsPendingFrame) {
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(5));
+
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  // Navigating/resetting the guest before the panel is shown again must clear
+  // `frame_submitted_while_hidden` so showing the panel does not attribute the
+  // old document's compositor frame to the new document.
+  metrics_.OnGuestReset();
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  metrics_.OnVisibilityChanged(true);
+
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kActionable));
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_NativeAndWebFre_SuppressesZeroAndPreConsentSamples) {
+  // Native FRE waits on consent: must not emit 0ms TimeToSubmittable, must not
+  // emit Inactive if hidden before accept, and must not log
+  // AcceptToChatActionable off a kSubmittable frame.
+  ShowOptions native_fre_options = MakeNativeFreShowOptions();
+  metrics_.OnWillShow(native_fre_options, /*has_conversation_id=*/false);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kFre, native_fre_options);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.TimeToActionable.SidePanel", 0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+
+  metrics_.OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel", 0);
+
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnNativeFreAccepted();
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Fre.AcceptToChatActionable", 0);
+
+  // Transitioning an already-open non-native invocation into Native FRE via
+  // OnWillShow() immediately clears any pre-consent submittable start_time so
+  // neither pre-accept hides nor post-accept frames emit TimeToSubmittable.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnClose();
+  metrics_.OnGuestReset();
+  ShowOptions non_native_options = ShowOptions::ForSidePanel(mock_tab_);
+  metrics_.OnWillShow(non_native_options, /*has_conversation_id=*/false);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton,
+                  non_native_options);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_.OnWillShow(native_fre_options, /*has_conversation_id=*/false);
+  metrics_.OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel", 0);
+
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnNativeFreAccepted();
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+
+  // WebUI FRE: even if the FRE screen already satisfied TimeToActionable,
+  // OnWebFreAccepted clears the pre-consent submittable start time so consent
+  // reading duration cannot leak into TimeToSubmittable.
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnClose();
+  metrics_.OnGuestReset();
+  ShowOptions web_fre_options = ShowOptions::ForSidePanel(mock_tab_);
+  metrics_.OnWillShow(web_fre_options, /*has_conversation_id=*/false);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kFre, web_fre_options);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(100), 1);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  metrics_.OnWebFreAccepted();
+  metrics_.OnGuestReset();
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_PreOpenMarkWhileHidden_WaitsForFrame) {
+  const base::TimeTicks pre_open_mark_time = base::TimeTicks::Now();
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  metrics_.OnVisibilityChanged(false);
+
+  // Pre-open marks replayed while hidden (with `mark_time < start_time`) do not
+  // emit an Inactive sample, matching existing `TimeToActionable` semantics so
+  // the subsequent visible compositor frame records the open-to-presentation
+  // time.
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, pre_open_mark_time);
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable, pre_open_mark_time);
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kActionable));
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToActionable.Inactive.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel", 0);
+
+  task_environment_.FastForwardBy(base::Milliseconds(30));
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.SidePanel", base::Milliseconds(80), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(80), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_OnCloseClearsHiddenFrameAndRecordsWithoutActionable) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(40));
+
+  // Submittable arrives without an actionable mark, then its frame completes
+  // while hidden before `OnClose()` cancels the invocation.
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnVisibilityChanged(false);
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  metrics_.OnClose();
+
+  // Reopening must not log a stale 0ms sample before a new frame is submitted;
+  // it waits for the reopened frame and records cleanly without actionable.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+
+  task_environment_.FastForwardBy(base::Milliseconds(18));
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(18), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_ExternalProfileConsentFlipSuppressesPreConsentOpen) {
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnWillShow(show_options, /*has_conversation_id=*/false);
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  task_environment_.FastForwardBy(base::Seconds(15));
+
+  // Another tab or settings completes onboarding on the shared profile without
+  // calling `OnWebFreAccepted()` on this instance. When the guest unlocks and
+  // emits `gemini.submittable`, the pre-consent wait must not be logged.
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.SidePanel", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TimeToSubmittable.Inactive.SidePanel", 0);
+  EXPECT_FALSE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable));
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_FloatyAndFloatyToSidePanelAttach) {
+  ShowOptions floaty_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, floaty_options);
+  metrics_.OnVisibilityChanged(true);
+
+  task_environment_.FastForwardBy(base::Milliseconds(180));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kActionable, base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
+  task_environment_.FastForwardBy(base::Milliseconds(120));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToActionable.Floaty", base::Milliseconds(180), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.Floaty", base::Milliseconds(300), 1);
+
+  // Mid-load Floaty -> SidePanel attach (`GlicInstanceImpl::Attach()` calls
+  // `Show(side_panel_options)` without closing an embedder) updates the
+  // recorded embedder suffix while keeping the initial OnOpen start time.
+  GlicInstanceMetrics attach_metrics(&profile_metrics_service_, &profile_);
+  ShowOptions side_panel_options{SidePanelShowOptions(mock_tab_)};
+  attach_metrics.OnOpen(mojom::InvocationSource::kTopChromeButton,
+                        floaty_options);
+  attach_metrics.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+
+  attach_metrics.OnOpen(mojom::InvocationSource::kDetachAttachButton,
+                        side_panel_options);
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+  attach_metrics.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  attach_metrics.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(250), 1);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToSubmittable.Floaty",
+                                     1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TimeToSubmittable_OnWebFreAccepted_ConsentedProfileDoesNotWipeInFlight) {
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+
+  ShowOptions show_options{SidePanelShowOptions(mock_tab_)};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+
+  // Redundant consent callback on an already-consented profile must not wipe
+  // an active TimeToSubmittable measurement.
+  metrics_.OnWebFreAccepted();
+  task_environment_.FastForwardBy(base::Milliseconds(150));
+  metrics_.OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(250), 1);
+}
+
 TEST_F(GlicInstanceMetricsTest, OnUserInputSubmitted_RecordsPromptType) {
   metrics_.OnVisibilityChanged(true);
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
@@ -2113,6 +2699,61 @@ TEST_P(GlicInstanceProviderMetricsTest, GeicConsumerNames) {
       GlicInstanceMetricsError::kFloatyClosedWithoutOpen, 1);
   histogram_tester_.ExpectTotalCount(other_prefix + ".Instance.Metrics.Error",
                                      0);
+}
+
+TEST_P(GlicInstanceProviderMetricsTest, TimeToSubmittable_ProviderSplit) {
+  const std::string specific_prefix =
+      (GetParam() == GlicProvider::kGeminiEnterprise) ? "Glic.Enterprise"
+                                                      : "Glic.Consumer";
+  const std::string other_prefix =
+      (GetParam() == GlicProvider::kGeminiEnterprise) ? "Glic.Consumer"
+                                                      : "Glic.Enterprise";
+
+  // Active SidePanel flow.
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(testing::ReturnRef(user_data_host));
+  metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton,
+                   ShowOptions::ForSidePanel(mock_tab));
+  metrics_->OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  metrics_->OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+  metrics_->OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.SidePanel", base::Milliseconds(300), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      specific_prefix + ".Instance.TimeToSubmittable.SidePanel",
+      base::Milliseconds(300), 1);
+  histogram_tester_.ExpectTotalCount(
+      other_prefix + ".Instance.TimeToSubmittable.SidePanel", 0);
+
+  // Inactive Floaty flow after close + guest reset.
+  metrics_->OnVisibilityChanged(false);
+  metrics_->OnClose();
+  metrics_->OnGuestReset();
+  metrics_->OnOpen(mojom::InvocationSource::kTopChromeButton,
+                   ShowOptions{FloatingShowOptions{}});
+  metrics_->OnVisibilityChanged(true);
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  metrics_->OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  metrics_->OnGuestMilestoneMarkObserved(
+      GlicInstanceMetrics::GuestMilestone::kSubmittable,
+      base::TimeTicks::Now());
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TimeToSubmittable.Inactive.Floaty",
+      base::Milliseconds(150), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      specific_prefix + ".Instance.TimeToSubmittable.Inactive.Floaty",
+      base::Milliseconds(150), 1);
+  histogram_tester_.ExpectTotalCount(
+      other_prefix + ".Instance.TimeToSubmittable.Inactive.Floaty", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -3583,7 +4224,8 @@ TEST_F(GlicInstanceMetricsTest,
   metrics_.OnOpen(mojom::InvocationSource::kFre, show_options);
   metrics_.OnNativeFreAccepted();
   metrics_.OnClientLoadError(ClientLoadErrorReason::kUnknown);
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectTotalCount("Glic.Fre.AcceptToChatActionable", 0);
 }
@@ -3600,19 +4242,23 @@ TEST_F(
       "Glic.Instance.PanelPresentationTime.SidePanel", 0, 1);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.TimeToActionable.SidePanel", 0, 1);
-  EXPECT_TRUE(metrics_.IsWaitingForActionable());
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kActionable));
 
   // Cold background navigation commit while native FRE is up keeps
   // TimeToActionable recorded while still waiting for the guest frame.
   metrics_.OnGuestReset();
-  EXPECT_TRUE(metrics_.IsWaitingForActionable());
+  EXPECT_TRUE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kActionable));
 
   // Guest ready and frame arrive in the background while the native FRE card is
   // up, without logging a second PanelPresentationTime or TimeToActionable.
   task_environment_.FastForwardBy(base::Milliseconds(150));
   metrics_.OnClientReady();
-  metrics_.OnGuestFrameSubmitted();
-  EXPECT_FALSE(metrics_.IsWaitingForActionable());
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
+  EXPECT_FALSE(metrics_.IsWaitingForGuestMilestone(
+      GlicInstanceMetrics::GuestMilestone::kActionable));
   histogram_tester_.ExpectTotalCount(
       "Glic.Instance.PanelPresentationTime.SidePanel", 1);
   histogram_tester_.ExpectTotalCount("Glic.Instance.TimeToActionable.SidePanel",
@@ -3646,7 +4292,8 @@ TEST_F(GlicInstanceMetricsTest,
   histogram_tester_.ExpectTotalCount("Glic.Fre.AcceptToChatActionable", 0);
 
   task_environment_.FastForwardBy(base::Milliseconds(500));
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
   histogram_tester_.ExpectUniqueSample("Glic.Fre.AcceptToChatActionable", 500,
                                        1);
 
@@ -3661,7 +4308,8 @@ TEST_F(GlicInstanceMetricsTest,
   task_environment_.FastForwardBy(base::Milliseconds(100));
   metrics_.OnWebFreAccepted();
   task_environment_.FastForwardBy(base::Milliseconds(150));
-  metrics_.OnGuestFrameSubmitted();
+  metrics_.OnGuestMilestoneFrameSubmitted(
+      GlicInstanceMetrics::GuestMilestone::kActionable);
 
   histogram_tester_.ExpectBucketCount("Glic.Fre.AcceptToChatActionable", 250,
                                       1);

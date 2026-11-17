@@ -2,18 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/glic_guest_actionable_mark_observer.h"
+#include "chrome/browser/glic/host/glic_guest_page_load_metrics_observer.h"
 
 #include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -21,23 +26,22 @@ namespace glic {
 
 namespace {
 
-constexpr std::string_view kInteractiveMarkName = "gemini.interactive";
-
-class GlicGuestActionableMarkObserver
+class GlicGuestPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
-  explicit GlicGuestActionableMarkObserver(GlicActionableMarkCallback callback)
+  explicit GlicGuestPageLoadMetricsObserver(
+      GlicGuestTimingMarkCallback callback)
       : callback_(std::move(callback)) {}
-  ~GlicGuestActionableMarkObserver() override = default;
+  ~GlicGuestPageLoadMetricsObserver() override = default;
 
-  GlicGuestActionableMarkObserver(const GlicGuestActionableMarkObserver&) =
+  GlicGuestPageLoadMetricsObserver(const GlicGuestPageLoadMetricsObserver&) =
       delete;
-  GlicGuestActionableMarkObserver& operator=(
-      const GlicGuestActionableMarkObserver&) = delete;
+  GlicGuestPageLoadMetricsObserver& operator=(
+      const GlicGuestPageLoadMetricsObserver&) = delete;
 
   // page_load_metrics::PageLoadMetricsObserver:
   const char* GetObserverName() const override {
-    return "GlicGuestActionableMarkObserver";
+    return "GlicGuestPageLoadMetricsObserver";
   }
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
@@ -51,28 +55,30 @@ class GlicGuestActionableMarkObserver
   void OnCustomUserTimingMarkObserved(
       const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
           timings) override {
+    const base::TimeTicks nav_start = GetDelegate().GetNavigationStart();
     for (const auto& mark : timings) {
-      if (mark->mark_name == kInteractiveMarkName) {
-        // `start_time` is relative to the navigation start of this page load.
-        callback_.Run(GetDelegate().GetNavigationStart() + mark->start_time);
-        return;
-      }
+      // `start_time` is relative to the navigation start of this page load.
+      callback_.Run(mark->mark_name, nav_start + mark->start_time);
     }
   }
 
  private:
-  GlicActionableMarkCallback callback_;
+  GlicGuestTimingMarkCallback callback_;
 };
 
 // Minimal embedder for the Glic guest's `MetricsWebContentsObserver`. It only
-// registers a `GlicGuestActionableMarkObserver`, so the guest's page loads
+// registers a `GlicGuestPageLoadMetricsObserver`, so the guest's page loads
 // don't feed any of the standard tab page-load metrics.
 class GuestPageLoadMetricsEmbedder
     : public page_load_metrics::PageLoadMetricsEmbedderInterface {
  public:
-  explicit GuestPageLoadMetricsEmbedder(GlicActionableMarkCallback callback)
+  explicit GuestPageLoadMetricsEmbedder(GlicGuestTimingMarkCallback callback)
       : callback_(std::move(callback)) {}
   ~GuestPageLoadMetricsEmbedder() override = default;
+
+  GuestPageLoadMetricsEmbedder(const GuestPageLoadMetricsEmbedder&) = delete;
+  GuestPageLoadMetricsEmbedder& operator=(const GuestPageLoadMetricsEmbedder&) =
+      delete;
 
   // page_load_metrics::PageLoadMetricsEmbedderInterface:
   bool IsNewTabPageUrl(const GURL& url) override { return false; }
@@ -80,7 +86,7 @@ class GuestPageLoadMetricsEmbedder
       page_load_metrics::PageLoadTracker* tracker,
       content::NavigationHandle* navigation_handle) override {
     tracker->AddObserver(
-        std::make_unique<GlicGuestActionableMarkObserver>(callback_));
+        std::make_unique<GlicGuestPageLoadMetricsObserver>(callback_));
   }
   page_load_metrics::NavigationScenario GetNavigationScenario(
       content::NavigationHandle* navigation_handle) const override {
@@ -99,13 +105,14 @@ class GuestPageLoadMetricsEmbedder
   bool ShouldObserveScheme(std::string_view scheme) override { return false; }
 
  private:
-  GlicActionableMarkCallback callback_;
+  GlicGuestTimingMarkCallback callback_;
 };
 
 }  // namespace
 
-void ObserveGlicGuestActionableMark(content::WebContents& guest_contents,
-                                    GlicActionableMarkCallback callback) {
+void ObserveGlicGuestPageLoadMetrics(content::WebContents& guest_contents,
+                                     GlicGuestTimingMarkCallback callback) {
+  CHECK(callback);
   if (page_load_metrics::MetricsWebContentsObserver::FromWebContents(
           &guest_contents)) {
     return;

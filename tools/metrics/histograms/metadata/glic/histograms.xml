@@ -3157,6 +3157,43 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram
+    name="Glic{GlicProvider}.Instance.TimeToSubmittable.Inactive.{EmbedderType}"
+    units="ms" expires_after="2027-11-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Measures the time from opening the Glic panel until the guest emits
+    performance.mark(&quot;gemini.submittable&quot;) (ready to submit a prompt),
+    for panels backgrounded before that mark. Recorded at most once per guest
+    document in {EmbedderType}. Not recorded for opens gated on upfront
+    first-run consent (neither during the FRE nor after consent is granted in
+    that open); inline pre-consent opens where the composer loads directly are
+    included. Scope: {GlicProvider}.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Instance.TimeToSubmittable.{EmbedderType}"
+    units="ms" expires_after="2027-11-01">
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Measures the time from opening the Glic panel until a compositor frame is
+    presented after the guest emits
+    performance.mark(&quot;gemini.submittable&quot;) (ready to submit a prompt).
+    If that frame is submitted while the panel is briefly hidden, ends when the
+    panel is shown again. Recorded at most once per guest document in
+    {EmbedderType} across both cold and pre-warmed opens. Not recorded for opens
+    gated on upfront first-run consent (neither during the FRE nor after consent
+    is granted in that open); inline pre-consent opens where the composer loads
+    directly are included. Scope: {GlicProvider}.
+  </summary>
+  <token key="EmbedderType" variants="EmbedderType"/>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Instance.TotalActiveDuration" units="ms"
     expires_after="2027-05-09">
   <owner>birnie@google.com</owner>

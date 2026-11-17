@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -68,6 +70,32 @@ namespace glic {
 // User actions are not split by provider; histograms carry the provider split.
 
 namespace {
+
+struct GuestMilestoneSpec {
+  GlicInstanceMetrics::GuestMilestone milestone;
+  std::string_view metric_prefix;
+  bool suppress_during_blocking_fre;
+};
+
+constexpr auto kGuestMilestoneSpecs = std::to_array<GuestMilestoneSpec>({
+    {GlicInstanceMetrics::GuestMilestone::kActionable,
+     "Instance.TimeToActionable.", /*suppress_during_blocking_fre=*/false},
+    {GlicInstanceMetrics::GuestMilestone::kSubmittable,
+     "Instance.TimeToSubmittable.", /*suppress_during_blocking_fre=*/true},
+});
+
+static_assert(kGuestMilestoneSpecs.size() ==
+              GlicInstanceMetrics::kGuestMilestoneCount);
+static_assert([] {
+  for (size_t i = 0; i < GlicInstanceMetrics::kGuestMilestoneCount; ++i) {
+    if (static_cast<size_t>(kGuestMilestoneSpecs[i].milestone) != i ||
+        kGuestMilestoneSpecs[i].metric_prefix.empty() ||
+        kGuestMilestoneSpecs[i].metric_prefix.back() != '.') {
+      return false;
+    }
+  }
+  return true;
+}());
 
 SafeEmbedderKey ToSafeKey(const EmbedderKey& key) {
   return std::visit(
@@ -571,12 +599,9 @@ void GlicInstanceMetrics::OnVisibilityChanged(bool is_visible) {
   }
   if (!was_visible && is_visible) {
     MaybeResolvePendingResponse();
-    if (guest_actionable_.frame_submitted_while_hidden &&
-        !actionable_invocation_state_.start_time.is_null()) {
-      // The guest's frame was ready while the panel was briefly hidden; it's on
-      // screen as soon as the panel is shown again.
-      guest_actionable_.frame_submitted_while_hidden = false;
-      RecordTimeToActionable(base::TimeTicks::Now());
+    const base::TimeTicks now = base::TimeTicks::Now();
+    for (const GuestMilestoneSpec& spec : kGuestMilestoneSpecs) {
+      MaybeRecordFrameSubmittedWhileHidden(spec.milestone, now);
     }
   }
   MaybeRecordOptInImpression();
@@ -986,9 +1011,10 @@ void GlicInstanceMetrics::OnClose(bool is_active_embedder) {
   MaybeRecordTimeToDismissWhileLoading();
   CancelNativeFreWait();
   invocation_load_state_ = {};
-  actionable_invocation_state_ = {};
-  // A frame submitted during this invocation is stale for the next one.
-  guest_actionable_.frame_submitted_while_hidden = false;
+  // Frames submitted during this invocation are stale for the next one.
+  for (GuestMilestoneSlot& slot : guest_milestones_) {
+    slot.invocation_state = {};
+  }
   opt_in_impression_recorded_for_current_open_ = false;
   open_invocation_id_.reset();
   // A prompt held in this open that was never released is restored by the
@@ -1098,6 +1124,11 @@ void GlicInstanceMetrics::UpdateNativeFreStateForShow(
     }
   } else if (options.fre_override == mojom::FreOverride::kNativeFre) {
     native_fre_state_ = NativeFreState::kWaitingForAccept;
+    for (const GuestMilestoneSpec& spec : kGuestMilestoneSpecs) {
+      if (spec.suppress_during_blocking_fre) {
+        MilestoneSlot(spec.milestone).invocation_state = {};
+      }
+    }
   } else if (options.invocation_source !=
              mojom::InvocationSource::kReshowInactive) {
     native_fre_state_ = NativeFreState::kNone;
@@ -1142,11 +1173,23 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
     }
     invocation_load_state_.embedder_type = embedder_type;
   }
-  if (!guest_actionable_.recorded) {
-    if (actionable_invocation_state_.start_time.is_null()) {
-      actionable_invocation_state_.start_time = now;
+  const bool is_unconsented = !GlicEnabling::HasConsentedForProfile(profile_);
+  for (const GuestMilestoneSpec& spec : kGuestMilestoneSpecs) {
+    GuestMilestoneSlot& slot = MilestoneSlot(spec.milestone);
+    if (spec.suppress_during_blocking_fre &&
+        native_fre_state_ == NativeFreState::kWaitingForAccept) {
+      // An unaccepted Native FRE dialog cannot submit prompts, so do not emit a
+      // 0ms sample or start timing while waiting on consent.
+      continue;
     }
-    actionable_invocation_state_.embedder_type = embedder_type;
+    if (slot.guest_state.recorded) {
+      continue;
+    }
+    if (slot.invocation_state.start_time.is_null()) {
+      slot.invocation_state.start_time = now;
+      slot.invocation_state.started_before_consent = is_unconsented;
+    }
+    slot.invocation_state.embedder_type = embedder_type;
   }
   last_invocation_source_ = source;
 
@@ -1187,7 +1230,7 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
       // screen as soon as the panel opens, before the web client is ready.
       RecordFreImpression();
       RecordPanelPresentationTime(now);
-      RecordTimeToActionable(now);
+      RecordMilestoneTime(GuestMilestone::kActionable, now);
     }
   }
 
@@ -1491,14 +1534,29 @@ void GlicInstanceMetrics::OnNativeFreAccepted() {
       GetGlicProviderSpec(profile_).RequiresGeminiAccountEligibility()) {
     fre_accept_to_actionable_start_time_ = base::TimeTicks::Now();
   }
-  if (guest_actionable_.guest_frame_submitted) {
+  if (MilestoneSlot(GuestMilestone::kActionable)
+          .guest_state.guest_frame_submitted) {
     MaybeRecordAcceptToChatActionable(base::TimeTicks::Now());
   }
 }
 
 void GlicInstanceMetrics::OnWebFreAccepted() {
-  if (native_fre_state_ != NativeFreState::kNone ||
-      guest_actionable_.recorded || guest_actionable_.guest_frame_submitted ||
+  for (const GuestMilestoneSpec& spec : kGuestMilestoneSpecs) {
+    if (!spec.suppress_during_blocking_fre) {
+      continue;
+    }
+    GuestMilestoneSlot& slot = MilestoneSlot(spec.milestone);
+    if (slot.invocation_state.started_before_consent) {
+      // Clear any pre-consent timing even if the WebUI FRE screen already
+      // satisfied `kActionable`, so consent reading time cannot inflate
+      // `TimeToSubmittable` once chat becomes submittable.
+      slot.invocation_state = {};
+    }
+  }
+  const GuestMilestoneState& actionable_state =
+      MilestoneSlot(GuestMilestone::kActionable).guest_state;
+  if (native_fre_state_ != NativeFreState::kNone || actionable_state.recorded ||
+      actionable_state.guest_frame_submitted ||
       !fre_accept_to_actionable_start_time_.is_null() || !IsVisible() ||
       GlicEnabling::HasConsentedForProfile(profile_) ||
       !GetGlicProviderSpec(profile_).RequiresGeminiAccountEligibility()) {
@@ -1512,79 +1570,116 @@ void GlicInstanceMetrics::CancelNativeFreWait() {
   fre_accept_to_actionable_start_time_ = base::TimeTicks();
 }
 
-void GlicInstanceMetrics::OnGuestActionableMarkObserved(
+void GlicInstanceMetrics::OnGuestMilestoneMarkObserved(
+    GuestMilestone milestone,
     base::TimeTicks mark_time) {
-  if (guest_actionable_.actionable_mark_time.has_value()) {
+  GuestMilestoneSlot& slot = MilestoneSlot(milestone);
+  if (std::exchange(slot.guest_state.mark_observed, true)) {
     return;
   }
-  guest_actionable_.actionable_mark_time = mark_time;
-  const bool is_visible =
-      visibility_tracker_ ? visibility_tracker_->state() : false;
-  // When the panel is visible, active TimeToActionable waits for
-  // OnGuestFrameSubmitted() so it includes the compositor frame that renders
-  // the actionable state. When the panel was hidden before the mark arrived
-  // (but not yet closed), no visible frame will be produced, so record the
-  // Inactive variant immediately using the mark's timestamp.
-  if (!is_visible && !actionable_invocation_state_.start_time.is_null() &&
-      mark_time >= actionable_invocation_state_.start_time) {
-    RecordTimeToActionable(mark_time);
+  // When the panel is visible, active milestone timing waits for the
+  // compositor frame so it includes rendering the milestone state. When the
+  // panel was hidden before the mark arrived (but not yet closed), no visible
+  // frame will be produced, so record the Inactive variant immediately using
+  // the mark's timestamp.
+  if (!IsVisible() && !slot.invocation_state.start_time.is_null() &&
+      mark_time >= slot.invocation_state.start_time) {
+    RecordMilestoneTime(milestone, mark_time);
   }
 }
 
-void GlicInstanceMetrics::OnGuestFrameSubmitted() {
-  guest_actionable_.guest_frame_submitted = true;
+void GlicInstanceMetrics::OnGuestMilestoneFrameSubmitted(
+    GuestMilestone milestone) {
+  GuestMilestoneSlot& slot = MilestoneSlot(milestone);
+  slot.guest_state.guest_frame_submitted = true;
   if (IsVisible()) {
-    MaybeRecordAcceptToChatActionable(base::TimeTicks::Now());
-    RecordTimeToActionable(base::TimeTicks::Now());
-  } else if (!actionable_invocation_state_.start_time.is_null()) {
+    const base::TimeTicks now = base::TimeTicks::Now();
+    if (milestone == GuestMilestone::kActionable) {
+      MaybeRecordAcceptToChatActionable(now);
+    }
+    RecordMilestoneTime(milestone, now);
+  } else if (!slot.invocation_state.start_time.is_null()) {
     // `InsertVisualStateCallback` is requested while the guest is mounted and
     // visible, but the renderer's compositor frame can arrive after the panel
     // was hidden (during the 500ms hide-to-close debounce, while the guest is
     // still mounted). Remember it so if the user shows the panel again before
     // OnClose(), we still record when it appears on screen.
-    guest_actionable_.frame_submitted_while_hidden = true;
+    slot.invocation_state.frame_submitted_while_hidden = true;
   }
 }
 
 void GlicInstanceMetrics::OnGuestReset() {
-  const bool keep_recorded =
-      guest_actionable_.recorded &&
+  const bool keep_actionable_recorded =
+      MilestoneSlot(GuestMilestone::kActionable).guest_state.recorded &&
       native_fre_state_ == NativeFreState::kWaitingForAccept;
-  guest_actionable_ = {};
-  guest_actionable_.recorded = keep_recorded;
+  for (GuestMilestoneSlot& slot : guest_milestones_) {
+    slot.guest_state = {};
+    slot.invocation_state.frame_submitted_while_hidden = false;
+  }
+  MilestoneSlot(GuestMilestone::kActionable).guest_state.recorded =
+      keep_actionable_recorded;
   guest_reported_opt_in_impression_ = false;
 }
 
-bool GlicInstanceMetrics::IsWaitingForActionable() const {
-  return !guest_actionable_.recorded ||
-         (!guest_actionable_.guest_frame_submitted &&
-          (native_fre_state_ == NativeFreState::kWaitingForAccept ||
-           !fre_accept_to_actionable_start_time_.is_null()));
+bool GlicInstanceMetrics::IsWaitingForGuestMilestone(
+    GuestMilestone milestone) const {
+  const GuestMilestoneState& state = MilestoneSlot(milestone).guest_state;
+  if (milestone == GuestMilestone::kActionable) {
+    return !state.recorded ||
+           (!state.guest_frame_submitted &&
+            (native_fre_state_ == NativeFreState::kWaitingForAccept ||
+             !fre_accept_to_actionable_start_time_.is_null()));
+  }
+  return !state.recorded;
 }
 
-void GlicInstanceMetrics::RecordTimeToActionable(base::TimeTicks end_time) {
-  if (guest_actionable_.recorded) {
+void GlicInstanceMetrics::RecordMilestoneTime(GuestMilestone milestone,
+                                              base::TimeTicks end_time) {
+  const GuestMilestoneSpec& spec =
+      kGuestMilestoneSpecs[static_cast<size_t>(milestone)];
+  GuestMilestoneSlot& slot = MilestoneSlot(milestone);
+  if (std::exchange(slot.guest_state.recorded, true)) {
     return;
   }
-  guest_actionable_.recorded = true;
-  if (actionable_invocation_state_.start_time.is_null()) {
+  slot.invocation_state.frame_submitted_while_hidden = false;
+  if (slot.invocation_state.start_time.is_null()) {
+    return;
+  }
+  // Suppress samples whose open began before profile consent if consent has
+  // since flipped (e.g. via another tab, settings, or racing IPC before
+  // `OnWebFreAccepted()`), while preserving inline pre-consent opens where
+  // the composer becomes submittable while still unconsented.
+  if (spec.suppress_during_blocking_fre &&
+      slot.invocation_state.started_before_consent &&
+      GlicEnabling::HasConsentedForProfile(profile_)) {
+    slot.invocation_state = {};
     return;
   }
 
-  base::TimeDelta actionable_time =
-      end_time - actionable_invocation_state_.start_time;
-  if (actionable_invocation_state_.embedder_type != EmbedderType::kUnknown) {
-    bool is_visible =
-        visibility_tracker_ ? visibility_tracker_->state() : false;
-    std::string_view inactive_str = is_visible ? "" : "Inactive.";
+  base::TimeDelta duration =
+      std::max(base::TimeDelta(), end_time - slot.invocation_state.start_time);
+  if (slot.invocation_state.embedder_type != EmbedderType::kUnknown) {
+    std::string_view inactive_str = IsVisible() ? "" : "Inactive.";
     std::string histogram_name = base::StrCat(
-        {"Instance.TimeToActionable.", inactive_str,
-         GetEmbedderTypeString(actionable_invocation_state_.embedder_type)});
-    metric_reporter_.RecordCustomTimes(histogram_name, actionable_time,
-                                       base::Milliseconds(1), base::Seconds(60),
-                                       50);
+        {spec.metric_prefix, inactive_str,
+         GetEmbedderTypeString(slot.invocation_state.embedder_type)});
+    metric_reporter_.RecordCustomTimes(
+        histogram_name, duration, base::Milliseconds(1), base::Seconds(60), 50);
   }
-  actionable_invocation_state_ = {};
+  slot.invocation_state = {};
+}
+
+void GlicInstanceMetrics::MaybeRecordFrameSubmittedWhileHidden(
+    GuestMilestone milestone,
+    base::TimeTicks now) {
+  GuestMilestoneSlot& slot = MilestoneSlot(milestone);
+  if (slot.invocation_state.frame_submitted_while_hidden &&
+      !slot.invocation_state.start_time.is_null()) {
+    // The guest's frame was ready while the panel was briefly hidden; it's on
+    // screen as soon as the panel is shown again.
+    slot.invocation_state.frame_submitted_while_hidden = false;
+    RecordMilestoneTime(milestone, now);
+  }
 }
 
 void GlicInstanceMetrics::MaybeRecordAcceptToChatActionable(

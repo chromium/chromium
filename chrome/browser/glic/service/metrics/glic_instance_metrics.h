@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INSTANCE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_METRICS_GLIC_INSTANCE_METRICS_H_
 
+#include <array>
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -295,27 +298,34 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Updates metrics state when the user accepts the WebUI FRE.
   void OnWebFreAccepted();
 
-  // Guest actionability milestones for Glic.Instance.TimeToActionable, reported
-  // by GlicWebClientManager.
+  // Guest readiness milestones for `Glic.Instance.TimeToActionable` and
+  // `Glic.Instance.TimeToSubmittable`, reported by `GlicWebClientManager`.
+  enum class GuestMilestone : size_t {
+    kActionable = 0,
+    kSubmittable = 1,
+    kMaxValue = kSubmittable,
+  };
+  static constexpr size_t kGuestMilestoneCount =
+      static_cast<size_t>(GuestMilestone::kMaxValue) + 1;
 
-  // Called when the guest web client records its actionability performance
-  // mark.
-  void OnGuestActionableMarkObserved(base::TimeTicks mark_time);
+  // Called when the guest web client records the custom `performance.mark()`
+  // corresponding to `milestone`.
+  void OnGuestMilestoneMarkObserved(GuestMilestone milestone,
+                                    base::TimeTicks mark_time);
 
-  // Called when a mounted, actionable guest has submitted a compositor frame
-  // reflecting its actionable state. If the panel is hidden at that point (e.g.
-  // during the hide debounce), the sample is recorded when the panel becomes
-  // visible again within the same invocation.
-  void OnGuestFrameSubmitted();
+  // Called when a mounted guest has submitted a compositor frame reflecting
+  // `milestone`. If the panel is hidden at that point (e.g. during the hide
+  // debounce), the sample is recorded when the panel becomes visible again
+  // within the same invocation.
+  void OnGuestMilestoneFrameSubmitted(GuestMilestone milestone);
+
+  // Returns whether the current guest document still needs a compositor frame
+  // callback for `milestone`.
+  bool IsWaitingForGuestMilestone(GuestMilestone milestone) const;
 
   // Called when a guest is attached to the Host, or when the attached guest
   // crashes or commits a new primary main-frame navigation.
   void OnGuestReset();
-
-  // Returns whether the current guest document still needs an actionable
-  // compositor frame callback (for Glic.Instance.TimeToActionable or
-  // Glic.Fre.AcceptToChatActionable).
-  bool IsWaitingForActionable() const;
 
   void OnUserResizeStarted(const gfx::Size& start_size);
   void OnUserResizeEnded(const gfx::Size& end_size);
@@ -475,8 +485,54 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // while the client was still loading.
   void MaybeRecordTimeToDismissWhileLoading();
 
+  // Stores info scoped to the current invocation loading phase.
+  struct InvocationLoadState {
+    base::TimeTicks start_time;
+    EmbedderType embedder_type = EmbedderType::kUnknown;
+    bool has_logged_dismiss_while_loading = false;
+  };
+
+  // Stores per-milestone timing state scoped to an active open/invocation.
+  struct MilestoneInvocationState {
+    base::TimeTicks start_time;
+    EmbedderType embedder_type = EmbedderType::kUnknown;
+    bool started_before_consent = false;
+    // Whether a frame was submitted while an invocation was being timed but the
+    // panel was hidden. Recorded when the panel is shown again.
+    bool frame_submitted_while_hidden = false;
+  };
+
+  // Stores presentation state for a guest readiness milestone on the currently
+  // loaded guest document. Reset on guest replacement, navigation commit,
+  // crash, or hibernate.
+  struct GuestMilestoneState {
+    // Whether the active/inactive histogram has been resolved for this guest
+    // document. Reloads while the panel is open aren't timed, but still set
+    // this so reopening the reloaded guest doesn't log a bogus sample.
+    // TODO(b/571994634): Track reload presentation time.
+    bool recorded = false;
+    // Whether this guest document has submitted a compositor frame after the
+    // milestone mark.
+    bool guest_frame_submitted = false;
+    bool mark_observed = false;
+  };
+
+  struct GuestMilestoneSlot {
+    GuestMilestoneState guest_state;
+    MilestoneInvocationState invocation_state;
+  };
+
+  GuestMilestoneSlot& MilestoneSlot(GuestMilestone milestone) {
+    return guest_milestones_[static_cast<size_t>(milestone)];
+  }
+  const GuestMilestoneSlot& MilestoneSlot(GuestMilestone milestone) const {
+    return guest_milestones_[static_cast<size_t>(milestone)];
+  }
+
   void RecordPanelPresentationTime(base::TimeTicks end_time);
-  void RecordTimeToActionable(base::TimeTicks end_time);
+  void RecordMilestoneTime(GuestMilestone milestone, base::TimeTicks end_time);
+  void MaybeRecordFrameSubmittedWhileHidden(GuestMilestone milestone,
+                                            base::TimeTicks now);
   void UpdateNativeFreStateForShow(const ShowOptions& options);
   void MaybeRecordAcceptToChatActionable(base::TimeTicks now);
   void CancelNativeFreWait();
@@ -527,29 +583,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
   base::EnumSet<mojom::WebClientMode> inputs_modes_used_;
 
-  // Stores info scoped to the current invocation loading phase.
-  struct InvocationLoadState {
-    base::TimeTicks start_time;
-    EmbedderType embedder_type = EmbedderType::kUnknown;
-    bool has_logged_dismiss_while_loading = false;
-  };
-
-  // Stores actionability state for the currently loaded guest document. Reset
-  // on guest replacement, navigation commit, crash, or hibernate.
-  struct GuestActionableState {
-    // Whether TimeToActionable has been recorded for this guest document.
-    // Reloads while the panel is open aren't timed, but still set this so that
-    // reopening the reloaded guest doesn't log a bogus sample.
-    // TODO(b/571994634): Track reload presentation time.
-    bool recorded = false;
-    // Whether a frame was submitted while an invocation was being timed but the
-    // panel was hidden. Recorded when the panel is shown again.
-    bool frame_submitted_while_hidden = false;
-    // Whether this guest document has submitted an actionable compositor frame.
-    bool guest_frame_submitted = false;
-    std::optional<base::TimeTicks> actionable_mark_time;
-  };
-
   // The last web ui state received.
   mojom::WebUiState last_web_ui_state_ = mojom::WebUiState::kUninitialized;
   // The last invocation source that was used to show the panel.
@@ -567,7 +600,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
       std::nullopt;
   bool did_open_ = false;
   InvocationLoadState invocation_load_state_;
-  InvocationLoadState actionable_invocation_state_;
+  std::array<GuestMilestoneSlot, kGuestMilestoneCount> guest_milestones_{};
   base::TimeTicks web_ui_load_start_time_;
   base::TimeTicks client_ready_time_;
   base::TimeTicks open_start_time_;
@@ -598,7 +631,6 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   std::map<tabs::TabHandle, int> tab_depths_;
 
   bool is_client_ready_ = false;
-  GuestActionableState guest_actionable_;
   bool is_opt_in_pending_ = false;
   bool opt_in_impression_recorded_for_current_open_ = false;
   NativeFreState native_fre_state_ = NativeFreState::kNone;

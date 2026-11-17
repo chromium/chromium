@@ -226,6 +226,7 @@ class WebClient implements GlicWebClient {
     });
 
     this.initialized = true;
+    performance.mark('gemini.submittable');
     const cbs = this.onInitializedCallbacks;
     this.onInitializedCallbacks = [];
     for (const cb of cbs) {

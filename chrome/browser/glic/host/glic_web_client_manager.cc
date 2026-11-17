@@ -4,9 +4,13 @@
 
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 
+#include <array>
+#include <cstddef>
 #include <optional>
+#include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
-#include "chrome/browser/glic/host/glic_guest_actionable_mark_observer.h"
+#include "chrome/browser/glic/host/glic_guest_page_load_metrics_observer.h"
 #include "chrome/browser/glic/host/glic_web_client_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
@@ -170,13 +174,16 @@ class GlicWebClientManager::Metrics {
   bool has_error_or_crash_ = false;
 };
 
-// Tracks guest presentation state for `Glic.Instance.TimeToActionable`.
+// Tracks guest presentation state for `Glic.Instance.TimeToActionable` and
+// `Glic.Instance.TimeToSubmittable`.
 //
-// The guest page emits `performance.mark("gemini.interactive")` when its UI is
-// ready for input. Once the guest is attached to a `Host`, shown in the panel
-// (`guest_mounted_`), and has emitted that mark, this class waits for the
-// renderer to submit one compositor frame (`InsertVisualStateCallback`) and
-// then notifies `GlicInstanceMetrics::OnGuestFrameSubmitted()`.
+// The guest page emits `performance.mark("gemini.interactive")` when its input
+// UI is rendered and `performance.mark("gemini.submittable")` when prompt
+// submission is wired up. Once the guest is attached to a `Host`, shown in the
+// panel (`guest_mounted_`), and has emitted a mark, this class waits for the
+// renderer to submit an independent compositor frame
+// (`InsertVisualStateCallback`) for each milestone and notifies
+// `GlicInstanceMetrics`.
 class GlicWebClientManager::GuestPresentationTracker {
  public:
   explicit GuestPresentationTracker(GlicWebClientManager& manager)
@@ -189,105 +196,176 @@ class GlicWebClientManager::GuestPresentationTracker {
   void OnAttachedToHost(GlicInstanceMetrics& instance_metrics) {
     CHECK(!instance_metrics_);
     instance_metrics_ = &instance_metrics;
-    visual_state_weak_ptr_factory_.InvalidateWeakPtrs();
+    InvalidateVisualStateCallbacks();
     instance_metrics_->OnGuestReset();
-    if (actionable_mark_time_) {
-      // Replay a mark that fired while warming before `AttachToHost()`.
-      instance_metrics_->OnGuestActionableMarkObserved(*actionable_mark_time_);
+    for (const MilestoneSpec& spec : kMilestoneSpecs) {
+      if (const auto& mark_time =
+              milestones_[ToIndex(spec.milestone)].mark_time) {
+        // Replay any mark that fired while warming before `AttachToHost()`.
+        instance_metrics_->OnGuestMilestoneMarkObserved(spec.milestone,
+                                                        *mark_time);
+      }
     }
-    MaybeRequestVisualStateCallback();
+    MaybeRequestVisualStateCallbacks();
   }
 
   void ObserveGuestContents(content::WebContents& guest_contents) {
-    // Drop any mark callback bound to a previous `guest_contents` (in
+    // Drop any mark callbacks bound to a previous `guest_contents` (in
     // `<webview>` mode, the old guest WebContents can stay alive until GC after
     // a new `<webview>` is attached). This is intentionally not invalidated in
-    // `Reset()` on navigation, because `ObserveGlicGuestActionableMark`
+    // `Reset()` on navigation, because `ObserveGlicGuestPageLoadMetrics`
     // attaches a WebContents-scoped observer once per `guest_contents` and
     // reuses this callback across navigations of that WebContents.
     guest_mark_weak_ptr_factory_.InvalidateWeakPtrs();
     Reset();
-    ObserveGlicGuestActionableMark(
+    ObserveGlicGuestPageLoadMetrics(
         guest_contents,
-        base::BindRepeating(&GuestPresentationTracker::OnActionableMarkObserved,
+        base::BindRepeating(&GuestPresentationTracker::OnMarkObserved,
                             guest_mark_weak_ptr_factory_.GetWeakPtr()));
   }
 
   void SetGuestMounted(bool mounted) {
     guest_mounted_ = mounted;
     if (!guest_mounted_) {
-      visual_state_weak_ptr_factory_.InvalidateWeakPtrs();
+      InvalidateVisualStateCallbacks();
       return;
     }
-    MaybeRequestVisualStateCallback();
+    MaybeRequestVisualStateCallbacks();
   }
 
   void Reset() {
-    actionable_mark_time_.reset();
-    visual_state_weak_ptr_factory_.InvalidateWeakPtrs();
+    for (MilestoneState& state : milestones_) {
+      state.mark_time.reset();
+    }
+    InvalidateVisualStateCallbacks();
     if (instance_metrics_) {
       instance_metrics_->OnGuestReset();
     }
   }
 
  private:
-  void OnActionableMarkObserved(base::TimeTicks mark_time) {
-    // Only the first mark per guest document counts.
-    if (actionable_mark_time_) {
-      return;
+  using GuestMilestone = GlicInstanceMetrics::GuestMilestone;
+  static constexpr size_t kMilestoneCount =
+      GlicInstanceMetrics::kGuestMilestoneCount;
+
+  struct MilestoneSpec {
+    GuestMilestone milestone;
+    std::string_view mark_name;
+  };
+
+  static constexpr auto kMilestoneSpecs = std::to_array<MilestoneSpec>({
+      {GuestMilestone::kActionable, "gemini.interactive"},
+      {GuestMilestone::kSubmittable, "gemini.submittable"},
+  });
+
+  static_assert(kMilestoneSpecs.size() == kMilestoneCount);
+  static_assert([] {
+    for (size_t i = 0; i < kMilestoneCount; ++i) {
+      if (static_cast<size_t>(kMilestoneSpecs[i].milestone) != i ||
+          kMilestoneSpecs[i].mark_name.empty()) {
+        return false;
+      }
+      for (size_t j = 0; j < i; ++j) {
+        if (kMilestoneSpecs[i].mark_name == kMilestoneSpecs[j].mark_name) {
+          return false;
+        }
+      }
     }
-    actionable_mark_time_ = mark_time;
-    if (instance_metrics_) {
-      instance_metrics_->OnGuestActionableMarkObserved(mark_time);
-    }
-    MaybeRequestVisualStateCallback();
+    return true;
+  }());
+
+  struct MilestoneState {
+    std::optional<base::TimeTicks> mark_time;
+    bool visual_state_pending = false;
+  };
+
+  static constexpr size_t ToIndex(GuestMilestone milestone) {
+    return static_cast<size_t>(milestone);
   }
 
-  void MaybeRequestVisualStateCallback() {
-    if (!instance_metrics_ || !guest_mounted_ || !actionable_mark_time_ ||
-        !instance_metrics_->IsWaitingForActionable() ||
-        visual_state_weak_ptr_factory_.HasWeakPtrs()) {
+  void InvalidateVisualStateCallbacks() {
+    visual_state_weak_ptr_factory_.InvalidateWeakPtrs();
+    for (MilestoneState& state : milestones_) {
+      state.visual_state_pending = false;
+    }
+  }
+
+  void MaybeRequestVisualStateCallbacks() {
+    for (const MilestoneSpec& spec : kMilestoneSpecs) {
+      MaybeRequestVisualStateCallback(spec.milestone);
+    }
+  }
+
+  void OnMarkObserved(std::string_view mark_name, base::TimeTicks mark_time) {
+    for (const MilestoneSpec& spec : kMilestoneSpecs) {
+      if (spec.mark_name != mark_name) {
+        continue;
+      }
+      MilestoneState& state = milestones_[ToIndex(spec.milestone)];
+      // Only the first mark per guest document counts.
+      if (state.mark_time) {
+        return;
+      }
+      state.mark_time = mark_time;
+      if (instance_metrics_) {
+        instance_metrics_->OnGuestMilestoneMarkObserved(spec.milestone,
+                                                        mark_time);
+      }
+      MaybeRequestVisualStateCallback(spec.milestone);
+      return;
+    }
+  }
+
+  void MaybeRequestVisualStateCallback(GuestMilestone milestone) {
+    MilestoneState& state = milestones_[ToIndex(milestone)];
+    if (!instance_metrics_ || !guest_mounted_ || !state.mark_time ||
+        !instance_metrics_->IsWaitingForGuestMilestone(milestone) ||
+        state.visual_state_pending) {
       return;
     }
     content::RenderFrameHost* rfh = manager_->GetGuestMainFrame();
     if (!rfh || !rfh->IsRenderFrameLive()) {
       return;
     }
-    // Wait for the renderer to submit a compositor frame that includes the DOM
-    // state from the actionability mark.
+    // Set `visual_state_pending` before `InsertVisualStateCallback` because the
+    // callback can run synchronously (with `updated = false`) when the frame
+    // widget is unavailable. Each milestone tracks its own pending flag so an
+    // earlier milestone's frame cannot satisfy a mark that arrived later.
+    state.visual_state_pending = true;
     rfh->InsertVisualStateCallback(
         base::BindOnce(&GuestPresentationTracker::OnVisualStateCallback,
-                       visual_state_weak_ptr_factory_.GetWeakPtr()));
+                       visual_state_weak_ptr_factory_.GetWeakPtr(), milestone));
   }
 
-  void OnVisualStateCallback(bool updated) {
-    visual_state_weak_ptr_factory_.InvalidateWeakPtrs();
+  void OnVisualStateCallback(GuestMilestone milestone, bool updated) {
+    MilestoneState& state = milestones_[ToIndex(milestone)];
+    state.visual_state_pending = false;
     // `InsertVisualStateCallback` only passes `updated = false` when the
     // renderer widget is missing or destroyed before completing the request
     // (including synchronously when `!blink_frame_widget_`), so do not
     // immediately re-request here.
-    if (!updated || !instance_metrics_ || !guest_mounted_ ||
-        !actionable_mark_time_ ||
-        !instance_metrics_->IsWaitingForActionable()) {
+    if (!updated || !instance_metrics_ || !guest_mounted_ || !state.mark_time ||
+        !instance_metrics_->IsWaitingForGuestMilestone(milestone)) {
       return;
     }
-    instance_metrics_->OnGuestFrameSubmitted();
+    instance_metrics_->OnGuestMilestoneFrameSubmitted(milestone);
   }
 
   const raw_ref<GlicWebClientManager> manager_;
   // Null while warming in `GlicWebContentsWarmingPool`; set once in
-  // `OnAttachedToHost()`.
+  // `OnAttachedToHost()`. Must outlive `this` (guaranteed because
+  // `GlicInstanceImpl::~GlicInstanceImpl()` hibernates `host_` before
+  // `instance_metrics_` is destroyed).
   raw_ptr<GlicInstanceMetrics> instance_metrics_ = nullptr;
   // True when the guest WebContents is shown in the panel (not hidden or
   // covered by a loading/error overlay).
   bool guest_mounted_ = false;
-  // Timestamp of the first "gemini.interactive" mark for the current guest
-  // document.
-  std::optional<base::TimeTicks> actionable_mark_time_;
+  std::array<MilestoneState, kMilestoneCount> milestones_{};
 
   base::WeakPtrFactory<GuestPresentationTracker> guest_mark_weak_ptr_factory_{
       this};
-  // Invalidated to cancel an in-flight `InsertVisualStateCallback`.
+  // Invalidated when unmounting or resetting to cancel all in-flight
+  // `InsertVisualStateCallback` requests.
   base::WeakPtrFactory<GuestPresentationTracker> visual_state_weak_ptr_factory_{
       this};
 };

@@ -221,6 +221,7 @@ export class WebClient implements GlicWebClient {
             request.onComplete(this.mockConfirmationApplied);
           }
         });
+    performance.mark('gemini.submittable');
     this.initializedPromise.resolve();
   }
 
