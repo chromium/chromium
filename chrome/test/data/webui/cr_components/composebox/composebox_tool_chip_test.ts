@@ -13,7 +13,7 @@ import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/co
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {MockInputState} from './composebox_test_utils.js';
+import {createToolConfig, MockInputState} from './composebox_test_utils.js';
 
 suite('ComposeboxToolChipTest', () => {
   let toolChip: ComposeboxToolChipElement;
@@ -35,19 +35,7 @@ suite('ComposeboxToolChipTest', () => {
   test('Renders icon defined in toolConfig', async () => {
     toolChip['inputState'] = new MockInputState({
       activeTool: ToolMode.kDeepSearch,
-      toolConfigs: [
-        {
-          tool: ToolMode.kDeepSearch,
-          menuLabel: 'Deep Search',
-          disableActiveModelSelection: false,
-          chipLabel: 'Deep Search',
-          chipA11yLabel: '',
-          icon: 94,
-          hintText: '',
-          aimUrlParams: [],
-          menuTooltip: '',
-        },
-      ],
+      toolConfigs: [createToolConfig(ToolMode.kDeepSearch, {icon: 94})],
     });
     await microtasksFinished();
 
@@ -59,19 +47,7 @@ suite('ComposeboxToolChipTest', () => {
   test('Renders new tool icon defined in toolConfig', async () => {
     toolChip['inputState'] = new MockInputState({
       activeTool: ToolMode.kImageGen,
-      toolConfigs: [
-        {
-          tool: ToolMode.kImageGen,
-          menuLabel: 'Create Images',
-          disableActiveModelSelection: false,
-          chipLabel: 'Create Images',
-          chipA11yLabel: '',
-          icon: 108,
-          hintText: '',
-          aimUrlParams: [],
-          menuTooltip: '',
-        },
-      ],
+      toolConfigs: [createToolConfig(ToolMode.kImageGen, {icon: 108})],
     });
     await microtasksFinished();
 
@@ -85,19 +61,7 @@ suite('ComposeboxToolChipTest', () => {
       async () => {
         toolChip['inputState'] = new MockInputState({
           activeTool: ToolMode.kDeepSearch,
-          toolConfigs: [
-            {
-              tool: ToolMode.kDeepSearch,
-              menuLabel: 'Deep Search',
-              disableActiveModelSelection: false,
-              chipLabel: 'Deep Search',
-              chipA11yLabel: '',
-              icon: 0,
-              hintText: '',
-              aimUrlParams: [],
-              menuTooltip: '',
-            },
-          ],
+          toolConfigs: [createToolConfig(ToolMode.kDeepSearch, {icon: 0})],
         });
         await microtasksFinished();
 
@@ -128,19 +92,7 @@ suite('ComposeboxToolChipTest', () => {
         });
         toolChip['inputState'] = new MockInputState({
           activeTool: ToolMode.kDeepSearch,
-          toolConfigs: [
-            {
-              tool: ToolMode.kDeepSearch,
-              menuLabel: 'Deep Search',
-              disableActiveModelSelection: false,
-              chipLabel: 'Deep Search',
-              chipA11yLabel: '',
-              icon: 94,
-              hintText: '',
-              aimUrlParams: [],
-              menuTooltip: '',
-            },
-          ],
+          toolConfigs: [createToolConfig(ToolMode.kDeepSearch, {icon: 94})],
         });
         await microtasksFinished();
 
@@ -152,19 +104,9 @@ suite('ComposeboxToolChipTest', () => {
   test('Uses chipA11yLabel from toolConfig as the aria-label', async () => {
     toolChip['inputState'] = new MockInputState({
       activeTool: ToolMode.kCanvas,
-      toolConfigs: [
-        {
-          tool: ToolMode.kCanvas,
-          menuLabel: 'Canvas',
-          disableActiveModelSelection: false,
-          chipLabel: 'Canvas',
-          chipA11yLabel: 'Canvas (active), click to remove',
-          icon: 0,
-          hintText: '',
-          aimUrlParams: [],
-          menuTooltip: '',
-        },
-      ],
+      toolConfigs: [createToolConfig(
+          ToolMode.kCanvas,
+          {chipA11yLabel: 'Canvas (active), click to remove'})],
     });
     await microtasksFinished();
 
@@ -179,19 +121,8 @@ suite('ComposeboxToolChipTest', () => {
       async () => {
         toolChip['inputState'] = new MockInputState({
           activeTool: ToolMode.kCanvas,
-          toolConfigs: [
-            {
-              tool: ToolMode.kCanvas,
-              menuLabel: 'Canvas',
-              disableActiveModelSelection: false,
-              chipLabel: 'Canvas',
-              chipA11yLabel: '',
-              icon: 0,
-              hintText: '',
-              aimUrlParams: [],
-              menuTooltip: '',
-            },
-          ],
+          toolConfigs: [createToolConfig(
+              ToolMode.kCanvas, {chipLabel: 'Canvas', chipA11yLabel: ''})],
         });
         await microtasksFinished();
 
