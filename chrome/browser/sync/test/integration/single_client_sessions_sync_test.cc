@@ -22,7 +22,6 @@
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
@@ -796,10 +795,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
           /*last_modified_time=*/0));
 
   // Mimic a browser restart by forcing a refresh to get updates.
-  GetSyncService(0)->TriggerRefresh(
-      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::SESSIONS});
-  EXPECT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
+  EXPECT_TRUE(GetClient(0)->TriggerRefreshAndWait({syncer::SESSIONS}));
 
   // Foreign data should be empty.
   SyncedSessionVector sessions;

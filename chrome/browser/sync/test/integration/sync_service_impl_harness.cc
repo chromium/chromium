@@ -31,9 +31,11 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_signin_delegate.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/trigger_refresh_checker.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/net/url_translator.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/engine/traffic_logger.h"
@@ -42,6 +44,7 @@
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_internals_util.h"
 #include "components/sync/service/sync_prefs.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
@@ -472,6 +475,15 @@ bool SyncServiceImplHarness::AwaitSyncTransportPaused() {
 
 bool SyncServiceImplHarness::AwaitInvalidationsStatus(bool expected_status) {
   return InvalidationsStatusChecker(service(), expected_status).Wait();
+}
+
+bool SyncServiceImplHarness::TriggerRefreshAndWait(
+    const syncer::DataTypeSet& types) {
+  TriggerRefreshChecker checker(
+      service(), sync_datatype_helper::test()->GetFakeServer(), types);
+  service()->TriggerRefresh(syncer::SyncService::TriggerRefreshSource::kUnknown,
+                            types);
+  return checker.Wait();
 }
 
 bool SyncServiceImplHarness::EnableHistorySyncNoWaitForCompletion() {

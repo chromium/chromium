@@ -14,7 +14,6 @@
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
@@ -165,7 +164,6 @@ class EnableDisableSingleClientTest
         .num_updates_downloaded_total;
   }
 
- protected:
   void SetupTest(bool all_types_enabled) {
     ASSERT_TRUE(SetupClients());
 
@@ -202,6 +200,15 @@ class EnableDisableSingleClientTest
     registered_selectable_types_ = GetRegisteredSelectableTypes(0);
   }
 
+  sync_pb::ClientToServerMessage TriggerGetUpdatesCycleAndWait() {
+    EXPECT_TRUE(GetClient(0)->TriggerRefreshAndWait({syncer::BOOKMARKS}));
+
+    sync_pb::ClientToServerMessage message;
+    EXPECT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));
+    return message;
+  }
+
+ protected:
   DataTypeSet ResolveGroup(UserSelectableType type) {
     DataTypeSet grouped_types = syncer::UserSelectableTypeToAllDataTypes(type);
     grouped_types.RetainAll(registered_data_types_);
@@ -654,30 +661,7 @@ IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientTest,
   EXPECT_EQ(cache_guid, prefs.GetCacheGuid());
 }
 
-class EnableDisableSingleClientSelfNotifyTest
-    : public EnableDisableSingleClientTest {
- public:
-  // UpdatedProgressMarkerChecker relies on the 'self-notify' feature.
-  bool TestUsesSelfNotifications() override { return true; }
-
-  sync_pb::ClientToServerMessage TriggerGetUpdatesCycleAndWait() {
-    TriggerSyncForDataTypes(0, {syncer::BOOKMARKS});
-    EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer())
-                    .Wait());
-
-    sync_pb::ClientToServerMessage message;
-    EXPECT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));
-    return message;
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         EnableDisableSingleClientSelfNotifyTest,
-                         GetSyncTestModes(),
-                         testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientSelfNotifyTest,
-                       PRE_ResendsBagOfChips) {
+IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientTest, PRE_ResendsBagOfChips) {
   sync_pb::ChipBag bag_of_chips;
   bag_of_chips.set_server_chips(kTestServerChips);
   ASSERT_FALSE(base::IsStringUTF8(bag_of_chips.SerializeAsString()));
@@ -695,8 +679,7 @@ IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientSelfNotifyTest,
   EXPECT_EQ(kTestServerChips, message.bag_of_chips().server_chips());
 }
 
-IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientSelfNotifyTest,
-                       ResendsBagOfChips) {
+IN_PROC_BROWSER_TEST_P(EnableDisableSingleClientTest, ResendsBagOfChips) {
   ASSERT_TRUE(SetupClients());
   syncer::SyncTransportDataPrefs prefs(
       GetProfile(0)->GetPrefs(),

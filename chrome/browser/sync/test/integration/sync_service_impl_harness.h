@@ -10,12 +10,14 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/sync_test_account.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/service/local_data_description.h"
@@ -174,6 +176,13 @@ class SyncServiceImplHarness {
 
   // Blocks the caller until invalidations are enabled or disabled.
   [[nodiscard]] bool AwaitInvalidationsStatus(bool expected_status);
+
+  // Triggers a refresh for `types` (all registered non-commit-only types by
+  // default) and blocks until the resulting refresh sync cycle completes.
+  [[nodiscard]] bool TriggerRefreshAndWait(
+      const syncer::DataTypeSet& types =
+          base::Difference(syncer::DataTypeSet::All(),
+                           syncer::CommitOnlyTypes()));
 
   // Returns the SyncServiceImpl member of the sync client.
   syncer::SyncServiceImpl* service() { return service_; }

@@ -30,7 +30,6 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/url_and_title.h"
@@ -1402,13 +1401,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
 
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
 
-  // After restart, the last sync cycle snapshot should be empty.
-  // Once a sync request happened (e.g. by a poll), that snapshot is populated.
-  // We use the following checker to simply wait for an non-empty snapshot.
-  GetSyncService(0)->TriggerRefresh(
-      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::BOOKMARKS});
-  EXPECT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
+  EXPECT_TRUE(GetClient(kSingleProfileIndex)
+                  ->TriggerRefreshAndWait({syncer::BOOKMARKS}));
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex, GetStoreType())
                     ->children()
                     .size());

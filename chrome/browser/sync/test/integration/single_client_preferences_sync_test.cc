@@ -21,7 +21,6 @@
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -242,14 +241,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // After restart, the last sync cycle snapshot should be empty.
-  // Once a sync request happened (e.g. by a poll), that snapshot is populated.
-  // We use the following checker to simply wait for an non-empty snapshot.
-  GetSyncService(0)->TriggerRefresh(
-      syncer::SyncService::TriggerRefreshSource::kUnknown,
-      {syncer::PREFERENCES});
-  EXPECT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
+  EXPECT_TRUE(GetClient(0)->TriggerRefreshAndWait({syncer::PREFERENCES}));
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
                    "Sync.DataTypeEntityChange.PREFERENCE",

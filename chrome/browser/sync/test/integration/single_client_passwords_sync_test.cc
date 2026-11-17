@@ -12,7 +12,6 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -279,16 +278,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientPasswordsSyncTest,
   ASSERT_EQ(1, GetPasswordCount());
 
   // Wait for data types to be ready for sync and trigger a sync cycle.
-  // Otherwise, TriggerRefresh() would be no-op.
+  // Otherwise, `TriggerRefreshAndWait()` would be no-op.
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  GetSyncService(0)->TriggerRefresh(
-      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::PASSWORDS});
-
-  // After restart, the last sync cycle snapshot should be empty. Once a sync
-  // request happened (e.g. by a poll), that snapshot is populated. We use the
-  // following checker to simply wait for an non-empty snapshot.
-  EXPECT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(0), GetFakeServer()).Wait());
+  EXPECT_TRUE(GetClient(0)->TriggerRefreshAndWait({syncer::PASSWORDS}));
 
   // If that metadata hasn't been properly persisted, the password stored on the
   // server will be received at the client as an initial update or an
