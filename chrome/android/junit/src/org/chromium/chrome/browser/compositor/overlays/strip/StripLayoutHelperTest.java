@@ -148,8 +148,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
+import org.chromium.chrome.browser.tasks.tab_management.HoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardPresenter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
@@ -263,7 +263,6 @@ public class StripLayoutHelperTest {
     private View mControlContainer;
     private TabHoverCardView mTabHoverCardView;
     private TabGroupHoverCardView mTabGroupHoverCardView;
-    private TabGroupHoverCardPresenter mTabGroupHoverCardPresenter;
     private SharedGroupTestHelper mSharedGroupTestHelper;
 
     // TODO(crbug.com/369736293): Verify usages and remove duplicate implementations of
@@ -6171,9 +6170,8 @@ public class StripLayoutHelperTest {
                         mActivity
                                 .getLayoutInflater()
                                 .inflate(R.layout.tab_group_hover_card_holder, /* root= */ null);
-        mTabGroupHoverCardPresenter = new TabGroupHoverCardPresenter(mTabModelSelector);
-        mStripLayoutHelper.setTabGroupHoverCardView(
-                mTabGroupHoverCardView, mTabGroupHoverCardPresenter);
+        mTabGroupHoverCardView.initialize(mTabModelSelector);
+        mStripLayoutHelper.setTabGroupHoverCardView(mTabGroupHoverCardView);
         // For ease of dp/px calculation.
         mTabHoverCardView.getContext().getResources().getDisplayMetrics().density = 1f;
     }
@@ -6228,11 +6226,11 @@ public class StripLayoutHelperTest {
 
         assertEquals(
                 "Hover card delay for min tab is incorrect.",
-                TabHoverCardView.MIN_HOVER_CARD_DELAY_MS,
+                HoverCardView.MIN_HOVER_CARD_DELAY_MS,
                 mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_SMALL));
         assertEquals(
                 "Hover card delay for width < min tab is incorrect.",
-                TabHoverCardView.MIN_HOVER_CARD_DELAY_MS,
+                HoverCardView.MIN_HOVER_CARD_DELAY_MS,
                 mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_SMALL - 1.f));
         assertEquals(
                 "Hover card delay for medium tab is incorrect.",
@@ -6240,7 +6238,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getHoverCardDelay(TAB_WIDTH_MEDIUM));
         assertEquals(
                 "Hover card delay for max tab is incorrect.",
-                TabHoverCardView.MAX_HOVER_CARD_DELAY_MS,
+                HoverCardView.MAX_HOVER_CARD_DELAY_MS,
                 mStripLayoutHelper.getHoverCardDelay(MAX_TAB_WIDTH_DP));
     }
 

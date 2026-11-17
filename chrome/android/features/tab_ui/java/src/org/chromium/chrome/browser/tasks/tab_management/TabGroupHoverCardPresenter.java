@@ -22,7 +22,7 @@ import java.util.List;
  * TabGroupHoverCardView}.
  */
 @NullMarked
-public class TabGroupHoverCardPresenter {
+class TabGroupHoverCardPresenter {
     private static final String BULLET_PREFIX = "• ";
 
     private final TabModelSelector mTabModelSelector;
@@ -32,7 +32,7 @@ public class TabGroupHoverCardPresenter {
      *
      * @param tabModelSelector The {@link TabModelSelector} to query tab group state from.
      */
-    public TabGroupHoverCardPresenter(TabModelSelector tabModelSelector) {
+    TabGroupHoverCardPresenter(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
     }
 
@@ -43,7 +43,7 @@ public class TabGroupHoverCardPresenter {
      * @param tabGroupId The stable tab group ID (Token).
      * @return True if data was successfully bound, false if group is invalid.
      */
-    public boolean bindData(TabGroupHoverCardView hoverCardView, @Nullable Token tabGroupId) {
+    boolean bindData(TabGroupHoverCardView hoverCardView, @Nullable Token tabGroupId) {
         if (tabGroupId == null) {
             return false;
         }

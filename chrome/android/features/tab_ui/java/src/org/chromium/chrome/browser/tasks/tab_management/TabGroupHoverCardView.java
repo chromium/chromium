@@ -5,38 +5,37 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
-import androidx.core.view.ViewCompat;
 
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.List;
 
 /**
- * Desktop-style hover card view for tab group headers in Vertical Tabs.
+ * Hover card view for tab group headers.
  *
  * <p>Renders the group title, up to 5 child tab titles, and an excess count footer using
  * pre-defined child views for zero-allocation performance.
  */
 @NullMarked
-public class TabGroupHoverCardView extends FrameLayout {
+public class TabGroupHoverCardView extends HoverCardView {
     /** Maximum number of child tab preview rows displayed in the hover card. */
     public static final int MAX_PREVIEW_TABS = 5;
 
     private final TextView[] mChildTabViews = new TextView[MAX_PREVIEW_TABS];
 
-    private ViewGroup mContentView;
     private TextView mGroupTitleView;
     private TextView mGroupExcessTabsView;
+    private @Nullable TabGroupHoverCardPresenter mPresenter;
 
     public TabGroupHoverCardView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -45,26 +44,44 @@ public class TabGroupHoverCardView extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mContentView = findViewById(R.id.content_view);
-        mGroupTitleView = mContentView.findViewById(R.id.group_title);
-        mGroupExcessTabsView = mContentView.findViewById(R.id.group_excess_tabs);
+        ViewGroup contentView = getContentView();
+        mGroupTitleView = contentView.findViewById(R.id.group_title);
+        mGroupExcessTabsView = contentView.findViewById(R.id.group_excess_tabs);
 
-        mChildTabViews[0] = mContentView.findViewById(R.id.group_child_tab_1);
-        mChildTabViews[1] = mContentView.findViewById(R.id.group_child_tab_2);
-        mChildTabViews[2] = mContentView.findViewById(R.id.group_child_tab_3);
-        mChildTabViews[3] = mContentView.findViewById(R.id.group_child_tab_4);
-        mChildTabViews[4] = mContentView.findViewById(R.id.group_child_tab_5);
+        mChildTabViews[0] = contentView.findViewById(R.id.group_child_tab_1);
+        mChildTabViews[1] = contentView.findViewById(R.id.group_child_tab_2);
+        mChildTabViews[2] = contentView.findViewById(R.id.group_child_tab_3);
+        mChildTabViews[3] = contentView.findViewById(R.id.group_child_tab_4);
+        mChildTabViews[4] = contentView.findViewById(R.id.group_child_tab_5);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        @Px int maxWidth = TabHoverCardView.getHoverCardWidthPx(getContext());
+        @Px int maxWidth = getHoverCardWidthPx(getContext());
         if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED) {
             maxWidth = Math.min(maxWidth, MeasureSpec.getSize(widthMeasureSpec));
         }
 
         int atMostWidthSpec = MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST);
         super.onMeasure(atMostWidthSpec, heightMeasureSpec);
+    }
+
+    @Override
+    public void initialize(TabModelSelector tabModelSelector) {
+        super.initialize(tabModelSelector);
+        mPresenter = new TabGroupHoverCardPresenter(tabModelSelector);
+    }
+
+    /**
+     * Resolves group metadata via {@link TabGroupHoverCardPresenter} and binds the data to the
+     * hover card view.
+     *
+     * @param tabGroupId The stable tab group ID (Token).
+     * @return True if data was successfully bound, false if group is invalid.
+     */
+    public boolean bindData(@Nullable Token tabGroupId) {
+        if (mPresenter == null) return false;
+        return mPresenter.bindData(this, tabGroupId);
     }
 
     /**
@@ -78,7 +95,7 @@ public class TabGroupHoverCardView extends FrameLayout {
      */
     public void bindData(
             String title, List<String> childTabTitles, int excessCount, boolean isIncognito) {
-        updateColors(isIncognito);
+        updateHoverCardColors(isIncognito);
 
         // Group Title.
         mGroupTitleView.setText(title);
@@ -109,31 +126,15 @@ public class TabGroupHoverCardView extends FrameLayout {
         }
     }
 
-    /**
-     * Positions and displays the hover card.
-     *
-     * @param x Target X screen coordinate in pixels.
-     * @param y Target Y screen coordinate in pixels.
-     */
-    public void show(float x, float y) {
-        setX(x);
-        setY(y);
-        setVisibility(View.VISIBLE);
-    }
-
-    /** Hides the hover card. */
-    public void hide() {
-        setVisibility(View.GONE);
-    }
-
-    /** Destroys references and hides the card. */
+    @Override
     public void destroy() {
-        hide();
+        mPresenter = null;
+        super.destroy();
     }
 
-    // --- Helper Methods ---
-
-    private void updateColors(boolean isIncognito) {
+    @Override
+    protected void updateHoverCardColors(boolean isIncognito) {
+        super.updateHoverCardColors(isIncognito);
         Context context = getContext();
         mGroupTitleView.setTextColor(
                 TabUiThemeProvider.getTabHoverCardTextColorPrimary(context, isIncognito));
@@ -143,19 +144,9 @@ public class TabGroupHoverCardView extends FrameLayout {
             childView.setTextColor(textColorSecondary);
         }
         mGroupExcessTabsView.setTextColor(textColorSecondary);
-
-        ViewCompat.setBackgroundTintList(
-                mContentView,
-                TabUiThemeProvider.getTabHoverCardBackgroundTintList(context, isIncognito));
     }
 
     // --- Testing Getters ---
-
-    /** Returns the background tint list of the inner content container for testing. */
-    @Nullable
-    ColorStateList getBackgroundTintListForTesting() {
-        return mContentView != null ? ViewCompat.getBackgroundTintList(mContentView) : null;
-    }
 
     /** Returns the TextView displaying the group title for testing. */
     TextView getGroupTitleViewForTesting() {

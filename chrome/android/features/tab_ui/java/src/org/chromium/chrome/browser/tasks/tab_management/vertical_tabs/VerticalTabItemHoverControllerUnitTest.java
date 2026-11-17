@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.HoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
@@ -262,11 +263,11 @@ public class VerticalTabItemHoverControllerUnitTest {
     public void testGetHoverCardDelay() {
         // Collapsed rail width (76dp) -> 300ms
         setContainerWidth(VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
-        assertEquals(TabHoverCardView.MIN_HOVER_CARD_DELAY_MS, mController.getHoverCardDelay());
+        assertEquals(HoverCardView.MIN_HOVER_CARD_DELAY_MS, mController.getHoverCardDelay());
 
         // Expanded rail width (240dp) -> 800ms
         setContainerWidth(VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP);
-        assertEquals(TabHoverCardView.MAX_HOVER_CARD_DELAY_MS, mController.getHoverCardDelay());
+        assertEquals(HoverCardView.MAX_HOVER_CARD_DELAY_MS, mController.getHoverCardDelay());
     }
 
     @Test
@@ -279,7 +280,7 @@ public class VerticalTabItemHoverControllerUnitTest {
 
         // Before delay elapses (200 ms), show should not be called yet.
         ShadowLooper.idleMainLooper(
-                TabHoverCardView.MIN_HOVER_CARD_DELAY_MS - 100, TimeUnit.MILLISECONDS);
+                HoverCardView.MIN_HOVER_CARD_DELAY_MS - 100, TimeUnit.MILLISECONDS);
         assertNull(getTabHoverCardView());
 
         // After full delay (300 ms), show is called.
@@ -1570,7 +1571,7 @@ public class VerticalTabItemHoverControllerUnitTest {
     }
 
     private TabGroupHoverCardView getTabGroupHoverCardView() {
-        return mRootView.findViewById(R.id.vertical_tab_group_hover_card_holder);
+        return mRootView.findViewById(R.id.tab_group_hover_card_holder);
     }
 
     private void assertTabHoverCardShowing(String tabTitle) {

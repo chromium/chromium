@@ -145,7 +145,7 @@ public class TabHoverCardViewUnitTest {
                 "|mLastHoveredTabId| is incorrect.",
                 1,
                 mTabHoverCardView.getLastHoveredTabIdForTesting());
-        assertTrue("|mIsShowing| should be true.", mTabHoverCardView.isShowingForTesting());
+        assertTrue("|mIsShowing| should be true.", mTabHoverCardView.isShowing());
         assertEquals(10f, mTabHoverCardView.getX(), 0f);
         assertEquals(20f, mTabHoverCardView.getY(), 0f);
         assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
@@ -388,7 +388,7 @@ public class TabHoverCardViewUnitTest {
         // Assume that the hover card is hidden before the thumbnail is fetched.
         mTabHoverCardView.hide();
         // Verify state is reset on hide.
-        assertFalse("|mIsShowing| should be false.", mTabHoverCardView.isShowingForTesting());
+        assertFalse("|mIsShowing| should be false.", mTabHoverCardView.isShowing());
         assertEquals(
                 "Hover card view should be hidden.", View.GONE, mTabHoverCardView.getVisibility());
         assertEquals(
@@ -558,7 +558,7 @@ public class TabHoverCardViewUnitTest {
         assertEquals(
                 "Hover card width should be default dimen when window is large.",
                 mHoverCardWidth,
-                TabHoverCardView.getHoverCardWidthPx(mContext));
+                HoverCardView.getHoverCardWidthPx(mContext));
 
         // Window is narrow: returns 90% of window width.
         int narrowWindowWidth = mHoverCardWidth - 10;
@@ -567,7 +567,7 @@ public class TabHoverCardViewUnitTest {
         assertEquals(
                 "Hover card width should be bounded by window width percent when window is narrow.",
                 expectedNarrowWidth,
-                TabHoverCardView.getHoverCardWidthPx(mContext));
+                HoverCardView.getHoverCardWidthPx(mContext));
     }
 
     @Test

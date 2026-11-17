@@ -121,7 +121,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.GroupSharedState;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardPresenter;
+import org.chromium.chrome.browser.tasks.tab_management.HoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
@@ -655,7 +655,6 @@ public class StripLayoutHelper
     private @Nullable StripLayoutGroupTitle mLastHoveredGroupTitle;
     private @Nullable TabHoverCardView mTabHoverCardView;
     private @Nullable TabGroupHoverCardView mTabGroupHoverCardView;
-    private @Nullable TabGroupHoverCardPresenter mTabGroupHoverCardPresenter;
     private long mLastHoverCardExitTime;
 
     // Tab Group Sync.
@@ -905,7 +904,6 @@ public class StripLayoutHelper
             mTabGroupHoverCardView.destroy();
             mTabGroupHoverCardView = null;
         }
-        mTabGroupHoverCardPresenter = null;
         if (mDataSharingService != null) {
             mDataSharingService.removeObserver(mDataSharingObserver);
             mDataSharingService = null;
@@ -3118,11 +3116,8 @@ public class StripLayoutHelper
         }
     }
 
-    void setTabGroupHoverCardView(
-            TabGroupHoverCardView tabGroupHoverCardView,
-            TabGroupHoverCardPresenter tabGroupHoverCardPresenter) {
+    void setTabGroupHoverCardView(TabGroupHoverCardView tabGroupHoverCardView) {
         mTabGroupHoverCardView = tabGroupHoverCardView;
-        mTabGroupHoverCardPresenter = tabGroupHoverCardPresenter;
         // If onHoverEnter was already processed before this method call, show card now.
         if (mLastHoveredGroupTitle != null && !mTabGroupHoverCardView.isShown()) {
             showHoverCardView(/* isDelayedCall= */ false);
@@ -3249,7 +3244,7 @@ public class StripLayoutHelper
 
     @VisibleForTesting
     int getHoverCardDelay(float tabWidth) {
-        return TabHoverCardView.getHoverCardDelay(
+        return HoverCardView.getHoverCardDelay(
                 tabWidth, StripLayoutUtils.getMinTabWidthDp(), MAX_TAB_WIDTH_DP);
     }
 
@@ -3291,11 +3286,10 @@ public class StripLayoutHelper
     }
 
     private void showTabGroupHoverCardView(StripLayoutGroupTitle hoveredGroupTitle) {
-        if (mTabGroupHoverCardView == null || mTabGroupHoverCardPresenter == null) {
+        if (mTabGroupHoverCardView == null) {
             return;
         }
-        if (!mTabGroupHoverCardPresenter.bindData(
-                mTabGroupHoverCardView, hoveredGroupTitle.getTabGroupId())) {
+        if (!mTabGroupHoverCardView.bindData(hoveredGroupTitle.getTabGroupId())) {
             return;
         }
         float[] position =

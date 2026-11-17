@@ -40,6 +40,7 @@ internal_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/GroupWindowInfo.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/GroupWindowState.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/GroupedLayoutDelegate.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/HoverCardView.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoMessageService.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoViewModel.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoTabSwitcherPane.java",

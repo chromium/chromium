@@ -105,7 +105,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.tabstrip.TabStripSceneLayerHolder;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardPresenter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
@@ -808,10 +807,9 @@ public class StripLayoutHelperManager
         tabGroupHoverCardViewStub.setOnInflateListener(
                 (viewStub, view) -> {
                     var hoverCardView = (TabGroupHoverCardView) view;
-                    var hoverCardPresenter =
-                            new TabGroupHoverCardPresenter(assumeNonNull(mTabModelSelector));
-                    mNormalHelper.setTabGroupHoverCardView(hoverCardView, hoverCardPresenter);
-                    mIncognitoHelper.setTabGroupHoverCardView(hoverCardView, hoverCardPresenter);
+                    hoverCardView.initialize(assumeNonNull(mTabModelSelector));
+                    mNormalHelper.setTabGroupHoverCardView(hoverCardView);
+                    mIncognitoHelper.setTabGroupHoverCardView(hoverCardView);
                 });
 
         if (tabModelStartupInfoSupplier != null) {

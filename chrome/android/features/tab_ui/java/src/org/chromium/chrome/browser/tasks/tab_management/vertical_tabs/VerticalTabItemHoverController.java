@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardPresenter;
+import org.chromium.chrome.browser.tasks.tab_management.HoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -83,7 +83,6 @@ public class VerticalTabItemHoverController {
     private final VerticalTabRailLayout mContainerView;
     private final TabModelSelector mTabModelSelector;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private final TabGroupHoverCardPresenter mTabGroupHoverCardPresenter;
     private final TabHoverListener mTabHoverListener =
             new TabHoverListener() {
                 @Override
@@ -151,7 +150,6 @@ public class VerticalTabItemHoverController {
         mTabGroupHoverCardViewStub = tabGroupHoverCardViewStub;
         mTabModelSelector = tabModelSelector;
         mIsContextMenuShowingSupplier = isContextMenuShowingSupplier;
-        mTabGroupHoverCardPresenter = new TabGroupHoverCardPresenter(tabModelSelector);
 
         if (mTabHoverCardViewStub != null) {
             mTabHoverCardViewStub.setOnInflateListener(
@@ -164,8 +162,11 @@ public class VerticalTabItemHoverController {
         }
         if (mTabGroupHoverCardViewStub != null) {
             mTabGroupHoverCardViewStub.setOnInflateListener(
-                    (ViewStub _, View view) ->
-                            mTabGroupHoverCardView = (TabGroupHoverCardView) view);
+                    (ViewStub _, View view) -> {
+                        mTabGroupHoverCardView = (TabGroupHoverCardView) view;
+                        mTabGroupHoverCardView.initialize(mTabModelSelector);
+                        mTabGroupHoverCardView.hide();
+                    });
         }
     }
 
@@ -504,7 +505,7 @@ public class VerticalTabItemHoverController {
         float railWidthDp = mContainerView.getWidth() / density;
         float minWidthDp = VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP;
         float maxWidthDp = VerticalTabUtils.SIDE_UI_CONTAINER_WIDTH_DP;
-        return TabHoverCardView.getHoverCardDelay(railWidthDp, minWidthDp, maxWidthDp);
+        return HoverCardView.getHoverCardDelay(railWidthDp, minWidthDp, maxWidthDp);
     }
 
     private void scheduleOrShowHoverCard(View view, Runnable showRunnable) {
@@ -570,7 +571,7 @@ public class VerticalTabItemHoverController {
         if (mTabGroupHoverCardView == null) return;
 
         // Bind group content first so child views are populated before measuring height.
-        if (!mTabGroupHoverCardPresenter.bindData(mTabGroupHoverCardView, tabGroupId)) {
+        if (!mTabGroupHoverCardView.bindData(tabGroupId)) {
             return;
         }
 
@@ -626,7 +627,7 @@ public class VerticalTabItemHoverController {
     static float[] getHoverCardPosition(
             View anchorView,
             View containerView,
-            View hoverCardView,
+            HoverCardView hoverCardView,
             boolean shouldShowCardBelowTab) {
         // 1. Calculate relative coordinates of the anchor view and rail container relative to the
         // hover card's parent container.
@@ -647,7 +648,7 @@ public class VerticalTabItemHoverController {
         // 2. Measure the hover card with exact card width to obtain its height for dynamic content.
         Context context = containerView.getContext();
         Resources resources = context.getResources();
-        int cardWidth = TabHoverCardView.getHoverCardWidthPx(context);
+        int cardWidth = HoverCardView.getHoverCardWidthPx(context);
         hoverCardView.measure(
                 View.MeasureSpec.makeMeasureSpec(cardWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));

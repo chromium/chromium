@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.HoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.ui.base.LocalizationUtils;
@@ -198,14 +199,14 @@ public class StripTabHoverCardPositionUnitTest {
         assertEquals(
                 "Card width within small window is incorrect.",
                 Math.round(0.9f * (mHoverCardWidth - 1)),
-                TabHoverCardView.getHoverCardWidthPx(mContext));
+                HoverCardView.getHoverCardWidthPx(mContext));
 
         // Set window width to be big enough to accommodate the default card width.
         mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth * 2);
         assertEquals(
                 "Card width within big window is incorrect.",
                 mHoverCardWidth,
-                TabHoverCardView.getHoverCardWidthPx(mContext));
+                HoverCardView.getHoverCardWidthPx(mContext));
     }
 
     @Test

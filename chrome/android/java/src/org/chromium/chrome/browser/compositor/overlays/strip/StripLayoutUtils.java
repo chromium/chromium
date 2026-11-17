@@ -24,7 +24,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
+import org.chromium.chrome.browser.tasks.tab_management.HoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -491,7 +491,7 @@ public class StripLayoutUtils {
     /**
      * Get the x and y coordinates of the position of the hover card, in px.
      *
-     * @param hoverCardView The hover card {@link View} being positioned.
+     * @param hoverCardView The {@link HoverCardView} being positioned.
      * @param isActiveTab Whether the tab is the active tab, {@code true} if the hovered tab is also
      *     the active tab, {@code false} otherwise.
      * @param tabX The tab x-position to compute hover card positioning.
@@ -503,7 +503,7 @@ public class StripLayoutUtils {
      */
     @VisibleForTesting
     public static float[] getHoverCardPosition(
-            View hoverCardView,
+            HoverCardView hoverCardView,
             boolean isActiveTab,
             float tabX,
             float tabWidth,
@@ -517,7 +517,7 @@ public class StripLayoutUtils {
         float windowWidthDp = windowWidthPx / displayDensity;
 
         // 2. Determine the hover card width.
-        int maxCardWidthPx = TabHoverCardView.getHoverCardWidthPx(context);
+        int maxCardWidthPx = HoverCardView.getHoverCardWidthPx(context);
         hoverCardView.measure(
                 View.MeasureSpec.makeMeasureSpec(maxCardWidthPx, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -15,18 +17,40 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.List;
 
 /** Unit tests for {@link TabGroupHoverCardView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupHoverCardViewUnitTest {
+    private static final Token TAB_GROUP_ID = new Token(1L, 2L);
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
+
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
+
     private Activity mActivity;
     private TabGroupHoverCardView mHoverCardView;
 
@@ -45,6 +69,12 @@ public class TabGroupHoverCardViewUnitTest {
                                         root,
                                         /* attachToRoot= */ false);
         root.addView(mHoverCardView);
+
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
+        when(mTab1.getTitle()).thenReturn("Tab 1");
+        when(mTab2.getTitle()).thenReturn("Tab 2");
     }
 
     @Test
@@ -97,18 +127,47 @@ public class TabGroupHoverCardViewUnitTest {
                 /* isIncognito= */ true);
         mHoverCardView.show(/* x= */ 0f, /* y= */ 0f);
 
+        assertHoverCardColors(/* isIncognito= */ true);
+    }
+
+    @Test
+    public void testInitialize() {
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
+        mHoverCardView.initialize(mTabModelSelector);
+        assertHoverCardColors(/* isIncognito= */ true);
+
+        TabModel standardTabModel = mock(TabModel.class);
+        TabModel incognitoTabModel = mock(TabModel.class);
+        when(standardTabModel.isIncognitoBranded()).thenReturn(false);
+        when(incognitoTabModel.isIncognitoBranded()).thenReturn(true);
+
+        mTabModelSupplier.set(standardTabModel);
+        assertHoverCardColors(/* isIncognito= */ false);
+
+        mTabModelSupplier.set(incognitoTabModel);
+        assertHoverCardColors(/* isIncognito= */ true);
+    }
+
+    @Test
+    public void testBindData_withToken() {
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Token Group");
+
+        assertFalse(mHoverCardView.bindData(TAB_GROUP_ID));
+
+        mHoverCardView.initialize(mTabModelSelector);
+        assertFalse(mHoverCardView.bindData(/* tabGroupId= */ null));
+        assertTrue(mHoverCardView.bindData(TAB_GROUP_ID));
+
         assertEquals(
-                TabUiThemeProvider.getTabHoverCardTextColorPrimary(
-                        mActivity, /* isIncognito= */ true),
-                mHoverCardView.getGroupTitleViewForTesting().getCurrentTextColor());
-        assertEquals(
-                TabUiThemeProvider.getTabHoverCardTextColorSecondary(
-                        mActivity, /* isIncognito= */ true),
-                mHoverCardView.getChildTabViewsForTesting()[0].getCurrentTextColor());
-        assertEquals(
-                TabUiThemeProvider.getTabHoverCardBackgroundTintList(
-                        mActivity, /* isIncognito= */ true),
-                mHoverCardView.getBackgroundTintListForTesting());
+                "Token Group", mHoverCardView.getGroupTitleViewForTesting().getText().toString());
+        TextView[] childViews = mHoverCardView.getChildTabViewsForTesting();
+        assertEquals(View.VISIBLE, childViews[0].getVisibility());
+        assertEquals("• Tab 1", childViews[0].getText().toString());
+        assertEquals(View.VISIBLE, childViews[1].getVisibility());
+        assertEquals("• Tab 2", childViews[1].getText().toString());
+        assertEquals(View.GONE, childViews[2].getVisibility());
+        assertEquals(View.GONE, mHoverCardView.getGroupExcessTabsViewForTesting().getVisibility());
     }
 
     @Test
@@ -141,13 +200,24 @@ public class TabGroupHoverCardViewUnitTest {
 
     @Test
     public void testDestroy() {
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+        mHoverCardView.initialize(mTabModelSelector);
+        assertTrue(mHoverCardView.bindData(TAB_GROUP_ID));
+        mHoverCardView.show(/* x= */ 10f, /* y= */ 20f);
+        assertTrue(mHoverCardView.isShowing());
+        assertTrue(mHoverCardView.isShown());
+        assertTrue(mTabModelSupplier.hasObservers());
+
         mHoverCardView.destroy();
+        assertFalse(mHoverCardView.isShowing());
         assertFalse(mHoverCardView.isShown());
+        assertFalse(mTabModelSupplier.hasObservers());
+        assertFalse(mHoverCardView.bindData(TAB_GROUP_ID));
     }
 
     @Test
     public void testOnMeasure_respectsMinAndMaxWidth() {
-        int expectedMaxWidth = TabHoverCardView.getHoverCardWidthPx(mActivity);
+        int expectedMaxWidth = HoverCardView.getHoverCardWidthPx(mActivity);
         int minContentWidth =
                 mActivity
                         .getResources()
@@ -179,5 +249,17 @@ public class TabGroupHoverCardViewUnitTest {
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         assertEquals(expectedMaxWidth, mHoverCardView.getMeasuredWidth());
+    }
+
+    private void assertHoverCardColors(boolean isIncognito) {
+        assertEquals(
+                TabUiThemeProvider.getTabHoverCardTextColorPrimary(mActivity, isIncognito),
+                mHoverCardView.getGroupTitleViewForTesting().getCurrentTextColor());
+        assertEquals(
+                TabUiThemeProvider.getTabHoverCardTextColorSecondary(mActivity, isIncognito),
+                mHoverCardView.getChildTabViewsForTesting()[0].getCurrentTextColor());
+        assertEquals(
+                TabUiThemeProvider.getTabHoverCardBackgroundTintList(mActivity, isIncognito),
+                mHoverCardView.getBackgroundTintList());
     }
 }
