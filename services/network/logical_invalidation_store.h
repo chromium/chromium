@@ -53,9 +53,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) LogicalInvalidationStore {
             base::OnceClosure callback = base::OnceClosure());
 
  private:
-  void OnLoaded(base::TimeTicks load_start_time,
-                LoadCallback callback,
-                std::pair<LoadResult, InvalidationFilterVector> result);
+  void OnLoaded(LoadCallback callback,
+                LoadResult load_result,
+                InvalidationFilterVector filters,
+                base::TimeDelta load_duration);
   void OnSaved(base::OnceClosure callback,
                std::pair<bool, base::TimeDelta> result);
 

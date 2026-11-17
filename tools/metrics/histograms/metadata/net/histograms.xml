@@ -4145,10 +4145,14 @@ chromium-metrics-reviews@google.com.
   <owner>deepakr@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
-    The time taken to asynchronously load and deserialize logical HTTP cache
-    invalidation filters from persistent disk storage via background thread.
-    Recorded once at NetworkContext startup when initializing the
-    LogicalInvalidationStore. From M160, this metric is only recorded when
+    The time taken on the background thread to synchronously read and
+    deserialize logical HTTP cache invalidation filters from persistent disk
+    storage. Recorded once at NetworkContext startup when
+    LogicalInvalidationStore successfully loads filters from disk; missing or
+    corrupt files are counted by Net.HttpCache.LogicalInvalidation.LoadResult
+    instead. From M160, this metric only measures synchronous background-thread
+    duration (prior to M160, it measured end-to-end async load duration across
+    all load outcomes) and is only recorded when
     net::features::kLogicalClearHttpCache is enabled.
   </summary>
 </histogram>

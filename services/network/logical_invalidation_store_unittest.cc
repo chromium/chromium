@@ -142,7 +142,7 @@ TEST_F(LogicalInvalidationStoreTest, LoadFileNotFound) {
   EXPECT_TRUE(loaded.empty());
 
   histogram_tester_.ExpectTotalCount(
-      "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration", 1);
+      "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration", 0);
   histogram_tester_.ExpectUniqueSample(
       "Net.HttpCache.LogicalInvalidation.LoadResult",
       static_cast<int>(LogicalInvalidationStore::LoadResult::kFileNotFound), 1);
@@ -166,7 +166,7 @@ TEST_F(LogicalInvalidationStoreTest, LoadCorruptFile) {
   EXPECT_TRUE(loaded.empty());
 
   histogram_tester_.ExpectTotalCount(
-      "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration", 1);
+      "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration", 0);
   histogram_tester_.ExpectUniqueSample(
       "Net.HttpCache.LogicalInvalidation.LoadResult",
       static_cast<int>(LogicalInvalidationStore::LoadResult::kCorrupt), 1);
@@ -197,7 +197,7 @@ TEST_F(LogicalInvalidationStoreTest, LoadTrailingGarbageFile) {
   EXPECT_TRUE(loaded.empty());
 
   histogram_tester_.ExpectTotalCount(
-      "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration", 1);
+      "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration", 0);
   histogram_tester_.ExpectUniqueSample(
       "Net.HttpCache.LogicalInvalidation.LoadResult",
       static_cast<int>(LogicalInvalidationStore::LoadResult::kCorrupt), 1);

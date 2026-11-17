@@ -4,11 +4,16 @@
 
 #include "services/network/logical_invalidation_store.h"
 
+#include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
@@ -45,28 +50,42 @@ std::pair<bool, base::TimeDelta> SerializeAndWriteInvalidationFiltersFile(
   return {success, timer.Elapsed()};
 }
 
-std::pair<LogicalInvalidationStore::LoadResult,
-          LogicalInvalidationStore::InvalidationFilterVector>
+// Returns the load result, loaded filters on success, and how long the attempt
+// took.
+std::tuple<LogicalInvalidationStore::LoadResult,
+           LogicalInvalidationStore::InvalidationFilterVector,
+           base::TimeDelta>
 LoadInvalidationFiltersFile(const base::FilePath& path) {
-  std::optional<std::vector<uint8_t>> data = base::ReadFileToBytes(path);
-  if (!data) {
-    if (!base::PathExists(path)) {
-      return {LogicalInvalidationStore::LoadResult::kFileNotFound, {}};
+  base::ElapsedTimer timer;
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
+    if (file.error_details() == base::File::FILE_ERROR_NOT_FOUND) {
+      return {LogicalInvalidationStore::LoadResult::kFileNotFound,
+              {},
+              timer.Elapsed()};
     }
-    return {LogicalInvalidationStore::LoadResult::kCorrupt, {}};
+    return {
+        LogicalInvalidationStore::LoadResult::kCorrupt, {}, timer.Elapsed()};
   }
-  base::Pickle pickle = base::Pickle::WithData(base::span(*data));
+  base::ScopedFILE stream(base::FileToFILE(std::move(file), "rb"));
+  std::string data;
+  if (!stream || !base::ReadStreamToString(stream.get(), &data)) {
+    return {
+        LogicalInvalidationStore::LoadResult::kCorrupt, {}, timer.Elapsed()};
+  }
+  base::Pickle pickle = base::Pickle::WithData(base::as_byte_span(data));
   base::PickleIterator iter(pickle);
   auto maybe_filters = net::ReadValueFromPickle<
       LogicalInvalidationStore::InvalidationFilterVector>(iter);
   if (!maybe_filters || !iter.ReachedEnd()) {
-    return {LogicalInvalidationStore::LoadResult::kCorrupt, {}};
+    return {
+        LogicalInvalidationStore::LoadResult::kCorrupt, {}, timer.Elapsed()};
   }
   for (auto& filter : *maybe_filters) {
     filter.was_loaded_from_disk = true;
   }
   return {LogicalInvalidationStore::LoadResult::kSuccess,
-          std::move(*maybe_filters)};
+          std::move(*maybe_filters), timer.Elapsed()};
 }
 
 }  // namespace
@@ -89,26 +108,27 @@ void LogicalInvalidationStore::Load(LoadCallback callback) {
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&LoadInvalidationFiltersFile, file_path_),
       base::BindOnce(&LogicalInvalidationStore::OnLoaded,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void LogicalInvalidationStore::OnLoaded(
-    base::TimeTicks load_start_time,
-    LoadCallback callback,
-    std::pair<LoadResult, InvalidationFilterVector> result) {
+void LogicalInvalidationStore::OnLoaded(LoadCallback callback,
+                                        LoadResult load_result,
+                                        InvalidationFilterVector filters,
+                                        base::TimeDelta load_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramTimes(
-      "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration",
-      base::TimeTicks::Now() - load_start_time);
   base::UmaHistogramEnumeration("Net.HttpCache.LogicalInvalidation.LoadResult",
-                                result.first);
-  if (result.first == LoadResult::kSuccess) {
+                                load_result);
+  // Only time successful loads. Missing or corrupt files bail out before
+  // reading or deserializing completes, so their duration would skew the
+  // distribution.
+  if (load_result == LoadResult::kSuccess) {
+    base::UmaHistogramTimes(
+        "Net.HttpCache.LogicalInvalidation.PersistenceLoadDuration",
+        load_duration);
     base::UmaHistogramCounts100(
-        "Net.HttpCache.LogicalInvalidation.LoadedFilterCount",
-        result.second.size());
+        "Net.HttpCache.LogicalInvalidation.LoadedFilterCount", filters.size());
   }
-  std::move(callback).Run(result.first, std::move(result.second));
+  std::move(callback).Run(load_result, std::move(filters));
 }
 
 void LogicalInvalidationStore::Save(const InvalidationFilterVector& filters,
