@@ -119,6 +119,7 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
   void Render(const base::UnguessableToken& clipboard_history_item_id,
               const std::string& markup,
               const gfx::Size& bounding_box_size,
+              const std::optional<ui::DataTransferEndpoint>& data_src,
               ImageModelCallback callback) override {
     // Return a dummy image as the render result.
     std::move(callback).Run(

@@ -49,6 +49,7 @@ IN_PROC_BROWSER_TEST_F(ChromeShellDelegateBrowserTest,
   bool callback_ran = false;
   factory->Render(
       token, "<img>test</img>", gfx::Size(100, 100),
+      /*data_src=*/std::nullopt,
       base::BindOnce([](bool* ran, ui::ImageModel model) { *ran = true; },
                      &callback_ran));
 

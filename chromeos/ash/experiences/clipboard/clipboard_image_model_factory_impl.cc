@@ -20,12 +20,14 @@ ClipboardImageModelFactoryImpl::ClipboardImageModelFactoryImpl()
 
 ClipboardImageModelFactoryImpl::~ClipboardImageModelFactoryImpl() = default;
 
-void ClipboardImageModelFactoryImpl::Render(const base::UnguessableToken& id,
-                                            const std::string& html_markup,
-                                            const gfx::Size& bounding_box_size,
-                                            ImageModelCallback callback) {
+void ClipboardImageModelFactoryImpl::Render(
+    const base::UnguessableToken& id,
+    const std::string& html_markup,
+    const gfx::Size& bounding_box_size,
+    const std::optional<ui::DataTransferEndpoint>& data_src,
+    ImageModelCallback callback) {
   DCHECK(!html_markup.empty());
-  pending_list_.emplace_front(id, html_markup, bounding_box_size,
+  pending_list_.emplace_front(id, html_markup, bounding_box_size, data_src,
                               std::move(callback));
   StartNextRequest();
 }
@@ -71,14 +73,13 @@ void ClipboardImageModelFactoryImpl::Deactivate() {
     return;
   }
 
-  if ((!request_ || !request_->IsModifyingClipboard())) {
+  if (!request_ || !request_->IsRunningRequest()) {
     return;
   }
 
-  // Stop the currently running request if it is modifying the clipboard.
-  // ClipboardImageModelFactory is `Deactivate()`-ed prior to the user pasting
-  // and a modified clipboard could interfere with pasting from
-  // ClipboardHistory.
+  // Stop the currently running request. ClipboardImageModelFactory is
+  // `Deactivate()`-ed prior to the user pasting and a running request could
+  // modify the clipboard and interfere with pasting from ClipboardHistory.
   pending_list_.emplace_front(request_->StopAndGetParams());
 }
 

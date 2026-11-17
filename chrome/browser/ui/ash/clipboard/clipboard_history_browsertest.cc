@@ -18,6 +18,7 @@
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -1466,7 +1467,10 @@ class FakeDataTransferPolicyController
       base::optional_ref<const ui::DataTransferEndpoint> data_dst,
       std::variant<size_t, std::vector<base::FilePath>> pasted_content,
       content::RenderFrameHost* rfh,
-      base::OnceCallback<void(bool)> callback) override {}
+      base::OnceCallback<void(bool)> callback) override {
+    std::move(callback).Run(
+        IsClipboardReadAllowed(data_src, data_dst, std::nullopt));
+  }
 
   void DropIfAllowed(std::optional<ui::DataTransferEndpoint> data_src,
                      std::optional<ui::DataTransferEndpoint> data_dst,
@@ -1490,6 +1494,16 @@ class ClipboardHistoryWithMockDLPBrowserTest
   void SetReadBlockedCallback(base::OnceClosure callback) {
     data_transfer_policy_controller_->SetReadBlockedCallback(
         std::move(callback));
+  }
+
+  void DeletePolicyControllerInstance() {
+    std::ignore = data_transfer_policy_controller_.release();
+    ui::DataTransferPolicyController::DeleteInstance();
+  }
+
+  void RecreatePolicyControllerInstance() {
+    data_transfer_policy_controller_ =
+        std::make_unique<FakeDataTransferPolicyController>();
   }
 
   // Write text into the clipboard buffer and it should be inaccessible from
@@ -1561,6 +1575,111 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest, Basics) {
   // Verify that the text is not pasted and menu is closed after click.
   EXPECT_EQ("", base::UTF16ToUTF8(textfield_->GetText()));
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+}
+
+// Verifies that ScopedClipboardModifier preserves the clipboard history item's
+// data source endpoint so DLP restrictions remain enforced while HTML previews
+// are being rendered, and that deactivating the factory stops any in-flight
+// render request.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest,
+                       HtmlPreviewPreservesDataSourceAndStopsOnDeactivate) {
+  SetClipboardTextWithAccessibleSrc("A");
+
+  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  ASSERT_TRUE(clipboard);
+  ui::DataTransferEndpoint history_dst(ui::EndpointType::kClipboardHistory);
+  ui::DataTransferEndpoint external_dst(GURL("https://www.other.com"));
+  EXPECT_NE(nullptr, clipboard->GetClipboardData(&external_dst));
+
+  const ui::DataTransferEndpoint restricted_src(
+      GURL("https://restricted.example.com"));
+  {
+    ClipboardImageModelRequest::ScopedClipboardModifier modifier(
+        "<table>secret</table>", restricted_src);
+
+    const ui::ClipboardData* modified_data =
+        clipboard->GetClipboardData(&history_dst);
+    ASSERT_NE(nullptr, modified_data);
+    EXPECT_EQ("<table>secret</table>", modified_data->markup_data());
+    ASSERT_TRUE(modified_data->source().has_value());
+    EXPECT_EQ(restricted_src, *modified_data->source());
+    EXPECT_EQ(nullptr, clipboard->GetClipboardData(&external_dst));
+  }
+
+  const ui::ClipboardData* restored_data =
+      clipboard->GetClipboardData(&external_dst);
+  ASSERT_NE(nullptr, restored_data);
+  EXPECT_EQ("A", restored_data->text());
+
+  // Verify that ScopedClipboardModifier replaces the clipboard data when the
+  // HTML markup matches the current clipboard markup but the data source
+  // differs.
+  const ui::DataTransferEndpoint accessible_src{GURL(kUrlString)};
+  {
+    ui::ScopedClipboardWriter(
+        ui::ClipboardBuffer::kCopyPaste,
+        std::make_unique<ui::DataTransferEndpoint>(accessible_src))
+        .WriteHTML(u"<table>secret</table>", /*source_url=*/"");
+    WaitForOperationConfirmed(/*success_expected=*/true);
+  }
+  EXPECT_NE(nullptr, clipboard->GetClipboardData(&external_dst));
+  {
+    ClipboardImageModelRequest::ScopedClipboardModifier modifier(
+        "<table>secret</table>", restricted_src);
+    const ui::ClipboardData* modified_data =
+        clipboard->GetClipboardData(&history_dst);
+    ASSERT_NE(nullptr, modified_data);
+    ASSERT_TRUE(modified_data->source().has_value());
+    EXPECT_EQ(restricted_src, *modified_data->source());
+    EXPECT_EQ(nullptr, clipboard->GetClipboardData(&external_dst));
+  }
+  EXPECT_NE(nullptr, clipboard->GetClipboardData(&external_dst));
+
+  // Verify that calling DataTransferPolicyController::DeleteInstance() while
+  // ScopedClipboardModifier is alive deletes only the base controller instance.
+  {
+    ClipboardImageModelRequest::ScopedClipboardModifier modifier(
+        "<table>secret</table>", restricted_src,
+        GURL("data:text/html;base64,abc"));
+    EXPECT_TRUE(ui::DataTransferPolicyController::HasInstance());
+    DeletePolicyControllerInstance();
+    EXPECT_FALSE(ui::DataTransferPolicyController::HasInstance());
+    EXPECT_EQ(nullptr, ui::DataTransferPolicyController::Get());
+  }
+  RecreatePolicyControllerInstance();
+  EXPECT_TRUE(ui::DataTransferPolicyController::HasInstance());
+
+  SetClipboardTextWithAccessibleSrc("A");
+
+  auto* factory = ash::ClipboardImageModelFactory::Get();
+  ASSERT_TRUE(factory);
+  factory->CancelAllRequests();
+
+  base::HistogramTester histogram_tester;
+  factory->Activate();
+
+  base::test::TestFuture<ui::ImageModel> rendered_image;
+  factory->Render(base::UnguessableToken::Create(),
+                  "<table><tr><td>secret</td></tr></table>",
+                  gfx::Size(100, 100), restricted_src,
+                  rendered_image.GetCallback());
+  EXPECT_FALSE(rendered_image.Get().IsEmpty());
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ImageModelRequest.StopReason",
+      ClipboardImageModelRequest::RequestStopReason::kFulfilled, 1);
+
+  const ui::ClipboardData* post_render_data =
+      clipboard->GetClipboardData(&external_dst);
+  ASSERT_NE(nullptr, post_render_data);
+  EXPECT_EQ("A", post_render_data->text());
+
+  factory->Render(base::UnguessableToken::Create(), "<table>secret</table>",
+                  gfx::Size(100, 100), restricted_src, base::DoNothing());
+  factory->Deactivate();
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ImageModelRequest.StopReason",
+      ClipboardImageModelRequest::RequestStopReason::kRequestCanceled, 1);
+  factory->CancelAllRequests();
 }
 
 // The test base used to check the clipboard history refresh feature on an Ash

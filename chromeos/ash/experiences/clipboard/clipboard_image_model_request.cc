@@ -5,12 +5,18 @@
 #include "chromeos/ash/experiences/clipboard/clipboard_image_model_request.h"
 
 #include <memory>
+#include <utility>
+#include <variant>
+#include <vector>
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/scoped_clipboard_history_pause.h"
 #include "base/base64.h"
+#include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
@@ -23,7 +29,9 @@
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -54,15 +62,98 @@ content::BrowserContext* GetBrowserContextByAccountId(
 
 }  // namespace
 
+// Temporarily treats clipboard reads and pastes targeting the offscreen
+// preview WebView's `data_url` as `ui::EndpointType::kClipboardHistory` so
+// `WebContents::Paste()` can render the HTML preview while external
+// destinations remain subject to DLP restrictions on `data_src`.
+class ClipboardImageModelRequest::ScopedClipboardModifier::ScopedPolicyOverride
+    : public ui::DataTransferPolicyController {
+ public:
+  explicit ScopedPolicyOverride(const GURL& data_url) : data_url_(data_url) {}
+  ScopedPolicyOverride(const ScopedPolicyOverride&) = delete;
+  ScopedPolicyOverride& operator=(const ScopedPolicyOverride&) = delete;
+  ~ScopedPolicyOverride() override = default;
+
+  // ui::DataTransferPolicyController:
+  bool IsClipboardReadAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      std::optional<size_t> size) override {
+    auto* underlying_controller = GetParentController();
+    if (!underlying_controller) {
+      return true;
+    }
+    if (IsPreviewDestination(data_dst)) {
+      const ui::DataTransferEndpoint history_dst(
+          ui::EndpointType::kClipboardHistory);
+      return underlying_controller->IsClipboardReadAllowed(data_src,
+                                                           history_dst, size);
+    }
+    return underlying_controller->IsClipboardReadAllowed(data_src, data_dst,
+                                                         size);
+  }
+
+  void PasteIfAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      std::variant<size_t, std::vector<base::FilePath>> pasted_content,
+      content::RenderFrameHost* rfh,
+      base::OnceCallback<void(bool)> paste_cb) override {
+    auto* underlying_controller = GetParentController();
+    if (!underlying_controller) {
+      std::move(paste_cb).Run(true);
+      return;
+    }
+    if (IsPreviewDestination(data_dst)) {
+      const ui::DataTransferEndpoint history_dst(
+          ui::EndpointType::kClipboardHistory);
+      underlying_controller->PasteIfAllowed(data_src, history_dst,
+                                            std::move(pasted_content), rfh,
+                                            std::move(paste_cb));
+      return;
+    }
+    underlying_controller->PasteIfAllowed(data_src, data_dst,
+                                          std::move(pasted_content), rfh,
+                                          std::move(paste_cb));
+  }
+
+  void DropIfAllowed(std::optional<ui::DataTransferEndpoint> data_src,
+                     std::optional<ui::DataTransferEndpoint> data_dst,
+                     std::optional<std::vector<ui::FileInfo>> filenames,
+                     base::OnceClosure drop_cb) override {
+    auto* underlying_controller = GetParentController();
+    if (!underlying_controller) {
+      std::move(drop_cb).Run();
+      return;
+    }
+    underlying_controller->DropIfAllowed(
+        std::move(data_src), std::move(data_dst), std::move(filenames),
+        std::move(drop_cb));
+  }
+
+ private:
+  bool IsPreviewDestination(
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) const {
+    return data_url_.is_valid() && data_dst.has_value() &&
+           data_dst->IsUrlType() && data_dst->GetURL() &&
+           *data_dst->GetURL() == data_url_;
+  }
+
+  const GURL data_url_;
+};
+
 // ClipboardImageModelFactory::Params: -----------------------------------------
 
-ClipboardImageModelRequest::Params::Params(const base::UnguessableToken& id,
-                                           const std::string& html_markup,
-                                           const gfx::Size& bounding_box_size,
-                                           ImageModelCallback callback)
+ClipboardImageModelRequest::Params::Params(
+    const base::UnguessableToken& id,
+    const std::string& html_markup,
+    const gfx::Size& bounding_box_size,
+    std::optional<ui::DataTransferEndpoint> data_src,
+    ImageModelCallback callback)
     : id(id),
       html_markup(html_markup),
       bounding_box_size(bounding_box_size),
+      data_src(std::move(data_src)),
       callback(std::move(callback)) {}
 
 ClipboardImageModelRequest::Params::Params(Params&&) = default;
@@ -84,13 +175,21 @@ ClipboardImageModelRequest::TestParams::~TestParams() = default;
 // ClipboardImageModelRequest------------- -------------------------------------
 
 ClipboardImageModelRequest::ScopedClipboardModifier::ScopedClipboardModifier(
-    const std::string& html_markup) {
+    const std::string& html_markup,
+    std::optional<ui::DataTransferEndpoint> data_src,
+    const GURL& data_url) {
+  if (ui::DataTransferPolicyController::HasInstance()) {
+    policy_override_ = std::make_unique<ScopedPolicyOverride>(data_url);
+  }
+
   auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   const auto* current_data = clipboard->GetClipboardData(&data_dst);
 
-  // No need to replace the clipboard contents if the markup is the same.
-  if (current_data && (html_markup == current_data->markup_data())) {
+  // No need to replace the clipboard contents if the markup and data source are
+  // the same.
+  if (current_data && html_markup == current_data->markup_data() &&
+      data_src == current_data->source()) {
     return;
   }
 
@@ -102,6 +201,7 @@ ClipboardImageModelRequest::ScopedClipboardModifier::ScopedClipboardModifier(
   // and will not need to be pasted in this manner.
   auto new_data = std::make_unique<ui::ClipboardData>();
   new_data->set_markup_data(html_markup);
+  new_data->set_source(std::move(data_src));
 
   scoped_clipboard_history_pause_ =
       ash::ClipboardHistoryController::Get()->CreateScopedPause();
@@ -148,6 +248,8 @@ void ClipboardImageModelRequest::Start(Params&& params) {
 
   request_id_ = std::move(params.id);
   html_markup_ = params.html_markup;
+  bounding_box_size_ = params.bounding_box_size;
+  data_src_ = std::move(params.data_src);
   deliver_image_model_callback_ = std::move(params.callback);
 
   timeout_timer_.Start(FROM_HERE, base::Seconds(10), this,
@@ -171,15 +273,11 @@ void ClipboardImageModelRequest::Start(Params&& params) {
 
   std::string encoded_html = base::Base64Encode(html_document);
   constexpr char kDataURIPrefix[] = "data:text/html;base64,";
+  data_url_ = GURL(base::StrCat(
+      {kDataURIPrefix, encoded_html, "#", request_id_.ToString()}));
   web_contents()->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(
-          GURL(kDataURIPrefix + encoded_html)));
+      content::NavigationController::LoadURLParams(data_url_));
   widget_->ShowInactive();
-
-  // Adapt to the render widget host view whose device scale factor is not one.
-  bounding_box_size_ = gfx::ScaleToCeiledSize(
-      params.bounding_box_size,
-      web_contents()->GetRenderWidgetHostView()->GetDeviceScaleFactor());
 }
 
 void ClipboardImageModelRequest::Stop(RequestStopReason stop_reason) {
@@ -194,6 +292,8 @@ void ClipboardImageModelRequest::Stop(RequestStopReason stop_reason) {
   copy_surface_weak_ptr_factory_.InvalidateWeakPtrs();
   timeout_timer_.Stop();
   request_id_ = base::UnguessableToken();
+  data_src_.reset();
+  data_url_ = GURL();
   if (web_contents()) {
     web_contents()->Stop();
   }
@@ -212,13 +312,9 @@ ClipboardImageModelRequest::Params
 ClipboardImageModelRequest::StopAndGetParams() {
   DCHECK(IsRunningRequest());
   Params params(request_id_, html_markup_, bounding_box_size_,
-                std::move(deliver_image_model_callback_));
+                std::move(data_src_), std::move(deliver_image_model_callback_));
   Stop(RequestStopReason::kRequestCanceled);
   return params;
-}
-
-bool ClipboardImageModelRequest::IsModifyingClipboard() const {
-  return scoped_clipboard_modifier_.has_value();
 }
 
 bool ClipboardImageModelRequest::IsRunningRequest(
@@ -254,7 +350,7 @@ void ClipboardImageModelRequest::DidStopLoading() {
   did_stop_loading_ = true;
 
   // Modify the clipboard so `html_markup_` can be pasted into the WebContents.
-  scoped_clipboard_modifier_.emplace(html_markup_);
+  scoped_clipboard_modifier_.emplace(html_markup_, data_src_, data_url_);
 
   web_contents()->GetRenderViewHost()->GetWidget()->InsertVisualStateCallback(
       base::BindOnce(&ClipboardImageModelRequest::OnVisualStateChangeFinished,
@@ -277,9 +373,11 @@ void ClipboardImageModelRequest::DidStopLoading() {
     web_contents()->GetNativeView()->SetBounds(
         gfx::Rect(kAutoResizeModeInitialSize));
   } else {
+    const gfx::Size scaled_bounding_box_size = GetScaledBoundingBoxSize();
     web_contents()->GetRenderWidgetHostView()->DisableAutoResize(
-        bounding_box_size_);
-    web_contents()->GetNativeView()->SetBounds(gfx::Rect(bounding_box_size_));
+        scaled_bounding_box_size);
+    web_contents()->GetNativeView()->SetBounds(
+        gfx::Rect(scaled_bounding_box_size));
   }
 
   // TODO(https://crbug.com/1149556): Clipboard Contents could be overwritten
@@ -371,5 +469,12 @@ bool ClipboardImageModelRequest::ShouldEnableAutoResizeMode() const {
 
   // Use auto resize mode if the copied web content is too big to render.
   return !gfx::Rect(kMaxWebContentsSize)
-              .Contains(gfx::Rect(bounding_box_size_));
+              .Contains(gfx::Rect(GetScaledBoundingBoxSize()));
+}
+
+gfx::Size ClipboardImageModelRequest::GetScaledBoundingBoxSize() const {
+  content::RenderWidgetHostView* rwhv =
+      web_contents() ? web_contents()->GetRenderWidgetHostView() : nullptr;
+  const float scale = rwhv ? rwhv->GetDeviceScaleFactor() : 1.0f;
+  return gfx::ScaleToCeiledSize(bounding_box_size_, scale);
 }

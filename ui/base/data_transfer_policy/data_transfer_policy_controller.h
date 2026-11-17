@@ -83,6 +83,10 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
   DataTransferPolicyController();
   virtual ~DataTransferPolicyController();
 
+  // Returns the controller immediately below `this` on the controller stack,
+  // or nullptr if none exists.
+  DataTransferPolicyController* GetParentController() const;
+
  private:
   // A singleton of DataTransferPolicyController. Equals nullptr when there's
   // not any data transfer restrictions required.

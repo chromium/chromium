@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_CLIPBOARD_IMAGE_MODEL_FACTORY_H_
 #define ASH_PUBLIC_CPP_CLIPBOARD_IMAGE_MODEL_FACTORY_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -13,6 +14,7 @@
 #include "ui/base/models/image_model.h"
 
 namespace ui {
+class DataTransferEndpoint;
 class ImageModel;
 }  // namespace ui
 
@@ -38,6 +40,7 @@ class ASH_PUBLIC_EXPORT ClipboardImageModelFactory {
   virtual void Render(const base::UnguessableToken& id,
                       const std::string& html_markup,
                       const gfx::Size& bounding_box_size,
+                      const std::optional<ui::DataTransferEndpoint>& data_src,
                       ImageModelCallback callback) = 0;
 
   // Called to stop rendering which was requested with |id|.

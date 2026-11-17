@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/clipboard_image_model_factory.h"
@@ -30,6 +31,7 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
   void Render(const base::UnguessableToken& id,
               const std::string& html_markup,
               const gfx::Size& bounding_box_size,
+              const std::optional<ui::DataTransferEndpoint>& data_src,
               ImageModelCallback callback) override;
   void CancelRequest(const base::UnguessableToken& id) override;
   void CancelAllRequests() override;

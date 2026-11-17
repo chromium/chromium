@@ -66,7 +66,8 @@ void ClipboardHistoryResourceManager::SetOrRequestHtmlPreview(
     return &existing != &item &&
            existing.display_format() ==
                chromeos::clipboard_history::DisplayFormat::kHtml &&
-           existing.data().markup_data() == item.data().markup_data();
+           existing.data().markup_data() == item.data().markup_data() &&
+           existing.data().source() == item.data().source();
   });
 
   // If no existing item will render the same as `item`, create a new request to
@@ -99,6 +100,7 @@ void ClipboardHistoryResourceManager::SetOrRequestHtmlPreview(
         id, item.data().markup_data(),
         IsRectContainedByAnyDisplay(bounding_box) ? bounding_box.size()
                                                   : gfx::Size(),
+        item.data().source(),
         base::BindOnce(&ClipboardHistoryResourceManager::OnImageModelRendered,
                        weak_factory_.GetWeakPtr(), id));
     return;

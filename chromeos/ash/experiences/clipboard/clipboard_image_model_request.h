@@ -16,7 +16,9 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/models/image_model.h"
+#include "url/gurl.h"
 
 class AccountId;
 
@@ -47,6 +49,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
     Params(const base::UnguessableToken& id,
            const std::string& html_markup,
            const gfx::Size& bounding_box_size,
+           std::optional<ui::DataTransferEndpoint> data_src,
            ImageModelCallback request_finished_callback);
     Params(Params&&);
     Params& operator=(Params&&);
@@ -61,6 +64,9 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
     // original page. It is used to calculate the size of the HTML preview image
     // shown on the clipboard history menu.
     gfx::Size bounding_box_size;
+
+    // Source of the clipboard data being rendered.
+    std::optional<ui::DataTransferEndpoint> data_src;
 
     // The callback to return the results of the request. Not called if the
     // request is stopped via Stop(), or if timeout occurs.
@@ -93,12 +99,17 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // contents when destructed.
   class ScopedClipboardModifier {
    public:
-    explicit ScopedClipboardModifier(const std::string& html_markup);
+    ScopedClipboardModifier(const std::string& html_markup,
+                            std::optional<ui::DataTransferEndpoint> data_src,
+                            const GURL& data_url = GURL());
     ScopedClipboardModifier(const ScopedClipboardModifier&) = delete;
     ScopedClipboardModifier& operator=(const ScopedClipboardModifier&) = delete;
     ~ScopedClipboardModifier();
 
    private:
+    class ScopedPolicyOverride;
+
+    std::unique_ptr<ScopedPolicyOverride> policy_override_;
     // Pauses ash::ClipboardHistory for its lifetime.
     std::unique_ptr<ash::ScopedClipboardHistoryPause>
         scoped_clipboard_history_pause_;
@@ -137,9 +148,6 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // `Stop()`s the request and gets the params of the running request.
   Params StopAndGetParams();
 
-  // Whether the clipboard is being modified by this request.
-  bool IsModifyingClipboard() const;
-
   // Returns whether a request with |request_id| is running, or if any request
   // is running if no |request_id| is supplied.
   bool IsRunningRequest(
@@ -177,6 +185,10 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // from that of the original selection region.
   bool ShouldEnableAutoResizeMode() const;
 
+  // Returns `bounding_box_size_` scaled by the WebContents' device scale
+  // factor.
+  gfx::Size GetScaledBoundingBoxSize() const;
+
   // A Widget that is not shown, but forces |web_view_| to render.
   std::unique_ptr<views::Widget> const widget_;
 
@@ -190,8 +202,15 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // The HTML being rendered.
   std::string html_markup_;
 
-  // The size of the rectangle enclosing the copied HTML on the original page.
+  // The unscaled DIP size of the rectangle enclosing the copied HTML on the
+  // original page.
   gfx::Size bounding_box_size_;
+
+  // Source of the clipboard data being rendered.
+  std::optional<ui::DataTransferEndpoint> data_src_;
+
+  // Data URL loaded in `web_view_` for the active request.
+  GURL data_url_;
 
   // Whether `DidStopLoading()` was called. Used to prevent the request from
   // responding to load events that happen after the initial load.
