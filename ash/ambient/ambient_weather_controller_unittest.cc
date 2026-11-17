@@ -5,17 +5,41 @@
 #include "ash/ambient/ambient_weather_controller.h"
 
 #include "ash/ambient/model/ambient_weather_model.h"
+#include "ash/ambient/model/ambient_weather_model_observer.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+namespace {
+
+// Waits for the next `AmbientWeatherModelObserver::OnWeatherInfoUpdated()`.
+class WeatherInfoUpdatedWaiter : public AmbientWeatherModelObserver {
+ public:
+  explicit WeatherInfoUpdatedWaiter(AmbientWeatherModel* model) {
+    observation_.Observe(model);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // AmbientWeatherModelObserver:
+  void OnWeatherInfoUpdated() override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<AmbientWeatherModel, AmbientWeatherModelObserver>
+      observation_{this};
+};
+
+}  // namespace
 
 class AmbientWeatherControllerTest : public AmbientAshTestBase {
  public:
@@ -39,8 +63,9 @@ TEST_F(AmbientWeatherControllerTest, RefreshesWeather) {
   // Check location permission is granted.
   EXPECT_TRUE(IsGeolocationUsageAllowed());
 
+  WeatherInfoUpdatedWaiter waiter(model);
   auto weather_refresher = weather_controller()->CreateScopedRefresher();
-  base::RunLoop().RunUntilIdle();
+  waiter.Wait();
 
   EXPECT_TRUE(model->show_celsius());
   EXPECT_FALSE(model->weather_condition_icon().isNull());
@@ -87,7 +112,6 @@ TEST_F(AmbientWeatherControllerTest, RespectsSystemLocationPermission) {
   EXPECT_FALSE(IsGeolocationUsageAllowed());
 
   auto weather_refresher = weather_controller()->CreateScopedRefresher();
-  base::RunLoop().RunUntilIdle();
   // Check against the default values of `AmbientWeatherModel`.
   EXPECT_TRUE(model->show_celsius());
   EXPECT_TRUE(model->weather_condition_icon().isNull());
@@ -134,7 +158,6 @@ TEST_F(AmbientWeatherControllerTest, DisabledByPolicy) {
 
   // No weather should be fetched when policy is disabled.
   auto weather_refresher = weather_controller()->CreateScopedRefresher();
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(backend_controller()->fetch_weather_count(), 0);
 
   // Enable weather integration by policy.
