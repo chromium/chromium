@@ -1614,6 +1614,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.SIMDUTF_TEXT_CODEC_UTF8_DECODE,
                 "When enabled, parses the HTML UTF-8 text with simdutf"),
+        Flag.baseFeature(
+                "V8Flag_always_specialize_for_script_context",
+                "Auto-generated flag for V8Flag_always_specialize_for_script_context."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
