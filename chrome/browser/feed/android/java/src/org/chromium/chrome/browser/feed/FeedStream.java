@@ -56,8 +56,6 @@ import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityL
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -180,17 +178,15 @@ public class FeedStream implements Stream {
             mBridge.reportOtherUserAction(FeedUserActionType.OPENED_CONTEXT_MENU);
 
             // Make a sheetContent with the view.
-            mBottomSheetContent = new CardMenuBottomSheetContent(view);
+            mBottomSheetContent =
+                    new CardMenuBottomSheetContent(
+                            view,
+                            () -> {
+                                actionSourceView.requestFocus();
+                                actionSourceView.sendAccessibilityEvent(
+                                        AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                            });
             mBottomSheetOriginatingSliceId = getSliceIdFromView(actionSourceView);
-            mBottomSheetController.addObserver(
-                    new BottomSheetObserver() {
-                        @Override
-                        public void onSheetClosed(@StateChangeReason int reason) {
-                            actionSourceView.requestFocus();
-                            actionSourceView.sendAccessibilityEvent(
-                                    AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                        }
-                    });
             mBottomSheetController.requestShowContent(mBottomSheetContent, true);
         }
 

@@ -21,9 +21,17 @@ public class CardMenuBottomSheetContent implements BottomSheetContent {
             new BottomSheetType.Builder().setUserInitiated(true).build();
 
     private final View mContentView;
+    private final Runnable mOnDestroy;
 
-    public CardMenuBottomSheetContent(View view) {
+    /**
+     * Creates bottom sheet content for a card context menu.
+     *
+     * @param view The content view shown inside the bottom sheet.
+     * @param onDestroy Invoked when the sheet content is destroyed.
+     */
+    public CardMenuBottomSheetContent(View view, Runnable onDestroy) {
         mContentView = view;
+        mOnDestroy = onDestroy;
     }
 
     @Override
@@ -42,7 +50,9 @@ public class CardMenuBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mOnDestroy.run();
+    }
 
     @Override
     public BottomSheetType getSheetType() {
