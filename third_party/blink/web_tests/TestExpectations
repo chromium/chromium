@@ -9167,3 +9167,6 @@ crbug.com/546084497 [ Debug Linux ] external/wpt/resize-observer/observer-in-cro
 crbug.com/565447575 [ Debug Linux ] external/wpt/webdriver/tests/bidi/storage/set_cookie/cookie_same_site.py [ Failure Pass Timeout ]
 crbug.com/565447575 [ Debug Linux ] external/wpt/webdriver/tests/classic/perform_actions/navigation.py [ Failure Pass Timeout ]
 crbug.com/565513701 [ Win ] external/wpt/css/css-scroll-snap/scroll-snap-type-pair-007.html [ Failure Pass Timeout ]
+
+# TODO(crbug.com/568343392): Re-enable this test.
+crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/reload/wait.py [ Failure Pass Timeout ]
