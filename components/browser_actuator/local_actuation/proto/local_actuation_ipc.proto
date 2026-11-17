@@ -1,0 +1,104 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package browser_actuator;
+
+// Messages exchanged over the local-actuation Mach service that the browser
+// process registers on macOS. A verified local caller (Gemini for macOS) uses
+// it to bring a profile window forward before browser actuation starts and to
+// focus the actuated tab when it finishes.
+//
+// Each request is a simple Mach message with `msgh_id` `'lact'`; each reply
+// uses `'LACT'`. After the Mach header come three native-endian uint32s
+// (`protocol_version`, which is 1; `info_plist_len`; `payload_len`), the
+// sender's `Info.plist` (1 to 32 KiB), and one serialized message from this
+// file. `msgh_size` is rounded up to a multiple of 4 and is at most 64 KiB.
+//
+// Chrome checks the sender's code signature against its `Info.plist` and the
+// kernel audit token before it parses the payload. A request with another
+// `protocol_version`, a malformed frame, or an unverified sender gets no
+// reply; the caller's reply port receives `MACH_NOTIFY_SEND_ONCE` instead.
+
+// Serialized payload of a 'lact' request message. Sent by the caller.
+message LocalActuationRequest {
+  oneof request {
+    HelloRequest hello = 1;
+    EnsureProfileWindowRequest ensure_profile_window = 2;
+    FocusActuatedTabRequest focus_actuated_tab = 3;
+  }
+}
+
+// Lets the caller verify Chrome's code signature from the reply before it
+// sends a profile directory or conversation id.
+message HelloRequest {}
+
+// Ensures a browser window is open for `profile_dir` and brings it forward.
+message EnsureProfileWindowRequest {
+  // Profile directory name under the user data dir ("Default", "Profile 1"),
+  // as Chrome wrote it. A single path component.
+  string profile_dir = 1;
+}
+
+// Activates the tab Chrome last actuated for `conversation_id` in
+// `profile_dir` and brings its window forward.
+message FocusActuatedTabRequest {
+  // Same as `EnsureProfileWindowRequest.profile_dir`.
+  string profile_dir = 1;
+
+  // Chrome's conversation id for the actuation task, the value the backend
+  // reports to the caller as `WorklogStep.chrome_conversation_id`. Opaque.
+  string conversation_id = 2;
+}
+
+// Serialized payload of a 'LACT' reply message. Sent by Chrome.
+message LocalActuationResponse {
+  enum Error {
+    ERROR_UNSPECIFIED = 0;
+    // `request` was unset or uses a method this Chrome version does not
+    // implement (for example, a newer caller talking to an older Chrome).
+    UNSUPPORTED_REQUEST = 1;
+    // Unparsable request payload or a malformed field.
+    INVALID_REQUEST = 2;
+  }
+
+  oneof result {
+    HelloResponse hello = 1;
+    EnsureProfileWindowResponse ensure_profile_window = 2;
+    FocusActuatedTabResponse focus_actuated_tab = 3;
+    Error error = 4;
+  }
+}
+
+// Reply to `HelloRequest`.
+message HelloResponse {}
+
+// Reply to `EnsureProfileWindowRequest`.
+message EnsureProfileWindowResponse {
+  enum Outcome {
+    OUTCOME_UNSPECIFIED = 0;
+    // A normal window for the profile is open and in front.
+    WINDOW_READY = 1;
+    // Unknown `profile_dir`, the profile requires sign-in, the profile failed
+    // to load, or browser windows are not allowed.
+    PROFILE_UNAVAILABLE = 2;
+  }
+  Outcome outcome = 1;
+}
+
+// Reply to `FocusActuatedTabRequest`.
+message FocusActuatedTabResponse {
+  enum Outcome {
+    OUTCOME_UNSPECIFIED = 0;
+    // The tab is active and its window is in front.
+    ACTIVATED_TAB = 1;
+    // Unknown profile, no task for this conversation, the tab was closed, or
+    // the task finished and Chrome no longer tracks it.
+    TAB_ACTIVATION_FAILED = 2;
+  }
+  Outcome outcome = 1;
+}
