@@ -154,6 +154,9 @@ class GlicProviderSpec {
   virtual bool IsActuationSupported() const = 0;
   // Whether this provider requires NoWebview mode.
   virtual bool RequiresNoWebview() const = 0;
+  // Returns the guest URL before `GetLocalizedGuestURL()` appends `hl`, or an
+  // empty GURL if none is configured.
+  virtual GURL GetUnlocalizedGuestUrl(Profile* profile) const = 0;
   // Returns the localized guest URL to load for `profile`, or an empty GURL
   // if none is configured.
   virtual GURL GetGuestUrl(Profile* profile) const = 0;

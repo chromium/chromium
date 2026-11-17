@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
@@ -157,6 +158,66 @@ TEST_F(GuestUtilTest, GetLocalizedGuestURLForDifferentLocales) {
     EXPECT_EQ(GURL("https://www.google.com?hl=" + test_case.expected_hl),
               GetLocalizedGuestURL(GURL("https://www.google.com")));
   }
+}
+
+TEST_F(GuestUtilTest, GetLocalizedGuestURLAppliesUiLocaleOverride) {
+  ScopedBrowserLocale scoped_locale("en");
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  base::ScopedClosureRunner reset_locale_override(
+      base::BindOnce(&PrefService::ClearPref, base::Unretained(local_state),
+                     prefs::kGlicUiLocaleOverride));
+
+  local_state->SetString(prefs::kGlicUiLocaleOverride, "hi");
+  EXPECT_EQ(GURL("https://www.google.com?hl=hi"),
+            GetLocalizedGuestURL(GURL("https://www.google.com")));
+  // An explicit `hl` query parameter on the guest URL (e.g. from a guest URL
+  // override) takes precedence over `prefs::kGlicUiLocaleOverride`.
+  EXPECT_EQ(GURL("https://www.google.com?hl=es"),
+            GetLocalizedGuestURL(GURL("https://www.google.com?hl=es")));
+
+  // Maps Norwegian Bokmal ("nb") to Google's "no" code.
+  local_state->SetString(prefs::kGlicUiLocaleOverride, "nb");
+  EXPECT_EQ(GURL("https://www.google.com?hl=no"),
+            GetLocalizedGuestURL(GURL("https://www.google.com")));
+
+  // Clearing override restores CLI `hl` or browser locale fallback.
+  local_state->ClearPref(prefs::kGlicUiLocaleOverride);
+  EXPECT_EQ(GURL("https://www.google.com?hl=es"),
+            GetLocalizedGuestURL(GURL("https://www.google.com?hl=es")));
+  EXPECT_EQ(GURL("https://www.google.com?hl=en"),
+            GetLocalizedGuestURL(GURL("https://www.google.com")));
+}
+
+TEST_F(GuestUtilMultiInstanceTest, GetGuestURLAppliesUiLocaleOverride) {
+  ScopedBrowserLocale scoped_locale("en");
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  base::ScopedClosureRunner reset_locale_override(
+      base::BindOnce(&PrefService::ClearPref, base::Unretained(local_state),
+                     prefs::kGlicUiLocaleOverride));
+
+  TestingProfile* profile = CreateTestingProfile("profile");
+  local_state->SetString(prefs::kGlicUiLocaleOverride, "ja");
+  EXPECT_EQ(GURL("https://www.example.com/glic?hl=ja"), GetGuestURL(profile));
+}
+
+TEST_F(GuestUtilMultiInstanceTest, GeicEnabledAppliesUiLocaleOverride) {
+  ScopedBrowserLocale scoped_locale("en");
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  base::ScopedClosureRunner reset_locale_override(
+      base::BindOnce(&PrefService::ClearPref, base::Unretained(local_state),
+                     prefs::kGlicUiLocaleOverride));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{features::kGeicGuestURL.name,
+          "https://business.gemini.google/side-panel"}}}},
+      {});
+
+  TestingProfile* profile = CreateTestingProfile("geic_locale_profile");
+  local_state->SetString(prefs::kGlicUiLocaleOverride, "es-419");
+  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?hl=es-419"),
+            GetGuestURL(profile));
 }
 
 TEST_F(GuestUtilMultiInstanceTest, GetGlicGuestURLs) {

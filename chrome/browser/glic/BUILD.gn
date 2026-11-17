@@ -626,6 +626,7 @@ source_set("impl") {
     ":glic_metrics",
     ":provider_spec_impl",
     ":selection_context",
+    "//base/i18n:language_tag",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",

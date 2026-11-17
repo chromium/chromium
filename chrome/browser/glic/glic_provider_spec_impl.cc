@@ -156,7 +156,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   std::string_view GetMetricsInfix() const override { return "Consumer"; }
   bool IsActuationSupported() const override { return true; }
   bool RequiresNoWebview() const override { return false; }
-  GURL GetGuestUrl(Profile* profile) const override {
+  GURL GetUnlocalizedGuestUrl(Profile* profile) const override {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     bool has_glic_guest_url =
         command_line->HasSwitch(::switches::kGlicGuestURL);
@@ -169,7 +169,11 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       LOG(ERROR) << "No glic guest url";
       return GURL();
     }
-    return GetLocalizedGuestURL(MaybeAppendAuthUser(url, profile));
+    return MaybeAppendAuthUser(url, profile);
+  }
+  GURL GetGuestUrl(Profile* profile) const override {
+    GURL url = GetUnlocalizedGuestUrl(profile);
+    return url.is_empty() ? url : GetLocalizedGuestURL(url);
   }
   bool SupportsAnchoredEntryPoint() const override { return true; }
   const GlicFreStore& GetFreStore() const override { return *fre_store_; }
@@ -330,12 +334,16 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     return base::FeatureList::IsEnabled(features::kGeicActuation);
   }
   bool RequiresNoWebview() const override { return true; }
-  GURL GetGuestUrl(Profile* profile) const override {
+  GURL GetUnlocalizedGuestUrl(Profile* profile) const override {
     if (guest_url_.is_empty()) {
       VLOG(1) << "GEiC is enabled but no guest URL was provided.";
       return GURL();
     }
-    return GetLocalizedGuestURL(guest_url_);
+    return guest_url_;
+  }
+  GURL GetGuestUrl(Profile* profile) const override {
+    GURL url = GetUnlocalizedGuestUrl(profile);
+    return url.is_empty() ? url : GetLocalizedGuestURL(url);
   }
   // The anchored error state shows consumer copy and help links.
   // TODO(b/576834093): Support anchoring with GEiC error states.

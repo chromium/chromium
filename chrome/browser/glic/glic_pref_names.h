@@ -89,6 +89,10 @@ inline constexpr char kGlicGuestUrlPresetProd[] = "glic.guest_url_preset_prod";
 inline constexpr char kGlicWebContinuityOriginatingHostUrlPreset[] =
     "glic.web_continuity_originating_host_url_preset";
 
+// String pref that overrides the UI language (`hl` query parameter) for the
+// Glic guest web client. Empty string means use Chrome's UI language.
+inline constexpr char kGlicUiLocaleOverride[] = "glic.ui_locale_override";
+
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile.
 

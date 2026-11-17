@@ -430,6 +430,23 @@ export function getHtml(this: GlicInternalsAppElement) {
                 <code>${this.data_.config.guestUrl}</code>
               </td>
             </tr>
+            <tr>
+              <td style="font-weight: 500;">UI Language Override</td>
+              <td>
+                <code>
+                  ${this.data_.config.uiLocaleOverride ||
+                      'None (Chrome UI language)'}
+                </code>
+                ${this.getOverridingGuestUrlHl_() ? html`
+                  <span>
+                    (${
+                        this.data_.config.uiLocaleOverride ? 'ignored; ' : ''
+                    }Guest URL sets
+                    <code>${'hl=' + this.getOverridingGuestUrlHl_()}</code>)
+                  </span>
+                ` : ''}
+              </td>
+            </tr>
           </tbody>
         </table>
       ` : html`
@@ -486,14 +503,13 @@ export function getHtml(this: GlicInternalsAppElement) {
   <!-- ================= DEBUG CONTROLS TAB ================= -->
   <div id="debug-controls-contents" class="tab-contents"
       ?hidden="${this.selectedTabIndex_ !== 1}">
-    <h2 id="debug">Debug Controls</h2>
+    <h2 id="debug.panel">
+      <a class="section-link" href="#debug.panel"
+          @click="${this.onSectionLinkClick_}">
+        Panel
+      </a>
+    </h2>
     <div class="presets-container">
-      <h3 id="debug.panel">
-        <a class="section-link" href="#debug.panel"
-            @click="${this.onSectionLinkClick_}">
-          Panel
-        </a>
-      </h3>
       <div style="display: flex; gap: 16px; align-items: center;">
         <label>
           <input type="checkbox" .checked="${!!this.data_?.showErrorAllowed}"
@@ -501,12 +517,106 @@ export function getHtml(this: GlicInternalsAppElement) {
           Allow Showing Errors
         </label>
       </div>
-      <h3 id="debug.invoke">
-        <a class="section-link" href="#debug.invoke"
-            @click="${this.onSectionLinkClick_}">
-          Invoke
-        </a>
-      </h3>
+      <label id="debug.language" for="uiLocaleInput">
+        Glic UI Language
+        <code>(hl)</code>
+      </label>
+      <div class="language-controls">
+        <div class="language-row">
+          <div class="ui-locale-combobox">
+            <input id="uiLocaleInput" type="text" role="combobox"
+                autocomplete="off" aria-autocomplete="list"
+                aria-expanded="${this.uiLocaleDropdownOpen_}"
+                aria-controls="uiLocaleListbox"
+                aria-activedescendant="${this.getActiveUiLocaleOptionId_()}"
+                placeholder="${this.getDefaultUiLocaleLabel_()}"
+                .value="${this.uiLocaleQuery_}"
+                @focus="${this.onUiLocaleInputFocus_}"
+                @click="${this.onUiLocaleInputClick_}"
+                @blur="${this.onUiLocaleInputBlur_}"
+                @input="${this.onUiLocaleInput_}"
+                @keydown="${this.onUiLocaleKeydown_}">
+            <button id="uiLocaleToggleButton" class="ui-locale-toggle"
+                type="button" tabindex="-1"
+                aria-label="Toggle UI language options"
+                aria-expanded="${this.uiLocaleDropdownOpen_}"
+                aria-controls="uiLocaleListbox"
+                @mousedown="${this.onUiLocaleToggleMousedown_}"
+                @click="${this.onUiLocaleToggleClick_}">
+              ▾
+            </button>
+            ${this.uiLocaleDropdownOpen_ ? html`
+              <div id="uiLocaleListbox" class="ui-locale-listbox" role="listbox"
+                  aria-labelledby="debug.language">
+                ${this.getFilteredUiLocaleOptions_().map((opt, idx) => html`
+                  <div id="uiLocaleOption-${idx}"
+                      class="ui-locale-option ${
+                          idx === this.uiLocaleActiveIndex_ ? 'active' : ''}"
+                      role="option" aria-selected="${
+                          this.isUiLocaleOptionSelected_(opt.code)}"
+                      data-code="${opt.code}"
+                      @mousedown="${this.onUiLocaleOptionMousedown_}"
+                      @click="${this.onUiLocaleOptionClick_}">
+                    ${opt.display}
+                  </div>
+                `)}
+              </div>
+            ` : ''}
+          </div>
+          ${this.isUiLocaleInputDirty_() ? html`
+            <cr-button id="applyUiLocaleButton"
+                @click="${this.onApplyUiLocaleClick_}">
+              Apply
+            </cr-button>
+          ` : ''}
+          ${this.hasUiLocaleOverride_() ? html`
+            <cr-button id="resetUiLocaleButton"
+                @click="${this.onResetUiLocaleClick_}">
+              Reset to Default
+            </cr-button>
+          ` : ''}
+        </div>
+        ${this.uiLocaleError_ ? html`
+          <div id="uiLocaleErrorMsg" class="error-msg">
+            Invalid BCP-47 locale code (enter a code like "hi", "es-419",
+            or "zh-TW", not a URL).
+          </div>
+        ` : ''}
+        ${this.getOverridingGuestUrlHl_() ? html`
+          <div id="uiLocaleIgnoredBanner"
+              class="warning-banner language-warning-banner">
+            <span>⚠️</span>
+            <span>
+              Glic UI Language already overridden in guest URL
+              <code>(${'hl=' + this.getOverridingGuestUrlHl_()})</code>.
+            </span>
+          </div>
+        ` : ''}
+        ${!this.getOverridingGuestUrlHl_() && this.uiLocaleReloadWarningShown_ ?
+            html`
+          <div id="uiLocaleReloadBanner"
+              class="warning-banner language-warning-banner">
+            <span>⚠️</span>
+            <span>
+              Reload any existing conversations for it to take effect.
+            </span>
+            <button id="dismissUiLocaleReloadButton"
+                class="banner-dismiss-button" type="button"
+                aria-label="Dismiss reload warning"
+                @click="${this.onDismissUiLocaleReloadClick_}">
+              ✕
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+    <h2 id="debug.invoke">
+      <a class="section-link" href="#debug.invoke"
+          @click="${this.onSectionLinkClick_}">
+        Invoke
+      </a>
+    </h2>
+    <div class="presets-container">
       <label for="invokePromptInput0">
         ${this.invokePrompts_.length > 1 ? 'Prompts' : 'Prompt'}
       </label>
@@ -802,12 +912,14 @@ export function getHtml(this: GlicInternalsAppElement) {
           <pre style="margin: 0;">${log}</pre>
         `)}
       </div>
-      <h3 id="debug.consents">
-        <a class="section-link" href="#debug.consents"
-            @click="${this.onSectionLinkClick_}">
-          Consents
-        </a>
-      </h3>
+    </div>
+    <h2 id="debug.consents">
+      <a class="section-link" href="#debug.consents"
+          @click="${this.onSectionLinkClick_}">
+        Consents
+      </a>
+    </h2>
+    <div class="presets-container">
       <div class="consents-container">
         <cr-checkbox ?checked="${!!this.data_?.enablement?.freIsConsented}"
             ?disabled="${!this.data_?.enablement?.freIsConsented}"

@@ -89,9 +89,10 @@ content::StoragePartitionConfig GetGlicStoragePartitionConfig(
 // `guest_url`.
 GURL MaybeApplyPresetGuestUrl(GURL guest_url);
 
-// Returns an updated guest URL that includes a language parameter, set to the
-// browser's UI language. If the parameter is already present, its current value
-// will not be changed.
+// Returns an updated guest URL that includes a language parameter (`hl`).
+// Preserves an existing `hl` parameter on `guest_url` (e.g. from a guest URL
+// override); otherwise appends `prefs::kGlicUiLocaleOverride` from local state
+// when non-empty, or Chrome's application locale.
 GURL GetLocalizedGuestURL(const GURL& guest_url);
 
 // Returns true if `web_contents` contains the Glic WebUI application.

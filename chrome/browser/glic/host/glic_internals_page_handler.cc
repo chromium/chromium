@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/tag_converters.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -60,6 +61,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/glic/glic_pref_names.h"
+#include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/skills/features.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
@@ -69,9 +71,11 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace glic {
 
@@ -547,6 +551,35 @@ mojom::GlicProviderType GetProviderType(Profile& profile) {
              : mojom::GlicProviderType::kGemini;
 }
 
+std::vector<mojom::LocaleOptionPtr> BuildAvailableUiLocales() {
+  std::vector<mojom::LocaleOptionPtr> options;
+  base::flat_set<std::string> seen_codes;
+  for (const std::string& locale : l10n_util::GetUserFacingUILocaleList()) {
+    std::string google_code = google_util::GetGoogleLocale(locale);
+    if (!seen_codes.insert(google_code).second) {
+      continue;
+    }
+    std::u16string display_name =
+        l10n_util::GetDisplayNameForLocale(locale, "en", /*is_for_ui=*/false);
+    auto option = mojom::LocaleOption::New();
+    option->code = std::move(google_code);
+    option->label =
+        display_name.empty() ? option->code : base::UTF16ToUTF8(display_name);
+    // `GetDisplayNameForLocale()` already appends " (<code>)" for
+    // `ENABLE_PSEUDOLOCALES` entries; strip it so the UI doesn't render it
+    // twice.
+    std::string code_suffix = " (" + option->code + ")";
+    if (option->label.ends_with(code_suffix)) {
+      option->label.resize(option->label.size() - code_suffix.size());
+    }
+    options.push_back(std::move(option));
+  }
+  std::ranges::sort(options, {}, [](const mojom::LocaleOptionPtr& option) {
+    return option->label;
+  });
+  return options;
+}
+
 }  // namespace
 
 GlicInternalsPageHandler::GlicInternalsPageHandler(
@@ -572,8 +605,16 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
                             ? &glic_service->actor_policy_checker()
                             : nullptr);
 
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+
   mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
   config->guest_url = GetGuestURL(browser_context_);
+  GURL unlocalized_guest_url =
+      GetGlicProviderSpec(profile).GetUnlocalizedGuestUrl(profile);
+  std::string explicit_hl;
+  if (net::GetValueForKeyInQuery(unlocalized_guest_url, "hl", &explicit_hl)) {
+    config->guest_url_explicit_locale = std::move(explicit_hl);
+  }
 
   config->autopush_guest_url = GURL(g_browser_process->local_state()->GetString(
       prefs::kGlicGuestUrlPresetAutopush));
@@ -587,14 +628,18 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
   config->web_continuity_originating_host_url =
       GURL(g_browser_process->local_state()->GetString(
           prefs::kGlicWebContinuityOriginatingHostUrlPreset));
+  if (PrefService* local_state = g_browser_process->local_state()) {
+    config->ui_locale_override =
+        local_state->GetString(prefs::kGlicUiLocaleOverride);
+  }
+  config->available_ui_locales = BuildAvailableUiLocales();
 
-  payload->show_error_allowed = Profile::FromBrowserContext(browser_context_)
-                                    ->GetPrefs()
-                                    ->GetBoolean(prefs::kGlicShowErrorAllowed);
+  payload->show_error_allowed =
+      profile->GetPrefs()->GetBoolean(prefs::kGlicShowErrorAllowed);
 
   payload->experimental_triggering_enabled =
-      GetGlicProviderSpec(Profile::FromBrowserContext(browser_context_))
-          .SupportsFeature(GlicFeature::kExperimentalTriggering);
+      GetGlicProviderSpec(profile).SupportsFeature(
+          GlicFeature::kExperimentalTriggering);
 
   if (g_browser_process->local_state()) {
     payload->hotkey_global_scope_migrated_v2 =
@@ -608,7 +653,6 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
   mojom::InternalsDebugInfoPtr debug_info = mojom::InternalsDebugInfo::New();
 
   // Populate partial WebClientInitialState
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
   auto state = mojom::WebClientInitialState::New();
   PopulateGlobalClientInitialState(state.get(), profile);
 
@@ -1077,6 +1121,41 @@ void GlicInternalsPageHandler::SetHotkeyGlobalScopeMigratedV2(bool migrated) {
       local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
     }
   }
+}
+
+void GlicInternalsPageHandler::SetUiLocaleOverride(
+    const std::string& locale,
+    SetUiLocaleOverrideCallback callback) {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::string_view trimmed = base::TrimWhitespaceASCII(locale, base::TRIM_ALL);
+  if (trimmed.empty()) {
+    local_state->ClearPref(prefs::kGlicUiLocaleOverride);
+    std::move(callback).Run(true);
+    return;
+  }
+
+  for (char c : trimmed) {
+    if (!base::IsAsciiAlphaNumeric(c) && c != '-' && c != '_') {
+      std::move(callback).Run(false);
+      return;
+    }
+  }
+
+  std::optional<base::i18n::LanguageTag> tag =
+      base::i18n::GetLanguageTagFromString(trimmed);
+  if (!tag.has_value() || tag->tag_string() == "und") {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  base::i18n::LanguageTag google_locale = google_util::GetGoogleLocale(*tag);
+  local_state->SetString(prefs::kGlicUiLocaleOverride,
+                         google_locale.tag_string());
+  std::move(callback).Run(true);
 }
 
 }  // namespace glic

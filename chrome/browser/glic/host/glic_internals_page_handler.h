@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_INTERNALS_PAGE_HANDLER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -62,6 +63,8 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
 
   void RevokeActuationConsent() override;
   void SetHotkeyGlobalScopeMigratedV2(bool migrated) override;
+  void SetUiLocaleOverride(const std::string& locale,
+                           SetUiLocaleOverrideCallback callback) override;
 
  private:
   void OnInvokeSuccess(TriggerInvokeFromInternalsActionCallback callback,

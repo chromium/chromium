@@ -678,9 +678,15 @@ GURL GetLocalizedGuestURL(const GURL& guest_url) {
   if (net::GetValueForKeyInQuery(guest_url, "hl", &unused_output)) {
     return guest_url;
   }
-  std::string application_locale = g_browser_process->GetApplicationLocale();
-  std::string google_locale = google_util::GetGoogleLocale(application_locale);
-  return net::AppendQueryParameter(guest_url, "hl", google_locale);
+  std::string locale;
+  if (PrefService* local_state = g_browser_process->local_state()) {
+    locale = local_state->GetString(prefs::kGlicUiLocaleOverride);
+  }
+  if (locale.empty()) {
+    locale = g_browser_process->GetApplicationLocale();
+  }
+  return net::AppendQueryParameter(guest_url, "hl",
+                                   google_util::GetGoogleLocale(locale));
 }
 
 bool IsGlicWebUI(const content::WebContents* web_contents) {

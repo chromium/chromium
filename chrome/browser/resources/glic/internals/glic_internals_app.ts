@@ -39,6 +39,13 @@ const TAB_GENERAL = 0;
 const TAB_DEBUG = 1;
 const DEFAULT_TAB_HASH = '#general';
 
+export interface UiLocaleComboOption {
+  code: string;
+  display: string;
+  label?: string;
+  isCustom?: boolean;
+}
+
 const TAB_HASH_MAP: Record<number, string> = {
   [TAB_GENERAL]: DEFAULT_TAB_HASH,
   [TAB_DEBUG]: '#debug',
@@ -103,10 +110,20 @@ export class GlicInternalsAppElement extends CrLitElement {
       tabNames_: {type: Array},
       featureModeEnumValues_: {type: Array},
       copyButtonText_: {type: String},
+      uiLocaleQuery_: {type: String},
+      uiLocaleDropdownOpen_: {type: Boolean},
+      uiLocaleActiveIndex_: {type: Number},
+      uiLocaleError_: {type: Boolean},
+      uiLocaleReloadWarningShown_: {type: Boolean},
     };
   }
 
   protected accessor copyButtonText_: string = 'Copy Diagnostics';
+  protected accessor uiLocaleQuery_: string = '';
+  protected accessor uiLocaleDropdownOpen_: boolean = false;
+  protected accessor uiLocaleActiveIndex_: number = 0;
+  protected accessor uiLocaleError_: boolean = false;
+  protected accessor uiLocaleReloadWarningShown_: boolean = false;
   private copyResetTimeoutId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private highlightTimeoutId_: number|null = null;
@@ -177,10 +194,11 @@ export class GlicInternalsAppElement extends CrLitElement {
     }
   }
 
-  private fetchInternalsData_() {
-    this.browserProxy_.handler.getInternalsDataPayload().then(
+  private fetchInternalsData_(): Promise<void> {
+    return this.browserProxy_.handler.getInternalsDataPayload().then(
         async ({internalsData}: {internalsData: InternalsDataPayload}) => {
           this.data_ = internalsData;
+          this.syncUiLocaleStateFromData_();
           if (window.location.hash) {
             await this.updateComplete;
             const {elementId} = this.resolveTargetHash_(window.location.hash);
@@ -189,6 +207,303 @@ export class GlicInternalsAppElement extends CrLitElement {
             }
           }
         });
+  }
+
+  private formatUiLocaleOverride_(code: string): string {
+    if (!code) {
+      return '';
+    }
+    const match =
+        this.data_?.config?.availableUiLocales?.find(opt => opt.code === code);
+    return match ? `${match.label} (${match.code})` : code;
+  }
+
+  private syncUiLocaleStateFromData_() {
+    this.uiLocaleError_ = false;
+    const currentOverride = this.data_?.config?.uiLocaleOverride ?? '';
+    this.uiLocaleQuery_ = this.formatUiLocaleOverride_(currentOverride);
+  }
+
+  protected hasUiLocaleOverride_(): boolean {
+    return !!this.data_?.config?.uiLocaleOverride;
+  }
+
+  protected getDefaultUiLocaleLabel_(): string {
+    const browserLocale = this.data_?.debugInfo?.locale;
+    return browserLocale ? `Default (Chrome UI language: ${browserLocale})` :
+                           'Default (Chrome UI language)';
+  }
+
+  protected getOverridingGuestUrlHl_(): string|null {
+    return this.data_?.config?.guestUrlExplicitLocale || null;
+  }
+
+  protected getFilteredUiLocaleOptions_(): UiLocaleComboOption[] {
+    const defaultOption: UiLocaleComboOption = {
+      code: '',
+      display: this.getDefaultUiLocaleLabel_(),
+    };
+    const presets: UiLocaleComboOption[] =
+        (this.data_?.config?.availableUiLocales ??
+         []).map(opt => ({
+                   code: opt.code,
+                   display: `${opt.label} (${opt.code})`,
+                   label: opt.label,
+                 }));
+    const currentOverride = this.data_?.config?.uiLocaleOverride ?? '';
+    const baseOptions: UiLocaleComboOption[] =
+        currentOverride && !presets.some(opt => opt.code === currentOverride) ?
+        [
+          defaultOption,
+          {
+            code: currentOverride,
+            display: `Custom locale (${currentOverride})`,
+            isCustom: true,
+          },
+          ...presets,
+        ] :
+        [defaultOption, ...presets];
+    if (!this.isUiLocaleInputDirty_()) {
+      return baseOptions;
+    }
+    const trimmed = this.uiLocaleQuery_.trim();
+    if (!trimmed) {
+      return baseOptions;
+    }
+    const lower = trimmed.toLowerCase();
+    const matches: UiLocaleComboOption[] = [];
+    if (defaultOption.display.toLowerCase().includes(lower)) {
+      matches.push(defaultOption);
+    }
+    for (const preset of presets) {
+      if (preset.display.toLowerCase().includes(lower) ||
+          preset.code.toLowerCase().includes(lower)) {
+        matches.push(preset);
+      }
+    }
+    const hasExactCode = matches.some(opt => opt.code.toLowerCase() === lower);
+    if (!hasExactCode) {
+      matches.push({
+        code: trimmed,
+        display: `Use custom locale code "${trimmed}"`,
+        isCustom: true,
+      });
+    }
+    return matches;
+  }
+
+  protected getActiveUiLocaleOptionId_(): string {
+    if (!this.uiLocaleDropdownOpen_) {
+      return '';
+    }
+    const options = this.getFilteredUiLocaleOptions_();
+    if (this.uiLocaleActiveIndex_ < 0 ||
+        this.uiLocaleActiveIndex_ >= options.length) {
+      return '';
+    }
+    return `uiLocaleOption-${this.uiLocaleActiveIndex_}`;
+  }
+
+  protected isUiLocaleOptionSelected_(code: string): boolean {
+    return (this.data_?.config?.uiLocaleOverride ?? '') === code;
+  }
+
+  protected isUiLocaleInputDirty_(): boolean {
+    const currentOverride = this.data_?.config?.uiLocaleOverride ?? '';
+    return this.uiLocaleQuery_.trim() !==
+        this.formatUiLocaleOverride_(currentOverride);
+  }
+
+  private resolveTypedUiLocale_(): string {
+    const trimmed = this.uiLocaleQuery_.trim();
+    if (!trimmed || trimmed === this.getDefaultUiLocaleLabel_()) {
+      return '';
+    }
+    const lower = trimmed.toLowerCase();
+    for (const opt of this.data_?.config?.availableUiLocales ?? []) {
+      const formatted = `${opt.label} (${opt.code})`.toLowerCase();
+      if (lower === formatted || lower === opt.code.toLowerCase() ||
+          lower === opt.label.toLowerCase()) {
+        return opt.code;
+      }
+    }
+    return trimmed;
+  }
+
+  private computeDefaultUiLocaleActiveIndex_(options: UiLocaleComboOption[]):
+      number {
+    if (!this.isUiLocaleInputDirty_()) {
+      const currentOverride = this.data_?.config?.uiLocaleOverride ?? '';
+      const idx = options.findIndex(opt => opt.code === currentOverride);
+      return idx >= 0 ? idx : 0;
+    }
+    const lower = this.uiLocaleQuery_.trim().toLowerCase();
+    if (!lower) {
+      return 0;
+    }
+    const exactIdx = options.findIndex(
+        opt => !opt.isCustom &&
+            (opt.code.toLowerCase() === lower ||
+             opt.label?.toLowerCase() === lower ||
+             opt.display.toLowerCase() === lower));
+    return exactIdx >= 0 ? exactIdx : 0;
+  }
+
+  private async openUiLocaleDropdown_() {
+    this.uiLocaleDropdownOpen_ = true;
+    const options = this.getFilteredUiLocaleOptions_();
+    this.uiLocaleActiveIndex_ =
+        this.computeDefaultUiLocaleActiveIndex_(options);
+    await this.scrollActiveUiLocaleOptionIntoView_();
+  }
+
+  private async scrollActiveUiLocaleOptionIntoView_() {
+    await this.updateComplete;
+    const id = this.getActiveUiLocaleOptionId_();
+    if (!id) {
+      return;
+    }
+    const el = this.shadowRoot?.getElementById(id);
+    el?.scrollIntoView({block: 'nearest'});
+  }
+
+  protected onUiLocaleInputFocus_(e: Event) {
+    // Do not open the listbox on bare `focus`: refocusing the internals tab
+    // from another surface (such as the Glic side panel) restores focus to the
+    // last-focused element before dispatching the click, which would pop the
+    // listbox over controls below `#uiLocaleInput`.
+    if (!this.isUiLocaleInputDirty_()) {
+      (e.target as HTMLInputElement).select();
+    }
+  }
+
+  protected onUiLocaleInputClick_(e: Event) {
+    if (!this.uiLocaleDropdownOpen_) {
+      if (!this.isUiLocaleInputDirty_()) {
+        (e.target as HTMLInputElement).select();
+      }
+      this.openUiLocaleDropdown_();
+    }
+  }
+
+  protected onUiLocaleInputBlur_() {
+    this.uiLocaleDropdownOpen_ = false;
+  }
+
+  protected onUiLocaleInput_(e: Event) {
+    this.uiLocaleQuery_ = (e.target as HTMLInputElement).value;
+    this.uiLocaleDropdownOpen_ = true;
+    const options = this.getFilteredUiLocaleOptions_();
+    this.uiLocaleActiveIndex_ =
+        this.computeDefaultUiLocaleActiveIndex_(options);
+    this.uiLocaleError_ = false;
+    void this.scrollActiveUiLocaleOptionIntoView_();
+  }
+
+  protected async onUiLocaleKeydown_(e: KeyboardEvent) {
+    const options = this.getFilteredUiLocaleOptions_();
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!this.uiLocaleDropdownOpen_) {
+        await this.openUiLocaleDropdown_();
+        return;
+      }
+      if (options.length > 0) {
+        this.uiLocaleActiveIndex_ =
+            (this.uiLocaleActiveIndex_ + 1) % options.length;
+        await this.scrollActiveUiLocaleOptionIntoView_();
+      }
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!this.uiLocaleDropdownOpen_) {
+        await this.openUiLocaleDropdown_();
+        return;
+      }
+      if (options.length > 0) {
+        this.uiLocaleActiveIndex_ =
+            (this.uiLocaleActiveIndex_ - 1 + options.length) % options.length;
+        await this.scrollActiveUiLocaleOptionIntoView_();
+      }
+      return;
+    }
+    if (e.key === 'Escape') {
+      if (this.uiLocaleDropdownOpen_) {
+        e.preventDefault();
+        this.uiLocaleDropdownOpen_ = false;
+        this.syncUiLocaleStateFromData_();
+      }
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      let codeToApply: string;
+      if (this.uiLocaleDropdownOpen_ && this.uiLocaleActiveIndex_ >= 0 &&
+          this.uiLocaleActiveIndex_ < options.length) {
+        codeToApply = options[this.uiLocaleActiveIndex_]!.code;
+      } else {
+        codeToApply = this.resolveTypedUiLocale_();
+      }
+      this.uiLocaleDropdownOpen_ = false;
+      await this.applyUiLocaleOverride_(codeToApply);
+    }
+  }
+
+  protected onUiLocaleToggleMousedown_(e: MouseEvent) {
+    e.preventDefault();
+  }
+
+  protected onUiLocaleToggleClick_() {
+    if (this.uiLocaleDropdownOpen_) {
+      this.uiLocaleDropdownOpen_ = false;
+      return;
+    }
+    const input =
+        this.shadowRoot?.querySelector<HTMLInputElement>('#uiLocaleInput');
+    input?.focus();
+    this.openUiLocaleDropdown_();
+  }
+
+  protected onUiLocaleOptionMousedown_(e: MouseEvent) {
+    e.preventDefault();
+  }
+
+  protected async onUiLocaleOptionClick_(e: MouseEvent) {
+    const code = (e.currentTarget as HTMLElement).dataset['code'] ?? '';
+    this.uiLocaleDropdownOpen_ = false;
+    this.shadowRoot?.querySelector<HTMLInputElement>('#uiLocaleInput')?.blur();
+    await this.applyUiLocaleOverride_(code);
+  }
+
+  protected async onApplyUiLocaleClick_() {
+    this.uiLocaleDropdownOpen_ = false;
+    await this.applyUiLocaleOverride_(this.resolveTypedUiLocale_());
+  }
+
+  protected async onResetUiLocaleClick_() {
+    this.uiLocaleDropdownOpen_ = false;
+    this.uiLocaleError_ = false;
+    await this.applyUiLocaleOverride_('');
+  }
+
+  protected onDismissUiLocaleReloadClick_() {
+    this.uiLocaleReloadWarningShown_ = false;
+  }
+
+  private async applyUiLocaleOverride_(locale: string) {
+    const previousOverride = this.data_?.config?.uiLocaleOverride ?? '';
+    const {success} =
+        await this.browserProxy_.handler.setUiLocaleOverride(locale);
+    if (!success) {
+      this.uiLocaleError_ = true;
+      return;
+    }
+    this.uiLocaleError_ = false;
+    await this.fetchInternalsData_();
+    if ((this.data_?.config?.uiLocaleOverride ?? '') !== previousOverride) {
+      this.uiLocaleReloadWarningShown_ = true;
+    }
   }
 
   protected onShowErrorAllowedChange(e: Event) {

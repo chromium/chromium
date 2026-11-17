@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 #include "chrome/browser/glic/host/glic_internals_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -41,6 +42,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
 
 namespace glic {
@@ -856,6 +859,457 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsInvokeBrowserTest,
       chrome_test_utils::NavigateToURL(contents, GURL(url::kAboutBlankURL)));
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return !actor_service->GetSurfaceRegistry().Get(handle); }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
+                       UiLanguageSelectorUpdatesPrefGuestUrlAndDiagnostics) {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(contents);
+
+  // Deep-link directly to #debug.language.
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals#debug.language")));
+  ASSERT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  // Verify label text, locale options, live filtering, and option click via
+  // real DOM events.
+  {
+    base::RunLoop pref_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    pref_registrar.Add(prefs::kGlicUiLocaleOverride, pref_loop.QuitClosure());
+
+    constexpr char kFilterAndSelectPreset[] = R"js(
+      (async () => {
+        const app = document.querySelector('glic-internals-app');
+        if (!app) {
+          return 'app-missing';
+        }
+        for (let i = 0; i < 50; ++i) {
+          await app.updateComplete;
+          if (app.data_?.config?.availableUiLocales?.length > 2 &&
+              app.shadowRoot.querySelector('#uiLocaleInput')) {
+            break;
+          }
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        if (app.selectedTabIndex_ !== 1) {
+          return `expected-debug-tab-got-${app.selectedTabIndex_}`;
+        }
+        const label =
+            app.shadowRoot.querySelector('label[id="debug.language"]');
+        const labelText =
+            label ? label.textContent.replace(/\s+/g, ' ').trim() : '';
+        if (labelText !== 'Glic UI Language (hl)') {
+          return `unexpected-label-text: ${labelText}`;
+        }
+        if (app.shadowRoot.querySelector('#uiLocaleReloadBanner')) {
+          return 'unexpected-reload-banner-before-change';
+        }
+
+        const input = app.shadowRoot.querySelector('#uiLocaleInput');
+        input.focus();
+        input.dispatchEvent(new FocusEvent('focus'));
+        await app.updateComplete;
+        if (app.shadowRoot.querySelector('#uiLocaleListbox')) {
+          return 'unexpected-listbox-on-bare-focus';
+        }
+
+        input.click();
+        await app.updateComplete;
+
+        const listbox = app.shadowRoot.querySelector('#uiLocaleListbox');
+        if (!listbox) {
+          return 'missing-listbox-on-click';
+        }
+        const codes = Array.from(
+            listbox.querySelectorAll('.ui-locale-option'),
+            el => el.dataset.code);
+        if (!codes.includes('') || !codes.includes('hi')) {
+          return `missing-expected-locales: ${JSON.stringify(codes)}`;
+        }
+
+        // Filter by typing part of the language name.
+        input.value = 'Hindi';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        await app.updateComplete;
+
+        const hiOption = app.shadowRoot.querySelector(
+            '.ui-locale-option[data-code="hi"]');
+        if (!hiOption) {
+          return 'missing-filtered-hi-option';
+        }
+        hiOption.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}));
+        hiOption.click();
+        return 'ok';
+      })()
+    )js";
+    ASSERT_EQ("ok", content::EvalJs(contents, kFilterAndSelectPreset));
+    pref_loop.Run();
+  }
+
+  EXPECT_EQ("hi", local_state->GetString(prefs::kGlicUiLocaleOverride));
+  EXPECT_THAT(glic::GetGuestURL(profile).spec(), testing::HasSubstr("hl=hi"));
+
+  constexpr char kVerifyPostSelectUi[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (app.data_?.config?.guestUrl?.includes('hl=hi') &&
+            app.shadowRoot.querySelector('#uiLocaleReloadBanner')) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      if (!app.data_.config.guestUrl.includes('hl=hi')) {
+        return `unexpected-guest-url: ${app.data_.config.guestUrl}`;
+      }
+      if (!app.shadowRoot.querySelector('#resetUiLocaleButton')) {
+        return 'missing-reset-button';
+      }
+      if (!app.shadowRoot.querySelector('#uiLocaleReloadBanner')) {
+        return 'missing-reload-banner';
+      }
+      const md = app.getDiagnosticsMarkdown_();
+      if (!md.includes('| UI Language Override | hi |')) {
+        return `missing-diagnostics-row: ${md}`;
+      }
+      const dismissBtn =
+          app.shadowRoot.querySelector('#dismissUiLocaleReloadButton');
+      if (!dismissBtn) {
+        return 'missing-dismiss-button';
+      }
+      // Simulate refocusing the tab when `#uiLocaleInput` was previously
+      // focused (e.g. clicking `X` while the Glic side panel had focus); this
+      // must not reopen `#uiLocaleListbox` over `#dismissUiLocaleReloadButton`.
+      const input = app.shadowRoot.querySelector('#uiLocaleInput');
+      input.dispatchEvent(new FocusEvent('focus'));
+      await app.updateComplete;
+      if (app.shadowRoot.querySelector('#uiLocaleListbox')) {
+        return 'listbox-reopened-on-tab-refocus';
+      }
+      dismissBtn.click();
+      await app.updateComplete;
+      if (app.shadowRoot.querySelector('#uiLocaleReloadBanner')) {
+        return 'reload-banner-not-dismissed';
+      }
+      return 'ok';
+    })()
+  )js";
+  ASSERT_EQ("ok", content::EvalJs(contents, kVerifyPostSelectUi));
+  EXPECT_EQ("hi", local_state->GetString(prefs::kGlicUiLocaleOverride));
+
+  // Verify loading a fresh chrome://glic/internals page restores the persisted
+  // preset in `#uiLocaleInput` without showing the banner.
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(contents, GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals#debug.language")));
+  ASSERT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+  constexpr char kVerifyPersistedPresetOnLoad[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        const input = app.shadowRoot.querySelector('#uiLocaleInput');
+        if (input && input.value) {
+          if (app.shadowRoot.querySelector('#uiLocaleReloadBanner')) {
+            return 'unexpected-banner-after-reload';
+          }
+          return input.value;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      return 'timed-out';
+    })()
+  )js";
+  ASSERT_EQ("Hindi (hi)",
+            content::EvalJs(contents, kVerifyPersistedPresetOnLoad));
+
+  // Reject malformed URL on Enter keydown, verify Refresh clears the error, and
+  // accept canonicalized BCP-47 ("es_MX" -> "es-MX") via Enter keydown.
+  constexpr char kTestInvalidAndRefreshClearsError[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      const input = app.shadowRoot.querySelector('#uiLocaleInput');
+      input.value = 'https://gemini.google.com/glic?hl=ja';
+      input.dispatchEvent(new Event('input', {bubbles: true}));
+      await app.updateComplete;
+      input.dispatchEvent(
+          new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (app.shadowRoot.querySelector('#uiLocaleErrorMsg')) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      if (!app.shadowRoot.querySelector('#uiLocaleErrorMsg')) {
+        return 'expected-error-msg-for-url';
+      }
+
+      const refreshBtn = app.shadowRoot.querySelector('#refreshButton');
+      refreshBtn.click();
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (!app.shadowRoot.querySelector('#uiLocaleErrorMsg') &&
+            input.value === 'Hindi (hi)') {
+          return 'ok';
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      return `refresh-did-not-clear-error: value=${input.value}`;
+    })()
+  )js";
+  ASSERT_EQ("ok", content::EvalJs(contents, kTestInvalidAndRefreshClearsError));
+
+  {
+    base::RunLoop pref_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    pref_registrar.Add(prefs::kGlicUiLocaleOverride, pref_loop.QuitClosure());
+
+    // Typing an exact locale code (`de`) pre-selects `German (de)` rather than
+    // an earlier substring match (`Default (Chrome UI language: ...)`).
+    constexpr char kApplyExactCodeDeViaEnter[] = R"js(
+      (async () => {
+        const app = document.querySelector('glic-internals-app');
+        const input = app.shadowRoot.querySelector('#uiLocaleInput');
+        input.value = 'de';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        await app.updateComplete;
+        input.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+        return 'ok';
+      })()
+    )js";
+    ASSERT_EQ("ok", content::EvalJs(contents, kApplyExactCodeDeViaEnter));
+    pref_loop.Run();
+  }
+  EXPECT_EQ("de", local_state->GetString(prefs::kGlicUiLocaleOverride));
+
+  {
+    base::RunLoop pref_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    pref_registrar.Add(prefs::kGlicUiLocaleOverride, pref_loop.QuitClosure());
+
+    // Typing `hi` + Enter pre-selects `Hindi (hi)` rather than `Chinese (...)`.
+    constexpr char kApplyExactCodeHiViaEnter[] = R"js(
+      (async () => {
+        const app = document.querySelector('glic-internals-app');
+        const input = app.shadowRoot.querySelector('#uiLocaleInput');
+        input.value = 'hi';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        await app.updateComplete;
+        input.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+        return 'ok';
+      })()
+    )js";
+    ASSERT_EQ("ok", content::EvalJs(contents, kApplyExactCodeHiViaEnter));
+    pref_loop.Run();
+  }
+  EXPECT_EQ("hi", local_state->GetString(prefs::kGlicUiLocaleOverride));
+
+  {
+    base::RunLoop pref_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    pref_registrar.Add(prefs::kGlicUiLocaleOverride, pref_loop.QuitClosure());
+
+    // Blurring and reopening `#uiLocaleInput` with unapplied text (`es_MX`)
+    // preserves the filtered custom option on Enter ("es_MX" -> "es-MX").
+    constexpr char kApplyCustomAfterBlurReopenViaEnter[] = R"js(
+      (async () => {
+        const app = document.querySelector('glic-internals-app');
+        const input = app.shadowRoot.querySelector('#uiLocaleInput');
+        input.value = 'es_MX';
+        input.dispatchEvent(new Event('input', {bubbles: true}));
+        await app.updateComplete;
+        input.dispatchEvent(new FocusEvent('blur'));
+        await app.updateComplete;
+        input.click();
+        await app.updateComplete;
+        input.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+        return 'ok';
+      })()
+    )js";
+    ASSERT_EQ("ok",
+              content::EvalJs(contents, kApplyCustomAfterBlurReopenViaEnter));
+    pref_loop.Run();
+  }
+  EXPECT_EQ("es-MX", local_state->GetString(prefs::kGlicUiLocaleOverride));
+  EXPECT_THAT(glic::GetGuestURL(profile).spec(),
+              testing::HasSubstr("hl=es-MX"));
+
+  // Reopening the dropdown while a custom locale (`es-MX`) is saved keeps
+  // `es-MX` in the list and pre-selected so pressing Enter does not clear it.
+  constexpr char kReopenSavedCustomAndPressEnter[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (app.data_?.config?.uiLocaleOverride === 'es-MX') {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      const input = app.shadowRoot.querySelector('#uiLocaleInput');
+      input.click();
+      await app.updateComplete;
+      const activeOpt =
+          app.shadowRoot.querySelector('.ui-locale-option.active');
+      if (!activeOpt || activeOpt.dataset.code !== 'es-MX') {
+        return `unexpected-active-opt: ${activeOpt?.dataset.code}`;
+      }
+      input.dispatchEvent(
+          new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+      await app.updateComplete;
+      return 'ok';
+    })()
+  )js";
+  ASSERT_EQ("ok", content::EvalJs(contents, kReopenSavedCustomAndPressEnter));
+  EXPECT_EQ("es-MX", local_state->GetString(prefs::kGlicUiLocaleOverride));
+
+  // Verify clicking Reset to Default clears the override via real click().
+  {
+    base::RunLoop pref_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    pref_registrar.Add(prefs::kGlicUiLocaleOverride, pref_loop.QuitClosure());
+
+    constexpr char kClickReset[] = R"js(
+      (() => {
+        const app = document.querySelector('glic-internals-app');
+        const resetBtn = app.shadowRoot.querySelector('#resetUiLocaleButton');
+        if (!resetBtn) {
+          return 'missing-reset-button';
+        }
+        resetBtn.click();
+        return 'ok';
+      })()
+    )js";
+    ASSERT_EQ("ok", content::EvalJs(contents, kClickReset));
+    pref_loop.Run();
+  }
+  EXPECT_EQ("", local_state->GetString(prefs::kGlicUiLocaleOverride));
+
+  constexpr char kVerifyAfterReset[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (!app.shadowRoot.querySelector('#resetUiLocaleButton')) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      if (app.shadowRoot.querySelector('#resetUiLocaleButton')) {
+        return 'reset-button-still-present';
+      }
+      const md = app.getDiagnosticsMarkdown_();
+      const expectedRow =
+          '| UI Language Override | None (Chrome UI language) |';
+      if (!md.includes(expectedRow)) {
+        return `unexpected-diagnostics-after-reset: ${md}`;
+      }
+      return 'ok';
+    })()
+  )js";
+  ASSERT_EQ("ok", content::EvalJs(contents, kVerifyAfterReset));
+}
+
+class GlicInternalsExplicitGuestUrlHlBrowserTest
+    : public GlicInternalsBrowserTest {
+ public:
+  GlicInternalsExplicitGuestUrlHlBrowserTest() {
+    url_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicURLConfig,
+          {{features::kGlicGuestURL.name,
+            "https://www.example.com/glic?hl=es"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList url_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsExplicitGuestUrlHlBrowserTest,
+                       UiLanguageSelectorWarnsWhenGuestUrlHasExplicitHl) {
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+  ASSERT_EQ("", local_state->GetString(prefs::kGlicUiLocaleOverride));
+
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals#debug.language")));
+  ASSERT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  // Even with no UI language override set, the warning is shown immediately
+  // whenever the base guest URL already carries an explicit `hl` parameter.
+  constexpr char kVerifyAlwaysShownWarning[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (app.shadowRoot.querySelector('#uiLocaleIgnoredBanner')) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      const banner = app.shadowRoot.querySelector('#uiLocaleIgnoredBanner');
+      if (!banner || !banner.textContent.includes('hl=es')) {
+        return `missing-or-wrong-ignored-banner: ${banner?.textContent}`;
+      }
+      return 'ok';
+    })()
+  )js";
+  ASSERT_EQ("ok", content::EvalJs(contents, kVerifyAlwaysShownWarning));
+
+  local_state->SetString(prefs::kGlicUiLocaleOverride, "hi");
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(contents, GURL(url::kAboutBlankURL)));
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals#debug.language")));
+  ASSERT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  constexpr char kVerifyIgnoredWarning[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (app.shadowRoot.querySelector('#uiLocaleIgnoredBanner')) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      const banner = app.shadowRoot.querySelector('#uiLocaleIgnoredBanner');
+      if (!banner || !banner.textContent.includes('hl=es')) {
+        return `missing-or-wrong-ignored-banner: ${banner?.textContent}`;
+      }
+      if (app.shadowRoot.querySelector('#uiLocaleReloadBanner')) {
+        return 'reload-banner-should-be-suppressed';
+      }
+      const md = app.getDiagnosticsMarkdown_();
+      const expectedRow =
+          '| UI Language Override | hi (ignored; Guest URL sets hl=es) |';
+      if (!md.includes(expectedRow)) {
+        return `missing-ignored-diagnostics-row: ${md}`;
+      }
+      return 'ok';
+    })()
+  )js";
+  EXPECT_EQ("ok", content::EvalJs(contents, kVerifyIgnoredWarning));
 }
 
 }  // namespace glic

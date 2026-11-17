@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -294,6 +296,32 @@ TEST_F(GeicFreTest, CompletionSurvivesLocaleChange) {
   EXPECT_TRUE(dict.FindDict(kFreKey));
 
   browser_process->SetApplicationLocale(original_locale);
+}
+
+TEST_F(GeicFreTest, CompletionSurvivesUiLocaleOverrideChange) {
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  base::ScopedClosureRunner reset_locale_override(
+      base::BindOnce(&PrefService::ClearPref, base::Unretained(local_state),
+                     glic::prefs::kGlicUiLocaleOverride));
+
+  base::test::ScopedFeatureList feature_list;
+  InitGeicFeatures(feature_list,
+                   "https://business.gemini.google/side-panel?configId=abc");
+  TestingProfile profile;
+
+  const GURL default_guest_url =
+      glic::GetGlicProviderSpec(&profile).GetGuestUrl(&profile);
+  CompleteFre(&profile);
+  EXPECT_EQ(GetFreStatus(&profile), GeicFreStatus::kCompleted);
+
+  local_state->SetString(glic::prefs::kGlicUiLocaleOverride, "hi");
+  const GURL overridden_guest_url =
+      glic::GetGlicProviderSpec(&profile).GetGuestUrl(&profile);
+  EXPECT_NE(overridden_guest_url, default_guest_url);
+  EXPECT_EQ(
+      overridden_guest_url,
+      GURL("https://business.gemini.google/side-panel?configId=abc&hl=hi"));
+  EXPECT_EQ(GetFreStatus(&profile), GeicFreStatus::kCompleted);
 }
 
 // `GetFrePrefKey()` only strips `hl` from `GetGuestUrl()`. If this fails

@@ -88,6 +88,15 @@ struct ProfileEnablement {
   GlicExperimentalTriggeringState glic_experimental_triggering_state;
 };
 
+// Supported UI locale option for the Glic internals language selector.
+struct LocaleOption {
+  // Google `hl` locale code (e.g. "hi", "es-419", "zh-TW").
+  string code;
+
+  // Human-readable display name (e.g. "Hindi", "Spanish (Latin America)").
+  string label;
+};
+
 // Basic configuration information about Glic.
 struct ConfigInfo {
   // The URL from which the guest web client is loaded from.
@@ -102,6 +111,17 @@ struct ConfigInfo {
 
   // User configured preset URL for web continuity.
   url.mojom.Url web_continuity_originating_host_url;
+
+  // User-configured UI locale override for the Glic guest URL `hl` parameter
+  // (empty when using Chrome's UI language).
+  string ui_locale_override;
+
+  // Explicit `hl` query parameter already present on the unlocalized guest URL
+  // (empty when the base guest URL does not specify `hl`).
+  string guest_url_explicit_locale;
+
+  // Supported UI locales for the internals language selector.
+  array<LocaleOption> available_ui_locales;
 };
 
 struct TieredRolloutInfo {
@@ -304,6 +324,11 @@ interface InternalsPageHandler {
 
   // Sets whether the hotkey global scope migration V2 preference is set.
   SetHotkeyGlobalScopeMigratedV2(bool migrated);
+
+  // Sets or clears (when `locale` is empty) the Glic UI locale override (`hl`
+  // query parameter on the guest URL). Returns false if `locale` is not a
+  // valid BCP-47 language tag.
+  SetUiLocaleOverride(string locale) => (bool success);
 };
 
 // Factory for InternalsPageHandler used in chrome://glic/internals.
