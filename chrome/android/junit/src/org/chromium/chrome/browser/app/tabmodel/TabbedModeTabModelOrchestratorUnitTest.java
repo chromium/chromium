@@ -325,6 +325,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         orchestrator.destroy();
         verify(mArchivedTabModelOrchestrator)
                 .removeHistoricalTabModelObserver(mSupplierCaptor.getValue());
+        verify(mPersistentStoreCleaner).removeTabContentManager(mTabContentManager);
     }
 
     @Test

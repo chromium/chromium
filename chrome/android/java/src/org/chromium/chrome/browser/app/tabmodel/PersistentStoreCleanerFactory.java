@@ -41,6 +41,27 @@ public class PersistentStoreCleanerFactory {
     }
 
     /**
+     * Look up the cleaner if instantiated for the given profile, or null otherwise.
+     *
+     * @param profile The profile used to lookup the cleaner.
+     * @return The {@link PersistentStoreCleaner} instance if instantiated, or null.
+     */
+    public static @Nullable PersistentStoreCleaner getIfInstantiatedForProfile(
+            @Nullable Profile profile) {
+        if (sCleanerForTesting != null) {
+            return sCleanerForTesting;
+        }
+        if (profile == null || profile.shutdownStarted()) {
+            return null;
+        }
+        Profile originalProfile = profile.getOriginalProfile();
+        if (originalProfile.shutdownStarted()) {
+            return null;
+        }
+        return sProfileMap.getForProfile(originalProfile);
+    }
+
+    /**
      * @param cleaner The cleaner to override with. Pass null to remove override.
      */
     public static void setForTesting(@Nullable PersistentStoreCleaner cleaner) {

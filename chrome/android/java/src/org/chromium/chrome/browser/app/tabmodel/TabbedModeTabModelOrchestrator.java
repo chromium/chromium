@@ -141,9 +141,15 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         TabArchiveSettings.getInstance().removeObserver(mTabArchiveSettingsObserver);
         releaseDeclutterLease();
-        mTabContentManager = null;
-
         Profile profile = getOriginalProfile();
+        if (mTabContentManager != null) {
+            PersistentStoreCleaner cleaner =
+                    PersistentStoreCleanerFactory.getIfInstantiatedForProfile(profile);
+            if (cleaner != null) {
+                cleaner.removeTabContentManager(mTabContentManager);
+            }
+            mTabContentManager = null;
+        }
         ArchivedTabModelOrchestrator archivedOrchestrator =
                 ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(profile);
         if (archivedOrchestrator != null) {

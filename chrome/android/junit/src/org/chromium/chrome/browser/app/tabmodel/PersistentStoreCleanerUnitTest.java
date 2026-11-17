@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabStateStore.TabStateStoreClean
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
@@ -76,6 +79,8 @@ public class PersistentStoreCleanerUnitTest {
     @Mock private Destroyable mLease;
 
     @Mock private TabContentManager mTabContentManager;
+    @Mock private TabContentManager mSecondTabContentManager;
+    @Mock private TabContentManager mDestroyedTabContentManager;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabModelSelector mArchivedTabModelSelector;
     @Mock private TabModelSelector mTabModelSelector;
@@ -595,5 +600,107 @@ public class PersistentStoreCleanerUnitTest {
 
         verify(mLegacyStoreCleaner).clearState(any(), any());
         verify(mTabStateStoreCleaner, never()).clearState(any());
+    }
+
+    @Test
+    public void testRemoveTabContentManager_RemovesOnlyManager_CleansUnusedDeps() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+
+        verify(mTabWindowManager).addObserver(mObserverCaptor.capture());
+        TabWindowManager.Observer observer = mObserverCaptor.getValue();
+
+        mCleaner.removeTabContentManager(mTabContentManager);
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+        verify(mTabWindowManager).removeObserver(observer);
+    }
+
+    @Test
+    public void testRemoveTabContentManager_MultipleManagers() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        mCleaner.scheduleCleanUnusedData(mSecondTabContentManager);
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+
+        mCleaner.removeTabContentManager(mTabContentManager);
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+
+        mCleaner.removeTabContentManager(mSecondTabContentManager);
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void testScheduleCleanUnusedData_PrunesDestroyedManagers() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+        when(mDestroyedTabContentManager.isDestroyed()).thenReturn(true);
+
+        mCleaner.scheduleCleanUnusedData(mDestroyedTabContentManager);
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+
+        mCleaner.removeTabContentManager(mTabContentManager);
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void testCleanUnusedWindows_IgnoresStaleDepsAfterRemove() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+
+        mCleaner.removeTabContentManager(mTabContentManager);
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+        mCleaner.scheduleCleanUnusedData(mSecondTabContentManager);
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void testRemoveTabContentManager_RemovesSelectorObserverAndIgnoresStaleCallback() {
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
+        TabModelSelectorObserver staleObserver = mSelectorObserverCaptor.getValue();
+
+        mCleaner.removeTabContentManager(mTabContentManager);
+        assertFalse(mCleaner.hasUnusedDataDepsForTesting());
+        verify(mTabModelSelector).removeObserver(staleObserver);
+
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
+        mCleaner.scheduleCleanUnusedData(mSecondTabContentManager);
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+
+        staleObserver.onTabStateInitialized();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+        assertTrue(mCleaner.hasUnusedDataDepsForTesting());
+    }
+
+    @Test
+    public void testPersistentStoreCleanerFactory_getIfInstantiatedForProfile() {
+        PersistentStoreCleanerFactory.setForTesting(null);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        assertNull(PersistentStoreCleanerFactory.getIfInstantiatedForProfile(mProfile));
+
+        PersistentStoreCleaner cleaner = PersistentStoreCleanerFactory.getForProfile(mProfile);
+        assertEquals(cleaner, PersistentStoreCleanerFactory.getIfInstantiatedForProfile(mProfile));
+
+        when(mProfile.shutdownStarted()).thenReturn(true);
+        assertNull(PersistentStoreCleanerFactory.getIfInstantiatedForProfile(mProfile));
+        assertNull(PersistentStoreCleanerFactory.getIfInstantiatedForProfile(null));
+        ProfileManager.onProfileDestroyed(mProfile);
     }
 }

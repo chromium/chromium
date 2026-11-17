@@ -49,7 +49,26 @@ public class PersistentStoreCleaner {
         final Set<TabContentManager> mTabContentManagers = new HashSet<>();
         @Nullable Runnable mCleanupRunnable;
         TabWindowManager.@Nullable Observer mTabWindowManagerObserver;
+        @Nullable TabModelSelector mObservedSelector;
+        @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
         @Nullable Destroyable mArchivedTabsLease;
+
+        void pruneDestroyedManagers() {
+            mTabContentManagers.removeIf(TabContentManager::isDestroyed);
+        }
+
+        @Nullable TabContentManager getValidManager() {
+            pruneDestroyedManagers();
+            return mTabContentManagers.isEmpty() ? null : mTabContentManagers.iterator().next();
+        }
+
+        void clearSelectorObserver() {
+            if (mObservedSelector != null && mTabModelSelectorObserver != null) {
+                mObservedSelector.removeObserver(mTabModelSelectorObserver);
+                mObservedSelector = null;
+                mTabModelSelectorObserver = null;
+            }
+        }
 
         void maybeAcquireArchivedTabsLease(Profile profile) {
             if (mArchivedTabsLease == null
@@ -62,6 +81,7 @@ public class PersistentStoreCleaner {
 
         @Override
         public void destroy() {
+            clearSelectorObserver();
             if (mTabWindowManagerObserver != null) {
                 TabWindowManagerSingleton.getInstance().removeObserver(mTabWindowManagerObserver);
                 mTabWindowManagerObserver = null;
@@ -199,6 +219,7 @@ public class PersistentStoreCleaner {
             unusedDataDeps = new UnusedDataDeps();
             mUnusedDataDeps = unusedDataDeps;
         }
+        unusedDataDeps.pruneDestroyedManagers();
         unusedDataDeps.mTabContentManagers.add(manager);
 
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
@@ -213,6 +234,24 @@ public class PersistentStoreCleaner {
                         }
                     };
             tabWindowManager.addObserver(unusedDataDeps.mTabWindowManagerObserver);
+        }
+    }
+
+    /**
+     * Removes a {@link TabContentManager} when its host activity / orchestrator is destroyed. If no
+     * active managers remain, cleans unused dependencies and unregisters observers to avoid memory
+     * leaks.
+     *
+     * @param manager The {@link TabContentManager} to remove.
+     */
+    public void removeTabContentManager(TabContentManager manager) {
+        assertOnUiThread();
+        if (mUnusedDataDeps == null) return;
+
+        mUnusedDataDeps.mTabContentManagers.remove(manager);
+        mUnusedDataDeps.pruneDestroyedManagers();
+        if (mUnusedDataDeps.mTabContentManagers.isEmpty()) {
+            cleanUnusedDeps();
         }
     }
 
@@ -233,13 +272,10 @@ public class PersistentStoreCleaner {
 
     private void cleanUnusedWindows(UnusedDataDeps deps) {
         assertOnUiThread();
-        TabContentManager validManager = null;
-        for (TabContentManager manager : deps.mTabContentManagers) {
-            if (!manager.isDestroyed()) {
-                validManager = manager;
-                break;
-            }
+        if (deps != mUnusedDataDeps) {
+            return;
         }
+        TabContentManager validManager = deps.getValidManager();
 
         if (validManager == null) {
             cleanUnusedDeps();
@@ -293,7 +329,9 @@ public class PersistentStoreCleaner {
                 // before initializing (e.g. window closed during startup), re-evaluate cleanup:
                 // if other selectors remain, continue waiting or proceed; if all selectors are
                 // gone, maybeCleanUnusedWindows() will safely abort.
-                selector.addObserver(
+                deps.clearSelectorObserver();
+                deps.mObservedSelector = selector;
+                deps.mTabModelSelectorObserver =
                         new TabModelSelectorObserver() {
                             @Override
                             public void onTabStateInitialized() {
@@ -306,11 +344,13 @@ public class PersistentStoreCleaner {
                             }
 
                             private void onFinished() {
-                                selector.removeObserver(this);
+                                deps.clearSelectorObserver();
                                 deps.mCleanupRunnable = null;
+                                if (deps != mUnusedDataDeps) return;
                                 maybeCleanUnusedWindows();
                             }
-                        });
+                        };
+                selector.addObserver(deps.mTabModelSelectorObserver);
                 return;
             }
         }
