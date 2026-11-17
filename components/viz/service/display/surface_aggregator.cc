@@ -1812,7 +1812,8 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // root surface to be embedded instead of merged. This supports the
       // feature |kDelegatedCompositingLimitToUi|.
       if (prevent_merging_surfaces_to_root_pass_ && child_resolved_frame &&
-          resolved_pass.is_root() && IsRootSurface(resolved_frame.surface())) {
+          child_resolved_frame->is_valid() && resolved_pass.is_root() &&
+          IsRootSurface(resolved_frame.surface())) {
         child_resolved_frame->GetRootRenderPassData()
             .aggregation()
             .prevent_merge = true;
