@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -2798,9 +2799,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 }
 
 // Provides a page service worker that answers every request under
-// `/sw-probe/`, the embedded test server responses for the probes that bypass
-// it (except `/sw-probe/beacon`, which tests handle themselves), and a helper
-// to load an extension with a content script.
+// `/sw-probe/` (except the probes that deliberately fall through to the
+// network), the embedded test server responses for the probes that bypass it
+// (except `/sw-probe/beacon`, which tests handle themselves), and a helper to
+// load an extension with a content script.
 class ContentScriptPageServiceWorkerTest : public ContentScriptApiTest {
  public:
   void SetUpOnMainThread() override {
@@ -2836,8 +2838,9 @@ class ContentScriptPageServiceWorkerTest : public ContentScriptApiTest {
   static std::unique_ptr<net::test_server::HttpResponse>
   HandleServiceWorkerProbeRequest(
       const net::test_server::HttpRequest& request) {
-    // Answers every request under `/sw-probe/` itself, so a probe can only
-    // reach the embedded test server if the worker was skipped.
+    // Answers every request under `/sw-probe/` itself (except for the probes
+    // that deliberately fall through to the network), so a probe can only reach
+    // the embedded test server if the worker was skipped.
     static constexpr char kServiceWorker[] = R"(
       self.addEventListener('install', () => self.skipWaiting());
       self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
@@ -2846,8 +2849,37 @@ class ContentScriptPageServiceWorkerTest : public ContentScriptApiTest {
         if (probe === undefined) {
           return;
         }
+        if (probe === 'preload-sw-redirect.js') {
+          // Intercept the initial preload and issue a redirect.
+          const target =
+              new URL('/sw-probe/sw-redirect-target.js', e.request.url);
+          e.respondWith(Response.redirect(target.href, 302));
+          return;
+        }
+        if (probe === 'main-world-preload-sw-redirect.js') {
+          // Intercept the initial preload and issue a redirect.
+          const target = new URL('/sw-probe/main-world-sw-redirect-target.js',
+                                 e.request.url);
+          e.respondWith(Response.redirect(target.href, 302));
+          return;
+        }
+        if (probe === 'sw-redirect-target.js' ||
+            probe === 'main-world-sw-redirect-target.js') {
+          // Deliberately fall through to network so WasFetchedViaServiceWorker
+          // is false.
+          return;
+        }
         const responses = {
           'module.js': ['text/javascript', "export default 'INTERCEPTED';"],
+          'preload.js': ['text/javascript', "export default 'INTERCEPTED';"],
+          'preload-fetch': ['text/plain', 'INTERCEPTED'],
+          'modulepreload.js':
+              ['text/javascript', "export default 'INTERCEPTED';"],
+          'main-world-preload.js':
+              ['text/javascript', "export default 'INTERCEPTED';"],
+          'main-world-preload-fetch': ['text/plain', 'INTERCEPTED'],
+          'main-world-modulepreload.js':
+              ['text/javascript', "export default 'INTERCEPTED';"],
           'events': ['text/event-stream', 'data: INTERCEPTED\n\n'],
         };
         const [type, body] = responses[probe] ?? ['text/plain', 'INTERCEPTED'];
@@ -2859,9 +2891,26 @@ class ContentScriptPageServiceWorkerTest : public ContentScriptApiTest {
     if (request.relative_url == "/sw.js") {
       response->set_content_type("text/javascript");
       response->set_content(kServiceWorker);
-    } else if (request.relative_url == "/sw-probe/text") {
+    } else if (request.relative_url == "/sw-probe/text" ||
+               request.relative_url == "/sw-probe/preload-fetch" ||
+               request.relative_url == "/sw-probe/main-world-preload-fetch") {
       response->set_content("REAL_SERVER");
-    } else if (request.relative_url == "/sw-probe/module.js") {
+    } else if (request.relative_url == "/sw-probe/preload-sw-redirect.js" ||
+               request.relative_url ==
+                   "/sw-probe/main-world-preload-sw-redirect.js") {
+      response->set_content_type("text/javascript");
+      response->set_content("export default 'REAL_SERVER_DIRECT';");
+    } else if (request.relative_url == "/sw-probe/sw-redirect-target.js" ||
+               request.relative_url ==
+                   "/sw-probe/main-world-sw-redirect-target.js") {
+      response->set_content_type("text/javascript");
+      response->set_content("export default 'SW_FALLTHROUGH_TARGET';");
+    } else if (request.relative_url == "/sw-probe/module.js" ||
+               request.relative_url == "/sw-probe/preload.js" ||
+               request.relative_url == "/sw-probe/modulepreload.js" ||
+               request.relative_url == "/sw-probe/main-world-preload.js" ||
+               request.relative_url ==
+                   "/sw-probe/main-world-modulepreload.js") {
       response->set_content_type("text/javascript");
       response->set_content("export default 'REAL_SERVER';");
     } else if (request.relative_url == "/sw-probe/events") {
@@ -2960,6 +3009,269 @@ IN_PROC_BROWSER_TEST_F(ContentScriptSkipServiceWorkerTest,
   // browser process alive at shutdown until the loader times out.
   beacon.Send(net::HTTP_OK);
   beacon.Done();
+}
+
+// Runs the test below with all reuse checks in `blink::Resource::CanReuse()`
+// enabled (`AllChecks`), and with the `GetSkipServiceWorker()` mismatch check
+// disabled (`WorldChecksOnly`). Isolated world requests always skip the page's
+// service worker while the page's preloads do not, so that check alone rejects
+// every probe below; disabling it leaves the `WorldForCsp()` / `TargetWorld()`
+// checks as the only defense exercised.
+class ContentScriptPageServiceWorkerPreloadTest
+    : public ContentScriptPageServiceWorkerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContentScriptPageServiceWorkerPreloadTest() {
+    if (GetParam()) {
+      feature_list_.InitFromCommandLine(
+          /*enable_features=*/"",
+          /*disable_features=*/
+          "PreventDifferentSkipServiceWorkerResourceReuse");
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContentScriptPageServiceWorkerPreloadTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WorldChecksOnly" : "AllChecks";
+                         });
+
+// Tests that requests issued from a content script's isolated world do not
+// reuse a `<link rel=preload>` or `<link rel=modulepreload>` entry from a
+// different script world or target world, including:
+// - preloads whose response was produced by the page's service worker
+//   (https://crbug.com/552870313).
+// - preloads poisoned through a service worker redirect whose final hop fell
+//   through to the network so `WasFetchedViaServiceWorker()` is `false`
+//   (https://crbug.com/551254456).
+// Both preloads inserted by the content script itself and preloads inserted by
+// the main world are covered.
+//
+// For each <link rel=preload> probe, the test also checks the console warning
+// from `blink::ResourceFetcher::PrintPreloadMismatch()`, which confirms that
+// the preload entry was actually found and then rejected for the expected
+// reason.
+//
+// The <link rel=modulepreload> probes are end-to-end sanity checks only, and do
+// not exercise the reuse checks in `blink::Resource::CanReuse()`: a
+// modulepreload never creates a preload entry in `blink::ResourceFetcher`, it
+// is fetched into the main world's module map, and its MemoryCache entry is
+// keyed by the Service Worker's cache identifier, which the isolated world
+// requests (that skip the Service Worker) never look up.
+IN_PROC_BROWSER_TEST_P(
+    ContentScriptPageServiceWorkerPreloadTest,
+    IsolatedWorldRequestsDoNotReusePageServiceWorkerPreloads) {
+  // Helpers shared by the page and the content script.
+  static constexpr char kProbeHelpers[] = R"(
+    const url = probe => location.origin + '/sw-probe/' + probe;
+
+    // Adds a <link> and resolves once it loaded, or rejects if it failed.
+    const addLink = (rel, as, probe) => new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = rel;
+      if (as) {
+        link.as = as;
+        // Matches the request mode (cors) and credentials mode (same-origin) of
+        // the isolated world requests below, so that a mismatch cannot mask a
+        // cross-world reuse.
+        link.crossOrigin = 'anonymous';
+      }
+      link.href = url(probe);
+      link.onload = resolve;
+      link.onerror = () =>
+          reject(new Error(`<link rel=${rel}> for ${probe} failed`));
+      document.head.appendChild(link);
+    });
+  )";
+
+  // Registers the Service Worker and, once it controls the page, adds main
+  // world preloads (answered by the Service Worker, except that the redirect
+  // target of `main-world-preload-sw-redirect.js` falls through to the network)
+  // and then signals the content script to start the tests, or to report a
+  // failed Service Worker registration or preload.
+  static constexpr char kMainPageScript[] = R"(
+    // The content script announces itself once its `message` listener is
+    // installed, so the start signal below can never be posted too early.
+    const contentScriptReady = new Promise(resolve => {
+      window.addEventListener('message', e => {
+        if (e.data === 'CONTENT_SCRIPT_READY') {
+          resolve();
+        }
+      });
+    });
+
+    navigator.serviceWorker.register('/sw.js').catch(async e => {
+      // Otherwise `controllerchange` never fires and the test times out.
+      await contentScriptReady;
+      window.postMessage(
+          'MAIN_WORLD_SETUP_FAILED: register() failed: ' + e.message, '*');
+    });
+    navigator.serviceWorker.addEventListener('controllerchange', async () => {
+      let message = 'START_TESTS';
+      try {
+        await addLink('preload', 'script', 'main-world-preload.js');
+        await addLink('preload', 'fetch', 'main-world-preload-fetch');
+        await addLink('preload', 'script', 'main-world-preload-sw-redirect.js');
+        await addLink('modulepreload', null, 'main-world-modulepreload.js');
+      } catch (e) {
+        message = 'MAIN_WORLD_SETUP_FAILED: ' + e.message;
+      }
+
+      // Start test here after all preloads finished.
+      await contentScriptReady;
+      window.postMessage(message, '*');
+    });
+  )";
+
+  static constexpr char kContentScript[] = R"(
+    // The page posts 'START_TESTS' only after every main world preload has
+    // finished, so the main world probes below always run while those preload
+    // entries exist, and must not reuse them.
+    window.addEventListener('message', e => {
+      if (typeof e.data === 'string' &&
+          e.data.startsWith('MAIN_WORLD_SETUP_FAILED')) {
+        // The main world has no `chrome.test`, so report on its behalf.
+        chrome.test.notifyFail(e.data);
+        return;
+      }
+      if (e.data !== 'START_TESTS') {
+        return;
+      }
+      chrome.test.runTests([
+        async function preloadProbe() {
+          await addLink('preload', 'script', 'preload.js');
+          const module = await import(url('preload.js'));
+          chrome.test.assertEq('REAL_SERVER', module.default);
+          chrome.test.succeed();
+        },
+        async function preloadFetchProbe() {
+          await addLink('preload', 'fetch', 'preload-fetch');
+          const response = await fetch(url('preload-fetch'));
+          chrome.test.assertEq('REAL_SERVER', await response.text());
+          chrome.test.succeed();
+        },
+        async function preloadSwRedirectProbe() {
+          await addLink('preload', 'script', 'preload-sw-redirect.js');
+          // The preload was intercepted by SW and redirected to
+          // sw-redirect-target.js, where the SW fell through to the network so
+          // WasFetchedViaServiceWorker is false on the response. If the preload
+          // cache entry were reused, module.default would be
+          // 'SW_FALLTHROUGH_TARGET'. Otherwise, dynamic import() fetches
+          // preload-sw-redirect.js directly from the server.
+          const module = await import(url('preload-sw-redirect.js'));
+          chrome.test.assertEq('REAL_SERVER_DIRECT', module.default);
+          chrome.test.succeed();
+        },
+        async function modulepreloadProbe() {
+          await addLink('modulepreload', null, 'modulepreload.js');
+          const module = await import(url('modulepreload.js'));
+          chrome.test.assertEq('REAL_SERVER', module.default);
+          chrome.test.succeed();
+        },
+        async function mainWorldPreloadProbe() {
+          const module = await import(url('main-world-preload.js'));
+          chrome.test.assertEq('REAL_SERVER', module.default);
+          chrome.test.succeed();
+        },
+        async function mainWorldPreloadFetchProbe() {
+          const response = await fetch(url('main-world-preload-fetch'));
+          chrome.test.assertEq('REAL_SERVER', await response.text());
+          chrome.test.succeed();
+        },
+        async function mainWorldPreloadSwRedirectProbe() {
+          const module = await import(url('main-world-preload-sw-redirect.js'));
+          chrome.test.assertEq('REAL_SERVER_DIRECT', module.default);
+          chrome.test.succeed();
+        },
+        async function mainWorldModulepreloadProbe() {
+          const module = await import(url('main-world-modulepreload.js'));
+          chrome.test.assertEq('REAL_SERVER', module.default);
+          chrome.test.succeed();
+        },
+      ]);
+    });
+
+    // Tells the page that the listener above is installed. The page's own
+    // listener is registered while parsing <head>, i.e. always before this
+    // content script runs, so this signal cannot be missed.
+    window.postMessage('CONTENT_SCRIPT_READY', '*');
+  )";
+
+  // Serves the page. It is outside `/sw-probe/`, so the worker never answers
+  // it.
+  const std::string main_page =
+      base::StrCat({"<html><head><script>", kProbeHelpers, kMainPageScript,
+                    "</script></head><body></body></html>"});
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const std::string& main_page,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/main.html") {
+          return nullptr;
+        }
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_content_type("text/html");
+        response->set_content(main_page);
+        return response;
+      },
+      main_page));
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ASSERT_TRUE(LoadContentScriptExtension(
+      base::StrCat({kProbeHelpers, kContentScript})));
+
+  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
+  console_observer.SetPattern("A preload for '*' is found, but is not used *");
+
+  ResultCatcher catcher;
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/main.html")));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Each <link rel=preload> probe must have found its preload entry and
+  // rejected it. The first `blink::Resource::CanReuse()` check that fails
+  // determines the reason, which is the same in both test parameters because
+  // the `WorldForCsp()` / `TargetWorld()` checks come before the
+  // `GetSkipServiceWorker()` check. <link rel=modulepreload> never creates a
+  // preload entry, so the modulepreload probes produce no warning.
+  const auto expected_warning = [&](std::string_view probe,
+                                    std::string_view reason) {
+    return base::StrCat({"A preload for '",
+                         embedded_test_server()
+                             ->GetURL(base::StrCat({"/sw-probe/", probe}))
+                             .spec(),
+                         "' is found, but is not used because it is a ", reason,
+                         " resource mismatch."});
+  };
+  const std::vector<std::string> expected_warnings = {
+      // Inserted by the content script: same `WorldForCsp()`, different
+      // `TargetWorld()`.
+      expected_warning("preload.js", "cross-target-world"),
+      expected_warning("preload-fetch", "cross-target-world"),
+      expected_warning("preload-sw-redirect.js", "cross-target-world"),
+      // Inserted by the main world: different `WorldForCsp()`, and the response
+      // was produced by the Service Worker.
+      expected_warning("main-world-preload.js", "cross-world service worker"),
+      expected_warning("main-world-preload-fetch",
+                       "cross-world service worker"),
+      // Inserted by the main world: different `WorldForCsp()`, and the final
+      // response fell through to the network (https://crbug.com/551254456).
+      expected_warning("main-world-preload-sw-redirect.js",
+                       "cross-world-for-csp"),
+  };
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return console_observer.messages().size() >= expected_warnings.size();
+  }));
+  std::vector<std::string> warnings;
+  for (const auto& message : console_observer.messages()) {
+    warnings.push_back(base::UTF16ToUTF8(message.message));
+  }
+  EXPECT_THAT(warnings, testing::UnorderedElementsAreArray(expected_warnings));
 }
 
 // Test fixture for verifying service worker registration behaviors when
