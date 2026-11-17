@@ -10,19 +10,18 @@
 #include <memory>
 #include <optional>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/webrtc/rtc_base/physical_socket_server.h"
+#include "third_party/webrtc/rtc_base/thread.h"
 #include "third_party/webrtc_overrides/api/location.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
@@ -88,16 +87,6 @@ class ThreadWrapper::PostTaskLatencySampler {
   bool should_sample_next_task_duration_ GUARDED_BY_CONTEXT(current_) = false;
 };
 
-struct ThreadWrapper::PendingSend {
-  explicit PendingSend(webrtc::FunctionView<void()> functor)
-      : functor(functor),
-        done_event(base::WaitableEvent::ResetPolicy::MANUAL,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED) {}
-
-  webrtc::FunctionView<void()> functor;
-  base::WaitableEvent done_event;
-};
-
 // static
 void ThreadWrapper::EnsureForCurrentMessageLoop() {
   if (ThreadWrapper::current() == nullptr) {
@@ -132,9 +121,7 @@ ThreadWrapper::ThreadWrapper(
     : Thread(std::make_unique<webrtc::PhysicalSocketServer>()),
       resetter_(&jingle_thread_wrapper, this, nullptr),
       task_runner_(task_runner),
-      send_allowed_(false),
-      pending_send_event_(base::WaitableEvent::ResetPolicy::MANUAL,
-                          base::WaitableEvent::InitialState::NOT_SIGNALED) {
+      send_allowed_(false) {
   DCHECK(task_runner->BelongsToCurrentThread());
   DCHECK(!webrtc::Thread::Current());
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
@@ -150,7 +137,6 @@ ThreadWrapper::~ThreadWrapper() {
   webrtc::ThreadManager::Instance()->SetCurrentThread(nullptr);
   webrtc::ThreadManager::Remove(this);
 
-  CHECK(pending_send_messages_.empty());
   coalesced_tasks_.Clear();
 }
 
@@ -168,62 +154,14 @@ void ThreadWrapper::BlockingCallImpl(webrtc::FunctionView<void()> functor,
   DCHECK(current_thread != nullptr) << "BlockingCall() can be called only from "
                                        "a thread that has ThreadWrapper.";
 
-  if (current_thread == this) {
-    functor();
-    return;
+  if (current_thread != this) {
+    // Allow inter-thread send only from threads that have
+    // |send_allowed_| flag set.
+    DCHECK(current_thread->send_allowed_)
+        << "Send()'ing synchronous "
+           "messages is not allowed from the current thread.";
   }
-
-  // Send message from a thread different than |this|.
-
-  // Allow inter-thread send only from threads that have
-  // |send_allowed_| flag set.
-  DCHECK(current_thread->send_allowed_)
-      << "Send()'ing synchronous "
-         "messages is not allowed from the current thread.";
-
-  PendingSend pending_send(functor);
-  {
-    base::AutoLock auto_lock(lock_);
-    pending_send_messages_.push_back(&pending_send);
-  }
-
-  // Need to signal |pending_send_event_| here in case the thread is
-  // sending message to another thread.
-  pending_send_event_.Signal();
-  task_runner_->PostTask(
-      location, base::BindOnce(&ThreadWrapper::ProcessPendingSends, weak_ptr_));
-
-  while (!pending_send.done_event.IsSignaled()) {
-    base::WaitableEvent* events[] = {&pending_send.done_event,
-                                     &current_thread->pending_send_event_};
-    size_t event = base::WaitableEvent::WaitMany(events);
-    DCHECK(event == 0 || event == 1);
-
-    if (event == 1) {
-      current_thread->ProcessPendingSends();
-    }
-  }
-}
-
-void ThreadWrapper::ProcessPendingSends() {
-  while (true) {
-    PendingSend* pending_send = nullptr;
-    {
-      base::AutoLock auto_lock(lock_);
-      if (!pending_send_messages_.empty()) {
-        pending_send = pending_send_messages_.front();
-        pending_send_messages_.pop_front();
-      } else {
-        // Reset the event while |lock_| is still locked.
-        pending_send_event_.Reset();
-        break;
-      }
-    }
-    if (pending_send) {
-      pending_send->functor();
-      pending_send->done_event.Signal();
-    }
-  }
+  webrtc::Thread::BlockingCallImpl(functor, location);
 }
 
 void ThreadWrapper::PostTaskImpl(absl::AnyInvocable<void() &&> task,
@@ -298,10 +236,6 @@ void ThreadWrapper::FinalizeRunTask(
     std::optional<base::TimeTicks> task_start_timestamp) {
   if (task_start_timestamp.has_value())
     task_duration_callback_.Run(base::TimeTicks::Now() - *task_start_timestamp);
-}
-
-bool ThreadWrapper::IsQuitting() {
-  NOTREACHED();
 }
 
 // All methods below are marked as not reached. See comments in the

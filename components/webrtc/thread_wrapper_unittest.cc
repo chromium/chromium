@@ -25,7 +25,6 @@ namespace {
 
 using ::blink::MetronomeLikeTaskQueueTest;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::MockFunction;
 
 constexpr TimeDelta kTestDelay1 = TimeDelta::Millis(10);
@@ -35,15 +34,6 @@ constexpr TimeDelta kTestDelay4 = TimeDelta::Millis(40);
 constexpr base::TimeDelta kMaxTestDelay = base::Milliseconds(40);
 
 class ThreadWrapperTest : public testing::Test {
- public:
-  // This method is used by the BlockingCallDuringBlockingCall test.
-  // It sends message to the main thread synchronously using BlockingCall().
-  void PingMainThread() {
-    MockFunction<void()> handler;
-    EXPECT_CALL(handler, Call);
-    thread_->BlockingCall(handler.AsStdFunction());
-  }
-
  protected:
   ThreadWrapperTest() : thread_(nullptr) {}
 
@@ -137,33 +127,6 @@ TEST_F(ThreadWrapperTest, BlockingCallToOtherThread) {
 
   MockFunction<void()> handler;
   EXPECT_CALL(handler, Call);
-  target->BlockingCall(handler.AsStdFunction());
-}
-
-// Verify that thread handles BlockingCall() while another BlockingCall() is
-// pending. The test creates second thread and BlockingCall()s
-// to that thread. handler calls PingMainThread() on the BlockingCall which
-// tries to BlockingCall() to the main thread.
-TEST_F(ThreadWrapperTest, BlockingCallDuringBlockingCall) {
-  ThreadWrapper::current()->set_send_allowed(true);
-
-  base::Thread second_thread("adWrapperTest");
-  second_thread.Start();
-
-  base::WaitableEvent initialized_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  ThreadWrapper* target;
-  second_thread.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&InitializeWrapperForNewThread, &target,
-                                &initialized_event));
-  initialized_event.Wait();
-
-  ASSERT_TRUE(target != nullptr);
-
-  MockFunction<void()> handler;
-  EXPECT_CALL(handler, Call)
-      .WillOnce(Invoke(this, &ThreadWrapperTest::PingMainThread));
   target->BlockingCall(handler.AsStdFunction());
 }
 

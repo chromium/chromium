@@ -7,17 +7,12 @@
 
 #include <stdint.h>
 
-#include <list>
 #include <memory>
 #include <optional>
 
 #include "base/auto_reset.h"
-#include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/synchronization/lock.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -97,7 +92,6 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // ensure that they are not called (each of them contain NOTREACHED
   // in the body). Some of this methods can be implemented if it
   // becomes necessary to use webrtc code that calls them.
-  bool IsQuitting() override;
   void Quit() override;
   void Restart() override;
   int GetDelay() override;
@@ -107,7 +101,6 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   void Run() override;
 
  private:
-  struct PendingSend;
   class PostTaskLatencySampler;
 
   explicit ThreadWrapper(
@@ -124,8 +117,6 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
                            TimeDelta delay,
                            const PostDelayedTaskTraits& traits,
                            const Location& location) override;
-
-  void ProcessPendingSends();
 
   // Executes WebRTC queued tasks from TaskQueueBase overrides on
   // |task_runner_|.
@@ -146,10 +137,6 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
 
   bool send_allowed_;
 
-  // |lock_| must be locked when accessing |pending_send_messages_|.
-  base::Lock lock_;
-  std::list<raw_ptr<PendingSend, CtnExperimental>> pending_send_messages_;
-  base::WaitableEvent pending_send_event_;
   std::unique_ptr<PostTaskLatencySampler> latency_sampler_;
   SampledDurationCallback task_latency_callback_;
   SampledDurationCallback task_duration_callback_;
