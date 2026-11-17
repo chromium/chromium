@@ -4,6 +4,7 @@
 
 #include "net/test/embedded_test_server/connection_tracker.h"
 
+#include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -68,7 +69,10 @@ size_t ConnectionTracker::GetReadSocketCount() const {
 
 void ConnectionTracker::WaitUntilConnectionRead() {
   base::RunLoop run_loop;
-  read_loop_ = &run_loop;
+  // `ReadFromSocketWithPort()` clears `read_loop_`, but `-Wlifetime-safety`
+  // cannot see across callbacks.
+  base::AutoReset<raw_ptr<base::RunLoop>> reset_read_loop(&read_loop_,
+                                                          &run_loop);
   read_loop_->Run();
 }
 
@@ -80,7 +84,10 @@ void ConnectionTracker::WaitForAcceptedConnections(size_t num_connections) {
   DCHECK_GT(num_connections, 0u);
   base::RunLoop run_loop;
   EXPECT_GE(num_connections, num_connected_sockets_);
-  num_accepted_connections_loop_ = &run_loop;
+  // `CheckAccepted()` clears `num_accepted_connections_loop_`, but
+  // `-Wlifetime-safety` cannot see across callbacks.
+  base::AutoReset<raw_ptr<base::RunLoop>> reset_accepted_loop(
+      &num_accepted_connections_loop_, &run_loop);
   num_accepted_connections_needed_ = num_connections;
   CheckAccepted();
   // Note that the previous call to CheckAccepted can quit this run loop
