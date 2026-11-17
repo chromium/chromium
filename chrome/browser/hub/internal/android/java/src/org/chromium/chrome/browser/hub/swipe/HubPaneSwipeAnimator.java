@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub.swipe;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_SETTLE_MIN_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_SLIDE_ANIMATION_DURATION_MS;
 
 import android.animation.Animator;
@@ -14,6 +15,8 @@ import android.animation.ValueAnimator;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,7 +41,12 @@ public class HubPaneSwipeAnimator {
 
     /** Creates an animator instance. */
     public HubPaneSwipeAnimator() {
-        mAnimationHandler = new AnimationHandler();
+        this(new AnimationHandler());
+    }
+
+    @VisibleForTesting
+    HubPaneSwipeAnimator(AnimationHandler animationHandler) {
+        mAnimationHandler = animationHandler;
     }
 
     /**
@@ -77,13 +85,14 @@ public class HubPaneSwipeAnimator {
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(currentAnim, adjacentAnim);
-        animatorSet.setInterpolator(HubPaneSwipeAnimationConfig.getSwipeSettleInterpolator());
+        animatorSet.setInterpolator(Interpolators.EMPHASIZED);
 
         float remainingFraction =
                 Math.abs(currentTargetX - currentView.getTranslationX()) / containerWidth;
-        long maxDuration = HubPaneSwipeAnimationConfig.getSwipeSettleMaxDurationMs();
-        long minDuration = HubPaneSwipeAnimationConfig.getSwipeSettleMinDurationMs(maxDuration);
-        long settleDuration = Math.max(minDuration, Math.round(maxDuration * remainingFraction));
+        long settleDuration =
+                Math.max(
+                        PANE_SETTLE_MIN_DURATION_MS,
+                        Math.round(PANE_SLIDE_ANIMATION_DURATION_MS * remainingFraction));
         animatorSet.setDuration(settleDuration);
 
         if (progressCallback != null) {
