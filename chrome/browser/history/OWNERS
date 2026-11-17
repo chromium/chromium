@@ -1,1 +1,4 @@
 file://components/history/OWNERS
+
+# Android history owners can add, rename, or remove history/java files.
+per-file BUILD.gn=file://chrome/browser/history/java/OWNERS
