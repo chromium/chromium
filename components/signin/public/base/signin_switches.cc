@@ -321,7 +321,7 @@ const base::FeatureParam<bool> kAccountPreviewDataPersistAccounts{
 // Controls optimizations for fetching account preview data. This flag has no
 // effect if `kEnableAccountPreviewData` is not enabled.
 BASE_FEATURE(kEnableAccountPreviewDataFetchOptimizations,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether only the reduced set of data types (required for heuristics
 // and string personalization) is requested and recorded for account preview
 // data.
