@@ -51,7 +51,7 @@ class CORE_EXPORT InsertTextCommand : public CompositeEditCommand {
   Position PositionInsideTextNode(const Position&, EditingState*);
   Position InsertTab(const Position&, EditingState*);
 
-  bool PerformTrivialReplace(const String&);
+  bool PerformTrivialReplace(const String&, EditingState*);
   void SetEndingSelectionWithoutValidation(const Position& start_position,
                                            const Position& end_position);
 

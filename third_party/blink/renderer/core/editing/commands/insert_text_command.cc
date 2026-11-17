@@ -161,7 +161,8 @@ void InsertTextCommand::SetEndingSelectionWithoutValidation(
 
 // This avoids the expense of a full fledged delete operation, and avoids a
 // layout that typically results from text removal.
-bool InsertTextCommand::PerformTrivialReplace(const String& text) {
+bool InsertTextCommand::PerformTrivialReplace(const String& text,
+                                              EditingState* editing_state) {
   // We may need to manipulate neighboring whitespace if we're deleting text.
   // This case is tested in
   // InsertTextCommandTest_InsertEmptyTextAfterWhitespaceThatNeedsFixup.
@@ -206,8 +207,18 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
   if (end_position.IsNull())
     return false;
 
-  SetEndingSelectionWithoutValidation(relocatable_start->GetPosition(),
-                                      end_position);
+  Position start_position = relocatable_start->GetPosition();
+  if (start_position.IsNull() || !start_position.IsValidFor(GetDocument()) ||
+      !end_position.IsValidFor(GetDocument()) ||
+      start_position > end_position) {
+    editing_state->Abort();
+    return false;
+  }
+  SetEndingSelectionWithoutValidation(start_position, end_position);
+  if (EndingVisibleSelection().IsNone()) {
+    editing_state->Abort();
+    return false;
+  }
   SetEndingSelection(SelectionForUndoStep::From(
       SelectionInDomTree::Builder()
           .Collapse(RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()
@@ -246,8 +257,10 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
   if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()
           ? EndingDomSelection().IsRange()
           : EndingSelection().IsRange()) {
-    if (PerformTrivialReplace(text_))
+    if (PerformTrivialReplace(text_, editing_state) ||
+        editing_state->IsAborted()) {
       return;
+    }
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     bool end_of_selection_was_at_start_of_block;
     if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
