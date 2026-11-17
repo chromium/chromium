@@ -58,6 +58,7 @@ using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 using blink::IndexedDBObjectStoreMetadata;
+using blink::mojom::IDBTransactionMode::VersionChange;
 
 namespace content::indexed_db {
 
@@ -477,14 +478,15 @@ void Transaction::Put(int64_t object_store_id,
 
   // This is decremented in DoPut.
   in_flight_memory_ += value.SizeEstimate();
+  auto [bad_message1, bad_message2] =
+      base::SplitOnceCallback(receiver_.GetBadMessageCallback());
   ScheduleTask(
       "PutRecord",
       base::BindOnce(&Transaction::DoPut, base::Unretained(this),
                      object_store_id, std::move(value), std::move(key), mode,
                      std::move(index_keys), std::move(wrapped_callback),
-                     // The validation checks are a bit too complex to squeeze
-                     // into a lambda, so they're performed in `DoPut`.
-                     receiver_.GetBadMessageCallback()));
+                     std::move(bad_message1)),
+      ObjectStoreMustExist(object_store_id, std::move(bad_message2)));
 }
 
 Status Transaction::DoPut(int64_t object_store_id,
@@ -510,16 +512,10 @@ Status Transaction::DoPut(int64_t object_store_id,
             blink::mojom::IDBError::New(code, message)));
   };
 
-  const IndexedDBObjectStoreMetadata* object_store =
-      connection_->database()->GetObjectStoreMetadataIfExists(object_store_id);
-  if (!object_store) {
-    ReportBadMessage(BadMessageReason::kTransactionDoPutInvalidObjectStoreId,
-                     "Invalid object_store_id",
-                     std::move(bad_message_callback));
-    return Status::InvalidArgument("Invalid object_store_id.");
-  }
+  const IndexedDBObjectStoreMetadata& object_store =
+      connection_->database()->GetObjectStoreMetadata(object_store_id);
   for (const IndexedDBIndexKeys& it : index_keys) {
-    if (!object_store->indexes.contains(it.id)) {
+    if (!object_store.indexes.contains(it.id)) {
       ReportBadMessage(BadMessageReason::kTransactionDoPutInvalidIndexId,
                        "Invalid index id", std::move(bad_message_callback));
       return Status::InvalidArgument("Invalid index id");
@@ -527,7 +523,7 @@ Status Transaction::DoPut(int64_t object_store_id,
   }
 
   if (put_mode != blink::mojom::IDBPutMode::CursorUpdate &&
-      object_store->auto_increment && !key.IsValid()) {
+      object_store.auto_increment && !key.IsValid()) {
     IndexedDBKey auto_inc_key = GenerateAutoIncrementKey(object_store_id);
     key_was_generated = true;
     if (!auto_inc_key.IsValid()) {
@@ -560,7 +556,7 @@ Status Transaction::DoPut(int64_t object_store_id,
 
   ASSIGN_OR_RETURN(
       std::vector<std::unique_ptr<IndexWriter>> index_writers,
-      MakeIndexWriters(this, *object_store, key, key_was_generated,
+      MakeIndexWriters(this, object_store, key, key_was_generated,
                        std::move(index_keys)),
       [&](IndexWriterError error) {
         switch (error.type) {
@@ -607,7 +603,7 @@ Status Transaction::DoPut(int64_t object_store_id,
     }
   }
 
-  if (object_store->auto_increment &&
+  if (object_store.auto_increment &&
       put_mode != blink::mojom::IDBPutMode::CursorUpdate &&
       key.type() == blink::mojom::IDBKeyType::Number) {
     TRACE_EVENT1("IndexedDB", "Database::PutOperation.AutoIncrement", "txn.id",
@@ -628,7 +624,7 @@ Status Transaction::DoPut(int64_t object_store_id,
   }
 
   bucket_context().delegate().on_content_changed.Run(
-      connection_->database()->name(), object_store->name);
+      connection_->database()->name(), object_store.name);
   return Status::OK();
 }
 
@@ -1301,12 +1297,15 @@ blink::mojom::IDBValuePtr Transaction::BuildMojoValue(IndexedDBValue value) {
 
 // static
 Transaction::VerificationCallback Transaction::ObjectStoreMustExist(
-    int64_t object_store_id) {
+    int64_t object_store_id,
+    mojo::ReportBadMessageCallback report_bad_message_callback) {
   return base::BindOnce(
       [](int64_t object_store_id,
          mojo::ReportBadMessageCallback report_bad_message_callback,
          Transaction& transaction) {
-        if (!transaction.connection_->database()->IsObjectStoreIdInMetadata(
+        // For VC txns, check the object store metadata.
+        if (transaction.mode() == VersionChange &&
+            !transaction.connection_->database()->IsObjectStoreIdInMetadata(
                 object_store_id)) {
           ReportBadMessage(
               BadMessageReason::kTransactionObjectStoreMustExistInvalidId,
@@ -1315,9 +1314,19 @@ Transaction::VerificationCallback Transaction::ObjectStoreMustExist(
           return Status::InvalidArgument("Invalid object_store_id.");
         }
 
+        // For non-VC txns, check the txn scope, which was validated against
+        // metadata at creation time.
+        if (transaction.mode() != VersionChange &&
+            !transaction.scope().contains(object_store_id)) {
+          std::move(report_bad_message_callback)
+              .Run("Object store is outside transaction scope");
+          return Status::InvalidArgument(
+              "Object store is outside transaction scope.");
+        }
+
         return Status::OK();
       },
-      object_store_id, mojo::GetBadMessageCallback());
+      object_store_id, std::move(report_bad_message_callback));
 }
 
 // static
@@ -1336,10 +1345,23 @@ Transaction::VerificationCallback Transaction::ObjectStoreAndIndexMustExist(
               "index_id must be valid", std::move(report_bad_message_callback));
           return Status::InvalidArgument("index_id must be valid.");
         }
-        if (!transaction.connection_->database()
-                 ->IsObjectStoreIdAndMaybeIndexIdInMetadata(
-                     object_store_id,
-                     index_id.value_or(IndexedDBIndexMetadata::kInvalidId))) {
+        if (transaction.mode() != VersionChange &&
+            !transaction.scope().contains(object_store_id)) {
+          std::move(report_bad_message_callback)
+              .Run("Object store is outside transaction scope");
+          return Status::InvalidArgument(
+              "Object store is outside transaction scope.");
+        }
+
+        // As above, validating the object store ID against the complete object
+        // store list in the metadata is redundant with the scope check for
+        // non-VC txns.
+        const Database& database = *transaction.connection_->database();
+        if ((transaction.mode() == VersionChange &&
+             !database.IsObjectStoreIdInMetadata(object_store_id)) ||
+            (index_id.has_value() &&
+             !database.GetObjectStoreMetadata(object_store_id)
+                  .indexes.contains(*index_id))) {
           ReportBadMessage(
               BadMessageReason::
                   kTransactionObjectStoreAndIndexMustExistInvalidIds,

@@ -187,6 +187,7 @@ Transaction* Connection::CreateVersionChangeTransaction(
     const std::set<int64_t>& scope,
     std::unique_ptr<BackingStore::Transaction> backing_store_transaction) {
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
+  CHECK(transactions_.empty());
 
   RecordCreateTransactionHistograms(
       blink::mojom::IDBTransactionMode::VersionChange);
@@ -330,6 +331,23 @@ void Connection::CreateTransaction(
     ReportBadMessage(
         BadMessageReason::kConnectionCreateTransactionAlreadyExists,
         kTransactionAlreadyExists, receiver_->GetBadMessageCallback());
+    return;
+  }
+
+  if (!transactions_.empty() &&
+      transactions_.begin()->second->mode() ==
+          blink::mojom::IDBTransactionMode::VersionChange) {
+    CHECK_EQ(transactions_.size(), 1U);
+    CHECK_EQ(database_->connections().size(), 1U);
+    receiver_->ReportBadMessage(
+        "Cannot create a transaction during a version change transaction");
+    return;
+  }
+
+  if (std::ranges::any_of(object_store_ids, [this](int64_t object_store_id) {
+        return !database_->IsObjectStoreIdInMetadata(object_store_id);
+      })) {
+    receiver_->ReportBadMessage("Invalid object_store_id in transaction scope");
     return;
   }
 
