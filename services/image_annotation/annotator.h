@@ -92,7 +92,7 @@ class Annotator : public mojom::Annotator {
   //                        new HTTP requests to the image annotation server.
   //  |batch_size|        : The maximum number of image annotation requests that
   //                        should be batched into a single request to the
-  //                        server.
+  //                        server. Must be >= 1.
   //  |min_ocr_confidence|: The minimum confidence value needed to return an OCR
   //                        result.
   Annotator(GURL pixels_server_url,

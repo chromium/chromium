@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -54,6 +56,10 @@ constexpr auto kAnnotationTypes =
         {manta::anchovy::kTypeLabel, mojom::AnnotationType::kLabel},
     });
 
+// TODO(crbug.com/340320912): Update or split this traffic annotation for
+// Anchovy/Manta before rolling out `kImageDescriptionsAlternateRouting` (under
+// alternate routing, Chrome sends only image pixels and language context to
+// Manta without image URLs or daily `/langs` requests).
 net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
   return net::DefineNetworkTrafficAnnotation("image_annotation", R"(
         semantics {
@@ -591,6 +597,7 @@ Annotator::Annotator(
       min_ocr_confidence_(min_ocr_confidence),
       server_languages_({"cs", "de", "en", "es", "fi", "fr", "hi", "hr", "id",
                          "it", "iw", "nl", "no", "pt", "ru", "sv", "tr"}) {
+  CHECK_GE(batch_size_, 1);
   server_request_timer_ = std::make_unique<base::RepeatingTimer>(
       FROM_HERE, throttle,
       base::BindRepeating(&Annotator::SendRequestBatchToServer,
@@ -849,48 +856,58 @@ void Annotator::SendRequestBatchToServer() {
     return;
   }
 
+  // Use anchovy if the flag is enabled.
+  if (features::IsImageDescriptionsAlternateRoutingEnabled()) {
+    CHECK(anchovy_provider_);
+    const size_t count = std::min<size_t>(server_request_queue_.size(),
+                                          static_cast<size_t>(batch_size_));
+    for (size_t i = 0; i < count; ++i) {
+      ServerRequestInfo& request_info = server_request_queue_.back();
+      CHECK(request_info.desc_requested);
+      ReportImageRequestIncludesDesc(request_info.desc_requested);
+      const RequestKey request_key = std::move(request_info.request_key);
+      const std::vector<uint8_t> image_bytes =
+          std::move(request_info.image_bytes);
+      server_request_queue_.pop_back();
+
+      // Populate a single-image batch using compact tag "0" rather than sending
+      // visited image URLs (`source_id`) in `tag`.
+      manta::anchovy::ImageDescriptionBatchRequest request(
+          request_key.desc_lang_tag);
+      request.images.emplace_back("0", image_bytes);
+      const auto now = base::Time::Now();
+      anchovy_provider_->GetImageDescriptions(
+          request, GetTrafficAnnotation(),
+          base::BindOnce(&Annotator::OnMantaResponseReceived,
+                         weak_factory_.GetWeakPtr(), request_key, now));
+    }
+    return;
+  }
+
   // Take last n elements (or all elements if there are less than n).
   const auto begin =
       server_request_queue_.end() -
       std::min<size_t>(server_request_queue_.size(), batch_size_);
   const auto end = server_request_queue_.end();
 
-  // Use anchovy if the flag is enabled.
-
-  if (features::IsImageDescriptionsAlternateRoutingEnabled()) {
-    CHECK(anchovy_provider_);
-    for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
-      CHECK(it->desc_requested);
-      ReportImageRequestIncludesDesc(it->desc_requested);
-      manta::anchovy::ImageDescriptionRequest request = {
-          it->request_key.source_id, it->request_key.desc_lang_tag,
-          it->image_bytes};
-      const auto now = base::Time::Now();
-      anchovy_provider_->GetImageDescription(
-          request, GetTrafficAnnotation(),
-          base::BindOnce(&Annotator::OnMantaResponseReceived,
-                         weak_factory_.GetWeakPtr(), it->request_key, now));
-    }
-  } else {
-    // The set of request keys relevant for this request.
-    std::set<RequestKey> request_keys;
-    for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
-      request_keys.insert(it->request_key);
-    }
-
-    // Kick off server communication.
-    std::unique_ptr<network::SimpleURLLoader> url_loader =
-        MakeRequestLoader(pixels_server_url_, api_key_);
-    url_loader->AttachStringForUpload(FormatJsonRequest(begin, end),
-                                      "application/json");
-    ongoing_server_requests_.push_back(std::move(url_loader));
-    ongoing_server_requests_.back()->DownloadToString(
-        url_loader_factory_.get(),
-        base::BindOnce(&Annotator::OnServerResponseReceived,
-                       weak_factory_.GetWeakPtr(), request_keys,
-                       --ongoing_server_requests_.end()),
-        kImageAnnotationMaxResponseSize);
+  // The set of request keys relevant for this request.
+  std::set<RequestKey> request_keys;
+  for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
+    request_keys.insert(it->request_key);
   }
+
+  // Kick off server communication.
+  std::unique_ptr<network::SimpleURLLoader> url_loader =
+      MakeRequestLoader(pixels_server_url_, api_key_);
+  url_loader->AttachStringForUpload(FormatJsonRequest(begin, end),
+                                    "application/json");
+  ongoing_server_requests_.push_back(std::move(url_loader));
+  ongoing_server_requests_.back()->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&Annotator::OnServerResponseReceived,
+                     weak_factory_.GetWeakPtr(), request_keys,
+                     --ongoing_server_requests_.end()),
+      kImageAnnotationMaxResponseSize);
 
   server_request_queue_.erase(begin, end);
 }
@@ -912,12 +929,14 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
     return;
   }
 
-  if (dict.empty()) {
+  const base::DictValue* results_by_tag =
+      dict.FindDict(manta::anchovy::kResultsByTagKey);
+  if (!results_by_tag) {
     ProcessResult(request_key, {});
     return;
   }
 
-  auto* results_list = dict.FindList("results");
+  const base::ListValue* results_list = results_by_tag->FindList("0");
   if (!results_list || results_list->empty()) {
     ProcessResult(request_key, {});
     return;

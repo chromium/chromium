@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -2610,16 +2611,32 @@ class FakeAnchovyProvider : public manta::AnchovyProvider {
   FakeAnchovyProvider(const FakeAnchovyProvider&) = delete;
   FakeAnchovyProvider& operator=(const FakeAnchovyProvider&) = delete;
 
-  void GetImageDescription(manta::anchovy::ImageDescriptionRequest& request,
-                           net::NetworkTrafficAnnotationTag traffic_annotation,
-                           manta::MantaGenericCallback callback) override {
+  void GetImageDescriptions(
+      const manta::anchovy::ImageDescriptionBatchRequest& request,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      manta::MantaGenericCallback callback) override {
     ++request_count_;
+    base::DictValue response_dict;
+    if (const base::ListValue* single_results =
+            fake_result_.FindList("results");
+        single_results &&
+        !fake_result_.FindDict(manta::anchovy::kResultsByTagKey) &&
+        request.images.size() == 1) {
+      // Wrap single-image `{"results": [...]}` fixtures under the requested tag
+      // in `results_by_tag` so existing single-image tests exercise the batched
+      // provider API unaltered.
+      response_dict.Set(manta::anchovy::kResultsByTagKey,
+                        base::DictValue().Set(request.images[0].tag,
+                                              single_results->Clone()));
+    } else {
+      response_dict = fake_result_.Clone();
+    }
     manta::MantaStatus status;
     status.status_code = status_code_;
     status.locale = "en";
     status.message =
         status_code_ == manta::MantaStatusCode::kOk ? "ok" : "error";
-    std::move(callback).Run(fake_result_.Clone(), status);
+    std::move(callback).Run(std::move(response_dict), std::move(status));
   }
 
   void SetFakeResult(base::DictValue fake_result,
@@ -3714,6 +3731,19 @@ TEST(AnnotatorTest, CrossOriginLocalProcessingIsolated) {
   EXPECT_EQ(error_a1, mojom::AnnotateImageError::kCanceled);
   EXPECT_THAT(processor_a2.callbacks(), SizeIs(1));
   EXPECT_THAT(processor_b1.callbacks(), SizeIs(1));
+}
+
+// Verifies that constructing an Annotator with a non-positive batch size
+// CHECK-crashes.
+TEST(AnnotatorDeathTest, NonPositiveBatchSizeCrashes) {
+  EXPECT_CHECK_DEATH(Annotator(GURL(kTestServerUrl), GURL(""), std::string(),
+                               kThrottle, /*batch_size=*/0,
+                               /*min_ocr_confidence=*/1.0, nullptr, nullptr,
+                               std::make_unique<TestAnnotatorClient>()));
+  EXPECT_CHECK_DEATH(Annotator(GURL(kTestServerUrl), GURL(""), std::string(),
+                               kThrottle, /*batch_size=*/-1,
+                               /*min_ocr_confidence=*/1.0, nullptr, nullptr,
+                               std::make_unique<TestAnnotatorClient>()));
 }
 
 }  // namespace image_annotation

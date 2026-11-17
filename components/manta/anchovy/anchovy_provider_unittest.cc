@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,7 +29,11 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/data_element.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace manta {
@@ -85,237 +90,6 @@ class AnchovyProviderTest : public BaseProviderTest {
         identity_test_env_->identity_manager());
   }
 };
-
-// Verifies that ComposeRequest populates the feature name,
-// ImageDescriptionContext type URL and language tag, and raw image bytes.
-TEST(AnchovyProtoHelperTest, ComposeRequest) {
-  const std::vector<uint8_t> kImageBytes = {10, 20, 30, 40};
-  anchovy::ImageDescriptionRequest request("https://example.com/img.jpg", "fr",
-                                           kImageBytes);
-
-  proto::Request request_proto =
-      anchovy::AnchovyProtoHelper::ComposeRequest(request);
-
-  EXPECT_EQ(request_proto.feature_name(),
-            proto::FeatureName::ACCESSIBILITY_IMAGE_DESCRIPTION);
-  ASSERT_TRUE(request_proto.has_request_config());
-  ASSERT_TRUE(request_proto.request_config().has_specific_options());
-  EXPECT_EQ(request_proto.request_config().specific_options().type_url(),
-            "type.googleapis.com/image_repository.api.ImageDescriptionContext");
-
-  proto::AnchovyContext context;
-  ASSERT_TRUE(context.ParseFromString(
-      request_proto.request_config().specific_options().value()));
-  EXPECT_EQ(context.lang_id(), "fr");
-  EXPECT_TRUE(context.optional_inputs().input1());
-
-  ASSERT_EQ(request_proto.input_data_size(), 1);
-  ASSERT_TRUE(request_proto.input_data(0).has_image());
-  EXPECT_EQ(request_proto.input_data(0).image().serialized_bytes(),
-            std::string(kImageBytes.begin(), kImageBytes.end()));
-}
-
-// Verifies that HandleImageDescriptionResponse distinguishes PRIMARY_CAPTION,
-// SECONDARY_CAPTION, LABEL, and OCR entries.
-TEST(AnchovyProtoHelperTest, HandleImageDescriptionResponseValidDescriptions) {
-  auto response = std::make_unique<proto::Response>();
-  AddAnchovyOutputData(response.get(),
-                       proto::AnchovyDescription_Type_PRIMARY_CAPTION,
-                       "A person riding a bicycle", 0.85f);
-  AddAnchovyOutputData(response.get(),
-                       proto::AnchovyDescription_Type_SECONDARY_CAPTION,
-                       "Mountain View", 0.75f);
-  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_LABEL,
-                       "bicycle", 0.95f);
-  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_OCR,
-                       "STOP", 0.90f);
-
-  base::test::TestFuture<base::DictValue, MantaStatus> future;
-  anchovy::AnchovyProtoHelper::HandleImageDescriptionResponse(
-      future.GetCallback(), std::move(response), {MantaStatusCode::kOk, "ok"});
-
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get<1>().status_code, MantaStatusCode::kOk);
-  const base::ListValue* results = future.Get<0>().FindList("results");
-  ASSERT_NE(results, nullptr);
-  ASSERT_EQ(results->size(), 4u);
-
-  EXPECT_EQ(*(*results)[0].GetDict().FindString("type"),
-            anchovy::kTypePrimaryCaption);
-  EXPECT_EQ(*(*results)[0].GetDict().FindString("text"),
-            "A person riding a bicycle");
-  EXPECT_NEAR(*(*results)[0].GetDict().FindDouble("score"), 0.85, 1e-5);
-
-  EXPECT_EQ(*(*results)[1].GetDict().FindString("type"),
-            anchovy::kTypeSecondaryCaption);
-  EXPECT_EQ(*(*results)[1].GetDict().FindString("text"), "Mountain View");
-  EXPECT_NEAR(*(*results)[1].GetDict().FindDouble("score"), 0.75, 1e-5);
-
-  EXPECT_EQ(*(*results)[2].GetDict().FindString("type"), anchovy::kTypeLabel);
-  EXPECT_EQ(*(*results)[2].GetDict().FindString("text"), "bicycle");
-  EXPECT_NEAR(*(*results)[2].GetDict().FindDouble("score"), 0.95, 1e-5);
-
-  EXPECT_EQ(*(*results)[3].GetDict().FindString("type"), anchovy::kTypeOcr);
-  EXPECT_EQ(*(*results)[3].GetDict().FindString("text"), "STOP");
-  EXPECT_NEAR(*(*results)[3].GetDict().FindDouble("score"), 0.90, 1e-5);
-}
-
-// Verifies that missing custom fields on earlier entries, malformed Any
-// payloads, empty text, and UNKNOWN/UNUSED enum types are safely skipped
-// without dropping valid subsequent entries.
-TEST(AnchovyProtoHelperTest,
-     HandleImageDescriptionResponseSkipsInvalidEntries) {
-  auto response = std::make_unique<proto::Response>();
-
-  // Entry 0: no custom proto field (should not abort the rest of the response).
-  response->add_output_data()->set_text("non-custom text");
-
-  // Entry 1: malformed protobuf wire bytes in custom.value.
-  auto* malformed_data = response->add_output_data();
-  malformed_data->set_score(0.9f);
-  malformed_data->mutable_custom()->set_value("\xFF\xFF\xFF\xFF");
-
-  // Entry 2: UNKNOWN description type.
-  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_UNKNOWN,
-                       "unknown type", 0.8f);
-
-  // Entry 3: UNUSED description type.
-  AddAnchovyOutputData(response.get(), proto::AnchovyDescription_Type_UNUSED,
-                       "unused type", 0.8f);
-
-  // Entry 4: unrecognized proto3 open enum integer value.
-  AddAnchovyOutputData(response.get(),
-                       static_cast<proto::AnchovyDescription::Type>(99),
-                       "unrecognized enum value", 0.8f);
-
-  // Entry 5: empty text string.
-  AddAnchovyOutputData(
-      response.get(), proto::AnchovyDescription_Type_PRIMARY_CAPTION, "", 0.8f);
-
-  // Entry 6: non-finite (NaN and infinite) float scores.
-  AddAnchovyOutputData(response.get(),
-                       proto::AnchovyDescription_Type_PRIMARY_CAPTION,
-                       "nan score", std::numeric_limits<float>::quiet_NaN());
-  AddAnchovyOutputData(response.get(),
-                       proto::AnchovyDescription_Type_PRIMARY_CAPTION,
-                       "inf score", std::numeric_limits<float>::infinity());
-
-  // Entry 7: valid PRIMARY_CAPTION entry.
-  AddAnchovyOutputData(response.get(),
-                       proto::AnchovyDescription_Type_PRIMARY_CAPTION,
-                       "A golden retriever on grass", 0.88f);
-
-  base::test::TestFuture<base::DictValue, MantaStatus> future;
-  anchovy::AnchovyProtoHelper::HandleImageDescriptionResponse(
-      future.GetCallback(), std::move(response), {MantaStatusCode::kOk, "ok"});
-
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(future.Get<1>().status_code, MantaStatusCode::kOk);
-  const base::ListValue* results = future.Get<0>().FindList("results");
-  ASSERT_NE(results, nullptr);
-  ASSERT_EQ(results->size(), 1u);
-  EXPECT_EQ(*(*results)[0].GetDict().FindString("type"),
-            anchovy::kTypePrimaryCaption);
-  EXPECT_EQ(*(*results)[0].GetDict().FindString("text"),
-            "A golden retriever on grass");
-}
-
-// Verifies that non-OK MantaStatusCode values and empty/all-invalid responses
-// return an empty DictValue.
-TEST(AnchovyProtoHelperTest, HandleImageDescriptionResponseErrorAndEmpty) {
-  // Non-OK status with null response returns empty dict and forwards status.
-  base::test::TestFuture<base::DictValue, MantaStatus> error_future;
-  anchovy::AnchovyProtoHelper::HandleImageDescriptionResponse(
-      error_future.GetCallback(), nullptr,
-      {MantaStatusCode::kBackendFailure, "backend error"});
-  ASSERT_TRUE(error_future.Wait());
-  EXPECT_TRUE(error_future.Get<0>().empty());
-  EXPECT_EQ(error_future.Get<1>().status_code,
-            MantaStatusCode::kBackendFailure);
-
-  // OK status with empty output_data returns empty dict.
-  base::test::TestFuture<base::DictValue, MantaStatus> empty_future;
-  anchovy::AnchovyProtoHelper::HandleImageDescriptionResponse(
-      empty_future.GetCallback(), std::make_unique<proto::Response>(),
-      {MantaStatusCode::kOk, "ok", "en"});
-  ASSERT_TRUE(empty_future.Wait());
-  EXPECT_TRUE(empty_future.Get<0>().empty());
-  EXPECT_EQ(empty_future.Get<1>().status_code, MantaStatusCode::kOk);
-  EXPECT_EQ(empty_future.Get<1>().locale, "en");
-
-  // OK status where all output_data entries are invalid also returns empty
-  // dict.
-  auto all_invalid_response = std::make_unique<proto::Response>();
-  AddAnchovyOutputData(all_invalid_response.get(),
-                       proto::AnchovyDescription_Type_UNKNOWN, "unknown", 0.5f);
-  base::test::TestFuture<base::DictValue, MantaStatus> invalid_future;
-  anchovy::AnchovyProtoHelper::HandleImageDescriptionResponse(
-      invalid_future.GetCallback(), std::move(all_invalid_response),
-      {MantaStatusCode::kOk, "ok"});
-  ASSERT_TRUE(invalid_future.Wait());
-  EXPECT_TRUE(invalid_future.Get<0>().empty());
-  EXPECT_EQ(invalid_future.Get<1>().status_code, MantaStatusCode::kOk);
-}
-
-TEST_F(AnchovyProviderTest, GetImageDescriptionSuccess) {
-  proto::Response response;
-  AddAnchovyOutputData(&response,
-                       proto::AnchovyDescription_Type_PRIMARY_CAPTION,
-                       "A cat sitting on a windowsill", 0.92f);
-
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<FakeAnchovyProvider> anchovy_provider =
-      CreateAnchovyProvider();
-
-  SetEndpointMockResponse(GURL{kMockEndpoint},
-                          /*response_data=*/response.SerializeAsString(),
-                          net::HTTP_OK, net::OK);
-
-  const std::vector<uint8_t> kImageBytes = {1, 2, 3};
-  anchovy::ImageDescriptionRequest request("https://example.com/cat.jpg", "en",
-                                           kImageBytes);
-  anchovy_provider->GetImageDescription(
-      request, TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::BindLambdaForTesting(
-          [quit_closure = task_environment_.QuitClosure()](
-              base::DictValue dict, MantaStatus manta_status) {
-            EXPECT_EQ(manta_status.status_code, MantaStatusCode::kOk);
-            const auto* results = dict.FindList("results");
-            ASSERT_NE(results, nullptr);
-            ASSERT_EQ(results->size(), 1u);
-            EXPECT_EQ(*(*results)[0].GetDict().FindString("type"),
-                      anchovy::kTypePrimaryCaption);
-            EXPECT_EQ(*(*results)[0].GetDict().FindString("text"),
-                      "A cat sitting on a windowsill");
-            quit_closure.Run();
-          }));
-  task_environment_.RunUntilQuit();
-  histogram_tester.ExpectTotalCount("Ash.MantaService.AnchovyProvider.TimeCost",
-                                    1);
-}
-
-TEST_F(AnchovyProviderTest, GetImageDescriptionBackendFailure) {
-  std::unique_ptr<FakeAnchovyProvider> anchovy_provider =
-      CreateAnchovyProvider();
-
-  SetEndpointMockResponse(GURL{kMockEndpoint}, /*response_data=*/"",
-                          net::HTTP_BAD_REQUEST, net::OK);
-
-  const std::vector<uint8_t> kImageBytes = {1, 2, 3};
-  anchovy::ImageDescriptionRequest request("https://example.com/cat.jpg", "en",
-                                           kImageBytes);
-  anchovy_provider->GetImageDescription(
-      request, TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::BindLambdaForTesting(
-          [quit_closure = task_environment_.QuitClosure()](
-              base::DictValue dict, MantaStatus manta_status) {
-            EXPECT_TRUE(dict.empty());
-            EXPECT_EQ(manta_status.status_code,
-                      MantaStatusCode::kBackendFailure);
-            quit_closure.Run();
-          }));
-  task_environment_.RunUntilQuit();
-}
 
 // Verifies compile-time rvalue temporary rejection, noexcept move traits, and
 // runtime move construction/assignment for batch request structs.
@@ -406,10 +180,14 @@ TEST(AnchovyProtoHelperTest, ComposeBatchRequest) {
 }
 
 // Verifies that ComposeRequest(ImageDescriptionBatchRequest) CHECK-crashes on
-// empty tags, non-UTF-8 tags, duplicate tags, or empty image byte buffers.
+// an empty image list, empty tags, non-UTF-8 tags, duplicate tags, or empty
+// image byte buffers.
 TEST(AnchovyProtoHelperDeathTest, ComposeBatchRequestRejectsInvalidEntries) {
   const std::vector<uint8_t> kValidImg = {1, 2, 3};
   const std::vector<uint8_t> kEmptyImg = {};
+
+  anchovy::ImageDescriptionBatchRequest empty_batch("en");
+  EXPECT_CHECK_DEATH(anchovy::AnchovyProtoHelper::ComposeRequest(empty_batch));
 
   anchovy::ImageDescriptionBatchRequest empty_tag_batch("en");
   empty_tag_batch.images.emplace_back("", kValidImg);
@@ -584,6 +362,184 @@ TEST(AnchovyProtoHelperTest, HandleImageDescriptionsResponseErrorAndEmpty) {
   ASSERT_NE(invalid_results_by_tag, nullptr);
   EXPECT_TRUE(invalid_results_by_tag->empty());
   EXPECT_EQ(invalid_future.Get<1>().status_code, MantaStatusCode::kOk);
+}
+
+TEST_F(AnchovyProviderTest, GetImageDescriptionsBatchSuccess) {
+  proto::Response response;
+  AddAnchovyOutputData(&response,
+                       proto::AnchovyDescription_Type_PRIMARY_CAPTION,
+                       "A cat sitting on a windowsill", 0.92f, "0");
+  AddAnchovyOutputData(&response,
+                       proto::AnchovyDescription_Type_SECONDARY_CAPTION,
+                       "Indoor", 0.80f, "0");
+  AddAnchovyOutputData(&response, proto::AnchovyDescription_Type_LABEL, "dog",
+                       0.85f, "1");
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<FakeAnchovyProvider> anchovy_provider =
+      CreateAnchovyProvider();
+
+  int http_request_count = 0;
+  std::string uploaded_body;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        if (req.url != GURL{kMockEndpoint}) {
+          return;
+        }
+        ++http_request_count;
+        ASSERT_NE(req.request_body, nullptr);
+        ASSERT_EQ(req.request_body->elements()->size(), 1u);
+        uploaded_body = std::string(req.request_body->elements()
+                                        ->at(0)
+                                        .As<network::DataElementBytes>()
+                                        .AsStringView());
+      }));
+
+  SetEndpointMockResponse(GURL{kMockEndpoint},
+                          /*response_data=*/response.SerializeAsString(),
+                          net::HTTP_OK, net::OK);
+
+  const std::vector<uint8_t> kCatBytes = {1, 2, 3};
+  const std::vector<uint8_t> kDogBytes = {4, 5, 6, 7};
+  anchovy::ImageDescriptionBatchRequest batch("en");
+  batch.images.emplace_back("0", kCatBytes);
+  batch.images.emplace_back("1", kDogBytes);
+
+  base::test::TestFuture<base::DictValue, MantaStatus> future;
+  anchovy_provider->GetImageDescriptions(batch, TRAFFIC_ANNOTATION_FOR_TESTS,
+                                         future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(http_request_count, 1);
+  proto::Request uploaded_request;
+  ASSERT_TRUE(uploaded_request.ParseFromString(uploaded_body));
+  EXPECT_EQ(uploaded_request.feature_name(),
+            proto::FeatureName::ACCESSIBILITY_IMAGE_DESCRIPTION);
+  ASSERT_EQ(uploaded_request.input_data_size(), 2);
+  EXPECT_EQ(uploaded_request.input_data(0).tag(), "0");
+  EXPECT_EQ(uploaded_request.input_data(0).image().serialized_bytes(),
+            std::string(kCatBytes.begin(), kCatBytes.end()));
+  EXPECT_EQ(uploaded_request.input_data(1).tag(), "1");
+  EXPECT_EQ(uploaded_request.input_data(1).image().serialized_bytes(),
+            std::string(kDogBytes.begin(), kDogBytes.end()));
+
+  EXPECT_EQ(future.Get<1>().status_code, MantaStatusCode::kOk);
+  const base::DictValue* results_by_tag =
+      future.Get<0>().FindDict(anchovy::kResultsByTagKey);
+  ASSERT_NE(results_by_tag, nullptr);
+  ASSERT_NE(results_by_tag->FindList("0"), nullptr);
+  EXPECT_EQ(results_by_tag->FindList("0")->size(), 2u);
+  ASSERT_NE(results_by_tag->FindList("1"), nullptr);
+  EXPECT_EQ(results_by_tag->FindList("1")->size(), 1u);
+
+  histogram_tester.ExpectTotalCount("Ash.MantaService.AnchovyProvider.TimeCost",
+                                    1);
+}
+
+TEST_F(AnchovyProviderTest,
+       GetImageDescriptionsOversizedBatchReturnsInvalidInput) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<FakeAnchovyProvider> anchovy_provider =
+      CreateAnchovyProvider();
+
+  int http_request_count = 0;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& req) {
+        if (req.url == GURL{kMockEndpoint}) {
+          ++http_request_count;
+        }
+      }));
+
+  // Batch exceeding `kMaxBatchSize` (`100`) images fails fast with
+  // `kInvalidInput` without issuing an HTTP request.
+  const std::vector<uint8_t> kValidBytes = {1, 2};
+  anchovy::ImageDescriptionBatchRequest oversized_batch("en");
+  oversized_batch.images.reserve(anchovy::kMaxBatchSize + 1);
+  for (size_t i = 0; i < anchovy::kMaxBatchSize + 1; ++i) {
+    oversized_batch.images.emplace_back(base::NumberToString(i), kValidBytes);
+  }
+  base::test::TestFuture<base::DictValue, MantaStatus> oversized_future;
+  anchovy_provider->GetImageDescriptions(oversized_batch,
+                                         TRAFFIC_ANNOTATION_FOR_TESTS,
+                                         oversized_future.GetCallback());
+  ASSERT_TRUE(oversized_future.Wait());
+  EXPECT_TRUE(oversized_future.Get<0>().empty());
+  EXPECT_EQ(oversized_future.Get<1>().status_code,
+            MantaStatusCode::kInvalidInput);
+
+  EXPECT_EQ(http_request_count, 0);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  histogram_tester.ExpectTotalCount("Ash.MantaService.AnchovyProvider.TimeCost",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Ash.MantaService.AnchovyProvider.StatusCode", 0);
+
+  // Boundary check: exactly `kMaxBatchSize` (`100`) valid images is accepted
+  // and issues a single HTTP request.
+  SetEndpointMockResponse(
+      GURL{kMockEndpoint},
+      /*response_data=*/proto::Response().SerializeAsString(), net::HTTP_OK,
+      net::OK);
+  anchovy::ImageDescriptionBatchRequest max_batch("en");
+  max_batch.images.reserve(anchovy::kMaxBatchSize);
+  for (size_t i = 0; i < anchovy::kMaxBatchSize; ++i) {
+    max_batch.images.emplace_back(base::NumberToString(i), kValidBytes);
+  }
+  base::test::TestFuture<base::DictValue, MantaStatus> max_future;
+  anchovy_provider->GetImageDescriptions(
+      max_batch, TRAFFIC_ANNOTATION_FOR_TESTS, max_future.GetCallback());
+  ASSERT_TRUE(max_future.Wait());
+  EXPECT_EQ(max_future.Get<1>().status_code, MantaStatusCode::kOk);
+  EXPECT_EQ(http_request_count, 1);
+}
+
+TEST_F(AnchovyProviderTest, GetImageDescriptionsBackendFailure) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<FakeAnchovyProvider> anchovy_provider =
+      CreateAnchovyProvider();
+
+  SetEndpointMockResponse(GURL{kMockEndpoint}, /*response_data=*/"",
+                          net::HTTP_BAD_REQUEST, net::OK);
+
+  const std::vector<uint8_t> kImg0 = {1, 2, 3};
+  const std::vector<uint8_t> kImg1 = {4, 5, 6};
+  anchovy::ImageDescriptionBatchRequest batch("en");
+  batch.images.emplace_back("0", kImg0);
+  batch.images.emplace_back("1", kImg1);
+
+  base::test::TestFuture<base::DictValue, MantaStatus> future;
+  anchovy_provider->GetImageDescriptions(batch, TRAFFIC_ANNOTATION_FOR_TESTS,
+                                         future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get<0>().empty());
+  EXPECT_EQ(future.Get<1>().status_code, MantaStatusCode::kBackendFailure);
+  histogram_tester.ExpectUniqueSample(
+      "Ash.MantaService.AnchovyProvider.StatusCode",
+      MantaStatusCode::kBackendFailure, 1);
+}
+
+TEST_F(AnchovyProviderTest, GetImageDescriptionsMalformedResponse) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<FakeAnchovyProvider> anchovy_provider =
+      CreateAnchovyProvider();
+
+  SetEndpointMockResponse(GURL{kMockEndpoint},
+                          /*response_data=*/"\xFF\xFF\xFF\xFF", net::HTTP_OK,
+                          net::OK);
+
+  const std::vector<uint8_t> kImg0 = {1, 2, 3};
+  anchovy::ImageDescriptionBatchRequest batch("en");
+  batch.images.emplace_back("0", kImg0);
+
+  base::test::TestFuture<base::DictValue, MantaStatus> future;
+  anchovy_provider->GetImageDescriptions(batch, TRAFFIC_ANNOTATION_FOR_TESTS,
+                                         future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get<0>().empty());
+  EXPECT_EQ(future.Get<1>().status_code, MantaStatusCode::kMalformedResponse);
+  histogram_tester.ExpectUniqueSample(
+      "Ash.MantaService.AnchovyProvider.StatusCode",
+      MantaStatusCode::kMalformedResponse, 1);
 }
 
 }  // namespace manta

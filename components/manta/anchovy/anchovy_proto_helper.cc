@@ -102,18 +102,10 @@ std::optional<base::DictValue> ParseAnchovyOutputEntry(
 }  // namespace
 
 proto::Request AnchovyProtoHelper::ComposeRequest(
-    const ImageDescriptionRequest& request) {
-  proto::Request request_proto = CreateBaseAnchovyRequest(request.lang_tag);
-
-  auto* input_data = request_proto.add_input_data();
-  input_data->mutable_image()->set_serialized_bytes(
-      std::string(request.image_bytes->begin(), request.image_bytes->end()));
-
-  return request_proto;
-}
-
-proto::Request AnchovyProtoHelper::ComposeRequest(
     const ImageDescriptionBatchRequest& request) {
+  // Callers guarantee at least one image in every batch request.
+  CHECK(!request.images.empty());
+
   proto::Request request_proto = CreateBaseAnchovyRequest(request.lang_tag);
 
   std::set<std::string_view> seen_tags;
@@ -132,36 +124,6 @@ proto::Request AnchovyProtoHelper::ComposeRequest(
   }
 
   return request_proto;
-}
-
-void AnchovyProtoHelper::HandleImageDescriptionResponse(
-    MantaGenericCallback callback,
-    std::unique_ptr<proto::Response> manta_response,
-    MantaStatus manta_status) {
-  if (manta_status.status_code != MantaStatusCode::kOk) {
-    CHECK(manta_response == nullptr);
-    std::move(callback).Run(base::DictValue(), std::move(manta_status));
-    return;
-  }
-
-  CHECK(manta_response);
-
-  base::ListValue results;
-  for (const auto& data : manta_response->output_data()) {
-    if (std::optional<base::DictValue> entry = ParseAnchovyOutputEntry(data)) {
-      results.Append(std::move(*entry));
-    }
-  }
-
-  // An empty response (or one with no valid entries) is still an acceptable
-  // response.
-  if (results.empty()) {
-    std::move(callback).Run(base::DictValue(), std::move(manta_status));
-    return;
-  }
-
-  std::move(callback).Run(base::DictValue().Set("results", std::move(results)),
-                          std::move(manta_status));
 }
 
 void AnchovyProtoHelper::HandleImageDescriptionsResponse(

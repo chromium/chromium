@@ -17,18 +17,12 @@ namespace manta::anchovy {
 
 class COMPONENT_EXPORT(MANTA) AnchovyProtoHelper {
  public:
-  static proto::Request ComposeRequest(
-      const anchovy::ImageDescriptionRequest& request);
-  // Serializes `request` into a Manta `proto::Request`. Every entry in
-  // `request.images` must have non-empty `image_bytes` and a unique, non-empty
-  // UTF-8 `tag`.
+  // Serializes `request` into a Manta `proto::Request`. `request.images` must
+  // be non-empty, and every entry must have non-empty `image_bytes` and a
+  // unique, non-empty UTF-8 `tag`.
   static proto::Request ComposeRequest(
       const ImageDescriptionBatchRequest& request);
 
-  static void HandleImageDescriptionResponse(
-      MantaGenericCallback callback,
-      std::unique_ptr<proto::Response> manta_response,
-      MantaStatus manta_status);
   // Parses `manta_response` and runs `callback` with a dictionary containing
   // `kResultsByTagKey` when `manta_status.status_code == MantaStatusCode::kOk`,
   // or an empty dictionary otherwise.

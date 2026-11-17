@@ -5,6 +5,8 @@
 #include "components/manta/anchovy/anchovy_provider.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -34,17 +36,30 @@ AnchovyProvider::AnchovyProvider(
 
 AnchovyProvider::~AnchovyProvider() = default;
 
-void AnchovyProvider::GetImageDescription(
-    anchovy::ImageDescriptionRequest& request,
+void AnchovyProvider::GetImageDescriptions(
+    const anchovy::ImageDescriptionBatchRequest& request,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     MantaGenericCallback done_callback) {
-  auto proto_request = anchovy::AnchovyProtoHelper::ComposeRequest(request);
+  CHECK(!request.images.empty());
+  if (request.images.size() > anchovy::kMaxBatchSize) {
+    // Fail fast without serializing image bytes or issuing an HTTP request
+    // because the server rejects batches exceeding `kMaxBatchSize` images.
+    std::move(done_callback)
+        .Run(base::DictValue(),
+             {MantaStatusCode::kInvalidInput, std::string()});
+    return;
+  }
+
+  // Serialize image bytes synchronously before returning while caller-owned
+  // buffers referenced by `request.images` are guaranteed alive.
+  proto::Request proto_request =
+      anchovy::AnchovyProtoHelper::ComposeRequest(request);
 
   RequestInternal(
       GURL(GetProviderEndpoint(features::IsAnchovyUseProdServerEnabled())),
       traffic_annotation, proto_request, MantaMetricType::kAnchovy,
       base::BindOnce(
-          &anchovy::AnchovyProtoHelper::HandleImageDescriptionResponse,
+          &anchovy::AnchovyProtoHelper::HandleImageDescriptionsResponse,
           std::move(done_callback)),
       kTimeout);
 }
