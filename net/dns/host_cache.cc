@@ -791,8 +791,10 @@ std::optional<base::TimeDelta> HostCache::Entry::TtlFromInternalResults(
   return smallest_ttl;
 }
 
-HostCache::HostCache(size_t max_entries)
-    : max_entries_(max_entries),
+HostCache::HostCache(size_t max_entries, size_t max_partitions)
+    : partitions_(PartitionMap::NO_AUTO_EVICT),
+      max_entries_(max_entries),
+      max_partitions_(max_partitions),
       tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 HostCache::~HostCache() {
@@ -971,6 +973,9 @@ const std::pair<const HostCache::Key, HostCache::Entry>* HostCache::Lookup(
     return nullptr;
   }
 
+  // Promote the partition to most-recently-used on a valid hit.
+  partitions_.Get(result->first.network_anonymization_key);
+
   entry->CountHit(/* hit_is_stale= */ false);
   if (stale_out) {
     entry->GetStaleness(now, network_changes_, stale_out);
@@ -999,6 +1004,9 @@ const std::pair<const HostCache::Key, HostCache::Entry>* HostCache::LookupStale(
     }
     return nullptr;
   }
+
+  // Promote the partition to most-recently-used on a cache hit.
+  partitions_.Get(result->first.network_anonymization_key);
 
   auto* entry = &result->second;
   bool is_stale = entry->IsStale(now, network_changes_);
@@ -1076,8 +1084,13 @@ HostCache::LookupInternalIgnoringFields(const Key& initial_key,
 
 std::pair<const HostCache::Key, HostCache::Entry>* HostCache::LookupInternal(
     const Key& key) {
-  auto it = entries_.find(key);
-  return (it != entries_.end()) ? &*it : nullptr;
+  auto partition_it = partitions_.Peek(key.network_anonymization_key);
+  if (partition_it == partitions_.end()) {
+    return nullptr;
+  }
+  EntryMap& entries = partition_it->second;
+  auto it = entries.find(key);
+  return (it != entries.end()) ? &*it : nullptr;
 }
 
 void HostCache::Set(const Key& key,
@@ -1090,29 +1103,45 @@ void HostCache::Set(const Key& key,
     return;
   }
 
+  const bool partition_exists =
+      partitions_.Peek(key.network_anonymization_key) != partitions_.end();
+  const size_t target_max_partitions =
+      partition_exists ? max_partitions_ : max_partitions_ - 1;
+  while (partitions_.size() > target_max_partitions &&
+         EvictOnePartition(now, /*skip_key=*/key.network_anonymization_key)) {
+  }
+  auto partition_it = partitions_.Get(key.network_anonymization_key);
+  if (partition_it == partitions_.end()) {
+    partition_it = partitions_.Put(key.network_anonymization_key, EntryMap());
+  }
+  EntryMap& entries = partition_it->second;
+
   bool has_active_pin = false;
   bool result_changed = false;
-  auto it = entries_.find(key);
-  if (it != entries_.end()) {
+  auto it = entries.find(key);
+  if (it != entries.end()) {
     has_active_pin = HasActivePin(it->second);
 
     // TODO(juliatuttle): Remember some old metadata (hit count or frequency or
     // something like that) if it's useful for better eviction algorithms?
     result_changed = entry.error() == OK && !it->second.ContentsEqual(entry);
-    entries_.erase(it);
+    entries.erase(it);
+    CHECK_GT(size_, 0u);
+    --size_;
   } else {
     result_changed = true;
     // This loop almost always runs at most once, for total runtime
-    // O(max_entries_).  It only runs more than once if the cache was over-full
-    // due to pinned entries, and this is the first call to Set() after
-    // Invalidate().  The amortized cost remains O(size()) per call to Set().
-    while (size() >= max_entries_ && EvictOneEntry(now)) {
+    // O(`max_entries_`). It only runs more than once if the partition was
+    // over-full due to pinned entries, and this is the first call to `Set()`
+    // after `Invalidate()`. The amortized cost remains O(entries.size()) per
+    // call to `Set()`.
+    while (entries.size() >= max_entries_ && EvictOneEntry(entries, now)) {
     }
   }
 
   Entry entry_for_cache(entry, now, ttl, network_changes_);
   entry_for_cache.set_pinning(entry.pinning().value_or(has_active_pin));
-  AddEntry(key, std::move(entry_for_cache));
+  AddEntry(entries, key, std::move(entry_for_cache));
 
   if (delegate_ && result_changed) {
     delegate_->ScheduleWrite();
@@ -1123,26 +1152,29 @@ const HostCache::Key* HostCache::GetMatchingKeyForTesting(
     std::string_view hostname,
     HostCache::Entry::Source* source_out,
     HostCache::EntryStaleness* stale_out) const {
-  for (const EntryMap::value_type& entry : entries_) {
-    if (GetHostname(entry.first.host) == hostname) {
-      if (source_out != nullptr) {
-        *source_out = entry.second.source();
+  for (const auto& [_, entries] : partitions_) {
+    for (const EntryMap::value_type& entry : entries) {
+      if (GetHostname(entry.first.host) == hostname) {
+        if (source_out != nullptr) {
+          *source_out = entry.second.source();
+        }
+        if (stale_out != nullptr) {
+          entry.second.GetStaleness(tick_clock_->NowTicks(), network_changes_,
+                                    stale_out);
+        }
+        return &entry.first;
       }
-      if (stale_out != nullptr) {
-        entry.second.GetStaleness(tick_clock_->NowTicks(), network_changes_,
-                                  stale_out);
-      }
-      return &entry.first;
     }
   }
 
   return nullptr;
 }
 
-void HostCache::AddEntry(const Key& key, Entry&& entry) {
-  DCHECK_EQ(0u, entries_.count(key));
-  DCHECK(entry.pinning().has_value());
-  entries_.emplace(key, std::move(entry));
+void HostCache::AddEntry(EntryMap& entries, const Key& key, Entry&& entry) {
+  CHECK(entry.pinning().has_value());
+  auto [_, inserted] = entries.emplace(key, std::move(entry));
+  CHECK(inserted);
+  ++size_;
 }
 
 void HostCache::Invalidate() {
@@ -1165,7 +1197,8 @@ void HostCache::clear() {
     return;
   }
 
-  entries_.clear();
+  partitions_.Clear();
+  size_ = 0;
   if (delegate_) {
     delegate_->ScheduleWrite();
   }
@@ -1182,16 +1215,28 @@ void HostCache::ClearForHosts(
 
   bool changed = false;
   base::TimeTicks now = tick_clock_->NowTicks();
-  for (auto it = entries_.begin(); it != entries_.end();) {
-    auto next_it = std::next(it);
+  for (auto partition_it = partitions_.begin();
+       partition_it != partitions_.end();) {
+    EntryMap& entries = partition_it->second;
+    for (auto it = entries.begin(); it != entries.end();) {
+      auto next_it = std::next(it);
 
-    if (host_filter.Run(GetHostname(it->first.host))) {
-      RecordErase(EraseReason::kEraseClear, now, it->first, it->second);
-      entries_.erase(it);
-      changed = true;
+      if (host_filter.Run(GetHostname(it->first.host))) {
+        RecordErase(EraseReason::kEraseClear, now, it->first, it->second);
+        entries.erase(it);
+        CHECK_GT(size_, 0u);
+        --size_;
+        changed = true;
+      }
+
+      it = next_it;
     }
 
-    it = next_it;
+    if (entries.empty()) {
+      partition_it = partitions_.Erase(partition_it);
+    } else {
+      ++partition_it;
+    }
   }
 
   if (delegate_ && changed) {
@@ -1204,9 +1249,19 @@ void HostCache::GetList(base::ListValue& entry_list,
                         SerializationType serialization_type) const {
   entry_list.clear();
 
-  for (const auto& pair : entries_) {
-    const Key& key = pair.first;
-    const Entry& entry = pair.second;
+  std::vector<const EntryMap::value_type*> sorted_entries;
+  sorted_entries.reserve(size_);
+  for (const auto& [_, entries] : partitions_) {
+    for (const auto& pair : entries) {
+      sorted_entries.push_back(&pair);
+    }
+  }
+  std::ranges::sort(sorted_entries, std::less<>(),
+                    &EntryMap::value_type::first);
+
+  for (const EntryMap::value_type* pair : sorted_entries) {
+    const Key& key = pair->first;
+    const Entry& entry = pair->second;
 
     base::Value network_anonymization_key_value;
     if (serialization_type == SerializationType::kRestorable) {
@@ -1260,10 +1315,18 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
   // Reset the restore size to 0.
   restore_size_ = 0;
 
+  if (caching_is_disabled()) {
+    return true;
+  }
+
+  const base::CheckedNumeric<size_t> max_total_entries =
+      base::CheckMul(max_entries_, max_partitions_);
+
   for (const auto& entry : old_cache) {
-    // If the cache is already full, don't bother prioritizing what to evict,
-    // just stop restoring.
-    if (size() == max_entries_) {
+    // If every partition in the cache is already full, don't bother
+    // prioritizing what to evict, just stop restoring.
+    if (max_total_entries.IsValidAnd(
+            [&](size_t max) { return size_ >= max; })) {
       break;
     }
 
@@ -1333,6 +1396,15 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
       // values that are no longer supported (e.g., a NetworkIsolationPartition
       // that has since been removed). Skip just this entry, rather than
       // failing to restore the whole cache.
+      continue;
+    }
+
+    auto partition_it = partitions_.Peek(network_anonymization_key);
+    if (partition_it == partitions_.end()) {
+      if (partitions_.size() >= max_partitions_) {
+        continue;
+      }
+    } else if (partition_it->second.size() >= max_entries_) {
       continue;
     }
 
@@ -1481,10 +1553,15 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
             network_anonymization_key, handles::kInvalidNetworkHandle);
     key.secure = secure;
 
+    if (partition_it == partitions_.end()) {
+      partition_it = partitions_.Put(network_anonymization_key, EntryMap());
+    }
+    EntryMap& entries = partition_it->second;
+
     // If the key is already in the cache, assume it's more recent and don't
     // replace the entry.
-    auto found = entries_.find(key);
-    if (found == entries_.end()) {
+    auto found = entries.find(key);
+    if (found == entries.end()) {
       Entry new_entry(
           error, std::move(ip_endpoints), std::move(endpoint_metadatas),
           base::flat_set<std::string>(std::move(aliases)),
@@ -1492,7 +1569,7 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
           Entry::SOURCE_UNKNOWN, expiration_time, network_changes_ - 1);
       new_entry.set_pinning(maybe_pinned.value_or(false));
       new_entry.set_canonical_names(std::move(canonical_names));
-      AddEntry(key, std::move(new_entry));
+      AddEntry(entries, key, std::move(new_entry));
       restore_size_++;
     }
   }
@@ -1501,7 +1578,7 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
 
 size_t HostCache::size() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return entries_.size();
+  return size_;
 }
 
 size_t HostCache::max_entries() const {
@@ -1509,11 +1586,11 @@ size_t HostCache::max_entries() const {
   return max_entries_;
 }
 
-bool HostCache::EvictOneEntry(base::TimeTicks now) {
-  DCHECK_LT(0u, entries_.size());
+bool HostCache::EvictOneEntry(EntryMap& entries, base::TimeTicks now) {
+  CHECK_LT(0u, entries.size());
 
   std::optional<net::HostCache::EntryMap::iterator> oldest_it;
-  for (auto it = entries_.begin(); it != entries_.end(); ++it) {
+  for (auto it = entries.begin(); it != entries.end(); ++it) {
     const Entry& entry = it->second;
     if (HasActivePin(entry)) {
       continue;
@@ -1535,13 +1612,44 @@ bool HostCache::EvictOneEntry(base::TimeTicks now) {
   if (oldest_it) {
     RecordErase(EraseReason::kEraseEvict, now, (*oldest_it)->first,
                 (*oldest_it)->second);
-    entries_.erase(*oldest_it);
+    entries.erase(*oldest_it);
+    CHECK_GT(size_, 0u);
+    --size_;
     return true;
   }
   return false;
 }
 
-bool HostCache::HasActivePin(const Entry& entry) {
+bool HostCache::EvictOnePartition(base::TimeTicks now,
+                                  const NetworkAnonymizationKey& skip_key) {
+  CHECK_LT(0u, partitions_.size());
+
+  for (auto it = partitions_.rbegin(); it != partitions_.rend(); ++it) {
+    if (it->first == skip_key) {
+      continue;
+    }
+    const EntryMap& entries = it->second;
+    if (HasAnyActivePins(entries)) {
+      continue;
+    }
+
+    for (const auto& [key, entry] : entries) {
+      RecordErase(EraseReason::kEraseEvict, now, key, entry);
+    }
+    CHECK_GE(size_, entries.size());
+    size_ -= entries.size();
+    partitions_.Erase(it);
+    return true;
+  }
+  return false;
+}
+
+bool HostCache::HasAnyActivePins(const EntryMap& entries) const {
+  return std::ranges::any_of(
+      entries, [this](const auto& pair) { return HasActivePin(pair.second); });
+}
+
+bool HostCache::HasActivePin(const Entry& entry) const {
   return entry.pinning().value_or(false) &&
          entry.network_changes() == network_changes();
 }
@@ -1583,8 +1691,10 @@ void HostCache::RecordErase(EraseReason reason,
 }
 
 void HostCache::RecordEraseAll(EraseReason reason, base::TimeTicks now) {
-  for (const auto& it : entries_) {
-    RecordErase(reason, now, it.first, it.second);
+  for (const auto& [_, entries] : partitions_) {
+    for (const auto& [key, entry] : entries) {
+      RecordErase(reason, now, key, entry);
+    }
   }
 }
 

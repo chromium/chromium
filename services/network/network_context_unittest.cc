@@ -5043,7 +5043,7 @@ TEST_F(NetworkContextTest, ClearHostCache) {
           base::TimeTicks::Now(), base::Days(1));
     }
     // Sanity check.
-    EXPECT_EQ(std::size(kDomains) * 2, host_cache->entries().size());
+    EXPECT_EQ(std::size(kDomains) * 2, host_cache->size());
 
     // Set up and run the filter, according to |test_case|.
     mojom::ClearDataFilterPtr clear_data_filter;
@@ -5075,7 +5075,7 @@ TEST_F(NetworkContextTest, ClearHostCache) {
       }
     }
 
-    EXPECT_EQ(host_cache->entries().size(), expected_cached);
+    EXPECT_EQ(host_cache->size(), expected_cached);
   }
 }
 

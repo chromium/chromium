@@ -22,6 +22,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
@@ -434,6 +435,14 @@ class NET_EXPORT HostCache {
 
   using EntryMap = std::map<Key, Entry>;
 
+  // Default maximum number of `NetworkAnonymizationKey` partitions. Entry
+  // eviction is scoped to a single partition, and when a new partition is
+  // needed while `max_partitions` are active, the least-recently-used partition
+  // without active pinned entries is evicted in its entirety. Isolation
+  // therefore holds against a flood from a single `NetworkAnonymizationKey`,
+  // not against a flood spread across many distinct keys.
+  static constexpr size_t kDefaultMaxPartitions = 32;
+
   // The two ways to serialize the cache to a value.
   enum class SerializationType {
     // Entries with transient NetworkAnonymizationKeys are not serialized, and
@@ -446,8 +455,12 @@ class NET_EXPORT HostCache {
     kDebug,
   };
 
-  // Constructs a HostCache that stores up to |max_entries|.
-  explicit HostCache(size_t max_entries);
+  // Constructs a HostCache that stores up to `max_entries` per
+  // `NetworkAnonymizationKey` partition across up to `max_partitions`
+  // partitions (active pinned entries may temporarily exceed these limits until
+  // `Invalidate()`).
+  explicit HostCache(size_t max_entries,
+                     size_t max_partitions = kDefaultMaxPartitions);
 
   HostCache(const HostCache&) = delete;
   HostCache& operator=(const HostCache&) = delete;
@@ -555,7 +568,11 @@ class NET_EXPORT HostCache {
   // Following are used by net_internals UI.
   size_t max_entries() const;
   int network_changes() const { return network_changes_; }
-  const EntryMap& entries() const { return entries_; }
+
+  size_t partition_count_for_testing() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return partitions_.size();
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HostCacheTest, NoCache);
@@ -613,19 +630,31 @@ class NET_EXPORT HostCache {
   void RecordEraseAll(EraseReason reason, base::TimeTicks now);
 
   // Returns true if this HostCache can contain no entries.
-  bool caching_is_disabled() const { return max_entries_ == 0; }
+  bool caching_is_disabled() const {
+    return max_entries_ == 0 || max_partitions_ == 0;
+  }
 
-  // Returns true if an entry was removed.
-  bool EvictOneEntry(base::TimeTicks now);
+  using PartitionMap = base::LRUCache<NetworkAnonymizationKey, EntryMap>;
+
+  // Returns true if an entry was removed from `entries`.
+  bool EvictOneEntry(EntryMap& entries, base::TimeTicks now);
+  // Returns true if a partition other than `skip_key` was removed from
+  // `partitions_`.
+  bool EvictOnePartition(base::TimeTicks now,
+                         const NetworkAnonymizationKey& skip_key);
+  // Returns true if `entries` contains any entry with an active pin.
+  bool HasAnyActivePins(const EntryMap& entries) const;
   // Helper to check if an Entry is currently pinned in the cache.
-  bool HasActivePin(const Entry& entry);
+  bool HasActivePin(const Entry& entry) const;
   // Helper to insert an Entry into the cache.
-  void AddEntry(const Key& key, Entry&& entry);
+  void AddEntry(EntryMap& entries, const Key& key, Entry&& entry);
 
-  // Map from hostname (presumably in lowercase canonicalized format) to
-  // a resolved result entry.
-  EntryMap entries_;
-  size_t max_entries_;
+  // Outer LRU map from `NetworkAnonymizationKey` to per-partition `EntryMap`.
+  PartitionMap partitions_;
+  const size_t max_entries_;
+  const size_t max_partitions_;
+  // Total number of entries across all partitions in `partitions_`.
+  size_t size_ = 0;
   int network_changes_ = 0;
   // Number of cache entries that were restored in the last call to
   // RestoreFromListValue(). Used in histograms.
