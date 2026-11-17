@@ -896,6 +896,9 @@ Additional details:
   <message name="IDS_POLICY_MORE_ACTIONS" desc="Label for the dropdown menu on the chrome://policy page that offers additional actions such as downloading policy data as a JSON file, uploading report or showing policy logs.">
     More actions
   </message>
+  <message name="IDS_POLICY_COLUMNS" desc="Label for the dropdown button on the chrome://policy page that lets the user choose which columns are visible in the policy tables.">
+    Columns
+  </message>
   <message name="IDS_POLICY_TABLE_COLUMN_SORT" desc="Part of the label for policy table sorting arrows.">
     Sort
   </message>

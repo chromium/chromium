@@ -43,10 +43,22 @@
   white-space: nowrap;
 }
 
-.policy.conflict.row {
+.row > [hidden],
+.policy.conflict.row[hidden],
+.policy.conflict.entry[hidden] {
+  display: none;
+}
+
+.policy.conflict.row:not([hidden]) {
   display: grid;
-  grid-template-columns: 25% 30% 10% 10% 10% 10% 5%;
-  grid-template-areas: 'name value source scope level messages copy';
+  grid-template-areas: var(
+      --policy-grid-template-areas,
+      'name value source scope level status toggle');
+  grid-template-columns: var(
+      --policy-grid-template-columns,
+      minmax(100px, 2.5fr) minmax(100px, 3fr) minmax(72px, 1fr)
+          minmax(72px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr)
+          minmax(48px, 5%));
 }
 
 .policy.conflict.row .name {
@@ -72,11 +84,15 @@
 }
 
 .policy.conflict.row .messages {
-  grid-area: messages;
+  grid-area: status;
 }
 
 .policy.conflict.row .copy {
-  grid-area: copy;
+  align-items: center;
+  display: flex;
+  grid-area: toggle;
+  justify-content: center;
+  padding-inline: 8px;
 }
 
 .value.row .value {
@@ -98,29 +114,33 @@
   width: 16px;
 }
 
-.policy.conflict.entry {
-  display: none;
+.policy.conflict.entry:not([hidden]) {
+  display: block;
+}
+
+.policy.conflict.entry .row > .name {
+  flex: 0 0 25%;
+  text-align: end;
+}
+
+.policy.conflict.entry .row > .value {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  text-overflow: unset;
+  white-space: pre-wrap;
+}
+
+.policy.conflict.entry .copy {
+  flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
-  .policy.conflict.row {
-    display: none;
+  :host {
+    --cr-section-padding: 12px;
   }
 
-  .policy.conflict.entry {
-    display: block;
-  }
-
-  .row > .name {
-    flex: 0 0 35%;
-  }
-
-  .row > .value {
-    display: block;
-    flex: 1;
-  }
-
-  .copy {
-    flex: 0 0 auto;
+  .policy.conflict.entry .row > .name {
+    flex: 0 0 50%;
   }
 }

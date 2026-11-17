@@ -141,6 +141,24 @@ ElementSelector* MoreActionsButton() {
           kMoreActionsButton)];
 }
 
+ElementSelector* ColumnsButton() {
+  static constexpr char kColumnsButton[] = "columns-button";
+  return [ElementSelector
+      selectorWithCSSSelector:base::StringPrintf(
+                                  "policy-app%s#%s",
+                                  kElementSelectorShadowDelimiter,
+                                  kColumnsButton)];
+}
+
+ElementSelector* ColumnValueCheckbox() {
+  static constexpr char kColumnValueCheckbox[] = "column-value";
+  return [ElementSelector
+      selectorWithCSSSelector:base::StringPrintf(
+                                  "policy-app%s#%s",
+                                  kElementSelectorShadowDelimiter,
+                                  kColumnValueCheckbox)];
+}
+
 ElementSelector* ViewLogsButton() {
   return [ElementSelector
       selectorWithCSSSelector:base::StringPrintf(
@@ -398,6 +416,34 @@ ElementSelector* ApplyPoliciesButton() {
                          @"window.statusUpdatedData !== null"];
   GREYAssertTrue(verifyResult.is_bool() && verifyResult.GetBool(),
                  @"Status updated event did not provide a valid object.");
+
+  policy_test_utils::ClearPolicies();
+}
+
+// Tests filtering policies via the `?filter=` query parameter and opening the
+// `Columns` dropdown menu.
+- (void)testFilterViaQueryParamAndColumnsMenu {
+  policy_test_utils::MergePolicy(false, "PrintingEnabled");
+  policy_test_utils::MergePolicy(1, "IncognitoModeAvailability");
+
+  const GURL filter_url = GURL(kChromeUIPolicyURL).Resolve("?filter=Printing");
+  [ChromeEarlGrey loadURL:filter_url];
+  [ChromeEarlGrey waitForWebStateContainingElement:ColumnsButton()];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_POLICY_COLUMNS)];
+
+  bool filtered_rows_ready = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        base::Value res = [ChromeEarlGrey
+            evaluateJavaScript:@"getVisiblePolicies().join(',')"];
+        return res.is_string() && res.GetString() == "PrintingEnabled";
+      });
+  GREYAssertTrue(filtered_rows_ready,
+                 @"Expected ?filter=Printing to show only PrintingEnabled.");
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElement(ColumnsButton())];
+  [ChromeEarlGrey waitForWebStateContainingElement:ColumnValueCheckbox()];
 
   policy_test_utils::ClearPolicies();
 }

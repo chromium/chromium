@@ -25,10 +25,15 @@
 
 :host(:not([hidden])) {
   display: block;
+  min-width: var(--policy-row-min-width, 0);
 }
 
 .row:not([hidden]) {
   display: flex;
+}
+
+.row > [hidden] {
+  display: none;
 }
 
 .row:not(.policy.row) {
@@ -38,7 +43,8 @@
 .row > * {
   box-sizing: border-box;
   overflow: hidden;
-  padding: var(--cr-section-vertical-padding, 12px) var(--cr-section-padding, 20px);
+  padding: var(--cr-section-vertical-padding, 12px)
+      var(--cr-section-padding, 20px);
   text-align: start;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -49,16 +55,27 @@
   text-align: end;
 }
 
+.row:not(.policy.row) .value {
+  flex: 1;
+  min-width: 0;
+}
+
 .row.header {
   background-color: var(--table-header);
   border-bottom: 1px solid var(--cr-separator-color);
 }
 
 .policy.row {
-  display: grid;
-  grid-template-columns: 25% 30% 10% 10% 10% 10% 5%;
-  grid-template-areas: 'name value source scope level messages toggle';
   border-bottom: 1px solid var(--cr-separator-color);
+  display: grid;
+  grid-template-areas: var(
+      --policy-grid-template-areas,
+      'name value source scope level status toggle');
+  grid-template-columns: var(
+      --policy-grid-template-columns,
+      minmax(100px, 2.5fr) minmax(100px, 3fr) minmax(72px, 1fr)
+          minmax(72px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr)
+          minmax(48px, 5%));
 }
 
 .policy.row .name {
@@ -86,11 +103,13 @@
 }
 
 .policy.row .messages {
-  grid-area: messages;
+  grid-area: status;
 }
 
 .policy.row .toggle {
   grid-area: toggle;
+  justify-content: center;
+  padding-inline: 8px;
 }
 
 .value.row .value {
@@ -105,6 +124,10 @@
 .warnings.row .value,
 .errors.row .value,
 .infos.row .value,
+.source.row .value,
+.scope.row .value,
+.level.row .value,
+.messages.row .value,
 .value.row .value {
   max-height: 200px;
   overflow: auto;
@@ -145,6 +168,7 @@ a {
 }
 
 .link img {
+  flex-shrink: 0;
   height: 12px;
   width: 12px;
 }
@@ -163,32 +187,9 @@ a {
   display: none;
 }
 
-@media (min-width: 768px) {
-  .level.row,
-  .messages.row,
-  .scope.row {
-    display: none;
-  }
-
-}
-
 @media (max-width: 768px) {
-  .policy.row .value,
-  .policy.row .level,
-  .policy.row .messages,
-  .policy.row .scope {
-    display: none;
-  }
-
-  .policy.row {
-    grid-template-columns: 50% 25% 25%;
-    grid-template-areas: 'name source toggle';
-  }
-
-  .level.row,
-  .messages.row,
-  .scope.row {
-    border-inline-end: none;
+  :host {
+    --cr-section-padding: 12px;
   }
 
   .row:not(.policy.row) .name {

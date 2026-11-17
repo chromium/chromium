@@ -52,6 +52,27 @@ export function getHtml(this: PolicyAppElement) {
 </if> <!-- not is_chromeos -->
         </cr-action-menu>
       </div>
+      <div class="menu-container">
+        <cr-button id="columns-button"
+            aria-haspopup="menu"
+            @click="${this.onColumnsClick_}">
+          $i18n{columns}
+          <cr-icon icon="cr:keyboard-arrow-down" slot="suffix-icon"></cr-icon>
+        </cr-button>
+        <cr-action-menu id="columnsMenu"
+            role-description="menu"
+            accessibility-label="$i18n{columns}">
+          ${this.columnOptions_.map(item => html`
+            <cr-checkbox id="column-${item.id}"
+                class="dropdown-item"
+                data-column="${item.id}"
+                ?checked="${this.isColumnVisible_(item.id)}"
+                @change="${this.onColumnCheckboxChange_}">
+              ${item.label}
+            </cr-checkbox>
+          `)}
+        </cr-action-menu>
+      </div>
     </div>
     <cr-checkbox id="show-unset"
         ?checked="${this.showUnset_}"
@@ -99,7 +120,8 @@ export function getHtml(this: PolicyAppElement) {
           <policy-table
               .dataModel="${group}"
               .filterPattern="${this.filterPattern_}"
-              .showUnset="${this.showUnset_}">
+              .showUnset="${this.showUnset_}"
+              .visibleColumns="${this.visibleColumns_}">
           </policy-table>
         `)}
       </section>

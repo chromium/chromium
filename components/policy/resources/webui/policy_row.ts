@@ -14,6 +14,8 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PolicyLevel, PolicyScope} from './policy.mojom-webui.js';
 import type {Conflict, Policy} from './policy.mojom-webui.js';
+import {OPTIONAL_POLICY_COLUMNS} from './policy_columns.js';
+import type {OptionalPolicyColumn} from './policy_columns.js';
 import {copyValue, stringifyPolicyValue} from './policy_conflict.js';
 import {getCss} from './policy_row.css.js';
 import {getHtml} from './policy_row.html.js';
@@ -52,11 +54,14 @@ export class PolicyRowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      visibleColumns: {type: Array},
     };
   }
 
   accessor policy: PolicyUiModel|null = null;
   accessor expanded: boolean = false;
+  accessor visibleColumns: OptionalPolicyColumn[] =
+      [...OPTIONAL_POLICY_COLUMNS];
 
   protected get unset(): boolean {
     return !!(this.policy && this.policy.value === undefined);
@@ -85,6 +90,10 @@ export class PolicyRowElement extends CrLitElement {
         this.setAttribute('no-help-link', '');
       }
     }
+  }
+
+  protected isColumnVisible(column: OptionalPolicyColumn): boolean {
+    return this.visibleColumns.includes(column);
   }
 
   protected getShowMoreLessLabel(): string {

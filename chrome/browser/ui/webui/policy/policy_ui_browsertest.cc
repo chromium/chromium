@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -107,6 +108,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1098,6 +1100,227 @@ INSTANTIATE_TEST_SUITE_P(PolicyPrecedenceUITestInstance,
                                           testing::Bool()));
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+
+void SetHomepageAndUrlBlocklistPolicies(
+    policy::MockConfigurationPolicyProvider& provider) {
+  policy::PolicyMap policy_map;
+  policy_map.Set(policy::key::kHomepageLocation, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                 base::Value("https://example.com"), nullptr);
+  base::ListValue blocked_urls;
+  blocked_urls.Append("blocked.example.com");
+  policy_map.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(std::move(blocked_urls)), nullptr);
+  provider.UpdateChromePolicy(policy_map);
+}
+
+[[nodiscard]] bool WaitForChromePolicyTableReady(
+    content::WebContents* web_contents) {
+  constexpr char kWaitForRowsJs[] = R"(
+    (async () => {
+      while (true) {
+        const table = getChromePolicyTable();
+        if (table && getAllPolicyRows(table).length > 0) {
+          await document.querySelector('policy-app').updateComplete;
+          await table.updateComplete;
+          return true;
+        }
+        await new Promise(r => setTimeout(r, 50));
+      }
+    })();
+  )";
+  return content::EvalJs(web_contents, kWaitForRowsJs) == true;
+}
+
+std::vector<std::string> EvalStringVec(content::WebContents* web_contents,
+                                       std::string_view script) {
+  std::vector<std::string> result;
+  for (content::EvalJsResult eval_result =
+           content::EvalJs(web_contents, script);
+       const auto& val : eval_result.ExtractList()) {
+    result.push_back(val.GetString());
+  }
+  return result;
+}
+
+[[nodiscard]] bool SetToolbarSearchValue(content::WebContents* web_contents,
+                                         std::string_view query) {
+  return content::EvalJs(
+             web_contents,
+             content::JsReplace("setToolbarSearchValue($1)", query)) == true;
+}
+
+[[nodiscard]] bool SetColumnCheckbox(content::WebContents* web_contents,
+                                     std::string_view column_id,
+                                     bool checked) {
+  return content::EvalJs(web_contents,
+                         content::JsReplace("setColumnCheckbox($1, $2)",
+                                            column_id, checked)) == true;
+}
+
+[[nodiscard]] bool TogglePolicyRowExpanded(content::WebContents* web_contents,
+                                           std::string_view policy_name) {
+  return content::EvalJs(web_contents,
+                         content::JsReplace("togglePolicyRowExpanded($1)",
+                                            policy_name)) == true;
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(PolicyUITest, FilterPoliciesViaUrlAndSearchSync) {
+  SetHomepageAndUrlBlocklistPolicies(provider_);
+
+  const GURL initial_url =
+      GURL(chrome::kChromeUIPolicyURL).Resolve("?filter=Homepage&extra=1");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+  {
+    SCOPED_TRACE("waiting for initial filtered policy table");
+    ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
+  }
+
+  EXPECT_EQ(content::EvalJs(web_contents(), "getToolbarSearchValue()"),
+            "Homepage");
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
+              ElementsAre(policy::key::kHomepageLocation));
+  const int initial_entries = web_contents()->GetController().GetEntryCount();
+
+  ASSERT_TRUE(SetToolbarSearchValue(web_contents(), "URLBlock"));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL().query(),
+            "filter=URLBlock&extra=1");
+  EXPECT_EQ(web_contents()->GetController().GetEntryCount(), initial_entries);
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
+              ElementsAre(policy::key::kURLBlocklist));
+
+  ASSERT_TRUE(SetToolbarSearchValue(web_contents(), ""));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL().query(), "extra=1");
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisiblePolicies()"),
+      ElementsAre(policy::key::kHomepageLocation, policy::key::kURLBlocklist));
+
+  // Navigate to `?filter=Homepage`, create a second same-document history entry
+  // via a fragment navigation, update its filter via `replaceState`, and verify
+  // that `HistoryGoBack` fires `popstate` to restore `Homepage`.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      GURL(chrome::kChromeUIPolicyURL).Resolve("?filter=Homepage")));
+  {
+    SCOPED_TRACE("waiting for Homepage filtered table");
+    ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
+  }
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      GURL(chrome::kChromeUIPolicyURL).Resolve("?filter=Homepage#section")));
+  ASSERT_TRUE(SetToolbarSearchValue(web_contents(), "URLBlock"));
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
+              ElementsAre(policy::key::kURLBlocklist));
+
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  {
+    SCOPED_TRACE("waiting for policy table after HistoryGoBack");
+    ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
+  }
+  EXPECT_EQ(web_contents()->GetLastCommittedURL().query(), "filter=Homepage");
+  EXPECT_EQ(content::EvalJs(web_contents(), "getToolbarSearchValue()"),
+            "Homepage");
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
+              ElementsAre(policy::key::kHomepageLocation));
+
+  ASSERT_TRUE(SetToolbarSearchValue(web_contents(), ""));
+  EXPECT_FALSE(web_contents()->GetLastCommittedURL().has_query());
+
+  // Unrecognized subpaths normalize `pathname` to `/` via `replaceState` while
+  // preserving `?filter=`.
+  const GURL unknown_subpath_url =
+      GURL(chrome::kChromeUIPolicyURL).Resolve("unknown-path?filter=Homepage");
+  const GURL normalized_url =
+      GURL(chrome::kChromeUIPolicyURL).Resolve("?filter=Homepage");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), unknown_subpath_url,
+                                     normalized_url));
+  {
+    SCOPED_TRACE("waiting for policy table after subpath normalization");
+    ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
+  }
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), normalized_url);
+  EXPECT_EQ(content::EvalJs(web_contents(), "getToolbarSearchValue()"),
+            "Homepage");
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisiblePolicies()"),
+              ElementsAre(policy::key::kHomepageLocation));
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyUITest,
+                       ColumnsDropdownMultiSelectAndExpandedRows) {
+  SetHomepageAndUrlBlocklistPolicies(provider_);
+
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+  {
+    SCOPED_TRACE("waiting for policy table");
+    ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
+  }
+
+  // Ensure all 5 optional columns are checked regardless of initial viewport
+  // width (such as narrow Android phone emulators), verifying `#columnsMenu`
+  // stays open across toggles.
+  for (std::string_view col : {"value", "source", "scope", "level", "status"}) {
+    ASSERT_TRUE(SetColumnCheckbox(web_contents(), col, true));
+  }
+  EXPECT_THAT(EvalStringVec(web_contents(), "getCheckedColumns()"),
+              ElementsAre("value", "source", "scope", "level", "status"));
+
+  ASSERT_EQ("source",
+            content::EvalJs(web_contents(), "sortChromePoliciesBy('source')"));
+
+  ASSERT_TRUE(SetColumnCheckbox(web_contents(), "source", false));
+  ASSERT_TRUE(SetColumnCheckbox(web_contents(), "level", false));
+
+  EXPECT_EQ(content::EvalJs(web_contents(),
+                            "getChromePolicyTable().mostRecentSortedColumn"),
+            "name");
+  EXPECT_THAT(EvalStringVec(web_contents(), "getCheckedColumns()"),
+              ElementsAre("value", "scope", "status"));
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisibleHeaders()"),
+              ElementsAre("name", "value", "scope", "status"));
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisibleCells('HomepageLocation')"),
+      ElementsAre("name", "value", "scope", "messages", "toggle"));
+  // Hidden cells keep their DOM nodes so `getAllPolicyRowDivs()` callers still
+  // read all 6 column texts plus the toggle cell.
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getPolicyRowDivTexts('HomepageLocation')"),
+      ElementsAre(policy::key::kHomepageLocation, "https://example.com",
+                  "Cloud", l10n_util::GetStringUTF8(IDS_POLICY_SCOPE_DEVICE),
+                  l10n_util::GetStringUTF8(IDS_POLICY_LEVEL_MANDATORY),
+                  l10n_util::GetStringUTF8(IDS_POLICY_OK), ""));
+
+  ASSERT_TRUE(
+      TogglePolicyRowExpanded(web_contents(), policy::key::kHomepageLocation));
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisibleDetailRows('HomepageLocation')"),
+      ElementsAre("value", "source", "level"));
+  EXPECT_EQ(
+      content::EvalJs(web_contents(),
+                      "getPolicyDetailRowValue('HomepageLocation', 'source')"),
+      "Cloud");
+
+  for (std::string_view col : {"value", "scope", "status"}) {
+    ASSERT_TRUE(SetColumnCheckbox(web_contents(), col, false));
+  }
+  EXPECT_THAT(EvalStringVec(web_contents(), "getCheckedColumns()"), IsEmpty());
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisibleHeaders()"),
+              ElementsAre("name"));
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisibleCells('HomepageLocation')"),
+      ElementsAre("name", "toggle"));
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisibleDetailRows('HomepageLocation')"),
+      ElementsAre("value", "source", "scope", "level", "messages"));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(https://crbug.com/1027135) Add tests to verify extension policies are
 // exported correctly.
@@ -1813,5 +2036,93 @@ IN_PROC_BROWSER_TEST_F(PolicyUITestBase,
       testing::HasSubstr("test-custom-argument"));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+namespace {
+
+[[nodiscard]] bool WaitForSmallScreenMediaQuery(
+    content::WebContents* web_contents,
+    bool expected_matches) {
+  return content::EvalJs(web_contents,
+                         content::JsReplace("waitForSmallScreenMediaQuery($1)",
+                                            expected_matches)) == true;
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(PolicyUITest,
+                       SmallScreenDefaultValueColumnAndManualOverride) {
+  SetHomepageAndUrlBlocklistPolicies(provider_);
+
+  // Start at a narrow viewport (`<= 768px`) to verify that `value` is the only
+  // optional column shown by default and hidden columns appear on expand.
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 600, 700));
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+  {
+    SCOPED_TRACE("waiting for small-screen policy table");
+    ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
+    ASSERT_TRUE(WaitForSmallScreenMediaQuery(web_contents(),
+                                             /*expected_matches=*/true));
+  }
+
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisibleHeaders()"),
+              ElementsAre("name", "value"));
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisibleCells('HomepageLocation')"),
+      ElementsAre("name", "value", "toggle"));
+
+  ASSERT_TRUE(
+      TogglePolicyRowExpanded(web_contents(), policy::key::kHomepageLocation));
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisibleDetailRows('HomepageLocation')"),
+      ElementsAre("value", "source", "scope", "level", "messages"));
+  EXPECT_EQ(
+      content::EvalJs(web_contents(),
+                      "getPolicyDetailRowValue('HomepageLocation', 'source')"),
+      "Cloud");
+
+  // Widen past `768px` before any manual column toggle to verify that all
+  // optional columns automatically appear and are not duplicated in detail
+  // rows.
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1024, 700));
+  {
+    SCOPED_TRACE("waiting for desktop-width media query");
+    ASSERT_TRUE(WaitForSmallScreenMediaQuery(web_contents(),
+                                             /*expected_matches=*/false));
+  }
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisibleHeaders()"),
+      ElementsAre("name", "value", "source", "scope", "level", "status"));
+  EXPECT_THAT(
+      EvalStringVec(web_contents(), "getVisibleDetailRows('HomepageLocation')"),
+      ElementsAre("value"));
+
+  // Manually customize columns (`value` + `source`), then shrink back to
+  // `<= 768px` to verify the manual selection overrides the viewport default.
+  for (std::string_view col : {"scope", "level", "status"}) {
+    ASSERT_TRUE(SetColumnCheckbox(web_contents(), col, false));
+  }
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 600, 700));
+  {
+    SCOPED_TRACE("waiting for small-screen resize after manual override");
+    ASSERT_TRUE(WaitForSmallScreenMediaQuery(web_contents(),
+                                             /*expected_matches=*/true));
+  }
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisibleHeaders()"),
+              ElementsAre("name", "value", "source"));
+
+  // Reloading at `<= 768px` resets the ephemeral manual override back to the
+  // narrow-viewport default (`value` only).
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+  {
+    SCOPED_TRACE("waiting for reloaded small-screen policy table");
+    ASSERT_TRUE(WaitForChromePolicyTableReady(web_contents()));
+    ASSERT_TRUE(WaitForSmallScreenMediaQuery(web_contents(),
+                                             /*expected_matches=*/true));
+  }
+  EXPECT_THAT(EvalStringVec(web_contents(), "getVisibleHeaders()"),
+              ElementsAre("name", "value"));
+}
 
 #endif  // !BUILDFLAG(IS_ANDROID)

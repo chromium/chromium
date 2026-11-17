@@ -53,17 +53,30 @@ status-box {
 
 .action-row-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+}
+
+.menu-container {
+  position: relative;
 }
 
 cr-button {
   --cr-button-height: 32px;
 }
 
-cr-checkbox {
+#show-unset {
   margin-inline-start: 16px;
   --cr-checkbox-label-padding-start: 8px;
+}
+
+#columnsMenu cr-checkbox {
+  --cr-checkbox-label-padding-start: 12px;
+}
+
+#columnsMenu cr-checkbox::part(label-container) {
+  white-space: nowrap;
 }
 
 a {

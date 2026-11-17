@@ -9,6 +9,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PolicyLevel, PolicyScope} from './policy.mojom-webui.js';
 import type {Conflict} from './policy.mojom-webui.js';
+import {OPTIONAL_POLICY_COLUMNS, OptionalPolicyColumn} from './policy_columns.js';
 import {getCss} from './policy_conflict.css.js';
 import {getHtml} from './policy_conflict.html.js';
 
@@ -63,19 +64,34 @@ export class PolicyConflictElement extends CrLitElement {
       conflict: {type: Object},
       rowLabel: {type: String},
       policyName: {type: String},
+      visibleColumns: {type: Array},
     };
   }
 
   accessor conflict: Conflict|null = null;
   accessor rowLabel: string = '';
   accessor policyName: string = '';
+  accessor visibleColumns: OptionalPolicyColumn[] =
+      [...OPTIONAL_POLICY_COLUMNS];
 
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute('role', 'rowgroup');
   }
 
+  protected isColumnVisible(column: OptionalPolicyColumn): boolean {
+    return this.visibleColumns.includes(column);
+  }
 
+  protected showCompactRow(): boolean {
+    return ([
+             OptionalPolicyColumn.VALUE,
+             OptionalPolicyColumn.SOURCE,
+             OptionalPolicyColumn.SCOPE,
+             OptionalPolicyColumn.LEVEL,
+           ] as const)
+        .every(column => this.isColumnVisible(column));
+  }
 
   protected getRowLabelText(): string {
     return this.rowLabel ? loadTimeData.getString(this.rowLabel) : '';

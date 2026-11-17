@@ -21,6 +21,10 @@
   white-space: nowrap;
 }
 
+:host([hidden]) {
+  display: none;
+}
+
 :host([selected]) {
   font-weight: bold;
 }
@@ -28,6 +32,7 @@
 .sort-arrows {
   display: inline-flex;
   flex-direction: column;
+  flex-shrink: 0;
   margin-inline-start: 5px;
   vertical-align: middle;
 }

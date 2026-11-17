@@ -4,6 +4,7 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {OptionalPolicyColumn} from './policy_columns.js';
 import type {PolicyTableElement} from './policy_table.js';
 
 export function getHtml(this: PolicyTableElement) {
@@ -35,7 +36,8 @@ export function getHtml(this: PolicyTableElement) {
       <policy-table-header-cell
         class="value"
         header-title="$i18n{headerValue}"
-        no-sort>
+        no-sort
+        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.VALUE)}">
       </policy-table-header-cell>
       <policy-table-header-cell
         class="source"
@@ -43,7 +45,8 @@ export function getHtml(this: PolicyTableElement) {
         header-title="$i18n{headerSource}"
         .sortedColumn="${this.mostRecentSortedColumn}"
         .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}">
+        @sort-changed="${this.onSortChanged}"
+        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.SOURCE)}">
       </policy-table-header-cell>
       <policy-table-header-cell
         class="scope"
@@ -51,7 +54,8 @@ export function getHtml(this: PolicyTableElement) {
         header-title="$i18n{headerScope}"
         .sortedColumn="${this.mostRecentSortedColumn}"
         .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}">
+        @sort-changed="${this.onSortChanged}"
+        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.SCOPE)}">
       </policy-table-header-cell>
       <policy-table-header-cell
         class="level"
@@ -59,7 +63,8 @@ export function getHtml(this: PolicyTableElement) {
         header-title="$i18n{headerLevel}"
         .sortedColumn="${this.mostRecentSortedColumn}"
         .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}">
+        @sort-changed="${this.onSortChanged}"
+        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.LEVEL)}">
       </policy-table-header-cell>
       <policy-table-header-cell
         class="status"
@@ -67,13 +72,15 @@ export function getHtml(this: PolicyTableElement) {
         header-title="$i18n{headerStatus}"
         .sortedColumn="${this.mostRecentSortedColumn}"
         .sortAscending="${this.sortAscending}"
-        @sort-changed="${this.onSortChanged}">
+        @sort-changed="${this.onSortChanged}"
+        ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.STATUS)}">
       </policy-table-header-cell>
       <div class="toggle" role="columnheader"></div>
     </div>
     ${this.sortedPolicies.map(policy => html`
       <policy-row
         .policy="${policy}"
+        .visibleColumns="${this.visibleColumns}"
         class="policy-data"
         ?hidden="${this.isPolicyHidden(policy)}">
       </policy-row>

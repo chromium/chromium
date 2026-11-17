@@ -4,18 +4,21 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {OptionalPolicyColumn} from './policy_columns.js';
 import type {PolicyConflictElement} from './policy_conflict.js';
 
 export function getHtml(this: PolicyConflictElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="policy conflict row" role="row">
+<div class="policy conflict row" role="row"
+    ?hidden="${!this.showCompactRow()}">
   <div class="name" role="rowheader">${this.getRowLabelText()}</div>
   <div class="value" role="cell">${this.getFormattedValue()}</div>
   <div class="source" role="cell">${this.getSourceText()}</div>
   <div class="scope" role="cell">${this.getScopeText()}</div>
   <div class="level" role="cell">${this.getLevelText()}</div>
-  <div class="messages" role="cell"></div>
+  <div class="messages" role="cell"
+      ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.STATUS)}"></div>
   <div class="copy" role="cell">
     <a is="action-link" class="copy-value link" role="button"
         @click="${this.onCopyClick}"
@@ -26,7 +29,8 @@ export function getHtml(this: PolicyConflictElement) {
     </a>
   </div>
 </div>
-<div class="policy conflict entry" role="rowgroup">
+<div class="policy conflict entry" role="rowgroup"
+    ?hidden="${this.showCompactRow()}">
   <div class="value row" role="row">
     <div class="name" role="rowheader">${this.getRowLabelText()}</div>
     <div class="value" role="cell">${this.getFormattedValue()}</div>

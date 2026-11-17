@@ -25,6 +25,7 @@ build_webui("build") {
     "policy_app.html.ts",
     "policy_app.ts",
     "browser_proxy.ts",
+    "policy_columns.ts",
     "policy_conflict.html.ts",
     "policy_conflict.ts",
     "policy_row.html.ts",

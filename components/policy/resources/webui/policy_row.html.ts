@@ -4,6 +4,7 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {OptionalPolicyColumn} from './policy_columns.js';
 import type {PolicyRowElement} from './policy_row.js';
 
 export function getHtml(this: PolicyRowElement) {
@@ -17,14 +18,25 @@ export function getHtml(this: PolicyRowElement) {
       <img src="${this.getOpenInNewIconSrc()}" alt="">
     </a>
   </div>
-  <div class="value" role="cell">${this.getTruncatedValue()}</div>
-  <div class="source" role="cell">${this.getSourceText()}</div>
-  <div class="scope" role="cell">${this.getScopeText()}</div>
-  <div class="level" role="cell">${this.getLevelText()}</div>
-  <div class="messages" role="cell">${this.getMessagesText()}</div>
+  <div class="value" role="cell"
+      ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.VALUE)}">${
+      this.getTruncatedValue()}</div>
+  <div class="source" role="cell"
+      ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.SOURCE)}">${
+      this.getSourceText()}</div>
+  <div class="scope" role="cell"
+      ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.SCOPE)}">${
+      this.getScopeText()}</div>
+  <div class="level" role="cell"
+      ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.LEVEL)}">${
+      this.getLevelText()}</div>
+  <div class="messages" role="cell"
+      ?hidden="${!this.isColumnVisible(OptionalPolicyColumn.STATUS)}">${
+      this.getMessagesText()}</div>
   <div class="toggle" role="cell" @click="${this.onToggleExpandedClick}">
     <cr-icon-button
-        iron-icon="${this.expanded ? 'cr:keyboard-arrow-up' : 'cr:keyboard-arrow-down'}"
+        iron-icon="${this.expanded ?
+            'cr:keyboard-arrow-up' : 'cr:keyboard-arrow-down'}"
         aria-label="${this.getShowMoreLessLabel()}">
     </cr-icon-button>
   </div>
@@ -41,15 +53,27 @@ export function getHtml(this: PolicyRowElement) {
     </a>
   </div>
 </div>
-<div class="scope row" role="row" ?hidden="${!this.expanded}">
+<div class="source row" role="row"
+    ?hidden="${!this.expanded ||
+        this.isColumnVisible(OptionalPolicyColumn.SOURCE)}">
+  <div class="name" role="rowheader">$i18n{headerSource}</div>
+  <div class="value" role="cell">${this.getSourceText()}</div>
+</div>
+<div class="scope row" role="row"
+    ?hidden="${!this.expanded ||
+        this.isColumnVisible(OptionalPolicyColumn.SCOPE)}">
   <div class="name" role="rowheader">$i18n{headerScope}</div>
   <div class="value" role="cell">${this.getScopeText()}</div>
 </div>
-<div class="level row" role="row" ?hidden="${!this.expanded}">
+<div class="level row" role="row"
+    ?hidden="${!this.expanded ||
+        this.isColumnVisible(OptionalPolicyColumn.LEVEL)}">
   <div class="name" role="rowheader">$i18n{headerLevel}</div>
   <div class="value" role="cell">${this.getLevelText()}</div>
 </div>
-<div class="messages row" role="row" ?hidden="${!this.expanded}">
+<div class="messages row" role="row"
+    ?hidden="${!this.expanded ||
+        this.isColumnVisible(OptionalPolicyColumn.STATUS)}">
   <div class="name" role="rowheader">$i18n{headerStatus}</div>
   <div class="value" role="cell">${this.getMessagesText()}</div>
 </div>
@@ -82,6 +106,7 @@ ${
       .policyName="${
           this.policy?.name ||
           ''}"
+      .visibleColumns="${this.visibleColumns}"
       ?hidden="${!this.expanded}">
   </policy-conflict>
 `)}
