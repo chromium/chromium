@@ -6,7 +6,6 @@
 
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -19,9 +18,6 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #include "ios/chrome/browser/content_suggestions/impression_limits/model/impression_limit_service_factory.h"
@@ -56,13 +52,6 @@ const base::Time kYesterday = TimeFromString("30 Mar 2025 10:30");
 const base::Time kLastMonth = TimeFromString("25 Feb 2025 9:00");
 const uint64_t kValidId = 67890L;
 
-const char* kPrefsToRegister[] = {
-    shop_card_prefs::kShopCardPriceDropUrlImpressions,
-    tab_resumption_prefs::kTabResumptionRegularUrlImpressions,
-    tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions,
-    tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions,
-};
-
 history::URLRows CreateURLRows(const std::vector<GURL>& urls) {
   history::URLRows url_rows;
   for (const auto& url : urls) {
@@ -71,54 +60,40 @@ history::URLRows CreateURLRows(const std::vector<GURL>& urls) {
   return url_rows;
 }
 
+// Create a BookmarkModel with a TestBookmarkClient.
+std::unique_ptr<KeyedService> CreateBookmarkModelWithTestBookmarkClient() {
+  auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+  client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+  return bookmarks::TestBookmarkClient::CreateModelWithClient(
+      std::move(client));
+}
+
 }  // namespace
 
 class ImpressionLimitServiceTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features*/ {},
-        /* disabled_features*/ {});
-    auto client = std::make_unique<bookmarks::TestBookmarkClient>();
-    client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
-    bookmark_model_ =
-        bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
-
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return commerce::MockShoppingService::Build();
-            }));
+        base::BindOnce(&commerce::MockShoppingService::Build));
+    builder.AddTestingFactory(
+        ios::BookmarkModelFactory::GetInstance(),
+        base::BindOnce(&CreateBookmarkModelWithTestBookmarkClient));
     builder.AddTestingFactory(
         ImpressionLimitServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](PrefService* pref_service,
-               bookmarks::BookmarkModel* bookmark_model,
-               ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<ImpressionLimitService>(
-                  pref_service,
-                  ios::HistoryServiceFactory::GetForProfile(profile),
-                  bookmark_model,
-                  commerce::ShoppingServiceFactory::GetForProfile(profile));
-            },
-            pref_service(), bookmark_model_.get()));
+        ImpressionLimitServiceFactory::GetDefaultFactory());
 
     profile_ = std::move(builder).Build();
 
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
-    for (auto* const pref : kPrefsToRegister) {
-      pref_service_.registry()->RegisterDictionaryPref(pref);
-    }
     impression_limit_service_ =
         ImpressionLimitServiceFactory::GetForProfile(profile_.get());
+    bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
   }
-
-  PrefService* pref_service() { return &pref_service_; }
 
   ProfileIOS* profile() { return profile_.get(); }
 
@@ -163,12 +138,10 @@ class ImpressionLimitServiceTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<ImpressionLimitService> impression_limit_service_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 // Check Impressions are logged correctly for same URL.
