@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -104,7 +104,7 @@ public interface TabModelDelegate {
      * @return Whether the move succeeded.
      */
     default boolean moveTabGroupToWindow(
-            Token tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
+            TabGroupId tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
         return false;
     }
 }

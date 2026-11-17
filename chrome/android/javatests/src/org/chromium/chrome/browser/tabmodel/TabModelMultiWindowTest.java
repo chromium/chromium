@@ -53,6 +53,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
@@ -139,7 +140,9 @@ public class TabModelMultiWindowTest {
                 () -> {
                     boolean moved =
                             mTabModelJni.moveTabGroupToWindowForTesting(
-                                    groupId, nativeBrowserWindow2, /* newIndex= */ 0);
+                                    TabGroupId.fromRawToken(groupId),
+                                    nativeBrowserWindow2,
+                                    /* newIndex= */ 0);
                     assertTrue(moved);
                 });
 
@@ -178,7 +181,9 @@ public class TabModelMultiWindowTest {
                 () -> {
                     boolean moved =
                             mTabModelJni.moveTabGroupToWindowForTesting(
-                                    invalidGroupId, nativeBrowserWindow2, /* newIndex= */ 0);
+                                    TabGroupId.fromRawToken(invalidGroupId),
+                                    nativeBrowserWindow2,
+                                    /* newIndex= */ 0);
                     assertFalse(moved);
                 });
     }

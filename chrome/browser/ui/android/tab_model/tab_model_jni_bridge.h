@@ -57,7 +57,7 @@ class TabModelJniBridge : public TabModel {
   void MoveTabToWindowForTesting(TabAndroid* tab,
                                  BrowserWindowInterface* browser_window,
                                  int new_index);
-  bool MoveTabGroupToWindowForTesting(const base::Token& group_id,
+  bool MoveTabGroupToWindowForTesting(tab_groups::TabGroupId group_id,
                                       BrowserWindowInterface* browser_window,
                                       int new_index);
   void SetMuteSetting(const std::vector<TabAndroid*>& tabs, bool mute);

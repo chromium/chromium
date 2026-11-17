@@ -50,6 +50,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tab_groups/android/tab_group_id_jni_conversion.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
@@ -186,12 +187,11 @@ void TabModelJniBridge::MoveTabToWindowForTesting(
 }
 
 bool TabModelJniBridge::MoveTabGroupToWindowForTesting(
-    const base::Token& group_id,
+    tab_groups::TabGroupId group_id,
     BrowserWindowInterface* browser_window,
     int new_index) {
   SessionID destination_window_id = browser_window->GetSessionID();
-  return MoveTabGroupToWindow(tab_groups::TabGroupId::FromRawToken(group_id),
-                              destination_window_id, new_index);
+  return MoveTabGroupToWindow(group_id, destination_window_id, new_index);
 }
 
 bool TabModelJniBridge::IsThisTabListEditable() {
@@ -988,7 +988,7 @@ bool TabModelJniBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   return Java_TabModelJniBridge_moveTabGroupToWindowInternal(
-      env, jobj, group_id.token(), window_android, destination_index);
+      env, jobj, group_id, window_android, destination_index);
 }
 
 // static

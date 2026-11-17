@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.components.ukm.UkmRecorder;
@@ -817,7 +818,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean moveTabGroupToWindow(Token tabGroupId, Activity activity, int newIndex) {
+    public boolean moveTabGroupToWindow(TabGroupId tabGroupId, Activity activity, int newIndex) {
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             return mModelDelegate.moveTabGroupToWindow(
                     tabGroupId, activity, newIndex, isIncognito());

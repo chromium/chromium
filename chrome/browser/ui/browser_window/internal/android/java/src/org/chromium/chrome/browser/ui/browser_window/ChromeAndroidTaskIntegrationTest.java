@@ -76,6 +76,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowResizePrecheckResult;
 import org.chromium.ui.display.DisplayUtil;
@@ -1241,7 +1242,7 @@ public class ChromeAndroidTaskIntegrationTest {
                             assertTrue(
                                     ((TabModelSelectorImpl) sourceActivity.getTabModelSelector())
                                             .moveTabGroupToWindow(
-                                                    groupId,
+                                                    TabGroupId.fromRawToken(groupId),
                                                     destActivity,
                                                     /* newIndex= */ 0,
                                                     /* isIncognito= */ true));

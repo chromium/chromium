@@ -42,6 +42,7 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -244,7 +245,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     }
 
     protected boolean moveTabGroupToWindowForTesting(
-            Token tabGroupId, JniPtr<NativeBrowserWindowInterface> browserWindow, int newIndex) {
+            TabGroupId tabGroupId,
+            JniPtr<NativeBrowserWindowInterface> browserWindow,
+            int newIndex) {
         return TabModelJniBridgeJni.get()
                 .moveTabGroupToWindowForTesting( // IN-TEST
                         assertNonNull(mNativeTabModelJniBridge),
@@ -706,7 +709,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     @CalledByNative
     private boolean moveTabGroupToWindowInternal(
-            @JniType("base::Token") Token tabGroupId,
+            @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             int newIndex) {
         Activity activity = windowAndroid.getActivity().get();
@@ -718,7 +721,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     // TODO(https://crbug.com/495795228): add `bringToFront` parameter to indicate
     // if the destination activity should be activated. See MultiInstanceOrchestrator.
     protected abstract boolean moveTabGroupToWindow(
-            Token tabGroupId, Activity activity, int newIndex);
+            TabGroupId tabGroupId, Activity activity, int newIndex);
 
     @Override
     public int getPinnedTabsCount() {
@@ -813,7 +816,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
         boolean moveTabGroupToWindowForTesting( // IN-TEST
                 JniPtr<NativeTabModelJniBridge> self,
-                @JniType("base::Token") Token tabGroupId,
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId,
                 JniPtr<NativeBrowserWindowInterface> browserWindow,
                 int newIndex);
 

@@ -13,7 +13,6 @@ import android.os.Handler;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Token;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModelOrderController;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -413,9 +413,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
 
     @Override
     public boolean moveTabGroupToWindow(
-            Token tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
+            TabGroupId tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
         TabModel tabModel = getModel(isIncognito);
-        if (!tabModel.containsTabGroup(tabGroupId)) return false;
+        if (!tabModel.containsTabGroup(tabGroupId.getToken())) return false;
 
         Tab currentTab = tabModel.getCurrentTabSupplier().get();
         assert currentTab != null;
@@ -425,7 +425,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
         TabGroupMetadata tabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         tabModel,
-                        tabModel.getTabsInGroup(tabGroupId),
+                        tabModel.getTabsInGroup(tabGroupId.getToken()),
                         TabWindowManagerSingleton.getInstance().getIdForWindow(currentActivity),
                         currentTab.getId());
         if (tabGroupMetadata == null) return false;
