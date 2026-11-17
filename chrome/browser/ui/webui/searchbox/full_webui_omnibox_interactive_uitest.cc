@@ -1571,8 +1571,17 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
 // Verifies that reactivating a browser window with an unfocused draft keeps the
 // draft visible without stealing focus back to the omnibox.
-IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus) {
+// TODO(crbug.com/569788689): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus \
+  DISABLED_ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus
+#else
+#define MAYBE_ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus \
+  ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus
+#endif
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    MAYBE_ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus) {
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
