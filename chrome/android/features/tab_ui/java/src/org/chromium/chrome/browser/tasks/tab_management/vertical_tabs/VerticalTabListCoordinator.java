@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -296,24 +295,23 @@ public class VerticalTabListCoordinator {
     }
 
     private class VerticalTabListClickHandler implements TabListItemOnClickListenerProvider {
-        private final TabActionListener mTabGroupClickedListener =
-                new TabActionListener() {
-                    @Override
-                    public void run(
-                            View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
-                        toggleTabGroupExpansion(tabId);
-                    }
-
-                    @Override
-                    public void run(
-                            View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
-                        // Intentional no-op: Sync groups are not supported in Vertical Tabs.
-                    }
-                };
-
         @Override
         public @Nullable TabActionListener onTabGroupClicked(Tab tab) {
-            return mTabGroupClickedListener;
+            Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId == null) return null;
+            return new TabActionListener() {
+                @Override
+                public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
+                    mMediator.toggleTabGroupExpansion(tabGroupId);
+                }
+
+                @Override
+                public void run(
+                        View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
+                    // Intentional no-op: only archived group cards pass a sync ID, and Vertical
+                    // Tabs doesn't display Archived tabs/group.
+                }
+            };
         }
 
         @Override
@@ -1139,16 +1137,6 @@ public class VerticalTabListCoordinator {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Toggles the expanded/collapsed visual and layout state of a tab group.
-     *
-     * @param tabId The ID of a tab in the tab group.
-     */
-    @VisibleForTesting
-    void toggleTabGroupExpansion(int tabId) {
-        mMediator.toggleTabGroupExpansion(tabId);
     }
 
     private void setActive(boolean isActive) {

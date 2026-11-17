@@ -1312,14 +1312,11 @@ public class TabListMediator implements TabListNotificationHandler {
     /**
      * Toggles the collapsed/expanded state of a tab group inside the TabModel.
      *
-     * @param tabId The ID of a tab in the tab group.
+     * @param tabGroupId The ID of the tab group.
      */
-    public void toggleTabGroupExpansion(int tabId) {
+    public void toggleTabGroupExpansion(Token tabGroupId) {
         TabModel tabModel = getCurrentTabModelChecked();
-        Tab tab = tabModel.getTabById(tabId);
-        if (tab == null) return;
-        Token tabGroupId = tab.getTabGroupId();
-        if (tabGroupId == null) return;
+        if (!tabModel.containsTabGroup(tabGroupId)) return;
 
         boolean isCollapsed = tabModel.getTabGroupCollapsed(tabGroupId);
         boolean newCollapsedState = !isCollapsed;

@@ -7338,7 +7338,7 @@ public class TabListMediatorUnitTest {
                         "Android.VerticalTabs.TabGroupCollapsed", true);
 
         // Toggle expansion (from expanded (false) to collapsed (true)).
-        mMediator.toggleTabGroupExpansion(TAB1_ID);
+        mMediator.toggleTabGroupExpansion(TAB_GROUP_ID);
 
         verify(mTabModel)
                 .setTabGroupCollapsed(TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
@@ -7352,11 +7352,27 @@ public class TabListMediatorUnitTest {
                         "Android.VerticalTabs.TabGroupCollapsed", false);
 
         // Toggle expansion (from collapsed (true) to expanded (false)).
-        mMediator.toggleTabGroupExpansion(TAB1_ID);
+        mMediator.toggleTabGroupExpansion(TAB_GROUP_ID);
 
         verify(mTabModel)
                 .setTabGroupCollapsed(TAB_GROUP_ID, /* isCollapsed= */ false, /* animate= */ false);
 
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testToggleTabGroupExpansion_UnknownGroupIsNoOp() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.VerticalTabs.TabGroupCollapsed")
+                        .build();
+
+        mMediator.toggleTabGroupExpansion(TAB_GROUP_ID);
+
+        verify(mTabModel, never()).setTabGroupCollapsed(any(), anyBoolean(), anyBoolean());
         histogramWatcher.assertExpected();
     }
 

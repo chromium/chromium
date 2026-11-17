@@ -1136,8 +1136,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     public void testToggleTabGroupExpansion_Expand() {
-        Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(TAB_GROUP_ID, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
 
         final boolean[] collapsedState = {true};
         doAnswer(invocation -> collapsedState[0])
@@ -1165,7 +1164,11 @@ public class VerticalTabListCoordinatorUnitTest {
         assertTrue(groupModel.get(TabProperties.IS_COLLAPSED));
         assertNotNull(groupModel.get(TabProperties.TAB_ACTION_BUTTON_DATA));
 
-        mCoordinator.toggleTabGroupExpansion(TAB_ID_1);
+        // The header listener uses the group ID, so an invalid tab ID (e.g. after the group's
+        // first tab closed) still toggles the group.
+        groupModel
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mMockChildView, Tab.INVALID_TAB_ID, /* triggeringMotion= */ null);
         assertFalse(
                 "Tab group should be expanded (IS_COLLAPSED = false) after first toggle click.",
                 groupModel.get(TabProperties.IS_COLLAPSED));
@@ -1250,12 +1253,12 @@ public class VerticalTabListCoordinatorUnitTest {
         PropertyModel groupModel = adapter.getModelList().get(0).model;
         assertEquals(TAB_GROUP_ID, groupModel.get(TabProperties.TAB_GROUP_HEADER_ID));
         assertNull(groupModel.get(TabProperties.TAB_ACTION_BUTTON_DATA));
+        assertNull(groupModel.get(TabProperties.TAB_CLICK_LISTENER));
     }
 
     @Test
     public void testToggleTabGroupExpansion_Collapse() {
-        Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(TAB_GROUP_ID, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
 
         final boolean[] collapsedState = {false};
         doAnswer(invocation -> collapsedState[0])
@@ -1282,7 +1285,9 @@ public class VerticalTabListCoordinatorUnitTest {
         PropertyModel groupModel = adapter.getModelList().get(0).model;
         assertFalse(groupModel.get(TabProperties.IS_COLLAPSED));
 
-        mCoordinator.toggleTabGroupExpansion(TAB_ID_1);
+        groupModel
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mMockChildView, Tab.INVALID_TAB_ID, /* triggeringMotion= */ null);
         assertTrue(
                 "Tab group should be collapsed (IS_COLLAPSED = true) after toggle click from"
                         + " expanded state.",
@@ -1305,8 +1310,28 @@ public class VerticalTabListCoordinatorUnitTest {
         assertEquals(1, adapter.getModelList().size());
         PropertyModel tabModel = adapter.getModelList().get(0).model;
 
-        mCoordinator.toggleTabGroupExpansion(TAB_ID_1);
+        tabModel.get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mMockChildView, TAB_ID_1, /* triggeringMotion= */ null);
+        verify(mTabModel, never())
+                .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
         assertFalse(tabModel.get(TabProperties.IS_COLLAPSED));
+    }
+
+    @Test
+    public void testTabGroupHeaderClick_SyncId_NoOp() {
+        setupMockTabGroup(TAB_GROUP_ID, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+
+        createCoordinator();
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        PropertyModel groupModel = adapter.getModelList().get(0).model;
+        groupModel
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mMockChildView, "sync_id_123", /* triggeringMotion= */ null);
+        verify(mTabModel, never())
+                .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
     }
 
     @Test
