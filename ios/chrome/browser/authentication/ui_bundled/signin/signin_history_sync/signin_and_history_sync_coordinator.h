@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 
+@protocol SystemIdentity;
+
 namespace signin_metrics {
 enum class AccessPoint : int;
 enum class PromoAction : int;
@@ -23,6 +25,8 @@ enum class PromoAction : int;
 // it is NO, it might still be skipped if the user previously approved it).
 // `fullscreenPromo`: whether the promo should be displayed in a fullscreen
 // modal.
+// `preselectedIdentity`: identity preselected in `FullscreenSigninCoordinator`
+// when `fullscreenPromo` is `YES` (or `nil` to use the default identity).
 // The `contextStyle` is used to customize content on screens.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
@@ -32,6 +36,7 @@ enum class PromoAction : int;
                    promoAction:(signin_metrics::PromoAction)promoAction
            optionalHistorySync:(BOOL)optionalHistorySync
                fullscreenPromo:(BOOL)fullscreenPromo
+           preselectedIdentity:(id<SystemIdentity>)preselectedIdentity
           continuationProvider:
               (const ChangeProfileContinuationProvider&)continuationProvider
     NS_DESIGNATED_INITIALIZER;

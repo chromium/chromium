@@ -10,10 +10,13 @@
 
 #import "base/notreached.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
@@ -23,6 +26,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 
 @interface FullscreenSigninCoordinator () <FirstRunScreenDelegate>
 
@@ -39,6 +43,9 @@
   SigninContextStyle _contextStyle;
   signin_metrics::AccessPoint _accessPoint;
   std::unique_ptr<SigninInProgress> _signinInProgress;
+  // Primary account when the account switching promo is started. Empty for
+  // other context styles.
+  GaiaId _initialPrimaryGaiaId;
 }
 
 - (instancetype)
@@ -75,6 +82,11 @@
   CHECK(self.canSwitchAccount ||
         !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   _signinInProgress = [self.sceneState createSigninInProgress];
+  if (_contextStyle == SigninContextStyle::kAccountSwitchingPromo) {
+    _initialPrimaryGaiaId =
+        identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia;
+  }
   self.navigationController =
       [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                     toolbarClass:nil];
@@ -124,7 +136,7 @@
 - (void)finishPresentingScreens {
   __weak __typeof(self) weakSelf = self;
   void (^completion)(void) = ^{
-    [weakSelf finishWithPrimaryIdentity];
+    [weakSelf finish];
   };
   [self.navigationController dismissViewControllerAnimated:YES
                                                 completion:completion];
@@ -176,14 +188,32 @@
   return nil;
 }
 
-- (void)finishWithPrimaryIdentity {
+// Returns the current primary identity if the signin was a success and
+// `CanceledByUser` otherwise.
+- (SigninCoordinatorResultOrIdentity)finishResult {
   id<SystemIdentity> identity =
       AuthenticationServiceFactory::GetForProfile(self.profile)
           ->GetPrimaryIdentity();
-  SigninCoordinatorResultOrIdentity result =
-      identity ? SigninCoordinatorResultOrIdentity(identity)
-               : base::unexpected(SigninCoordinatorResultCanceledByUser);
-  [self finishWithResult:std::move(result)];
+  if (!identity) {
+    //  The user is signed-out. Sign-in was canceled.
+    return base::unexpected(SigninCoordinatorResultCanceledByUser);
+  }
+  // TODO(crbug.com/586620889): For `DeeplinkSigninCoordinator`, if the identity
+  // did not change, it’s also a cancelation.
+  if (_contextStyle == SigninContextStyle::kAccountSwitchingPromo &&
+      identity.gaiaId == _initialPrimaryGaiaId) {
+    // The primary identity is not changed, thus the user canceled the switch.
+    return base::unexpected(SigninCoordinatorResultCanceledByUser);
+  }
+  // In all other case, it’s a success.
+  return identity;
+}
+
+// Finishes with `SigninCoordinatorResultCanceledByUser` if there is no primary
+// identity, or if the account switching promo did not switch the primary
+// account.
+- (void)finish {
+  [self finishWithResult:[self finishResult]];
 }
 
 - (void)finishWithResult:(SigninCoordinatorResultOrIdentity)result {

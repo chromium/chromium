@@ -11,6 +11,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
+    "//google_apis",
     "//ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
@@ -23,6 +24,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:system_identity",
   ]
 }
 
@@ -49,6 +51,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",

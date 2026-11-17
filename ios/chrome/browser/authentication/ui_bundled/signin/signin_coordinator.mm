@@ -343,6 +343,7 @@ using signin_metrics::PromoAction;
                      promoAction:promoAction
              optionalHistorySync:optionalHistorySync
                  fullscreenPromo:fullscreenPromo
+             preselectedIdentity:nil
             continuationProvider:continuationProvider];
 }
 

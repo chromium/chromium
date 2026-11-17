@@ -87,6 +87,9 @@ HistorySyncResultToSigninCoordinatorResultOrIdentity(
   BOOL _optionalHistorySync;
   // Whether the promo should be displayed in a fullscreen modal.
   BOOL _fullscreenPromo;
+  // Identity preselected in `FullscreenSigninCoordinator` when
+  // `_fullscreenPromo` is `YES`.
+  id<SystemIdentity> _preselectedIdentity;
   ChangeProfileContinuationProvider _continuationProvider;
 }
 
@@ -98,6 +101,7 @@ HistorySyncResultToSigninCoordinatorResultOrIdentity(
                    promoAction:(signin_metrics::PromoAction)promoAction
            optionalHistorySync:(BOOL)optionalHistorySync
                fullscreenPromo:(BOOL)fullscreenPromo
+           preselectedIdentity:(id<SystemIdentity>)preselectedIdentity
           continuationProvider:
               (const ChangeProfileContinuationProvider&)continuationProvider {
   self = [super initWithBaseViewController:viewController
@@ -106,9 +110,11 @@ HistorySyncResultToSigninCoordinatorResultOrIdentity(
                                accessPoint:accessPoint];
   if (self) {
     CHECK(continuationProvider);
+    CHECK(!preselectedIdentity || fullscreenPromo);
     _continuationProvider = continuationProvider;
     _optionalHistorySync = optionalHistorySync;
     _fullscreenPromo = fullscreenPromo;
+    _preselectedIdentity = preselectedIdentity;
     _promoAction = promoAction;
     _currentStep = SignInHistorySyncStep::kStart;
   }
@@ -217,10 +223,11 @@ HistorySyncResultToSigninCoordinatorResultOrIdentity(
   id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   SigninCoordinatorResultOrIdentity result;
   if (!previousResult.has_value() &&
-      previousResult.error() == SigninCoordinatorResultInterrupted) {
-    // If a SigninCoordinator is interrupted, the completion info should not
-    // contain an identity even if a sign-in has been completed successfully.
-    result = base::unexpected(SigninCoordinatorResultInterrupted);
+      previousResult.error() != SigninCoordinatorResultDisabled) {
+    // If a step failed (e.g. it was interrupted or canceled), the completion
+    // info should not contain an identity even if a primary account is signed
+    // in. `SigninCoordinatorResultDisabled` only means that a step was skipped.
+    result = base::unexpected(previousResult.error());
   } else if (identity) {
     result = identity;
   } else {
@@ -244,6 +251,8 @@ HistorySyncResultToSigninCoordinatorResultOrIdentity(
                                 accessPoint:self.accessPoint
           changeProfileContinuationProvider:_continuationProvider];
       _fullscreenSigninCoordinator.delegate = self;
+      _fullscreenSigninCoordinator.identity = _preselectedIdentity;
+      _fullscreenSigninCoordinator.canSwitchAccount = YES;
       [_fullscreenSigninCoordinator start];
       return;
     }

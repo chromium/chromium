@@ -30,11 +30,13 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -92,12 +94,15 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
     system_identity_manager->AddIdentity(fake_identity_);
+    other_identity_ = [FakeSystemIdentity fakeIdentity2];
+    system_identity_manager->AddIdentity(other_identity_);
   }
 
   ~FullscreenSigninCoordinatorTest() override {
     EXPECT_OCMOCK_VERIFY((id)fullscreen_signin_screen_coordinator_mock_);
   }
 
+  // PlatformTest:
   void TearDown() override {
     [coordinator_ stop];
     coordinator_ = nil;
@@ -110,17 +115,23 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Initializes and starts `coordinator_`.
-  void StartCoordinator() {
+  // Initializes and starts `coordinator_` with `context_style`,
+  // `access_point`, `identity` and `can_switch_account`.
+  void StartCoordinator(SigninContextStyle context_style,
+                        signin_metrics::AccessPoint access_point,
+                        id<SystemIdentity> identity,
+                        BOOL can_switch_account) {
     delegate_ = [[FakeFullscreenSigninCoordinatorDelegate alloc] init];
     coordinator_ = [[FullscreenSigninCoordinator alloc]
                initWithBaseViewController:window_.rootViewController
                                   browser:browser_.get()
                            screenProvider:[[SigninScreenProvider alloc] init]
-                             contextStyle:SigninContextStyle::kDefault
-                              accessPoint:signin_metrics::AccessPoint::kSettings
+                             contextStyle:context_style
+                              accessPoint:access_point
         changeProfileContinuationProvider:DoNothingContinuationProvider()];
     coordinator_.delegate = delegate_;
+    coordinator_.identity = identity;
+    coordinator_.canSwitchAccount = can_switch_account;
 
     fullscreen_signin_screen_coordinator_mock_ =
         OCMStrictClassMock([FullscreenSigninScreenCoordinator class]);
@@ -135,16 +146,16 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
                                      delegate:static_cast<
                                                   id<FirstRunScreenDelegate>>(
                                                   coordinator_)
-                                 contextStyle:SigninContextStyle::kDefault
-                                  accessPoint:signin_metrics::AccessPoint::
-                                                  kSettings
+                                 contextStyle:context_style
+                                  accessPoint:access_point
                                   promoAction:signin_metrics::PromoAction::
                                                   PROMO_ACTION_NO_SIGNIN_PROMO
             changeProfileContinuationProvider:*provider])
         .andReturn(fullscreen_signin_screen_coordinator_mock_);
-    OCMExpect([fullscreen_signin_screen_coordinator_mock_ setIdentity:nil]);
     OCMExpect(
-        [fullscreen_signin_screen_coordinator_mock_ setCanSwitchAccount:NO]);
+        [fullscreen_signin_screen_coordinator_mock_ setIdentity:identity]);
+    OCMExpect([fullscreen_signin_screen_coordinator_mock_
+        setCanSwitchAccount:can_switch_account]);
     OCMExpect([fullscreen_signin_screen_coordinator_mock_ start]);
 
     [coordinator_ start];
@@ -162,6 +173,7 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
       fullscreen_signin_screen_coordinator_mock_ = nil;
   UIWindow* window_ = nil;
   FakeSystemIdentity* fake_identity_ = nil;
+  FakeSystemIdentity* other_identity_ = nil;
   ProfileState* profile_state_ = nil;
   SceneState* scene_state_ = nil;
 };
@@ -170,7 +182,9 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
 // dismissal completes rather than snapshotting it before dismissal.
 TEST_F(FullscreenSigninCoordinatorTest,
        PrimaryIdentityQueriedOnDismissalCompletion) {
-  StartCoordinator();
+  StartCoordinator(SigninContextStyle::kDefault,
+                   signin_metrics::AccessPoint::kSettings, /*identity=*/nil,
+                   /*can_switch_account=*/NO);
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile_);
@@ -194,7 +208,9 @@ TEST_F(FullscreenSigninCoordinatorTest,
 // Tests that `FullscreenSigninCoordinator` reports the signed-in identity when
 // the primary identity remains signed in after dismissal completes.
 TEST_F(FullscreenSigninCoordinatorTest, CompletesWithSuccessWhenSignedIn) {
-  StartCoordinator();
+  StartCoordinator(SigninContextStyle::kDefault,
+                   signin_metrics::AccessPoint::kSettings, /*identity=*/nil,
+                   /*can_switch_account=*/NO);
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForProfile(profile_);
@@ -209,6 +225,52 @@ TEST_F(FullscreenSigninCoordinatorTest, CompletesWithSuccessWhenSignedIn) {
   SigninCoordinatorResultOrIdentity result = [delegate_ waitForResult];
   ASSERT_TRUE(result.has_value());
   EXPECT_NSEQ(result.value(), fake_identity_);
+}
+
+// Tests that `FullscreenSigninCoordinator` reports the new primary identity
+// when the account switching promo switched the primary account.
+TEST_F(FullscreenSigninCoordinatorTest,
+       AccountSwitchingPromoCompletesWithNewIdentityAfterSwitch) {
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile_);
+  auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kStartPage);
+  StartCoordinator(SigninContextStyle::kAccountSwitchingPromo,
+                   signin_metrics::AccessPoint::kSettings, other_identity_,
+                   /*can_switch_account=*/YES);
+
+  auth_service->SignOut(signin_metrics::ProfileSignout::kTest);
+  auth_service->SignIn(other_identity_, signin_metrics::AccessPoint::kSettings);
+  OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
+
+  [static_cast<id<FirstRunScreenDelegate>>(coordinator_)
+      firstRunScreenCoordinatorWantsToBeStopped:
+          fullscreen_signin_screen_coordinator_mock_];
+
+  SigninCoordinatorResultOrIdentity result = [delegate_ waitForResult];
+  ASSERT_TRUE(result.has_value());
+  EXPECT_NSEQ(result.value(), other_identity_);
+}
+
+// Tests that `FullscreenSigninCoordinator` reports a cancelation when the
+// account switching promo is dismissed without switching the primary account.
+TEST_F(FullscreenSigninCoordinatorTest,
+       AccountSwitchingPromoCanceledWithoutSwitch) {
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile_);
+  auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kStartPage);
+  StartCoordinator(SigninContextStyle::kAccountSwitchingPromo,
+                   signin_metrics::AccessPoint::kSettings, other_identity_,
+                   /*can_switch_account=*/YES);
+
+  OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
+
+  [static_cast<id<FirstRunScreenDelegate>>(coordinator_)
+      firstRunScreenCoordinatorWantsToBeStopped:
+          fullscreen_signin_screen_coordinator_mock_];
+
+  SigninCoordinatorResultOrIdentity result = [delegate_ waitForResult];
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SigninCoordinatorResultCanceledByUser);
 }
 
 }  // namespace
