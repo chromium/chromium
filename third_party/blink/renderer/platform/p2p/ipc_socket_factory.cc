@@ -717,6 +717,7 @@ AsyncDnsAddressResolverImpl::AsyncDnsAddressResolverImpl(
 
 AsyncDnsAddressResolverImpl::~AsyncDnsAddressResolverImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  resolver_->Cancel();
 }
 
 void AsyncDnsAddressResolverImpl::Start(const webrtc::SocketAddress& addr,
