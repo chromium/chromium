@@ -21,6 +21,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 namespace affiliations {
@@ -50,10 +51,12 @@ class GmailOtpServiceImpl : public GmailOtpService {
   // GmailOtpService:
   GmailOtpBackend* GetBackend() override;
   void GetFreshestCachedOtp(const url::Origin& origin,
+                            ukm::SourceId ukm_source_id,
                             bool allow_psl_matching,
                             GetFreshestCachedOtpCallback callback) override;
   [[nodiscard]] ExpiringSubscription Subscribe(
       const url::Origin& origin,
+      ukm::SourceId ukm_source_id,
       bool allow_psl_matching,
       base::Time expiration,
       IncomingTokenCallback callback,
@@ -68,11 +71,13 @@ class GmailOtpServiceImpl : public GmailOtpService {
   void StartCachedOtpCheck(ExpiringSubscriptionHandle check_handle,
                            std::vector<OneTimeToken> tokens,
                            size_t current_index,
+                           ukm::SourceId ukm_source_id,
                            bool allow_psl_matching,
                            GetFreshestCachedOtpCallback callback);
   void OnCachedTokenMatchChecked(ExpiringSubscriptionHandle check_handle,
                                  std::vector<OneTimeToken> tokens,
                                  size_t current_index,
+                                 ukm::SourceId ukm_source_id,
                                  bool allow_psl_matching,
                                  GetFreshestCachedOtpCallback callback,
                                  GmailOtpSenderDomainMatchType match_type);
@@ -81,13 +86,15 @@ class GmailOtpServiceImpl : public GmailOtpService {
 
   void NotifySubscriber(
       const ScopedDomainMatcherCleanup* cleanup,
+      ukm::SourceId ukm_source_id,
       bool allow_psl_matching,
       IncomingTokenCallback callback,
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> result);
   void OnBackendTokenReceived(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> result);
   void OnBackendSubscriptionExpired();
-  void OnSubscriberDomainMatchChecked(bool allow_psl_matching,
+  void OnSubscriberDomainMatchChecked(ukm::SourceId ukm_source_id,
+                                      bool allow_psl_matching,
                                       IncomingTokenCallback callback,
                                       OneTimeToken token,
                                       GmailOtpSenderDomainMatchType match_type);

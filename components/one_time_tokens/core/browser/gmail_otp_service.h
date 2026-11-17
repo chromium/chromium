@@ -14,6 +14,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 namespace one_time_tokens {
@@ -37,17 +38,21 @@ class GmailOtpService : public KeyedService {
   // Asynchronously queries the backend cache for the freshest cached OTP
   // matching `origin`. Invokes `callback` with the freshest matching token if
   // one exists, or `std::nullopt` otherwise. If `origin` is opaque, posts
-  // `std::nullopt` asynchronously.
+  // `std::nullopt` asynchronously. Records sender domain match UKM metrics
+  // against `ukm_source_id` if valid.
   virtual void GetFreshestCachedOtp(const url::Origin& origin,
+                                    ukm::SourceId ukm_source_id,
                                     bool allow_psl_matching,
                                     GetFreshestCachedOtpCallback callback) = 0;
 
   // Subscribes to incoming OTPs for `origin` until `expiration`.
   // `callback` is called for matching tokens or backend errors.
   // If `origin` is opaque, asynchronously notifies `callback` with
-  // `OneTimeTokenRetrievalError::kGmailOtpUnknown`.
+  // `OneTimeTokenRetrievalError::kGmailOtpUnknown`. Records sender domain match
+  // UKM metrics against `ukm_source_id` if valid.
   [[nodiscard]] virtual ExpiringSubscription Subscribe(
       const url::Origin& origin,
+      ukm::SourceId ukm_source_id,
       bool allow_psl_matching,
       base::Time expiration,
       IncomingTokenCallback callback,
