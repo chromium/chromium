@@ -267,7 +267,7 @@ cr-searchbox-input:has(#lensPlaceholder:not([hidden]))::part(
   --cr-searchbox-match-padding-inline-start: 16px;
 
   /* Used in search-animated-glow-element. */
-  --search-animated-glow-drag-drop-placeholder-top: 16px;
+  --search-animated-glow-drag-drop-placeholder-top: 18px;
   --omnibox-everywhere-top-actions-top: 16px;
 }
 
@@ -444,12 +444,13 @@ cr-searchbox-input::part(icon),
   height: var(--cr-searchbox-height, 48px);
 }
 
-/* Overrides the 16px default on :host when collapsed to a single-line pill. */
+/* Overrides the defaults on :host when collapsed to a single-line pill. */
 :host(:not([dropdown-is-visible]):not([has-user-input])) {
   --cr-searchbox-border-radius: calc(var(--cr-searchbox-height, 48px) / 2);
   --enterprise-profile-clearance: 24px;
   --loomnibox-animation-duration: 220ms;
   --omnibox-everywhere-top-actions-top: 10px;
+  --search-animated-glow-drag-drop-placeholder-top: 12px;
 }
 
 :host(:not([dropdown-is-visible]):not([has-user-input])) #inputWrapper {

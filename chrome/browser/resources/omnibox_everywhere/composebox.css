@@ -99,6 +99,7 @@
   --cr-composebox-submit-icon-offset: 0;
   --cr-composebox-submit-icon-size: 20px;
   --cr-composebox-submit-width: 40px;
+  --search-animated-glow-drag-drop-placeholder-top: 18px;
 }
 
 #composebox {

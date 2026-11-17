@@ -121,6 +121,19 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertTrue(omnibox.hasAttribute('is-dragging-file'));
         assertEquals(GlowAnimationState.DRAGGING, omnibox.animationState);
 
+        const glow =
+            omnibox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
+                'search-animated-glow')!;
+        const dragDropPlaceholder =
+            glow.shadowRoot.querySelector<HTMLElement>('#dragDropPlaceholder')!;
+        assertEquals('12px', window.getComputedStyle(dragDropPlaceholder).top);
+
+        omnibox.dropdownIsVisible = true;
+        await microtasksFinished();
+        assertEquals('18px', window.getComputedStyle(dragDropPlaceholder).top);
+        omnibox.dropdownIsVisible = false;
+        await microtasksFinished();
+
         inputWrapper?.dispatchEvent(new DragEvent('dragleave', {
           bubbles: true,
           composed: true,
@@ -1894,6 +1907,13 @@ suite('OmniboxEverywhereComposeboxTest', () => {
         await microtasksFinished();
 
         assertTrue(composebox.hasAttribute('is-dragging-file'));
+
+        const glow =
+            composebox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
+                'search-animated-glow')!;
+        const dragDropPlaceholder =
+            glow.shadowRoot.querySelector<HTMLElement>('#dragDropPlaceholder')!;
+        assertEquals('18px', window.getComputedStyle(dragDropPlaceholder).top);
 
         dropZone?.dispatchEvent(new DragEvent('dragleave', {
           bubbles: true,
