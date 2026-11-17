@@ -356,7 +356,9 @@ bool FocusController::SetActiveWindow(
     return true;
   }
 
-  CHECK(rules_->CanActivateWindow(window), base::NotFatalUntil::M163);
+  // TODO(crbug.com/585410215): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(rules_->CanActivateWindow(window));
   if (window)
     CHECK_EQ(window, rules_->GetActivatableWindow(window),
              base::NotFatalUntil::M163);
