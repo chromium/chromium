@@ -227,7 +227,11 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Check that the suggestion at the specified index is selected.
+     * Check that the suggestion at the specified index is selected, both in the selection model and
+     * on the row view currently bound to that index.
+     *
+     * <p>The row view is looked up on every poll, because list updates and layout changes can
+     * recycle and rebind rows, and recycled rows are deselected.
      *
      * @param expectedIndex The expected index of the selected suggestion.
      */
@@ -238,6 +242,18 @@ public class OmniboxTestUtils {
                             "Selected suggestion index does not match",
                             mAutocomplete.getSelectedIndex(),
                             Matchers.equalTo(expectedIndex));
+                    // A non-null selected index implies that the dropdown exists.
+                    OmniboxSuggestionsDropdown dropdown =
+                            assumeNonNull(
+                                    (OmniboxSuggestionsDropdown)
+                                            mAutocomplete.getSuggestionsDropdown());
+                    View view = dropdown.getDropdownItemViewForTest(expectedIndex);
+                    Criteria.checkThat(
+                            "Suggestion view is not bound", view, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "Suggestion view is not selected",
+                            assumeNonNull(view).isSelected(),
+                            Matchers.is(true));
                 });
     }
 

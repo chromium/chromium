@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import android.view.KeyEvent;
-import android.view.View;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.LargeTest;
@@ -145,7 +144,7 @@ public class SiteSearchTest {
         mOmniboxUtils.checkSuggestionsShown();
 
         // First row should be selected when typing
-        checkIsFirstSuggestionRowSelected();
+        mOmniboxUtils.checkSuggestionSelected(0);
 
         // Wait for the Site Search Action chip to be bound and displayed in the suggestion row
         waitForView(
@@ -195,12 +194,6 @@ public class SiteSearchTest {
                     assertEquals("Search " + name, siteSearchData.fullName);
                     assertEquals(enteredViaSpace, siteSearchData.enteredViaSpace);
                 });
-    }
-
-    private void checkIsFirstSuggestionRowSelected() {
-        OmniboxTestUtils.SuggestionInfo<View> firstSuggestion =
-                mOmniboxUtils.findSuggestion(info -> true);
-        CriteriaHelper.pollUiThread(() -> firstSuggestion.view.isSelected());
     }
 
     private void checkIsActionChipSelected(String chipText) {
