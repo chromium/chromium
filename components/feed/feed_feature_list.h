@@ -96,7 +96,8 @@ BASE_DECLARE_FEATURE(kWideScreenFeedForFoldables);
 
 // Feature that syncs whether the feed is turned on or off between Android
 // devices of the same form factor: between phones, and between tablets.
-// Foldables sync with phones.
+// Foldables sync with phones. Also turns off the feed on cars (Android
+// Automotive).
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kAndroidFeedsVisibilitySyncByFormFactor);
 

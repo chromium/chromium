@@ -48,6 +48,8 @@ BASE_EXPORT void set_is_xr_for_testing();
 BASE_EXPORT void reset_is_xr_for_testing();
 BASE_EXPORT void set_is_desktop_for_testing(bool is_desktop);
 BASE_EXPORT void reset_is_desktop_for_testing();
+BASE_EXPORT void set_is_automotive_for_testing(bool is_automotive);
+BASE_EXPORT void reset_is_automotive_for_testing();
 BASE_EXPORT void set_is_foldable_for_testing(bool is_foldable);
 BASE_EXPORT void reset_is_foldable_for_testing();
 

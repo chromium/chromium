@@ -223,6 +223,7 @@ public final class DeviceInfo {
         }
     }
 
+    @CalledByNativeForTesting
     public static void setIsAutomotiveForTesting(boolean isAutomotive) {
         sIsAutomotiveForTesting = isAutomotive;
         ResettersForTesting.register(
@@ -233,6 +234,15 @@ public final class DeviceInfo {
         if (isAutomotive) {
             setExclusiveFormFactorForTesting(FormFactor.AUTOMOTIVE);
         }
+        resetInstance();
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
+    }
+
+    @CalledByNativeForTesting
+    public static void resetIsAutomotiveForTesting() {
+        sIsAutomotiveForTesting = null;
         resetInstance();
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);

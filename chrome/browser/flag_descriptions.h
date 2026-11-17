@@ -5473,7 +5473,7 @@ inline constexpr char kAndroidFeedsVisibilitySyncByFormFactorName[] =
 inline constexpr char kAndroidFeedsVisibilitySyncByFormFactorDescription[] =
     "Syncs whether the feed is turned on or off between Android devices of the "
     "same form factor: between phones, and between tablets. Foldables sync "
-    "with phones.";
+    "with phones. Also turns off the feed on cars (Android Automotive).";
 
 inline constexpr char kAndroidFreLayoutUpdateName[] =
     "Android Fre Layout Update";

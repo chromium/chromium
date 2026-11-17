@@ -14,6 +14,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/feed/feed_feature_list.h"
 #endif
 
 namespace feed {
@@ -48,14 +50,21 @@ class FeedServiceIsEnabledTest : public testing::Test {
     // Don't depend on the form factor of the device running the test.
     base::android::device_info::set_is_desktop_for_testing(
         /*is_desktop=*/false);
+    base::android::device_info::set_is_automotive_for_testing(
+        /*is_automotive=*/false);
 #endif
   }
 
   void TearDown() override {
 #if BUILDFLAG(IS_ANDROID)
     base::android::device_info::reset_is_desktop_for_testing();
+    base::android::device_info::reset_is_automotive_for_testing();
 #endif
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void TestIsEnabledOnAutomotiveImpl(bool feature_enabled);
+#endif
 
   TestingPrefServiceSimple pref_service_;
 };
@@ -74,6 +83,26 @@ TEST_F(FeedServiceIsEnabledTest, DisabledOnAndroidDesktop) {
   base::android::device_info::set_is_desktop_for_testing(
       /*is_desktop=*/true);
   EXPECT_FALSE(FeedService::IsEnabled(pref_service_));
+}
+
+TEST_F(FeedServiceIsEnabledTest, DisabledOnAutomotiveWhenFeatureEnabled) {
+  TestIsEnabledOnAutomotiveImpl(/*feature_enabled=*/true);
+}
+
+TEST_F(FeedServiceIsEnabledTest, EnabledOnAutomotiveWhenFeatureDisabled) {
+  TestIsEnabledOnAutomotiveImpl(/*feature_enabled=*/false);
+}
+
+void FeedServiceIsEnabledTest::TestIsEnabledOnAutomotiveImpl(
+    bool feature_enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kAndroidFeedsVisibilitySyncByFormFactor,
+                                    feature_enabled);
+  EXPECT_TRUE(FeedService::IsEnabled(pref_service_));
+
+  base::android::device_info::set_is_automotive_for_testing(
+      /*is_automotive=*/true);
+  EXPECT_EQ(!feature_enabled, FeedService::IsEnabled(pref_service_));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

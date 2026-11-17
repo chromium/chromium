@@ -185,6 +185,18 @@ void reset_is_desktop_for_testing() {
   get_holder().reset();
 }
 
+void set_is_automotive_for_testing(bool is_automotive) {
+  Java_DeviceInfo_setIsAutomotiveForTesting(AttachCurrentThread(),  // IN-TEST
+                                            is_automotive);
+  get_holder().reset();
+}
+
+void reset_is_automotive_for_testing() {
+  Java_DeviceInfo_resetIsAutomotiveForTesting(  // IN-TEST
+      AttachCurrentThread());
+  get_holder().reset();
+}
+
 void set_is_foldable_for_testing(bool is_foldable) {
   Java_DeviceInfo_setIsFoldableForTesting(AttachCurrentThread(),
                                           is_foldable);  // IN-TEST

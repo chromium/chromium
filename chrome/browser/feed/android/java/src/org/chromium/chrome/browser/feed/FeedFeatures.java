@@ -22,8 +22,9 @@ public final class FeedFeatures {
     /**
      * @param profile the profile of the current user.
      * @return Whether the feed is allowed to be used. Returns false if the feed is disabled due to
-     *     enterprise policy, by flag, or on Android desktop (checked natively by
-     *     FeedService::IsEnabled()). The value returned should not be cached as it may change.
+     *     enterprise policy, by flag, or on device types that don't show the feed, such as Android
+     *     desktop (checked natively by FeedService::IsEnabled()). The value returned should not be
+     *     cached as it may change.
      */
     public static boolean isFeedEnabled(Profile profile) {
         return FeedServiceBridge.isEnabled() && isFeedEnabledByDse(profile);

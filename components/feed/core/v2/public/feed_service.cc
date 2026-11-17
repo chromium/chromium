@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -342,6 +343,14 @@ bool FeedService::IsEnabled(const PrefService& pref_service) {
   // Android desktop doesn't show the feed. Checking it here, rather than only
   // in the Java UI, also stops native loads such as background refreshes.
   if (base::android::device_info::is_desktop()) {
+    return false;
+  }
+
+  // Cars (Android Automotive) don't show the feed either. This is gated on
+  // kAndroidFeedsVisibilitySyncByFormFactor, which also leaves cars out of the
+  // feed visibility sync, so both roll out together.
+  if (base::android::device_info::is_automotive() &&
+      base::FeatureList::IsEnabled(kAndroidFeedsVisibilitySyncByFormFactor)) {
     return false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
