@@ -1274,7 +1274,7 @@ public class ContextualSearchInstrumentationBase {
 
     /** Scrolls the base page. */
     protected void scrollBasePage() {
-        fling(0.f, 0.75f, 0.f, 0.7f, 100);
+        fling(0.5f, 0.75f, 0.5f, 0.7f, 100);
     }
 
     /** Taps the base page near the top. */
