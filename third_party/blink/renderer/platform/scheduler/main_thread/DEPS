@@ -28,6 +28,9 @@ specific_include_rules = {
   "memory_purge_manager.cc": [
     "+base/android/self_compaction_manager.h"
   ],
+  "memory_purge_manager_unittest.cc": [
+    "+base/callback_list.h",
+  ],
   "frame_scheduler_impl.h": [
     "+net/base/request_priority.h"
   ],

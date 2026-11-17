@@ -4,8 +4,10 @@
 
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 
+#import "base/callback_list.h"
 #import "base/functional/bind.h"
-#import "base/memory/memory_pressure_listener.h"
+#import "base/memory/memory_pressure_level.h"
+#import "base/memory_coordinator/memory_pressure_source.h"
 #import "base/test/task_environment.h"
 #import "base/threading/thread.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -14,21 +16,21 @@
 using previous_session_info_constants::
     kDidSeeMemoryWarningShortlyBeforeTerminating;
 
-class MemoryWarningHelperTest : public PlatformTest,
-                                public base::MemoryPressureListener {
+class MemoryWarningHelperTest : public PlatformTest {
  public:
   MemoryWarningHelperTest(const MemoryWarningHelperTest&) = delete;
   MemoryWarningHelperTest& operator=(const MemoryWarningHelperTest&) = delete;
 
  protected:
   MemoryWarningHelperTest() {
-    // Set up `memory_pressure_listener_registration_` to invoke
-    // `OnMemoryPressure` which will store the memory pressure level sent to the
-    // callback in `memory_pressure_level_` so that tests can verify the level
-    // is correct.
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::MemoryPressureListenerRegistration>(
-            base::MemoryPressureListenerTag::kTest, this);
+    // Set up `memory_pressure_subscription_` to invoke
+    // `OnMemoryPressureLevelUpdated` which will store the memory pressure level
+    // sent to the callback in `memory_pressure_level_` so that tests can verify
+    // the level is correct.
+    memory_pressure_subscription_ =
+        base::MemoryPressureSource::Get().AddCallback(base::BindRepeating(
+            &MemoryWarningHelperTest::OnMemoryPressureLevelUpdated,
+            base::Unretained(this)));
     memory_pressure_level_ = base::MEMORY_PRESSURE_LEVEL_MODERATE;
   }
 
@@ -43,17 +45,16 @@ class MemoryWarningHelperTest : public PlatformTest,
     return memory_helper_;
   }
 
-  // Callback for `memory_pressure_listener_`.
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override {
+  // Callback for `memory_pressure_subscription_`.
+  void OnMemoryPressureLevelUpdated(
+      base::MemoryPressureLevel memory_pressure_level) {
     memory_pressure_level_ = memory_pressure_level;
   }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::MemoryPressureLevel memory_pressure_level_;
-  std::unique_ptr<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  base::CallbackListSubscription memory_pressure_subscription_;
   MemoryWarningHelper* memory_helper_;
 };
 
@@ -72,7 +73,8 @@ TEST_F(MemoryWarningHelperTest, VerifyForegroundMemoryWarningCountReset) {
 }
 
 // Invokes applicationDidReceiveMemoryWarning and verifies the memory pressure
-// callback (i.e. MainControllerTest::OnMemoryPressure) is invoked.
+// callback (i.e. MemoryWarningHelperTest::OnMemoryPressureLevelUpdated) is
+// invoked.
 TEST_F(MemoryWarningHelperTest, VerifyApplicationDidReceiveMemoryWarning) {
   [GetMemoryHelper() handleMemoryPressure];
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, GetMemoryPressureLevel());

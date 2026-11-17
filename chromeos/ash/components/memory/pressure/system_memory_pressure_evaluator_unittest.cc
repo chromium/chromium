@@ -7,13 +7,13 @@
 #include <unistd.h>
 
 #include "base/byte_size.h"
+#include "base/callback_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener_registry.h"
-#include "base/memory/mock_memory_pressure_listener.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -56,7 +56,6 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
 
 TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   base::MemoryPressureSource memory_pressure_source;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::UI);
 
@@ -68,54 +67,55 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   // At this point we have no memory pressure.
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator->current_vote());
 
-  base::RegisteredMockMemoryPressureListener listener;
+  base::MockCallback<base::MemoryPressureSource::Callback> on_level_updated;
+  base::CallbackListSubscription subscription =
+      memory_pressure_source.AddCallback(on_level_updated.Get());
 
   // Moderate Pressure.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator->OnMemoryPressure(
       PressureLevel::MODERATE,
       memory_pressure::ReclaimTarget(base::ByteSize(1000)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator->current_vote());
-  Mock::VerifyAndClearExpectations(&listener);
+  Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Critical Pressure.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   evaluator->OnMemoryPressure(
       PressureLevel::CRITICAL,
       memory_pressure::ReclaimTarget(base::ByteSize(1000)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, evaluator->current_vote());
-  Mock::VerifyAndClearExpectations(&listener);
+  Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Moderate Pressure.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator->OnMemoryPressure(
       PressureLevel::MODERATE,
       memory_pressure::ReclaimTarget(base::ByteSize(1000)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator->current_vote());
-  Mock::VerifyAndClearExpectations(&listener);
+  Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // No pressure.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_NONE));
   evaluator->OnMemoryPressure(
       PressureLevel::NONE, memory_pressure::ReclaimTarget(base::ByteSize(0)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator->current_vote());
-  Mock::VerifyAndClearExpectations(&listener);
+  Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // No pressure again, no notification.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE))
-      .Times(0);
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_NONE)).Times(0);
   evaluator->OnMemoryPressure(
       PressureLevel::NONE, memory_pressure::ReclaimTarget(base::ByteSize(0)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator->current_vote());
-  Mock::VerifyAndClearExpectations(&listener);
+  Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Back into moderate.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator->OnMemoryPressure(
       PressureLevel::MODERATE,
       memory_pressure::ReclaimTarget(base::ByteSize(1000)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator->current_vote());
-  Mock::VerifyAndClearExpectations(&listener);
+  Mock::VerifyAndClearExpectations(&on_level_updated);
 }
 
 }  // namespace memory

@@ -7,10 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
-#include "base/memory/mock_memory_pressure_listener.h"
+#include "base/callback_list.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
@@ -58,7 +57,6 @@ class AvailableMemoryMonitorEvaluatorTest : public testing::Test {
 
  protected:
   base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
@@ -69,7 +67,10 @@ TEST_F(AvailableMemoryMonitorEvaluatorTest, CheckMemoryPressure) {
   MultiSourceMemoryPressureMonitor monitor;
   TestAvailableMemoryMonitorEvaluator evaluator(monitor.CreateVoter());
 
-  testing::StrictMock<base::RegisteredMockMemoryPressureListener> listener;
+  testing::StrictMock<base::MockCallback<base::MemoryPressureSource::Callback>>
+      on_level_updated;
+  base::CallbackListSubscription subscription =
+      memory_pressure_source_.AddCallback(on_level_updated.Get());
 
   base::AvailableMemoryMonitor::MemorySample sample;
   sample.timestamp = base::TimeTicks::Now();
@@ -80,11 +81,11 @@ TEST_F(AvailableMemoryMonitorEvaluatorTest, CheckMemoryPressure) {
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
 
   // Transition NONE -> MODERATE notifies.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator.set_next_pressure_level(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Sustained MODERATE during cooldown: does not re-notify before
   // kModeratePressureCooldown elapses, then notifies once it elapses.
@@ -94,23 +95,23 @@ TEST_F(AvailableMemoryMonitorEvaluatorTest, CheckMemoryPressure) {
   sample.timestamp = base::TimeTicks::Now();
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   task_environment_.FastForwardBy(base::Seconds(1));
   sample.timestamp = base::TimeTicks::Now();
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Transition MODERATE -> CRITICAL always notifies.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   evaluator.set_next_pressure_level(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   task_environment_.FastForwardBy(base::Seconds(2));
   sample.timestamp = base::TimeTicks::Now();
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Sustained CRITICAL during cooldown: does not re-notify before
   // kCriticalPressureCooldown elapses, then notifies once it elapses.
@@ -120,32 +121,32 @@ TEST_F(AvailableMemoryMonitorEvaluatorTest, CheckMemoryPressure) {
   sample.timestamp = base::TimeTicks::Now();
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   task_environment_.FastForwardBy(base::Seconds(1));
   sample.timestamp = base::TimeTicks::Now();
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Transition CRITICAL -> MODERATE notifies.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator.set_next_pressure_level(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   task_environment_.FastForwardBy(base::Seconds(2));
   sample.timestamp = base::TimeTicks::Now();
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Transition MODERATE -> NONE notifies.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_NONE));
   evaluator.set_next_pressure_level(base::MEMORY_PRESSURE_LEVEL_NONE);
   task_environment_.FastForwardBy(base::Seconds(2));
   sample.timestamp = base::TimeTicks::Now();
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Sustained NONE does not notify.
   task_environment_.FastForwardBy(
@@ -153,7 +154,7 @@ TEST_F(AvailableMemoryMonitorEvaluatorTest, CheckMemoryPressure) {
   sample.timestamp = base::TimeTicks::Now();
   evaluator.CheckMemoryPressure(sample);
   EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 }
 
 }  // namespace memory_pressure

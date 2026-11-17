@@ -7,12 +7,12 @@
 #include <fuchsia/memorypressure/cpp/fidl.h>
 #include <fuchsia/memorypressure/cpp/fidl_test_base.h>
 
+#include "base/callback_list.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
-#include "base/memory/memory_pressure_listener_registry.h"
-#include "base/memory/mock_memory_pressure_listener.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/run_loop.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -73,7 +73,6 @@ class SystemMemoryPressureEvaluatorFuchsiaTest
   }
 
   base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -136,38 +135,41 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(have_watcher());
 
-  testing::StrictMock<base::RegisteredMockMemoryPressureListener> listener;
+  testing::StrictMock<base::MockCallback<base::MemoryPressureSource::Callback>>
+      on_level_updated;
+  base::CallbackListSubscription subscription =
+      memory_pressure_source_.AddCallback(on_level_updated.Get());
 
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   SendPressureLevel(fuchsia::memorypressure::Level::WARNING);
   EXPECT_EQ(evaluator.current_vote(), base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Verify that MODERATE pressure level is reported periodically.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   task_environment_.FastForwardBy(
       MemoryPressureVoteAggregator::kModeratePressureCooldown);
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   SendPressureLevel(fuchsia::memorypressure::Level::CRITICAL);
   EXPECT_EQ(evaluator.current_vote(), base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
   // Verify that CRITICAL pressure level is reported periodically.
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   task_environment_.FastForwardBy(
       MemoryPressureVoteAggregator::kCriticalPressureCooldown);
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_NONE));
   SendPressureLevel(fuchsia::memorypressure::Level::NORMAL);
   EXPECT_EQ(evaluator.current_vote(), base::MEMORY_PRESSURE_LEVEL_NONE);
 
   // Verify that NONE pressure level is not reported periodically.
   task_environment_.FastForwardBy(
       MemoryPressureVoteAggregator::kModeratePressureCooldown);
-  testing::Mock::VerifyAndClearExpectations(&listener);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated);
 }
 
 }  // namespace memory_pressure

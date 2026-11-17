@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/memory_purge_manager.h"
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/functional/bind.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -18,8 +18,7 @@ namespace blink {
 
 namespace {
 
-class MemoryPurgeManagerTest : public testing::Test,
-                               public base::MemoryPressureListener {
+class MemoryPurgeManagerTest : public testing::Test {
  public:
   MemoryPurgeManagerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
@@ -29,13 +28,14 @@ class MemoryPurgeManagerTest : public testing::Test,
   MemoryPurgeManagerTest& operator=(const MemoryPurgeManagerTest&) = delete;
 
   void SetUp() override {
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::MemoryPressureListenerRegistration>(
-            FROM_HERE, base::MemoryPressureListenerTag::kTest, this);
+    memory_pressure_subscription_ =
+        memory_pressure_source_.AddCallback(base::BindRepeating(
+            &MemoryPurgeManagerTest::OnMemoryPressureLevelUpdated,
+            base::Unretained(this)));
   }
 
   void TearDown() override {
-    memory_pressure_listener_registration_.reset();
+    memory_pressure_subscription_ = {};
     task_environment_.FastForwardUntilNoTasksRemain();
     memory_purge_manager_.SetPurgeDisabledForTesting(false);
   }
@@ -48,18 +48,16 @@ class MemoryPurgeManagerTest : public testing::Test,
   unsigned MemoryPressureCount() const { return memory_pressure_count_; }
 
   base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  base::CallbackListSubscription memory_pressure_subscription_;
 
   MemoryPurgeManager memory_purge_manager_;
 
   unsigned memory_pressure_count_ = 0;
 
  private:
-  void OnMemoryPressure(base::MemoryPressureLevel) override {
+  void OnMemoryPressureLevelUpdated(base::MemoryPressureLevel) {
     memory_pressure_count_++;
   }
 };
@@ -106,9 +104,9 @@ TEST_F(MemoryPurgeManagerTest, PageResumedUndoMemoryPressureSuppression) {
     EXPECT_EQ(0U, MemoryPressureCount());
   }
 
-  EXPECT_TRUE(base::MemoryPressureListener::AreNotificationsSuppressed());
+  EXPECT_TRUE(base::MemoryPressureSource::AreNotificationsSuppressed());
   memory_purge_manager_.OnPageResumed();
-  EXPECT_FALSE(base::MemoryPressureListener::AreNotificationsSuppressed());
+  EXPECT_FALSE(base::MemoryPressureSource::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageDestroyed(/* frozen=*/false);
 }
@@ -129,7 +127,7 @@ TEST_F(MemoryPurgeManagerTest, PageFrozenPurgeMemoryAllPagesFrozenDisabled) {
   } else {
     EXPECT_EQ(0U, MemoryPressureCount());
   }
-  EXPECT_FALSE(base::MemoryPressureListener::AreNotificationsSuppressed());
+  EXPECT_FALSE(base::MemoryPressureSource::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
@@ -138,7 +136,7 @@ TEST_F(MemoryPurgeManagerTest, PageFrozenPurgeMemoryAllPagesFrozenDisabled) {
   } else {
     EXPECT_EQ(0U, MemoryPressureCount());
   }
-  EXPECT_FALSE(base::MemoryPressureListener::AreNotificationsSuppressed());
+  EXPECT_FALSE(base::MemoryPressureSource::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageFrozen();
   FastForwardBy(MemoryPurgeManager::kFreezePurgeDelay);
@@ -147,16 +145,16 @@ TEST_F(MemoryPurgeManagerTest, PageFrozenPurgeMemoryAllPagesFrozenDisabled) {
   } else {
     EXPECT_EQ(0U, MemoryPressureCount());
   }
-  EXPECT_TRUE(base::MemoryPressureListener::AreNotificationsSuppressed());
+  EXPECT_TRUE(base::MemoryPressureSource::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageResumed();
-  EXPECT_FALSE(base::MemoryPressureListener::AreNotificationsSuppressed());
+  EXPECT_FALSE(base::MemoryPressureSource::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageDestroyed(/* frozen=*/false);
-  EXPECT_FALSE(base::MemoryPressureListener::AreNotificationsSuppressed());
+  EXPECT_FALSE(base::MemoryPressureSource::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageCreated();
-  EXPECT_FALSE(base::MemoryPressureListener::AreNotificationsSuppressed());
+  EXPECT_FALSE(base::MemoryPressureSource::AreNotificationsSuppressed());
 
   memory_purge_manager_.OnPageDestroyed(/* frozen=*/false);
   memory_purge_manager_.OnPageDestroyed(/* frozen=*/true);

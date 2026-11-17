@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.h"
 
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/callback_list.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
+#include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -23,23 +23,17 @@ base::TimeDelta kMinimumInterval = base::Minutes(10);
 
 }  // namespace
 
-class UserLevelMemoryPressureSignalGeneratorTest
-    : public testing::Test,
-      public base::MemoryPressureListener {
+class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
  public:
   UserLevelMemoryPressureSignalGeneratorTest() = default;
   ~UserLevelMemoryPressureSignalGeneratorTest() override = default;
 
   void SetUp() override {
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::MemoryPressureListenerRegistration>(
-            base::MemoryPressureListenerTag::kTest, this);
+    memory_pressure_subscription_ =
+        memory_pressure_source_.AddCallback(on_level_updated_.Get());
   }
 
-  void TearDown() override { memory_pressure_listener_registration_.reset(); }
-
-  // base::MemoryPressureListener:
-  MOCK_METHOD(void, OnMemoryPressure, (base::MemoryPressureLevel), (override));
+  void TearDown() override { memory_pressure_subscription_ = {}; }
 
   void FastForwardBy(base::TimeDelta delta) {
     DCHECK(!delta.is_negative());
@@ -57,11 +51,10 @@ class UserLevelMemoryPressureSignalGeneratorTest
 
  protected:
   base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   blink::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  base::MockCallback<base::MemoryPressureSource::Callback> on_level_updated_;
+  base::CallbackListSubscription memory_pressure_subscription_;
 };
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
@@ -76,12 +69,12 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   //            Request  Signal
   // (*) inert interval = 5m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
   FastForwardBy(base::Seconds(1));
 
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
@@ -98,7 +91,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   //                      Request  Signal
   // (*) inert interval = 5m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
   FastForwardBy(base::Seconds(1));
@@ -107,7 +100,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 
   FastForwardBy(kInertInterval);
 
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
@@ -124,7 +117,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   //         Request                    Signal
   // (*) inert interval = 5m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
   FastForwardBy(base::Minutes(1));
@@ -139,7 +132,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 
   FastForwardBy(kInertInterval - base::Seconds(1));
 
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   // kInertInterval has passed after loading was finished.
   FastForwardBy(base::Seconds(1));
 
@@ -159,7 +152,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   //                        Request   Request  Signal(once)
   // (*) inert interval = 5m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
   FastForwardBy(base::Minutes(1));
@@ -180,7 +173,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 
   // Now kInertInterval has passed after loading was finished.
   // Only 1 Generate() is invoked.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   FastForwardBy(base::Seconds(1));
 }
 
@@ -199,7 +192,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
   FastForwardBy(base::Minutes(1));
@@ -223,7 +216,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 
   FastForwardBy(kInertInterval - base::Seconds(1));
 
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
 
   FastForwardBy(base::Seconds(1));
 
@@ -246,7 +239,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
   FastForwardBy(base::Minutes(1));
@@ -287,7 +280,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest, TwoRequestsAndOneIsExpired) {
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
   FastForwardBy(base::Minutes(1));
@@ -319,7 +312,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest, TwoRequestsAndOneIsExpired) {
 
   // |kInertInterval| passes after loading is finished, memory pressure
   // signal caused by the second request is generated.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   FastForwardBy(kInertInterval - time_to_expire);
 
   // Confirm that the second request is not expired.
@@ -341,7 +334,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
   FastForwardBy(base::Minutes(1));
@@ -360,7 +353,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
           base::MEMORY_PRESSURE_LEVEL_CRITICAL),
       kInertInterval);
 
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   FastForwardBy(kInertInterval);
 }
 
@@ -379,7 +372,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
   FastForwardBy(base::Minutes(1));
@@ -400,7 +393,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 
   FastForwardBy(kInertInterval - base::Seconds(2));
 
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   FastForwardBy(base::Seconds(2));
 }
 
@@ -411,23 +404,23 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 
   // 1. Request NONE pressure. It should not be generated, as this is the
   // initial pressure level.
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_NONE);
 
   // 2. Request CRITICAL pressure and ensure it is generated.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated_);
 
   // 3. Request NONE pressure.
   // This should trigger a notification immediately.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_NONE));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_NONE);
-  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated_);
 
   // 4. Request NONE again. Should NOT notify again because last_generated_ was
   // cleared.
-  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
+  EXPECT_CALL(on_level_updated_, Run(_)).Times(0);
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_NONE);
 }
 
@@ -436,19 +429,19 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest, CriticalToNoneToCritical) {
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   // 1. Request CRITICAL pressure and ensure it is generated.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated_);
 
   // 2. Request NONE pressure. This should trigger a notification immediately.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_NONE));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_NONE);
-  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated_);
 
   // 3 Request CRITICAL pressure again and ensure it is generated.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated_);
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
@@ -457,9 +450,9 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   // 1. Generate CRITICAL signal at T=0.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  testing::Mock::VerifyAndClearExpectations(this);
+  testing::Mock::VerifyAndClearExpectations(&on_level_updated_);
 
   // 2. Request CRITICAL signal at T=1m.
   // It should wait until T=10m (minimum interval).
@@ -484,7 +477,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 
   // 6. Fast forward to T=10m (minimum interval expiry).
   // Signal should be generated here.
-  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(on_level_updated_, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   FastForwardBy(base::Minutes(2));
 }
 

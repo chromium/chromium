@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
@@ -15,8 +16,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/field_trial.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
@@ -435,12 +437,15 @@ class SimpleCache : public network::mojom::SimpleCache {
 
 class NetworkServiceTestHelper::NetworkServiceTestImpl
     : public network::mojom::NetworkServiceTest,
-      public base::CurrentThread::DestructionObserver,
-      public base::MemoryPressureListener {
+      public base::CurrentThread::DestructionObserver {
  public:
   NetworkServiceTestImpl() : test_host_resolver_(new TestHostResolver()) {
-    memory_pressure_listener_registration_.emplace(
-        base::MemoryPressureListenerTag::kTest, this);
+    if (auto* memory_pressure_source = base::MemoryPressureSource::MaybeGet()) {
+      memory_pressure_subscription_ =
+          memory_pressure_source->AddCallback(base::BindRepeating(
+              &NetworkServiceTestImpl::OnMemoryPressureLevelUpdated,
+              base::Unretained(this)));
+    }
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kUseMockCertVerifierForTesting)) {
@@ -859,8 +864,8 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 
  private:
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override {
+  void OnMemoryPressureLevelUpdated(
+      base::MemoryPressureLevel memory_pressure_level) {
     latest_memory_pressure_level_ = memory_pressure_level;
   }
 
@@ -893,8 +898,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   std::unique_ptr<net::ScopedKeyPinningStateChromeDefaults>
       key_pinning_state_defaults_;
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-  std::optional<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  base::CallbackListSubscription memory_pressure_subscription_;
   base::MemoryPressureLevel latest_memory_pressure_level_ =
       base::MEMORY_PRESSURE_LEVEL_NONE;
   int write_result_;

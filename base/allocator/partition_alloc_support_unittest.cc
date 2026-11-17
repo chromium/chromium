@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_features.h"
+#include "base/callback_list.h"
 #include "base/command_line.h"
-#include "base/memory/memory_pressure_listener_registry.h"
-#include "base/memory/mock_memory_pressure_listener.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -494,15 +494,16 @@ class PartitionAllocMemoryPressureTest : public testing::Test {
 
 TEST_F(PartitionAllocMemoryPressureTest, MonitorEndToEnd) {
   MemoryPressureSource source;
-  MemoryPressureListenerRegistry registry;
-  RegisteredMockMemoryPressureListener listener;
+  MockCallback<MemoryPressureSource::Callback> on_level_updated;
+  CallbackListSubscription subscription =
+      source.AddCallback(on_level_updated.Get());
 
   auto& monitor = PartitionAllocMemoryPressureMonitor::Instance();
   monitor.Start(task_environment_.GetMainThreadTaskRunner());
 
   // 1. Transition to CRITICAL pressure (reserve 90 out of 100 pages = 90%).
   base::RunLoop critical_run_loop;
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL))
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL))
       .WillOnce([&] { critical_run_loop.Quit(); });
 
   uintptr_t addr1 = manager().Reserve(
@@ -521,7 +522,7 @@ TEST_F(PartitionAllocMemoryPressureTest, MonitorEndToEnd) {
   // 2. Transition back to NONE pressure (unreserve 3 more pages -> 85% = 90% -
   // 5%).
   base::RunLoop none_run_loop;
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE))
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_NONE))
       .WillOnce([&] { none_run_loop.Quit(); });
 
   manager().UnreserveAndDecommit(
@@ -535,8 +536,9 @@ TEST_F(PartitionAllocMemoryPressureTest, MonitorEndToEnd) {
 
 TEST_F(PartitionAllocMemoryPressureTest, MonitorStartupAlreadyCritical) {
   MemoryPressureSource source;
-  MemoryPressureListenerRegistry registry;
-  RegisteredMockMemoryPressureListener listener;
+  MockCallback<MemoryPressureSource::Callback> on_level_updated;
+  CallbackListSubscription subscription =
+      source.AddCallback(on_level_updated.Get());
 
   // Allocate 92 out of 100 pages (92% >= 90%) BEFORE starting monitor.
   uintptr_t addr = manager().Reserve(
@@ -548,7 +550,7 @@ TEST_F(PartitionAllocMemoryPressureTest, MonitorStartupAlreadyCritical) {
   // Starting the monitor when already critical should immediately trigger
   // MEMORY_PRESSURE_LEVEL_CRITICAL.
   base::RunLoop critical_run_loop;
-  EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL))
+  EXPECT_CALL(on_level_updated, Run(base::MEMORY_PRESSURE_LEVEL_CRITICAL))
       .WillOnce([&] { critical_run_loop.Quit(); });
 
   auto& monitor = PartitionAllocMemoryPressureMonitor::Instance();
