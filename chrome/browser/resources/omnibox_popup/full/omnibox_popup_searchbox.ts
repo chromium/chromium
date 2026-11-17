@@ -600,12 +600,9 @@ export class OmniboxPopupSearchboxElement extends
     this.inputResizeObserver_.observe(this.$.inputWrapper);
 
     this.eventTracker_.add(document, 'mousemove', this.onMouseMove_.bind(this));
-    // A pointer press outside of the unbounded window requests an interactive
-    // dismissal too. Clear the flag once the press reaches the page, so that a
-    // later Escape keyup isn't replayed as a keydown.
-    this.eventTracker_.add(document, 'pointerdown', () => {
-      this.pendingInteractiveDismissal_ = false;
-    }, /*capture=*/ true);
+    this.eventTracker_.add(
+        document, 'pointerdown', this.onDocumentPointerdown_.bind(this),
+        /*capture=*/ true);
     this.eventTracker_.add(document, 'mouseup', this.onMouseUp_.bind(this));
     this.eventTracker_.add(document, 'dragstart', this.onDragStart_.bind(this));
     this.eventTracker_.add(document, 'dragend', this.onDragEnd_.bind(this));
@@ -1079,6 +1076,35 @@ export class OmniboxPopupSearchboxElement extends
     // query them.
     this.queryZpsOnMouseRelease_ = e.button === 0 &&
         e.composedPath().includes(input) && (wasUnfocused || !input.value);
+  }
+
+  private onDocumentPointerdown_(e: PointerEvent) {
+    // A pointer press outside of the unbounded window requests an interactive
+    // dismissal too. Clear the flag once the press reaches the page, so that a
+    // later Escape keyup isn't replayed as a keydown.
+    this.pendingInteractiveDismissal_ = false;
+
+    if (!this.unboundedSupported_) {
+      return;
+    }
+    // TODO(crbug.com/585623146): Remove once presses in the unbounded window's
+    // shadow pass through to the browser.
+    // While #inputWrapper is unbounded, Blink hit-tests the whole unbounded
+    // window, so a mouse or touch press in its shadow (outside of
+    // #inputWrapper) targets the document instead of passing through to the
+    // browser. Close the dropdown like a press outside of the window would.
+    if (!this.dropdownIsVisible ||
+        !this.$.inputWrapper.matches(':unbounded') ||
+        e.composedPath().includes(this.$.inputWrapper)) {
+      return;
+    }
+    // Keep focus in the input: canceling `pointerdown` makes Blink skip the
+    // focus change (and the compatibility `mousedown`). Otherwise Blink clears
+    // focus with a null `relatedTarget`, which `onInputWrapperFocusout()`
+    // leaves to C++ as focus moving to native UI, so the omnibox would look
+    // focused but not be.
+    e.preventDefault();
+    this.clearAutocompleteMatches();
   }
 
   private onMouseMove_(e: MouseEvent) {

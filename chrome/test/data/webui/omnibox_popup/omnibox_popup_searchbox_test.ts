@@ -9089,6 +9089,72 @@ suite('OmniboxPopupSearchboxTest', function() {
       assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
     });
 
+    test('PressOutsideInputWrapperClosesDropdown', async () => {
+      searchbox.activeQueryId = 0;
+      searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+        queryId: 0,
+        input: 'test',
+        matches: [createSearchMatch({allowedToBeDefaultMatch: true})],
+      }));
+      await microtasksFinished();
+      searchbox.$.input.focus();
+      assertTrue(searchbox.dropdownIsVisible);
+      assertTrue(unbounded);
+      testProxy.handler.reset();
+
+      // A press inside #inputWrapper keeps the dropdown open.
+      const insidePress = new PointerEvent(
+          'pointerdown', {bubbles: true, cancelable: true, composed: true});
+      searchbox.$.matches.dispatchEvent(insidePress);
+      await microtasksFinished();
+      assertFalse(insidePress.defaultPrevented);
+      assertTrue(searchbox.dropdownIsVisible);
+
+      // A press in the shadow of the unbounded window targets the document.
+      const shadowPress =
+          new PointerEvent('pointerdown', {bubbles: true, cancelable: true});
+      document.documentElement.dispatchEvent(shadowPress);
+      await microtasksFinished();
+      assertTrue(shadowPress.defaultPrevented);
+      assertFalse(searchbox.dropdownIsVisible);
+      assertEquals(null, searchbox.result);
+      assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+      assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
+      assertFalse(unbounded);
+      assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+
+      // Once the dropdown is closed, presses outside are left alone.
+      const laterPress =
+          new PointerEvent('pointerdown', {bubbles: true, cancelable: true});
+      document.documentElement.dispatchEvent(laterPress);
+      assertFalse(laterPress.defaultPrevented);
+    });
+
+    test('TouchPressOutsideInputWrapperClosesDropdown', async () => {
+      searchbox.activeQueryId = 0;
+      searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+        queryId: 0,
+        input: 'test',
+        matches: [createSearchMatch({allowedToBeDefaultMatch: true})],
+      }));
+      await microtasksFinished();
+      searchbox.$.input.focus();
+      assertTrue(searchbox.dropdownIsVisible);
+      assertTrue(unbounded);
+
+      // A touch press in the shadow closes the dropdown on press, since a
+      // touch drag never produces a `mousedown`.
+      const touchPress = new PointerEvent(
+          'pointerdown',
+          {bubbles: true, cancelable: true, pointerType: 'touch'});
+      document.documentElement.dispatchEvent(touchPress);
+      await microtasksFinished();
+      assertTrue(touchPress.defaultPrevented);
+      assertFalse(searchbox.dropdownIsVisible);
+      assertFalse(unbounded);
+      assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+    });
+
     test('VisibilityChangeReappliesUnboundedElement', async () => {
       let visibilityState = 'hidden';
       Object.defineProperty(document, 'visibilityState', {
@@ -9207,7 +9273,8 @@ suite('OmniboxPopupSearchboxTest', function() {
       const replayed: KeyboardEvent[] = [];
       wrapper.addEventListener('keydown', e => replayed.push(e));
 
-      // An outside press requests a dismissal and then reaches the page.
+      // An outside press requests a dismissal and then reaches the page,
+      // which closes the dropdown.
       wrapper.dispatchEvent(new ToggleEvent(
           'beforetoggle',
           {oldState: 'open', newState: 'closed', cancelable: true}));
@@ -9216,7 +9283,7 @@ suite('OmniboxPopupSearchboxTest', function() {
       await microtasksFinished();
 
       assertEquals(0, replayed.length);
-      assertTrue(searchbox.dropdownIsVisible);
+      assertFalse(searchbox.dropdownIsVisible);
     });
 
     test('ClipsSelectionListboxWhenUnboundedSupported', () => {
