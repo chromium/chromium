@@ -500,6 +500,14 @@ bool AnimationHost::SetDeferredValueGeneratorProgress(
   return deferred_value_generators_.Write(*this).SetProgress(key, progress);
 }
 
+void AnimationHost::OnDeferredPropertyAnimated(const DeferredPropertyKey& key,
+                                               float progress) {
+  // LayerTreeHost::AnimateLayers() ticks the main-thread AnimationHost too.
+  if (thread_instance_ == ThreadInstance::kImpl) {
+    SetDeferredValueGeneratorProgress(key, progress);
+  }
+}
+
 void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
                                      const PropertyTrees& property_trees) {
   auto* host_impl = static_cast<AnimationHost*>(mutator_host_impl);

@@ -27,9 +27,12 @@ enum Type {
   // infra. The value of the animation represents its progress.
   NATIVE_PROPERTY,
   BACKDROP_FILTER,
+  // Used for properties whose value is produced by a DeferredValueGenerator on
+  // the compositor. The animated value represents the generator's progress.
+  DEFERRED_PROPERTY,
   // These sentinels must be last
   FIRST_TARGET_PROPERTY = TRANSFORM,
-  LAST_TARGET_PROPERTY = BACKDROP_FILTER
+  LAST_TARGET_PROPERTY = DEFERRED_PROPERTY
 };
 
 }  // namespace TargetProperty

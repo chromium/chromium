@@ -63,6 +63,17 @@ KeyframeModel::TargetPropertyId::TargetPropertyId(
       native_property_type_(native_property_type) {}
 
 KeyframeModel::TargetPropertyId::TargetPropertyId(
+    int target_property_type,
+    DeferredPropertyType deferred_property_type)
+    : target_property_type_(target_property_type),
+      custom_property_name_(""),
+      native_property_type_(PaintWorkletInput::NativePropertyType::kInvalid),
+      deferred_property_type_(deferred_property_type) {
+  DCHECK_EQ(target_property_type, TargetProperty::DEFERRED_PROPERTY);
+  DCHECK_NE(deferred_property_type, DeferredPropertyType::kInvalid);
+}
+
+KeyframeModel::TargetPropertyId::TargetPropertyId(
     const TargetPropertyId& other) = default;
 
 KeyframeModel::TargetPropertyId::TargetPropertyId(TargetPropertyId&& other) =

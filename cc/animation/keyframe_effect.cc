@@ -250,6 +250,12 @@ void KeyframeEffect::AddKeyframeModel(
           same_group_and_target =
               cc_keyframe_model->native_property_type() ==
               cc_existing_keyframe_model->native_property_type();
+        } else if (same_group_and_target &&
+                   keyframe_model->TargetProperty() ==
+                       TargetProperty::DEFERRED_PROPERTY) {
+          same_group_and_target =
+              cc_keyframe_model->deferred_property_type() ==
+              cc_existing_keyframe_model->deferred_property_type();
         }
 
         // Keyframe models in the same group might target the same property
@@ -471,7 +477,8 @@ bool KeyframeEffect::HasTickingKeyframeModel() const {
 bool KeyframeEffect::RequiresInvalidation() const {
   for (const auto& it : keyframe_models()) {
     if (it->TargetProperty() == TargetProperty::NATIVE_PROPERTY ||
-        it->TargetProperty() == TargetProperty::CSS_CUSTOM_PROPERTY) {
+        it->TargetProperty() == TargetProperty::CSS_CUSTOM_PROPERTY ||
+        it->TargetProperty() == TargetProperty::DEFERRED_PROPERTY) {
       return true;
     }
   }
@@ -484,8 +491,10 @@ bool KeyframeEffect::AffectsNativeProperty() const {
     // create a compositor animation frame sequence tracker when there is a
     // composited scroll.
     if (it->TargetProperty() != TargetProperty::CSS_CUSTOM_PROPERTY &&
-        it->TargetProperty() != TargetProperty::NATIVE_PROPERTY)
+        it->TargetProperty() != TargetProperty::NATIVE_PROPERTY &&
+        it->TargetProperty() != TargetProperty::DEFERRED_PROPERTY) {
       return true;
+    }
   }
   return false;
 }

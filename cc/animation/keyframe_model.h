@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "cc/animation/animation_export.h"
+#include "cc/paint/deferred_property_key.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/paint_worklet_input.h"
 #include "ui/gfx/animation/keyframe/keyframe_model.h"
@@ -33,11 +34,11 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
 
   static const int kInvalidGroup = -1;
 
-  // Bundles a property id with its name and native type.
+  // Bundles a target property with any custom, native, or deferred subtype.
   class CC_ANIMATION_EXPORT TargetPropertyId {
    public:
-    // For a property that is neither TargetProperty::CSS_CUSTOM_PROPERTY nor
-    // TargetProperty::NATIVE_PROPERTY.
+    // For properties other than CSS_CUSTOM_PROPERTY, NATIVE_PROPERTY, and
+    // DEFERRED_PROPERTY.
     explicit TargetPropertyId(int target_property_type);
     // For TargetProperty::CSS_CUSTOM_PROPERTY, the string is the custom
     // property name.
@@ -47,6 +48,9 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
     TargetPropertyId(
         int target_property_type,
         PaintWorkletInput::NativePropertyType native_property_type);
+    // For TargetProperty::DEFERRED_PROPERTY.
+    TargetPropertyId(int target_property_type,
+                     DeferredPropertyType deferred_property_type);
     TargetPropertyId(const TargetPropertyId&);
     TargetPropertyId(TargetPropertyId&&);
     ~TargetPropertyId();
@@ -60,6 +64,9 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
     PaintWorkletInput::NativePropertyType native_property_type() const {
       return native_property_type_;
     }
+    DeferredPropertyType deferred_property_type() const {
+      return deferred_property_type_;
+    }
 
    private:
     int target_property_type_;
@@ -68,6 +75,9 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
     std::string custom_property_name_;
     // Type of the animated native property.
     PaintWorkletInput::NativePropertyType native_property_type_;
+    // Type of the animated deferred property.
+    DeferredPropertyType deferred_property_type_ =
+        DeferredPropertyType::kInvalid;
   };
 
   static std::unique_ptr<KeyframeModel> Create(
@@ -142,6 +152,10 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
 
   PaintWorkletInput::NativePropertyType native_property_type() const {
     return target_property_id_.native_property_type();
+  }
+
+  DeferredPropertyType deferred_property_type() const {
+    return target_property_id_.deferred_property_type();
   }
 
   bool StartShouldBeDeferred() const override;

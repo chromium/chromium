@@ -17,6 +17,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
+#include "cc/paint/deferred_property_key.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_delegate.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
@@ -42,8 +43,10 @@ ElementId CalculateTargetElementId(const ElementAnimations* element_animations,
 
 bool UsingPaintWorklet(int property_index) {
   // The set of properties where its animation uses paint worklet infra.
+  // DEFERRED_PROPERTY does not, but its models also name their own ElementId.
   return property_index == TargetProperty::CSS_CUSTOM_PROPERTY ||
-         property_index == TargetProperty::NATIVE_PROPERTY;
+         property_index == TargetProperty::NATIVE_PROPERTY ||
+         property_index == TargetProperty::DEFERRED_PROPERTY;
 }
 
 }  // namespace
@@ -196,6 +199,16 @@ void ElementAnimations::OnFloatAnimated(const float& value,
             PaintWorkletInput::PropertyValue(value),
             KeyframeModel::ToCcKeyframeModel(keyframe_model),
             target_property_id);
+      break;
+    case TargetProperty::DEFERRED_PROPERTY:
+      // Deferred values are sampled into the sync tree, so a model that only
+      // affects active elements must not set the progress. AnimationHost owns
+      // the generators, so there is no need to go through MutatorHostDelegate.
+      if (KeyframeModelAffectsPendingElements(keyframe_model)) {
+        auto* model = KeyframeModel::ToCcKeyframeModel(keyframe_model);
+        animation_host_->OnDeferredPropertyAnimated(
+            {model->element_id(), model->deferred_property_type()}, value);
+      }
       break;
     case TargetProperty::OPACITY: {
       float opacity = std::clamp(value, 0.0f, 1.0f);

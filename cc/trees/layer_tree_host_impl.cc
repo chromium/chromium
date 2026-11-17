@@ -3715,7 +3715,8 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   current_begin_frame_tracker_.Start(args);
   frame_trackers_.NotifyBeginImplFrame(args);
   compositor_frame_reporting_controller_->SetNeedsRasterPropertiesAnimated(
-      paint_worklet_tracker_.HasInputPropertiesAnimatedOnImpl());
+      paint_worklet_tracker_.HasInputPropertiesAnimatedOnImpl() ||
+      mutator_host_->NeedsUpdateDeferredValues());
   if (!GetSettings().is_layer_tree_for_ui) {
     devtools_instrumentation::DidBeginFrame(id_, args.frame_time,
                                             args.frame_id.sequence_number);
@@ -3756,6 +3757,12 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   if (!settings().trees_in_viz_in_viz_process ||
       settings().TreeAnimationsInVizInVizProcess()) {
     Animate();
+    // Ticking may have changed a deferred value generator's progress, which is
+    // only sampled when a sync tree updates.
+    if (mutator_host_->NeedsUpdateDeferredValues()) {
+      delegate_->SetNeedsImplSideInvalidation(
+          /*needs_first_draw_on_activation=*/true);
+    }
   }
 
   if (image_animation_controller_) {

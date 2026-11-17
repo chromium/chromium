@@ -134,6 +134,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool SetDeferredValueGeneratorProgress(const DeferredPropertyKey& key,
                                          std::optional<float> progress);
 
+  // Receives the progress ticked by a `DEFERRED_PROPERTY` animation. Ignored on
+  // the main thread, since only the compositor samples generators.
+  void OnDeferredPropertyAnimated(const DeferredPropertyKey& key,
+                                  float progress);
+
   const DeferredValueGenerators& deferred_value_generators_for_testing() const {
     return deferred_value_generators_.Read(*this);
   }

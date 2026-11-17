@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -20,6 +21,10 @@
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "cc/base/features.h"
+#include "cc/paint/deferred_property_key.h"
+#include "cc/paint/deferred_value_generators.h"
+#include "cc/paint/deferred_value_map.h"
+#include "cc/paint/deferred_values.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/animation_timelines_test_common.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
@@ -927,6 +932,56 @@ TEST_F(ElementAnimationsTest, BackdropFilterTransition) {
   EXPECT_EQ(end_filters,
             delegate_.GetBackdropFilters(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
+}
+
+// A `DEFERRED_PROPERTY` model that affects pending elements sets the progress
+// of its generator on the compositor. A model that only affects active
+// elements, such as one that is being replaced, does not.
+TEST_F(ElementAnimationsTest, DeferredBackgroundColorTransition) {
+  CreateTestLayer(false, false);
+  host_->AddAnimationTimeline(timeline_);
+  timeline_->AttachAnimation(animation_);
+  animation_->AttachPaintWorkletElement();
+  const DeferredPropertyKey key{element_id_,
+                                DeferredPropertyType::kBackgroundColor};
+
+  DeferredValueGenerators generators;
+  generators.Set(key, std::make_unique<DeferredColorValueGenerator>(
+                          base::MakeRefCounted<TestColorCurve>()));
+  host_->SetDeferredValueGenerators(generators);
+  PushProperties();
+  GetImplTimelineAndAnimationByID();
+
+  auto add_model = [&](int group, float to, bool affects_pending) {
+    auto model = KeyframeModel::Create(
+        std::make_unique<FakeFloatTransition>(1.0, 0.f, to),
+        AnimationIdProvider::NextKeyframeModelId(), group,
+        {TargetProperty::DEFERRED_PROPERTY, key.deferred_property_type});
+    model->set_element_id(element_id_);
+    model->set_affects_pending_elements(affects_pending);
+    model->set_start_time(kInitialTickTime);
+    model->SetRunState(KeyframeModel::RUNNING);
+    animation_impl_->AddKeyframeModel(std::move(model));
+  };
+  add_model(/*group=*/1, /*to=*/1.f, /*affects_pending=*/true);
+  add_model(/*group=*/0, /*to=*/2.f, /*affects_pending=*/false);
+
+  // A deferred property is tracked as a raster animation, not a native one.
+  EXPECT_TRUE(host_impl_->HasInvalidationAnimation());
+  EXPECT_FALSE(host_impl_->HasNativePropertyAnimation());
+
+  DeferredValueMap values;
+  auto tick_and_sample = [&](int ms) {
+    animation_impl_->Tick(kInitialTickTime + base::Milliseconds(ms));
+    std::ignore = host_impl_->UpdateDeferredValues(values);
+    return values.colors.at(key);
+  };
+  EXPECT_EQ(TestColorCurve::Gray(0.f), tick_and_sample(0));
+  EXPECT_EQ(TestColorCurve::Gray(0.5f), tick_and_sample(500));
+
+  // Ticking the same progress again leaves the generators clean.
+  animation_impl_->Tick(kInitialTickTime + base::Milliseconds(500));
+  EXPECT_FALSE(host_impl_->NeedsUpdateDeferredValues());
 }
 
 TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {

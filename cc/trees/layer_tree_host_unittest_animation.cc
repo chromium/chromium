@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <climits>
+#include <limits>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -27,6 +28,9 @@
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/solid_color_layer.h"
+#include "cc/paint/deferred_property_key.h"
+#include "cc/paint/deferred_value_generators.h"
+#include "cc/paint/deferred_values.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_picture_layer.h"
@@ -2192,6 +2196,51 @@ class ImplSideInvalidationWithoutCommitTestScroll
 };
 
 MULTI_THREAD_TEST_F(ImplSideInvalidationWithoutCommitTestScroll);
+
+// A `DEFERRED_PROPERTY` animation ticks on the compositor, and its progress
+// reaches the sync tree through an impl-side invalidation.
+class LayerTreeHostAnimationTestDeferredProperty
+    : public LayerTreeHostAnimationTest {
+ public:
+  void SetupTree() override {
+    LayerTreeHostAnimationTest::SetupTree();
+    AttachAnimationsToTimeline();
+    animation_->AttachPaintWorkletElement();
+  }
+
+  void BeginTest() override {
+    DeferredValueGenerators generators;
+    generators.Set(kKey, std::make_unique<DeferredColorValueGenerator>(
+                             base::MakeRefCounted<TestColorCurve>()));
+    animation_host()->SetDeferredValueGenerators(generators);
+
+    // Alternates forever, so the progress keeps changing however long the
+    // first frames take.
+    auto model = KeyframeModel::Create(
+        std::make_unique<FakeFloatTransition>(1.0, 0.f, 1.f),
+        AnimationIdProvider::NextKeyframeModelId(),
+        AnimationIdProvider::NextGroupId(),
+        {TargetProperty::DEFERRED_PROPERTY, kKey.deferred_property_type});
+    model->set_element_id(kKey.element_id);
+    model->set_direction(KeyframeModel::Direction::ALTERNATE_NORMAL);
+    model->set_iterations(std::numeric_limits<double>::infinity());
+    animation_->AddKeyframeModel(std::move(model));
+  }
+
+  void DidInvalidateContentOnImplSide(LayerTreeHostImpl* host_impl) override {
+    // Only the sync tree has the progress that the animation just ticked.
+    if (host_impl->sync_tree()->deferred_values() !=
+        host_impl->active_tree()->deferred_values()) {
+      EndTest();
+    }
+  }
+
+ private:
+  static constexpr DeferredPropertyKey kKey{
+      ElementId(42), DeferredPropertyType::kBackgroundColor};
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestDeferredProperty);
 
 class LayerTreeHostAnimationTestNotifyAnimationFinished
     : public LayerTreeHostAnimationTest {
