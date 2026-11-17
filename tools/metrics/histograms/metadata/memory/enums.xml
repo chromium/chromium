@@ -36,11 +36,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="gt;= 200MB"/>
 </enum>
 
-<enum name="BooleanLargeAllocationFromFreelist">
-  <int value="0" label="Allocated via IPC"/>
-  <int value="1" label="Allocated via Freelist"/>
-</enum>
-
 <enum name="MappedAndResidentPagesDumpState">
   <int value="0" label="kAccessPagemapDenied"/>
   <int value="1" label="kFailure"/>
