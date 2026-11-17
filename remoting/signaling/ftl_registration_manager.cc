@@ -53,6 +53,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Initiating a Chrome Remote Desktop connection."
           data: "User credentials for using the instant messaging service."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "instantmessaging-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO

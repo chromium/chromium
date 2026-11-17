@@ -51,6 +51,7 @@ constexpr net::NetworkTrafficAnnotationTag kReceiveMessagesTrafficAnnotation =
       }
       data: "No user data is provided in the request."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "remotedesktop.corp.googleapis.com"
       internal {
         contacts { owners: "//remoting/OWNERS" }
       }
@@ -82,6 +83,7 @@ constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
       }
       data: "No user data is provided in the request."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "remotedesktop.corp.googleapis.com"
       internal {
         contacts { owners: "//remoting/OWNERS" }
       }

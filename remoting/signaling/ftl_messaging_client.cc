@@ -50,6 +50,7 @@ constexpr net::NetworkTrafficAnnotationTag kAckMessagesTrafficAnnotation =
       data:
         "User's auth code and message ID for the message to be acknowledged."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "instantmessaging-pa.googleapis.com"
       internal {
         contacts { email: "garykac@chromium.org" }
         contacts { email: "jamiewalch@chromium.org" }
@@ -94,6 +95,7 @@ constexpr net::NetworkTrafficAnnotationTag kReceiveMessagesTrafficAnnotation =
       data:
         "User's auth code and registration ID for retrieving messages."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "instantmessaging-pa.googleapis.com"
       internal {
         contacts { email: "garykac@chromium.org" }
         contacts { email: "jamiewalch@chromium.org" }
@@ -143,6 +145,7 @@ constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
         "https://tools.ietf.org/html/rfc4566 and "
         "https://tools.ietf.org/html/rfc5245."
       destination: GOOGLE_OWNED_SERVICE
+      api_service_name: "instantmessaging-pa.googleapis.com"
       internal {
         contacts { email: "garykac@chromium.org" }
         contacts { email: "jamiewalch@chromium.org" }

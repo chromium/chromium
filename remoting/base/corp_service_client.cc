@@ -67,6 +67,7 @@ void CorpServiceClient::ProvisionCorpMachine(
             "fully-qualified domain name of the machine being configured for "
             "remote access."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop.corp.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }
@@ -115,6 +116,7 @@ void CorpServiceClient::ReportProvisioningError(
           data:
             "The host id and an error message/reason why provisioning failed."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop.corp.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }
@@ -157,6 +159,7 @@ void CorpServiceClient::SendHeartbeat(const std::string& directory_id,
           data:
             "An internal UUID to identify the remote access host instance."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop.corp.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }
@@ -208,6 +211,7 @@ void CorpServiceClient::UpdateRemoteAccessHost(
             "version of the CRD package installed, and a set of signaling ids "
             "which the CRD client can use to send the host messages."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop.corp.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }

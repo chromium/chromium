@@ -29,6 +29,7 @@ constexpr net::NetworkTrafficAnnotationTag kDeleteHostTrafficAnnotation =
             "User's Chrome Remote Desktop credentials and the Chrome Remote "
             "Desktop host ID that identifies the host."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -52,6 +53,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetHostListTrafficAnnotation =
           data:
             "User's Chrome Remote Desktop credentials."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -77,6 +79,7 @@ constexpr net::NetworkTrafficAnnotationTag kLegacyHeartbeatTrafficAnnotation =
             "version of the CRD package installed, and a set of signaling ids "
             "which the CRD client can use to send the host messages."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -104,6 +107,7 @@ constexpr net::NetworkTrafficAnnotationTag kRegisterHostTrafficAnnotation =
             "User's Chrome Remote Desktop credentials and information about "
             "the new Chrome Remote Desktop host such as host ID and host name."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -127,6 +131,7 @@ constexpr net::NetworkTrafficAnnotationTag kSendHeartbeatTrafficAnnotation =
           data:
             "Includes an internal UUID to identify the remote access host."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO

@@ -85,6 +85,7 @@ void CorpSessionAuthzServiceClient::GenerateHostToken(
           data:
             "Access token of the Chrome Remote Desktop host's robot account."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop.corp.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }
@@ -131,6 +132,7 @@ void CorpSessionAuthzServiceClient::VerifySessionToken(
             "Access token of the Chrome Remote Desktop host's robot account, "
             "session token returned by the Chrome Remote Desktop client."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop.corp.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }
@@ -180,6 +182,7 @@ void CorpSessionAuthzServiceClient::ReauthorizeHost(
             "Access token of the Chrome Remote Desktop host's robot account, "
             "session token returned by the Chrome Remote Desktop client."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop.corp.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }

@@ -54,6 +54,7 @@ void CorpLoggingServiceClient::ReportSessionDisconnected(
             "which identifies the disconnected session; error code explaining "
             "why the session was disconnected."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "remotedesktop.corp.googleapis.com"
           internal {
             contacts { owners: "//remoting/OWNERS" }
           }
