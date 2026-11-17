@@ -159,8 +159,6 @@ class TestRenderingContext2D final
     return execution_context_.Get();
   }
 
-  bool HasAlpha() const override { return true; }
-
   void SetContextLost(LostContextMode context_lost_mode) {
     context_lost_mode_ = context_lost_mode;
   }

@@ -501,8 +501,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   virtual bool HasAlpha() const = 0;
 
-  virtual bool IsDesynchronized() const { NOTREACHED(); }
-
   virtual void WillDrawImage(CanvasImageSource*, bool image_is_texture_backed) {
   }
 

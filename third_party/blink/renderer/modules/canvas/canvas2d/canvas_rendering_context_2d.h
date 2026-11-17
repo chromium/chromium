@@ -277,10 +277,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void DrawFocusRing(const Path&, Element*);
   void UpdateElementAccessibility(const Path&, Element*);
 
-  bool HasAlpha() const override { return CreationAttributes().alpha; }
-  bool IsDesynchronized() const override {
-    return CreationAttributes().desynchronized;
-  }
   void PageVisibilityChanged() override;
   void Stop() final;
 

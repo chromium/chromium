@@ -383,6 +383,9 @@ class MODULES_EXPORT BaseRenderingContext2D
     return color_params_.ColorSpace();
   }
 
+  bool HasAlpha() const final { return CreationAttributes().alpha; }
+  bool IsDesynchronized() const { return CreationAttributes().desynchronized; }
+
   void DispatchContextLostEvent(TimerBase*);
   void DispatchContextRestoredEvent(TimerBase*);
   void TryRestoreContextEvent(TimerBase*);

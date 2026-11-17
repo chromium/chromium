@@ -94,10 +94,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
-  bool HasAlpha() const final { return CreationAttributes().alpha; }
-  bool IsDesynchronized() const final {
-    return CreationAttributes().desynchronized;
-  }
   void Dispose() override;
   void LoseContext(LostContextMode) override;
 
