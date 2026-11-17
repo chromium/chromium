@@ -859,7 +859,6 @@ void FileSystemAccessHandleBase::DidRemove(
 }
 
 void FileSystemAccessHandleBase::DoGetCloudIdentifiers(
-    FileSystemAccessPermissionContext::HandleType handle_type,
     ContentBrowserClient::GetCloudIdentifiersCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -879,7 +878,7 @@ void FileSystemAccessHandleBase::DoGetCloudIdentifiers(
     return;
   }
 
-  GetContentClient()->browser()->GetCloudIdentifiers(url_, handle_type,
+  GetContentClient()->browser()->GetCloudIdentifiers(url_, GetHandleType(),
                                                      std::move(callback));
 }
 

@@ -664,9 +664,7 @@ TEST_P(FileSystemAccessDoRequestReadPermissionTest,
       blink::mojom::FileSystemAccessErrorPtr,
       std::vector<blink::mojom::FileSystemAccessCloudIdentifierPtr>>
       future;
-  handle.DoGetCloudIdentifiers(
-      FileSystemAccessPermissionContext::HandleType::kFile,
-      future.GetCallback());
+  handle.DoGetCloudIdentifiers(future.GetCallback());
   EXPECT_EQ(future.Get<0>()->status,
             blink::mojom::FileSystemAccessStatus::kSecurityError);
 }

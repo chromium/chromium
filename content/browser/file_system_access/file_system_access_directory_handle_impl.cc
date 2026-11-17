@@ -1061,9 +1061,7 @@ void FileSystemAccessDirectoryHandleImpl::GetUniqueId(
 void FileSystemAccessDirectoryHandleImpl::GetCloudIdentifiers(
     GetCloudIdentifiersCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DoGetCloudIdentifiers(
-      FileSystemAccessPermissionContext::HandleType::kDirectory,
-      std::move(callback));
+  DoGetCloudIdentifiers(std::move(callback));
 }
 
 base::WeakPtr<FileSystemAccessHandleBase>

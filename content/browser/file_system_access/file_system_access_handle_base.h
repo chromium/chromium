@@ -156,10 +156,10 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
       scoped_refptr<FileSystemAccessLockManager::LockHandle> lock);
 
-  // Implementation for the GetCloudIdentifiers method in the
-  // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
+  // Implementation for the `GetCloudIdentifiers` method in the
+  // `blink::mojom::FileSystemAccessFileHandle` and `DirectoryHandle`
+  // interfaces.
   void DoGetCloudIdentifiers(
-      FileSystemAccessPermissionContext::HandleType handle_type,
       ContentBrowserClient::GetCloudIdentifiersCallback callback);
 
   // Invokes `callback`, possibly after first requesting the permission

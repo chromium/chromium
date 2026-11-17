@@ -1014,8 +1014,7 @@ bool FileSystemAccessFileHandleImpl::CanUseCowSwapFile() const {
 void FileSystemAccessFileHandleImpl::GetCloudIdentifiers(
     GetCloudIdentifiersCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DoGetCloudIdentifiers(FileSystemAccessPermissionContext::HandleType::kFile,
-                        std::move(callback));
+  DoGetCloudIdentifiers(std::move(callback));
 }
 
 base::WeakPtr<FileSystemAccessHandleBase>
