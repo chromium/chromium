@@ -587,6 +587,127 @@ suite('SearchboxMixinTest', () => {
         assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
       });
 
+  test(
+      'onInputWrapperFocusout resets virtual-focus button selection to kNormal',
+      async () => {
+        element.virtualFocusEnabledOverride = true;
+        element.isAimButtonVisibleOverride = true;
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'hello');
+
+        const matches = [
+          createSearchMatch({
+            allowedToBeDefaultMatch: true,
+            fillIntoEdit: 'hello',
+          }),
+          createUrlMatch(),
+        ];
+        element.onAutocompleteResultChanged(createAutocompleteResult({
+          queryId: element.activeQueryId,
+          input: 'hello',
+          matches,
+        }));
+        await microtasksFinished();
+        assertTrue(element.dropdownIsVisible);
+
+        const composeButton =
+            element.shadowRoot.querySelector('cr-searchbox-compose-button')!;
+        let composeClicked = false;
+        composeButton.addEventListener('compose-click', () => {
+          composeClicked = true;
+        });
+
+        // Select a match-bound virtual-focus button (line 0, AI Mode) and blur.
+        element.setSelection({
+          line: 0,
+          state: SelectionLineState.kFocusedButtonAim,
+          actionIndex: 0,
+        });
+        await microtasksFinished();
+        assertTrue(composeButton.hasAttribute('has-virtual-focus'));
+
+        element.getWrapperElement().dispatchEvent(new FocusEvent('focusout', {
+          relatedTarget: document.body,
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(element.dropdownIsVisible);
+        assertDeepEquals(
+            {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+            element.selection);
+        assertFalse(composeButton.hasAttribute('has-virtual-focus'));
+
+        // Pressing Enter afterwards navigates to the match instead of
+        // activating the previously focused button.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Enter'));
+        await microtasksFinished();
+        assertFalse(composeClicked);
+        const navArgs =
+            await testProxy.handler.whenCalled('openAutocompleteMatch');
+        assertEquals(0, navArgs.line);
+
+        // Select a line -1 virtual-focus button (e.g. profile / voice / Lens)
+        // and verify blur preserves line -1 while clearing the button state.
+        await simulateUserTextInput(mockInput, 'world');
+        element.onAutocompleteResultChanged(createAutocompleteResult({
+          queryId: element.activeQueryId,
+          input: 'world',
+          matches,
+        }));
+        await microtasksFinished();
+        element.setSelection({
+          line: -1,
+          state: SelectionLineState.kFocusedButtonProfile,
+          actionIndex: 0,
+        });
+        await microtasksFinished();
+
+        element.getWrapperElement().dispatchEvent(new FocusEvent('focusout', {
+          relatedTarget: document.body,
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertDeepEquals(kDefaultSelection, element.selection);
+
+        // Keyword mode selection is preserved on blur.
+        const keywordMatch = createSearchMatch({
+          allowedToBeDefaultMatch: true,
+          fillIntoEdit: 'youtube.com cats',
+          keywordModel: createMatchKeywordModel({
+            type: KeywordType.kChip,
+            keyword: 'youtube.com',
+            chipHint: 'Search YouTube',
+          }),
+        });
+        await simulateUserTextInput(mockInput, 'youtube.com cats');
+        element.onAutocompleteResultChanged(createAutocompleteResult({
+          queryId: element.activeQueryId,
+          input: 'youtube.com cats',
+          matches: [keywordMatch],
+        }));
+        await microtasksFinished();
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Tab'));
+        await microtasksFinished();
+        assertDeepEquals(
+            {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0},
+            element.selection);
+
+        element.getWrapperElement().dispatchEvent(new FocusEvent('focusout', {
+          relatedTarget: document.body,
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertDeepEquals(
+            {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0},
+            element.selection);
+      });
+
   test('pressing Enter on input navigates to the selected match', async () => {
     const mockInput = element.getInputElement();
     await simulateUserTextInput(mockInput, 'hello ');
