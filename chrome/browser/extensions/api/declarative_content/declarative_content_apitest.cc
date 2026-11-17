@@ -4,9 +4,11 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -33,8 +35,10 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/rules_registry_ids.h"
+#include "extensions/browser/state_store.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -1149,6 +1153,141 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   std::vector<const api::events::Rule*> rules;
   rules_registry->GetAllRules(extension->id(), &rules);
   EXPECT_EQ(1u, rules.size());
+}
+
+// Regression test for crbug.com/574640360, modelled on the two-launch
+// reproduction steps:
+// 1. Install a persistent MV3 extension holding only `declarativeContent` and
+//    seed the Extension Rules StateStore with the collapsed duplicate-ID
+//    (`"\uFFFD\uFFFD\uFFFD"`) rule batch produced when lone-surrogate rule IDs
+//    were serialized by `JSONWriter`.
+// 2. Restart the browser so `RulesCacheDelegate` replays the persisted rules
+//    through `DeserializeAndAddRules` -> `AddRulesNoFill` ->
+//    `ChromeContentRulesRegistry::AddRulesImpl`, verifying the duplicate batch
+//    is rejected cleanly on startup.
+IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
+                       PRE_DuplicatePersistedRuleIdsOnStartup) {
+  static constexpr char kManifest[] = R"({
+    "name": "Duplicate rule ID repro",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["declarativeContent"],
+    "action": {},
+    "background": {"service_worker": "bg.js"}
+  })";
+  static constexpr char kBackgroundJs[] = R"(
+    chrome.runtime.onInstalled.addListener(() => {
+      const makeRule = (id) => ({
+        ...(id !== undefined ? {id} : {}),
+        conditions: [
+          new chrome.declarativeContent.PageStateMatcher({pageUrl: {}}),
+        ],
+        actions: [new chrome.declarativeContent.ShowAction()],
+      });
+      const dupId = '\uFFFD\uFFFD\uFFFD';
+      chrome.declarativeContent.onPageChanged.addRules(
+          [makeRule(dupId), makeRule(dupId)], () => {
+            chrome.test.assertLastError(
+                `Id ${dupId} was used multiple times.`);
+            chrome.declarativeContent.onPageChanged.addRules(
+                [makeRule()], () => {
+                  chrome.test.assertNoLastError();
+                  chrome.test.sendMessage('installed');
+                });
+          });
+    });
+  )";
+
+  ext_dir_.WriteManifest(kManifest);
+  ext_dir_.WriteFile(FILE_PATH_LITERAL("bg.js"), kBackgroundJs);
+
+  ExtensionTestMessageListener installed_listener("installed");
+  ChromeTestExtensionLoader loader(profile());
+  // `ext_dir_` is a temporary directory deleted after the `PRE_` step, so pack
+  // and install the extension into the profile directory for `InstalledLoader`
+  // to load after the restart.
+  loader.set_pack_extension(true);
+  scoped_refptr<const Extension> extension =
+      loader.LoadExtension(ext_dir_.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(installed_listener.WaitUntilSatisfied());
+
+  scoped_refptr<RulesRegistry> rules_registry =
+      RulesRegistryService::Get(profile())->GetRulesRegistry(
+          rules_registry_ids::kDefaultRulesRegistryID,
+          declarative_content_constants::kOnPageChanged);
+  ASSERT_TRUE(rules_registry);
+
+  base::RunLoop registry_ready_loop;
+  rules_registry->ready().Post(FROM_HERE, registry_ready_loop.QuitClosure());
+  registry_ready_loop.Run();
+
+  StateStore* rules_store = ExtensionSystem::Get(profile())->rules_store();
+  ASSERT_TRUE(rules_store);
+  // Flush the `ProcessChangedRules` -> `UpdateRules` write queued by the
+  // initial `addRules` call before overwriting the stored rule list.
+  {
+    base::RunLoop drain_store_loop;
+    rules_store->FlushForTesting(drain_store_loop.QuitClosure());
+    drain_store_loop.Run();
+  }
+  rules_store->SetExtensionValue(
+      extension->id(), "declarative_rules.declarativeContent.onPageChanged",
+      base::test::ParseJson(R"([
+        {
+          "actions": [{"instanceType": "declarativeContent.ShowAction"}],
+          "conditions": [{
+            "instanceType": "declarativeContent.PageStateMatcher",
+            "pageUrl": {}
+          }],
+          "id": "\uFFFD\uFFFD\uFFFD",
+          "priority": 100
+        },
+        {
+          "actions": [{"instanceType": "declarativeContent.ShowAction"}],
+          "conditions": [{
+            "instanceType": "declarativeContent.PageStateMatcher",
+            "pageUrl": {}
+          }],
+          "id": "\uFFFD\uFFFD\uFFFD",
+          "priority": 100
+        }
+      ])"));
+
+  base::RunLoop flush_loop;
+  rules_store->FlushForTesting(flush_loop.QuitClosure());
+  flush_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
+                       DuplicatePersistedRuleIdsOnStartup) {
+  base::RunLoop system_ready_loop;
+  ExtensionSystem::Get(profile())->ready().Post(
+      FROM_HERE, system_ready_loop.QuitClosure());
+  system_ready_loop.Run();
+
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension) << message_;
+  ASSERT_EQ("Duplicate rule ID repro", extension->name());
+
+  scoped_refptr<RulesRegistry> rules_registry =
+      RulesRegistryService::Get(profile())->GetRulesRegistry(
+          rules_registry_ids::kDefaultRulesRegistryID,
+          declarative_content_constants::kOnPageChanged);
+  ASSERT_TRUE(rules_registry);
+
+  base::RunLoop registry_ready_loop;
+  rules_registry->ready().Post(FROM_HERE, registry_ready_loop.QuitClosure());
+  registry_ready_loop.Run();
+
+  std::vector<const api::events::Rule*> rules;
+  rules_registry->GetAllRules(extension->id(), &rules);
+  EXPECT_TRUE(rules.empty());
+
+  // Trigger navigation rule evaluation to confirm no dangling predicates exist.
+  content::WebContents* const tab = GetActiveWebContents();
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test1/")));
+  EXPECT_FALSE(tab->IsCrashed());
 }
 
 // TODO(wittman): Once ChromeContentRulesRegistry operates on condition and

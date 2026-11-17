@@ -349,4 +349,56 @@ TEST(RulesRegistryTest, DeleteRuleInManifest) {
   EXPECT_EQ("manifest_rule_0", *(get_rules[0]->id));
 }
 
+// Regression test for crbug.com/574640360: rule IDs containing invalid UTF-8
+// (such as lone UTF-16 surrogates encoded as WTF-8) or intra-batch duplicate
+// IDs must be rejected without leaking entries in `used_rule_identifiers_`.
+TEST(RulesRegistryTest, RejectsInvalidUtf8AndDuplicateRuleIds) {
+  content::BrowserTaskEnvironment task_environment;
+
+  scoped_refptr<RulesRegistry> registry =
+      new TestRulesRegistry(/*event_name=*/"", key);
+
+  // Distinct lone surrogates U+D800 (\xED\xA0\x80) and U+DC00 (\xED\xB0\x80)
+  // in WTF-8 would both collapse to U+FFFD x3 when persisted to JSON.
+  {
+    std::vector<api::events::Rule> add_rules(3);
+    add_rules[0].id = "valid_before_invalid";
+    add_rules[1].id = "\xED\xA0\x80";
+    add_rules[2].id = "\xED\xB0\x80";
+    std::string error = registry->AddRules(kExtensionId, std::move(add_rules));
+    EXPECT_FALSE(error.empty());
+  }
+
+  std::vector<const api::events::Rule*> get_rules;
+  registry->GetAllRules(kExtensionId, &get_rules);
+  EXPECT_TRUE(get_rules.empty());
+  EXPECT_EQ(0u, registry->GetNumberOfUsedRuleIdentifiersForTesting());
+
+  // Intra-batch duplicate explicit IDs must also fail atomically without
+  // polluting `used_rule_identifiers_`.
+  {
+    std::vector<api::events::Rule> add_rules(2);
+    add_rules[0].id = "dup_id";
+    add_rules[1].id = "dup_id";
+    std::string error = registry->AddRules(kExtensionId, std::move(add_rules));
+    EXPECT_FALSE(error.empty());
+  }
+  EXPECT_EQ(0u, registry->GetNumberOfUsedRuleIdentifiersForTesting());
+
+  // Valid non-ASCII UTF-8 IDs (including U+FFFD and Unicode noncharacters)
+  // and the rolled-back IDs above remain usable.
+  {
+    std::vector<api::events::Rule> add_rules(4);
+    add_rules[0].id = "valid_before_invalid";
+    add_rules[1].id = "dup_id";
+    add_rules[2].id = "\xEF\xBF\xBD";
+    add_rules[3].id = "\xEF\xBF\xBE";
+    std::string error = registry->AddRules(kExtensionId, std::move(add_rules));
+    EXPECT_TRUE(error.empty()) << error;
+  }
+
+  registry->GetAllRules(kExtensionId, &get_rules);
+  EXPECT_EQ(4u, get_rules.size());
+}
+
 }  // namespace extensions

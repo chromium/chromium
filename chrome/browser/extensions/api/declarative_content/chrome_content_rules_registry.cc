@@ -4,13 +4,19 @@
 
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
 
+#include <set>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/declarative/constants.h"
+#include "extensions/browser/api/declarative/declarative_utils.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -261,10 +267,27 @@ std::string ChromeContentRulesRegistry::AddRulesImpl(
         evaluator.get();
   }
 
+  // Validate all rule IDs before `CreateRule()` allocates any rules or
+  // predicates.
+  std::set<std::string> seen_rule_ids;
+  for (const api::events::Rule* api_rule : api_rules) {
+    // Return an error if the rule ID is missing or not valid UTF-8.
+    if (!declarative::IsValidRuleId(api_rule->id)) {
+      return declarative::kInvalidRuleIdError;
+    }
+
+    // Reject rule IDs that are already registered for this extension in
+    // `content_rules_` or duplicated within this `api_rules` batch.
+    ExtensionIdRuleIdPair rule_id(extension_id, *api_rule->id);
+    auto [_, inserted] = seen_rule_ids.insert(*api_rule->id);
+    if (content_rules_.contains(rule_id) || !inserted) {
+      return base::StringPrintf(declarative::kDuplicateRuleIdError,
+                                api_rule->id->c_str());
+    }
+  }
+
   for (auto* api_rule : api_rules) {
     ExtensionIdRuleIdPair rule_id(extension_id, *api_rule->id);
-    CHECK(content_rules_.find(rule_id) == content_rules_.end(),
-          base::NotFatalUntil::M161);
 
     std::unique_ptr<const ContentRule> rule(
         CreateRule(extension, predicate_factories, *api_rule, &error));
@@ -296,17 +319,23 @@ std::string ChromeContentRulesRegistry::AddRulesImpl(
       }
     }
 
-    new_rules[rule_id] = std::move(rule);
+    auto [_, inserted] = new_rules.emplace(rule_id, std::move(rule));
+    CHECK(inserted);
+  }
+
+  // Move the new rules into `content_rules_` (which owns each `ContentRule` and
+  // its `ContentPredicate`s) before passing unowned `ContentPredicate*`
+  // pointers to `evaluators_`.
+  for (auto& [rule_id, rule] : new_rules) {
+    auto [_, inserted] = content_rules_.emplace(rule_id, std::move(rule));
+    CHECK(inserted);
   }
 
   // Notify the evaluators about their new predicates.
   for (const std::unique_ptr<ContentPredicateEvaluator>& evaluator :
-       evaluators_)
+       evaluators_) {
     evaluator->TrackPredicates(new_predicates[evaluator.get()]);
-
-  // Wohoo, everything worked fine.
-  content_rules_.insert(std::make_move_iterator(new_rules.begin()),
-                        std::make_move_iterator(new_rules.end()));
+  }
 
   // Request evaluation for all WebContents, under the assumption that a
   // non-empty condition has been added.
