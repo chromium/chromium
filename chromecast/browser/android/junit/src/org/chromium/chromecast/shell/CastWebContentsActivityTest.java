@@ -1169,4 +1169,41 @@ public class CastWebContentsActivityTest {
                 startedIntent.getBooleanExtra(
                         "com.google.android.apps.castshell.extra.IS_DELAYED_EXPANSION", false));
     }
+
+    @Test
+    public void testFromCastCoreNewIntentDoesNotOverwriteSessionIdOrResetKeepScreenOn() {
+        mActivityLifecycle =
+                Robolectric.buildActivity(
+                        CastWebContentsActivity.class,
+                        CastWebContentsIntentUtils.requestStartCastActivity(
+                                mWebContents,
+                                true,
+                                false,
+                                true,
+                                /* keepScreenOn= */ true,
+                                mSessionId));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create().start().resume();
+
+        // Drain initial TaskRemovedMonitorService start intent.
+        assertNotNull(Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService());
+
+        Intent castCoreIntent =
+                new Intent(RuntimeEnvironment.application, CastWebContentsActivity.class);
+        castCoreIntent.putExtra(CastWebContentsIntentUtils.INTENT_EXTRA_FROM_CAST_CORE, true);
+        castCoreIntent.putExtra(
+                CastWebContentsIntentUtils.INTENT_EXTRA_SESSION_ID, "placeholder-root-session-id");
+
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE),
+                () -> mActivityLifecycle.newIntent(castCoreIntent),
+                false);
+
+        assertNull(Shadows.shadowOf(RuntimeEnvironment.application).getNextStartedService());
+        assertEquals(mSessionId, CastWebContentsIntentUtils.getSessionId(mActivity.getIntent()));
+        assertTrue(
+                Shadows.shadowOf(mActivity.getWindow())
+                        .getFlag(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
+    }
 }

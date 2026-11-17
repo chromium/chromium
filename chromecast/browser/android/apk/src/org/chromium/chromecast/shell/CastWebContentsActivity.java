@@ -242,14 +242,19 @@ public class CastWebContentsActivity extends ComponentActivity {
                             });
                 });
 
+        Controller<Boolean> keepScreenOnIntentState = new Controller<>();
+        mGotIntentState
+                .filter(intent -> !CastWebContentsIntentUtils.isIntentFromCastCore(intent))
+                .map(CastWebContentsIntentUtils::shouldKeepScreenOn)
+                .subscribe(Observer.onOpen(keepScreenOnIntentState::set));
         Observable<Unit> shouldKeepScreenOn =
-                mGotIntentState
-                        .filter(
-                                intent ->
-                                        CastWebContentsIntentUtils.shouldKeepScreenOn(intent)
-                                                || (isInLockTaskMode(this)
-                                                        && !canPlayBackgroundAudio()))
-                        .opaque();
+                any(
+                        mGotIntentState
+                                .filter(
+                                        intent ->
+                                                isInLockTaskMode(this) && !canPlayBackgroundAudio())
+                                .opaque()
+                                .or(keepScreenOnIntentState.filter(x -> x).opaque()));
 
         isDocked.subscribe(
                 (x) -> {
@@ -263,6 +268,7 @@ public class CastWebContentsActivity extends ComponentActivity {
                 });
 
         mGotIntentState
+                .filter(intent -> !CastWebContentsIntentUtils.isIntentFromCastCore(intent))
                 .map(Intent::getExtras)
                 .map(CastWebContentsIntentUtils::getSessionId)
                 .subscribe(Observer.onOpen(mSessionIdState::set));
@@ -341,9 +347,8 @@ public class CastWebContentsActivity extends ComponentActivity {
                                                     WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         });
 
-        mGotIntentState
+        mSessionIdState
                 .andIgnore(not(mIsFinishingState))
-                .map(CastWebContentsIntentUtils::getSessionId)
                 .subscribe(
                         sessionId -> {
                             TaskRemovedMonitorService.start(mRootSessionId, sessionId);
@@ -422,7 +427,9 @@ public class CastWebContentsActivity extends ComponentActivity {
     protected void onNewIntent(Intent intent) {
         Log.d(TAG, "onNewIntent");
         super.onNewIntent(intent);
-        setIntent(intent);
+        if (!CastWebContentsIntentUtils.isIntentFromCastCore(intent)) {
+            setIntent(intent);
+        }
         mGotIntentState.set(intent);
         notifyIfActivityStartedByCastCore(intent);
 
