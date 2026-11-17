@@ -39,7 +39,7 @@ namespace subtle {
 // overrides are not allowed.
 class BASE_EXPORT ScopedTimeClockOverrides {
  public:
-  // Pass |nullptr| for any override if it shouldn't be overriden.
+  // Pass |nullptr| for any override if it shouldn't be overridden.
   ScopedTimeClockOverrides(TimeNowFunction time_override,
                            TimeTicksNowFunction time_ticks_override,
                            ThreadTicksNowFunction thread_ticks_override,
