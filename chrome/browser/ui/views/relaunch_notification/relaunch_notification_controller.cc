@@ -325,7 +325,9 @@ void RelaunchNotificationController::HandleRelaunchRequiredState(
 }
 
 base::Time RelaunchNotificationController::IncreaseRelaunchDeadlineOnShow() {
-  CHECK(timer_.IsRunning(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/585705001): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(timer_.IsRunning());
   CHECK(!timer_.desired_run_time().is_null(), base::NotFatalUntil::M162);
   base::Time relaunch_deadline = timer_.desired_run_time();
 
