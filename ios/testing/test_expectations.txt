@@ -748,3 +748,6 @@ crbug.com/584668880 GeminiContainerTestCase/testSwipeDownWithConversationMinimiz
 
 # Gardening suppression 2026-11-16
 crbug.com/585110131 [ Device ] ComposeboxEligiblityTestCase/testTabPickerScrollsToActiveTab [ Pass Failure ]
+
+# Gardening suppression 2026-11-17
+crbug.com/584310068 [ iOS26 iOS27 Simulator ] HistoryUITestCase/testContextMenuRepeatedShare [ Pass Failure ]
