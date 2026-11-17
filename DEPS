@@ -297,11 +297,11 @@ vars = {
   'rewrapper_cfg_project': Str(''),
 
   # screen-ai CIPD packages
-  'screen_ai_linux': 'version:153.07',
-  'screen_ai_macos_amd64': 'version:153.07',
-  'screen_ai_macos_arm64': 'version:153.07',
-  'screen_ai_windows_amd64': 'version:153.07',
-  'screen_ai_windows_386': 'version:153.07',
+  'screen_ai_linux': 'version:153.08',
+  'screen_ai_macos_amd64': 'version:153.08',
+  'screen_ai_macos_arm64': 'version:153.08',
+  'screen_ai_windows_amd64': 'version:153.08',
+  'screen_ai_windows_386': 'version:153.08',
 
   # download libaom test data
   'download_libaom_testdata': False,
