@@ -174,7 +174,9 @@ void SessionController::DidGetUserInteraction(
   // instead, so dictation could never be stopped with the hotkey.
   Profile* const profile = Profile::FromBrowserContext(GetBrowserContext());
   CHECK(profile);
-  if (MatchesAccelerator(key_event, GetDictationHotkeyFromPrefs(profile))) {
+  if (MatchesAccelerator(key_event, GetDictationHotkeyFromPrefs(profile)) ||
+      MatchesAccelerator(key_event,
+                         GetDictationPressAndHoldHotkeyFromPrefs(profile))) {
     return;
   }
 

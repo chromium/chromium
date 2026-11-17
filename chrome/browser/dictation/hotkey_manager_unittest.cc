@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "chrome/browser/dictation/dictation_keyed_service_factory.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/scoped_global_hotkey.h"
 #include "chrome/browser/dictation/session_state.h"
 #include "chrome/browser/dictation/test_util.h"
@@ -258,6 +259,85 @@ TEST_F(DictationHotkeyManagerTest, InvalidPrefDoesNotRegister) {
   profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey, "D");
   CreateManager();
   EXPECT_FALSE(fake_state_.is_registered());
+}
+
+TEST_F(DictationHotkeyManagerTest, PressAndHoldRegistrationWithDefaultPref) {
+  base::test::ScopedFeatureList press_and_hold_feature{kDictationPressAndHold};
+  profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey, "");
+  CreateManager();
+  EXPECT_TRUE(fake_state_.is_registered());
+  EXPECT_EQ(
+      fake_state_.last_registered_accelerator(),
+      ui::Accelerator(ui::VKEY_D, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN |
+                                      ui::EF_ALT_DOWN));
+}
+
+TEST_F(DictationHotkeyManagerTest,
+       PressAndHoldAcceleratorPressedCallsEventHandler) {
+  base::test::ScopedFeatureList press_and_hold_feature{kDictationPressAndHold};
+  ui::Accelerator toggle_accelerator(ui::VKEY_D, ui::EF_CONTROL_DOWN);
+  ui::Accelerator hold_accelerator(ui::VKEY_D,
+                                   ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  profile_.GetPrefs()->SetString(
+      prefs::kVoiceTypingHotkey,
+      ui::Command::AcceleratorToString(toggle_accelerator));
+  profile_.GetPrefs()->SetString(
+      prefs::kVoiceTypingPressAndHoldHotkey,
+      ui::Command::AcceleratorToString(hold_accelerator));
+  CreateManager();
+  EXPECT_EQ(fake_state_.registration_count(), 2);
+
+  MockDictationKeyedService* mock_service =
+      static_cast<MockDictationKeyedService*>(
+          DictationKeyedService::Get(&profile_));
+  EXPECT_CALL(*mock_service, PressAndHoldHotkeyHandler()).Times(1);
+  EXPECT_CALL(*mock_service, ToggleHotkeyHandler()).Times(0);
+
+  EXPECT_TRUE(manager_->AcceleratorPressed(hold_accelerator));
+}
+
+TEST_F(DictationHotkeyManagerTest,
+       SameHotkeyForToggleAndPressAndHoldAllowedAndDeduplicated) {
+  base::test::ScopedFeatureList press_and_hold_feature{kDictationPressAndHold};
+  ui::Accelerator shared_accelerator(ui::VKEY_D, ui::EF_CONTROL_DOWN);
+  const std::string shared_str =
+      ui::Command::AcceleratorToString(shared_accelerator);
+  profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey, shared_str);
+  profile_.GetPrefs()->SetString(prefs::kVoiceTypingPressAndHoldHotkey,
+                                 shared_str);
+
+  EXPECT_EQ(GetDictationHotkeyFromPrefs(&profile_), shared_accelerator);
+  EXPECT_EQ(GetDictationPressAndHoldHotkeyFromPrefs(&profile_),
+            shared_accelerator);
+
+  CreateManager();
+  // FocusManager registration is deduplicated to a single registration, and
+  // pressing the shared hotkey invokes PressAndHoldHotkeyHandler (which starts
+  // in toggle mode for the hold threshold before switching to press-and-hold).
+  EXPECT_EQ(fake_state_.registration_count(), 1);
+
+  MockDictationKeyedService* mock_service =
+      static_cast<MockDictationKeyedService*>(
+          DictationKeyedService::Get(&profile_));
+  EXPECT_CALL(*mock_service, PressAndHoldHotkeyHandler()).Times(1);
+  EXPECT_TRUE(manager_->AcceleratorPressed(shared_accelerator));
+}
+
+TEST_F(DictationHotkeyManagerTest, AcceleratorRepeatIgnored) {
+  ui::Accelerator accelerator(ui::VKEY_D, ui::EF_CONTROL_DOWN);
+  profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey,
+                                 ui::Command::AcceleratorToString(accelerator));
+  CreateManager();
+
+  MockDictationKeyedService* mock_service =
+      static_cast<MockDictationKeyedService*>(
+          DictationKeyedService::Get(&profile_));
+  EXPECT_CALL(*mock_service, ToggleHotkeyHandler()).Times(0);
+  EXPECT_CALL(*mock_service, PressAndHoldHotkeyHandler()).Times(0);
+
+  ui::Accelerator repeat_accelerator(ui::VKEY_D,
+                                     ui::EF_CONTROL_DOWN | ui::EF_IS_REPEAT);
+  EXPECT_TRUE(manager_->AcceleratorPressed(repeat_accelerator));
 }
 
 }  // namespace

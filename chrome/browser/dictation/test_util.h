@@ -281,6 +281,7 @@ class MockDictationKeyedService : public DictationKeyedService {
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;
 
   MOCK_METHOD(void, ToggleHotkeyHandler, (), (override));
+  MOCK_METHOD(void, PressAndHoldHotkeyHandler, (), (override));
 
   FakeGlobalAcceleratorListener& fake_global_listener() {
     return fake_global_listener_.listener();

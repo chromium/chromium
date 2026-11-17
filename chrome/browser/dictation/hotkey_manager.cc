@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/scoped_global_hotkey.h"
@@ -24,11 +26,10 @@
 
 namespace dictation {
 
-ui::Accelerator GetDictationHotkeyFromPrefs(Profile* profile) {
-  CHECK(profile);
+namespace {
 
-  const std::string accelerator_str =
-      profile->GetPrefs()->GetString(prefs::kVoiceTypingHotkey);
+ui::Accelerator ParseValidDictationAccelerator(
+    const std::string& accelerator_str) {
   if (accelerator_str.empty()) {
     return ui::Accelerator();
   }
@@ -47,13 +48,6 @@ ui::Accelerator GetDictationHotkeyFromPrefs(Profile* profile) {
   return accelerator;
 }
 
-bool IsListeningState(SessionState state) {
-  return state == SessionState::kStreamInitializing ||
-         state == SessionState::kTranscribing;
-}
-
-namespace {
-
 ui::GlobalAcceleratorListener* g_global_listener_for_testing = nullptr;
 
 ui::GlobalAcceleratorListener* GetGlobalListener() {
@@ -63,6 +57,26 @@ ui::GlobalAcceleratorListener* GetGlobalListener() {
 }
 
 }  // namespace
+
+ui::Accelerator GetDictationHotkeyFromPrefs(Profile* profile) {
+  CHECK(profile);
+  return ParseValidDictationAccelerator(
+      profile->GetPrefs()->GetString(prefs::kVoiceTypingHotkey));
+}
+
+ui::Accelerator GetDictationPressAndHoldHotkeyFromPrefs(Profile* profile) {
+  CHECK(profile);
+  if (!base::FeatureList::IsEnabled(kDictationPressAndHold)) {
+    return ui::Accelerator();
+  }
+  return ParseValidDictationAccelerator(
+      profile->GetPrefs()->GetString(prefs::kVoiceTypingPressAndHoldHotkey));
+}
+
+bool IsListeningState(SessionState state) {
+  return state == SessionState::kStreamInitializing ||
+         state == SessionState::kTranscribing;
+}
 
 HotkeyManager::HotkeyManager(
     Profile* profile,
@@ -75,11 +89,16 @@ HotkeyManager::HotkeyManager(
   CHECK(registration_delegate_);
 
   pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(prefs::kVoiceTypingHotkey,
-                      base::BindRepeating(&HotkeyManager::OnHotkeyPrefChanged,
-                                          base::Unretained(this)));
+  pref_registrar_.Add(
+      prefs::kVoiceTypingHotkey,
+      base::BindRepeating(&HotkeyManager::OnToggleHotkeyPrefChanged,
+                          base::Unretained(this)));
+  pref_registrar_.Add(
+      prefs::kVoiceTypingPressAndHoldHotkey,
+      base::BindRepeating(&HotkeyManager::OnPressAndHoldHotkeyPrefChanged,
+                          base::Unretained(this)));
 
-  UpdateRegistration();
+  UpdateHotkeyRegistrations();
   UpdateGlobalRegistration();
 }
 
@@ -105,6 +124,16 @@ DictationKeyedService& HotkeyManager::service() {
 }
 
 bool HotkeyManager::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  if (accelerator.IsRepeat()) {
+    return true;
+  }
+  const ui::Accelerator hold_accelerator =
+      GetDictationPressAndHoldHotkeyFromPrefs(profile_);
+  if (!hold_accelerator.IsEmpty() && accelerator == hold_accelerator) {
+    service().PressAndHoldHotkeyHandler();
+    return true;
+  }
+  CHECK(accelerator == GetDictationHotkeyFromPrefs(profile_));
   service().ToggleHotkeyHandler();
   return true;
 }
@@ -113,21 +142,36 @@ bool HotkeyManager::CanHandleAccelerators() const {
   return true;
 }
 
-void HotkeyManager::OnHotkeyPrefChanged() {
-  UpdateRegistration();
+void HotkeyManager::OnToggleHotkeyPrefChanged() {
+  UpdateHotkeyRegistrations();
   UpdateGlobalRegistration();
 }
 
-void HotkeyManager::UpdateRegistration() {
-  hotkey_registration_.reset();
+void HotkeyManager::OnPressAndHoldHotkeyPrefChanged() {
+  UpdateHotkeyRegistrations();
+}
 
-  const ui::Accelerator accelerator = GetDictationHotkeyFromPrefs(profile_);
-  if (accelerator.IsEmpty()) {
-    return;
+void HotkeyManager::UpdateHotkeyRegistrations() {
+  toggle_hotkey_registration_.reset();
+  press_and_hold_hotkey_registration_.reset();
+
+  const ui::Accelerator toggle_accelerator =
+      GetDictationHotkeyFromPrefs(profile_);
+  if (!toggle_accelerator.IsEmpty()) {
+    toggle_hotkey_registration_ =
+        registration_delegate_->CreateScopedHotkeyRegistration(
+            profile_, toggle_accelerator, *this);
   }
 
-  hotkey_registration_ = registration_delegate_->CreateScopedHotkeyRegistration(
-      profile_, accelerator, *this);
+  const ui::Accelerator hold_accelerator =
+      GetDictationPressAndHoldHotkeyFromPrefs(profile_);
+  // When both modes use the same hotkey, `toggle_hotkey_registration_` already
+  // registers the accelerator on the FocusManager for `*this`.
+  if (!hold_accelerator.IsEmpty() && hold_accelerator != toggle_accelerator) {
+    press_and_hold_hotkey_registration_ =
+        registration_delegate_->CreateScopedHotkeyRegistration(
+            profile_, hold_accelerator, *this);
+  }
 }
 
 void HotkeyManager::UpdateGlobalRegistration() {

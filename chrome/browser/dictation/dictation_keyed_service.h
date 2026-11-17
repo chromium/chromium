@@ -116,8 +116,12 @@ class DictationKeyedService : public KeyedService,
   // Handles the context menu item click.
   void ContextMenuHandler(const TargetDetails& target_details);
 
-  // Handles the dictation hotkey press.
+  // Handles the dictation toggle hotkey press.
   virtual void ToggleHotkeyHandler();
+
+  // Handles the dictation press-and-hold hotkey press (including when the
+  // toggle and press-and-hold hotkeys are configured to the same shortcut).
+  virtual void PressAndHoldHotkeyHandler();
 
   // Returns null when no session is in progress.
   SessionController* session_controller() {

@@ -29,14 +29,24 @@ class ScopedGlobalHotkey;
 // unset or not registrable. Use this so all callers agree on the hotkey.
 ui::Accelerator GetDictationHotkeyFromPrefs(Profile* profile);
 
+// Returns the Dictation press-and-hold hotkey from prefs, or an empty
+// accelerator if it is unset or not registrable. May equal
+// GetDictationHotkeyFromPrefs() when the user configures the same shortcut for
+// both toggle and press-and-hold.
+ui::Accelerator GetDictationPressAndHoldHotkeyFromPrefs(Profile* profile);
+
 // Returns whether `state` counts as listening, i.e. whether the OS-wide hotkey
 // should be registered.
 bool IsListeningState(SessionState state);
 
-// Manages the hotkey for Dictation.
-// It listens to preference changes and registers the hotkey with standard
+// Manages the hotkeys for Dictation:
+// - Toggle hotkey: pressing once starts listening, and pressing again stops
+//   listening.
+// - Press-and-hold hotkey: holding the shortcut starts listening and releasing
+//   it stops listening (push-to-talk).
+// It listens to preference changes and registers both hotkeys with standard
 // priority using a delegate. While Dictation is listening, it also registers
-// the hotkey OS-wide so that Dictation can be stopped from any window.
+// the toggle hotkey OS-wide so that Dictation can be stopped from any window.
 class HotkeyManager : public ui::AcceleratorTarget {
  public:
   // Interface for managing the lifetime of a registered hotkey.
@@ -92,8 +102,9 @@ class HotkeyManager : public ui::AcceleratorTarget {
   }
 
  private:
-  void OnHotkeyPrefChanged();
-  void UpdateRegistration();
+  void OnToggleHotkeyPrefChanged();
+  void OnPressAndHoldHotkeyPrefChanged();
+  void UpdateHotkeyRegistrations();
   // Registers, re-registers or unregisters the OS-wide hotkey to match
   // `listening_` and the hotkey pref.
   void UpdateGlobalRegistration();
@@ -108,7 +119,8 @@ class HotkeyManager : public ui::AcceleratorTarget {
   std::unique_ptr<RegistrationDelegate> registration_delegate_;
 
   PrefChangeRegistrar pref_registrar_;
-  std::unique_ptr<ScopedHotkeyRegistration> hotkey_registration_;
+  std::unique_ptr<ScopedHotkeyRegistration> toggle_hotkey_registration_;
+  std::unique_ptr<ScopedHotkeyRegistration> press_and_hold_hotkey_registration_;
 
   bool listening_ = false;
   std::unique_ptr<ScopedGlobalHotkey> global_hotkey_;
