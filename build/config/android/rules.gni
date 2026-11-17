@@ -1098,12 +1098,18 @@ if (!is_robolectric && enable_java_templates) {
     foreach(_lib_dep, _lib_deps) {
       _expanded_lib_deps += [ get_label_info(_lib_dep, "label_no_toolchain") ]
     }
-    foreach(_group_name,
-            [
-              "assetres",
-              "header",
-              "host",
-            ]) {
+    _group_names = [
+      "assetres",
+      "header",
+      "host",
+    ]
+    if (!disable_android_lint) {
+      _group_names += [
+        "lint_annotations",
+        "lint_partials",
+      ]
+    }
+    foreach(_group_name, _group_names) {
       group("${target_name}__$_group_name") {
         deps = []
         foreach(_lib_dep, _expanded_lib_deps) {
@@ -2779,6 +2785,14 @@ if (!is_robolectric && enable_java_templates) {
         !_is_bundle_module && tiered_dex_assembly && !_proguard_enabled &&
         _min_sdk_version >= default_min_sdk_version
 
+    # Library partial results come from the default lint jar and the default
+    # min and target SDK (ObsoleteSdkInt, NewApi and targetSdk checks bake
+    # them in), so other apks analyze everything in their own lint step.
+    _lint_reuse_library_analysis =
+        _enable_lint && !defined(invoker.lint_jar_path) &&
+        "$_min_sdk_version" == "$default_min_sdk_version" &&
+        "$_target_sdk_version" == "$default_target_sdk_version"
+
     java_library_impl(_java_target_name) {
       forward_variables_from(invoker,
                              [
@@ -2816,6 +2830,7 @@ if (!is_robolectric && enable_java_templates) {
       version_code = _version_code
       version_name = _version_name
       enable_lint = _enable_lint
+      lint_reuse_library_analysis = _lint_reuse_library_analysis
       if (_is_bundle_module) {
         type = "android_app_bundle_module"
         res_size_info_path = _res_size_info_path
@@ -3176,7 +3191,7 @@ if (!is_robolectric && enable_java_templates) {
     }
 
     if (_enable_lint) {
-      android_lint("${target_name}__lint") {
+      android_lint_app_analysis("${target_name}__lint") {
         forward_variables_from(invoker,
                                [
                                  "lint_baseline_file",
@@ -3187,6 +3202,7 @@ if (!is_robolectric && enable_java_templates) {
         build_config = _build_config
         build_config_dep = ":$_build_config_target"
         manifest = _android_manifest
+        reuse_library_analysis = _lint_reuse_library_analysis
 
         # This will use library subtargets under-the-hood
         deps = [

@@ -101,19 +101,6 @@ def ProcessJavacOutput(output, target_name):
     return javac_output_processor.Process(target_name, output)
 
 
-@functools.cache
-def _GetFileSize(path):
-    return os.path.getsize(path)
-
-
-def _GetUsableCpuCount():
-    """Returns the number of CPUs this process may use (e.g. with taskset)."""
-    try:
-        return len(os.sched_getaffinity(0))
-    except (AttributeError, OSError):  # Not available on macOS, or sandboxed.
-        return os.cpu_count() or 1
-
-
 def _ComputeNumShards(java_files, use_errorprone):
     """Returns how many processes to split |java_files| across.
 
@@ -124,38 +111,20 @@ def _ComputeNumShards(java_files, use_errorprone):
     For Error Prone, the number also depends on the number of CPUs (see
     _MAX_ERRORPRONE_SHARDS).
     """
+    if use_errorprone:
+        return build_utils.ComputeNumShardsForCpus(
+            java_files,
+            _MIN_FILES_TO_SHARD,
+            _ERRORPRONE_MIN_SHARD_SIZE,
+            _MAX_ERRORPRONE_SHARDS,
+        )
     if len(java_files) < _MIN_FILES_TO_SHARD:
         return 1
-    total_size = sum(_GetFileSize(p) for p in java_files)
-    if use_errorprone:
-        num_shards = min(
-            _MAX_ERRORPRONE_SHARDS,
-            total_size // _ERRORPRONE_MIN_SHARD_SIZE,
-            _GetUsableCpuCount() // 2,
-        )
-    else:
-        num_shards = min(
-            _MAX_JAVAC_SHARDS, round(total_size / _JAVAC_SHARD_TARGET_SIZE)
-        )
+    total_size = sum(build_utils.GetFileSizeCached(p) for p in java_files)
+    num_shards = min(
+        _MAX_JAVAC_SHARDS, round(total_size / _JAVAC_SHARD_TARGET_SIZE)
+    )
     return max(1, num_shards)
-
-
-def _ShardJavaFiles(java_files, num_shards):
-    """Splits |java_files| into |num_shards| lists of similar total size.
-
-    Files are kept in sorted order so that files within the same package
-    (which are most likely to reference one another) end up in the same shard.
-    """
-    sizes = [(p, _GetFileSize(p)) for p in sorted(java_files)]
-    total_size = sum(s for _, s in sizes) or 1
-    shards = [[] for _ in range(num_shards)]
-    cumulative_size = 0
-    for path, size in sizes:
-        # Assign each file to the shard that contains its midpoint.
-        idx = (cumulative_size + size // 2) * num_shards // total_size
-        shards[min(idx, num_shards - 1)].append(path)
-        cumulative_size += size
-    return [s for s in shards if s]
 
 
 def _AllowSharding(options, javac_cmd, use_errorprone):
@@ -192,7 +161,9 @@ def _RunShardedJavac(
     """
     assert cmd[-1] == '@' + java_files_rsp_path
     shard_cmds = []
-    for i, shard in enumerate(_ShardJavaFiles(java_files, num_shards)):
+    for i, shard in enumerate(
+        build_utils.ShardFilesBySize(java_files, num_shards)
+    ):
         shard_rsp_path = f'{java_files_rsp_path}.shard{i}'
         with open(shard_rsp_path, 'w', encoding='utf-8') as f:
             f.write(' '.join(shard))

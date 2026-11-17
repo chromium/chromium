@@ -74,6 +74,7 @@ if (is_android) {
     # "build_server" (default)
     #     Runs static analysis jobs via a daemon process and does not block
     #     on the results. Does not work on bots (requires autoninja.py).
+    #     Android lint is not offloaded: it runs as build steps.
     #     See: https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/static_analysis.md#autoninja-integration
     # "on"
     #     Runs static analysis as build steps, blocking until they complete.

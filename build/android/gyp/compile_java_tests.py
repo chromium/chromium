@@ -175,7 +175,7 @@ class ShardingTests(unittest.TestCase):
         def num_shards(usable_cpus, files):
             with (
                 mock.patch.object(
-                    compile_java, '_GetUsableCpuCount', return_value=usable_cpus
+                    build_utils, 'GetUsableCpuCount', return_value=usable_cpus
                 ),
                 mock.patch.object(
                     compile_java, '_ERRORPRONE_MIN_SHARD_SIZE', 10
@@ -198,10 +198,12 @@ class ShardingTests(unittest.TestCase):
         self.assertEqual(1, num_shards(96, files[:3]))
 
     def testGetUsableCpuCount(self):
+        self.addCleanup(build_utils.GetUsableCpuCount.cache_clear)
         with mock.patch(
             'os.sched_getaffinity', return_value={0, 1, 2}, create=True
         ):
-            self.assertEqual(3, compile_java._GetUsableCpuCount())
+            build_utils.GetUsableCpuCount.cache_clear()
+            self.assertEqual(3, build_utils.GetUsableCpuCount())
         for error in (AttributeError, OSError):
             with (
                 mock.patch(
@@ -209,11 +211,12 @@ class ShardingTests(unittest.TestCase):
                 ),
                 mock.patch('os.cpu_count', return_value=5),
             ):
-                self.assertEqual(5, compile_java._GetUsableCpuCount())
+                build_utils.GetUsableCpuCount.cache_clear()
+                self.assertEqual(5, build_utils.GetUsableCpuCount())
 
     def testShardJavaFiles(self):
         files = self._CreateFiles([10, 10, 10, 10, 40, 10, 10])
-        shards = compile_java._ShardJavaFiles(list(reversed(files)), 3)
+        shards = build_utils.ShardFilesBySize(list(reversed(files)), 3)
         # Files stay in sorted order, and are balanced by size.
         self.assertEqual(
             [files[0:3], files[3:5], files[5:7]],
@@ -223,7 +226,7 @@ class ShardingTests(unittest.TestCase):
 
     def testShardJavaFiles_OmitsEmptyShards(self):
         files = self._CreateFiles([100, 1])
-        shards = compile_java._ShardJavaFiles(files, 4)
+        shards = build_utils.ShardFilesBySize(files, 4)
         self.assertEqual([[files[0]], [files[1]]], shards)
 
     def testAllowSharding(self):

@@ -518,6 +518,32 @@ class ParamsJson(dict):
         return DepsList(dict.fromkeys(deps), sealed=True)
 
     @functools.cache
+    def lint_analyzed_deps(self):
+        """Returns transitive deps that write their own partial lint results.
+
+        Unlike deps().recursive(), this follows deps and public_deps only
+        through java_library and group targets, as the __lint_partials GN
+        groups do. A library reached only through another type of target (e.g.
+        android_resources) is left out, and analyzed by the apk lint step.
+        """
+        ret = []
+        seen = set()
+        stack = [self]
+        while stack:
+            p = stack.pop()
+            for path in p.get('deps_configs', []) + p.get(
+                'public_deps_configs', []
+            ):
+                d = get_params(path)
+                if d in seen or d.type not in ('java_library', 'group'):
+                    continue
+                seen.add(d)
+                stack.append(d)
+                if d.get('lint_analysis_dir'):
+                    ret.append(d)
+        return ret
+
+    @functools.cache
     def public_deps(self):
         """Returns direct public dependencies and their transitive public_deps."""
         deps = self._cached_direct_public_deps()

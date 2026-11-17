@@ -214,7 +214,8 @@ template("write_build_config") {
     ]
   }
 
-  if (defined(invoker.enable_lint) && invoker.enable_lint) {
+  if ((defined(invoker.enable_lint) && invoker.enable_lint) ||
+      defined(invoker.lint_analysis_dir)) {
     _outputs += [ string_replace(invoker.build_config,
                                  ".build_config.json",
                                  ".lint.build_config.json") ]
@@ -483,6 +484,7 @@ template("write_build_config") {
                                "gradle_treat_as_prebuilt",
                                "is_prebuilt",
                                "library_always_compress",
+                               "lint_reuse_library_analysis",
                                "low_classpath_priority",
                                "main_class",
                                "module_name",
@@ -510,6 +512,14 @@ template("write_build_config") {
       }
       if (defined(invoker.aar_path)) {
         aar_path = rebase_path(invoker.aar_path, root_build_dir)
+      }
+      if (defined(invoker.lint_analysis_dir)) {
+        lint_analysis_dir =
+            rebase_path(invoker.lint_analysis_dir, root_build_dir)
+      }
+      if (defined(invoker.lint_annotations_zip)) {
+        lint_annotations_zip =
+            rebase_path(invoker.lint_annotations_zip, root_build_dir)
       }
       if (defined(invoker.processed_jar_path)) {
         processed_jar_path =
@@ -1063,160 +1073,356 @@ template("test_runner_script") {
 }
 
 if (enable_java_templates) {
-  template("android_lint") {
+  template("android_lint_app_analysis") {
+    # Lint runs in two steps: "__app_analysis" writes the partial results of
+    # the app module, and this target merges them with those of libraries and
+    # reports the issues. With reuse_library_analysis, libraries are analyzed
+    # by their own __lint_analysis targets, which leaves the app module with
+    # only resources and the sources of targets that have no such analysis.
+    _reuse_library_analysis = invoker.reuse_library_analysis
+
+    # https://crbug.com/1098752 Fix for bot OOM (https://crbug.com/1098333).
+    if (defined(java_cmd_pool_size)) {
+      _pool = "//build/config/android:java_cmd_pool($default_toolchain)"
+    } else {
+      _pool = "//build/toolchain:link_pool($default_toolchain)"
+    }
+
+    # Lint requires generated sources and generated resources from the build.
+    # Turbine __header targets depend on all generated sources, and the
+    # __assetres targets depend on all generated resources.
+    _deps = []
+    _lib_partials_deps = []
+    _lib_annotations_deps = []
+    _non_lib_deps = []
+    if (defined(invoker.deps)) {
+      _lib_deps =
+          filter_exclude(filter_include(invoker.deps, java_library_patterns),
+                         java_resource_patterns)
+      foreach(_lib_dep, _lib_deps) {
+        # Expand //foo/java -> //foo/java:java
+        _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
+        _deps += [
+          "${_lib_dep}__assetres",
+          "${_lib_dep}__header",
+        ]
+        _lib_partials_deps += [ "${_lib_dep}__lint_partials" ]
+        _lib_annotations_deps += [ "${_lib_dep}__lint_annotations" ]
+      }
+
+      # Keep non-java deps as they may generate files used only by lint.
+      # e.g. generated suppressions.xml files.
+      _non_lib_deps = filter_exclude(invoker.deps, _lib_deps)
+      _deps += _non_lib_deps
+    }
+    _deps += [ invoker.build_config_dep ]
+
+    if (defined(invoker.lint_jar_path)) {
+      _lint_jar_path = invoker.lint_jar_path
+    } else {
+      _lint_jar_path = _default_lint_jar_path
+    }
+
+    # Save generated xml files in a consistent location for debugging.
+    if (defined(invoker.lint_gen_dir)) {
+      _lint_gen_dir = invoker.lint_gen_dir
+    } else {
+      _lint_gen_dir = "$target_gen_dir/$target_name"
+    }
+    _backported_methods = "//third_party/r8/backported_methods.txt"
+    _lint_json = string_replace(invoker.build_config,
+                                ".build_config.json",
+                                ".lint.build_config.json")
+    _rebased_lint_json = rebase_path(_lint_json, root_build_dir)
+
+    _common_inputs = [
+      _backported_methods,
+      _lint_json,
+    ]
+    _common_args = [
+      "--lint-jar-path",
+      rebase_path(_lint_jar_path, root_build_dir),
+      "--android-sdk-root",
+      rebase_path(lint_android_sdk_root, root_build_dir),
+      "--backported-methods",
+      rebase_path(_backported_methods, root_build_dir),
+    ]
+    _use_native_lint = _lint_jar_path == _default_lint_jar_path
+    if (_use_native_lint) {
+      # lint.py uses the native image only on linux-x64 (as remote actions
+      # do), and the JVM elsewhere.
+      _common_inputs += native_image_java_paths_for_inputs + _native_lint_inputs
+      _common_args += [
+        "--native-lint-path",
+        rebase_path(_native_lint_path, root_build_dir),
+      ]
+    }
+    if (!_use_native_lint || !use_native_image_inputs) {
+      _common_inputs += java_paths_for_inputs + [ _lint_jar_path ]
+    }
+    if (defined(invoker.lint_suppressions_file)) {
+      _common_inputs += [ invoker.lint_suppressions_file ]
+      _common_args += [
+        "--config-path",
+        rebase_path(invoker.lint_suppressions_file, root_build_dir),
+      ]
+    }
+    _report_target_name = target_name
+    _analysis_target_name = "${target_name}__app_analysis"
+
+    # Analyzes the app module and writes its partial results. Reports no
+    # issues and does not read the baseline.
+    action_with_pydeps(_analysis_target_name) {
+      forward_variables_from(invoker, [ "testonly" ])
+      visibility = [ ":$_report_target_name" ]
+      pool = _pool
+      deps = _deps
+      if (_reuse_library_analysis) {
+        deps += _lib_annotations_deps
+      } else {
+        not_needed([ "_lib_annotations_deps" ])
+      }
+      script = "//build/android/gyp/lint.py"
+      depfile = "$target_gen_dir/$target_name.d"
+      inputs = _common_inputs + [ invoker.manifest ]
+      _stamp_path = "$target_out_dir/$target_name/build.lint.stamp"
+      outputs = [ _stamp_path ]
+
+      args =
+          _common_args + [
+            "--mode=analyze-app",
+            "--depfile",
+            rebase_path(depfile, root_build_dir),
+            "--stamp",
+            rebase_path(_stamp_path, root_build_dir),
+            "--lint-gen-dir",
+            rebase_path(_lint_gen_dir, root_build_dir),
+            "--android-sdk-version=${lint_android_sdk_version}",
+            "--manifest",
+            rebase_path(invoker.manifest, root_build_dir),
+
+            # Lint requires all resource files to be passed in the same
+            # invocation for checks like UnusedResources. Sources of analyzed
+            # libraries are left out.
+            "--sources=@FileArg($_rebased_lint_json:sources)",
+            "--aars=@FileArg($_rebased_lint_json:aars)",
+            "--aar-dirs=@FileArg($_rebased_lint_json:aar_dirs)",
+            "--srcjars=@FileArg($_rebased_lint_json:srcjars)",
+            "--resource-sources=@FileArg($_rebased_lint_json:resource_sources)",
+            "--resource-zips=@FileArg($_rebased_lint_json:resource_zips)",
+
+            # The required for annotation checks like @IntDef.
+            "--classpath=@FileArg($_rebased_lint_json:classpath)",
+            "--annotation-zips=@FileArg($_rebased_lint_json:annotation_zips)",
+          ]
+    }
+
+    # Merges the partial results of the app module and of analyzed libraries,
+    # and fails on issues that are not in the baseline. Takes about 1 second,
+    # and is the only lint step that re-runs for a changed baseline.
     action_with_pydeps(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      pool = _pool
+      deps = _non_lib_deps + [
+               ":$_analysis_target_name",
+               invoker.build_config_dep,
+             ]
+      if (_reuse_library_analysis) {
+        deps += _lib_partials_deps
+      } else {
+        not_needed([ "_lib_partials_deps" ])
+      }
+      script = "//build/android/gyp/lint.py"
+      depfile = "$target_gen_dir/$target_name.d"
 
-      # https://crbug.com/1098752 Fix for bot OOM (https://crbug.com/1098333).
+      # The report reads the merged manifest (e.g. for MissingPermission in
+      # library partial results), which may change without changing the
+      # app's partial results.
+      inputs = _common_inputs + [ invoker.manifest ]
+      _stamp_path = "$target_out_dir/$target_name/build.lint.stamp"
+      outputs = [ _stamp_path ]
+      args = _common_args + [
+               "--mode=report",
+               "--depfile",
+               rebase_path(depfile, root_build_dir),
+               "--stamp",
+               rebase_path(_stamp_path, root_build_dir),
+               "--lint-gen-dir",
+               rebase_path("$_lint_gen_dir/report", root_build_dir),
+               "--app-lint-gen-dir",
+               rebase_path(_lint_gen_dir, root_build_dir),
+               "--library-analysis-dirs=@FileArg($_rebased_lint_json:lint_analysis_dirs)",
+             ]
+      if (treat_warnings_as_errors) {
+        args += [ "--warnings-as-errors" ]
+      }
+      if (defined(invoker.lint_baseline_file)) {
+        if (compute_inputs_for_analyze) {
+          # The baseline file is included in lint.py as a depfile dep. Since
+          # removing it regenerates the file, it is useful to not have this
+          # as a gn input during local development. Add it only for bots'
+          # analyze.
+          inputs += [ invoker.lint_baseline_file ]
+        }
+        args += [
+          # Baseline allows us to turn on lint warnings without fixing all
+          # the pre-existing issues. This stops the flood of new issues while
+          # the existing ones are being fixed.
+          "--baseline",
+          rebase_path(invoker.lint_baseline_file, root_build_dir),
+        ]
+      }
+    }
+  }
+
+  # Analyzes one library for lint: extracts its typedefs for the analyses of
+  # its dependents, and writes partial results for the lint step of each apk
+  # that includes it.
+  #
+  # Variables:
+  #   build_config, build_config_dep, javac_build_config: Of the library.
+  #   header_jar_path, header_dep: Header jar of the library.
+  #   annotations_target_name, annotations_zip: Typedefs target and output.
+  #   lint_gen_dir: Where the partial results go.
+  #   lib_deps: Library deps, whose typedefs the analysis reads.
+  #   target_sources_file: (optional) File that lists the sources.
+  #   enable_shards: Whether lint.py may split the sources across several
+  #     lint processes. Needs header_jar_path to have every class of the
+  #     library.
+  template("android_lint_library_analysis") {
+    _lint_json = string_replace(invoker.build_config,
+                                ".build_config.json",
+                                ".lint.build_config.json")
+    _rebased_lint_json = rebase_path(_lint_json, root_build_dir)
+    _rebased_javac_json =
+        rebase_path(invoker.javac_build_config, root_build_dir)
+    _turbine_json = string_replace(invoker.build_config,
+                                   ".build_config.json",
+                                   ".turbine.build_config.json")
+    _rebased_turbine_json = rebase_path(_turbine_json, root_build_dir)
+    _backported_methods = "//third_party/r8/backported_methods.txt"
+    _rebased_header_jar = rebase_path(invoker.header_jar_path, root_build_dir)
+
+    _common_inputs = [
+      _lint_json,
+      invoker.javac_build_config,
+      _turbine_json,
+    ]
+    _common_deps = [
+      invoker.build_config_dep,
+
+      # The header jar target depends on the srcjars of this target, and
+      # transitively on the header jars and srcjars of its deps.
+      invoker.header_dep,
+    ]
+    _common_args = [
+      "--lint-jar-path",
+      rebase_path(_default_lint_jar_path, root_build_dir),
+      "--native-lint-path",
+      rebase_path(_native_lint_path, root_build_dir),
+      "--android-sdk-root",
+      rebase_path(lint_android_sdk_root, root_build_dir),
+      "--srcjars=@FileArg($_rebased_lint_json:srcjars)",
+    ]
+    if (defined(invoker.target_sources_file)) {
+      _common_inputs += [ invoker.target_sources_file ]
+      _common_args += [
+        "--sources",
+        rebase_path(invoker.target_sources_file, root_build_dir),
+      ]
+    }
+
+    # As in android_lint_app_analysis().
+    _common_inputs += native_image_java_paths_for_inputs + _native_lint_inputs
+    if (!use_native_image_inputs) {
+      _common_inputs += java_paths_for_inputs + [ _default_lint_jar_path ]
+    }
+
+    # Not in the java_cmd_pool: the native extractor takes 0.2 s and
+    # 200 MB for most libraries, and analyses of dependents wait on it.
+    action_with_pydeps(invoker.annotations_target_name) {
+      script = "//build/android/gyp/lint.py"
+      depfile = "$target_gen_dir/$target_name.d"
+      outputs = [ invoker.annotations_zip ]
+      inputs = _common_inputs
+      deps = _common_deps
+      args = _common_args + [
+               "--mode=extract-annotations",
+               "--depfile",
+               rebase_path(depfile, root_build_dir),
+               "--output",
+               rebase_path(invoker.annotations_zip, root_build_dir),
+               "--lint-gen-dir",
+               rebase_path("$target_gen_dir/$target_name", root_build_dir),
+               "--classpath=@FileArg($_rebased_javac_json:sdk_interface_jars)",
+               "--classpath=@FileArg($_rebased_javac_json:javac_full_interface_classpath)",
+               "--classpath",
+               _rebased_header_jar,
+               "--depfile-classpath=@FileArg($_rebased_turbine_json:interface_classpath)",
+             ]
+    }
+
+    action_with_pydeps(target_name) {
       if (defined(java_cmd_pool_size)) {
         pool = "//build/config/android:java_cmd_pool($default_toolchain)"
       } else {
         pool = "//build/toolchain:link_pool($default_toolchain)"
       }
-
-      # Lint requires generated sources and generated resources from the build.
-      # Turbine __header targets depend on all generated sources, and the
-      # __assetres targets depend on all generated resources.
-      deps = []
-      if (defined(invoker.deps)) {
-        _lib_deps =
-            filter_exclude(filter_include(invoker.deps, java_library_patterns),
-                           java_resource_patterns)
-        foreach(_lib_dep, _lib_deps) {
-          # Expand //foo/java -> //foo/java:java
-          _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
-          deps += [
-            "${_lib_dep}__assetres",
-            "${_lib_dep}__header",
-          ]
-        }
-
-        # Keep non-java deps as they may generate files used only by lint.
-        # e.g. generated suppressions.xml files.
-        deps += filter_exclude(invoker.deps, _lib_deps)
-      }
-
-      if (defined(invoker.min_sdk_version)) {
-        _min_sdk_version = invoker.min_sdk_version
-      } else {
-        _min_sdk_version = default_min_sdk_version
-      }
-
-      if (defined(invoker.lint_jar_path)) {
-        _lint_jar_path = invoker.lint_jar_path
-      } else {
-        _lint_jar_path = _default_lint_jar_path
-      }
-
-      # Save generated xml files in a consistent location for debugging.
-      if (defined(invoker.lint_gen_dir)) {
-        _lint_gen_dir = invoker.lint_gen_dir
-      } else {
-        _lint_gen_dir = "$target_gen_dir/$target_name"
-      }
-      _backported_methods = "//third_party/r8/backported_methods.txt"
-
       script = "//build/android/gyp/lint.py"
       depfile = "$target_gen_dir/$target_name.d"
-      inputs = [ _backported_methods ]
 
-      args = [
-        "--target-name",
-        get_label_info(":${target_name}", "label_no_toolchain"),
-        "--depfile",
-        rebase_path(depfile, root_build_dir),
-        "--lint-jar-path",
-        rebase_path(_lint_jar_path, root_build_dir),
-        "--lint-gen-dir",
-        rebase_path(_lint_gen_dir, root_build_dir),
-        "--android-sdk-version=${lint_android_sdk_version}",
-        "--android-sdk-root",
-        rebase_path(lint_android_sdk_root, root_build_dir),
-        "--backported-methods",
-        rebase_path(_backported_methods, root_build_dir),
-      ]
-      _use_native_lint = _lint_jar_path == _default_lint_jar_path
-      if (_use_native_lint) {
-        # lint.py uses the native image only on linux-x64 (as remote actions
-        # do), and the JVM elsewhere.
-        inputs += native_image_java_paths_for_inputs + _native_lint_inputs
+      _stamp = "${invoker.lint_gen_dir}.stamp"
+      outputs = [ _stamp ]
+      inputs = _common_inputs + [ _backported_methods ]
+
+      # Analyses read the typedefs of deps.
+      deps = _common_deps
+      foreach(_lib_dep, invoker.lib_deps) {
+        _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
+        deps += [ "${_lib_dep}__lint_annotations" ]
+      }
+      args = _common_args + [
+               "--mode=analyze-library",
+               "--depfile",
+               rebase_path(depfile, root_build_dir),
+               "--stamp",
+               rebase_path(_stamp, root_build_dir),
+               "--lint-gen-dir",
+               rebase_path(invoker.lint_gen_dir, root_build_dir),
+               "--android-sdk-version=${lint_android_sdk_version}",
+               "--backported-methods",
+               rebase_path(_backported_methods, root_build_dir),
+               "--min-sdk-version=$default_min_sdk_version",
+               "--target-sdk-version=$default_target_sdk_version",
+               "--classpath=@FileArg($_rebased_javac_json:javac_full_interface_classpath)",
+
+               # Like turbine, re-analyze only for API changes of direct deps:
+               # classes a library references must come from its direct deps.
+               # Changes of transitive header jars (6x more analyses for the
+               # same 30 upstream commits) otherwise rerun most dependents.
+               "--depfile-classpath=@FileArg($_rebased_turbine_json:interface_classpath)",
+               "--aars=@FileArg($_rebased_lint_json:aars)",
+               "--aar-dirs=@FileArg($_rebased_lint_json:aar_dirs)",
+               "--annotation-zips=@FileArg($_rebased_lint_json:annotation_zips)",
+
+               # The library's own header jar has classes of other shards, its
+               # R class and annotation processor output, none of which are in
+               # its sources.
+               "--classpath",
+               _rebased_header_jar,
+               "--depfile-classpath",
+               _rebased_header_jar,
+             ]
+      if (invoker.enable_shards) {
+        # An input here: the typedefs of this library, which the action above
+        # extracts. Each shard reads it for the typedefs declared in other
+        # shards (unsharded analyses see them in the sources).
+        deps += [ ":${invoker.annotations_target_name}" ]
         args += [
-          "--native-lint-path",
-          rebase_path(_native_lint_path, root_build_dir),
+          "--own-annotations-zip",
+          rebase_path(invoker.annotations_zip, root_build_dir),
         ]
       }
-      if (!_use_native_lint || !use_native_image_inputs) {
-        inputs += java_paths_for_inputs + [ _lint_jar_path ]
-      }
-
-      if (android_static_analysis == "build_server") {
-        args += [ "--use-build-server" ]
-      }
-
-      if (defined(invoker.lint_suppressions_file)) {
-        inputs += [ invoker.lint_suppressions_file ]
-
-        args += [
-          "--config-path",
-          rebase_path(invoker.lint_suppressions_file, root_build_dir),
-        ]
-      }
-
-      if (defined(invoker.manifest_package)) {
-        args += [ "--manifest-package=${invoker.manifest_package}" ]
-      }
-
-      if (treat_warnings_as_errors) {
-        args += [ "--warnings-as-errors" ]
-      }
-
-      if (defined(invoker.lint_baseline_file)) {
-        if (compute_inputs_for_analyze) {
-          # The baseline file is included in lint.py as a depfile dep. Since
-          # removing it regenerates the file, it is useful to not have this as
-          # a gn input during local development. Add it only for bots' analyze.
-          inputs += [ invoker.lint_baseline_file ]
-        }
-        args += [
-          # Baseline allows us to turn on lint warnings without fixing all the
-          # pre-existing issues. This stops the flood of new issues while the
-          # existing ones are being fixed.
-          "--baseline",
-          rebase_path(invoker.lint_baseline_file, root_build_dir),
-        ]
-      }
-
-      _stamp_path = "$target_out_dir/$target_name/build.lint.stamp"
-      deps += [ invoker.build_config_dep ]
-      _lint_json = string_replace(invoker.build_config,
-                                  ".build_config.json",
-                                  ".lint.build_config.json")
-      inputs += [ _lint_json ]
-      _rebased_lint_json = rebase_path(_lint_json, root_build_dir)
-
-      inputs += [ invoker.manifest ]
-      args += [
-        "--manifest",
-        rebase_path(invoker.manifest, root_build_dir),
-
-        # Lint requires all source and all resource files to be passed in the
-        # same invocation for checks like UnusedResources.
-        "--sources=@FileArg($_rebased_lint_json:sources)",
-        "--aars=@FileArg($_rebased_lint_json:aars)",
-        "--aar-dirs=@FileArg($_rebased_lint_json:aar_dirs)",
-        "--srcjars=@FileArg($_rebased_lint_json:srcjars)",
-        "--resource-sources=@FileArg($_rebased_lint_json:resource_sources)",
-        "--resource-zips=@FileArg($_rebased_lint_json:resource_zips)",
-
-        # The required for annotation checks like @IntDef.
-        "--classpath=@FileArg($_rebased_lint_json:classpath)",
-      ]
-
-      outputs = [ _stamp_path ]
-      args += [
-        "--stamp",
-        rebase_path(_stamp_path, root_build_dir),
-      ]
     }
   }
 
@@ -3932,6 +4138,27 @@ if (enable_java_templates) {
                  rebase_path(_source_files, root_build_dir))
     }
 
+    # Each Android library writes partial lint results that the lint step of
+    # each apk that includes it merges. testonly libraries are skipped:
+    # lint-enabled apks rarely include them, so their analyses would only run
+    # when building "all" (as bots do). An apk that includes one analyzes its
+    # sources in its own __app_analysis step.
+    _enable_lint_analysis =
+        !disable_android_lint && _is_library && _requires_android &&
+        _chromium_code && _has_sources &&
+        current_toolchain == default_toolchain &&
+        !(defined(invoker.testonly) && invoker.testonly)
+    if (_enable_lint_analysis) {
+      _lint_analysis_target_name = "${target_name}__lint_analysis"
+      _lint_analysis_dir = "$target_gen_dir/$_lint_analysis_target_name"
+
+      # The typedefs of this library, for the analyses of its dependents. Lint
+      # reads only zips named annotations.zip.
+      _lint_annotations_target_name = "${target_name}__lint_annotations_zip"
+      _lint_annotations_zip =
+          "$target_gen_dir/$_lint_annotations_target_name/annotations.zip"
+    }
+
     write_build_config(_build_config_target_name) {
       forward_variables_from(invoker,
                              [
@@ -3944,6 +4171,7 @@ if (enable_java_templates) {
                                "enable_lint",
                                "gradle_treat_as_prebuilt",
                                "input_jars_paths",
+                               "lint_reuse_library_analysis",
                                "preferred_dep",
                                "low_classpath_priority",
                                "main_class",
@@ -4001,6 +4229,10 @@ if (enable_java_templates) {
       chromium_code = _chromium_code
       build_config = _build_config
       is_prebuilt = _is_prebuilt
+      if (_enable_lint_analysis) {
+        lint_analysis_dir = _lint_analysis_dir
+        lint_annotations_zip = _lint_annotations_zip
+      }
       if (defined(_dex_needs_classpath)) {
         dex_needs_classpath = _dex_needs_classpath
       } else if (defined(invoker.bytecode_rewriter_target)) {
@@ -4381,6 +4613,27 @@ if (enable_java_templates) {
           }
         }
       }
+
+      if (_enable_lint_analysis) {
+        android_lint_library_analysis(_lint_analysis_target_name) {
+          build_config = _build_config
+          build_config_dep = ":$_build_config_target_name"
+          javac_build_config = _javac_build_config
+          header_jar_path = _header_jar_path
+          header_dep = ":$_header_target_name"
+          annotations_target_name = _lint_annotations_target_name
+          annotations_zip = _lint_annotations_zip
+          lint_gen_dir = _lint_analysis_dir
+          lib_deps = _lib_deps
+          if (defined(_target_sources_file)) {
+            target_sources_file = _target_sources_file
+          }
+
+          # Shards resolve the classes of other shards through the library's
+          # own header jar.
+          enable_shards = !_skip_header_jar
+        }
+      }
     }  # _has_sources
 
     if (_is_prebuilt || _build_device_jar || _build_host_jar) {
@@ -4644,6 +4897,35 @@ if (enable_java_templates) {
         if (_supports_android || _requires_robolectric ||
             _bypass_platform_checks) {
           deps = _java_assetres_deps
+        }
+      }
+    }
+
+    if (!disable_android_lint &&
+        (_is_library || _supports_android || _requires_robolectric)) {
+      # The partial lint results of this target and its transitive deps, for
+      # the lint step of apks. Must be defined wherever __assetres is.
+      group("${target_name}__lint_partials") {
+        deps = []
+        foreach(_lib_dep, _lib_deps) {
+          _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
+          deps += [ "${_lib_dep}__lint_partials" ]
+        }
+        if (_enable_lint_analysis) {
+          deps += [ ":$_lint_analysis_target_name" ]
+        }
+      }
+
+      # The annotations.zip of this target and its transitive deps, for the
+      # analyses of dependents.
+      group("${target_name}__lint_annotations") {
+        deps = []
+        foreach(_lib_dep, _lib_deps) {
+          _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
+          deps += [ "${_lib_dep}__lint_annotations" ]
+        }
+        if (_enable_lint_analysis) {
+          deps += [ ":$_lint_annotations_target_name" ]
         }
       }
     }

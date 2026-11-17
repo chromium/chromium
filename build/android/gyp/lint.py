@@ -6,7 +6,8 @@
 """Runs Android's lint tool."""
 
 import argparse
-import functools
+import concurrent.futures
+import glob
 import logging
 import os
 import platform
@@ -18,7 +19,6 @@ from xml.dom import minidom
 from xml.etree import ElementTree
 
 from util import build_utils
-from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
 _LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md'
@@ -78,6 +78,34 @@ _DISABLED_IN_LIBRARIES = [
 # machine.
 _PER_LIBRARY_JVM_FLAGS = ['-XX:+UseSerialGC', '-XX:ActiveProcessorCount=2']
 
+# Large libraries are analyzed by several lint processes at once, as Error
+# Prone does (see compile_java.py). Each process has a fixed cost (loading the
+# SDK and the classpath), and the issues found do not depend on how files are
+# sharded, so the number of shards can depend on the machine:
+# * At most one shard per 1MB of source (about 90 files of chrome_java).
+# * At most half of the usable CPUs.
+# * At most 8, which is what chrome_java (20MB) gets.
+# The shards of a library share its one slot of the build's java_cmd_pool.
+_MIN_SHARD_SIZE = 1024 * 1024
+_MAX_SHARDS = 8
+# Libraries with fewer files are not sharded, which avoids stat()ing the files
+# of small libraries. Only files that average over 20KB would reach 2 shards
+# with fewer.
+_MIN_FILES_TO_SHARD = 100
+# Heap of a library analysis, in MB: the lowest that is as fast as 2G. Most
+# libraries get the minimum. The native image takes 17% more CPU with 256M;
+# the JVM takes 2x as long for chrome_java with 512M, and runs out of memory
+# with 256M. Shards get larger on machines with few CPUs, and then need about
+# 200MB per MB of source. The shards of chrome_java on the native image:
+#   8 x 2.5MB (16 CPUs): 11.5 s with 512M, 11.8 s with 2G.
+#   4 x 5MB (8 CPUs): 17.2 s with 512M, 15.8 s with 1G, 16.0 s with 2G.
+#   2 x 10MB (4 CPUs): 42.8 s with 512M, 25.8 s with 1G, 24.5 s with 2G.
+#   1 x 20MB: 119 s with 512M, 44 s with 1G, 41 s with 2G.
+_MIN_XMX_MB_NATIVE = 512
+_MIN_XMX_MB_JVM = 1024
+_MAX_XMX_MB = 2048
+_XMX_MB_PER_SOURCE_MB = 200
+
 _RES_ZIP_DIR = 'RESZIPS'
 _SRCJAR_DIR = 'SRCJARS'
 
@@ -103,7 +131,6 @@ def _GenerateProjectFile(
     resource_sources=None,
     aars=None,
     android_sdk_version=None,
-    baseline_path=None,
     aar_dirs=None,
     library=False,
     annotation_zips=None,
@@ -115,9 +142,6 @@ def _GenerateProjectFile(
     sdk = ElementTree.SubElement(project, 'sdk')
     # Lint requires that the sdk path be an absolute path.
     sdk.set('dir', os.path.abspath(android_sdk_root))
-    if baseline_path is not None:
-        baseline = ElementTree.SubElement(project, 'baseline')
-        baseline.set('file', baseline_path)
     cache = ElementTree.SubElement(project, 'cache')
     cache.set('dir', cache_dir)
     main_module = ElementTree.SubElement(project, 'module')
@@ -130,10 +154,8 @@ def _GenerateProjectFile(
     main_module.set('partial-results-dir', partials_dir)
     if android_sdk_version:
         main_module.set('compile_sdk_version', android_sdk_version)
-    # Cache task has no manifest.
-    if android_manifest:
-        manifest = ElementTree.SubElement(main_module, 'merged-manifest')
-        manifest.set('file', android_manifest)
+    manifest = ElementTree.SubElement(main_module, 'merged-manifest')
+    manifest.set('file', android_manifest)
     if srcjar_sources:
         srcjar_sources = sorted(set(srcjar_sources))  # Ensure these are unique.
         for srcjar_file in srcjar_sources:
@@ -410,7 +432,7 @@ def _RunReport(
     lint_gen_dir,
     baseline,
     app_lint_gen_dir,
-    dep_partials_dirs,
+    library_analysis_dirs,
     warnings_as_errors=False,
     native_lint_path=None,
 ):
@@ -421,13 +443,15 @@ def _RunReport(
         os.path.join(app_lint_gen_dir, 'project.xml')
     ).getroot()
     main_module = project.find('module')
-    for dep_partials_dir in dep_partials_dirs:
-        _AddDepModule(
-            project,
-            main_module,
-            _ModuleName(dep_partials_dir),
-            partials_dir=dep_partials_dir,
-        )
+    for analysis_dir in library_analysis_dirs:
+        # One module per shard of the library's analysis.
+        for partials_dir in sorted(glob.glob(_ShardPartialsGlob(analysis_dir))):
+            _AddDepModule(
+                project,
+                main_module,
+                _ModuleName(partials_dir),
+                partials_dir=partials_dir,
+            )
     if baseline:
         ElementTree.SubElement(project, 'baseline').set('file', baseline)
     project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
@@ -459,90 +483,90 @@ def _RunReport(
         sys.exit(1)
 
 
-def _RunLint(
-    lint_jar_path,
-    backported_methods_path,
-    config_path,
-    sources,
-    classpath,
-    cache_dir,
-    android_sdk_version,
-    aars,
-    srcjars,
-    resource_sources,
-    resource_zips,
-    android_sdk_root,
-    lint_gen_dir,
-    baseline,
-    manifest_path,
-    warnings_as_errors=False,
-    aar_dirs=None,
-    mode='full',
-    annotation_zips=None,
-    min_sdk_version=None,
-    target_sdk_version=None,
-    jvm_flags=None,
-    native_lint_path=None,
-):
-    """Runs lint over one module.
+def _ShardPartialsDir(analysis_dir, shard):
+    return os.path.join(analysis_dir, f'shard{shard}', 'partials')
 
-    Modes:
-      full: Analyzes and reports on the whole app in one lint invocation.
-      analyze-library: Writes partial results for one library module, without
-          any knowledge of the apks that include it (lint --analyze-only).
-      analyze-app: Writes partial results for the app module: resources, and
-          sources that belong to no analyzed library.
 
+def _ShardPartialsGlob(analysis_dir):
+    return _ShardPartialsDir(analysis_dir, '*')
+
+
+def _AnalyzeModule(cmd, partials_dir, keep_cache, **project_kwargs):
+    """Writes the partial results of one module. Returns False if lint failed.
+
+    The module's project.xml, lint cache and partial results are in the parent
+    directory of |partials_dir|.
     """
-    logging.info('Lint starting')
-    analyze = mode != 'full'
-    is_per_target_cache = not cache_dir
-    if is_per_target_cache:
-        # Use per-target cache directory when --cache-dir is not used.
-        cache_dir = os.path.join(lint_gen_dir, 'android_lint_cache')
-        # Clear any stale or partially extracted AARs from interrupted runs;
-        # Lint skips unpacking an AAR if its cache subdirectory already exists.
-        shutil.rmtree(cache_dir, ignore_errors=True)
-        # Lint complains if the directory does not exist.
-        os.makedirs(cache_dir)
-
-    if baseline and not os.path.exists(baseline) and not analyze:
-        # Generating new baselines is only done locally, and requires more memory to
-        # avoid OOMs.
-        creating_baseline = True
-        lint_xmx = '6G'
-    else:
-        creating_baseline = False
-        lint_xmx = '4G'
-    disabled = _DISABLED_ALWAYS
-    if mode == 'analyze-library':
-        # One library needs far less than the whole app.
-        lint_xmx = '2G'
-        disabled = disabled + _DISABLED_IN_LIBRARIES
-
+    gen_dir = os.path.dirname(partials_dir)
     # Lint requires this directory to exist and be cleared. See b/324598620.
-    partials_dir = os.path.join(lint_gen_dir, 'partials')
     shutil.rmtree(partials_dir, ignore_errors=True)
     os.makedirs(partials_dir)
+    cache_dir = os.path.join(gen_dir, 'android_lint_cache')
+    # Lint writes its API database here (.aar files are read from the dirs
+    # that the build unpacks them into). Start empty, so that a file that an
+    # interrupted run left half-written is not reused.
+    shutil.rmtree(cache_dir, ignore_errors=True)
+    # Lint complains if the directory does not exist.
+    os.makedirs(cache_dir)
 
-    cmd = _LintCmd(
-        lint_jar_path,
-        android_sdk_root,
-        lint_xmx,
-        disabled,
-        jvm_flags,
-        native_lint_path,
+    project_xml_path = os.path.join(gen_dir, 'project.xml')
+    _WriteXmlFile(
+        _GenerateProjectFile(
+            cache_dir=cache_dir, partials_dir=partials_dir, **project_kwargs
+        ),
+        project_xml_path,
     )
-    cmd += [
-        '--config',
-        _WriteConfig(lint_gen_dir, config_path, backported_methods_path),
-    ]
+    ok = _Run(cmd + ['--project', project_xml_path], gen_dir, False, False)
+
+    is_debug = os.environ.get('LINT_DEBUG', '0') != '0'
+    if not is_debug and not keep_cache:
+        shutil.rmtree(cache_dir, ignore_errors=True)
+    if not ok:
+        _PrintFailureHelp(is_debug, project_xml_path)
+    return ok
+
+
+def _RunAnalysis(args, sources, resource_sources):
+    """Writes partial results (lint --analyze-only), which report nothing.
+
+    Modes:
+      analyze-library: For one library, without any knowledge of the apks that
+          include it. Large libraries are split across several lint processes.
+      analyze-app: For the app module: resources, and sources that belong to no
+          analyzed library.
+
+    Keeps the partial results, each project.xml and the extracted srcjars and
+    resources that they point to, since the report step reads them.
+
+    Returns False if lint failed (and its output was printed).
+    """
+    logging.info('Lint starting')
+    library = args.mode == 'analyze-library'
+    lint_gen_dir = args.lint_gen_dir
+
+    disabled = _DISABLED_ALWAYS
+    if library:
+        disabled = disabled + _DISABLED_IN_LIBRARIES
+    config_path = _WriteConfig(
+        lint_gen_dir, args.config_path, args.backported_methods
+    )
+
+    def lint_cmd(xmx):
+        cmd = _LintCmd(
+            args.lint_jar_path,
+            args.android_sdk_root,
+            xmx,
+            disabled,
+            _PER_LIBRARY_JVM_FLAGS if library else None,
+            args.native_lint_path,
+        )
+        return cmd + ['--config', config_path, '--analyze-only']
 
     resource_root_dir = os.path.join(lint_gen_dir, _RES_ZIP_DIR)
     shutil.rmtree(resource_root_dir, True)
     # These are zip files with generated resources (e. g. strings from GRD).
     logging.info('Extracting resource zips')
-    for resource_zip in resource_zips:
+    for resource_zip in args.resource_zips:
         # Use a consistent root and name rather than a temporary file so that
         # suppressions can be local to the lint target and the resource target.
         resource_dir = os.path.join(resource_root_dir, resource_zip)
@@ -555,77 +579,87 @@ def _RunLint(
     srcjar_root_dir = os.path.join(lint_gen_dir, _SRCJAR_DIR)
     shutil.rmtree(srcjar_root_dir, True)
     srcjar_sources = []
-    if srcjars:
-        for srcjar in srcjars:
-            # Use path without extensions since otherwise the file name includes
-            # .srcjar and lint treats it as a srcjar.
-            srcjar_dir = os.path.join(
-                srcjar_root_dir, os.path.splitext(srcjar)[0]
-            )
-            os.makedirs(srcjar_dir)
-            # Sadly lint's srcjar support is broken since it only considers the first
-            # srcjar. Until we roll a lint version with that fixed, we need to extract
-            # it ourselves.
-            srcjar_sources.extend(
-                build_utils.ExtractAll(srcjar, path=srcjar_dir)
-            )
+    for srcjar in args.srcjars:
+        # Lint has no code that reads sources from inside a .srcjar, so they
+        # are extracted. The directory name omits the extension.
+        srcjar_dir = os.path.join(srcjar_root_dir, os.path.splitext(srcjar)[0])
+        os.makedirs(srcjar_dir)
+        srcjar_sources.extend(build_utils.ExtractAll(srcjar, path=srcjar_dir))
 
-    if mode == 'analyze-library':
-        manifest_path = os.path.join(lint_gen_dir, 'AndroidManifest.xml')
-        _WriteLibraryManifest(
-            manifest_path, min_sdk_version, target_sdk_version
+    project_kwargs = {
+        'android_sdk_root': args.android_sdk_root,
+        'classpath': args.classpath,
+        'resource_sources': resource_sources,
+        'aars': args.aars,
+        'android_sdk_version': args.android_sdk_version,
+        'aar_dirs': dict(zip(args.aars, args.aar_dirs)),
+        'library': library,
+    }
+
+    if not library:
+        # The report step reuses the app's project.xml, which names its cache
+        # dir.
+        ok = _AnalyzeModule(
+            lint_cmd('4G'),
+            os.path.join(lint_gen_dir, 'partials'),
+            keep_cache=True,
+            android_manifest=args.manifest,
+            sources=sources,
+            srcjar_sources=srcjar_sources,
+            annotation_zips=args.annotation_zips,
+            **project_kwargs,
         )
-    logging.info('Generating project file')
-    project_file_root = _GenerateProjectFile(
-        manifest_path,
-        android_sdk_root,
-        cache_dir,
-        partials_dir,
-        sources,
-        classpath,
-        srcjar_sources,
-        resource_sources,
-        aars,
-        android_sdk_version,
-        None if analyze else baseline,
-        aar_dirs=aar_dirs,
-        library=mode == 'analyze-library',
-        annotation_zips=annotation_zips,
+        logging.info('Lint completed')
+        return ok
+
+    manifest_path = os.path.join(lint_gen_dir, 'AndroidManifest.xml')
+    _WriteLibraryManifest(
+        manifest_path, args.min_sdk_version, args.target_sdk_version
     )
+    # The report step reads every shard that exists, and the number of shards
+    # can change between runs.
+    for path in glob.glob(os.path.join(lint_gen_dir, 'shard*')):
+        shutil.rmtree(path)
 
-    project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
-    _WriteXmlFile(project_file_root, project_xml_path)
-    cmd += ['--project', project_xml_path]
-    if analyze:
-        # Partial analysis reports nothing: issues come out of --report-only.
-        cmd += ['--analyze-only']
+    shards = [sources]
+    annotation_zips = args.annotation_zips
+    if args.own_annotations_zip:
+        num_shards = build_utils.ComputeNumShardsForCpus(
+            sources, _MIN_FILES_TO_SHARD, _MIN_SHARD_SIZE, _MAX_SHARDS
+        )
+        if num_shards > 1:
+            shards = build_utils.ShardFilesBySize(sources, num_shards)
+            # Shards read the classes of each other from the library's header
+            # jar (on the classpath), and the typedefs from this zip.
+            annotation_zips = annotation_zips + [args.own_annotations_zip]
+    if args.native_lint_path and _IS_LINUX_X64:
+        xmx_mb = _MIN_XMX_MB_NATIVE
+    else:
+        xmx_mb = _MIN_XMX_MB_JVM
+    if len(sources) >= _MIN_FILES_TO_SHARD:
+        total_size = sum(build_utils.GetFileSizeCached(p) for p in sources)
+        shard_size_mb = total_size / len(shards) / (1024 * 1024)
+        xmx_mb = max(xmx_mb, int(shard_size_mb * _XMX_MB_PER_SOURCE_MB))
+        xmx_mb = min(xmx_mb, _MAX_XMX_MB)
+    cmd = lint_cmd(f'{xmx_mb}M')
 
-    ok = _Run(
-        cmd,
-        lint_gen_dir,
-        creating_baseline and not warnings_as_errors,
-        warnings_as_errors and not analyze,
-    )
+    def analyze_shard(i):
+        return _AnalyzeModule(
+            cmd,
+            _ShardPartialsDir(lint_gen_dir, i),
+            keep_cache=False,
+            android_manifest=manifest_path,
+            sources=shards[i],
+            # Generated sources are few, so they all go in the first shard.
+            srcjar_sources=srcjar_sources if i == 0 else None,
+            annotation_zips=annotation_zips,
+            **project_kwargs,
+        )
 
-    # When not treating warnings as errors, display the extra footer.
-    is_debug = os.environ.get('LINT_DEBUG', '0') != '0'
-    # Analysis modes keep their partial results, project.xml and the extracted
-    # srcjars and resources that it points to, since the report step reads them.
-    if not is_debug and not analyze:
-        shutil.rmtree(resource_root_dir, ignore_errors=True)
-        shutil.rmtree(srcjar_root_dir, ignore_errors=True)
-        if os.path.exists(project_xml_path):
-            os.unlink(project_xml_path)
-        shutil.rmtree(partials_dir, ignore_errors=True)
-    # The report step reuses the app's project.xml, which names its cache dir.
-    if not is_debug and is_per_target_cache and mode != 'analyze-app':
-        shutil.rmtree(cache_dir, ignore_errors=True)
-
-    if not ok:
-        _PrintFailureHelp(is_debug, project_xml_path)
-        sys.exit(1)
-
+    with concurrent.futures.ThreadPoolExecutor(len(shards)) as executor:
+        results = list(executor.map(analyze_shard, range(len(shards))))
     logging.info('Lint completed')
+    return all(results)
 
 
 _PACKAGE_RE = re.compile(r'^package\s+([\w.]+)', flags=re.MULTILINE)
@@ -719,20 +753,19 @@ def _ExtractAnnotations(
 def _ParseArgs(argv):
     parser = argparse.ArgumentParser()
     action_helpers.add_depfile_arg(parser)
-    parser.add_argument('--target-name', help='Fully qualified GN target name.')
     parser.add_argument(
         '--mode',
         choices=[
-            'full',
             'analyze-library',
             'analyze-app',
             'report',
             'extract-annotations',
         ],
-        default='full',
-        help='See _RunLint(). report: merges the partial results of '
-        '--app-lint-gen-dir and --partials-dirs. extract-annotations: writes '
-        'the typedefs of --sources and --srcjars to --output.',
+        required=True,
+        help='analyze-*: See _RunAnalysis(). report: merges the partial '
+        'results of --app-lint-gen-dir and --library-analysis-dirs. '
+        'extract-annotations: writes the typedefs of --sources and --srcjars '
+        'to --output.',
     )
     parser.add_argument(
         '--min-sdk-version',
@@ -748,6 +781,12 @@ def _ParseArgs(argv):
         'dependencies, for their typedefs.',
     )
     parser.add_argument(
+        '--own-annotations-zip',
+        help='analyze-library: The zip that extract-annotations wrote for '
+        'this same library (an input). Given to each shard, for typedefs '
+        'declared in other shards. Libraries without it are not sharded.',
+    )
+    parser.add_argument(
         '--output', help='extract-annotations: Path of the zip to write.'
     )
     parser.add_argument(
@@ -755,13 +794,9 @@ def _ParseArgs(argv):
         help='report: --lint-gen-dir of the analyze-app step.',
     )
     parser.add_argument(
-        '--partials-dirs',
-        help='report: GN list of partial results dirs of analyzed libraries.',
-    )
-    parser.add_argument(
-        '--use-build-server',
-        action='store_true',
-        help='Always use the build server.',
+        '--library-analysis-dirs',
+        help='report: GN list of --lint-gen-dir of the analyze-library steps '
+        'to merge.',
     )
     parser.add_argument(
         '--lint-jar-path', required=True, help='Path to the lint jar.'
@@ -774,11 +809,6 @@ def _ParseArgs(argv):
     parser.add_argument(
         '--backported-methods',
         help='Path to backported methods file created by R8.',
-    )
-    parser.add_argument(
-        '--cache-dir',
-        help='Path to the directory in which the android cache '
-        'directory tree should be stored.',
     )
     parser.add_argument('--config-path', help='Path to lint suppressions file.')
     parser.add_argument(
@@ -799,7 +829,7 @@ def _ParseArgs(argv):
     parser.add_argument(
         '--warnings-as-errors',
         action='store_true',
-        help='Treat all warnings as errors.',
+        help='report: Treat all warnings as errors.',
     )
     parser.add_argument(
         '--sources',
@@ -842,7 +872,8 @@ def _ParseArgs(argv):
     )
     parser.add_argument(
         '--baseline',
-        help='Baseline file to ignore existing errors and fail on new errors.',
+        help='report: Baseline file to ignore existing errors and fail on new '
+        'errors.',
     )
 
     args = parser.parse_args(build_utils.ExpandFileArgs(argv))
@@ -859,7 +890,9 @@ def _ParseArgs(argv):
         args.depfile_classpath
     )
     args.annotation_zips = action_helpers.parse_gn_list(args.annotation_zips)
-    args.partials_dirs = action_helpers.parse_gn_list(args.partials_dirs)
+    args.library_analysis_dirs = action_helpers.parse_gn_list(
+        args.library_analysis_dirs
+    )
 
     if args.baseline:
         assert os.path.basename(args.baseline) == 'lint-baseline.xml', (
@@ -884,7 +917,7 @@ def main():
             args.lint_gen_dir,
             args.baseline,
             args.app_lint_gen_dir,
-            args.partials_dirs,
+            args.library_analysis_dirs,
             warnings_as_errors=args.warnings_as_errors,
             native_lint_path=args.native_lint_path,
         )
@@ -930,73 +963,19 @@ def main():
             build_utils.ReadSourcesList(resource_sources_file)
         )
 
-    possible_depfile_deps = (
-        args.srcjars
-        + args.resource_zips
-        + sources
-        + resource_sources
-        + [args.baseline, args.manifest]
-    )
-    depfile_deps = [p for p in possible_depfile_deps if p]
-
-    # _RunLint ignores the baseline and warnings_as_errors in partial modes.
-    run_lint = functools.partial(
-        _RunLint,
-        args.lint_jar_path,
-        args.backported_methods,
-        args.config_path,
-        sources,
-        args.classpath,
-        args.cache_dir,
-        args.android_sdk_version,
-        args.aars,
-        args.srcjars,
-        resource_sources,
-        args.resource_zips,
-        args.android_sdk_root,
-        args.lint_gen_dir,
-        args.baseline,
-        args.manifest,
-        warnings_as_errors=args.warnings_as_errors,
-        aar_dirs=dict(zip(args.aars, args.aar_dirs)),
-        native_lint_path=args.native_lint_path,
-    )
-
-    if args.mode != 'full':
-        # Partial analysis does not use the build server.
-        run_lint(
-            mode=args.mode,
-            annotation_zips=args.annotation_zips,
-            min_sdk_version=args.min_sdk_version,
-            target_sdk_version=args.target_sdk_version,
-            jvm_flags=_PER_LIBRARY_JVM_FLAGS,
-        )
-        if args.depfile:
-            action_helpers.write_depfile(
-                args.depfile,
-                args.stamp,
-                depfile_deps + depfile_classpath + args.annotation_zips,
-            )
-        build_utils.Touch(args.stamp)
-        return
+    ok = _RunAnalysis(args, sources, resource_sources)
+    if not ok:
+        sys.exit(1)
 
     if args.depfile:
+        depfile_deps = args.srcjars + args.resource_zips + sources
+        depfile_deps += resource_sources + depfile_classpath
+        depfile_deps += args.annotation_zips
+        depfile_deps += [
+            p for p in (args.manifest, args.own_annotations_zip) if p
+        ]
         action_helpers.write_depfile(args.depfile, args.stamp, depfile_deps)
-
-    # Avoid parallelizing cache creation since lint runs without the cache defeat
-    # the purpose of creating the cache in the first place. Forward the command
-    # after the depfile has been written as siso requires it.
-    if server_utils.MaybeRunCommand(
-        name=args.target_name,
-        argv=sys.argv,
-        stamp_file=args.stamp,
-        use_build_server=args.use_build_server,
-    ):
-        return
-
-    run_lint()
-    logging.info('Creating stamp file')
-    server_utils.MaybeTouch(args.stamp)
+    build_utils.Touch(args.stamp)
 
 
 if __name__ == '__main__':

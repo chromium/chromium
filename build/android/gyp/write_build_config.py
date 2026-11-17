@@ -608,6 +608,28 @@ def _ToTraceEventRewrittenPath(jar_dir, path):
     return os.path.join(jar_dir, path)
 
 
+def _AarDir(c):
+    # android_aar_prebuilt() unpacks the .aar into the directory that holds
+    # classes.jar.
+    return os.path.dirname(c['unprocessed_jar_path'])
+
+
+def _CreateLibraryLintConfig(params):
+    """Inputs of a library's own lint analysis."""
+    aars = {}
+    for c in params.deps().recursive():
+        if path := c.get('aar_path'):
+            aars[path] = _AarDir(c)
+    config = {}
+    config['aars'] = list(aars)
+    config['aar_dirs'] = list(aars.values())
+    config['srcjars'] = params.get('bundled_srcjars', [])
+    config['annotation_zips'] = [
+        c['lint_annotations_zip'] for c in params.lint_analyzed_deps()
+    ]
+    return config
+
+
 def _CreateLintConfig(params, javac_config, manifest_config):
     # Collect all sources and resources at the apk/bundle_module level.
     aars = {}
@@ -615,21 +637,34 @@ def _CreateLintConfig(params, javac_config, manifest_config):
     sources = set()
     resource_sources = set()
     resource_zips = set()
+    lint_analysis_dirs = []
+    annotation_zips = []
+    analyzed = set()
+    if params.get('lint_reuse_library_analysis'):
+        for c in params.lint_analyzed_deps():
+            lint_analysis_dirs.append(c['lint_analysis_dir'])
+            # Sources left to the app's own analysis are checked against
+            # typedefs declared in analyzed libraries.
+            annotation_zips.append(c['lint_annotations_zip'])
+            analyzed.add(c)
 
     if path := params.get('target_sources_file'):
         sources.add(path)
     if paths := params.get('bundled_srcjars'):
         srcjars.update(paths)
     for c in params.deps().recursive():
-        if c.get('chromium_code', True) and c.requires_android():
+        if (
+            c not in analyzed
+            and c.get('chromium_code', True)
+            and c.requires_android()
+        ):
             if path := c.get('target_sources_file'):
                 sources.add(path)
             if paths := c.get('bundled_srcjars'):
                 srcjars.update(paths)
         if path := c.get('aar_path'):
-            # android_aar_prebuilt() unpacks the .aar into the directory that
-            # holds classes.jar. Passing it lets lint skip unzipping every .aar.
-            aars[path] = os.path.dirname(c['unprocessed_jar_path'])
+            # Lets lint skip unzipping every .aar.
+            aars[path] = _AarDir(c)
 
     for c in params.resource_deps():
         if c.get('chromium_code', True):
@@ -664,14 +699,16 @@ def _CreateLintConfig(params, javac_config, manifest_config):
         manifests += manifest_config['extra_android_manifests']
 
     config = {}
-    config['aars'] = sorted(aars)
-    config['aar_dirs'] = [aars[a] for a in config['aars']]
+    config['aars'] = list(aars)
+    config['aar_dirs'] = list(aars.values())
     config['android_manifests'] = manifests
     config['classpath'] = classpath
     config['sources'] = sorted(sources)
     config['srcjars'] = sorted(srcjars)
     config['resource_sources'] = sorted(resource_sources)
     config['resource_zips'] = sorted(resource_zips)
+    config['lint_analysis_dirs'] = lint_analysis_dirs
+    config['annotation_zips'] = annotation_zips
     return config
 
 
@@ -1065,6 +1102,8 @@ def main():
 
     if params.get('enable_lint'):
         lint_config = _CreateLintConfig(params, javac_config, manifest_config)
+    elif params.get('lint_analysis_dir'):
+        lint_config = _CreateLibraryLintConfig(params)
 
     # Depfiles expect output order to match the order in GN.
     outputs = [

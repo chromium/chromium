@@ -17,6 +17,7 @@ static analysis tasks in the background. This will change the build as follows:
   * If the output gets mixed in with what you are doing so it is no longer clear, you can check the task output in the logfile.
     * E.g.: `out/Default/buildserver.log.0`.
 * Changes the terminal title to keep live track of remaining analysis tasks.
+* Android lint is not offloaded: it always runs as build steps.
 
 [cbuild- speed improvement]: https://dashboards.corp.google.com/clank_build_speed?f=commit:bt:1411615,1422246&f=benchmark:in:base_sig_compile,chrome_nosig_compile&f=server:in:true,false&f=emulator:in:None,api31
 

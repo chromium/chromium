@@ -401,7 +401,8 @@ Args that affect build speed:
 Normally analysis build steps like Lint and Error Prone will run as normal build
 steps. The build will then wait for all analysis steps to complete successfully.
 By offloading analysis build steps to a separate build server to be run lazily at
-a low priority, the actual build can complete much faster.
+a low priority, the actual build can complete much faster. Lint is not
+offloaded: it always runs as build steps.
 
 **Note**: Since the build completes before the analysis checks finish, the build
 will not fail if an analysis check fails.
