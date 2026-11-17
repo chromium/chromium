@@ -480,17 +480,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.ImageFetchStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-01-14">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Status of image fetches for the feed. Recorded for each image
-    fetch. Fetches happen when loading the feed or scrolling the feed. Fetched
-    images are cached, so subsequent loads may not fetch again. Feed v2 only.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.LoadStepLatency{FeedLoadLatencyStep}"
     units="ms" expires_after="2024-07-21">
   <owner>harringtond@chromium.org</owner>

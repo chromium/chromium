@@ -10,7 +10,6 @@
 
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/public/types.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -72,13 +71,12 @@ ImageFetchId ImageFetcher::Fetch(const GURL& url, ImageCallback callback) {
   simple_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&ImageFetcher::OnFetchComplete, weak_factory_.GetWeakPtr(),
-                     id, url),
+                     id),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
   return id;
 }
 
 void ImageFetcher::OnFetchComplete(ImageFetchId id,
-                                   const GURL& url,
                                    std::optional<std::string> response_data) {
   TRACE_EVENT_END("android.ui.jank", perfetto::Track(GetTrackId(id)), "bytes",
                   response_data ? response_data->size() : 0);
@@ -94,7 +92,6 @@ void ImageFetcher::OnFetchComplete(ImageFetchId id,
   } else {
     response.status_code = request->loader->NetError();
   }
-  MetricsReporter::OnImageFetched(url, response.status_code);
 
   if (response_data)
     response.response_bytes = std::move(response_data).value();

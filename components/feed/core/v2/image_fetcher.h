@@ -51,7 +51,6 @@ class ImageFetcher {
 
   // Called when fetch request completes.
   void OnFetchComplete(ImageFetchId id,
-                       const GURL& url,
                        std::optional<std::string> response_data);
 
   std::optional<PendingRequest> RemovePending(ImageFetchId id);

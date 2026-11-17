@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
@@ -84,28 +83,21 @@ class ImageFetcherTest : public testing::Test {
 };
 
 TEST_F(ImageFetcherTest, SendRequestSendsValidRequest) {
-  base::HistogramTester histograms;
   CallbackReceiver<NetworkResponse> receiver;
   image_fetcher()->Fetch(GURL("https://example.com"), receiver.Bind());
   network::ResourceRequest resource_request = Respond("", net::HTTP_OK);
 
   EXPECT_EQ(GURL("https://example.com"), resource_request.url);
   EXPECT_EQ("GET", resource_request.method);
-
-  EXPECT_EQ(
-      std::vector<base::Bucket>({{net::HTTP_OK, 1}}),
-      histograms.GetAllSamples("ContentSuggestions.Feed.ImageFetchStatus"));
 }
 
 TEST_F(ImageFetcherTest, SendRequestReceivesNetError) {
-  base::HistogramTester histograms;
   CallbackReceiver<NetworkResponse> receiver;
   image_fetcher()->Fetch(GURL("https://example.com"), receiver.Bind());
   Respond("", net::ERR_ACCESS_DENIED);
 
-  EXPECT_EQ(
-      std::vector<base::Bucket>({{net::ERR_ACCESS_DENIED, 1}}),
-      histograms.GetAllSamples("ContentSuggestions.Feed.ImageFetchStatus"));
+  ASSERT_TRUE(receiver.GetResult());
+  EXPECT_EQ(net::ERR_ACCESS_DENIED, receiver.GetResult()->status_code);
 }
 
 TEST_F(ImageFetcherTest, SendRequestValidResponse) {

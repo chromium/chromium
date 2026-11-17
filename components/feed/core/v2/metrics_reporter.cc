@@ -946,13 +946,6 @@ void MetricsReporter::OnLoadMore(const StreamType& stream_type,
   LogContentStats(stream_type, content_stats);
 }
 
-void MetricsReporter::OnImageFetched(const GURL& url,
-                                     int net_error_or_http_status) {
-  VVLOG << "OnImageFetched status=" << net_error_or_http_status << " " << url;
-  base::UmaHistogramSparse("ContentSuggestions.Feed.ImageFetchStatus",
-                           net_error_or_http_status);
-}
-
 void MetricsReporter::OnResourceFetched(int net_error_or_http_status) {
   base::UmaHistogramSparse("ContentSuggestions.Feed.ResourceFetchStatus",
                            net_error_or_http_status);
