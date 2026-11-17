@@ -18,12 +18,20 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /** Tests for {@link DexLoader}. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class DexLoaderTest {
     /** Package of APK to load dex file from. */
     private static final String PACKAGE_WITH_DEX_TO_EXTRACT =
@@ -46,10 +54,13 @@ public class DexLoaderTest {
     private DexLoader mDexLoader;
     private File mLocalDexDir;
 
-    /** Monitors read files and modified files in the directory passed to the constructor. */
+    /**
+     * Monitors read files and modified files in the directory passed to the constructor. The lists
+     * are thread-safe, because FileObserver calls onEvent() on its own thread.
+     */
     private static class FileMonitor extends FileObserver {
-        public final ArrayList<String> mReadPaths = new ArrayList<>();
-        public final ArrayList<String> mModifiedPaths = new ArrayList<>();
+        public final List<String> mReadPaths = new CopyOnWriteArrayList<>();
+        public final List<String> mModifiedPaths = new CopyOnWriteArrayList<>();
 
         public FileMonitor(File directory) {
             super(directory.getPath());
@@ -65,6 +76,8 @@ public class DexLoaderTest {
                 case FileObserver.DELETE:
                 case FileObserver.DELETE_SELF:
                 case FileObserver.MODIFY:
+                // DexLoader writes the .dex file to a temporary file and then renames it.
+                case FileObserver.MOVED_TO:
                     mModifiedPaths.add(path);
                     break;
                 default:
@@ -135,13 +148,21 @@ public class DexLoaderTest {
             ClassLoader loader =
                     mDexLoader.load(
                             mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME, mLocalDexDir);
+
+            // FileObserver delivers events on its own thread, after load() returns. Wait for the
+            // events before stopWatching(), or they can be lost. inotify keeps the event order:
+            // the rename (MOVED_TO) comes before the read (ACCESS) of the class load. So after
+            // the ACCESS event, no event of this block can reach the monitor of the next block.
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> localDexDirMonitor.mModifiedPaths.contains(DEX_ASSET_NAME),
+                    "No create, modify, or move event for " + DEX_ASSET_NAME);
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> localDexDirMonitor.mReadPaths.contains(DEX_ASSET_NAME),
+                    "No read event for " + DEX_ASSET_NAME);
             localDexDirMonitor.stopWatching();
 
             Assert.assertNotNull(loader);
             Assert.assertTrue(canLoadCanaryClass(loader));
-
-            Assert.assertTrue(localDexDirMonitor.mReadPaths.contains(DEX_ASSET_NAME));
-            Assert.assertTrue(localDexDirMonitor.mModifiedPaths.contains(DEX_ASSET_NAME));
         }
         {
             // Load dex a second time. We should use the already extracted dex file.
@@ -192,6 +213,83 @@ public class DexLoaderTest {
         // should have been deleted.
         Assert.assertTrue(new File(mLocalDexDir, DEX_ASSET_NAME2).exists());
         Assert.assertFalse(canaryDexFile1.exists());
+    }
+
+    /**
+     * Test that {@link DexLoader#load()} extracts the dex file as a read-only file. Android 14+
+     * refuses to load a dex file which the app can write to.
+     */
+    @Test
+    @MediumTest
+    public void testExtractedDexIsReadOnly() {
+        ClassLoader loader =
+                mDexLoader.load(mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME, mLocalDexDir);
+        Assert.assertNotNull(loader);
+        Assert.assertTrue(canLoadCanaryClass(loader));
+
+        File localDexFile = new File(mLocalDexDir, DEX_ASSET_NAME);
+        Assert.assertTrue(localDexFile.exists());
+        Assert.assertFalse(localDexFile.canWrite());
+
+        // The temporary file which was used for the extraction should be gone.
+        File[] localDexDirFiles = mLocalDexDir.listFiles();
+        Assert.assertNotNull(localDexDirFiles);
+        for (File f : localDexDirFiles) {
+            Assert.assertFalse(f.getName(), f.getName().endsWith(".tmp"));
+        }
+    }
+
+    /**
+     * Test that {@link DexLoader#load()} makes a writable dex file from a previous WebAPK shell
+     * version read-only in place, and that the dex file loads. The pre-existing file has the
+     * content of canary2.dex, which is different from the asset with the same name. So the test
+     * fails if load() extracts the asset again instead of reusing the file.
+     */
+    @Test
+    @MediumTest
+    public void testPreExistingWritableDexIsMadeReadOnlyAndLoads() throws IOException {
+        Assert.assertTrue(mLocalDexDir.mkdir());
+
+        // Extract the dex file the way that older WebAPK shells did: without making it
+        // read-only. Use the content of canary2.dex to show if load() reuses this file.
+        File localDexFile = new File(mLocalDexDir, DEX_ASSET_NAME);
+        copyAssetToFile(mRemoteContext, DEX_ASSET_NAME2, localDexFile);
+        Assert.assertTrue(localDexFile.canWrite());
+
+        ClassLoader loader =
+                mDexLoader.load(mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME2, mLocalDexDir);
+        Assert.assertNotNull(loader);
+        Assert.assertTrue(canLoadClass(loader, CANARY_CLASS_NAME2));
+        Assert.assertFalse(localDexFile.canWrite());
+    }
+
+    /**
+     * Test that {@link DexLoader#load()} replaces an empty read-only dex file. The rename needs
+     * write permission on the directory, not on the replaced file.
+     */
+    @Test
+    @MediumTest
+    public void testEmptyReadOnlyDexIsReplaced() throws IOException {
+        Assert.assertTrue(mLocalDexDir.mkdir());
+        File localDexFile = new File(mLocalDexDir, DEX_ASSET_NAME);
+        Assert.assertTrue(localDexFile.createNewFile());
+        Assert.assertTrue(localDexFile.setReadOnly());
+
+        ClassLoader loader =
+                mDexLoader.load(mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME, mLocalDexDir);
+        Assert.assertNotNull(loader);
+        Assert.assertTrue(canLoadCanaryClass(loader));
+        Assert.assertTrue(localDexFile.length() > 0);
+        Assert.assertFalse(localDexFile.canWrite());
+    }
+
+    /** Copies an asset from {@code context}'s APK to a writable file. */
+    private static void copyAssetToFile(Context context, String assetName, File destFile)
+            throws IOException {
+        try (InputStream inputStream = context.getAssets().open(assetName);
+                OutputStream outputStream = new FileOutputStream(destFile)) {
+            FileUtils.copyStream(inputStream, outputStream);
+        }
     }
 
     /**

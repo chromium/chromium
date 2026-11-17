@@ -58,15 +58,25 @@ public class DexLoader {
     public @Nullable ClassLoader load(
             Context remoteContext, String dexName, String canaryClassName, File localDexDir) {
         File localDexFile = new File(localDexDir, dexName);
+        boolean needsExtraction = !localDexFile.exists() || localDexFile.length() == 0;
+
+        // Android 14+ refuses to load a .dex file which the app can write to. WebAPK shells
+        // older than version 196 extracted writable .dex files, and these files survive WebAPK
+        // updates. Make such a file read-only. If that fails, extract the file again.
+        if (!needsExtraction && localDexFile.canWrite() && !localDexFile.setReadOnly()) {
+            Log.w(TAG, "Could not make " + localDexFile.getPath() + " read-only");
+            deletePath(localDexFile);
+            needsExtraction = true;
+        }
 
         // Extract the .dex file from the remote context's APK. Create a ClassLoader from the
         // extracted file.
-        if (!localDexFile.exists() || localDexFile.length() == 0) {
+        if (needsExtraction) {
             if (!localDexDir.exists() && !localDexDir.mkdirs()) {
                 return null;
             }
 
-            if (!extractAsset(remoteContext, dexName, localDexFile)) {
+            if (!extractAsset(remoteContext, dexName, localDexDir, localDexFile)) {
                 Log.w(TAG, "Could not extract dex from assets");
                 return null;
             }
@@ -90,41 +100,54 @@ public class DexLoader {
     }
 
     /**
-     * Extracts an asset from {@link context}'s APK to a file.
+     * Extracts an asset from {@link context}'s APK to a read-only file.
+     *
+     * <p>Writes the asset to a temporary file in {@code destDir}, makes the temporary file
+     * read-only, and then renames it to {@code destFile}. Android 14+ refuses to load a .dex file
+     * which the app can write to. The rename replaces {@code destFile} if it exists, even if it is
+     * read-only, because rename(2) checks the write permission of the directory, not of the file.
      *
      * @param assetName Name of the asset to extract.
+     * @param destDir Directory which contains {@code destFile}. The temporary file is created in
+     *     this directory, so that the rename stays on one file system.
      * @param destFile File to extract the asset to.
      * @return true on success.
      */
-    private static boolean extractAsset(Context context, String assetName, File destFile) {
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
+    private static boolean extractAsset(
+            Context context, String assetName, File destDir, File destFile) {
+        File tempFile;
         try {
-            inputStream = context.getAssets().open(assetName);
-            outputStream = new FileOutputStream(destFile);
+            tempFile = File.createTempFile(destFile.getName(), ".tmp", destDir);
+        } catch (IOException e) {
+            Log.w(TAG, "Could not create temporary file in " + destDir.getPath(), e);
+            return false;
+        }
+
+        try (InputStream inputStream = context.getAssets().open(assetName);
+                OutputStream outputStream = new FileOutputStream(tempFile)) {
             byte[] buffer = new byte[BUFFER_SIZE];
-            int count = 0;
+            int count;
             while ((count = inputStream.read(buffer, 0, BUFFER_SIZE)) != -1) {
                 outputStream.write(buffer, 0, count);
             }
-            inputStream.close();
-            outputStream.close();
-            return true;
         } catch (IOException e) {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException ex) {
-                }
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException ex) {
-                }
-            }
+            Log.w(TAG, "Could not write " + tempFile.getPath(), e);
+            deletePath(tempFile);
+            return false;
         }
-        return false;
+
+        if (!tempFile.setReadOnly()) {
+            Log.w(TAG, "Could not make " + tempFile.getPath() + " read-only");
+            deletePath(tempFile);
+            return false;
+        }
+
+        if (!tempFile.renameTo(destFile)) {
+            Log.w(TAG, "Could not rename " + tempFile.getPath() + " to " + destFile.getPath());
+            deletePath(tempFile);
+            return false;
+        }
+        return true;
     }
 
     /**

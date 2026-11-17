@@ -21,6 +21,14 @@ android_library("compiled_in_runtime_library_java") {
   sources = [ "src/org/chromium/webapk/lib/runtime_library/IWebApkApi.java" ]
 }
 
+# DexLoader has no Android resources. It is in its own target so that
+# :dex_loader_javatests can go into chrome_public_test_apk without the WebAPK
+# shell resources, which clash with Chrome's resources (mipmap-hdpi/app_icon).
+android_library("dex_loader_java") {
+  sources = [ "src/org/chromium/webapk/shell_apk/DexLoader.java" ]
+  errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
+}
+
 mustache_pass("generate_chromeos_manifest_for_upload") {
   inputs = [ "AndroidManifest.xml" ]
   output_dir =
@@ -52,7 +60,6 @@ template("webapk_java") {
                            ])
 
     sources = [
-      "src/org/chromium/webapk/shell_apk/DexLoader.java",
       "src/org/chromium/webapk/shell_apk/HostBrowserClassLoader.java",
       "src/org/chromium/webapk/shell_apk/HostBrowserLauncher.java",
       "src/org/chromium/webapk/shell_apk/HostBrowserLauncherParams.java",
@@ -83,6 +90,10 @@ template("webapk_java") {
       "//components/webapk/android/libs/common:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
+
+    # Users of this target (for example HostBrowserClassLoaderTest) refer to
+    # DexLoader directly.
+    public_deps = [ ":dex_loader_java" ]
     errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]
   }
 }
@@ -341,12 +352,24 @@ webapk_tmpl("h2o_j_unit_webapk") {
   manifest_target_name = h2o_junit_manifest_target_name
 }
 
+android_library("dex_loader_javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/webapk/shell_apk/DexLoaderTest.java" ]
+  deps = [
+    ":dex_loader_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}
+
 android_library("shell_apk_javatests") {
   testonly = true
-  sources = [
-    "javatests/src/org/chromium/webapk/shell_apk/DexLoaderTest.java",
-    "javatests/src/org/chromium/webapk/shell_apk/h2o/SplashUtilsTest.java",
-  ]
+  sources =
+      [ "javatests/src/org/chromium/webapk/shell_apk/h2o/SplashUtilsTest.java" ]
   deps = [
     ":webapk_generated_webapk_java",
     "//base:base_java",
