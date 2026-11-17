@@ -11,7 +11,6 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -134,18 +133,9 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
   if (site_engagement::SiteEngagementService::IsEnabled()) {
-    if (Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-            ->IsTopChromeWebUIProfile()) {
-      // TopChromeWebUIProfile has no SiteEngagementService. The engagement
-      // score is only used to pick a Top Chrome WebUI to preload, so a
-      // preloadable WebUI in TopChromeWebUIProfile would need to record it in
-      // its user profile instead.
-      CHECK(!TopChromeWebUIConfig::From(profile, webui_url)->IsPreloadable());
-    } else {
-      site_engagement_helper_ =
-          std::make_unique<site_engagement::SiteEngagementService::Helper>(
-              web_contents_.get());
-    }
+    site_engagement_helper_ =
+        std::make_unique<site_engagement::SiteEngagementService::Helper>(
+            web_contents_.get());
   }
 
   if (webui_resizes_host_) {

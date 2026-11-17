@@ -166,10 +166,11 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // and handling the "ready-to-show" event emitted by the WebContents.
   void SetPreloadedContents(std::unique_ptr<content::WebContents> web_contents);
 
+  // Creates the WebContents for a window of `browser_context` in the profile
+  // that webui::GetProfileForTopChromeWebUIContents() returns.
   std::unique_ptr<content::WebContents> CreateNewContents(
       content::BrowserContext* browser_context,
-      GURL url,
-      Profile* user_profile = nullptr);
+      GURL url);
 
   void LoadURLForContents(content::WebContents* web_contents, GURL url);
 

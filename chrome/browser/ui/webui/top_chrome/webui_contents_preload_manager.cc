@@ -413,7 +413,7 @@ void WebUIContentsPreloadManager::MaybePreloadForBrowserContext(
 
   // Don't preload if already preloaded for this `browser_context`.
   if (preloaded_web_contents_ &&
-      preloaded_web_contents_->GetBrowserContext() == browser_context &&
+      webui::GetUserProfile(preloaded_web_contents_.get()) == browser_context &&
       preloaded_web_contents_->GetVisibleURL().GetWithEmptyPath() ==
           preload_url->GetWithEmptyPath()) {
     return;
@@ -456,8 +456,8 @@ void WebUIContentsPreloadManager::SetPreloadedContents(
   preloaded_web_contents_ = std::move(web_contents);
   if (preloaded_web_contents_) {
     webui_controller_embedder_stub_->AttachTo(preloaded_web_contents_.get());
-    profile_observation_.Observe(Profile::FromBrowserContext(
-        preloaded_web_contents_->GetBrowserContext()));
+    profile_observation_.Observe(
+        webui::GetUserProfile(preloaded_web_contents_.get()));
     auto* preload_state = WebUIContentsPreloadState::FromWebContents(
         preloaded_web_contents_.get());
     preload_state->preloaded = true;
@@ -478,11 +478,13 @@ RequestResult WebUIContentsPreloadManager::Request(
                                           : WebUIPreloadResult::kNoPreload;
 
   // Use preloaded contents if requested the same WebUI under the same browser
-  // context. Navigating to or from a blank page is also allowed.
+  // context for the same user profile. Navigating to or from a blank page is
+  // also allowed.
   // TODO(325836830): allow navigations between WebUIs.
   if (preloaded_web_contents_ &&
       preloaded_web_contents_->GetBrowserContext() ==
           contents_browser_context &&
+      webui::GetUserProfile(preloaded_web_contents_.get()) == browser_context &&
       (preloaded_web_contents_->GetURL().host() == webui_url.host() ||
        preloaded_web_contents_->GetURL().IsAboutBlank() ||
        webui_url.IsAboutBlank())) {
@@ -495,8 +497,7 @@ RequestResult WebUIContentsPreloadManager::Request(
     web_contents_ret = std::move(preloaded_web_contents_);
     SetPreloadedContents(nullptr);
   } else {
-    web_contents_ret =
-        CreateNewContents(contents_browser_context, webui_url, user_profile);
+    web_contents_ret = CreateNewContents(browser_context, webui_url);
   }
 
   // Navigate to path if the request URL has a different path.
@@ -579,17 +580,18 @@ void WebUIContentsPreloadManager::ReenableNavigationForTesting() {
 std::unique_ptr<content::WebContents>
 WebUIContentsPreloadManager::CreateNewContents(
     content::BrowserContext* browser_context,
-    GURL url,
-    Profile* user_profile) {
+    GURL url) {
+  Profile* user_profile = Profile::FromBrowserContext(browser_context);
+  Profile& contents_profile =
+      webui::GetProfileForTopChromeWebUIContents(user_profile, url);
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
-          GetWebContentsCreateParams(url, browser_context));
+          GetWebContentsCreateParams(url, &contents_profile));
 
   // In TopChromeWebUIProfile, which is shared by the windows of all profiles,
   // set the user profile first, since the helpers below and the WebUI
   // controller created by the navigation use it.
-  if (Profile::FromBrowserContext(browser_context)->IsTopChromeWebUIProfile()) {
-    CHECK(user_profile);
+  if (contents_profile.IsTopChromeWebUIProfile()) {
     webui::SetUserProfile(web_contents.get(), user_profile);
   }
 
@@ -675,7 +677,7 @@ void WebUIContentsPreloadManager::OnProfileWillBeDestroyed(Profile* profile) {
   }
 
   webui_controller_embedder_stub_->Detach();
-  CHECK_EQ(preloaded_web_contents_->GetBrowserContext(), profile);
+  CHECK_EQ(webui::GetUserProfile(preloaded_web_contents_.get()), profile);
   preloaded_web_contents_.reset();
 }
 
@@ -685,10 +687,10 @@ void WebUIContentsPreloadManager::OnWebContentsDestroyed(
   // preloaded content would only be the second highest engaged WebUI for
   // the most time.
   if (IsDelayPreloadEnabled()) {
-    MaybePreloadForBrowserContextLater(web_contents->GetBrowserContext(),
+    MaybePreloadForBrowserContextLater(webui::GetUserProfile(web_contents),
                                        nullptr, PreloadReason::kWebUIDestroyed);
   } else {
-    MaybePreloadForBrowserContext(web_contents->GetBrowserContext(),
+    MaybePreloadForBrowserContext(webui::GetUserProfile(web_contents),
                                   PreloadReason::kWebUIDestroyed);
   }
 }
@@ -712,7 +714,7 @@ void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(
                               .possibly_invalid_spec());
 
     const bool should_auto_reisze_host =
-        TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
+        TopChromeWebUIConfig::From(webui::GetUserProfile(web_contents),
                                    web_contents->GetVisibleURL())
             ->ShouldAutoResizeHost();
     if (render_widget_host_view && should_auto_reisze_host) {

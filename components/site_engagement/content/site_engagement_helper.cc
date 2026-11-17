@@ -16,6 +16,7 @@
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 
 namespace site_engagement {
@@ -206,7 +207,11 @@ SiteEngagementService::Helper::Helper(
     : content::WebContentsObserver(web_contents),
       input_tracker_(this, web_contents),
       media_tracker_(this, web_contents),
-      service_(SiteEngagementService::Get(web_contents->GetBrowserContext())),
+      // The user BrowserContext, e.g. the user profile of a Chrome UI
+      // WebContents in a BrowserContext shared by the windows of all
+      // profiles, which has no SiteEngagementService.
+      service_(SiteEngagementService::Get(
+          content::GetUserBrowserContext(*web_contents))),
       prefetch_manager_(prefetch_manager) {}
 
 void SiteEngagementService::Helper::RecordUserInput(EngagementType type) {

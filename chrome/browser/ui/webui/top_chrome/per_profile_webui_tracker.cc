@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -122,7 +123,7 @@ bool PerProfileWebUITrackerImpl::ProfileHasBackgroundWebUI(
     const std::string& webui_url) const {
   url::Origin webui_origin = url::Origin::Create(GURL(webui_url));
   for (const auto& [web_contents, _] : web_contents_observers_) {
-    if (web_contents->GetBrowserContext() != profile ||
+    if (webui::GetUserProfile(web_contents) != profile ||
         web_contents->GetVisibleURL().host() != webui_origin.host()) {
       continue;
     }
@@ -161,7 +162,9 @@ void PerProfileWebUITrackerImpl::OnWebContentsOriginChanged(
     content::WebContents* web_contents,
     url::Origin old_origin,
     url::Origin new_origin) {
-  content::BrowserContext* profile = web_contents->GetBrowserContext();
+  // A tracked WebContents is destroyed before its user profile.
+  Profile* profile = webui::GetUserProfile(web_contents);
+  CHECK(profile);
   // Opaque origins are about:blank, we don't track them.
   if (!old_origin.opaque()) {
     auto it = profile_origin_set_.find({profile, old_origin});
