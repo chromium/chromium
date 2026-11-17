@@ -129,7 +129,10 @@ class CORE_EXPORT GridRangeBuilder {
         : grid_line(grid_line),
           grid_item_range_index_to_cache(grid_item_range_index_to_cache) {}
     wtf_size_t grid_line;
-    raw_ptr<wtf_size_t, UnprotectedInRelease | DanglingUntriaged>
+    // UnprotectedInReleaseForPerformance: Based on analysis of
+    // blink_perf.layout fixed-grid-lots-of-data. Two of these are created
+    // per grid item and FinalizeRanges() sorts them.
+    raw_ptr<wtf_size_t, UnprotectedInReleaseForPerformance | DanglingUntriaged>
         grid_item_range_index_to_cache;
   };
 
