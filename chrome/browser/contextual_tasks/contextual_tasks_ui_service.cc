@@ -3682,19 +3682,71 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   CHECK(!url.is_empty());
   CHECK(contextual_tasks_service_);
 
-  // Abort if the tab is no longer active to prevent opening the panel on the
-  // wrong tab.
-  if (!tab_interface || !tab_interface->IsActivated()) {
+  if (!tab_interface) {
     return;
   }
 
   // Get the controller for the current window.
   auto* controller =
       ContextualTasksPanelController::From(browser_window_interface);
-  auto* panel_contents = controller->GetActiveWebContents();
+  if (!controller) {
+    return;
+  }
+
+  // Resolve which side panel `WebContents` should receive `url`. A null result
+  // means a new task is created below.
+  content::WebContents* panel_contents = nullptr;
+  if (tab_interface->IsActivated()) {
+    // Foreground tab: reuse the side panel only if it is currently open for a
+    // contextual task.
+    if (controller->IsPanelOpenForContextualTask()) {
+      panel_contents = controller->GetActiveWebContents();
+    }
+  } else {
+    // Background tab: never open the side panel on the currently active tab.
+    // Only continue loading into the background tab's existing cached side
+    // panel `WebContents` when that task is waiting for its initial URL.
+
+    // Look up the task associated with the background tab.
+    if (!tab_interface->GetContents()) {
+      return;
+    }
+    SessionID tab_id =
+        sessions::SessionTabHelper::IdForTab(tab_interface->GetContents());
+    std::optional<ContextualTask> existing_task =
+        tab_id.is_valid()
+            ? contextual_tasks_service_->GetContextualTaskForTab(tab_id)
+            : std::nullopt;
+    if (!existing_task) {
+      return;
+    }
+
+    // Only pending ghost-loader tasks load in the background. This leaves any
+    // side panel the user previously closed untouched.
+    const base::Uuid& task_id = existing_task->GetTaskId();
+    if (!IsTaskWaitingForUrl(task_id)) {
+      return;
+    }
+
+    // Find the cached side panel `WebContents` that hosts this task.
+    for (content::WebContents* wc : controller->GetPanelWebContentsList()) {
+      if (!wc) {
+        continue;
+      }
+      auto* wc_helper = ContextualSearchWebContentsHelper::FromWebContents(wc);
+      if ((wc_helper && wc_helper->task_id() == task_id) ||
+          GetTaskIdFromUrl(wc->GetVisibleURL()) == task_id) {
+        panel_contents = wc;
+        break;
+      }
+    }
+    if (!panel_contents) {
+      return;
+    }
+  }
 
   // Create a task for the URL if the side panel wasn't already showing a task.
-  if (!panel_contents || !controller->IsPanelOpenForContextualTask()) {
+  if (!panel_contents) {
     base::Uuid task_id;
     if (options.use_mstk_for_task_association) {
       std::string mstk;

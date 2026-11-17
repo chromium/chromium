@@ -5881,6 +5881,164 @@ TEST_F(ContextualTasksUiServiceTest,
             std::nullopt);
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       StartTaskUiInSidePanel_LoadsInBackgroundWhenTabInactive) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture}, {});
+
+  auto tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab_contents.get());
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(tab_contents.get()));
+  ON_CALL(tab, IsActivated).WillByDefault(Return(true));
+
+  NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetProfile())
+      .WillByDefault(Return(profile_.get()));
+  ON_CALL(testing::Const(mock_browser_window), GetProfile())
+      .WillByDefault(Return(profile_.get()));
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(unowned_user_data_host));
+
+  NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window);
+  ON_CALL(mock_panel_controller, Show).WillByDefault([&] {
+    ON_CALL(mock_panel_controller, GetActiveWebContents)
+        .WillByDefault(Return(panel_contents.get()));
+    ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask)
+        .WillByDefault(Return(true));
+    ON_CALL(mock_panel_controller, GetPanelWebContentsList)
+        .WillByDefault(
+            Return(std::vector<content::WebContents*>{panel_contents.get()}));
+  });
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*contextual_tasks_service_, CreateTask).WillByDefault(Return(task));
+  ON_CALL(*contextual_tasks_service_, GetContextualTaskForTab(tab_id))
+      .WillByDefault(Return(task));
+
+  real_service_->InitSidePanelWithGhostLoader(
+      &mock_browser_window, &tab,
+      std::make_unique<
+          NiceMock<contextual_search::MockContextualSearchSessionHandle>>());
+  EXPECT_TRUE(real_service_->IsTaskWaitingForUrl(task.GetTaskId()));
+
+  // Simulate switching away to another tab without a side panel before the
+  // search URL finishes building.
+  ON_CALL(tab, IsActivated).WillByDefault(Return(false));
+  ON_CALL(mock_panel_controller, GetActiveWebContents)
+      .WillByDefault(Return(nullptr));
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(mock_panel_controller, Show).Times(0);
+
+  GURL lens_url("https://www.google.com/search?vsrid=123&lns_mode=un");
+  real_service_->StartTaskUiInSidePanel(&mock_browser_window, &tab, lens_url,
+                                        /*session_handle=*/nullptr);
+
+  EXPECT_FALSE(real_service_->IsTaskWaitingForUrl(task.GetTaskId()));
+  ASSERT_NE(panel_contents->GetController().GetPendingEntry(), nullptr);
+  const GURL pending_url =
+      panel_contents->GetController().GetPendingEntry()->GetURL();
+  std::string vsrid;
+  std::string gsc;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(pending_url, "vsrid", &vsrid));
+  EXPECT_EQ(vsrid, "123");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(pending_url, "gsc", &gsc));
+  EXPECT_EQ(gsc, "2");
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       StartTaskUiInSidePanel_AbortsWhenInactiveTabNotWaitingOrUncached) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture}, {});
+
+  auto tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto closed_panel_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto foreground_panel_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab_contents.get());
+
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(tab_contents.get()));
+  ON_CALL(tab, IsActivated).WillByDefault(Return(false));
+
+  NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetProfile())
+      .WillByDefault(Return(profile_.get()));
+  ON_CALL(testing::Const(mock_browser_window), GetProfile())
+      .WillByDefault(Return(profile_.get()));
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(unowned_user_data_host));
+
+  ContextualTask foreground_task(base::Uuid::GenerateRandomV4());
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      foreground_panel_contents.get())
+      ->SetTaskSession(foreground_task.GetTaskId(), nullptr, nullptr);
+
+  ContextualTask closed_preserved_task(base::Uuid::GenerateRandomV4());
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      closed_panel_contents.get())
+      ->SetTaskSession(closed_preserved_task.GetTaskId(), nullptr, nullptr);
+
+  NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      &mock_browser_window);
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_panel_controller, GetActiveWebContents)
+      .WillByDefault(Return(foreground_panel_contents.get()));
+  ON_CALL(mock_panel_controller, GetPanelWebContentsList)
+      .WillByDefault(Return(std::vector<content::WebContents*>{
+          foreground_panel_contents.get(), closed_panel_contents.get()}));
+
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(mock_panel_controller, Show).Times(0);
+
+  GURL lens_url("https://www.google.com/search?vsrid=456&lns_mode=un");
+
+  // Case 1: Inactive tab has no associated task.
+  ON_CALL(*contextual_tasks_service_, GetContextualTaskForTab(tab_id))
+      .WillByDefault(Return(std::nullopt));
+  real_service_->StartTaskUiInSidePanel(&mock_browser_window, &tab, lens_url,
+                                        /*session_handle=*/nullptr);
+  EXPECT_EQ(foreground_panel_contents->GetController().GetPendingEntry(),
+            nullptr);
+  EXPECT_EQ(closed_panel_contents->GetController().GetPendingEntry(), nullptr);
+
+  // Case 2: Inactive tab has a closed preserved task (not waiting for URL).
+  ON_CALL(*contextual_tasks_service_, GetContextualTaskForTab(tab_id))
+      .WillByDefault(Return(closed_preserved_task));
+  real_service_->StartTaskUiInSidePanel(&mock_browser_window, &tab, lens_url,
+                                        /*session_handle=*/nullptr);
+  EXPECT_EQ(foreground_panel_contents->GetController().GetPendingEntry(),
+            nullptr);
+  EXPECT_EQ(closed_panel_contents->GetController().GetPendingEntry(), nullptr);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextualTasksUiServiceTest, SidePanelUrlChangesSyncStaleCsParam) {
   ThemeService* theme_service =

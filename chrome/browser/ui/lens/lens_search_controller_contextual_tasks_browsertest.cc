@@ -4,6 +4,7 @@
 
 #include <map>
 
+#include "base/auto_reset.h"
 #include "base/base64url.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
@@ -77,6 +79,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/url_util.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
@@ -85,6 +88,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 
@@ -1815,4 +1819,170 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerAskGoogleNoAimPopupTest,
   ASSERT_TRUE(omnibox_controller);
   EXPECT_NE(omnibox_controller->popup_state_manager()->popup_state(),
             OmniboxPopupState::kAim);
+}
+
+class LensSearchControllerBackgroundRegionQueryTest
+    : public LensSearchControllerStartZeroStateSessionTest {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}},
+         {contextual_tasks::kContextualTasksUpdatedEntryPoints, {}},
+         {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
+         {lens::features::kLensSidePanelUnification,
+          {{"allow-signed-out", "true"}}},
+         {lens::features::kLensOverlay,
+          {{"endpoint-url",
+            embedded_test_server()->GetURL("/v1/crupload").spec()}}},
+         {lens::features::kLensOverlayContextualSearchbox,
+          {{"cluster-info-endpoint-url",
+            embedded_test_server()->GetURL("/v1/clusterinfo").spec()}}},
+         {lens::features::kLensComposeboxIdentityDelegation,
+          {{"lens-composebox-cluster-info-endpoint-url",
+            embedded_test_server()->GetURL("/v1/clusterinfo").spec()},
+           {"lens-composebox-endpoint-url",
+            embedded_test_server()->GetURL("/v1/crupload").spec()}}}},
+        /*disabled_features=*/{});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    LensSearchControllerStartZeroStateSessionTest::SetUpOnMainThread();
+    SidePanelUI::From(browser())->DisableAnimationsForTesting();
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        lens::prefs::kLensSharingPageScreenshotEnabled, true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        lens::prefs::kLensSharingPageContentEnabled, true);
+    browser()->GetProfile()->GetPrefs()->SetInteger(
+        contextual_search::kSearchContentSharingSettings,
+        static_cast<int>(
+            contextual_search::SearchContentSharingSettingsValue::kEnabled));
+    search_test_utils::WaitForTemplateURLServiceToLoad(
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile()));
+    cluster_info_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), "/v1/clusterinfo",
+            /*relative_url_is_prefix=*/true);
+    upload_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            embedded_test_server(), "/v1/crupload",
+            /*relative_url_is_prefix=*/true);
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void SendClusterInfoAndUploadResponses() {
+    cluster_info_response_->WaitForRequest();
+    lens::LensOverlayServerClusterInfoResponse cluster_info;
+    cluster_info.set_search_session_id("search_session_id");
+    cluster_info.set_server_session_id("server_session_id");
+    std::string cluster_info_bytes;
+    cluster_info.SerializeToString(&cluster_info_bytes);
+    cluster_info_response_->Send(net::HTTP_OK, "application/x-protobuf",
+                                 cluster_info_bytes);
+    cluster_info_response_->Done();
+
+    upload_response_->WaitForRequest();
+    lens::LensOverlayServerResponse upload_response;
+    std::string upload_bytes;
+    upload_response.SerializeToString(&upload_bytes);
+    upload_response_->Send(net::HTTP_OK, "application/x-protobuf",
+                           upload_bytes);
+    upload_response_->Done();
+  }
+
+ private:
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      cluster_info_response_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse> upload_response_;
+  base::test::ScopedFeatureList feature_list_;
+  base::AutoReset<bool> ignore_non_official_api_keys_{
+      ComposeboxQueryController::SetIgnoreNonOfficialApiKeysForTesting()};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    LensSearchControllerBackgroundRegionQueryTest,
+    SwitchingTabsWhileWaitingForRegionResultsLoadsInBackground) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  lens::WaitForPaint(browser(), url);
+
+  tabs::TabInterface* original_tab = browser()->GetActiveTabInterface();
+  auto* controller = LensSearchController::From(original_tab);
+  ASSERT_TRUE(controller);
+
+  controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+  auto* overlay_controller = controller->lens_overlay_controller();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() ==
+           LensOverlayController::State::kOverlay;
+  }));
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  overlay_controller->IssueLensRegionRequestForTesting(std::move(region),
+                                                       /*is_click=*/false);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsContextualTasksSidePanelOpen(); }));
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  content::WebContents* panel_contents =
+      panel_controller->GetActiveWebContents();
+  ASSERT_TRUE(panel_contents);
+  EXPECT_EQ(panel_contents->GetVisibleURL(), GURL(url::kAboutBlankURL));
+
+  auto* ui_service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_TRUE(ui_service);
+  std::optional<contextual_tasks::ContextualTask> task =
+      panel_controller->GetCurrentTask();
+  ASSERT_TRUE(task.has_value());
+  const base::Uuid task_id = task->GetTaskId();
+  EXPECT_TRUE(ui_service->IsTaskWaitingForUrl(task_id));
+
+  // Switch to a new tab while the region search URL is still waiting on
+  // cluster info and image upload.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+
+  EXPECT_FALSE(controller->IsOff());
+  EXPECT_FALSE(IsContextualTasksSidePanelOpen());
+  EXPECT_TRUE(ui_service->IsTaskWaitingForUrl(task_id));
+
+  // Complete the background upload and search URL generation while the user
+  // remains on the new tab.
+  SendClusterInfoAndUploadResponses();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !ui_service->IsTaskWaitingForUrl(task_id) &&
+           panel_contents->GetVisibleURL().SchemeIsHTTPOrHTTPS();
+  }));
+  // The side panel stays hidden on the unrelated foreground tab.
+  EXPECT_FALSE(IsContextualTasksSidePanelOpen());
+
+  // Switching back to the original tab reveals both the Lens overlay and the
+  // side panel with the search results URL loaded.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 0);
+
+  EXPECT_TRUE(IsContextualTasksSidePanelOpen());
+  EXPECT_EQ(panel_controller->GetActiveWebContents(), panel_contents);
+  EXPECT_TRUE(panel_contents->GetVisibleURL().SchemeIsHTTPOrHTTPS());
+  std::string gsessionid;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(panel_contents->GetVisibleURL(),
+                                         "gsessionid", &gsessionid));
+  EXPECT_EQ(gsessionid, "search_session_id");
+  EXPECT_FALSE(ui_service->IsTaskWaitingForUrl(task_id));
+  EXPECT_FALSE(controller->IsOff());
+  EXPECT_TRUE(overlay_controller->IsOverlayShowing());
 }

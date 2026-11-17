@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
@@ -49,6 +50,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -4538,6 +4540,92 @@ TEST_F(
 
   router.SetSidePanelSessionHandle(nullptr);
   user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+}
+
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    GetSuggestInputs_ResolvesBackgroundTabSessionAndIgnoresClosedActivePanel) {
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents_.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents_.get());
+
+  testing::NiceMock<contextual_tasks::MockContextualTasksService>*
+      mock_tasks_service = nullptr;
+  contextual_tasks::ContextualTasksServiceFactory::GetInstance()
+      ->SetTestingFactory(
+          profile_.get(),
+          base::BindRepeating(
+              [](testing::NiceMock<
+                     contextual_tasks::MockContextualTasksService>** out_ptr,
+                 content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                auto service = std::make_unique<testing::NiceMock<
+                    contextual_tasks::MockContextualTasksService>>();
+                *out_ptr = service.get();
+                return service;
+              },
+              &mock_tasks_service));
+  ASSERT_NE(contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+                profile_.get()),
+            nullptr);
+  ASSERT_NE(mock_tasks_service, nullptr);
+
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  contextual_tasks::ContextualTask bg_task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_tasks_service, GetContextualTaskForTab(tab_id))
+      .WillByDefault(Return(bg_task));
+
+  std::unique_ptr<content::WebContents> bg_panel_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto bg_session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  lens::proto::LensOverlaySuggestInputs bg_inputs;
+  bg_inputs.set_search_session_id("bg_session_id");
+  ON_CALL(*bg_session_handle, GetSuggestInputs())
+      .WillByDefault(Return(bg_inputs));
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      bg_panel_contents.get())
+      ->SetTaskSession(bg_task.GetTaskId(), std::move(bg_session_handle),
+                       nullptr);
+
+  auto fg_session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  lens::proto::LensOverlaySuggestInputs fg_inputs;
+  fg_inputs.set_search_session_id("fg_session_id");
+  ON_CALL(*fg_session_handle, GetSuggestInputs())
+      .WillByDefault(Return(fg_inputs));
+
+  testing::NiceMock<contextual_tasks::MockContextualTasksPanelController>
+      mock_panel_controller(mock_browser_window_interface_.get());
+  ON_CALL(mock_panel_controller, GetPanelWebContentsList())
+      .WillByDefault(Return(std::vector<content::WebContents*>{
+          nullptr, bg_panel_contents.get()}));
+  ON_CALL(mock_panel_controller, GetContextualSearchSessionHandleForPanel())
+      .WillByDefault(Return(fg_session_handle.get()));
+
+  // When the tab is active and its side panel is closed, a preserved cached
+  // panel `WebContents` must not be reused.
+  ON_CALL(mock_tab_interface_, IsActivated()).WillByDefault(Return(true));
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  EXPECT_EQ(router.GetSuggestInputs(), std::nullopt);
+
+  // When the tab is in the background while another tab's side panel is open in
+  // the foreground, the router resolves the background tab's own cached session
+  // handle.
+  ON_CALL(mock_tab_interface_, IsActivated()).WillByDefault(Return(false));
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  std::optional<lens::proto::LensOverlaySuggestInputs> resolved_inputs =
+      router.GetSuggestInputs();
+  ASSERT_TRUE(resolved_inputs.has_value());
+  EXPECT_EQ(resolved_inputs->search_session_id(), "bg_session_id");
 }
 
 }  // namespace lens

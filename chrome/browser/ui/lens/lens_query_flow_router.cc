@@ -11,6 +11,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_metrics.h"
@@ -44,6 +47,8 @@
 #include "components/omnibox/common/logger.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "net/base/url_util.h"
@@ -1273,11 +1278,48 @@ LensQueryFlowRouter::GetContextualSearchSessionHandle() const {
 
   auto* controller = contextual_tasks::ContextualTasksPanelController::From(
       browser_window_interface());
-  if (!controller || !controller->IsPanelOpenForContextualTask()) {
+  if (!controller) {
     return nullptr;
   }
 
-  return controller->GetContextualSearchSessionHandleForPanel();
+  // Foreground tab: only the currently open side panel's session applies. A
+  // closed panel's cached `WebContents` may still hold a preserved session, but
+  // a new Lens query on this tab must start a fresh session, so return null in
+  // that case.
+  if (!tab_interface() || tab_interface()->IsActivated()) {
+    return controller->IsPanelOpenForContextualTask()
+               ? controller->GetContextualSearchSessionHandleForPanel()
+               : nullptr;
+  }
+
+  // Background tab: the open side panel belongs to the foreground tab, so look
+  // up this tab's own task and return the session from its cached side panel
+  // `WebContents`. This keeps in-flight queries bound to the originating tab
+  // while it is in the background.
+  if (auto* tasks_service =
+          contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+              profile());
+      tasks_service && web_contents()) {
+    SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+    if (std::optional<contextual_tasks::ContextualTask> task =
+            tab_id.is_valid() ? tasks_service->GetContextualTaskForTab(tab_id)
+                              : std::nullopt) {
+      // Find the cached side panel `WebContents` that hosts this tab's task.
+      for (content::WebContents* panel_wc :
+           controller->GetPanelWebContentsList()) {
+        if (!panel_wc) {
+          continue;
+        }
+        if (auto* helper =
+                ContextualSearchWebContentsHelper::FromWebContents(panel_wc);
+            helper && helper->task_id() == task->GetTaskId()) {
+          return helper->session_handle();
+        }
+      }
+    }
+  }
+
+  return nullptr;
 }
 
 void LensQueryFlowRouter::SetQueryContextualizerForTesting(
