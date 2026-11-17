@@ -13,8 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
-#include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/platform_browser_test.h"
+#include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -35,25 +34,19 @@
 namespace ttc {
 namespace {
 
-class PointerInputObserverBrowserTest : public PlatformBrowserTest {
+class PointerInputObserverBrowserTest : public TtcCoreBrowserTestBase {
  public:
+  // TtcCoreBrowserTestBase:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    PlatformBrowserTest::SetUpCommandLine(command_line);
+    TtcCoreBrowserTestBase::SetUpCommandLine(command_line);
     // Android phones do not isolate sites by default, and the iframe test
     // needs the cross-site iframe in its own process.
     content::IsolateAllSitesForTesting(command_line);
   }
 
   void SetUpOnMainThread() override {
-    PlatformBrowserTest::SetUpOnMainThread();
+    TtcCoreBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    // AndroidBrowserTest serves chrome/test/data over HTTPS only.
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  content::WebContents* web_contents() {
-    return chrome_test_utils::GetActiveWebContents(this);
   }
 
   // Where the tracker says the user pointed since the test began.

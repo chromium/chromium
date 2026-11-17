@@ -394,6 +394,7 @@ source_set("browser_test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/test/base:chrome_test_utils",
     "//components/keyed_service/core",
+    "//content/public/common",
     "//net:test_support",
     "//testing/gtest",
   ]

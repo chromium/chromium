@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -34,7 +33,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -126,18 +124,6 @@ class PageContextMonitorBrowserTest : public TtcCoreBrowserTestBase {
   ~PageContextMonitorBrowserTest() override = default;
 
   // TtcCoreBrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    TtcCoreBrowserTestBase::SetUpCommandLine(command_line);
-#if BUILDFLAG(IS_ANDROID)
-    // Test devices are often offline. The offline status indicator that appears
-    // a few seconds after startup resizes the top controls, which asserts if
-    // the controls are not fully shown at that moment (e.g. during a tab
-    // switch). See crbug.com/574927722.
-    command_line->AppendSwitch(
-        switches::kForceOnlineConnectionStateForIndicator);
-#endif
-  }
-
   void SetUpOnMainThread() override {
     // Serves /cross-site/<host>/<path>. Must be set up before the base class
     // starts the server.

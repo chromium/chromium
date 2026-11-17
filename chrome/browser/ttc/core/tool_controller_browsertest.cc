@@ -141,18 +141,6 @@ class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
   ~ToolControllerBrowserTest() override = default;
 
   // TtcCoreBrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    TtcCoreBrowserTestBase::SetUpCommandLine(command_line);
-#if BUILDFLAG(IS_ANDROID)
-    // Test devices are often offline. The offline status indicator that appears
-    // a few seconds after startup resizes the top controls, which asserts if
-    // the controls are not fully shown at that moment (e.g. during tab
-    // fullscreen or a tab switch). See crbug.com/574927722.
-    command_line->AppendSwitch(
-        switches::kForceOnlineConnectionStateForIndicator);
-#endif
-  }
-
   void SetUpOnMainThread() override {
     TtcCoreBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");

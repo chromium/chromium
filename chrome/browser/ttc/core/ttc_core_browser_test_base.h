@@ -12,6 +12,10 @@
 
 class Profile;
 
+namespace base {
+class CommandLine;
+}
+
 namespace content {
 class BrowserContext;
 class WebContents;
@@ -34,6 +38,7 @@ class TtcCoreBrowserTestBase : public PlatformBrowserTest {
   ~TtcCoreBrowserTestBase() override;
 
   // PlatformBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override;
   void SetUpOnMainThread() override;

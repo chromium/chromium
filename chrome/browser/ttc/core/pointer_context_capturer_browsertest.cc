@@ -82,13 +82,9 @@ IN_PROC_BROWSER_TEST_P(PointerContextCapturerScaleBrowserTest,
   ASSERT_NEAR(view->GetDeviceScaleFactor(), GetParam(), 0.001f);
 
   // On Android the view can still be resized after the page has loaded, as
-  // the browser's UI settles: e.g. on a device that is offline, an indicator
-  // appears above the page a couple of seconds after startup. The screenshot
-  // of a capture during which that happens has the size that the view had
-  // when the capture began. So capture until the view kept its size
-  // throughout.
-  // TODO(crbug.com/586612559): Keep the offline indicator from showing in all
-  // TTC browser tests.
+  // the browser's UI settles. The screenshot of a capture during which that
+  // happens has the size that the view had when the capture began. So capture
+  // until the view kept its size throughout.
   PointerContextCapturer capturer(TestTimeouts::action_timeout());
   base::test::TestFuture<PointerContextCapturer::Result> future;
   gfx::Size view_size;
