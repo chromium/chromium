@@ -787,6 +787,13 @@
             android:layout_height="wrap_content"
             android:checked = "false"
             android:text="@string/allow_initial_navigation_to_leave" />
+
+        <CheckBox
+            android:id="@+id/enabled_tabbed_cct_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/enabled_tabbed_cct_text" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

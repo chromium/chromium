@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_OVERFLOW_CONTEXTUAL_MENU_ITEM_BUTTON =
             "OverflowMenuItemButton";
     private static final String SHARED_PREF_CAN_LEAVE = "CanLeave";
+    private static final String SHARED_PREF_ENABLED_TABBED_CCT = "EnabledTabbedCct";
     private static final String SHARED_PREF_NAVBAR_COLOR_TOOLBAR = "NavbarColorToolbar";
     private static final String CCT_OPTION_REGULAR = "CCT";
     private static final String CCT_OPTION_PARTIAL = "Partial CCT";
@@ -231,6 +232,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mAdditionalLinkContextualMenuItemCheckbox;
     private CheckBox mOverflowContextualMenuItemCheckbox;
     private CheckBox mInitialIntentCanLeaveBrowser;
+    private CheckBox mEnabledTabbedCctCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -248,6 +250,8 @@ public class MainActivity extends AppCompatActivity
             "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
     private static final String EXTRA_TRANSLUCENT_BACKGROUND =
             "androidx.browser.customtabs.extra.TRANSLUCENT_BACKGROUND";
+    private static final String EXTRA_TABBED_CCT_ACCOUNT_ID =
+            "androidx.browser.customtabs.extra.EXTRA_TABBED_CCT_ACCOUNT_ID";
 
     private final ActivityResultLauncher<Intent> mLauncher =
             AuthTabIntent.registerActivityResultLauncher(this, this::handleAuthResult);
@@ -912,6 +916,9 @@ public class MainActivity extends AppCompatActivity
         mInitialIntentCanLeaveBrowser = findViewById(R.id.allow_initial_navigation_to_leave);
         mInitialIntentCanLeaveBrowser.setChecked(
                 mSharedPref.getInt(SHARED_PREF_CAN_LEAVE, UNCHECKED) == CHECKED);
+        mEnabledTabbedCctCheckbox = findViewById(R.id.enabled_tabbed_cct_checkbox);
+        mEnabledTabbedCctCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_ENABLED_TABBED_CCT, UNCHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -1309,6 +1316,9 @@ public class MainActivity extends AppCompatActivity
             int bgColor = Color.parseColor(bgAlphaText.getText().toString());
             customTabsIntent.intent.putExtra(EXTRA_TRANSLUCENT_BACKGROUND, bgColor);
         }
+        if (mEnabledTabbedCctCheckbox.isChecked()) {
+            customTabsIntent.intent.putExtra(EXTRA_TABBED_CCT_ACCOUNT_ID, "default_account");
+        }
         if (mCctType.equals(CCT_OPTION_AUTHTAB)) {
             launchAuthTab(url);
             editor.putString(SHARED_PREF_CUSTOM_SCHEME, mCustomScheme);
@@ -1377,6 +1387,9 @@ public class MainActivity extends AppCompatActivity
         editor.putInt(
                 SHARED_PREF_CAN_LEAVE,
                 mInitialIntentCanLeaveBrowser.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_ENABLED_TABBED_CCT,
+                mEnabledTabbedCctCheckbox.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(SHARED_PREF_DECORATION, decorationType);
         editor.apply();
     }

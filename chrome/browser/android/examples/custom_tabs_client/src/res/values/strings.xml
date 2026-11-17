@@ -42,6 +42,7 @@
     <string name="default_url">https://www.google.com</string>
     <string name="disconnect_button_text">Disconnect</string>
     <string name="dp_template">%ddp</string>
+    <string name="enabled_tabbed_cct_text">Enable Tabbed CCT</string>
     <string name="engagement_signals_button_text">Start Engagement Signals</string>
     <string name="ephemeral_cct_text">Enable Ephemeral Browsing</string>
     <string name="launch_button_text">Launch in CCT</string>
