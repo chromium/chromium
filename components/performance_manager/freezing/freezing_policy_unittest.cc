@@ -310,8 +310,12 @@ class FreezingPolicyMemoryCheckTimerTest
 
   void OnGraphCreated(GraphImpl* graph) override {
     graph->PassToGraph(std::make_unique<PageLiveStateDecorator>());
-    policy_ =
-        graph->PassToGraph(std::make_unique<MemorySamplingFreezingPolicy>());
+    auto policy = std::make_unique<MemorySamplingFreezingPolicy>();
+    // Pages in this test have no WebContents, so the real Freezer can't be
+    // used.
+    policy->SetFreezerForTesting(
+        std::make_unique<::testing::NiceMock<LenientMockFreezer>>());
+    policy_ = graph->PassToGraph(std::move(policy));
   }
 
  protected:
@@ -326,6 +330,11 @@ class FreezingPolicyMemoryCheckTimerTest
     }
 
     int sample_count() const { return sample_count_; }
+
+    base::LiveTicks GenerateRandomPeriodicUnfreezePhase() const override {
+      // Make the periodic unfreeze phase non-random for tests.
+      return base::LiveTicks();
+    }
 
    private:
     bool GetSystemMemoryInfo(base::SystemMemoryInfo* info) override {
