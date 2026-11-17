@@ -16546,6 +16546,7 @@ from previous Chrome versions.
   <int value="434333410" label="DefaultMeetWebApp:disabled"/>
   <int value="434530296"
       label="HappinessTrackingSurveysForDesktopMigration:disabled"/>
+  <int value="434670549" label="RestoreTabGroupsOnFre:disabled"/>
   <int value="435112062" label="UseDnsHttpsSvcbAddressHints:disabled"/>
   <int value="436249288" label="ImeMojoDecoder:disabled"/>
   <int value="436682243" label="TabGroupsAndroid:disabled"/>
@@ -16773,6 +16774,7 @@ from previous Chrome versions.
   <int value="506005649" label="WelcomeExperience:disabled"/>
   <int value="506015849" label="OmniboxFuzzyUrlSuggestions:disabled"/>
   <int value="506153966" label="WebAppSyncGeneratedIconUpdateFix:disabled"/>
+  <int value="506782144" label="RestoreTabGroupsOnFre:enabled"/>
   <int value="507206806" label="OmniboxExpandedLayout:enabled"/>
   <int value="507847553" label="AndroidTipsNotifications:enabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>

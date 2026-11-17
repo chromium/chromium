@@ -14109,6 +14109,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRustBrotliInNetDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kRustBrotliInNet)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"restore-tab-groups-on-fre", flag_descriptions::kRestoreTabGroupsOnFreName,
+     flag_descriptions::kRestoreTabGroupsOnFreDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kRestoreTabGroupsOnFre)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

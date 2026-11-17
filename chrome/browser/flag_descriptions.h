@@ -6436,6 +6436,12 @@ inline constexpr char kReengagementNotificationDescription[] =
     "Enables Chrome to use the in-product help system to decide when "
     "to show re-engagement notifications.";
 
+inline constexpr char kRestoreTabGroupsOnFreName[] =
+    "Restore tab groups from the Restore Tabs promo";
+inline constexpr char kRestoreTabGroupsOnFreDescription[] =
+    "Restores synced tab groups as groups when the user restores tabs from "
+    "another device through the Restore Tabs promo.";
+
 inline constexpr char kSeccompFilterGpuSandboxName[] =
     "Seccomp-BPF GPU sandbox";
 inline constexpr char kSeccompFilterGpuSandboxDescription[] =

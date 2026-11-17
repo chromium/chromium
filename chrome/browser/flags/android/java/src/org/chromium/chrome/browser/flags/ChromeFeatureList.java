@@ -802,6 +802,7 @@ public abstract class ChromeFeatureList {
             "ReportNotificationContentDetectionData";
     public static final String RESET_NATIVE_POINTER_IN_CREDIT_CARD_AUTH_DIALOG =
             "ResetNativePointerInCreditCardAuthDialog";
+    public static final String RESTORE_TAB_GROUPS_ON_FRE = "RestoreTabGroupsOnFre";
     public static final String RFH_HIDDEN_WHEN_HIDDEN_BUT_PAINTING =
             "RFHHiddenWhenHiddenButPainting";
     public static final String SAFETY_FRE_PROMO = "SafetyFrePromo";
@@ -1876,6 +1877,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(PDF_LAUNCHER_ACTIVITY, false);
     public static final MutableFlagWithSafeDefault sRemoveExtraHeadersOnCrossOriginRedirect =
             newMutableFlagWithSafeDefault(REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT, true);
+    public static final MutableFlagWithSafeDefault sRestoreTabGroupsOnFre =
+            newMutableFlagWithSafeDefault(RESTORE_TAB_GROUPS_ON_FRE, false);
     public static final MutableFlagWithSafeDefault sSafetyFrePromo =
             newMutableFlagWithSafeDefault(SAFETY_FRE_PROMO, false);
     public static final MutableFlagWithSafeDefault sScheduleWindowCleaning =

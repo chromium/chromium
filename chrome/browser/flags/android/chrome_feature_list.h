@@ -285,6 +285,7 @@ BASE_DECLARE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT);
 BASE_DECLARE_FEATURE(kReadAloudServerExperiments);
 BASE_DECLARE_FEATURE(kReengagementNotification);
 BASE_DECLARE_FEATURE(kRemoveExtraHeadersOnCrossOriginRedirect);
+BASE_DECLARE_FEATURE(kRestoreTabGroupsOnFre);
 BASE_DECLARE_FEATURE(kSafetyFrePromo);
 BASE_DECLARE_FEATURE(kScheduleWindowCleaning);
 BASE_DECLARE_FEATURE(kSessionRestoreAfterCrash);

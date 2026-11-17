@@ -8633,6 +8633,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "restore-tab-groups-on-fre",
+    "owners": ["madhavpruthi@google.com", "clank-tab-dev@google.com"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "restrict-interactions-in-swipe-region-on-fullscreen",
     "owners": ["clhager@google.com"],
     "expiry_milestone": 165
