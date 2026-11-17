@@ -12696,12 +12696,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsProtocolMonitorDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsProtocolMonitor)},
 
-    {"bundled-security-settings-secure-dns-v2",
-     flag_descriptions::kBundledSecuritySettingsSecureDnsV2Name,
-     flag_descriptions::kBundledSecuritySettingsSecureDnsV2Description,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(safe_browsing::kBundledSecuritySettingsSecureDnsV2)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     {"search-engine-explicit-choice-dialog",
      flag_descriptions::kSearchEngineExplicitChoiceDialogName,

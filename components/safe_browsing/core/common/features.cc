@@ -64,9 +64,6 @@ BASE_FEATURE(kBundledSecuritySettings, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBundledSecuritySettingsAskBeforeHttp,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBundledSecuritySettingsSecureDnsV2,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClientSideDetectionBypassTiers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<std::string> kClientSideDetectionBypassTiersList{

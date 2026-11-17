@@ -398,13 +398,6 @@ inline constexpr char kBundledSecuritySettingsAskBeforeHttpDescription[] =
     "Includes Ask-Before-HTTP (HTTPS-First Mode) in the Enhanced security "
     "bundle.";
 
-inline constexpr char kBundledSecuritySettingsSecureDnsV2Name[] =
-    "Bundled Security Settings Secure Dns V2";
-inline constexpr char kBundledSecuritySettingsSecureDnsV2Description[] =
-    "Enables Secure DNS V2 setting in the bundles on the "
-    "chrome://settings/security page. The setting will move from the advanced "
-    "section to the bundled section.";
-
 inline constexpr char kCanvasDrawElementName[] = "HTML-in-Canvas";
 inline constexpr char kCanvasDrawElementDescription[] =
     "Enables the Canvas 2D drawElement API and the WebGL texElement2D API for "

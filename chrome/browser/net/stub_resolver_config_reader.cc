@@ -30,7 +30,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
@@ -146,15 +145,13 @@ bool ShouldUseDohFallback(net::SecureDnsMode secure_dns_mode,
     return false;
   }
 
-  // If the feature is enabled then return the boolean value of the pref.
-  // DoH fallback is a new setting introduced in the Bundled Security Settings
-  // for Secure DNS. If the new UI is enabled to make the setting available,
-  // then just check user choice in the pref.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kBundledSecuritySettingsSecureDnsV2)) {
-    return doh_config_source.AutomaticModeFallbackToDohEnabled();
-  }
-
+  // Automatic-mode DoH fallback is not currently launched, though its
+  // underlying resolver plumbing remains in place. Ignore
+  // `doh_config_source.AutomaticModeFallbackToDohEnabled()` so any stale pref
+  // values persisted in local state are not honored while there is no settings
+  // UI to change them.
+  // TODO(crbug.com/586589235): Clean up or re-gate the dormant automatic-mode
+  // DoH fallback plumbing.
   return false;
 }
 

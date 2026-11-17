@@ -61,11 +61,6 @@ BASE_DECLARE_FEATURE(kBundledSecuritySettings);
 // Security settings bundle.
 BASE_DECLARE_FEATURE(kBundledSecuritySettingsAskBeforeHttp);
 
-// Enables new Secure DNS V2 UI in Bundled Security Settings UI on the
-// chrome://settings/security page. Requires that kBundledSecuritySettings is
-// also enabled.
-BASE_DECLARE_FEATURE(kBundledSecuritySettingsSecureDnsV2);
-
 // Allows a list of ClientSideDetectionType to bypass the priority tier check.
 BASE_DECLARE_FEATURE(kClientSideDetectionBypassTiers);
 // The tier list below will be in form of the integer value of the

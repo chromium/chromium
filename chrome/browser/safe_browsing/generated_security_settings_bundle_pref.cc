@@ -4,13 +4,9 @@
 
 #include "chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h"
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace safe_browsing {
@@ -43,22 +39,6 @@ GeneratedSecuritySettingsBundlePref::SetPref(const base::Value* value) {
   SetSecurityBundleSetting(
       *(profile_->GetPrefs()),
       static_cast<SecuritySettingsBundleSetting>(selection));
-
-  PrefService* local_state = g_browser_process->local_state();
-
-  // This is how the bundle controls each security setting.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kBundledSecuritySettingsSecureDnsV2)) {
-    // Secure DNS Setting.
-    // TODO(crbug.com/460180440): migrate to a per-profile setting.
-    const bool fallback_to_doh =
-        selection == static_cast<int>(SecuritySettingsBundleSetting::ENHANCED);
-    local_state->SetString(prefs::kDnsOverHttpsMode,
-                           SecureDnsConfig::kModeAutomatic);
-    local_state->SetString(prefs::kDnsOverHttpsTemplates, "");
-    local_state->SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
-                            fallback_to_doh);
-  }
 
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }

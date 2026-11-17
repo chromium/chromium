@@ -217,8 +217,6 @@ source_set("impl") {
     "//components/pref_registry",
     "//components/privacy_sandbox",
     "//components/proxy_config",
-    "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/base:signin_buildflags",
     "//components/strings:components_strings",
     "//components/variations",
