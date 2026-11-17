@@ -73,7 +73,7 @@ public class TabSwitcherSearchRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(21) // Updated delete/close button icon.
+                    .setRevision(22) // Optically centered tab switcher button count.
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
 

@@ -56,7 +56,7 @@ public class NewBackgroundTabFakeTabSwitcherButtonRenderTest {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     private FrameLayout mRootView;

@@ -64,8 +64,8 @@ public class TabSwitcherIncognitoReauthViewTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY_INCOGNITO)
-                    .setRevision(11)
-                    .setDescription("Updated Incognito splash to GM3")
+                    .setRevision(12)
+                    .setDescription("Optically centered tab switcher button count.")
                     .build();
 
     private WebPageStation mPage;

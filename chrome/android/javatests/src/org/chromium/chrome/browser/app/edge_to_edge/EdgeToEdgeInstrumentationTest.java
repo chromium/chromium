@@ -92,7 +92,7 @@ public class EdgeToEdgeInstrumentationTest {
             new RenderTestRule.Builder()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_EDGE_TO_EDGE)
                     .setCorpus(Corpus.ANDROID_RENDER_TESTS_PUBLIC)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     private static final String TEST_AUTO_PAGE =

@@ -53,7 +53,7 @@ public class GlicBottomBarRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_GLIC)
-                    .setRevision(0)
+                    .setRevision(1)
                     .build();
 
     @Rule

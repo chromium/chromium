@@ -42,3 +42,17 @@ android_library("java") {
   ]
   resources_package = "org.chromium.chrome.browser.ui.android.bars_common"
 }
+
+robolectric_library("junit") {
+  sources = [ "junit/src/org/chromium/chrome/browser/ui/android/bars_common/TabSwitcherDrawableUnitTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_junit_test_support",
+    "//build/android:build_java",
+    "//chrome/browser/ui/android/theme:java",
+    "//components/browser_ui/theme/android:java_resources",
+    "//third_party/junit",
+  ]
+  resources_package = "org.chromium.chrome.browser.ui.android.bars_common"
+}

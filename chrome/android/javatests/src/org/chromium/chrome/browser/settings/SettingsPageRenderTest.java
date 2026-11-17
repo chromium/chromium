@@ -48,8 +48,9 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class SettingsPageRenderTest {
-    private static final int RENDER_TEST_REVISION = 3;
-    private static final String RENDER_TEST_DESCRIPTION = "Added edge-to-edge padding.";
+    private static final int RENDER_TEST_REVISION = 4;
+    private static final String RENDER_TEST_DESCRIPTION =
+            "Optically centered tab switcher button count.";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
