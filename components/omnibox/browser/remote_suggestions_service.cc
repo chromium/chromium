@@ -303,9 +303,7 @@ GURL AddAimInputStateParamsToEndpointUrl(
             ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
             : search_terms_args.input_state.active_tool;
     modified_url = net::AppendOrReplaceQueryParameter(
-        url_to_modify, "azm",
-        base::NumberToString(
-            static_cast<int>(tool_mode)));
+        modified_url, "azm", base::NumberToString(static_cast<int>(tool_mode)));
   }
   if (search_terms_args.input_state.active_model !=
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
@@ -313,6 +311,10 @@ GURL AddAimInputStateParamsToEndpointUrl(
         modified_url, "sam",
         base::NumberToString(
             static_cast<int>(search_terms_args.input_state.active_model)));
+  }
+  if (!search_terms_args.input_state.will_fulfill_in_aim) {
+    modified_url =
+        net::AppendOrReplaceQueryParameter(modified_url, "shaq", "1");
   }
   return modified_url;
 }

@@ -575,6 +575,17 @@ TEST_F(RemoteSuggestionsServiceTest,
             {"client", "chrome-compose"},
             {"azm", "1"},
             {"sam", "1"}});
+
+  // When `will_fulfill_in_aim` is false, `shaq=1` should also be appended.
+  search_terms_args.input_state.will_fulfill_in_aim = false;
+  url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+  CheckUrl(url, "https://www.google.com/suggest",
+           {{"q", "query"},
+            {"client", "chrome-compose"},
+            {"azm", "1"},
+            {"sam", "1"},
+            {"shaq", "1"}});
 }
 
 TEST_F(RemoteSuggestionsServiceTest, PreviousQueryAppendedIfAvailable) {
