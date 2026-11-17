@@ -526,7 +526,7 @@ AwContentBrowserClient::GetGeneratedCodeCacheSettings(
   AwBrowserContext* browser_context = static_cast<AwBrowserContext*>(context);
   // We need to set a comparable limit for the code cache since the source file
   // needs to be in the HTTP cache for the code cache entry to be used. There
-  // are two code caches that both use this value, so we pass half the the HTTP
+  // are two code caches that both use this value, so we pass half the HTTP
   // cache size limit to keep the total cache usage to roughly 2x the HTTP cache
   // limit.
   int http_cache_quota = GetDefaultHttpCacheSize();
