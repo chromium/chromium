@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserControlsService} from '/shared/browser_controls_api.mojom-webui.js';
-import type {BrowserControlsServiceInterface} from '/shared/browser_controls_api.mojom-webui.js';
+import type {BrowserControlsServiceInterface, BrowserControlsServiceRemote} from '/shared/browser_controls_api.mojom-webui.js';
 import type {IconUpdate} from '/shared/icon_handle.mojom-webui.js';
 import type {PermissionChipDelegate} from '/shared/permission_chip_delegate.js';
 import {ToolbarUIObserverCallbackRouter, ToolbarUIService} from '/shared/toolbar_ui_api.mojom-webui.js';
@@ -267,6 +267,12 @@ export interface BrowserProxy extends PermissionChipDelegate {
 
   /**
    * Resolves once the browser has dispatched every message sent so far on the
+   * BrowserControlsService pipe (e.g. navigateHome, reloadFromClick, back).
+   */
+  flushBrowserControlsHandlerForTesting(): Promise<void>;
+
+  /**
+   * Resolves once the browser has dispatched every message sent so far on the
    * ToolbarUIService pipe (e.g. onOmniboxAction). For tests that need the
    * browser-side state to reflect what this page has already sent.
    */
@@ -275,6 +281,7 @@ export interface BrowserProxy extends PermissionChipDelegate {
 
 export class BrowserProxyImpl implements BrowserProxy {
   private callbackRouter: ToolbarUIObserverCallbackRouter;
+  private browserControlsRemote: BrowserControlsServiceRemote;
   private toolbarUIRemote: ToolbarUIServiceRemote;
   private initialState_: InitialStateReader|null = null;
   browserControlsHandler: BrowserControlsServiceInterface;
@@ -282,7 +289,8 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   private constructor() {
     this.callbackRouter = new ToolbarUIObserverCallbackRouter();
-    this.browserControlsHandler = BrowserControlsService.getRemote();
+    this.browserControlsRemote = BrowserControlsService.getRemote();
+    this.browserControlsHandler = this.browserControlsRemote;
     this.toolbarUIRemote = ToolbarUIService.getRemote();
     this.toolbarUIHandler = this.toolbarUIRemote;
   }
@@ -367,6 +375,10 @@ export class BrowserProxyImpl implements BrowserProxy {
     if (handle !== INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE) {
       this.callbackRouter.removeListener(handle);
     }
+  }
+
+  flushBrowserControlsHandlerForTesting(): Promise<void> {
+    return this.browserControlsRemote.$.flushForTesting();
   }
 
   flushToolbarUiHandlerForTesting(): Promise<void> {

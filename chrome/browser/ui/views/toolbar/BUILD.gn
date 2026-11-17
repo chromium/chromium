@@ -407,6 +407,34 @@ source_set("impl") {
 }
 
 if (!is_android) {
+  source_set("webui_element_test_support") {
+    testonly = true
+    public = [ "test_support/webui_element_test_support.h" ]
+    sources = [ "test_support/webui_element_test_support.cc" ]
+    public_deps = [
+      "//testing/gtest",
+      "//ui/base/interaction",
+      "//ui/base/interaction:test_support",
+    ]
+    deps = [
+      ":toolbar",
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/webui/webui_toolbar",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//ui/views",
+      "//ui/views/controls/webview",
+      "//ui/views/interaction:test_support",
+      "//ui/webui/tracked_element",
+      "//ui/webui/tracked_element:test_support",
+    ]
+  }
+
   source_set("test_support") {
     testonly = true
     sources = [
@@ -423,6 +451,7 @@ if (!is_android) {
       "webui_test_utils.cc",
       "webui_test_utils.h",
     ]
+    public_deps = [ ":webui_element_test_support" ]
     deps = [
       ":toolbar",
       "//base",
@@ -539,6 +568,7 @@ if (!is_android) {
 
     if (toolkit_views) {
       sources += [
+        "test_support/webui_element_test_support_browsertest.cc",
         "toolbar_view_browsertest.cc",
         "webui_home_control_browsertest.cc",
         "webui_home_control_test_base.cc",

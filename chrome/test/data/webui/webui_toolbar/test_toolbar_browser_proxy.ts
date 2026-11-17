@@ -315,6 +315,10 @@ export class TestToolbarBrowserProxy extends TestBrowserProxy implements
   removeShowSplitTabsContextMenuListener(
       _handle: ShowSplitTabsContextMenuHandle) {}
 
+  flushBrowserControlsHandlerForTesting(): Promise<void> {
+    return Promise.resolve();
+  }
+
   flushToolbarUiHandlerForTesting(): Promise<void> {
     return Promise.resolve();
   }
