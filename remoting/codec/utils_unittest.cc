@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
@@ -27,6 +27,50 @@ namespace remoting {
 namespace {
 
 constexpr uint8_t kSentinel = 0xCD;
+
+using LibyuvArgbToYuvFn = int (*)(const uint8_t* src_argb,
+                                  int src_stride_argb,
+                                  uint8_t* dst_y,
+                                  int dst_stride_y,
+                                  uint8_t* dst_u,
+                                  int dst_stride_u,
+                                  uint8_t* dst_v,
+                                  int dst_stride_v,
+                                  int width,
+                                  int height);
+
+struct RowAlignTestParam {
+  const char* name;
+  int align;
+};
+
+struct RegionAlignmentTestParam {
+  const char* name;
+  int align;
+  bool is_i444;
+  int uv_divisor;
+  LibyuvArgbToYuvFn ref_convert_fn;
+};
+
+enum class RegionShape {
+  kFullFrame,
+  kMultiRect,
+};
+
+struct RegionParallelTestParam {
+  const char* name;
+  RegionShape region_shape;
+  bool is_i444;
+  int u_stride;
+  int v_stride;
+  int uv_divisor;
+};
+
+struct YuvSubsamplingTestParam {
+  const char* name;
+  bool is_i444;
+  int uv_divisor;
+};
 
 // Populates an ARGB frame with deterministic, spatially varying pixel values.
 void FillPatternFrame(webrtc::DesktopFrame& frame) {
@@ -48,12 +92,80 @@ void FillPatternFrame(webrtc::DesktopFrame& frame) {
                        webrtc::DesktopRect::MakeSize(frame.size()));
 }
 
+webrtc::DesktopRegion BuildParallelTestRegion(RegionShape shape,
+                                              int width,
+                                              int height) {
+  if (shape == RegionShape::kFullFrame) {
+    return webrtc::DesktopRegion(webrtc::DesktopRect::MakeWH(width, height));
+  }
+  CHECK_GE(height, 540);
+  // Mixes a tall rect (split across dynamic strips) and short rects
+  // (`height == 4`, kept intact without splitting) totaling >= 512k pixels.
+  webrtc::DesktopRegion region;
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 0, width, 514));
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 520, width, 524));
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 528, width, 532));
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 536, width, 540));
+  return region;
+}
+
+// Initializes a `TaskEnvironment` and pins every foreground `ThreadPool` worker
+// on a `TestWaitableEvent` (`Wait()` on `TestWaitableEvent` omits
+// `ScopedBlockingCall`, preventing `ThreadPool` from spawning replacement
+// workers). Static `PostTask` + `BarrierClosure` fan-out would deadlock in this
+// state because `release_workers_` is only signaled on destruction;
+// `base::CreateJob(...).Join()` drains all strips inline on the calling thread
+// instead.
+class ScopedSaturateForegroundThreadPool {
+ public:
+  ScopedSaturateForegroundThreadPool() {
+    base::RepeatingClosure occupied_barrier = base::BarrierClosure(
+        base::test::TaskEnvironment::kNumForegroundThreadPoolThreads,
+        base::BindOnce(&base::TestWaitableEvent::Signal,
+                       base::Unretained(&workers_occupied_)));
+    for (int i = 0;
+         i < base::test::TaskEnvironment::kNumForegroundThreadPoolThreads;
+         ++i) {
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::TaskPriority::USER_BLOCKING},
+          base::BindOnce(
+              [](base::RepeatingClosure on_occupied,
+                 base::TestWaitableEvent* release) {
+                on_occupied.Run();
+                release->Wait();
+              },
+              occupied_barrier, base::Unretained(&release_workers_)));
+    }
+    workers_occupied_.Wait();
+  }
+
+  ScopedSaturateForegroundThreadPool(
+      const ScopedSaturateForegroundThreadPool&) = delete;
+  ScopedSaturateForegroundThreadPool& operator=(
+      const ScopedSaturateForegroundThreadPool&) = delete;
+
+  ~ScopedSaturateForegroundThreadPool() {
+    release_workers_.Signal();
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+  }
+
+ private:
+  // Declared before `task_environment_` so both events outlive
+  // `~TaskEnvironment()`'s `ThreadPool` worker-thread join.
+  base::TestWaitableEvent workers_occupied_;
+  base::TestWaitableEvent release_workers_;
+  base::test::TaskEnvironment task_environment_;
+};
+
 }  // namespace
 
-TEST(CodecUtilsTest, GetBoundingRect) {
+TEST(CodecUtilsTest, GetBoundingRect_EmptyRegion) {
   webrtc::DesktopRegion region;
   EXPECT_TRUE(GetBoundingRect(region).is_empty());
+}
 
+TEST(CodecUtilsTest, GetBoundingRect_MultipleRects) {
+  webrtc::DesktopRegion region;
   region.AddRect(webrtc::DesktopRect::MakeLTRB(10, 20, 30, 40));
   region.AddRect(webrtc::DesktopRect::MakeLTRB(5, 50, 60, 80));
   EXPECT_TRUE(GetBoundingRect(region).equals(
@@ -195,311 +307,323 @@ TEST(CodecUtilsTest, ConvertDesktopFrameRectToYuv_I444SubRectAndStrides) {
   }
 }
 
-TEST(CodecUtilsTest, ConvertDesktopFrameRegionToYuv_RowAlignmentAndClipping) {
-  // Exercise 16-, 32-, and 64-pixel SIMD row alignments deterministically on
-  // all bots (including non-AVX-512 CQ hosts) across both I420 and I444, using
-  // a frame width that is not a multiple of `align` to verify right-edge
-  // clipping.
-  for (const int align : {16, 32, 64}) {
-    ScopedSimdMemoryAlignmentForTesting scoped_align(align);
-    const int width = align + 6;
-    constexpr int kHeight = 16;
-    const int y_stride = align * 2;
+class GetRowAlignedRegionTest
+    : public testing::TestWithParam<RowAlignTestParam> {};
 
-    webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(width, kHeight));
-    FillPatternFrame(frame);
+TEST_P(GetRowAlignedRegionTest, CoalescesOverlappingWidenedRects) {
+  const int align = GetParam().align;
+  ScopedSimdMemoryAlignmentForTesting scoped_align(align);
+  const int width = align * 2;
 
-    // Input rect [align + 2, 4, width, 12] is row-aligned by
-    // GetRowAlignedRect() to [align, 4, width, 12] (right edge clipped to
-    // `width`).
-    const webrtc::DesktopRegion region(
-        webrtc::DesktopRect::MakeLTRB(align + 2, 4, width, 12));
-    const webrtc::DesktopRect expected_aligned =
-        webrtc::DesktopRect::MakeLTRB(align, 4, width, 12);
+  // The two input rects (`x:[2, 6), y:[4, 12)` and `x:[10, 14), y:[6, 14)`)
+  // are disjoint, but once `GetRowAlignedRect()` widens both X-ranges to
+  // `[0, align)`, they overlap on rows `y:[6, 12)` and coalesce into a single
+  // `MakeLTRB(0, 4, align, 14)` rectangle.
+  webrtc::DesktopRegion region;
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(2, 4, 6, 12));
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(10, 6, 14, 14));
 
-    for (const bool is_i444 : {false, true}) {
-      SCOPED_TRACE(testing::Message()
-                   << "align=" << align << " is_i444=" << is_i444);
-      const int uv_stride = is_i444 ? y_stride : align;
-      const int uv_height = is_i444 ? kHeight : kHeight / 2;
-      const int uv_width = is_i444 ? width : width / 2;
+  const webrtc::DesktopRegion aligned_region =
+      GetRowAlignedRegion(region, width);
+  EXPECT_TRUE(aligned_region.Equals(
+      webrtc::DesktopRegion(webrtc::DesktopRect::MakeLTRB(0, 4, align, 14))));
 
-      std::vector<uint8_t> ref_y(y_stride * kHeight, 0);
-      std::vector<uint8_t> ref_u(uv_stride * uv_height, 0);
-      std::vector<uint8_t> ref_v(uv_stride * uv_height, 0);
-      if (is_i444) {
-        libyuv::ARGBToI444(frame.data(), frame.stride(), ref_y.data(), y_stride,
-                           ref_u.data(), uv_stride, ref_v.data(), uv_stride,
-                           width, kHeight);
+  std::vector<webrtc::DesktopRect> rects;
+  for (webrtc::DesktopRegion::Iterator r(aligned_region); !r.IsAtEnd();
+       r.Advance()) {
+    rects.push_back(r.rect());
+  }
+  ASSERT_EQ(rects.size(), 1u);
+  EXPECT_TRUE(rects[0].equals(webrtc::DesktopRect::MakeLTRB(0, 4, align, 14)));
+}
+
+TEST_P(GetRowAlignedRegionTest, CoalescesAbuttingClippedWidenedRects) {
+  const int align = GetParam().align;
+  ScopedSimdMemoryAlignmentForTesting scoped_align(align);
+
+  // `MakeLTRB(2, 4, 6, 14)` widens to `[0, align)`, while
+  // `MakeLTRB(align + 2, 4, align + 6, 14)` in the next SIMD block widens and
+  // clips to `[align, align + 8)` on a frame of width `align + 8`, abutting
+  // horizontally and coalescing into `MakeLTRB(0, 4, align + 8, 14)`.
+  webrtc::DesktopRegion region;
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(2, 4, 6, 14));
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(align + 2, 4, align + 6, 14));
+
+  EXPECT_TRUE(GetRowAlignedRegion(region, align + 8)
+                  .Equals(webrtc::DesktopRegion(
+                      webrtc::DesktopRect::MakeLTRB(0, 4, align + 8, 14))));
+}
+
+constexpr RowAlignTestParam kRowAlignParams[] = {
+    {"Align16", 16},
+    {"Align32", 32},
+    {"Align64", 64},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GetRowAlignedRegionTest,
+    testing::ValuesIn(kRowAlignParams),
+    [](const testing::TestParamInfo<RowAlignTestParam>& info) {
+      return info.param.name;
+    });
+
+class ConvertDesktopFrameRegionToYuvAlignmentTest
+    : public testing::TestWithParam<RegionAlignmentTestParam> {};
+
+TEST_P(ConvertDesktopFrameRegionToYuvAlignmentTest, RowAlignmentAndClipping) {
+  const RegionAlignmentTestParam& param = GetParam();
+  ScopedSimdMemoryAlignmentForTesting scoped_align(param.align);
+  const int width = param.align + 6;
+  constexpr int kHeight = 16;
+  const int y_stride = param.align * 2;
+  const int uv_stride = y_stride / param.uv_divisor;
+  const int uv_height = kHeight / param.uv_divisor;
+
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(width, kHeight));
+  FillPatternFrame(frame);
+
+  // Input rect `[align + 2, 4, width, 12]` is row-aligned by
+  // `GetRowAlignedRect()` to `[align, 4, width, 12]` (right edge clipped to
+  // `width`).
+  const webrtc::DesktopRegion region(
+      webrtc::DesktopRect::MakeLTRB(param.align + 2, 4, width, 12));
+  const webrtc::DesktopRect expected_aligned =
+      webrtc::DesktopRect::MakeLTRB(param.align, 4, width, 12);
+
+  std::vector<uint8_t> ref_y(y_stride * kHeight, 0);
+  std::vector<uint8_t> ref_u(uv_stride * uv_height, 0);
+  std::vector<uint8_t> ref_v(uv_stride * uv_height, 0);
+  param.ref_convert_fn(frame.data(), frame.stride(), ref_y.data(), y_stride,
+                       ref_u.data(), uv_stride, ref_v.data(), uv_stride, width,
+                       kHeight);
+
+  std::vector<uint8_t> actual_y(y_stride * kHeight, kSentinel);
+  std::vector<uint8_t> actual_u(uv_stride * uv_height, kSentinel);
+  std::vector<uint8_t> actual_v(uv_stride * uv_height, kSentinel);
+  ConvertDesktopFrameRegionToYuv(frame, region, param.is_i444, actual_y,
+                                 y_stride, actual_u, uv_stride, actual_v,
+                                 uv_stride);
+
+  for (int y = 0; y < kHeight; ++y) {
+    for (int x = 0; x < y_stride; ++x) {
+      const size_t idx = static_cast<size_t>(y * y_stride + x);
+      if (expected_aligned.Contains(webrtc::DesktopVector(x, y))) {
+        EXPECT_EQ(actual_y[idx], ref_y[idx])
+            << "Y mismatch at (" << x << ", " << y << ")";
       } else {
-        libyuv::ARGBToI420(frame.data(), frame.stride(), ref_y.data(), y_stride,
-                           ref_u.data(), uv_stride, ref_v.data(), uv_stride,
-                           width, kHeight);
+        EXPECT_EQ(actual_y[idx], kSentinel)
+            << "Y overwritten at (" << x << ", " << y << ")";
       }
+    }
+  }
 
-      std::vector<uint8_t> actual_y(y_stride * kHeight, kSentinel);
-      std::vector<uint8_t> actual_u(uv_stride * uv_height, kSentinel);
-      std::vector<uint8_t> actual_v(uv_stride * uv_height, kSentinel);
-      ConvertDesktopFrameRegionToYuv(frame, region, is_i444, actual_y, y_stride,
-                                     actual_u, uv_stride, actual_v, uv_stride);
-
-      for (int y = 0; y < kHeight; ++y) {
-        for (int x = 0; x < width; ++x) {
-          const size_t idx = static_cast<size_t>(y * y_stride + x);
-          if (expected_aligned.Contains(webrtc::DesktopVector(x, y))) {
-            EXPECT_EQ(actual_y[idx], ref_y[idx])
-                << "Y mismatch at (" << x << ", " << y << ")";
-          } else {
-            EXPECT_EQ(actual_y[idx], kSentinel)
-                << "Y overwritten at (" << x << ", " << y << ")";
-          }
-        }
-      }
-
-      const int uv_scale = is_i444 ? 1 : 2;
-      for (int uv_y = 0; uv_y < uv_height; ++uv_y) {
-        const bool in_y = uv_y >= expected_aligned.top() / uv_scale &&
-                          uv_y < expected_aligned.bottom() / uv_scale;
-        for (int uv_x = 0; uv_x < uv_width; ++uv_x) {
-          const size_t idx = static_cast<size_t>(uv_y * uv_stride + uv_x);
-          if (in_y && uv_x >= expected_aligned.left() / uv_scale &&
-              uv_x < expected_aligned.right() / uv_scale) {
-            EXPECT_EQ(actual_u[idx], ref_u[idx])
-                << "U mismatch at (" << uv_x << ", " << uv_y << ")";
-            EXPECT_EQ(actual_v[idx], ref_v[idx])
-                << "V mismatch at (" << uv_x << ", " << uv_y << ")";
-          } else {
-            EXPECT_EQ(actual_u[idx], kSentinel)
-                << "U overwritten at (" << uv_x << ", " << uv_y << ")";
-            EXPECT_EQ(actual_v[idx], kSentinel)
-                << "V overwritten at (" << uv_x << ", " << uv_y << ")";
-          }
-        }
+  for (int uv_y = 0; uv_y < uv_height; ++uv_y) {
+    const bool in_y = uv_y >= expected_aligned.top() / param.uv_divisor &&
+                      uv_y < expected_aligned.bottom() / param.uv_divisor;
+    for (int uv_x = 0; uv_x < uv_stride; ++uv_x) {
+      const size_t idx = static_cast<size_t>(uv_y * uv_stride + uv_x);
+      if (in_y && uv_x >= expected_aligned.left() / param.uv_divisor &&
+          uv_x < expected_aligned.right() / param.uv_divisor) {
+        EXPECT_EQ(actual_u[idx], ref_u[idx])
+            << "U mismatch at (" << uv_x << ", " << uv_y << ")";
+        EXPECT_EQ(actual_v[idx], ref_v[idx])
+            << "V mismatch at (" << uv_x << ", " << uv_y << ")";
+      } else {
+        EXPECT_EQ(actual_u[idx], kSentinel)
+            << "U overwritten at (" << uv_x << ", " << uv_y << ")";
+        EXPECT_EQ(actual_v[idx], kSentinel)
+            << "V overwritten at (" << uv_x << ", " << uv_y << ")";
       }
     }
   }
 }
 
-TEST(CodecUtilsTest, GetRowAlignedRegion_CoalescesOverlappingWidenedRects) {
-  for (const int align : {16, 32, 64}) {
-    SCOPED_TRACE(align);
-    ScopedSimdMemoryAlignmentForTesting scoped_align(align);
-    const int width = align * 2;
+TEST_P(ConvertDesktopFrameRegionToYuvAlignmentTest,
+       OverlappingAlignedRectsProduceCorrectOutput) {
+  const RegionAlignmentTestParam& param = GetParam();
+  ScopedSimdMemoryAlignmentForTesting scoped_align(param.align);
+  const int width = param.align * 2;
+  constexpr int kHeight = 16;
+  const int y_stride = width;
+  const int uv_stride = width / param.uv_divisor;
+  const int uv_height = kHeight / param.uv_divisor;
 
-    // The two input rects (`x:[2, 6), y:[4, 12)` and `x:[10, 14), y:[6, 14)`)
-    // are disjoint, but once `GetRowAlignedRect()` widens both X-ranges to
-    // `[0, align)`, they overlap on rows `y:[6, 12)` and coalesce into a single
-    // `MakeLTRB(0, 4, align, 14)` rectangle.
-    webrtc::DesktopRegion region;
-    region.AddRect(webrtc::DesktopRect::MakeLTRB(2, 4, 6, 12));
-    region.AddRect(webrtc::DesktopRect::MakeLTRB(10, 6, 14, 14));
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(width, kHeight));
+  FillPatternFrame(frame);
 
-    const webrtc::DesktopRegion aligned_region =
-        GetRowAlignedRegion(region, width);
-    EXPECT_TRUE(aligned_region.Equals(
-        webrtc::DesktopRegion(webrtc::DesktopRect::MakeLTRB(0, 4, align, 14))));
+  // `MakeLTRB(2, 4, 6, 12)` and `MakeLTRB(10, 6, 14, 14)` are initially
+  // disjoint and overlap on `x:[0, align), y:[6, 12)` once
+  // `GetRowAlignedRect()` widens both X-ranges to `[0, align)`.
+  webrtc::DesktopRegion region;
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(2, 4, 6, 12));
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(10, 6, 14, 14));
 
-    std::vector<webrtc::DesktopRect> rects;
-    for (webrtc::DesktopRegion::Iterator r(aligned_region); !r.IsAtEnd();
-         r.Advance()) {
-      rects.push_back(r.rect());
-    }
-    ASSERT_EQ(rects.size(), 1u);
-    EXPECT_TRUE(
-        rects[0].equals(webrtc::DesktopRect::MakeLTRB(0, 4, align, 14)));
+  std::vector<uint8_t> actual_y(y_stride * kHeight, kSentinel);
+  std::vector<uint8_t> actual_u(uv_stride * uv_height, kSentinel);
+  std::vector<uint8_t> actual_v(uv_stride * uv_height, kSentinel);
+  ConvertDesktopFrameRegionToYuv(frame, region, param.is_i444, actual_y,
+                                 y_stride, actual_u, uv_stride, actual_v,
+                                 uv_stride);
 
-    // Adding `MakeLTRB(align + 2, 4, align + 6, 14)` in the next SIMD block
-    // widens to `MakeLTRB(align, 4, align + 8, 14)` when clipped to
-    // `align + 8`, abutting `MakeLTRB(0, 4, align, 14)` horizontally and
-    // coalescing into `MakeLTRB(0, 4, align + 8, 14)`.
-    region.AddRect(webrtc::DesktopRect::MakeLTRB(align + 2, 4, align + 6, 14));
-    EXPECT_TRUE(GetRowAlignedRegion(region, align + 8)
-                    .Equals(webrtc::DesktopRegion(
-                        webrtc::DesktopRect::MakeLTRB(0, 4, align + 8, 14))));
-  }
+  std::vector<uint8_t> expected_y(y_stride * kHeight, kSentinel);
+  std::vector<uint8_t> expected_u(uv_stride * uv_height, kSentinel);
+  std::vector<uint8_t> expected_v(uv_stride * uv_height, kSentinel);
+  ConvertDesktopFrameRectToYuv(
+      frame, webrtc::DesktopRect::MakeLTRB(0, 4, param.align, 14),
+      param.is_i444, expected_y, y_stride, expected_u, uv_stride, expected_v,
+      uv_stride);
+
+  EXPECT_EQ(actual_y, expected_y);
+  EXPECT_EQ(actual_u, expected_u);
+  EXPECT_EQ(actual_v, expected_v);
 }
 
-TEST(
-    CodecUtilsTest,
-    ConvertDesktopFrameRegionToYuv_OverlappingAlignedRectsProduceCorrectOutput) {
-  for (const int align : {16, 32, 64}) {
-    ScopedSimdMemoryAlignmentForTesting scoped_align(align);
-    const int width = align * 2;
-    constexpr int kHeight = 16;
-    const int y_stride = width;
+constexpr RegionAlignmentTestParam kRegionAlignmentParams[] = {
+    {"Align16_I420", 16, /*is_i444=*/false, /*uv_divisor=*/2,
+     &libyuv::ARGBToI420},
+    {"Align32_I420", 32, /*is_i444=*/false, /*uv_divisor=*/2,
+     &libyuv::ARGBToI420},
+    {"Align64_I420", 64, /*is_i444=*/false, /*uv_divisor=*/2,
+     &libyuv::ARGBToI420},
+    {"Align16_I444", 16, /*is_i444=*/true, /*uv_divisor=*/1,
+     &libyuv::ARGBToI444},
+    {"Align32_I444", 32, /*is_i444=*/true, /*uv_divisor=*/1,
+     &libyuv::ARGBToI444},
+    {"Align64_I444", 64, /*is_i444=*/true, /*uv_divisor=*/1,
+     &libyuv::ARGBToI444},
+};
 
-    webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(width, kHeight));
-    FillPatternFrame(frame);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConvertDesktopFrameRegionToYuvAlignmentTest,
+    testing::ValuesIn(kRegionAlignmentParams),
+    [](const testing::TestParamInfo<RegionAlignmentTestParam>& info) {
+      return info.param.name;
+    });
 
-    // `MakeLTRB(2, 4, 6, 12)` and `MakeLTRB(10, 6, 14, 14)` are initially
-    // disjoint and overlap on `x:[0, align), y:[6, 12)` once
-    // `GetRowAlignedRect()` widens both X-ranges to `[0, align)`.
-    webrtc::DesktopRegion region;
-    region.AddRect(webrtc::DesktopRect::MakeLTRB(2, 4, 6, 12));
-    region.AddRect(webrtc::DesktopRect::MakeLTRB(10, 6, 14, 14));
+class ConvertDesktopFrameRegionToYuvParallelTest
+    : public testing::TestWithParam<RegionParallelTestParam> {};
 
-    for (const bool is_i444 : {false, true}) {
-      SCOPED_TRACE(testing::Message()
-                   << "align=" << align << " is_i444=" << is_i444);
-      const int uv_stride = is_i444 ? width : width / 2;
-      const int uv_height = is_i444 ? kHeight : kHeight / 2;
-
-      std::vector<uint8_t> actual_y(y_stride * kHeight, kSentinel);
-      std::vector<uint8_t> actual_u(uv_stride * uv_height, kSentinel);
-      std::vector<uint8_t> actual_v(uv_stride * uv_height, kSentinel);
-      ConvertDesktopFrameRegionToYuv(frame, region, is_i444, actual_y, y_stride,
-                                     actual_u, uv_stride, actual_v, uv_stride);
-
-      std::vector<uint8_t> expected_y(y_stride * kHeight, kSentinel);
-      std::vector<uint8_t> expected_u(uv_stride * uv_height, kSentinel);
-      std::vector<uint8_t> expected_v(uv_stride * uv_height, kSentinel);
-      ConvertDesktopFrameRectToYuv(
-          frame, webrtc::DesktopRect::MakeLTRB(0, 4, align, 14), is_i444,
-          expected_y, y_stride, expected_u, uv_stride, expected_v, uv_stride);
-
-      EXPECT_EQ(actual_y, expected_y);
-      EXPECT_EQ(actual_u, expected_u);
-      EXPECT_EQ(actual_v, expected_v);
-    }
-  }
-}
-
-TEST(CodecUtilsTest,
-     ConvertDesktopFrameRegionToYuv_ParallelJobMatchesSinglePass) {
+TEST_P(ConvertDesktopFrameRegionToYuvParallelTest,
+       ParallelJobMatchesSinglePass) {
   base::test::TaskEnvironment task_environment;
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
+  const RegionParallelTestParam& param = GetParam();
+
   // 1024 * 542 = 555,008 pixels (> `kParallelYuvConversionPixelThreshold`).
   // `542` is not divisible by 16, exercising `RoundToTwosMultiple` across
   // uneven horizontal strip heights so I420 chroma rows remain aligned.
   constexpr int kWidth = 1024;
   constexpr int kHeight = 542;
   constexpr int kYStride = 1088;
+  const int uv_height = kHeight / param.uv_divisor;
 
   webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(kWidth, kHeight));
   FillPatternFrame(frame);
 
-  // Exercise both a full-frame rect and a multi-rect region mixing a tall rect
-  // (split across dynamic strips) and short rects (`height == 4`, kept intact
-  // without splitting) that totals >= 512k pixels.
-  webrtc::DesktopRegion multi_rect_region;
-  multi_rect_region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 0, kWidth, 514));
-  multi_rect_region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 520, kWidth, 524));
-  multi_rect_region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 528, kWidth, 532));
-  multi_rect_region.AddRect(webrtc::DesktopRect::MakeLTRB(0, 536, kWidth, 540));
+  const webrtc::DesktopRegion region =
+      BuildParallelTestRegion(param.region_shape, kWidth, kHeight);
+  const webrtc::DesktopRegion aligned_region =
+      GetRowAlignedRegion(region, kWidth);
 
-  const std::vector<webrtc::DesktopRegion> regions = {
-      webrtc::DesktopRegion(webrtc::DesktopRect::MakeWH(kWidth, kHeight)),
-      multi_rect_region,
-  };
-
-  size_t region_idx = 0;
-  for (const webrtc::DesktopRegion& region : regions) {
-    const webrtc::DesktopRegion aligned_region =
-        GetRowAlignedRegion(region, kWidth);
-    for (const bool is_i444 : {false, true}) {
-      SCOPED_TRACE(testing::Message()
-                   << "region_idx=" << region_idx << " is_i444=" << is_i444);
-      const int u_stride = is_i444 ? 1104 : 576;
-      const int v_stride = is_i444 ? 1120 : 608;
-      const int uv_height = is_i444 ? kHeight : kHeight / 2;
-
-      std::vector<uint8_t> expected_y(kYStride * kHeight, kSentinel);
-      std::vector<uint8_t> expected_u(u_stride * uv_height, kSentinel);
-      std::vector<uint8_t> expected_v(v_stride * uv_height, kSentinel);
-      for (webrtc::DesktopRegion::Iterator r(aligned_region); !r.IsAtEnd();
-           r.Advance()) {
-        ConvertDesktopFrameRectToYuv(frame, r.rect(), is_i444, expected_y,
-                                     kYStride, expected_u, u_stride, expected_v,
-                                     v_stride);
-      }
-
-      std::vector<uint8_t> actual_y(kYStride * kHeight, kSentinel);
-      std::vector<uint8_t> actual_u(u_stride * uv_height, kSentinel);
-      std::vector<uint8_t> actual_v(v_stride * uv_height, kSentinel);
-      ConvertDesktopFrameRegionToYuv(frame, region, is_i444, actual_y, kYStride,
-                                     actual_u, u_stride, actual_v, v_stride);
-
-      EXPECT_EQ(actual_y, expected_y);
-      EXPECT_EQ(actual_u, expected_u);
-      EXPECT_EQ(actual_v, expected_v);
-    }
-    ++region_idx;
+  std::vector<uint8_t> expected_y(kYStride * kHeight, kSentinel);
+  std::vector<uint8_t> expected_u(param.u_stride * uv_height, kSentinel);
+  std::vector<uint8_t> expected_v(param.v_stride * uv_height, kSentinel);
+  for (webrtc::DesktopRegion::Iterator r(aligned_region); !r.IsAtEnd();
+       r.Advance()) {
+    ConvertDesktopFrameRectToYuv(frame, r.rect(), param.is_i444, expected_y,
+                                 kYStride, expected_u, param.u_stride,
+                                 expected_v, param.v_stride);
   }
+
+  std::vector<uint8_t> actual_y(kYStride * kHeight, kSentinel);
+  std::vector<uint8_t> actual_u(param.u_stride * uv_height, kSentinel);
+  std::vector<uint8_t> actual_v(param.v_stride * uv_height, kSentinel);
+  ConvertDesktopFrameRegionToYuv(frame, region, param.is_i444, actual_y,
+                                 kYStride, actual_u, param.u_stride, actual_v,
+                                 param.v_stride);
+
+  EXPECT_EQ(actual_y, expected_y);
+  EXPECT_EQ(actual_u, expected_u);
+  EXPECT_EQ(actual_v, expected_v);
 }
 
-TEST(CodecUtilsTest,
-     ConvertDesktopFrameRegionToYuv_CompletesInlineWhenThreadPoolStarved) {
-  // Declare `workers_occupied` and `release_workers` before `task_environment`
-  // so they outlive `~TaskEnvironment()`'s `ThreadPool` worker-thread join.
-  base::TestWaitableEvent workers_occupied;
-  base::TestWaitableEvent release_workers;
-  base::test::TaskEnvironment task_environment;
-  base::ScopedClosureRunner release_guard(base::BindOnce(
-      &base::TestWaitableEvent::Signal, base::Unretained(&release_workers)));
+constexpr RegionParallelTestParam kRegionParallelParams[] = {
+    {"FullFrame_I420", RegionShape::kFullFrame, /*is_i444=*/false,
+     /*u_stride=*/576, /*v_stride=*/608, /*uv_divisor=*/2},
+    {"FullFrame_I444", RegionShape::kFullFrame, /*is_i444=*/true,
+     /*u_stride=*/1104, /*v_stride=*/1120, /*uv_divisor=*/1},
+    {"MultiRect_I420", RegionShape::kMultiRect, /*is_i444=*/false,
+     /*u_stride=*/576, /*v_stride=*/608, /*uv_divisor=*/2},
+    {"MultiRect_I444", RegionShape::kMultiRect, /*is_i444=*/true,
+     /*u_stride=*/1104, /*v_stride=*/1120, /*uv_divisor=*/1},
+};
 
-  // Pin every foreground `ThreadPool` worker on `release_workers` (`Wait()` on
-  // `TestWaitableEvent` omits `ScopedBlockingCall`, so `ThreadPool` does not
-  // spawn replacement threads). Static `PostTask` + `BarrierClosure` would
-  // deadlock here because `release_workers` is only signaled after conversion
-  // returns; `CreateJob(...).Join()` drains all strips inline on the calling
-  // thread instead.
-  base::RepeatingClosure occupied_barrier = base::BarrierClosure(
-      base::test::TaskEnvironment::kNumForegroundThreadPoolThreads,
-      base::BindOnce(&base::TestWaitableEvent::Signal,
-                     base::Unretained(&workers_occupied)));
-  for (int i = 0;
-       i < base::test::TaskEnvironment::kNumForegroundThreadPoolThreads; ++i) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-        base::BindOnce(
-            [](base::RepeatingClosure on_occupied,
-               base::TestWaitableEvent* release) {
-              on_occupied.Run();
-              release->Wait();
-            },
-            occupied_barrier, base::Unretained(&release_workers)));
-  }
-  workers_occupied.Wait();
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConvertDesktopFrameRegionToYuvParallelTest,
+    testing::ValuesIn(kRegionParallelParams),
+    [](const testing::TestParamInfo<RegionParallelTestParam>& info) {
+      return info.param.name;
+    });
+
+class ConvertDesktopFrameRegionToYuvStarvedPoolTest
+    : public testing::TestWithParam<YuvSubsamplingTestParam> {};
+
+TEST_P(ConvertDesktopFrameRegionToYuvStarvedPoolTest,
+       CompletesInlineWhenThreadPoolStarved) {
+  ScopedSaturateForegroundThreadPool saturated_pool;
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
+  const YuvSubsamplingTestParam& param = GetParam();
 
   constexpr int kWidth = 1024;
   constexpr int kHeight = 512;  // 524,288 pixels >= 512,000.
+  const int uv_stride = kWidth / param.uv_divisor;
+  const int uv_height = kHeight / param.uv_divisor;
 
   webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(kWidth, kHeight));
   FillPatternFrame(frame);
   const webrtc::DesktopRegion region(
       webrtc::DesktopRect::MakeWH(kWidth, kHeight));
 
-  for (const bool is_i444 : {false, true}) {
-    SCOPED_TRACE(testing::Message() << "is_i444=" << is_i444);
-    const int uv_stride = is_i444 ? kWidth : kWidth / 2;
-    const int uv_height = is_i444 ? kHeight : kHeight / 2;
+  std::vector<uint8_t> actual_y(kWidth * kHeight, kSentinel);
+  std::vector<uint8_t> actual_u(uv_stride * uv_height, kSentinel);
+  std::vector<uint8_t> actual_v(uv_stride * uv_height, kSentinel);
+  ConvertDesktopFrameRegionToYuv(frame, region, param.is_i444, actual_y, kWidth,
+                                 actual_u, uv_stride, actual_v, uv_stride);
 
-    std::vector<uint8_t> actual_y(kWidth * kHeight, kSentinel);
-    std::vector<uint8_t> actual_u(uv_stride * uv_height, kSentinel);
-    std::vector<uint8_t> actual_v(uv_stride * uv_height, kSentinel);
-    ConvertDesktopFrameRegionToYuv(frame, region, is_i444, actual_y, kWidth,
-                                   actual_u, uv_stride, actual_v, uv_stride);
+  std::vector<uint8_t> expected_y(kWidth * kHeight, kSentinel);
+  std::vector<uint8_t> expected_u(uv_stride * uv_height, kSentinel);
+  std::vector<uint8_t> expected_v(uv_stride * uv_height, kSentinel);
+  ConvertDesktopFrameRectToYuv(
+      frame, webrtc::DesktopRect::MakeWH(kWidth, kHeight), param.is_i444,
+      expected_y, kWidth, expected_u, uv_stride, expected_v, uv_stride);
 
-    std::vector<uint8_t> expected_y(kWidth * kHeight, kSentinel);
-    std::vector<uint8_t> expected_u(uv_stride * uv_height, kSentinel);
-    std::vector<uint8_t> expected_v(uv_stride * uv_height, kSentinel);
-    ConvertDesktopFrameRectToYuv(
-        frame, webrtc::DesktopRect::MakeWH(kWidth, kHeight), is_i444,
-        expected_y, kWidth, expected_u, uv_stride, expected_v, uv_stride);
-
-    EXPECT_EQ(actual_y, expected_y);
-    EXPECT_EQ(actual_u, expected_u);
-    EXPECT_EQ(actual_v, expected_v);
-  }
-
-  release_guard.RunAndReset();
-  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_EQ(actual_y, expected_y);
+  EXPECT_EQ(actual_u, expected_u);
+  EXPECT_EQ(actual_v, expected_v);
 }
+
+constexpr YuvSubsamplingTestParam kYuvSubsamplingParams[] = {
+    {"I420", /*is_i444=*/false, /*uv_divisor=*/2},
+    {"I444", /*is_i444=*/true, /*uv_divisor=*/1},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ConvertDesktopFrameRegionToYuvStarvedPoolTest,
+    testing::ValuesIn(kYuvSubsamplingParams),
+    [](const testing::TestParamInfo<YuvSubsamplingTestParam>& info) {
+      return info.param.name;
+    });
 
 TEST(CodecUtilsTest,
      ConvertDesktopFrameRegionToYuv_NoThreadPoolRunsSinglePassAboveThreshold) {
   // Intentionally omit `TaskEnvironment` (`ThreadPoolInstance::Get()` is null)
   // to verify callers without an initialized `ThreadPool` fall back cleanly to
   // single-pass conversion above `kParallelYuvConversionPixelThreshold`.
+  ScopedParallelConversionCpuCapForTesting force_parallel(/*max_workers=*/4);
   constexpr int kWidth = 1024;
   constexpr int kHeight = 512;  // 524,288 pixels >= 512,000.
 

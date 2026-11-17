@@ -25,6 +25,8 @@ namespace {
 
 using ConvertRectFn = base::FunctionRef<void(const webrtc::DesktopRect&)>;
 
+std::atomic<int> g_parallel_cpu_cap_override_for_testing{0};
+
 int64_t GetRegionPixelCount(const webrtc::DesktopRegion& region) {
   int64_t pixels = 0;
   for (webrtc::DesktopRegion::Iterator r(region); !r.IsAtEnd(); r.Advance()) {
@@ -41,8 +43,12 @@ size_t GetMaxParallelWorkers(int64_t yuv_pixels) {
   constexpr int64_t kMaxWorkers = 8;
   constexpr int64_t kPixelsPerWorker = 128000;
   static_assert(kParallelYuvConversionPixelThreshold >= kPixelsPerWorker);
+  const int override_cap =
+      g_parallel_cpu_cap_override_for_testing.load(std::memory_order_relaxed);
   const int64_t cpu_cap =
-      std::max<int64_t>(1, (base::SysInfo::NumberOfProcessors() + 1) / 2);
+      override_cap > 0
+          ? override_cap
+          : std::max<int64_t>(1, (base::SysInfo::NumberOfProcessors() + 1) / 2);
   return static_cast<size_t>(
       std::min({cpu_cap, yuv_pixels / kPixelsPerWorker, kMaxWorkers}));
 }
@@ -209,6 +215,20 @@ void ConvertDesktopFrameRegionToYuv(const webrtc::DesktopFrame& frame,
        r.Advance()) {
     convert_rect(r.rect());
   }
+}
+
+ScopedParallelConversionCpuCapForTesting::
+    ScopedParallelConversionCpuCapForTesting(int max_workers)
+    : previous_override_(g_parallel_cpu_cap_override_for_testing.exchange(
+          max_workers,
+          std::memory_order_relaxed)) {
+  CHECK_GT(max_workers, 0);
+}
+
+ScopedParallelConversionCpuCapForTesting::
+    ~ScopedParallelConversionCpuCapForTesting() {
+  g_parallel_cpu_cap_override_for_testing.store(previous_override_,
+                                                std::memory_order_relaxed);
 }
 
 }  // namespace remoting

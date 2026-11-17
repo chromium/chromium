@@ -62,6 +62,22 @@ void ConvertDesktopFrameRegionToYuv(const webrtc::DesktopFrame& frame,
                                     base::span<uint8_t> v_data,
                                     int v_stride);
 
+// Overrides the `(NumberOfProcessors() + 1) / 2` worker cap in
+// `GetMaxParallelWorkers()` so unit tests exercise the multi-strip
+// `base::CreateJob()` path deterministically even on 1- or 2-vCPU bots.
+class ScopedParallelConversionCpuCapForTesting {
+ public:
+  explicit ScopedParallelConversionCpuCapForTesting(int max_workers);
+  ScopedParallelConversionCpuCapForTesting(
+      const ScopedParallelConversionCpuCapForTesting&) = delete;
+  ScopedParallelConversionCpuCapForTesting& operator=(
+      const ScopedParallelConversionCpuCapForTesting&) = delete;
+  ~ScopedParallelConversionCpuCapForTesting();
+
+ private:
+  const int previous_override_;
+};
+
 }  // namespace remoting
 
 #endif  // REMOTING_CODEC_UTILS_H_
