@@ -124,13 +124,9 @@ external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection
 external/wpt/editing/plaintext-only/paste.https.html*
 external/wpt/event-timing/modal-dialog-interrupt-paint.html
 external/wpt/event-timing/selection-autoscroll.html
-external/wpt/fedcm/fedcm-disconnect-errors.https.html
 external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html
 external/wpt/fedcm/fedcm-iframe.https.html
 external/wpt/fedcm/fedcm-manifest-not-in-list.https.html
-external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html
-external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-silent.https.html
-external/wpt/fedcm/fedcm-not-observed-by-service-worker.https.html
 external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe-active-mode.https.html
 external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe.https.html
 # https://github.com/web-platform-tests/wpt/issues/48078
@@ -383,7 +379,6 @@ virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-l
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-025.html
 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-036.html
 virtual/fedcm-accounts-push/external/wpt/fedcm/fedcm-accounts-push/fedcm-identity-discovery.tentative.sub.https.html
-virtual/fedcm-register/external/wpt/fedcm/fedcm-register/fedcm-no-registered-idps.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-fenced-navigations-replace-do-not-contribute-to-joint.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/key-scrolling.https.html

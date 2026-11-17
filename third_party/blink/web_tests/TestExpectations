@@ -6631,7 +6631,6 @@ crbug.com/40269432 external/wpt/css/css-fonts/font-display/font-display.html [ F
 # Flaky tests on Win11-arm64
 crbug.com/325602826 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-metadata.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326065719 [ Win11-arm64 ] http/tests/xmlhttprequest/simple-cross-origin-progress-events.html [ Failure Pass Timeout ] # Flaky
-crbug.com/326065568 [ Win11-arm64 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326065727 [ Win11-arm64 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission-worker.https.window.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326065972 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326067001 [ Win11-arm64 ] external/wpt/fedcm/fedcm-authz/fedcm-userinfo-after-resolve.https.html [ Failure Pass Timeout ] # Flaky
@@ -8577,10 +8576,7 @@ crbug.com/569679632 [ Win ] bindings/pass-as-span.html [ Failure Pass ]
 # Gardener 2026-10-16
 crbug.com/551678154 external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe-active-mode.https.html [ Failure Pass ]
 crbug.com/550839289 external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe.https.html [ Failure Pass ]
-crbug.com/551670645 [ Linux ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
-crbug.com/551670645 [ Mac ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
-crbug.com/551670645 [ Win10.20h2 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
-crbug.com/551670645 [ Win11 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
+crbug.com/551670645 external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
 
 # Gardener 2026-10-19
 crbug.com/570886829 [ Mac ] external/wpt/css/css-contain/contain-size-flexbox-002.html [ Failure Pass ]
