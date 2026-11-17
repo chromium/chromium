@@ -35,7 +35,13 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   // Populates cached registration and Instance ID data from `load_result`.
   void OnRegistrationDataLoaded(const GCMStore::LoadResult& load_result);
 
+  // Returns true if at least one standalone app is registered for GCM.
+  bool HasStandaloneRegisteredApp() const;
+
   // GCMRegistrationManager implementation:
+  bool ValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
+                            const std::string& registration_id) override;
+  std::vector<std::string> GetRegisteredAppIds() const override;
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id,
                          const std::string& extra_data) override;
@@ -43,14 +49,23 @@ class GCMRegistrationManagerImpl : public GCMRegistrationManager {
   std::pair<std::string, std::string> GetInstanceIDData(
       const std::string& app_id) const override;
 
-  // TODO(b/545115204): Remove temporary accessor once all Instance ID
-  // methods are migrated from `GCMClientImpl`.
+  // TODO(b/545115204): Remove temporary accessors once all registration and
+  // Instance ID methods and tests are migrated from `GCMClientImpl`.
+  const RegistrationInfoMap& registrations() const { return registrations_; }
+  RegistrationInfoMap& mutable_registrations() { return registrations_; }
   const InstanceIDDataMap& instance_id_data() const {
     return instance_id_data_;
   }
 
  private:
+  // Removes deprecated data (such as obsolete registrations) from the cache and
+  // persistent store.
+  void RemoveDeprecatedData();
+
   const raw_ref<GCMStore> gcm_store_;
+
+  // Cached registration info.
+  RegistrationInfoMap registrations_;
 
   // Cached Instance ID data, key is app ID and value is pair of Instance ID
   // and extra data.

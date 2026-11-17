@@ -10,13 +10,20 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_split.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/engine/gcm_store.h"
 
 namespace gcm {
 
 namespace {
+
+// Previously, GCMAccountMapper registered with this app ID. Any persisted
+// registration for it in GCMStore is obsolete and removed on load.
+// Deprecated in October 2026.
+constexpr char kDeprecatedGCMAccountMapperAppId[] = "com.google.android.gms";
 
 // Serializes `instance_id` and `extra_data` into "<instance_id>,<extra_data>".
 std::string SerializeInstanceIDData(const std::string& instance_id,
@@ -51,12 +58,75 @@ GCMRegistrationManagerImpl::~GCMRegistrationManagerImpl() {
 void GCMRegistrationManagerImpl::OnRegistrationDataLoaded(
     const GCMStore::LoadResult& load_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [key, value] : load_result.registrations) {
+    std::string registration_id;
+    scoped_refptr<RegistrationInfo> registration =
+        RegistrationInfo::BuildFromString(key, value, &registration_id);
+    // TODO(jianli): Add UMA to track the error case.
+    if (registration) {
+      registrations_.emplace(std::move(registration), registration_id);
+    }
+  }
+
   for (const auto& [key, value] : load_result.instance_id_data) {
     if (std::optional<std::pair<std::string, std::string>> data =
             DeserializeInstanceIDData(value)) {
       instance_id_data_[key] = *std::move(data);
     }
   }
+
+  RemoveDeprecatedData();
+}
+
+bool GCMRegistrationManagerImpl::HasStandaloneRegisteredApp() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !registrations_.empty();
+}
+
+bool GCMRegistrationManagerImpl::ValidateRegistration(
+    scoped_refptr<RegistrationInfo> registration_info,
+    const std::string& registration_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Must have a cached registration.
+  RegistrationInfoMap::const_iterator registrations_iter =
+      registrations_.find(registration_info);
+  if (registrations_iter == registrations_.end()) {
+    return false;
+  }
+
+  // Cached registration ID must match.
+  const std::string& cached_registration_id = registrations_iter->second;
+  if (registration_id != cached_registration_id) {
+    return false;
+  }
+
+  // For GCM registration, also match the sender IDs since multiple
+  // registrations are not supported.
+  const GCMRegistrationInfo* gcm_registration_info =
+      GCMRegistrationInfo::FromRegistrationInfo(registration_info.get());
+  if (gcm_registration_info) {
+    const GCMRegistrationInfo* cached_gcm_registration_info =
+        GCMRegistrationInfo::FromRegistrationInfo(
+            registrations_iter->first.get());
+    CHECK(cached_gcm_registration_info);
+    if (gcm_registration_info->sender_ids !=
+        cached_gcm_registration_info->sender_ids) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+std::vector<std::string> GCMRegistrationManagerImpl::GetRegisteredAppIds()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::string> app_ids;
+  for (const auto& [registration_info, registration_id] : registrations_) {
+    app_ids.push_back(registration_info->app_id);
+  }
+  return app_ids;
 }
 
 void GCMRegistrationManagerImpl::AddInstanceIDData(
@@ -96,6 +166,18 @@ GCMRegistrationManagerImpl::GetInstanceIDData(const std::string& app_id) const {
     return {};
   }
   return iter->second;
+}
+
+void GCMRegistrationManagerImpl::RemoveDeprecatedData() {
+  if (!base::FeatureList::IsEnabled(features::kGCMRemoveDeprecatedStoreData)) {
+    return;
+  }
+  auto deprecated_info = base::MakeRefCounted<GCMRegistrationInfo>();
+  deprecated_info->app_id = kDeprecatedGCMAccountMapperAppId;
+  if (registrations_.erase(deprecated_info)) {
+    gcm_store_->RemoveRegistration(kDeprecatedGCMAccountMapperAppId,
+                                   base::DoNothing());
+  }
 }
 
 }  // namespace gcm

@@ -70,11 +70,6 @@ const int64_t kDefaultUserSerialNumber = 0LL;
 const int kDestroyGCMStoreDelayMS = 5 * 60 * 1000;  // 5 minutes.
 constexpr base::TimeDelta kTokenInvalidationInterval = base::Days(7);
 
-// Previously, GCMAccountMapper registered with this app ID. Any persisted
-// registration for it in GCMStore is obsolete and removed on load.
-// Deprecated in October 2026.
-constexpr char kDeprecatedGCMAccountMapperAppId[] = "com.google.android.gms";
-
 GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {
   switch (status) {
     case MCSClient::QUEUED:
@@ -242,18 +237,6 @@ void GCMClientImpl::OnLoadCompleted(
   last_checkin_time_ = result->last_checkin_time;
   gservices_settings_.UpdateFromLoadResult(*result);
 
-  RemoveDeprecatedData(*result);
-
-  for (const auto& [key, value] : result->registrations) {
-    std::string registration_id;
-    scoped_refptr<RegistrationInfo> registration =
-        RegistrationInfo::BuildFromString(key, value, &registration_id);
-    // TODO(jianli): Add UMA to track the error case.
-    if (registration) {
-      registrations_.emplace(std::move(registration), registration_id);
-    }
-  }
-
   CHECK(registration_manager_);
   registration_manager_->OnRegistrationDataLoaded(*result);
 
@@ -281,18 +264,6 @@ void GCMClientImpl::OnLoadCompleted(
   }
 
   StartGCM();
-}
-
-void GCMClientImpl::RemoveDeprecatedData(GCMStore::LoadResult& result) {
-  if (!base::FeatureList::IsEnabled(features::kGCMRemoveDeprecatedStoreData)) {
-    return;
-  }
-  if (result.registrations.erase(kDeprecatedGCMAccountMapperAppId)) {
-    gcm_store_->RemoveRegistration(
-        kDeprecatedGCMAccountMapperAppId,
-        base::BindOnce(&GCMClientImpl::UpdateRegistrationCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void GCMClientImpl::StartGCM() {
@@ -597,10 +568,11 @@ void GCMClientImpl::Register(
   CHECK_NE(registration_info->app_id,
            chrome_build_info_.product_category_for_subtypes);
 
+  CHECK(registration_manager_);
   // Find and use the cached registration ID.
   RegistrationInfoMap::const_iterator registrations_iter =
-      registrations_.find(registration_info);
-  if (registrations_iter != registrations_.end()) {
+      registration_manager_->registrations().find(registration_info);
+  if (registrations_iter != registration_manager_->registrations().end()) {
     bool matched = true;
 
     // For GCM registration, we also match the sender IDs since multiple
@@ -710,14 +682,16 @@ void GCMClientImpl::OnRegisterCompleted(
   }
 
   if (result == SUCCESS) {
+    CHECK(registration_manager_);
     // Cache it.
     // Note that the existing cached record has to be removed first because
     // otherwise the key value in registrations_ will not be updated. For GCM
     // registrations, the key consists of pair of app_id and sender_ids though
     // only app_id is used in the key comparison.
-    registrations_.erase(registration_info);
+    registration_manager_->mutable_registrations().erase(registration_info);
     registration_info->last_validated = clock_->Now();
-    registrations_[registration_info] = registration_id;
+    registration_manager_->mutable_registrations()[registration_info] =
+        registration_id;
 
     // Save it in the persistent store.
     gcm_store_->AddRegistration(
@@ -741,36 +715,9 @@ bool GCMClientImpl::ValidateRegistration(
     const std::string& registration_id) {
   DCHECK_EQ(state_, READY);
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-
-  // Must have a cached registration.
-  RegistrationInfoMap::const_iterator registrations_iter =
-      registrations_.find(registration_info);
-  if (registrations_iter == registrations_.end()) {
-    return false;
-  }
-
-  // Cached registration ID must match.
-  const std::string& cached_registration_id = registrations_iter->second;
-  if (registration_id != cached_registration_id) {
-    return false;
-  }
-
-  // For GCM registration, we also match the sender IDs since multiple
-  // registrations are not supported.
-  const GCMRegistrationInfo* gcm_registration_info =
-      GCMRegistrationInfo::FromRegistrationInfo(registration_info.get());
-  if (gcm_registration_info) {
-    const GCMRegistrationInfo* cached_gcm_registration_info =
-        GCMRegistrationInfo::FromRegistrationInfo(
-            registrations_iter->first.get());
-    DCHECK(cached_gcm_registration_info);
-    if (gcm_registration_info->sender_ids !=
-        cached_gcm_registration_info->sender_ids) {
-      return false;
-    }
-  }
-
-  return true;
+  CHECK(registration_manager_);
+  return registration_manager_->ValidateRegistration(
+      std::move(registration_info), registration_id);
 }
 
 void GCMClientImpl::Unregister(
@@ -809,6 +756,7 @@ void GCMClientImpl::Unregister(
                        instance_id_token_info->scope;
   }
 
+  CHECK(registration_manager_);
   // Remove the registration/token(s) from the cache and the store.
   // TODO(jianli): Remove it only when the request is successful.
   if (instance_id_token_info &&
@@ -817,7 +765,8 @@ void GCMClientImpl::Unregister(
     // If authorized_entity and scope are '*', find and remove all associated
     // tokens.
     bool token_found = false;
-    for (auto iter = registrations_.begin(); iter != registrations_.end();) {
+    for (auto iter = registration_manager_->mutable_registrations().begin();
+         iter != registration_manager_->mutable_registrations().end();) {
       InstanceIDTokenInfo* cached_instance_id_token_info =
           InstanceIDTokenInfo::FromRegistrationInfo(iter->first.get());
       if (cached_instance_id_token_info &&
@@ -827,7 +776,7 @@ void GCMClientImpl::Unregister(
             cached_instance_id_token_info->GetSerializedKey(),
             base::BindOnce(&GCMClientImpl::UpdateRegistrationCallback,
                            weak_ptr_factory_.GetWeakPtr()));
-        registrations_.erase(iter++);
+        registration_manager_->mutable_registrations().erase(iter++);
       } else {
         ++iter;
       }
@@ -840,13 +789,14 @@ void GCMClientImpl::Unregister(
       return;
     }
   } else {
-    auto iter = registrations_.find(registration_info);
-    if (iter == registrations_.end()) {
+    auto iter =
+        registration_manager_->mutable_registrations().find(registration_info);
+    if (iter == registration_manager_->mutable_registrations().end()) {
       observers_.Notify(&Observer::OnUnregisterFinished, registration_info,
                         INVALID_PARAMETER);
       return;
     }
-    registrations_.erase(iter);
+    registration_manager_->mutable_registrations().erase(iter);
 
     gcm_store_->RemoveRegistration(
         registration_info->GetSerializedKey(),
@@ -987,9 +937,8 @@ GCMClient::GCMStatistics GCMClientImpl::GetStatistics() const {
 
   recorder_.CollectActivities(&stats.recorded_activities);
 
-  for (auto it = registrations_.begin(); it != registrations_.end(); ++it) {
-    stats.registered_app_ids.push_back(it->first->app_id);
-  }
+  CHECK(registration_manager_);
+  stats.registered_app_ids = registration_manager_->GetRegisteredAppIds();
   return stats;
 }
 
@@ -1158,7 +1107,8 @@ void GCMClientImpl::HandleIncomingSendError(
 }
 
 bool GCMClientImpl::HasStandaloneRegisteredApp() const {
-  return !registrations_.empty();
+  CHECK(registration_manager_);
+  return registration_manager_->HasStandaloneRegisteredApp();
 }
 
 }  // namespace gcm

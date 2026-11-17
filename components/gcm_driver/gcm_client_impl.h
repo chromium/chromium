@@ -174,9 +174,6 @@ class GCMClientImpl : public GCMClient,
   // Runs after GCM Store load is done to trigger continuation of the
   // initialization.
   void OnLoadCompleted(std::unique_ptr<GCMStore::LoadResult> result);
-  // Removes deprecated data (such as obsolete registrations) from `result` and
-  // the persistent store.
-  void RemoveDeprecatedData(GCMStore::LoadResult& result);
   // Starts the GCM.
   void StartGCM();
   // Initializes mcs_client_, which handles the connection to MCS.
@@ -323,9 +320,6 @@ class GCMClientImpl : public GCMClient,
   std::unique_ptr<MCSClient> mcs_client_;
 
   std::unique_ptr<CheckinRequest> checkin_request_;
-
-  // Cached registration info.
-  RegistrationInfoMap registrations_;
 
   // Currently pending registration requests. GCMClientImpl owns the
   // RegistrationRequests.

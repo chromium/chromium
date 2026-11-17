@@ -7,6 +7,10 @@
 
 #include <string>
 #include <utility>
+#include <vector>
+
+#include "base/memory/scoped_refptr.h"
+#include "components/gcm_driver/registration_info.h"
 
 namespace gcm {
 
@@ -14,6 +18,15 @@ namespace gcm {
 class GCMRegistrationManager {
  public:
   virtual ~GCMRegistrationManager() = default;
+
+  // Validates that cached registration info matches `registration_info` and
+  // `registration_id`.
+  virtual bool ValidateRegistration(
+      scoped_refptr<RegistrationInfo> registration_info,
+      const std::string& registration_id) = 0;
+
+  // Returns the list of currently registered app IDs.
+  virtual std::vector<std::string> GetRegisteredAppIds() const = 0;
 
   // Adds the Instance ID data for a particular app to the cache and persistent
   // store.

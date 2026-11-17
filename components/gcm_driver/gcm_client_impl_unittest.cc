@@ -25,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "components/fcm/engine/chrome_build_info.h"
 #include "components/fcm/engine/fcm_internals_builder.h"
+#include "components/gcm_driver/gcm_registration_manager_impl.h"
 #include "google_apis/gcm/base/fake_encryptor.h"
 #include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
@@ -574,7 +575,8 @@ void GCMClientImplTest::CompleteUnregistration(const std::string& app_id) {
 }
 
 bool GCMClientImplTest::ExistsRegistration(const std::string& app_id) const {
-  return ExistsGCMRegistrationInMap(gcm_client_->registrations_, app_id);
+  return ExistsGCMRegistrationInMap(
+      gcm_client_->registration_manager_->registrations(), app_id);
 }
 
 void GCMClientImplTest::AddRegistration(
@@ -584,7 +586,8 @@ void GCMClientImplTest::AddRegistration(
   auto registration = base::MakeRefCounted<GCMRegistrationInfo>();
   registration->app_id = app_id;
   registration->sender_ids = sender_ids;
-  gcm_client_->registrations_.emplace(std::move(registration), registration_id);
+  gcm_client_->registration_manager_->mutable_registrations().emplace(
+      std::move(registration), registration_id);
 }
 
 void GCMClientImplTest::InitializeGCMClient() {
@@ -1665,7 +1668,8 @@ bool GCMClientInstanceIDTest::ExistsToken(const std::string& app_id,
   instance_id_info->app_id = app_id;
   instance_id_info->authorized_entity = authorized_entity;
   instance_id_info->scope = scope;
-  return gcm_client()->registrations_.count(std::move(instance_id_info)) > 0;
+  return gcm_client()->registration_manager_->registrations().count(
+             std::move(instance_id_info)) > 0;
 }
 
 TEST_F(GCMClientInstanceIDTest, GetToken) {
