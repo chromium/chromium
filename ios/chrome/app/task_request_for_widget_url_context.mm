@@ -12,9 +12,12 @@
 #import "base/strings/stringprintf.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -123,6 +126,10 @@ std::optional<WidgetKitExtensionAction> ActionForWidgetURL(NSURL* url) {
   }
 
   WidgetKitExtensionAction action = actionOpt.value();
+  default_browser::NotifyStartWithWidget(
+      feature_engagement::TrackerFactory::GetForProfile(
+          sceneState.profileState.profile));
+
   GURL externalGURL;
   TabOpeningPostOpeningAction postOpeningAction =
       TabOpeningPostOpeningAction::NO_ACTION;
