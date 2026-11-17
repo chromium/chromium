@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_icon.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -49,7 +51,6 @@
 #include "chrome/browser/startup/startup_features.h"
 #include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_tray_theme_watcher_win_test_util.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/installer/util/auto_launch_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -603,10 +604,77 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   local_state->SetBoolean(prefs::kOmniboxEverywhereEnabled, true);
   VerifyAndClearStartupRegistrationExpectations();
 
+  // 8. Disabling LaunchOnStartupEnabled policy unregisters background launch,
+  // and removing the policy restores it.
+  TestingPrefServiceSimple* testing_local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+  testing_local_state->SetManagedPref(::prefs::kForegroundLaunchOnLogin,
+                                      base::Value(false));
+  VerifyAndClearStartupRegistrationExpectations();
+
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+  testing_local_state->RemoveManagedPref(::prefs::kForegroundLaunchOnLogin);
+  VerifyAndClearStartupRegistrationExpectations();
+
+  // 9. Disabling BackgroundModeEnabled policy also unregisters background
+  // launch, and removing the policy restores it.
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+  testing_local_state->SetManagedPref(::prefs::kBackgroundModeEnabled,
+                                      base::Value(false));
+  VerifyAndClearStartupRegistrationExpectations();
+
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+  testing_local_state->RemoveManagedPref(::prefs::kBackgroundModeEnabled);
+  VerifyAndClearStartupRegistrationExpectations();
+
   profile_.reset();
   TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 }
 #endif
+
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       BackgroundModePolicyControlsKeepAlive) {
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  ASSERT_NE(local_state, nullptr);
+
+  OmniboxEverywhereBackgroundModeManager manager(base::DoNothing());
+  manager.SetProfile(profile());
+
+  KeepAliveRegistry* keep_alive_registry = KeepAliveRegistry::GetInstance();
+  EXPECT_TRUE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+  EXPECT_NE(manager.status_icon_for_testing(), nullptr);
+
+  // Unmanaged user pref does not drop the background keep-alive.
+  local_state->SetBoolean(::prefs::kBackgroundModeEnabled, false);
+  EXPECT_TRUE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+
+  // Managed policy set to false drops the keep-alive while keeping the status
+  // icon visible.
+  local_state->SetManagedPref(::prefs::kBackgroundModeEnabled,
+                              base::Value(false));
+  EXPECT_FALSE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+  EXPECT_NE(manager.status_icon_for_testing(), nullptr);
+
+  // Managed policy set to true restores the keep-alive.
+  local_state->SetManagedPref(::prefs::kBackgroundModeEnabled,
+                              base::Value(true));
+  EXPECT_TRUE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+
+  // Removing a managed false policy restores the keep-alive.
+  local_state->SetManagedPref(::prefs::kBackgroundModeEnabled,
+                              base::Value(false));
+  EXPECT_FALSE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+  local_state->RemoveManagedPref(::prefs::kBackgroundModeEnabled);
+  EXPECT_TRUE(keep_alive_registry->IsOriginRegistered(
+      KeepAliveOrigin::OMNIBOX_EVERYWHERE));
+}
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
        DeferStatusIconUntilBrowserStartupComplete) {

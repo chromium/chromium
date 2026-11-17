@@ -352,9 +352,8 @@ void OmniboxEverywhereController::MaybeLoadPersistedTargetProfile() {
     return;
   }
 
-  if (!g_browser_process || !g_browser_process->local_state() ||
-      !g_browser_process->local_state()->GetBoolean(
-          prefs::kOmniboxEverywhereBackgroundMode)) {
+  if (!g_browser_process ||
+      !prefs::IsBackgroundModeEnabled(g_browser_process->local_state())) {
     return;
   }
 

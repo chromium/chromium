@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -37,6 +38,36 @@ bool IsEphemeralModelEnabled() {
 #else
   return false;
 #endif
+}
+
+bool IsBackgroundModeEnabled(const PrefService* local_state) {
+  if (!local_state ||
+      !local_state->GetBoolean(kOmniboxEverywhereBackgroundMode)) {
+    return false;
+  }
+  if (const PrefService::Preference* policy_pref =
+          local_state->FindPreference(::prefs::kBackgroundModeEnabled);
+      policy_pref && policy_pref->IsManaged() &&
+      !policy_pref->GetValue()->GetBool()) {
+    return false;
+  }
+  return true;
+}
+
+bool IsLaunchOnStartupEnabled(const PrefService* local_state) {
+  if (!local_state ||
+      !local_state->GetBoolean(kOmniboxEverywhereLaunchOnStartup)) {
+    return false;
+  }
+#if BUILDFLAG(IS_WIN)
+  if (const PrefService::Preference* policy_pref =
+          local_state->FindPreference(::prefs::kForegroundLaunchOnLogin);
+      policy_pref && policy_pref->IsManaged() &&
+      !policy_pref->GetValue()->GetBool()) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -1398,6 +1399,47 @@ TEST_F(OmniboxEverywhereControllerTest,
 
   // Controller should not have loaded the profile because Omnibox Everywhere
   // is disabled.
+  EXPECT_EQ(nullptr, controller.target_profile());
+}
+
+TEST_F(OmniboxEverywhereControllerTest,
+       BackgroundModePolicyDisabledDoesNotLoadProfileOnBackgroundStartup) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager.SetUp(temp_dir.GetPath()));
+
+  base::FilePath test_profile_path =
+      temp_dir.GetPath().AppendASCII("AsyncTestProfile");
+  ASSERT_TRUE(base::CreateDirectory(test_profile_path));
+
+  ProfileAttributesInitParams init_params;
+  init_params.profile_path = test_profile_path;
+  init_params.profile_name = u"AsyncTestProfile";
+  testing_profile_manager.profile_attributes_storage()->AddProfile(
+      std::move(init_params));
+
+  TestingPrefServiceSimple* local_state =
+      TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  local_state->SetFilePath(omnibox_everywhere::prefs::kLastTargetProfileDir,
+                           test_profile_path);
+  local_state->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode, true);
+  local_state->SetManagedPref(::prefs::kBackgroundModeEnabled,
+                              base::Value(false));
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kNoStartupWindow);
+
+  omnibox_everywhere::OmniboxEverywhereController controller(
+      base::BindRepeating(
+          [](Profile* profile) -> std::unique_ptr<WebUIContentsWrapper> {
+            return std::make_unique<TestWebUIContentsWrapper>(profile);
+          }));
+
+  task_environment()->RunUntilIdle();
   EXPECT_EQ(nullptr, controller.target_profile());
 }
 

@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_icon.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -61,6 +62,14 @@ OmniboxEverywhereBackgroundModeManager::OmniboxEverywhereBackgroundModeManager(
       base::BindRepeating(
           &OmniboxEverywhereBackgroundModeManager::OnPrefChanged,
           base::Unretained(this)));
+  if (g_browser_process->local_state()->FindPreference(
+          ::prefs::kBackgroundModeEnabled)) {
+    background_mode_policy_pref_member_.Init(
+        ::prefs::kBackgroundModeEnabled, g_browser_process->local_state(),
+        base::BindRepeating(
+            &OmniboxEverywhereBackgroundModeManager::OnPrefChanged,
+            base::Unretained(this)));
+  }
 #if BUILDFLAG(IS_WIN)
   launch_on_startup_pref_member_.Init(
       prefs::kOmniboxEverywhereLaunchOnStartup,
@@ -68,6 +77,14 @@ OmniboxEverywhereBackgroundModeManager::OmniboxEverywhereBackgroundModeManager(
       base::BindRepeating(
           &OmniboxEverywhereBackgroundModeManager::OnPrefChanged,
           base::Unretained(this)));
+  if (g_browser_process->local_state()->FindPreference(
+          ::prefs::kForegroundLaunchOnLogin)) {
+    launch_on_startup_policy_pref_member_.Init(
+        ::prefs::kForegroundLaunchOnLogin, g_browser_process->local_state(),
+        base::BindRepeating(
+            &OmniboxEverywhereBackgroundModeManager::OnPrefChanged,
+            base::Unretained(this)));
+  }
 #endif  // BUILDFLAG(IS_WIN)
   hotkey_string_pref_member_.Init(
       prefs::kOmniboxEverywhereHotkey, g_browser_process->local_state(),
@@ -123,11 +140,12 @@ void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
     return;
   }
 
-  const bool background_mode_enabled = background_mode_pref_member_.GetValue();
+  const bool background_mode_enabled =
+      prefs::IsBackgroundModeEnabled(g_browser_process->local_state());
 
 #if BUILDFLAG(IS_WIN)
   const bool launch_on_startup_enabled =
-      launch_on_startup_pref_member_.GetValue();
+      prefs::IsLaunchOnStartupEnabled(g_browser_process->local_state());
   const bool should_launch_on_startup =
       background_mode_enabled && launch_on_startup_enabled;
   // TODO(crbug.com/532190282): Load the persisted target profile on OS startup
@@ -176,8 +194,8 @@ void OmniboxEverywhereBackgroundModeManager::OnPrefChanged() {
 
 void OmniboxEverywhereBackgroundModeManager::UpdateProfileKeepAlive() {
   if (enabled_pref_member_.GetValue() &&
-      background_mode_pref_member_.GetValue() && profile_ &&
-      !profile_->IsOffTheRecord()) {
+      prefs::IsBackgroundModeEnabled(g_browser_process->local_state()) &&
+      profile_ && !profile_->IsOffTheRecord()) {
     if (!profile_keep_alive_ || profile_keep_alive_->profile() != profile_) {
       profile_keep_alive_ = ScopedProfileKeepAlive::TryAcquire(
           profile_, ProfileKeepAliveOrigin::kOmniboxEverywhere);

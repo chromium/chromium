@@ -97,6 +97,7 @@ class OmniboxEverywhereBackgroundModeManager
 
   BooleanPrefMember enabled_pref_member_;
   BooleanPrefMember background_mode_pref_member_;
+  BooleanPrefMember background_mode_policy_pref_member_;
   StringPrefMember hotkey_string_pref_member_;
   BooleanPrefMember hotkey_enabled_pref_member_;
   raw_ptr<Profile> profile_ = nullptr;
@@ -118,6 +119,7 @@ class OmniboxEverywhereBackgroundModeManager
   StartupLaunchManager::Client startup_launch_client_{
       StartupLaunchReason::kOmniboxEverywhere};
   BooleanPrefMember launch_on_startup_pref_member_;
+  BooleanPrefMember launch_on_startup_policy_pref_member_;
   // Redraws the search loupe when the taskbar switches between light and dark.
   StatusTrayThemeWatcherWin taskbar_theme_watcher_{base::BindRepeating(
       &OmniboxEverywhereBackgroundModeManager::UpdateStatusIconImage,

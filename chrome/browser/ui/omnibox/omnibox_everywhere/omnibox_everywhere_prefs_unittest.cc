@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -374,6 +375,73 @@ TEST_F(OmniboxEverywherePrefsTest, ResetLocalStatePrefs) {
   EXPECT_FALSE(local_state_.GetBoolean(kOmniboxEverywhereEphemeralModel));
 #endif
   EXPECT_EQ(base::FilePath(), local_state_.GetFilePath(kLastTargetProfileDir));
+}
+
+TEST_F(OmniboxEverywherePrefsTest, IsBackgroundModeEnabled) {
+  EXPECT_FALSE(IsBackgroundModeEnabled(nullptr));
+  EXPECT_FALSE(IsBackgroundModeEnabled(&local_state_));
+
+  local_state_.SetBoolean(kOmniboxEverywhereBackgroundMode, true);
+  EXPECT_TRUE(IsBackgroundModeEnabled(&local_state_));
+
+  local_state_.registry()->RegisterBooleanPref(::prefs::kBackgroundModeEnabled,
+                                               true);
+
+  // Unmanaged user preference does not disable Omnibox Everywhere background
+  // mode.
+  local_state_.SetBoolean(::prefs::kBackgroundModeEnabled, false);
+  EXPECT_TRUE(IsBackgroundModeEnabled(&local_state_));
+
+  // Managed policy set to false disables Omnibox Everywhere background mode.
+  local_state_.SetManagedPref(::prefs::kBackgroundModeEnabled,
+                              base::Value(false));
+  EXPECT_FALSE(IsBackgroundModeEnabled(&local_state_));
+
+  // Managed policy set to true allows Omnibox Everywhere background mode.
+  local_state_.SetManagedPref(::prefs::kBackgroundModeEnabled,
+                              base::Value(true));
+  EXPECT_TRUE(IsBackgroundModeEnabled(&local_state_));
+
+  // Removing the managed policy restores user preference behavior.
+  local_state_.SetManagedPref(::prefs::kBackgroundModeEnabled,
+                              base::Value(false));
+  EXPECT_FALSE(IsBackgroundModeEnabled(&local_state_));
+  local_state_.RemoveManagedPref(::prefs::kBackgroundModeEnabled);
+  EXPECT_TRUE(IsBackgroundModeEnabled(&local_state_));
+}
+
+TEST_F(OmniboxEverywherePrefsTest, IsLaunchOnStartupEnabled) {
+  EXPECT_FALSE(IsLaunchOnStartupEnabled(nullptr));
+  EXPECT_FALSE(IsLaunchOnStartupEnabled(&local_state_));
+
+  local_state_.SetBoolean(kOmniboxEverywhereLaunchOnStartup, true);
+  EXPECT_TRUE(IsLaunchOnStartupEnabled(&local_state_));
+
+#if BUILDFLAG(IS_WIN)
+  local_state_.registry()->RegisterBooleanPref(
+      ::prefs::kForegroundLaunchOnLogin, false);
+
+  // Default/unmanaged false does not disable Omnibox Everywhere launch on
+  // startup.
+  EXPECT_TRUE(IsLaunchOnStartupEnabled(&local_state_));
+
+  // Managed policy set to false disables Omnibox Everywhere launch on startup.
+  local_state_.SetManagedPref(::prefs::kForegroundLaunchOnLogin,
+                              base::Value(false));
+  EXPECT_FALSE(IsLaunchOnStartupEnabled(&local_state_));
+
+  // Managed policy set to true allows Omnibox Everywhere launch on startup.
+  local_state_.SetManagedPref(::prefs::kForegroundLaunchOnLogin,
+                              base::Value(true));
+  EXPECT_TRUE(IsLaunchOnStartupEnabled(&local_state_));
+
+  // Removing the managed policy restores user preference behavior.
+  local_state_.SetManagedPref(::prefs::kForegroundLaunchOnLogin,
+                              base::Value(false));
+  EXPECT_FALSE(IsLaunchOnStartupEnabled(&local_state_));
+  local_state_.RemoveManagedPref(::prefs::kForegroundLaunchOnLogin);
+  EXPECT_TRUE(IsLaunchOnStartupEnabled(&local_state_));
+#endif
 }
 
 }  // namespace

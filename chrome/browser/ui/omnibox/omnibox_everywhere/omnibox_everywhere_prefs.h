@@ -27,6 +27,16 @@ namespace prefs {
 // Returns true if the ephemeral model (close/hide on focus loss) is enabled.
 bool IsEphemeralModelEnabled();
 
+// Returns whether Omnibox Everywhere background mode is enabled, respecting
+// the BackgroundModeEnabled enterprise policy. Returns false if `local_state`
+// is null.
+bool IsBackgroundModeEnabled(const PrefService* local_state);
+
+// Returns whether Omnibox Everywhere launch on startup is enabled, respecting
+// the LaunchOnStartupEnabled enterprise policy. Returns false if `local_state`
+// is null.
+bool IsLaunchOnStartupEnabled(const PrefService* local_state);
+
 // Boolean preference specifying whether the global hotkey for Omnibox
 // Everywhere is enabled.
 inline constexpr char kHotkeyEnabled[] = "omnibox_everywhere.hotkey_enabled";
