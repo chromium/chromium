@@ -34,7 +34,7 @@ export function getHtml(this: ActionChipsElement) {
                 <cr-icon icon="${this.getIcon_(chip)}"></cr-icon>
               ` : ''}
             </div>
-            <div class="action-chip-text-container">
+            <div class="action-chip-text-container" dir="auto">
               ${chip.suggestTemplateInfo.primaryText.text ? html`
                 <span class="chip-title">
                   ${chip.suggestTemplateInfo.primaryText.text}
