@@ -19,16 +19,12 @@ build_webui("build") {
     "controls/extension_controlled_indicator.ts",
   ]
 
-  css_files = [
-    "controls/extension_controlled_indicator.css",
-    "md_select.css",
-  ]
+  css_files = [ "controls/extension_controlled_indicator.css" ]
 
   ts_files = [
     "a11y_page/ax_annotations_browser_proxy.ts",
     "a11y_page/captions_browser_proxy.ts",
     "appearance_page/fonts_browser_proxy.ts",
-    "controls/cr_policy_pref_mixin.ts",
     "controls/cr_policy_pref_mixin_lit.ts",
     "extension_control_browser_proxy.ts",
     "lifetime_browser_proxy.ts",
@@ -37,14 +33,11 @@ build_webui("build") {
     "prefs/equality_comparators.ts",
     "prefs/pref_util.ts",
     "prefs2/prefs_browser_proxy.ts",
-    "prefs2/pref_key_observer_mixin.ts",
     "prefs2/pref_key_observer_mixin_lit.ts",
     "prefs2/pref_service.ts",
-    "prefs2/pref_service_observer_mixin.ts",
     "prefs2/pref_service_observer_mixin_lit.ts",
     "privacy_page/privacy_page_browser_proxy.ts",
     "security_page/security_page_browser_proxy.ts",
-    "web_ui_listener_mixin.ts",
   ]
 
   ts_composite = true
@@ -63,7 +56,6 @@ build_webui("build") {
   }
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

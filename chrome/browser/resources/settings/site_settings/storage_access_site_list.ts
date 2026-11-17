@@ -13,8 +13,9 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './storage_access_site_list_entry.js';
 import '../settings_shared.css.js';
 
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
 
 import type {ContentSetting} from './constants.js';
 import {ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';

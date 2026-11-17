@@ -13,15 +13,14 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '/shared/settings/md_select.css.js';
 import '../settings_shared.css.js';
 import '../settings_page/settings_subpage.js';
 import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';
 import './cr_lazy_render.js';
+import './md_select.css.js';
 import './site_entry.js';
 
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -36,6 +35,7 @@ import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
 
 import {getTemplate} from './all_sites.html.js';
 import {AllSitesAction2, AllSitesDialog, ContentSetting, SortMethod} from './constants.js';

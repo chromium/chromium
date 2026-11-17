@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {PrefService} from './pref_service.js';
 
 type PrefObject<T> = chrome.settingsPrivate.PrefObject<T>;
 type ObserverCallback<T> = (pref: Readonly<PrefObject<T>>) => void;

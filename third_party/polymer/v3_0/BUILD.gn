@@ -122,7 +122,6 @@ ts_library("library") {
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/lens/shared:build_ts",
     "//chrome/browser/resources/settings:build_ts",
-    "//chrome/browser/resources/settings_shared:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/lens:build_ts",

@@ -9,6 +9,7 @@ const replacements = new Map([
   ['HelpBubbleMixin', 'HelpBubbleMixinLit'],
   ['I18nMixin', 'I18nMixinLit'],
   ['PolymerElement', 'CrLitElement'],
+  ['PrefServiceObserverMixin', 'PrefServiceObserverMixinLit'],
   ['WebUiListenerMixin', 'WebUiListenerMixinLit'],
 
   // URLs
@@ -25,7 +26,15 @@ const replacements = new Map([
     '//resources/cr_elements/i18n_mixin_lit.js',
   ],
   [
-    '/shared/settings/web_ui_listener_mixin.js',
+    '../pref_service_observer_mixin.js',
+    '/shared/settings/prefs2/pref_service_observer_mixin_lit.js',
+  ],
+  [
+    '../../web_ui_listener_mixin.js',
+    'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js',
+  ],
+  [
+    '../web_ui_listener_mixin.js',
     'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js',
   ],
   [

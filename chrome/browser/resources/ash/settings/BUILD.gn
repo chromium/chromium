@@ -370,6 +370,7 @@ build_webui("build") {
     "common/route_origin_mixin.ts",
     "common/setting_id_param_util.ts",
     "common/types.ts",
+    "controls/cr_policy_pref_mixin.ts",
     "controls/pref_control_mixin.ts",
     "controls/settings_boolean_control_mixin.ts",
     "controls/v2/base_row_mixin.ts",

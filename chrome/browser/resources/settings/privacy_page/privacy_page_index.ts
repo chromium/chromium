@@ -9,7 +9,6 @@ import '../settings_shared.css.js';
 import './privacy_guide/privacy_guide_promo.js';
 import './privacy_page.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -18,6 +17,7 @@ import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/
 import {loadTimeData} from '../i18n_setup.js';
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
+import {PrefServiceObserverMixin} from '../pref_service_observer_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin} from '../router.js';
 import type {Route, SettingsRoutes} from '../router.js';

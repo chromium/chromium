@@ -16,7 +16,6 @@ export {ChromeSigninAccessPoint, ChromeSigninUserChoice, PageStatus, SignedInSta
 export type {ChromeSigninUserChoiceInfo, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 export {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
 export {PrefService} from '/shared/settings/prefs2/pref_service.js';
-export {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 export {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 export type {PrefServiceObserverMixinLitInterface} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 export {PrefsBrowserProxy} from '/shared/settings/prefs2/prefs_browser_proxy.js';
@@ -24,7 +23,6 @@ export {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy
 export type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 export {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 export type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
-export {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 export {browserProxyFactory as customizeColorSchemeModeBrowserProxyFactory, ColorSchemeMode, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeClientRemote, CustomizeColorSchemeModeHandlerRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 export type {BrowserProxy as CustomizeColorSchemeModeBrowserProxy} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -126,6 +124,7 @@ export {ExceptionListElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE} from './perf
 export {ExceptionAddDialogTabs, ExceptionTabbedAddDialogElement} from './performance_page/tab_discard/exception_tabbed_add_dialog.js';
 export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './performance_page/tab_discard/exception_validation_mixin.js';
 export {HOVER_CARD_IMAGES_PREF, HOVER_CARD_MEMORY_USAGE_PREF, SettingsTabHoverPreviewPageElement} from './performance_page/tab_hover_preview_page.js';
+export {PrefServiceObserverMixin} from './pref_service_observer_mixin.js';
 export {HatsBrowserProxyImpl, SecurityPageInteraction, TrustSafetyInteraction} from './privacy_page/hats_browser_proxy.js';
 export type {HatsBrowserProxy} from './privacy_page/hats_browser_proxy.js';
 export {PrivacyGuideBrowserProxyImpl} from './privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
@@ -172,5 +171,6 @@ export type {SearchResult, SettingsSearchHandlerInterface} from './settings_sear
 export {MAX_QUERY_LENGTH, SettingsUiElement} from './settings_ui/settings_ui.js';
 export {SiteFaviconElement} from './site_favicon.js';
 export {convertDateToWindowsEpoch} from './time.js';
+export {WebUiListenerMixin} from './web_ui_listener_mixin.js';
 export {WindowProxyImpl} from './window_proxy.js';
 export type {WindowProxy} from './window_proxy.js';

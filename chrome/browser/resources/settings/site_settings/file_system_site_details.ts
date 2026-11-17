@@ -10,7 +10,6 @@
 import './file_system_site_entry_item.js';
 import '../settings_page/settings_subpage.js';
 
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -19,6 +18,7 @@ import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './file_system_site_details.html.js';

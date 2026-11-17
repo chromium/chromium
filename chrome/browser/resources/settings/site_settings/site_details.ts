@@ -26,8 +26,6 @@ import './all_sites_icons.html.js';
 import './clear_storage_dialog_shared.css.js';
 import './site_details_permission.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -36,10 +34,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+import {PrefServiceObserverMixin} from '../pref_service_observer_mixin.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
 
 import {ChooserType, ContentSetting, ContentSettingsTypes, JavascriptOptimizerSetting} from './constants.js';
 import {getTemplate} from './site_details.html.js';

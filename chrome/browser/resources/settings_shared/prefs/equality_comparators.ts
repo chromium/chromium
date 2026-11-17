@@ -51,8 +51,7 @@ function objectsEqual(
     return false;
   }
 
-  for (let i = 0; i < keys1.length; i++) {
-    const key = keys1[i];
+  for (const key of keys1) {
     if (!deepEqual(obj1[key], obj2[key])) {
       return false;
     }

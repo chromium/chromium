@@ -4,9 +4,9 @@
 
 /** @fileoverview Handles interprocess communication for the privacy page. */
 
-// clang-format off
+// <if expr="_google_chrome and not is_chromeos">
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
-// clang-format on
+// </if>
 
 export interface MetricsReporting {
   enabled: boolean;

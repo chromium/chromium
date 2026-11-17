@@ -22,7 +22,6 @@ import '../settings_shared.css.js';
 import './recent_site_permissions.js';
 import './site_settings_list.js';
 
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -37,6 +36,7 @@ import type {SafetyHubBrowserProxy, UnusedSitePermissions} from '../safety_hub/s
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from '../safety_hub/safety_hub_browser_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
+import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
 
 import type {SettingsRecentSitePermissionsElement} from './recent_site_permissions.js';
 import type {CategoryListItem} from './site_settings_list.js';

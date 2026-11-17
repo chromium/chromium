@@ -356,6 +356,7 @@ build_webui("build") {
     "people_page/sync_encryption_options.ts",
     "people_page/sync_page.html.ts",
     "people_page/sync_page.ts",
+    "pref_service_observer_mixin.ts",
     "privacy_page/cookies_page.html.ts",
     "privacy_page/cookies_page.ts",
     "privacy_page/do_not_track_toggle.html.ts",
@@ -515,6 +516,7 @@ build_webui("build") {
     "time.ts",
     "tooltip_mixin.ts",
     "tooltip_mixin_lit.ts",
+    "web_ui_listener_mixin.ts",
     "window_proxy.ts",
   ]
 
@@ -777,6 +779,7 @@ build_webui("build") {
     "site_settings/chooser_exception_list.css",
     "site_settings/chooser_exception_list_entry.css",
     "site_settings/clear_storage_dialog_shared.css",
+    "site_settings/md_select.css",
     "site_settings/media_picker.css",
     "site_settings/search_highlight_style.css",
     "site_settings/settings_category_default_radio_group.css",

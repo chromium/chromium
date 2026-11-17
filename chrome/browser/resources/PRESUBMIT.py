@@ -204,10 +204,9 @@ def CheckNoNewPolymer(input_api, output_api):
   EXCLUDED_PATHS = [
     'chrome/browser/resources/ash/',
     'chrome/browser/resources/chromeos/',
-    'chrome/browser/resources/lens/overlay/help_bubble_mixin.ts',
-    'chrome/browser/resources/password_manager/',
-    'chrome/browser/resources/settings/site_settings/',
-    'chrome/browser/resources/settings_shared/',
+    # TODO(crbug.com/393471368): Remove settings/* exceptions in next CL.
+    'chrome/browser/resources/settings/pref_service_observer_mixin.ts',
+    'chrome/browser/resources/settings/web_ui_listener_mixin.ts',
   ]
 
   normalized_excluded_paths = []

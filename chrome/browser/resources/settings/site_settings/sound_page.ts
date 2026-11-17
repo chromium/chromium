@@ -10,12 +10,12 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import type {SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';

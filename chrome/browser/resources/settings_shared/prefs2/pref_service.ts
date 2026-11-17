@@ -412,7 +412,7 @@ export class PrefService {
     this.isDispatching_ = true;
     try {
       while (this.eventQueueIndex_ < this.eventQueue_.length) {
-        const nextEvent = this.eventQueue_[this.eventQueueIndex_];
+        const nextEvent = this.eventQueue_[this.eventQueueIndex_]!;
         this.eventQueueIndex_++;
         this.eventTarget_.dispatchEvent(nextEvent);
       }

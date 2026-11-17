@@ -15,12 +15,12 @@ import '../settings_page/settings_subpage.js';
 import './site_list.js';
 import './site_settings_shared.css.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsCollapseRadioButtonElement} from '../controls/collapse_radio_button.js';
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
+import {PrefServiceObserverMixin} from '../pref_service_observer_mixin.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';

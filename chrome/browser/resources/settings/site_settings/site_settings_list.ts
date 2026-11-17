@@ -7,8 +7,6 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -18,11 +16,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {BaseMixin} from '../base_mixin.js';
 import type {FocusConfig} from '../focus_config.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {PrefServiceObserverMixin} from '../pref_service_observer_mixin.js';
 import type {Route} from '../router.js';
 import {Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsState} from '../site_settings/constants.js';
 import type {SiteSettingsBrowserProxy} from '../site_settings/site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from '../site_settings/site_settings_browser_proxy.js';
+import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
 
 import {getTemplate} from './site_settings_list.html.js';
 
