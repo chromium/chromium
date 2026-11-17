@@ -8094,6 +8094,7 @@ from previous Chrome versions.
       label="JourneysOnDeviceClusteringContentClustering:enabled"/>
   <int value="-2049843624"
       label="TrustedWebActivityContactsDelegation:disabled"/>
+  <int value="-2049650166" label="NtpWidgetPlatform:disabled"/>
   <int value="-2049260649"
       label="autofill-custom-form-control-scripts-dir:enabled"/>
   <int value="-2048927838" label="AutoplayWhitelistSettings:enabled"/>
@@ -16250,6 +16251,7 @@ from previous Chrome versions.
   <int value="356959150" label="SetShape:enabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
   <int value="357165937" label="ShareToGoogleCollections:enabled"/>
+  <int value="357501886" label="NtpWidgetPlatform:enabled"/>
   <int value="357782837" label="CredentialManagementUnifiedUi:enabled"/>
   <int value="357832577" label="OmniboxSuggestionHoverFillShape:disabled"/>
   <int value="358399482" label="enable-high-dpi-fixed-position-compositing"/>

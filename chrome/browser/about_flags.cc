@@ -7689,6 +7689,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-shortcuts-redesign", flag_descriptions::kNtpShortcutsRedesignName,
      flag_descriptions::kNtpShortcutsRedesignDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpShortcutsRedesign)},
+
+    {"ntp-widget-platform", flag_descriptions::kNtpWidgetPlatformName,
+     flag_descriptions::kNtpWidgetPlatformDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpWidgetPlatform)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

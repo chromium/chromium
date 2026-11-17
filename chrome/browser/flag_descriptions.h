@@ -7134,6 +7134,10 @@ inline constexpr char kNtpWallpaperSearchButtonAnimationDescription[] =
     "Enables animation for New Tab Page's Wallpaper Search button. Requires "
     "#ntp-wallpaper-search-button to be enabled too.";
 
+inline constexpr char kNtpWidgetPlatformName[] = "NTP Widget Platform";
+inline constexpr char kNtpWidgetPlatformDescription[] =
+    "Enables the customizable widget platform on the New Tab Page.";
+
 inline constexpr char kHappinessTrackingSurveysForDesktopDemoName[] =
     "Happiness Tracking Surveys Demo";
 inline constexpr char kHappinessTrackingSurveysForDesktopDemoDescription[] =

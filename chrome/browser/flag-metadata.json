@@ -7401,6 +7401,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "ntp-widget-platform",
+    "owners": [ "hannahrogers@google.com", "rtatum@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "october-test-uxr",
     "owners": [ "yfriedman@google.com" ],
     "expiry_milestone": 160
