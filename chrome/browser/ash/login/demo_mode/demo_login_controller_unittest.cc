@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -167,6 +169,8 @@ class DemoLoginControllerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
 
+    // Needed by `ExistingUserController::DeviceSettingsChanged()`.
+    user_adding_screen_ = UserAddingScreen::Create();
     existing_user_controller_ = std::make_unique<ExistingUserController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
@@ -184,6 +188,7 @@ class DemoLoginControllerTest : public testing::Test {
 
   void TearDown() override {
     existing_user_controller_.reset();
+    user_adding_screen_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     chromeos::PowerPolicyController::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
@@ -308,6 +313,7 @@ class DemoLoginControllerTest : public testing::Test {
           TestingBrowserProcess::GetGlobal()->local_state())};
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  std::unique_ptr<UserAddingScreen> user_adding_screen_;
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 
   // Required for `user_manager::UserList`:

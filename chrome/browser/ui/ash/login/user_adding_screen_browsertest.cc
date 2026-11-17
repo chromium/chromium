@@ -45,9 +45,14 @@ class UserAddingScreenTest : public LoginManagerTest,
   UserAddingScreenTest(const UserAddingScreenTest&) = delete;
   UserAddingScreenTest& operator=(const UserAddingScreenTest&) = delete;
 
-  void SetUpInProcessBrowserTestFixture() override {
-    LoginManagerTest::SetUpInProcessBrowserTestFixture();
+  void SetUpOnMainThread() override {
+    LoginManagerTest::SetUpOnMainThread();
     UserAddingScreen::Get()->AddObserver(this);
+  }
+
+  void TearDownOnMainThread() override {
+    UserAddingScreen::Get()->RemoveObserver(this);
+    LoginManagerTest::TearDownOnMainThread();
   }
 
   void WaitUntilUserAddingFinishedOrCancelled() {

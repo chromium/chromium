@@ -1013,6 +1013,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Enable per-user metrics support as soon as user_manager is created.
   g_browser_process->metrics_service()->InitPerUserMetrics();
 
+  user_adding_screen_ = UserAddingScreen::Create();
+
   screen_locker_controller_ = std::make_unique<ScreenLockerController>(
       g_browser_process->local_state(),
       g_browser_process->GetFeatures()->application_locale_storage(),
@@ -1020,7 +1022,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       g_browser_process->platform_part()->browser_policy_connector_ash(),
       SessionManagerClient::Get(), session_termination_manager_.get(),
       session_manager::SessionManager::Get(), user_manager::UserManager::Get(),
-      UserAddingScreen::Get(),
+      user_adding_screen_.get(),
       g_browser_process->platform_part()
           ->multi_user_sign_in_policy_controller(),
       g_browser_process->platform_part()->GetSystemClock());
@@ -1720,6 +1722,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   fast_transition_observer_.reset();
   network_throttling_observer_.reset();
   screen_locker_controller_.reset();
+  user_adding_screen_.reset();
   low_disk_notification_.reset();
   smart_charging_manager_.reset();
   adaptive_screen_brightness_manager_.reset();

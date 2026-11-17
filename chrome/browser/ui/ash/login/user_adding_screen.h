@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_ASH_LOGIN_USER_ADDING_SCREEN_H_
 #define CHROME_BROWSER_UI_ASH_LOGIN_USER_ADDING_SCREEN_H_
 
+#include <memory>
+
 namespace ash {
 
 // An interface that defines screen for adding users into multi-profile session.
-// Current implementation is a singleton.
-// TODO(dzhioev): get rid of singleton.
 class UserAddingScreen {
  public:
   struct Observer {
@@ -20,7 +20,12 @@ class UserAddingScreen {
 
   UserAddingScreen(const UserAddingScreen&) = delete;
   UserAddingScreen& operator=(const UserAddingScreen&) = delete;
+  virtual ~UserAddingScreen();
 
+  // Creates the global instance. Only one instance may exist at a time.
+  static std::unique_ptr<UserAddingScreen> Create();
+
+  // Returns the global instance created by `Create()`.
   static UserAddingScreen* Get();
 
   virtual void Start() = 0;
@@ -32,7 +37,6 @@ class UserAddingScreen {
 
  protected:
   UserAddingScreen();
-  virtual ~UserAddingScreen();
 };
 
 }  // namespace ash

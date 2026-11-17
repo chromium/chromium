@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 
+#include <memory>
 #include <optional>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/browser_process.h"
@@ -27,8 +29,15 @@
 namespace ash {
 namespace {
 
+UserAddingScreen* g_instance = nullptr;
+
 class UserAddingScreenImpl : public UserAddingScreen {
  public:
+  UserAddingScreenImpl();
+  UserAddingScreenImpl(const UserAddingScreenImpl&) = delete;
+  UserAddingScreenImpl& operator=(const UserAddingScreenImpl&) = delete;
+  ~UserAddingScreenImpl() override;
+
   void Start() override;
   void Cancel() override;
   bool IsRunning() override;
@@ -36,19 +45,12 @@ class UserAddingScreenImpl : public UserAddingScreen {
   void AddObserver(UserAddingScreen::Observer* observer) override;
   void RemoveObserver(UserAddingScreen::Observer* observer) override;
 
-  static UserAddingScreenImpl* GetInstance();
-
  private:
-  friend struct base::DefaultSingletonTraits<UserAddingScreenImpl>;
-
   void OnDisplayHostCompletion();
-
-  UserAddingScreenImpl();
-  ~UserAddingScreenImpl() override;
 
   base::ObserverList<UserAddingScreen::Observer>::UncheckedAndDanglingUntriaged
       observers_;
-  raw_ptr<LoginDisplayHost, DanglingUntriaged> display_host_;
+  raw_ptr<LoginDisplayHost, DanglingUntriaged> display_host_ = nullptr;
 
   UserAddingScreenInputMethodsController im_controller_;
 
@@ -58,6 +60,16 @@ class UserAddingScreenImpl : public UserAddingScreen {
   // the screen was opened from the login screen, where no session exists.
   std::optional<AccountId> interrupted_user_;
 };
+
+UserAddingScreenImpl::UserAddingScreenImpl() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+UserAddingScreenImpl::~UserAddingScreenImpl() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void UserAddingScreenImpl::Start() {
   // TODO(crbug.com/403154552): Avoid g_browser_process.
@@ -161,22 +173,20 @@ void UserAddingScreenImpl::OnDisplayHostCompletion() {
   }
 }
 
-// static
-UserAddingScreenImpl* UserAddingScreenImpl::GetInstance() {
-  return base::Singleton<UserAddingScreenImpl>::get();
-}
-
-UserAddingScreenImpl::UserAddingScreenImpl() : display_host_(nullptr) {}
-
-UserAddingScreenImpl::~UserAddingScreenImpl() = default;
-
-}  // anonymous namespace
+}  // namespace
 
 UserAddingScreen::UserAddingScreen() = default;
 UserAddingScreen::~UserAddingScreen() = default;
 
+// static
+std::unique_ptr<UserAddingScreen> UserAddingScreen::Create() {
+  return std::make_unique<UserAddingScreenImpl>();
+}
+
+// static
 UserAddingScreen* UserAddingScreen::Get() {
-  return UserAddingScreenImpl::GetInstance();
+  CHECK(g_instance);
+  return g_instance;
 }
 
 }  // namespace ash

@@ -107,6 +107,7 @@ class SigninProfileHandler;
 class SuspendPerfReporter;
 class SystemTokenCertDBInitializer;
 class TokenHandleStoreFactory;
+class UserAddingScreen;
 class UserLoginPermissionTracker;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
@@ -349,6 +350,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 #if BUILDFLAG(USE_CUPS)
   std::unique_ptr<ash::LocalPrinter> local_printer_;
 #endif
+
+  std::unique_ptr<UserAddingScreen> user_adding_screen_;
 
   std::unique_ptr<ScreenLockerController> screen_locker_controller_;
 

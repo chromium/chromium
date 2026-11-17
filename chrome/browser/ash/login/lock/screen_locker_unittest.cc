@@ -173,6 +173,7 @@ class ScreenLockerUnitTest : public testing::Test {
 
     // Initialize ScreenLocker dependencies:
     SystemSaltGetter::Initialize();
+    user_adding_screen_ = UserAddingScreen::Create();
     screen_locker_controller_ = std::make_unique<ScreenLockerController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
@@ -184,12 +185,13 @@ class ScreenLockerUnitTest : public testing::Test {
             ->browser_policy_connector_ash(),
         SessionManagerClient::Get(), &session_termination_manager_,
         session_manager_.get(), fake_user_manager_.Get(),
-        UserAddingScreen::Get(), multi_user_sign_in_policy_controller_.get(),
+        user_adding_screen_.get(), multi_user_sign_in_policy_controller_.get(),
         system_clock_.get());
   }
 
   void TearDown() override {
     screen_locker_controller_.reset();
+    user_adding_screen_.reset();
     assistant_delegate_.reset();
     user_session_manager_->Shutdown();
 
@@ -293,6 +295,7 @@ class ScreenLockerUnitTest : public testing::Test {
   std::optional<input_method::ScopedInputMethodManagerForTesting<
       input_method::MockInputMethodManagerImpl>>
       input_method_manager_;
+  std::unique_ptr<UserAddingScreen> user_adding_screen_;
   std::unique_ptr<ScreenLockerController> screen_locker_controller_;
 };
 
