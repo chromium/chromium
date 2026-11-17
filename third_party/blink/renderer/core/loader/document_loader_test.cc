@@ -1264,5 +1264,66 @@ TEST(DocumentLoaderDidOpenInputStreamTest, FiltersCommitUrl) {
                                       1);
 }
 
+class RecordingDidCommitDocumentReplacementLocalFrameHost
+    : public FakeLocalFrameHost {
+ public:
+  void DidCommitDocumentReplacement() override { ++count_; }
+
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+class RecordingDidCommitDocumentReplacementWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  void DidCommitDocumentReplacementNavigation(WebDocumentLoader*) override {
+    ++count_;
+  }
+
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+TEST(DocumentLoaderDidCommitDocumentReplacementTest,
+     NotifiesLocalFrameHostAndClient) {
+  test::TaskEnvironment task_environment;
+  RecordingDidCommitDocumentReplacementWebFrameClient web_frame_client;
+  RecordingDidCommitDocumentReplacementLocalFrameHost local_frame_host;
+  local_frame_host.Init(
+      web_frame_client.GetRemoteNavigationAssociatedInterfaces());
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize(&web_frame_client);
+  LocalFrame* local_frame = To<LocalFrame>(web_view->GetPage()->MainFrame());
+
+  // Regular commit should not trigger DidCommitDocumentReplacement.
+  const KURL url("https://example.com/index.html");
+  auto regular_params = WebNavigationParams::CreateWithHTMLStringForTesting(
+      base::span_from_cstring("<p>hello</p>"), url);
+  local_frame->Loader().CommitNavigation(std::move(regular_params), nullptr);
+  local_frame_host.FlushForTesting();
+  EXPECT_EQ(local_frame_host.count(), 0);
+  EXPECT_EQ(web_frame_client.count(), 0);
+
+  // Document replacement commit (e.g. javascript: URL) should notify both
+  // LocalFrameHost and WebLocalFrameClient.
+  auto replacement_params = local_frame->Loader()
+                                .GetDocumentLoader()
+                                ->CreateWebNavigationParamsToCloneDocument();
+  WebNavigationParams::FillStaticResponse(
+      replacement_params.get(), "text/html", "UTF-8",
+      base::span_from_cstring("<p>replaced</p>"));
+  replacement_params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+  local_frame->Loader().CommitNavigation(std::move(replacement_params), nullptr,
+                                         CommitReason::kJavascriptUrl);
+  local_frame_host.FlushForTesting();
+  EXPECT_EQ(local_frame_host.count(), 1);
+  EXPECT_EQ(web_frame_client.count(), 1);
+}
+
 }  // namespace
 }  // namespace blink

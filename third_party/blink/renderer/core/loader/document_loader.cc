@@ -3512,6 +3512,7 @@ void DocumentLoader::CommitNavigation() {
     if (commit_reason_ == CommitReason::kInitialization) {
       // There's no observers yet so nothing to notify.
     } else if (IsJavaScriptURLOrXSLTCommitOrDiscard()) {
+      frame_->GetLocalFrameHostRemote().DidCommitDocumentReplacement();
       GetLocalFrameClient().DidCommitDocumentReplacementNavigation(this);
     } else {
       GetLocalFrameClient().DispatchDidCommitLoad(

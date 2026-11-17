@@ -800,6 +800,13 @@ interface LocalFrameHost {
   // document in the frame should be updated to `url` per step 12 of
   // https://whatwg.org/C/dynamic-markup-insertion.html#document-open-steps.
   DidOpenDocumentInputStream(url.mojom.Url url);
+
+  // Sent by the renderer when it replaces the frame's document with a new one
+  // without a navigation that commits in the browser: the result of a
+  // javascript: URL, of an XSLT transform, or of discarding the frame. The
+  // browser keeps its document (e.g. the DocumentToken stays the same), but
+  // must drop state that is tied to the replaced document in the renderer.
+  DidCommitDocumentReplacement();
 };
 
 // Implemented in Browser, this interface defines frame-specific methods
