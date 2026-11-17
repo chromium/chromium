@@ -2052,7 +2052,9 @@ bool BrowserAccessibilityManager::IsRootFrameManager() const {
     BrowserAccessibilityManager* parent_manager =
         BrowserAccessibilityManager::FromID(GetParentTreeID());
     CHECK(parent_manager, base::NotFatalUntil::M163);
-    CHECK(!parent_manager->IsWebContentSource(), base::NotFatalUntil::M163);
+    // TODO(crbug.com/585393827): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!parent_manager->IsWebContentSource());
   }
   return is_root_tree;
 }
