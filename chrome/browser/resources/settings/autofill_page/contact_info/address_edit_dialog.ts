@@ -18,6 +18,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import type {CountryDetailManagerProxy} from '../country_detail_manager_proxy.js';
 import {CountryDetailManagerProxyImpl} from '../country_detail_manager_proxy.js';
 
@@ -97,6 +98,8 @@ export class SettingsAddressEditDialogElement extends
   protected accessor canSave_: boolean = false;
   protected accessor isAccountAddress_: boolean = false;
   protected accessor accountAddressRecordTypeNotice_: string = '';
+  private readonly settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private addressFields_:
       Map<chrome.autofillPrivate.FieldType, string|undefined> = new Map();
@@ -305,7 +308,18 @@ export class SettingsAddressEditDialogElement extends
     return !country.countryCode;
   }
 
-  protected getPhoneNumberInputClass_(
+  protected getInputClass_(item: uiComponents.AddressComponentUi): string {
+    const classes = [
+      item.additionalClassName,
+      this.getPhoneNumberInputClass_(item.fieldType),
+    ];
+    if (this.settingsRefresh2026Enabled_) {
+      classes.push('stroked');
+    }
+    return classes.join(' ');
+  }
+
+  private getPhoneNumberInputClass_(
       fieldType: chrome.autofillPrivate.FieldType): string {
     if (fieldType ===
         chrome.autofillPrivate.FieldType.PHONE_HOME_WHOLE_NUMBER) {

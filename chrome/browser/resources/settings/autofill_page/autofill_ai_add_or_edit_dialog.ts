@@ -178,6 +178,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   private accessor autofillEnableGradientGoogleLogos_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   protected accessor saveInProgress_: boolean = false;
+  protected readonly settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   private requiredAttributeTypes_: AttributeType[] = [];
   private entityDataManager_: EntityDataManagerProxy =

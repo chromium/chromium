@@ -37,7 +37,7 @@ export function getHtml(this: SettingsAddressEditDialogElement) {
             <cr-textarea label="${item.label}" .value="${item.value}"
                 @value-changed="${this.onValueChanged_}" data-row="${rowIndex}"
                 data-column="${columnIndex}"
-                class="address-column ${item.additionalClassName}"
+                class="address-column ${this.getInputClass_(item)}"
                 spellcheck="false" maxlength="1000"
                 ?required="${item.isRequired}" ?invalid="${
                     this.isVisuallyInvalid_(item.isValidatable, item.isValid)}">
@@ -46,8 +46,7 @@ export function getHtml(this: SettingsAddressEditDialogElement) {
             <cr-input type="text" label="${item.label}" .value="${item.value}"
                 @value-changed="${this.onValueChanged_}" data-row="${rowIndex}"
                 data-column="${columnIndex}" spellcheck="false" maxlength="1000"
-                class="address-column ${item.additionalClassName}
-                        ${this.getPhoneNumberInputClass_(item.fieldType)}"
+                class="address-column ${this.getInputClass_(item)}"
                 ?required="${item.isRequired}" ?invalid="${
                     this.isVisuallyInvalid_(item.isValidatable, item.isValid)}">
             </cr-input>

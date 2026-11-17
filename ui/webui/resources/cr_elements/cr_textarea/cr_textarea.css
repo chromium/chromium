@@ -23,6 +23,7 @@ textarea {
 
 #input-container {
   background-color: var(--cr-input-background-color);
+  border: var(--cr-input-border, none);
 }
 
 :host([invalid]) #underline {

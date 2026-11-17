@@ -161,6 +161,7 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
           chrome.autofillPrivate.AttributeTypeDataType.STRING) ?
           html`
         <cr-input id="attribute-instance-field" type="text"
+            class="${this.settingsRefresh2026Enabled_ ? 'stroked' : ''}"
             label="${this.computeInputLabel_(attributeInstanceItem)}"
             .value="${attributeInstanceItem.value as string}"
             data-index="${index}" spellcheck="false" maxlength="1000"

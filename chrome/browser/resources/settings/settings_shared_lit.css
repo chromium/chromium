@@ -37,12 +37,15 @@
     padding: var(--settings-header-padding);
   }
 
-  cr-input.stroked {
+  cr-input.stroked,
+  cr-textarea.stroked {
     --cr-input-hover-background-color: transparent;
   }
 
-  cr-input.stroked[disabled] {
+  cr-input.stroked[disabled],
+  cr-textarea.stroked[disabled] {
     --cr-input-background-color: var(--cr-hover-background-color);
+    --cr-input-border: 1px solid transparent;
   }
 
   cr-link-row {
