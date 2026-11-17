@@ -180,9 +180,22 @@ JsInProcessFuzzer::GetChromiumCommandLineArguments() {
   base::FilePath path_dir = dir.Take();
   std::string user_data_dir = "--user-data-dir=" + path_dir.value();
 #endif
+#if BUILDFLAG(IS_FUZZILLI)
+  // Fuzzilli programs exercise the Mojo interfaces of the browser, not V8, so
+  // V8 is kept quiet here:
+  // - No --jit-fuzzing: it makes V8 optimize functions after a handful of
+  //   calls, on background threads, which adds coverage that does not depend
+  //   on the program and makes executions slower.
+  constexpr base::CommandLine::CharType kJsFlags[] = FILE_PATH_LITERAL(
+      "--js-flags=--allow-natives-syntax --expose-gc --fuzzing --future "
+      "--harmony");
+#else
+  constexpr base::CommandLine::CharType kJsFlags[] = FILE_PATH_LITERAL(
+      "--js-flags=--jit-fuzzing --allow-natives-syntax "
+      "--expose-gc --fuzzing --future --harmony");
+#endif
   return {
-      FILE_PATH_LITERAL("--js-flags=--jit-fuzzing --allow-natives-syntax "
-                        "--expose-gc --fuzzing --future --harmony"),
+      kJsFlags,
       FILE_PATH_LITERAL("--enable-blink-features=MojoJS,MojoJSTest"),
       FILE_PATH_LITERAL("--enable-experimental-web-platform-features"),
       // Disable this to avoid crashing the testing framework when invalid Mojo
