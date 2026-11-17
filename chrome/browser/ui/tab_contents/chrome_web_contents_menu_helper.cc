@@ -9,14 +9,17 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
 content::ContextMenuParams AddContextMenuParamsPropertiesFromPreferences(
     content::WebContents* web_contents,
     const content::ContextMenuParams& params) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  // Use the prefs of the user that the WebContents is shown for, which differs
+  // from the profile of the WebContents in TopChromeWebUIProfile.
+  Profile* profile = Profile::FromBrowserContext(
+      content::GetUserBrowserContext(*web_contents));
   PrefService* prefs = profile->GetPrefs();
 
   if (!prefs->GetBoolean(

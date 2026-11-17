@@ -203,6 +203,8 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
 
   content::ContextMenuParams params_;
   const raw_ptr<content::WebContents, DanglingUntriaged> source_web_contents_;
+  // The BrowserContext of the user that the frame is shown for, whose prefs and
+  // services apply to the menu. See content::GetUserBrowserContext().
   const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   ui::SimpleMenuModel menu_model_;
