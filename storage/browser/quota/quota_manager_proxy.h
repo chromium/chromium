@@ -212,7 +212,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // amount of space left in the given bucket. Checks against quota remaining in
   // the bucket and across the whole StorageKey. The returned value is the
   // amount of space remaining in bytes.
-  void GetBucketSpaceRemaining(
+  virtual void GetBucketSpaceRemaining(
       const BucketLocator& bucket,
       base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback);
 

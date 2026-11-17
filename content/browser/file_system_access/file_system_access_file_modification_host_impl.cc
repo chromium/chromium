@@ -105,27 +105,21 @@ void FileSystemAccessFileModificationHostImpl::RequestCapacityChange(
     return;
   }
 
-  quota_manager_proxy()->GetUsageAndQuota(
-      url_.storage_key(),
+  quota_manager_proxy()->GetBucketSpaceRemaining(
+      *url_.bucket(),
       base::BindOnce(
-          &FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota,
+          &FileSystemAccessFileModificationHostImpl::DidGetBucketSpaceRemaining,
           weak_factory_.GetWeakPtr(), capacity_delta, std::move(callback)));
 }
 
-void FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota(
+void FileSystemAccessFileModificationHostImpl::DidGetBucketSpaceRemaining(
     int64_t capacity_delta,
     RequestCapacityChangeCallback callback,
-    blink::mojom::QuotaStatusCode status,
-    int64_t usage,
-    int64_t quota) {
+    storage::QuotaErrorOr<int64_t> space_remaining) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  int64_t new_usage;
-  bool usage_within_bounds =
-      base::CheckAdd(usage, capacity_delta).AssignIfValid(&new_usage);
-
-  if (status != blink::mojom::QuotaStatusCode::kOk || !usage_within_bounds ||
-      new_usage > quota) {
+  if (!space_remaining.has_value() ||
+      capacity_delta > space_remaining.value()) {
     std::move(callback).Run(0);
     return;
   }

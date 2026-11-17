@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -15,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_waitable_event.h"
@@ -166,6 +168,49 @@ void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
     });
     barrier_closure.Run();
   }
+}
+
+void MockQuotaManager::GetBucketSpaceRemaining(
+    const BucketLocator& bucket,
+    base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback) {
+  // The real implementation always replies asynchronously.
+  callback = base::BindPostTaskToCurrentDefault(std::move(callback));
+
+  std::optional<int64_t> bucket_space_remaining;
+  if (!bucket.is_default) {
+    QuotaErrorOr<BucketInfo> bucket_info = FindBucket(bucket);
+    if (!bucket_info.has_value()) {
+      std::move(callback).Run(base::unexpected(bucket_info.error()));
+      return;
+    }
+    if (bucket_info->quota > 0) {
+      auto usage = usage_map_.find(bucket);
+      bucket_space_remaining =
+          bucket_info->quota -
+          (usage != usage_map_.end() ? usage->second.usage : 0);
+    }
+  }
+
+  GetUsageAndQuota(
+      bucket.storage_key,
+      base::BindOnce(
+          [](std::optional<int64_t> bucket_space_remaining,
+             base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback,
+             blink::mojom::QuotaStatusCode status, int64_t usage,
+             int64_t quota) {
+            if (status != blink::mojom::QuotaStatusCode::kOk) {
+              std::move(callback).Run(
+                  base::unexpected(QuotaError::kUnknownError));
+              return;
+            }
+            int64_t space_remaining = quota - usage;
+            if (bucket_space_remaining.has_value()) {
+              space_remaining =
+                  std::min(space_remaining, *bucket_space_remaining);
+            }
+            std::move(callback).Run(space_remaining);
+          },
+          bucket_space_remaining, std::move(callback)));
 }
 
 int64_t MockQuotaManager::GetQuotaForStorageKey(

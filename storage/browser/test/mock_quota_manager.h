@@ -89,6 +89,13 @@ class MockQuotaManager : public QuotaManager {
   void GetUsageAndQuota(const blink::StorageKey& storage_key,
                         UsageAndQuotaCallback callback) override;
 
+  // Overrides QuotaManager's implementation. Like the real one, reports the
+  // smaller of the space left for the whole StorageKey and, for a non-default
+  // bucket with its own quota, the space left in that bucket.
+  void GetBucketSpaceRemaining(
+      const BucketLocator& bucket,
+      base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback) override;
+
   int64_t GetQuotaForStorageKey(const blink::StorageKey& storage_key,
                                 const QuotaSettings& settings) const override;
 

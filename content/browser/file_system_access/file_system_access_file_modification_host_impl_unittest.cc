@@ -10,12 +10,18 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/concurrent_callbacks.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -45,41 +51,49 @@ int64_t RequestCapacityChangeSync(
   return granted_capacity;
 }
 
-// MockQuotaManagerProxy that can defer delivery of GetUsageAndQuota() results.
-// The usage and quota are computed when the request is made, but the callback
-// is only run once RunDeferredCallbacks() is called. This simulates multiple
-// capacity requests racing against stale quota usage information.
+// MockQuotaManagerProxy that can defer delivery of GetBucketSpaceRemaining()
+// results. The space remaining is computed when the request is made, but the
+// callback is only run once RunDeferredCallbacks() is called. This simulates
+// multiple capacity requests racing against stale quota usage information.
 class DeferringQuotaManagerProxy : public storage::MockQuotaManagerProxy {
  public:
   using storage::MockQuotaManagerProxy::MockQuotaManagerProxy;
 
-  using storage::MockQuotaManagerProxy::GetUsageAndQuota;
-  void GetUsageAndQuota(
-      const blink::StorageKey& storage_key,
-      storage::QuotaManager::UsageAndQuotaCallback callback) override {
+  void GetBucketSpaceRemaining(
+      const storage::BucketLocator& bucket,
+      base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)> callback)
+      override {
     if (!defer_callbacks_) {
-      storage::MockQuotaManagerProxy::GetUsageAndQuota(storage_key,
-                                                       std::move(callback));
+      storage::MockQuotaManagerProxy::GetBucketSpaceRemaining(
+          bucket, std::move(callback));
       return;
     }
-    storage::MockQuotaManagerProxy::GetUsageAndQuota(
-        storage_key,
-        base::BindLambdaForTesting([this, callback = std::move(callback)](
-                                       blink::mojom::QuotaStatusCode status,
-                                       int64_t usage, int64_t quota) mutable {
-          deferred_callbacks_.push_back(
-              base::BindOnce(std::move(callback), status, usage, quota));
-        }));
+    storage::MockQuotaManagerProxy::GetBucketSpaceRemaining(
+        bucket, base::BindOnce(
+                    [](base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)>
+                           callback,
+                       base::OnceCallback<void(base::OnceClosure)> defer,
+                       storage::QuotaErrorOr<int64_t> space_remaining) {
+                      std::move(defer).Run(base::BindOnce(
+                          std::move(callback), std::move(space_remaining)));
+                    },
+                    std::move(callback), deferred_callbacks_.CreateCallback()));
   }
 
   void set_defer_callbacks(bool defer) { defer_callbacks_ = defer; }
 
+  // Waits for all deferred lookups to complete, then runs their callbacks in
+  // the order the lookups were made.
   void RunDeferredCallbacks() {
-    std::vector<base::OnceClosure> callbacks;
-    callbacks.swap(deferred_callbacks_);
-    for (auto& callback : callbacks) {
-      std::move(callback).Run();
-    }
+    base::RunLoop run_loop;
+    std::move(deferred_callbacks_)
+        .Done(base::BindOnce([](std::vector<base::OnceClosure> callbacks) {
+                for (auto& callback : callbacks) {
+                  std::move(callback).Run();
+                }
+              }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+    deferred_callbacks_ = base::ConcurrentCallbacks<base::OnceClosure>();
   }
 
  protected:
@@ -87,7 +101,7 @@ class DeferringQuotaManagerProxy : public storage::MockQuotaManagerProxy {
 
  private:
   bool defer_callbacks_ = false;
-  std::vector<base::OnceClosure> deferred_callbacks_;
+  base::ConcurrentCallbacks<base::OnceClosure> deferred_callbacks_;
 };
 
 }  // namespace
@@ -283,6 +297,42 @@ TEST_F(FileSystemAccessFileModificationHostImplTest,
   EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 1);
   EXPECT_EQ("A file's size cannot be negative or out of bounds",
             bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(FileSystemAccessFileModificationHostImplTest,
+       RequestCapacityChange_BucketQuotaExceeded) {
+  // The StorageKey has plenty of quota left, but the file's bucket does not.
+  quota_manager()->SetQuota(kTestStorageKey, 1024 * 1024);
+  storage::BucketInitParams params(kTestStorageKey, "test_bucket");
+  params.quota = 100;
+  ASSERT_OK_AND_ASSIGN(storage::BucketInfo bucket,
+                       quota_manager()->GetOrCreateBucketSync(params));
+  test_file_url_.SetBucket(bucket.ToBucketLocator());
+  auto host = CreateHost(/*file_size=*/0);
+
+  EXPECT_EQ(RequestCapacityChangeSync(host.get(), 101), 0);
+  EXPECT_EQ(host->granted_capacity(), 0);
+  EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 0);
+
+  EXPECT_EQ(RequestCapacityChangeSync(host.get(), 100), 100);
+  EXPECT_EQ(host->granted_capacity(), 100);
+  EXPECT_EQ(*quota_manager_proxy_->last_notified_bucket_delta(), 100);
+
+  // The granted capacity counts against the bucket's quota.
+  EXPECT_EQ(RequestCapacityChangeSync(host.get(), 1), 0);
+  EXPECT_EQ(host->granted_capacity(), 100);
+}
+
+TEST_F(FileSystemAccessFileModificationHostImplTest,
+       RequestCapacityChange_StorageKeyQuotaExceeded) {
+  quota_manager()->SetQuota(kTestStorageKey, 100);
+
+  EXPECT_EQ(RequestCapacityChangeSync(allocation_host_.get(), 101), 0);
+  EXPECT_EQ(allocation_host_->granted_capacity(), 0);
+  EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 0);
+
+  EXPECT_EQ(RequestCapacityChangeSync(allocation_host_.get(), 100), 100);
+  EXPECT_EQ(allocation_host_->granted_capacity(), 100);
 }
 
 }  // namespace content

@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -80,11 +81,10 @@ class CONTENT_EXPORT FileSystemAccessFileModificationHostImpl
   // Called when the receiver is disconnected.
   void OnReceiverDisconnect();
 
-  void DidGetUsageAndQuota(int64_t capacity_delta,
-                           RequestCapacityChangeCallback callback,
-                           blink::mojom::QuotaStatusCode status,
-                           int64_t usage,
-                           int64_t quota);
+  void DidGetBucketSpaceRemaining(
+      int64_t capacity_delta,
+      RequestCapacityChangeCallback callback,
+      storage::QuotaErrorOr<int64_t> space_remaining);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

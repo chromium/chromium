@@ -395,7 +395,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // leaking information about the user's browsing mode.
   void GetBucketUsageAndReportedQuota(BucketId id,
                                       UsageAndQuotaCallback callback);
-  void GetBucketSpaceRemaining(
+  virtual void GetBucketSpaceRemaining(
       const BucketLocator& bucket,
       base::OnceCallback<void(QuotaErrorOr<int64_t>)> callback);
 
