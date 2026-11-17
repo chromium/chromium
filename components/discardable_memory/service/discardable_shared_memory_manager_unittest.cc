@@ -10,6 +10,8 @@
 #include <array>
 #include <memory>
 
+#include "base/byte_size.h"
+#include "base/memory/discardable_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
@@ -256,7 +258,8 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnModerateMemoryPressure) {
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
-  EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
+  EXPECT_EQ(base::ByteSize(memory2.mapped_size()),
+            manager_->GetAllocatedSize());
   EXPECT_FALSE(memory1.IsMemoryResident());
   EXPECT_TRUE(memory2.IsMemoryResident());
 }
@@ -293,7 +296,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
 
-  EXPECT_EQ(0u, manager_->GetBytesAllocated());
+  EXPECT_EQ(base::ByteSize(0), manager_->GetAllocatedSize());
   EXPECT_FALSE(memory1.IsMemoryResident());
   EXPECT_FALSE(memory2.IsMemoryResident());
 }
@@ -378,8 +381,8 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
-  EXPECT_EQ(memory1.mapped_size() + memory2.mapped_size(),
-            manager_->GetBytesAllocated());
+  EXPECT_EQ(base::ByteSize(memory1.mapped_size() + memory2.mapped_size()),
+            manager_->GetAllocatedSize());
   EXPECT_TRUE(memory1.IsMemoryResident());
   EXPECT_TRUE(memory2.IsMemoryResident());
 
@@ -388,7 +391,8 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
-  EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
+  EXPECT_EQ(base::ByteSize(memory2.mapped_size()),
+            manager_->GetAllocatedSize());
   EXPECT_FALSE(memory1.IsMemoryResident());
   EXPECT_TRUE(memory2.IsMemoryResident());
 
@@ -398,7 +402,8 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
-  EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
+  EXPECT_EQ(base::ByteSize(memory2.mapped_size()),
+            manager_->GetAllocatedSize());
 
   // Critical pressure (0% limit) should reduce limit and release all segments.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
@@ -406,10 +411,24 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
-  EXPECT_EQ(0u, manager_->GetBytesAllocated());
+  EXPECT_EQ(base::ByteSize(0), manager_->GetAllocatedSize());
   EXPECT_FALSE(memory2.IsMemoryResident());
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+
+TEST_F(DiscardableSharedMemoryManagerTest, AllocateLockedDiscardableMemory) {
+  EXPECT_EQ(base::ByteSize(0), manager_->GetAllocatedSize());
+
+  std::unique_ptr<base::DiscardableMemory> memory =
+      manager_->AllocateLockedDiscardableMemory(base::KiB(1));
+  ASSERT_TRUE(memory);
+  EXPECT_NE(nullptr, memory->data());
+  EXPECT_GE(manager_->GetAllocatedSize(), base::KiB(1));
+
+  memory->Unlock();
+  memory.reset();
+  EXPECT_EQ(base::ByteSize(0), manager_->GetAllocatedSize());
+}
 
 }  // namespace
 }  // namespace discardable_memory

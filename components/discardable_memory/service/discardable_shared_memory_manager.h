@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/format_macros.h"
 #include "base/functional/callback.h"
 #include "base/memory/discardable_memory_allocator.h"
@@ -74,6 +75,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // Overridden from base::DiscardableMemoryAllocator:
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
       size_t size) override;
+  std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
+      base::ByteSize size) override;
 
   // Overridden from base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -105,6 +108,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
 
   // Returns bytes of allocated discardable memory.
   size_t GetBytesAllocated() const override;
+  base::ByteSize GetAllocatedSize() const override;
 
   void ReleaseFreeMemory() override {
     // Do nothing since we already subscribe to memory pressure notifications.

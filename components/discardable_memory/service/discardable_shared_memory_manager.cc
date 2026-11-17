@@ -21,6 +21,7 @@
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
@@ -342,19 +343,27 @@ void DiscardableSharedMemoryManager::Bind(
 
 std::unique_ptr<base::DiscardableMemory>
 DiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(size_t size) {
-  DCHECK_NE(size, 0u);
+  return AllocateLockedDiscardableMemory(base::ByteSize(size));
+}
+
+std::unique_ptr<base::DiscardableMemory>
+DiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
+    base::ByteSize size) {
+  DCHECK(!size.is_zero());
+  const size_t size_in_bytes = base::checked_cast<size_t>(size.InBytes());
 
   int32_t new_id = g_next_discardable_shared_memory_id.GetNext();
 
   // Note: Use DiscardableSharedMemoryHeap for in-process allocation
   // of discardable memory if the cost of each allocation is too high.
   base::UnsafeSharedMemoryRegion region;
-  AllocateLockedDiscardableSharedMemory(kInvalidUniqueClientID, size, new_id,
-                                        &region);
+  AllocateLockedDiscardableSharedMemory(kInvalidUniqueClientID, size_in_bytes,
+                                        new_id, &region);
   std::unique_ptr<base::DiscardableSharedMemory> memory(
       new base::DiscardableSharedMemory(std::move(region)));
-  if (!memory->Map(size))
-    base::TerminateBecauseOutOfMemory(size);
+  if (!memory->Map(size_in_bytes)) {
+    base::TerminateBecauseOutOfMemory(size_in_bytes);
+  }
   // Close file descriptor to avoid running out.
   memory->Close();
   return std::make_unique<DiscardableMemoryImpl>(
@@ -373,7 +382,7 @@ bool DiscardableSharedMemoryManager::OnMemoryDump(
         pmd->CreateAllocatorDump("discardable");
     total_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                          GetBytesAllocated());
+                          GetAllocatedSize().InBytes());
     return true;
   }
 
@@ -459,9 +468,13 @@ void DiscardableSharedMemoryManager::EnforceMemoryPolicy() {
 }
 
 size_t DiscardableSharedMemoryManager::GetBytesAllocated() const {
+  return base::checked_cast<size_t>(GetAllocatedSize().InBytes());
+}
+
+base::ByteSize DiscardableSharedMemoryManager::GetAllocatedSize() const {
   base::AutoLock lock(lock_);
 
-  return bytes_allocated_;
+  return base::ByteSize(bytes_allocated_);
 }
 
 void DiscardableSharedMemoryManager::WillDestroyCurrentMessageLoop() {
