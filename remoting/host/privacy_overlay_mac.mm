@@ -395,6 +395,94 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
 
 }  // namespace
 
+// Forwards AppKit/NSWorkspace notifications to `PrivacyOverlayMac`. Every
+// notification callback retains `self` for its full lexical scope via
+// `NS_VALID_UNTIL_END_OF_SCOPE` (either because the handler can invoke
+// `EndOverlay()`, as `OnScreenParametersChanged()` does on failure, or for
+// consistency against future edits to the other handlers): `EndOverlay()`
+// invalidates and releases `notification_observer_` while `DisconnectSession()`
+// may synchronously destroy `_overlay`, so `_overlay` must never be accessed
+// after forwarding.
+@interface PrivacyOverlayNotificationObserver : NSObject
+- (instancetype)initWithOverlay:
+                    (base::WeakPtr<remoting::PrivacyOverlayMac>)overlay
+                   buttonWindow:(NSWindow*)buttonWindow;
+- (void)invalidate;
+@end
+
+@implementation PrivacyOverlayNotificationObserver {
+  base::WeakPtr<remoting::PrivacyOverlayMac> _overlay;
+}
+
+- (instancetype)initWithOverlay:
+                    (base::WeakPtr<remoting::PrivacyOverlayMac>)overlay
+                   buttonWindow:(NSWindow*)buttonWindow {
+  self = [super init];
+  if (self) {
+    _overlay = std::move(overlay);
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(onScreenParametersChanged:)
+               name:NSApplicationDidChangeScreenParametersNotification
+             object:nil];
+    if (buttonWindow) {
+      [NSNotificationCenter.defaultCenter
+          addObserver:self
+             selector:@selector(onButtonWindowDidMove:)
+                 name:NSWindowDidMoveNotification
+               object:buttonWindow];
+    }
+    [NSWorkspace.sharedWorkspace.notificationCenter
+        addObserver:self
+           selector:@selector(onAccessibilityDisplayOptionsChanged:)
+               name:NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
+             object:nil];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  // Defensive safety net (`-invalidate` is idempotent): `EndOverlay()` normally
+  // calls `-invalidate` explicitly before releasing this observer, and
+  // `NSNotificationCenter` also auto-unregisters deallocated observers.
+  [self invalidate];
+}
+
+- (void)invalidate {
+  [NSNotificationCenter.defaultCenter removeObserver:self];
+  [NSWorkspace.sharedWorkspace.notificationCenter removeObserver:self];
+  _overlay.reset();
+}
+
+- (void)onScreenParametersChanged:(NSNotification*)notification {
+  PrivacyOverlayNotificationObserver* keepAlive NS_VALID_UNTIL_END_OF_SCOPE =
+      self;
+  (void)keepAlive;
+  if (_overlay) {
+    _overlay->OnScreenParametersChanged();
+  }
+}
+
+- (void)onButtonWindowDidMove:(NSNotification*)notification {
+  PrivacyOverlayNotificationObserver* keepAlive NS_VALID_UNTIL_END_OF_SCOPE =
+      self;
+  (void)keepAlive;
+  if (_overlay) {
+    _overlay->OnButtonWindowDidMove();
+  }
+}
+
+- (void)onAccessibilityDisplayOptionsChanged:(NSNotification*)notification {
+  PrivacyOverlayNotificationObserver* keepAlive NS_VALID_UNTIL_END_OF_SCOPE =
+      self;
+  (void)keepAlive;
+  if (_overlay) {
+    _overlay->OnAccessibilityDisplayOptionsChanged();
+  }
+}
+
+@end
+
 @implementation PrivacyOverlayBackdropView {
   std::optional<bool> _highContrastOverrideForTesting;
 }
@@ -714,10 +802,14 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
         NSMakeRect(kButtonMargin, kButtonMargin, buttonWidth, buttonHeight);
     [_buttonView addSubview:_disconnectButton];
 
+    // Capture exclusion on `button_window_` is best-effort (`sharingType =
+    // NSWindowSharingNone` is still set, and remote clicks are dropped in
+    // `-sendEvent:`): unlike `backdrop_windows_`, failing to apply the CGS
+    // capture-exclude shape on the Disconnect button does not expose local
+    // screen contents or block the remote desktop, so keep the session active.
     if (!ApplyCaptureExclusion(self)) {
-      [self orderOut:nil];
-      [self close];
-      return nil;
+      LOG(WARNING)
+          << "Failed to apply initial capture exclusion to Disconnect button";
     }
   }
   return self;
@@ -903,6 +995,10 @@ bool PrivacyOverlayMac::BeginOverlay() {
   PositionDisconnectButton(screen_frames, initial_cocoa_pos);
   DeactivateDisconnectButton();
 
+  notification_observer_ = [[PrivacyOverlayNotificationObserver alloc]
+      initWithOverlay:weak_factory_.GetWeakPtr()
+         buttonWindow:button_window_];
+
   NSAccessibilityPostNotificationWithUserInfo(
       NSApp, NSAccessibilityAnnouncementRequestedNotification, @{
         NSAccessibilityAnnouncementKey : sharing_with_text_,
@@ -923,6 +1019,11 @@ void PrivacyOverlayMac::EndOverlay() {
   auto_hide_timer_.Stop();
   local_input_monitor_.reset();
   active_button_screen_frame_.reset();
+
+  if (notification_observer_) {
+    [notification_observer_ invalidate];
+    notification_observer_ = nil;
+  }
 
   for (PrivacyOverlayBackdropWindow* window in backdrop_windows_) {
     [window orderOut:nil];
@@ -1058,8 +1159,7 @@ void PrivacyOverlayMac::PositionDisconnectButton(
 
   // Store expected origin in global Cocoa screen coordinates (matching
   // `button_window_.frame.origin`, bottom-left origin of primary display) for
-  // `ShouldRepositionOnDisplacement()` when observing `NSWindowDidMove` (wired
-  // up in a follow-up CL).
+  // `ShouldRepositionOnDisplacement()` when observing `NSWindowDidMove`.
   SetExpectedPosition(static_cast<int>(cocoa_x), static_cast<int>(cocoa_y));
   [button_window_ setFrameOrigin:NSMakePoint(cocoa_x, cocoa_y)];
 }
@@ -1107,13 +1207,9 @@ void PrivacyOverlayMac::ActivateDisconnectButtonWithFrames(
   PositionDisconnectButton(screen_frames, cocoa_screen_point);
 
   if (!ApplyCaptureExclusion(button_window_)) {
-    LOG(ERROR)
+    LOG(WARNING)
         << "Failed to apply capture exclusion when activating Disconnect "
         << "button";
-    EndOverlay();
-    DisconnectSession(
-        "Failed to apply capture exclusion to Disconnect button.");
-    return;
   }
   is_button_hidden_ = false;
   button_window_.ignoresMouseEvents = NO;
@@ -1162,6 +1258,85 @@ void PrivacyOverlayMac::OnLocalMouseEvent(const webrtc::DesktopVector& position,
 void PrivacyOverlayMac::OnLocalKeyPressed(uint32_t /*usb_keycode*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ActivateDisconnectButtonForQuartzPoint(mouse_position_);
+}
+
+void PrivacyOverlayMac::OnScreenParametersChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_ending_) {
+    return;
+  }
+
+  ResetRepositionAttempts();
+  if (!UpdateBackdrops()) {
+    EndOverlay();
+    DisconnectSession("Failed to update Privacy Overlay backdrops.");
+    return;
+  }
+  const std::vector<NSRect> screen_frames = GetScreenFrames();
+  PositionDisconnectButton(
+      screen_frames, ConvertQuartzPointToCocoa(screen_frames, mouse_position_));
+  if (!is_button_hidden_ && button_window_) {
+    if (!ApplyCaptureExclusion(button_window_)) {
+      LOG(WARNING)
+          << "Failed to reapply capture exclusion to Disconnect button after "
+          << "screen parameters changed";
+    }
+    [button_window_ orderFrontRegardless];
+  }
+}
+
+void PrivacyOverlayMac::OnButtonWindowDidMove() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_ending_ || is_repositioning_button_ || !button_window_ ||
+      !expected_x().has_value() || !expected_y().has_value()) {
+    return;
+  }
+
+  // During display reconfiguration, AppKit may relocate `button_window_` and
+  // post `NSWindowDidMoveNotification` before
+  // `NSApplicationDidChangeScreenParametersNotification`. Skip snap-back if the
+  // expected origin no longer lies within any current display frame; the
+  // subsequent `OnScreenParametersChanged()` callback will recompute the button
+  // position and reset reposition attempts for the new geometry. Note that if
+  // AppKit posts `NSWindowDidMoveNotification` before `NSScreen.screens` itself
+  // reflects the new configuration, `GetScreenFrames()` still returns stale
+  // geometry and a single transient snap-back can occur before
+  // `OnScreenParametersChanged()` corrects it.
+  const NSPoint expected_origin = NSMakePoint(*expected_x(), *expected_y());
+  const std::vector<NSRect> screen_frames = GetScreenFrames();
+  const bool expected_origin_on_screen = std::ranges::any_of(
+      screen_frames, [&expected_origin](const NSRect& screen_frame) {
+        // Use `NSPointInRect` (inclusive of `NSMinX` / `NSMinY`, exclusive of
+        // `NSMaxX` / `NSMaxY`) rather than `NSMouseInRect(..., /*flipped=*/NO)`
+        // because `expected_origin` is a bottom-left window frame origin rather
+        // than a cursor coordinate.
+        return NSPointInRect(expected_origin, screen_frame);
+      });
+  if (!expected_origin_on_screen) {
+    return;
+  }
+
+  NSRect frame = button_window_.frame;
+  int actual_x = static_cast<int>(std::lround(frame.origin.x));
+  int actual_y = static_cast<int>(std::lround(frame.origin.y));
+  if (ShouldRepositionOnDisplacement(actual_x, actual_y)) {
+    base::AutoReset<bool> repositioning(&is_repositioning_button_, true);
+    [button_window_ setFrameOrigin:expected_origin];
+  }
+}
+
+void PrivacyOverlayMac::OnAccessibilityDisplayOptionsChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_ending_) {
+    return;
+  }
+
+  for (PrivacyOverlayBackdropWindow* window in backdrop_windows_) {
+    window.contentView.needsDisplay = YES;
+  }
+  if (button_window_) {
+    button_window_.contentView.needsDisplay = YES;
+  }
 }
 
 void PrivacyOverlayMac::OnDisconnectButtonClicked() {

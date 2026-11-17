@@ -24,6 +24,7 @@
 @class PrivacyOverlayBackdropWindow;
 @class PrivacyOverlayButtonView;
 @class PrivacyOverlayButtonWindow;
+@class PrivacyOverlayNotificationObserver;
 
 namespace remoting {
 
@@ -72,6 +73,11 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   // `HostWindow` implementation.
   void Start(const base::WeakPtr<ClientSessionControl>& client_session_control)
       override;
+
+  // Notification handlers invoked by `PrivacyOverlayNotificationObserver`.
+  void OnScreenParametersChanged();
+  void OnButtonWindowDidMove();
+  void OnAccessibilityDisplayOptionsChanged();
 
   static base::AutoReset<ScreenFramesProvider>
   SetScreenFramesProviderForTesting(ScreenFramesProvider provider);
@@ -170,6 +176,10 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   // `local_input_monitor_` is unavailable or reports an error.
   bool auto_hide_enabled_ = true;
 
+  // Guard preventing `OnButtonWindowDidMove()` from resetting consecutive
+  // reposition attempts when snapping `button_window_` back into place.
+  bool is_repositioning_button_ = false;
+
   // True when `button_window_` is ordered out in its idle state.
   bool is_button_hidden_ = true;
 
@@ -200,6 +210,10 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
 
   // Floating Disconnect button window at `NSScreenSaverWindowLevel + 1`.
   PrivacyOverlayButtonWindow* __strong button_window_;
+
+  // Observer for display configuration, window movement, and accessibility
+  // contrast notifications.
+  PrivacyOverlayNotificationObserver* __strong notification_observer_;
 
   base::WeakPtrFactory<PrivacyOverlayMac> weak_factory_{this};
 };

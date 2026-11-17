@@ -64,6 +64,27 @@
 
 @end
 
+@interface TestPrivacyOverlayButtonView : PrivacyOverlayButtonView
+@property(nonatomic, readonly) NSUInteger displayInvalidationCount;
+@end
+
+@implementation TestPrivacyOverlayButtonView {
+  NSUInteger _displayInvalidationCount;
+}
+
+- (NSUInteger)displayInvalidationCount {
+  return _displayInvalidationCount;
+}
+
+- (void)setNeedsDisplay:(BOOL)needsDisplay {
+  if (needsDisplay) {
+    ++_displayInvalidationCount;
+  }
+  [super setNeedsDisplay:needsDisplay];
+}
+
+@end
+
 namespace remoting {
 
 namespace {
@@ -980,43 +1001,33 @@ TEST_F(PrivacyOverlayMacTest,
 }
 
 TEST_F(PrivacyOverlayMacTest,
-       DisconnectsSessionWhenButtonWindowInitialCaptureExclusionFails) {
-  NSMutableArray<PrivacyOverlayBackdropWindow*>* created_backdrops =
-      [[NSMutableArray alloc] init];
+       KeepsSessionActiveWhenButtonWindowInitialCaptureExclusionFails) {
   int button_applier_calls = 0;
   auto reset_applier = PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
-      base::BindLambdaForTesting([created_backdrops, &button_applier_calls](
-                                     NSWindow* window, NSSize /*size*/) {
-        if ([window isKindOfClass:[PrivacyOverlayBackdropWindow class]]) {
-          [created_backdrops
-              addObject:base::apple::ObjCCastStrict<
-                            PrivacyOverlayBackdropWindow>(window)];
-          return true;
-        }
-        if ([window isKindOfClass:[PrivacyOverlayButtonWindow class]]) {
-          ++button_applier_calls;
-          return false;
-        }
-        return true;
-      }));
+      base::BindLambdaForTesting(
+          [&button_applier_calls](NSWindow* window, NSSize /*size*/) {
+            if ([window isKindOfClass:[PrivacyOverlayButtonWindow class]]) {
+              ++button_applier_calls;
+              return false;
+            }
+            return true;
+          }));
 
-  EXPECT_CALL(client_session_control_,
-              DisconnectSession(protocol::ErrorCode::OK, _, _))
-      .Times(1);
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
   StartOverlay();
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
 
-  EXPECT_GT(created_backdrops.count, 0u);
-  for (PrivacyOverlayBackdropWindow* backdrop in created_backdrops) {
-    EXPECT_FALSE(backdrop.isVisible);
-  }
   EXPECT_EQ(button_applier_calls, 1);
-  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
-  EXPECT_EQ(overlay_->button_window_for_testing(), nil);
+  EXPECT_GT(overlay_->backdrop_windows_for_testing().count, 0u);
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  EXPECT_EQ(button_window.sharingType, NSWindowSharingNone);
   EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
 }
 
 TEST_F(PrivacyOverlayMacTest,
-       DisconnectsSessionWhenActivateButtonCaptureExclusionFails) {
+       KeepsSessionAndRevealsButtonWhenActivateCaptureExclusionFails) {
   StartOverlay();
 
   NSArray<PrivacyOverlayBackdropWindow*>* backdrops =
@@ -1031,18 +1042,17 @@ TEST_F(PrivacyOverlayMacTest,
       base::BindLambdaForTesting(
           [](NSWindow* /*window*/, NSSize /*size*/) { return false; }));
 
-  EXPECT_CALL(client_session_control_,
-              DisconnectSession(protocol::ErrorCode::OK, _, _))
-      .Times(1);
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
   ActivateDisconnectButtonOnPrimaryScreen();
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
 
-  EXPECT_FALSE(button_window.isVisible);
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_FALSE(button_window.ignoresMouseEvents);
+  EXPECT_EQ(button_window.sharingType, NSWindowSharingNone);
   for (PrivacyOverlayBackdropWindow* backdrop in backdrops) {
-    EXPECT_FALSE(backdrop.isVisible);
+    EXPECT_TRUE(backdrop.isVisible);
   }
-  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
-  EXPECT_EQ(overlay_->button_window_for_testing(), nil);
-  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
 }
 
 TEST_F(PrivacyOverlayMacTest,
@@ -1547,6 +1557,259 @@ TEST_F(PrivacyOverlayMacTest,
   task_environment_.FastForwardBy(base::Seconds(60));
   EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
   EXPECT_TRUE(button_window.isVisible);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       SnapBackRepositionsDisplacedButtonWindowWithLoopGuard) {
+  const NSRect kPrimaryFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting(
+          [kPrimaryFrame]() { return std::vector<NSRect>{kPrimaryFrame}; }));
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(720.0, 450.0); }));
+
+  StartOverlay();
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(720.0, 450.0));
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  ASSERT_TRUE(overlay_->expected_x().has_value());
+  ASSERT_TRUE(overlay_->expected_y().has_value());
+  const int expected_x = *overlay_->expected_x();
+  const int expected_y = *overlay_->expected_y();
+  EXPECT_EQ(overlay_->consecutive_reposition_attempts(), 0);
+
+  // First `kMaxRepositionAttempts` (3) displacements should snap back to
+  // `(expected_x, expected_y)`.
+  for (int i = 1; i <= DisconnectWindowBase::kMaxRepositionAttempts; ++i) {
+    [button_window
+        setFrameOrigin:NSMakePoint(expected_x + 50, expected_y + 50)];
+    EXPECT_EQ(overlay_->consecutive_reposition_attempts(), i);
+    EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.x)),
+              expected_x);
+    EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.y)),
+              expected_y);
+  }
+
+  // The 4th consecutive displacement hits the loop guard and does not snap
+  // back.
+  [button_window setFrameOrigin:NSMakePoint(expected_x + 50, expected_y + 50)];
+  EXPECT_EQ(overlay_->consecutive_reposition_attempts(),
+            DisconnectWindowBase::kMaxRepositionAttempts);
+  EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.x)),
+            expected_x + 50);
+  EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.y)),
+            expected_y + 50);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       ScreenParametersChangedUpdatesBackdropsRecentersButtonAndResetsGuard) {
+  const NSRect kInitialPrimary = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  const NSRect kResizedPrimary = NSMakeRect(0.0, 0.0, 1920.0, 1080.0);
+  const NSRect kSecondary = NSMakeRect(1920.0, 0.0, 1280.0, 800.0);
+  std::vector<NSRect> frames = {kInitialPrimary};
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting([&frames]() { return frames; }));
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(720.0, 450.0); }));
+
+  StartOverlay();
+  ASSERT_EQ(overlay_->backdrop_windows_for_testing().count, 1u);
+  EXPECT_TRUE(NSEqualRects(overlay_->backdrop_windows_for_testing()[0].frame,
+                           kInitialPrimary));
+
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(720.0, 450.0));
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  ASSERT_TRUE(overlay_->expected_x().has_value());
+  ASSERT_TRUE(overlay_->expected_y().has_value());
+  const int initial_expected_x = *overlay_->expected_x();
+  const int initial_expected_y = *overlay_->expected_y();
+
+  [button_window setFrameOrigin:NSMakePoint(initial_expected_x + 30,
+                                            initial_expected_y + 30)];
+  EXPECT_EQ(overlay_->consecutive_reposition_attempts(), 1);
+
+  // 1 -> 2 displays (with resized primary) via the real notification exercises
+  // observer wiring plus backdrop resize, backdrop addition, reposition-guard
+  // reset, and button recentering.
+  frames = {kResizedPrimary, kSecondary};
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSApplicationDidChangeScreenParametersNotification
+                    object:NSApp];
+
+  EXPECT_EQ(overlay_->consecutive_reposition_attempts(), 0);
+  ASSERT_EQ(overlay_->backdrop_windows_for_testing().count, 2u);
+  EXPECT_TRUE(NSEqualRects(overlay_->backdrop_windows_for_testing()[0].frame,
+                           kResizedPrimary));
+  EXPECT_TRUE(NSEqualRects(overlay_->backdrop_windows_for_testing()[1].frame,
+                           kSecondary));
+  ASSERT_TRUE(overlay_->expected_x().has_value());
+  ASSERT_TRUE(overlay_->expected_y().has_value());
+  EXPECT_NE(*overlay_->expected_x(), initial_expected_x);
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kResizedPrimary), 1.0);
+  EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.x)),
+            *overlay_->expected_x());
+  EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.y)),
+            *overlay_->expected_y());
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       IgnoresSnapBackWhenDisplayRemovedBeforeScreenParametersChangedFires) {
+  const NSRect kPrimary = NSMakeRect(0.0, 0.0, 1920.0, 1080.0);
+  const NSRect kSecondary = NSMakeRect(1920.0, 0.0, 1280.0, 800.0);
+  std::vector<NSRect> frames = {kPrimary, kSecondary};
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting([&frames]() { return frames; }));
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(960.0, 540.0); }));
+
+  StartOverlay();
+  ASSERT_EQ(overlay_->backdrop_windows_for_testing().count, 2u);
+
+  // Reveal `button_window` on `kSecondary`, then remove `kSecondary`. If AppKit
+  // relocates `button_window` onto `kPrimary` (`NSWindowDidMove`) before
+  // `OnScreenParametersChanged()` runs, snap-back must not pull the button back
+  // onto the removed display or consume a reposition attempt.
+  SimulatePointerMove(webrtc::DesktopVector(2560, 400));
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  ASSERT_TRUE(overlay_->expected_x().has_value());
+  ASSERT_GE(*overlay_->expected_x(), 1920);
+
+  frames = {kPrimary};
+  [button_window setFrameOrigin:NSMakePoint(100.0, 100.0)];
+  EXPECT_EQ(overlay_->consecutive_reposition_attempts(), 0);
+  EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.x)), 100);
+  EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.y)), 100);
+
+  overlay_->OnScreenParametersChanged();
+  ASSERT_EQ(overlay_->backdrop_windows_for_testing().count, 1u);
+  EXPECT_TRUE(NSEqualRects(overlay_->backdrop_windows_for_testing()[0].frame,
+                           kPrimary));
+  ASSERT_TRUE(overlay_->expected_x().has_value());
+  ASSERT_TRUE(overlay_->expected_y().has_value());
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kPrimary), 1.0);
+  EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.x)),
+            *overlay_->expected_x());
+  EXPECT_EQ(static_cast<int>(std::lround(button_window.frame.origin.y)),
+            *overlay_->expected_y());
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       AccessibilityDisplayOptionsChangedMarksOverlayViewsNeedsDisplay) {
+  StartOverlay();
+
+  ASSERT_GT(overlay_->backdrop_windows_for_testing().count, 0u);
+  PrivacyOverlayBackdropWindow* backdrop_window =
+      overlay_->backdrop_windows_for_testing().firstObject;
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(backdrop_window, nil);
+  ASSERT_NE(button_window, nil);
+
+  TestPrivacyOverlayBackdropView* backdrop_view =
+      [[TestPrivacyOverlayBackdropView alloc]
+          initWithFrame:backdrop_window.contentView.frame];
+  TestPrivacyOverlayButtonView* button_view =
+      [[TestPrivacyOverlayButtonView alloc]
+          initWithFrame:button_window.contentView.frame];
+  backdrop_window.contentView = backdrop_view;
+  button_window.contentView = button_view;
+
+  const NSUInteger backdrop_invalidations_before =
+      backdrop_view.displayInvalidationCount;
+  const NSUInteger button_invalidations_before =
+      button_view.displayInvalidationCount;
+
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      postNotificationName:
+          NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
+                    object:NSWorkspace.sharedWorkspace];
+
+  EXPECT_GT(backdrop_view.displayInvalidationCount,
+            backdrop_invalidations_before);
+  EXPECT_GT(button_view.displayInvalidationCount, button_invalidations_before);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       ScreenParametersChangedDisconnectsSessionWhenUpdateBackdropsFails) {
+  std::vector<NSRect> frames = {NSMakeRect(0.0, 0.0, 1440.0, 900.0)};
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting([&frames]() { return frames; }));
+
+  StartOverlay();
+  ASSERT_EQ(overlay_->backdrop_windows_for_testing().count, 1u);
+  PrivacyOverlayBackdropWindow* backdrop_window =
+      overlay_->backdrop_windows_for_testing().firstObject;
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(backdrop_window, nil);
+  ASSERT_NE(button_window, nil);
+
+  frames.clear();
+  // Destroy `overlay_` synchronously inside `DisconnectSession()` while
+  // `-[PrivacyOverlayNotificationObserver onScreenParametersChanged:]` is still
+  // on the stack to exercise the re-entrant observer teardown path.
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .WillOnce([this]() { DestroyOverlay(); });
+
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSApplicationDidChangeScreenParametersNotification
+                    object:NSApp];
+
+  EXPECT_EQ(overlay_, nullptr);
+  EXPECT_FALSE(backdrop_window.isVisible);
+  EXPECT_FALSE(button_window.isVisible);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       ScreenParametersChangedKeepsSessionWhenButtonCaptureExclusionFails) {
+  const NSRect kInitialPrimary = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  const NSRect kResizedPrimary = NSMakeRect(0.0, 0.0, 1920.0, 1080.0);
+  std::vector<NSRect> frames = {kInitialPrimary};
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting([&frames]() { return frames; }));
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(720.0, 450.0); }));
+
+  StartOverlay();
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(720.0, 450.0));
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  ASSERT_TRUE(button_window.isVisible);
+
+  int button_applier_calls = 0;
+  auto reset_applier = PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
+      base::BindLambdaForTesting(
+          [&button_applier_calls](NSWindow* window, NSSize /*size*/) {
+            if ([window isKindOfClass:[PrivacyOverlayButtonWindow class]]) {
+              ++button_applier_calls;
+              return false;
+            }
+            return true;
+          }));
+
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  frames = {kResizedPrimary};
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSApplicationDidChangeScreenParametersNotification
+                    object:NSApp];
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  EXPECT_EQ(button_applier_calls, 1);
+  ASSERT_EQ(overlay_->backdrop_windows_for_testing().count, 1u);
+  EXPECT_TRUE(NSEqualRects(overlay_->backdrop_windows_for_testing()[0].frame,
+                           kResizedPrimary));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kResizedPrimary), 1.0);
 }
 
 }  // namespace
