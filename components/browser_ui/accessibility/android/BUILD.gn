@@ -179,6 +179,7 @@ android_library("unit_device_javatests") {
   ]
 
   deps = [
+    ":constants_java",
     ":java_resources",
     ":lib_java",
     ":page_zoom_utils_java",

@@ -190,6 +190,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         // When Accessibility Page Zoom v2 is enabled, show additional controls.
         if (shouldShowPageZoomV2()) {
             mPageZoomIncludeOSAdjustment.setVisible(true);
+            mPageZoomIncludeOSAdjustment.setChecked(PageZoomUtils.shouldIncludeOSAdjustment());
             mPageZoomIncludeOSAdjustment.setOnPreferenceChangeListener(this);
         } else {
             mPageZoomIncludeOSAdjustment.setVisible(false);
@@ -295,6 +296,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             mDelegate.notifyPageZoomUsed();
         } else if (PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT.equals(preference.getKey())) {
             // TODO(mschillaci): Implement the override behavior for OS level.
+            PageZoomUtils.setShouldIncludeOSAdjustment((Boolean) newValue);
         } else if (PREF_CARET_BROWSING.equals(preference.getKey())) {
             mDelegate.setCaretBrowsingEnabled((Boolean) newValue);
         } else if (PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION.equals(preference.getKey())) {

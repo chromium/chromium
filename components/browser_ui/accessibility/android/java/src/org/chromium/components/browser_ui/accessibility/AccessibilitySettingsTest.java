@@ -44,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -127,6 +128,11 @@ public class AccessibilitySettingsTest {
 
     @After
     public void tearDown() {
+        // The class is batched, so don't leak the OS-level adjustment choice into other tests.
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .remove(AccessibilityConstants.PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT)
+                .commit();
         PrefChangeRegistrarJni.setInstanceForTesting(null);
         UserPrefs.setPrefServiceForTesting(null);
         ThreadUtils.runOnUiThreadBlocking(
@@ -255,6 +261,8 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     @Features.EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2})
     public void testPageZoomPreference_osLevelAdjustmentPreference_visibleWhenEnabled() {
+        // Seed a non-default value so that initialization from PageZoomUtils is exercised.
+        PageZoomUtils.setShouldIncludeOSAdjustment(true);
         launchPreferenceUI();
         ChromeSwitchPreference osLevelAdjustmentPref =
                 (ChromeSwitchPreference)
@@ -262,9 +270,9 @@ public class AccessibilitySettingsTest {
                                 AccessibilitySettings.PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
         Assert.assertNotNull(osLevelAdjustmentPref);
         Assert.assertNotNull(osLevelAdjustmentPref.getOnPreferenceChangeListener());
-
-        // Current state of the preference (on/off).
-        boolean initialSettingState = osLevelAdjustmentPref.isChecked();
+        Assert.assertTrue(
+                "OS-Level adjustment setting was not initialized from PageZoomUtils",
+                osLevelAdjustmentPref.isChecked());
 
         // First scroll to the "Match Android font size" preference, then click.
         onView(withId(R.id.recycler_view))
@@ -274,9 +282,12 @@ public class AccessibilitySettingsTest {
                                         withText(R.string.page_zoom_include_os_adjustment_title))));
         onView(withText(R.string.page_zoom_include_os_adjustment_title)).perform(click());
 
-        Assert.assertTrue(
+        Assert.assertFalse(
                 "OS-Level adjustment setting did not change on click",
-                initialSettingState != osLevelAdjustmentPref.isChecked());
+                osLevelAdjustmentPref.isChecked());
+        Assert.assertFalse(
+                "OS-Level adjustment setting was not saved to PageZoomUtils",
+                PageZoomUtils.shouldIncludeOSAdjustment());
     }
 
     @Test
