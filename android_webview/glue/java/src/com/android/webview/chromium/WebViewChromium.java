@@ -132,7 +132,11 @@ class WebViewChromium
     private ContentSettingsAdapter mWebSettings;
     // The WebView wrapper for WebContents and required browser components.
     AwContents mAwContents;
-    // The state associated with this WebView. This exists before `initForReal()` is called.
+    // The state associated with this WebView. This exists before `initForReal()` is called, but is
+    // null until `init()` runs. WebView subclasses can call getters before that, e.g. from an
+    // overridden `requestLayout()` during the framework WebView constructor (crbug.com/586292009).
+    // TODO(crbug.com/586292009): Remove the `mAwWebContent == null` checks once
+    // `WebViewInitInConstructor` launches and `mAwWebContent` is always created in the constructor.
     private AwWebContent mAwWebContent;
     // Receives callbacks from the AwWebContent that this WebViewChromium adopts.
     private final AwWebContent.ViewHost mWebContentHost =
@@ -423,6 +427,7 @@ class WebViewChromium
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_CERTIFICATE")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_CERTIFICATE, ApiCallUserAction.WEBVIEW_INSTANCE_GET_CERTIFICATE);
+            if (mAwWebContent == null) return null;
             return mAwWebContent.getCertificate();
         }
     }
@@ -1073,6 +1078,7 @@ class WebViewChromium
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_PROGRESS")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_PROGRESS, ApiCallUserAction.WEBVIEW_INSTANCE_GET_PROGRESS);
+            if (mAwWebContent == null) return 100;
             return mAwWebContent.getMostRecentProgress();
         }
     }
@@ -1086,6 +1092,7 @@ class WebViewChromium
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.GET_CONTENT_HEIGHT,
                     ApiCallUserAction.WEBVIEW_INSTANCE_GET_CONTENT_HEIGHT);
+            if (mAwWebContent == null) return 0;
             return mAwWebContent.getContentHeightCss();
         }
     }
@@ -1099,6 +1106,7 @@ class WebViewChromium
                     ApiCallUserAction.WEBVIEW_INSTANCE_GET_CONTENT_WIDTH);
             // We don't check that we're on the UI thread because we have not done it historically.
             // Also, this method is only callable via reflection.
+            if (mAwWebContent == null) return 0;
             return mAwWebContent.getContentWidthCss();
         }
     }
@@ -1724,6 +1732,7 @@ class WebViewChromium
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CAN_ZOOM_IN, ApiCallUserAction.WEBVIEW_INSTANCE_CAN_ZOOM_IN);
             checkThread();
+            if (mAwWebContent == null) return false;
             return mAwWebContent.canZoomIn();
         }
     }
@@ -1736,6 +1745,7 @@ class WebViewChromium
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.CAN_ZOOM_OUT, ApiCallUserAction.WEBVIEW_INSTANCE_CAN_ZOOM_OUT);
             checkThread();
+            if (mAwWebContent == null) return false;
             return mAwWebContent.canZoomOut();
         }
     }
