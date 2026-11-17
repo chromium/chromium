@@ -5,6 +5,7 @@
 module omnibox_popup.mojom;
 
 import "components/omnibox/browser/searchbox.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 import "url/mojom/url.mojom";
@@ -21,6 +22,14 @@ enum MatchesUpdate {
   // later click of a multi-click gesture (e.g. the second click of a
   // double-click) whose first click opened the dropdown.
   kPreserveMatches,
+};
+
+// A latency journey that ends on the frame that shows an `OmniboxInputState`.
+struct LatencyJourney {
+  // The UMA histogram that records the journey's latency.
+  string histogram_name;
+  // When the journey started.
+  mojo_base.mojom.TimeTicks start_time;
 };
 
 // The per-tab input-row state of the Omnibox.
@@ -69,6 +78,13 @@ struct OmniboxInputState {
   // display, e.g. they omit "http://", so they can differ from the URL. Empty
   // if there is no such URL, or the page may not drag it.
   url.mojom.Url drag_url;
+  // If set, the page records `latency_journey` with the presentation time of
+  // the first frame that shows this state (`chrome.requestPresentationTime()`).
+  // If the page is hidden, that's the first frame after it becomes visible,
+  // and a later state that replaces this one before then (another journey's
+  // state, a blur, another tab's state or the start of user input) drops the
+  // journey, as do the keyword mode shortcut and a popup clear.
+  LatencyJourney? latency_journey;
 };
 
 // Browser-side handler for the Omnibox Popup.

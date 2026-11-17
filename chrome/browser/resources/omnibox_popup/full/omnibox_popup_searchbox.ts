@@ -34,6 +34,7 @@ import type {OmniboxInputState, PageCallbackRouter as PopupPageCallbackRouter, P
 import type {OmniboxPopupContextualEntrypointElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint.js';
 import type {OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint_button.js';
 
+import {LatencyJourneyRecorder} from './latency_journey_recorder.js';
 import {getCss} from './omnibox_popup_searchbox.css.js';
 import {getHtml} from './omnibox_popup_searchbox.html.js';
 import {TextfieldModel} from './textfield_model.js';
@@ -443,6 +444,12 @@ export class OmniboxPopupSearchboxElement extends
   // of relying on deferred focus/selectall.
   // Stores pending focus action if focus arrives while document is hidden.
   private deferredFocusAction_: DeferredFocusAction|null = null;
+  // Records the latency journeys that the browser sends with input states,
+  // once the Lit renders of their states are done.
+  private latencyJourneyRecorder_: LatencyJourneyRecorder =
+      new LatencyJourneyRecorder(
+          () =>
+              Promise.all([this.updateComplete, this.$.input.updateComplete]));
   // Captured mouse coordinates when mouse button is pressed.
   private clientXAtMouseDown_: number = 0;
   private clientYAtMouseDown_: number = 0;
@@ -1943,6 +1950,12 @@ export class OmniboxPopupSearchboxElement extends
       // Prevent stale tracking of queried input across state updates.
       this.lastQueriedInput = text;
     }
+
+    // Record the latency journey that ends when the frame showing the new
+    // text, selection and focus is presented (or, if focusing is deferred, the
+    // first frame after the document becomes visible). Done last, still in this
+    // task, so that it can't affect the state handling.
+    this.latencyJourneyRecorder_.onInputStateApplied(state);
   }
 
   override updateInputForSelection(
@@ -2015,6 +2028,9 @@ export class OmniboxPopupSearchboxElement extends
     } else {
       this.deferredFocusAction_ = null;
       this.handleFocusLost_();
+      // The input no longer shows the focus that a journey waiting for the
+      // document to become visible ends on.
+      this.latencyJourneyRecorder_.onInputStateReplaced();
     }
   }
 
@@ -2027,6 +2043,9 @@ export class OmniboxPopupSearchboxElement extends
             KeywordModeEntryMethod.KEYBOARD_SHORTCUT)) {
       return;
     }
+    // The input no longer shows the state that a journey waiting for the
+    // document to become visible ends on.
+    this.latencyJourneyRecorder_.onInputStateReplaced();
 
     if (!this.userInputInProgress_) {
       // Clear permanent URL text and transition to user input mode with empty
@@ -2056,6 +2075,7 @@ export class OmniboxPopupSearchboxElement extends
    * callback to complete the hide handshake.
    */
   private async onClearPopup_(): Promise<void> {
+    this.latencyJourneyRecorder_.onInputStateReplaced();
     this.hasReceivedInitialInputState_ = false;
     this.hasDirectUserDomInput_ = false;
     this.lastSelectedMatch_ = null;
@@ -2258,7 +2278,9 @@ export class OmniboxPopupSearchboxElement extends
   /**
    * Re-applies the unbounded window state and executes deferred focus (`FOCUS`
    * / `FOCUS_AND_SELECT`) once the tab transitions from hidden to visible
-   * (`document.visibilityState === 'visible'`).
+   * (`document.visibilityState === 'visible'`), then lets
+   * `latencyJourneyRecorder_` report the latency journey that waited for it
+   * with the first frame of the show.
    */
   private onVisibilityChange_() {
     if (document.visibilityState !== 'visible') {
@@ -2274,6 +2296,7 @@ export class OmniboxPopupSearchboxElement extends
         this.getInputElement().select();
       }
     }
+    this.latencyJourneyRecorder_.onDocumentVisible();
   }
 
   // Pops #inputWrapper out of the WebView while the dropdown is visible.

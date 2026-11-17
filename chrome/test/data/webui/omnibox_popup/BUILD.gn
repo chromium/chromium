@@ -53,4 +53,6 @@ build_webui_tests("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  ts_definitions =
+      [ "//tools/typescript/definitions/chrome_request_presentation_time.d.ts" ]
 }

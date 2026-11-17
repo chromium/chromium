@@ -268,7 +268,8 @@ void OmniboxPopupHandler::SetInputState(
     bool show_full_url,
     omnibox_popup::mojom::MatchesUpdate matches_update,
     searchbox::mojom::InputKeywordModelPtr keyword_model,
-    bool is_tab_switch) {
+    bool is_tab_switch,
+    omnibox_popup::mojom::LatencyJourneyPtr latency_journey) {
   current_sequence_number_++;
   TRACE_EVENT("omnibox", "OmniboxPopupHandler::SetInputState",
               "sequence_number", current_sequence_number_, "is_focused",
@@ -349,6 +350,12 @@ void OmniboxPopupHandler::SetInputState(
       state->tab_id = tab->GetHandle().raw_value();
     }
   }
+  if (latency_journey) {
+    TRACE_EVENT_INSTANT("omnibox",
+                        "OmniboxPopupHandler::SetInputState:LatencyJourney",
+                        "histogram", latency_journey->histogram_name);
+  }
+  state->latency_journey = std::move(latency_journey);
   page_->SetInputState(std::move(state));
 }
 

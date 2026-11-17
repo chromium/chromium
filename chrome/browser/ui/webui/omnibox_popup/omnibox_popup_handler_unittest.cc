@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -169,6 +171,55 @@ TEST_F(OmniboxPopupHandlerTest, OnInputLocaleChanged) {
   EXPECT_CALL(page_, SetPrefersUrlInput(true));
   handler_->OnInputLocaleChanged();
   page_.FlushForTesting();
+}
+
+// Sends an input state with `latency_journey` and returns the journey that
+// the page received with it.
+omnibox_popup::mojom::LatencyJourneyPtr SendInputStateWithLatencyJourney(
+    OmniboxPopupHandler& handler,
+    testing::NiceMock<MockOmniboxPopupPage>& page,
+    omnibox_popup::mojom::LatencyJourneyPtr latency_journey) {
+  omnibox_popup::mojom::LatencyJourneyPtr received;
+  EXPECT_CALL(page, SetInputState(testing::_))
+      .WillOnce([&](omnibox_popup::mojom::OmniboxInputStatePtr state) {
+        received = std::move(state->latency_journey);
+      });
+  handler.SetInputState("https://example.com/", gfx::Range(0, 20),
+                        /*user_input_in_progress=*/false,
+                        "https://example.com/", /*is_focused=*/true,
+                        "example.com", /*show_full_url=*/false,
+                        omnibox_popup::mojom::MatchesUpdate::kDefault,
+                        /*keyword_model=*/nullptr, /*is_tab_switch=*/false,
+                        std::move(latency_journey));
+  page.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page);
+  return received;
+}
+
+TEST_F(OmniboxPopupHandlerTest, SetInputStateSendsLatencyJourney) {
+  // Arrange
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
+  // Act
+  const omnibox_popup::mojom::LatencyJourneyPtr received =
+      SendInputStateWithLatencyJourney(
+          *handler_, page_,
+          omnibox_popup::mojom::LatencyJourney::New("Test.Histogram",
+                                                    start_time));
+
+  // Assert
+  ASSERT_TRUE(received);
+  EXPECT_EQ(received->histogram_name, "Test.Histogram");
+  EXPECT_EQ(received->start_time, start_time);
+}
+
+TEST_F(OmniboxPopupHandlerTest, SetInputStateWithoutLatencyJourney) {
+  // Act
+  const omnibox_popup::mojom::LatencyJourneyPtr received =
+      SendInputStateWithLatencyJourney(*handler_, page_, nullptr);
+
+  // Assert
+  EXPECT_FALSE(received);
 }
 
 TEST_F(OmniboxPopupHandlerTest, SyncsDefaultSearchProvider) {

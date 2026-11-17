@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 import {isMac} from '//resources/js/platform.js';
-import {MatchesUpdate, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, PlaceholderType, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
+import {MatchesUpdate, MetricsReporterImpl, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, PlaceholderType, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {MetricsReporter} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createAutocompleteResult, createMatchKeywordModel, createSearchMatch, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -76,6 +78,7 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     currentMatch: null,
     prefersUrlInput: true,
     dragUrl: '',
+    latencyJourney: null,
     ...overrides,
   };
 }
@@ -9363,6 +9366,472 @@ suite('OmniboxPopupSearchboxTest', function() {
       assertTrue(
           boundedShadows.some(s => s.includes('inset')),
           `Expected inset shadow in: ${boundedShadow}`);
+    });
+  });
+
+  // Tests that the page records the latency journeys that end on the frames
+  // showing the browser's state changes. These are the Full WebUI omnibox's
+  // latency metrics.
+  suite('LatencyJourneys', () => {
+    const url = 'https://example.com/';
+    const histogram = 'Omnibox.Latency.Test';
+    let originalRequestPresentationTime: typeof chrome.requestPresentationTime;
+    // Fake `chrome.requestPresentationTime()`: counts the calls, and settles
+    // their promises on `resolvePresentationTime()`.
+    let presentationTimeRequests: number;
+    let presentationTimeResolvers: Array<(time: bigint|null) => void>;
+
+    // Records the spans that the page reports.
+    class TestMetricsReporter extends MockedMetricsReporter {
+      spans: Array<[string, bigint, bigint]> = [];
+
+      override umaReportLongTimeSpan(name: string, start: bigint, end: bigint) {
+        this.spans.push([name, start, end]);
+      }
+    }
+    let metricsReporter: TestMetricsReporter;
+    let originalMetricsReporter: MetricsReporter;
+
+    function createLatencyJourney(startTime: bigint) {
+      return {histogramName: histogram, startTime: {internalValue: startTime}};
+    }
+
+    function resolvePresentationTime(time: bigint|null) {
+      const resolvers = presentationTimeResolvers;
+      presentationTimeResolvers = [];
+      resolvers.forEach(resolve => resolve(time));
+    }
+
+    function setVisibilityState(state: DocumentVisibilityState) {
+      Object.defineProperty(
+          document, 'visibilityState', {value: state, configurable: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+    }
+
+    // Returns the latencies of the spans reported for `histogram`.
+    function getRecordedLatencies(): bigint[] {
+      return metricsReporter.spans.map(span => {
+        assertEquals(histogram, span[0]);
+        return span[2] - span[1];
+      });
+    }
+
+    setup(() => {
+      presentationTimeRequests = 0;
+      presentationTimeResolvers = [];
+      originalRequestPresentationTime = chrome.requestPresentationTime;
+      Object.assign(chrome, {
+        requestPresentationTime: () => {
+          presentationTimeRequests++;
+          return new Promise<bigint|null>(
+              resolve => presentationTimeResolvers.push(resolve));
+        },
+      });
+      // `MetricsReporterImpl` comes from omnibox_popup_full.js, since with
+      // `optimize_webui` the page bundles its own copy of it.
+      originalMetricsReporter = MetricsReporterImpl.getInstance();
+      metricsReporter = new TestMetricsReporter();
+      MetricsReporterImpl.setInstanceForTest(metricsReporter);
+      handler.reset();
+    });
+
+    teardown(() => {
+      Object.assign(
+          chrome, {requestPresentationTime: originalRequestPresentationTime});
+      Object.defineProperty(
+          document, 'visibilityState', {value: 'visible', configurable: true});
+      MetricsReporterImpl.setInstanceForTest(originalMetricsReporter);
+    });
+
+    test('RecordsLatencyWhenFramePresented', async () => {
+      // Arrange: nothing beyond `setup()`.
+
+      // Act: focus the input with all its text selected, then present the
+      // frame.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        selection: {start: 0, end: url.length},
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+      resolvePresentationTime(1234n);
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+      assertEquals(1, presentationTimeRequests);
+      assertDeepEquals([234n], getRecordedLatencies());
+    });
+
+    test('DoesNotObserveStateWithoutJourney', async () => {
+      // Arrange: nothing beyond `setup()`.
+
+      // Act.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        selection: {start: 0, end: url.length},
+        isFocused: true,
+      }));
+      await microtasksFinished();
+      resolvePresentationTime(1234n);
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('DoesNotRecordWhenFrameNotPresented', async () => {
+      // Arrange: nothing beyond `setup()`.
+
+      // Act: the frame isn't presented, e.g. the change had no visible effect.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+      resolvePresentationTime(null);
+      await microtasksFinished();
+
+      // Assert.
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('DefersJourneyUntilVisible', async () => {
+      // Arrange: the popup's document is still hidden, e.g. because the state
+      // arrived before the visibility change.
+      setVisibilityState('hidden');
+
+      // Act: the state arrives while hidden.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: '',
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Assert: nothing is observed while hidden, since a hidden document's
+      // frames aren't presented.
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+
+      // Act: the document becomes visible, which focuses the input.
+      setVisibilityState('visible');
+      await microtasksFinished();
+      resolvePresentationTime(8000n);
+      await microtasksFinished();
+
+      // Assert: the journey ends with the first frame of the show.
+      assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+      assertEquals(1, presentationTimeRequests);
+      assertDeepEquals([7000n], getRecordedLatencies());
+    });
+
+    test('RecordsOnlyNewerJourneyWhenStateReplacedWhileHidden', async () => {
+      // Arrange: a journey is deferred while the document is hidden.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        tabId: 1,
+        text: url,
+        isFocused: true,
+        isTabSwitch: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: a second state with a journey of its own arrives before the
+      // document becomes visible, so the show doesn't show the first state.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        tabId: 2,
+        text: 'https://other.example/',
+        isFocused: true,
+        isTabSwitch: true,
+        latencyJourney: createLatencyJourney(2000n),
+      }));
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+      resolvePresentationTime(5000n);
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(1, presentationTimeRequests);
+      assertDeepEquals([3000n], getRecordedLatencies());
+    });
+
+    test('DropsDeferredJourneyWhenBlurredWhileHidden', async () => {
+      // Arrange: a journey is deferred while the document is hidden.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: the browser blurs the input before the document becomes visible.
+      callbackRouter.setFocus(
+          false, /*queryZps=*/ false, /*selectAll=*/ false,
+          /*showFullUrl=*/ false);
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+
+      // Assert: the journey doesn't end with the first frame of the show, which
+      // doesn't show the input focused.
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('DropsDeferredJourneyWhenUnfocusedStateArrives', async () => {
+      // Arrange: a journey is deferred while the document is hidden.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: a state without a journey of its own, but with the input blurred,
+      // arrives before the document becomes visible.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        isFocused: false,
+      }));
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('ClearPopupDropsDeferredJourney', async () => {
+      // Arrange: a journey is deferred while the document is hidden.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: the popup is cleared before it's shown, then shown again later.
+      await callbackRouter.clearPopup();
+      setVisibilityState('visible');
+      await microtasksFinished();
+
+      // Assert: the later show doesn't end the journey with a frame that
+      // doesn't show its state.
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('KeepsDeferredJourneyWhenFocusRefinedWhileHidden', async () => {
+      // Arrange: a new NTP tab's state arrives while the document is hidden.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: '',
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: the focus restored on the window's activation, without a journey
+      // of its own, arrives before the document becomes visible.
+      callbackRouter.setFocus(
+          true, /*queryZps=*/ false, /*selectAll=*/ true,
+          /*showFullUrl=*/ false);
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+      resolvePresentationTime(9000n);
+      await microtasksFinished();
+
+      // Assert: the show still shows the new tab's focused input.
+      assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+      assertDeepEquals([8000n], getRecordedLatencies());
+    });
+
+    test('KeepsDeferredJourneyWhenStateRefinedWhileHidden', async () => {
+      // Arrange: a journey is deferred while the document is hidden. Its tab
+      // is known, as it always is in a browser window.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        tabId: 1,
+        text: url,
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: a state of the same tab, without a journey of its own, updates the
+      // journey's state before the document becomes visible.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        tabId: 1,
+        text: '',
+        isFocused: true,
+      }));
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+      resolvePresentationTime(10000n);
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals('', searchbox.$.input.inputElement.value);
+      assertDeepEquals([9000n], getRecordedLatencies());
+    });
+
+    test('DropsDeferredJourneyOnTabSwitchWhileHidden', async () => {
+      // Arrange: a journey is deferred while the document is hidden. The tabs'
+      // IDs are unknown (0), so only `isTabSwitch` tells that the tab changes.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: a tab switch's state, focused but without a journey of its own,
+      // arrives before the document becomes visible.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: '',
+        isFocused: true,
+        isTabSwitch: true,
+      }));
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+
+      // Assert: the show shows another tab, so the journey is dropped.
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('DropsDeferredJourneyOnAnotherTabsStateWhileHidden', async () => {
+      // Arrange: a journey is deferred while the document is hidden.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        tabId: 1,
+        text: '',
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: the first state of another tab that takes focus, e.g. a new NTP,
+      // arrives before the document becomes visible. The browser doesn't mark
+      // such a state as a tab switch.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        tabId: 2,
+        text: '',
+        isFocused: true,
+        isTabSwitch: false,
+      }));
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+
+      // Assert: the show shows the other tab, so the journey is dropped.
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('DropsDeferredJourneyWhenUserInputStartsWhileHidden', async () => {
+      // Arrange: a journey is deferred while the document is hidden.
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: '',
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: the state of an edit, without a journey of its own, arrives before
+      // the document becomes visible.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: 'a',
+        selection: {start: 1, end: 1},
+        userInputInProgress: true,
+        isFocused: true,
+      }));
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+
+      // Assert: the show shows the edit, so the journey is dropped.
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('KeywordModeShortcutDropsDeferredJourney', async () => {
+      // Arrange: the default search engine has a keyword, and a journey is
+      // deferred while the document is hidden.
+      testProxy.page.setAvailableKeywordModels(
+          [{
+            type: KeywordType.kChip,
+            keyword: 'google.com',
+            displayText: 'Search Google',
+            iconPath: '',
+            placeholder: 'Search Google',
+          }],
+          'google.com');
+      await microtasksFinished();
+      setVisibilityState('hidden');
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: '',
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+
+      // Act: the keyword mode shortcut is used before the document becomes
+      // visible.
+      callbackRouter.focusSearchWithDefaultSearchEngineKeywordMode();
+      await microtasksFinished();
+      setVisibilityState('visible');
+      await microtasksFinished();
+
+      // Assert: the show shows keyword mode, so the journey is dropped.
+      assertEquals('google.com', searchbox.inputKeywordModel?.keyword);
+      assertEquals(0, presentationTimeRequests);
+      assertDeepEquals([], getRecordedLatencies());
+    });
+
+    test('RequestsPresentationTimeAfterLitRender', async () => {
+      // Arrange: record whether the searchbox's Lit render was still pending
+      // when the page asked for the presentation time, since
+      // `chrome.requestPresentationTime()` only observes a frame that the DOM
+      // changes made so far have requested.
+      const renderPendingAtRequest: boolean[] = [];
+      const fakeRequestPresentationTime = chrome.requestPresentationTime;
+      Object.assign(chrome, {
+        requestPresentationTime: () => {
+          renderPendingAtRequest.push(searchbox.isUpdatePending);
+          return fakeRequestPresentationTime();
+        },
+      });
+
+      // Act: a state that changes the searchbox's Lit properties, e.g. its
+      // logical focus, arrives with a journey.
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: url,
+        isFocused: true,
+        latencyJourney: createLatencyJourney(1000n),
+      }));
+      await microtasksFinished();
+      resolvePresentationTime(1500n);
+      await microtasksFinished();
+
+      // Assert: the page asked once, after the render.
+      assertDeepEquals([false], renderPendingAtRequest);
+      assertDeepEquals([500n], getRecordedLatencies());
     });
   });
 });

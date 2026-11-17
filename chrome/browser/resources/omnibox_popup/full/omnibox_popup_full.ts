@@ -8,6 +8,7 @@ import './full_app.js';
 
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {sanitizeTextForPaste, stripJavascriptSchemas} from '//resources/cr_components/searchbox/utils.js';
+export {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 export {UrlDeemphasisMode, type UrlEmphasis} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 export {browserProxyFactory as omniboxPopupBrowserProxyFactory, MatchesUpdate, OmniboxEscapeAction, type OmniboxInputState, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote, PlaceholderType} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup.mojom-webui.js';
 export type {OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint_button.js';

@@ -101,16 +101,20 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   // omnibox_popup::mojom::Page:
   void OnShow();
   void OnContextMenuClosed();
-  void SetInputState(const std::string& text,
-                     const gfx::Range& selection,
-                     bool user_input_in_progress,
-                     const std::string& full_url,
-                     bool is_focused,
-                     const std::string& permanent_display_text,
-                     bool show_full_url,
-                     omnibox_popup::mojom::MatchesUpdate matches_update,
-                     searchbox::mojom::InputKeywordModelPtr keyword_model,
-                     bool is_tab_switch);
+  // For `SetInputState()`, a non-null `latency_journey` ends on the frame that
+  // shows the new state, and the page records it.
+  void SetInputState(
+      const std::string& text,
+      const gfx::Range& selection,
+      bool user_input_in_progress,
+      const std::string& full_url,
+      bool is_focused,
+      const std::string& permanent_display_text,
+      bool show_full_url,
+      omnibox_popup::mojom::MatchesUpdate matches_update,
+      searchbox::mojom::InputKeywordModelPtr keyword_model,
+      bool is_tab_switch,
+      omnibox_popup::mojom::LatencyJourneyPtr latency_journey = nullptr);
   void SetFocus(bool is_focused,
                 bool query_zps = false,
                 bool select_all = false,
