@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
@@ -60,7 +60,7 @@ class VIEWS_EXPORT ViewGuard : public ViewObserver {
   // ViewObserver:
   void OnViewIsDeleting(View* view) override;
 
-  const raw_ref<View> view_;
+  raw_ptr<View> view_;
   const std::optional<base::NotFatalUntil> not_fatal_until_;
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };
