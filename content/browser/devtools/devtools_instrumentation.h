@@ -37,7 +37,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
@@ -551,15 +550,6 @@ void OnWorkerMainScriptLoadingFailed(
     FrameTreeNode* ftn,
     RenderFrameHostImpl* ancestor_rfh,
     const network::URLLoaderCompletionStatus& status);
-
-// Adds a message from a worklet to the devtools console. This is specific to
-// FLEDGE auction worklet and shared storage worklet where the message may
-// contain sensitive cross-origin information, and therefore the devtools
-// logging needs to bypass the usual path through the renderer.
-void CONTENT_EXPORT
-LogWorkletMessage(RenderFrameHostImpl& frame_host,
-                  blink::mojom::ConsoleMessageLevel log_level,
-                  const std::string& message);
 
 void ApplyNetworkContextParamsOverrides(
     BrowserContext* browser_context,

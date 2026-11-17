@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/traced_value.h"
 #include "base/unguessable_token.h"
 #include "components/download/public/common/download_create_info.h"
@@ -3029,49 +3028,6 @@ void OnWorkerMainScriptRequestWillBeSent(
                    ftn->current_url(),
                    /*initiator_devtools_request_id*/ "",
                    ancestor_frame_host.devtools_frame_token(), timestamp);
-}
-
-void LogWorkletMessage(RenderFrameHostImpl& frame_host,
-                       blink::mojom::ConsoleMessageLevel log_level,
-                       const std::string& message) {
-  FrameTreeNode* ftn = frame_host.frame_tree_node();
-  if (!ftn) {
-    return;
-  }
-
-  std::string log_level_string;
-  switch (log_level) {
-    case blink::mojom::ConsoleMessageLevel::kVerbose:
-      log_level_string = protocol::Log::LogEntry::LevelEnum::Verbose;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kInfo:
-      log_level_string = protocol::Log::LogEntry::LevelEnum::Info;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kWarning:
-      log_level_string = protocol::Log::LogEntry::LevelEnum::Warning;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kError:
-      log_level_string = protocol::Log::LogEntry::LevelEnum::Error;
-      break;
-  }
-
-  CHECK(!log_level_string.empty(), base::NotFatalUntil::M159);
-
-  auto entry =
-      protocol::Log::LogEntry::Create()
-          .SetSource(protocol::Log::LogEntry::SourceEnum::Other)
-          .SetLevel(log_level_string)
-          .SetText(message)
-          .SetTimestamp(base::Time::Now().InMillisecondsFSinceUnixEpoch())
-          .Build();
-  DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
-
-  // Manually trigger RenderFrameHostImpl::DidAddMessageToConsole, so that the
-  // observer behavior aligns more with the observer behavior for the regular
-  // devtools logging path from the renderer.
-  frame_host.DidAddMessageToConsole(log_level, base::UTF8ToUTF16(message),
-                                    /*line_no=*/0, /*source_id=*/{},
-                                    /*untrusted_stack_trace=*/{});
 }
 
 void ApplyNetworkContextParamsOverrides(

@@ -121,7 +121,7 @@ Worker behavior depends on the type of worker:
   [github issue](https://github.com/w3c/webappsec-permissions-policy/issues/207)),
   so it can’t be taken into account here. See step 14.3.4 in section 10.2.4 of
   the [spec](https://html.spec.whatwg.org/multipage/workers.html\#worker-processing-model).
-* Shared Workers and Shared Storage Worklets do not currently support COI.
+* Shared Workers do not currently support COI.
 * Dedicated Workers and Worklets have the COI capability if their
   hosting document does.
 

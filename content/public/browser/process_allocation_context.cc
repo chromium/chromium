@@ -28,7 +28,6 @@ bool ProcessAllocationContext::IsForNavigation() const {
     case ProcessAllocationSource::kCanRequestURL:
     case ProcessAllocationSource::kAuctionProcessManager:
     case ProcessAllocationSource::kServiceWorkerProcessManager:
-    case ProcessAllocationSource::kSharedStorageRenderThreadWorkletDriver:
     case ProcessAllocationSource::kSharedWorker:
     case ProcessAllocationSource::kNoProcessCreationExpected:
     case ProcessAllocationSource::kTest:

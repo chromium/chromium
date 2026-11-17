@@ -371,7 +371,7 @@ const char kEnablePluginPlaceholderTesting[] =
 const char kEnablePreciseMemoryInfo[] = "enable-precise-memory-info";
 
 // Enables Privacy Sandbox APIs: Attribution Reporting, Fledge, Topics, Fenced
-// Frames, Shared Storage, Private Aggregation, and their associated features.
+// Frames, Private Aggregation, and their associated features.
 const char kEnablePrivacySandboxAdsApis[] = "enable-privacy-sandbox-ads-apis";
 
 // Set options to cache V8 data. (none, code, or default)

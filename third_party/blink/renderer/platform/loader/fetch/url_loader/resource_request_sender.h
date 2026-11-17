@@ -197,10 +197,8 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
     // used/cleared in `ResourceRequestSender::FollowPendingRedirect()`.
     bool has_pending_redirect = false;
 
-    // Headers that need to be added or updated upon the pending redirect.
-    // Used for Client Hints headers, `Shared-Storage-Writable` header in the
-    // case that permission has been restored/revoked on a redirect, while this
-    // comment might be outdated.
+    // Headers that need to be added, modified, or removed upon following a
+    // pending redirect (for example, Client Hints headers).
     network::HttpRequestHeadersUpdateParams headers_update_params;
 
     // Used to notify the loading stats.
