@@ -11,13 +11,14 @@
 #include <wrl.h>
 
 #include <array>
+#include <memory>
 #include <vector>
 
 #include "media/base/encoder_status.h"
 #include "media/base/video_codecs.h"
 #include "media/filters/h26x_annex_b_bitstream_builder.h"
-#include "media/gpu/h264_rate_controller.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d12_software_rate_controller.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/parsers/h265_parser.h"
 #include "media/video/video_encode_accelerator.h"
@@ -120,12 +121,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate
   D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1 pic_params_{};
   D3D12VideoEncoderRateControl current_rate_control_;
 
-  std::optional<H264RateController> software_rate_controller_;
-  H264RateControllerSettings rate_controller_settings_;
-  // The timestamp of the next frame in the encoded video, to be used for the
-  // rate controller. The value stands for the time delta relative to the
-  // beginning of the video when the frame should be decoded.
-  base::TimeDelta rate_controller_timestamp_;
+  // Picks the QP of each frame when the bitrate mode is CBR or VBR. The
+  // hardware encoder then runs in CQP mode.
+  std::unique_ptr<D3D12SoftwareRateController> software_rate_controller_;
 
   D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS input_arguments_{};
   std::array<UINT, 16> list0_reference_frames_{};

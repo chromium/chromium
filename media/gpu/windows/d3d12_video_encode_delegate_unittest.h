@@ -6,8 +6,11 @@
 #define MEDIA_GPU_WINDOWS_D3D12_VIDEO_ENCODE_DELEGATE_UNITTEST_H_
 
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 #include "media/gpu/windows/d3d12_video_processor_wrapper.h"
@@ -98,6 +101,30 @@ class D3D12VideoEncodeDelegateTestBase : public ::testing::Test {
   void EnableFeature(const base::Feature& feature);
 
   void DisableFeature(const base::Feature& feature);
+
+  // Initializes `encoder_delegate_` with `config` and encodes one frame per
+  // entry of `timestamps`. The mocked driver reports every frame as
+  // `frame_size` bytes. Returns the QP of each encoded frame.
+  // `encoder_delegate_` must be newly created and not yet initialized.
+  std::vector<int> InitializeAndEncodeFrames(
+      const VideoEncodeAccelerator::Config& config,
+      size_t frame_size,
+      const std::vector<base::TimeDelta>& timestamps);
+
+  // Encodes the same `num_frames` frames of `frame_size` bytes twice on newly
+  // created delegates: once spaced `interval` apart and once at
+  // `config.framerate`. Returns the QP of the last frame of each run as
+  // `{qp_at_interval, qp_at_config_framerate}`.
+  std::pair<int, int> GetLastQpAtIntervalAndAtConfigFramerate(
+      const VideoEncodeAccelerator::Config& config,
+      size_t frame_size,
+      int num_frames,
+      base::TimeDelta interval);
+
+  // Replaces `encoder_delegate_` with a new, uninitialized delegate. Codec
+  // fixtures that use `GetLastQpAtIntervalAndAtConfigFramerate()` override
+  // this.
+  virtual void CreateEncoderDelegate();
 
   std::unique_ptr<D3D12VideoEncodeDelegate> encoder_delegate_;
   std::optional<base::test::ScopedFeatureList> scoped_feature_list_;

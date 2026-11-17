@@ -20,7 +20,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_color_space.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
-#include "media/gpu/h264_rate_control_util.h"
 #include "media/gpu/h265_builder.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/format_utils.h"
@@ -340,53 +339,12 @@ bool D3D12VideoEncodeH265Delegate::UpdateRateControl(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
   if (software_rate_controller_) {
-    if (bitrate_allocation.GetMode() != Bitrate::Mode::kConstant &&
-        bitrate_allocation.GetMode() != Bitrate::Mode::kVariable) {
+    if (!software_rate_controller_->UpdateRateControl(bitrate_allocation,
+                                                      framerate)) {
       return false;
     }
-
     framerate_ = framerate;
     bitrate_allocation_ = bitrate_allocation;
-    if (bitrate_allocation.GetSumBps() == 0) {
-      return false;
-    }
-    float peak_target_ratio =
-        1.f * bitrate_allocation.GetPeakBps() / bitrate_allocation.GetSumBps();
-    uint32_t sum_bitrate = 0;
-    if (framerate != rate_controller_settings_.frame_rate_max) {
-      // Frame rate has changed, resetting the rate controller.
-      rate_controller_settings_.frame_rate_max = framerate;
-      CHECK_GT(framerate, 0u);
-      rate_controller_settings_.gop_max_duration =
-          base::Seconds((gop_structure_.GOPLength + framerate - 1) / framerate);
-      for (size_t i = 0; i < rate_controller_settings_.layer_settings.size();
-           i++) {
-        H264RateControllerLayerSettings& layer_settings =
-            rate_controller_settings_.layer_settings[i];
-        sum_bitrate += bitrate_allocation.GetBitrateBps(0, i);
-        layer_settings.avg_bitrate = sum_bitrate;
-        layer_settings.peak_bitrate =
-            bitrate_allocation.GetMode() == Bitrate::Mode::kConstant
-                ? sum_bitrate
-                : base::saturated_cast<uint32_t>(sum_bitrate *
-                                                 peak_target_ratio);
-        layer_settings.frame_rate = framerate / static_cast<float>(1u << i);
-      }
-      software_rate_controller_.emplace(rate_controller_settings_);
-    } else {
-      // Frame rate has not changed, updating the bitrate.
-      for (size_t i = 0; i < GetNumTemporalLayers(); i++) {
-        sum_bitrate += bitrate_allocation.GetBitrateBps(0, i);
-        software_rate_controller_->temporal_layers(i).SetBufferParameters(
-            rate_controller_settings_.layer_settings[i].hrd_buffer_size,
-            sum_bitrate,
-            bitrate_allocation.GetMode() == Bitrate::Mode::kConstant
-                ? sum_bitrate
-                : base::saturated_cast<uint32_t>(sum_bitrate *
-                                                 peak_target_ratio),
-            rate_controller_settings_.ease_hrd_reduction);
-      }
-    }
     return true;
   }
 
@@ -541,19 +499,9 @@ EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
   // Rate control.
   int qp = -1;
   if (software_rate_controller_) {
-    size_t temporal_idx =
-        metadata_.svc_generic ? metadata_.svc_generic->temporal_idx : 0;
-    software_rate_controller_->temporal_layers(temporal_idx)
-        .ShrinkHRDBuffer(rate_controller_timestamp_);
-    if (is_keyframe) {
-      software_rate_controller_->EstimateIntraFrameQP(
-          rate_controller_timestamp_);
-    } else {
-      software_rate_controller_->EstimateInterFrameQP(
-          temporal_idx, rate_controller_timestamp_);
-    }
-    qp = software_rate_controller_->temporal_layers(temporal_idx)
-             .curr_frame_qp();
+    qp = base::checked_cast<int>(software_rate_controller_->ComputeQp(
+        metadata_.timestamp, is_keyframe,
+        metadata_.svc_generic ? metadata_.svc_generic->temporal_idx : 0));
   } else if (options.quantizer.has_value()) {
     qp = options.quantizer.value();
   }
@@ -698,46 +646,22 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
                            picture_control_support_h265.MaxL0ReferencesForP);
   }
 
-  if ((config.bitrate.mode() == Bitrate::Mode::kConstant ||
-       config.bitrate.mode() == Bitrate::Mode::kVariable) &&
-      GetNumTemporalLayers() <= h264_rate_control_util::kMaxNumTemporalLayers) {
+  software_rate_controller_.reset();
+  if (D3D12SoftwareRateController::IsSupported(config.bitrate.mode(),
+                                               GetNumTemporalLayers())) {
     constexpr uint32_t kDefaultQp = 26;
     rate_control_ = D3D12VideoEncoderRateControl::CreateCqp(
         kDefaultQp, kDefaultQp, kDefaultQp);
-    rate_controller_settings_.content_type = config.content_type;
-    rate_controller_settings_.frame_size = config.input_visible_size;
-    rate_controller_settings_.frame_rate_max = config.framerate;
-    rate_controller_settings_.gop_max_duration = base::Seconds(
-        (config.gop_length.value() + config.framerate - 1) / config.framerate);
-    rate_controller_settings_.fixed_delta_qp = false;
-    rate_controller_settings_.ease_hrd_reduction = false;
-    rate_controller_settings_.num_temporal_layers = GetNumTemporalLayers();
-    H264RateControllerLayerSettings layer_settings;
-    constexpr size_t kHRDBufferSize = 40000;
-    layer_settings.hrd_buffer_size = kHRDBufferSize;
-    layer_settings.min_qp = kH265MinQuantizer;
-    layer_settings.max_qp = kH265MaxQuantizer;
-    VideoBitrateAllocation bitrate_allocation =
-        AllocateBitrateForDefaultEncoding(config);
-    if (bitrate_allocation.GetSumBps() == 0) {
-      return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-              "Bitrate is zero"};
+    // There is no desktop-specific max QP for H.265. kH265MaxQuantizer (42) is
+    // already well below the H.264 limit of 51.
+    const uint32_t max_qp = kH265MaxQuantizer;
+    auto rate_controller_or_error = D3D12SoftwareRateController::Create(
+        config, AllocateBitrateForDefaultEncoding(config),
+        GetNumTemporalLayers(), kH265MinQuantizer, max_qp);
+    if (!rate_controller_or_error.has_value()) {
+      return std::move(rate_controller_or_error).error();
     }
-    float peak_target_ratio =
-        1.f * bitrate_allocation.GetPeakBps() / bitrate_allocation.GetSumBps();
-    uint32_t sum_bitrate = 0;
-    for (size_t i = 0; i < rate_controller_settings_.num_temporal_layers; i++) {
-      sum_bitrate += bitrate_allocation.GetBitrateBps(0, i);
-      layer_settings.avg_bitrate = sum_bitrate;
-      layer_settings.peak_bitrate =
-          config.bitrate.mode() == Bitrate::Mode::kConstant
-              ? sum_bitrate
-              : base::saturated_cast<uint32_t>(sum_bitrate * peak_target_ratio);
-      layer_settings.frame_rate =
-          config.framerate / static_cast<float>(1u << i);
-      rate_controller_settings_.layer_settings.push_back(layer_settings);
-    }
-    software_rate_controller_.emplace(rate_controller_settings_);
+    software_rate_controller_ = std::move(rate_controller_or_error).value();
   }
 
   D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec{
@@ -999,7 +923,6 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
     return EncoderStatus::Codes::kEncoderInitializationError;
   }
 
-  rate_controller_timestamp_ = base::TimeDelta();
   current_rate_control_ = rate_control_;
   input_arguments_.SequenceControlDesc.RateControl =
       current_rate_control_.GetD3D12VideoEncoderRateControl();
@@ -1052,18 +975,9 @@ D3D12VideoEncodeH265Delegate::ReadbackBitstream(
   if (software_rate_controller_) {
     // Update the software rate controller here since we do not know the payload
     // size until now.
-    if (metadata_.key_frame) {
-      software_rate_controller_->FinishIntraFrame(payload_size,
-                                                  rate_controller_timestamp_);
-    } else {
-      software_rate_controller_->FinishInterFrame(
-          metadata_.svc_generic ? metadata_.svc_generic->temporal_idx : 0,
-          payload_size, rate_controller_timestamp_);
-    }
-    // The next frame should be decoded at (1 / frame_rate) seconds later.
-    rate_controller_timestamp_ +=
-        base::Seconds(1) /
-        rate_controller_settings_.layer_settings[0].frame_rate;
+    software_rate_controller_->FinishFrame(
+        payload_size, metadata_.key_frame,
+        metadata_.svc_generic ? metadata_.svc_generic->temporal_idx : 0);
   }
   return payload_size;
 }

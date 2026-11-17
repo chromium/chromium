@@ -462,7 +462,11 @@ D3D12VideoEncodeDelegate::Encode(
     const gfx::ColorSpace& input_frame_color_space,
     const BitstreamBuffer& bitstream_buffer,
     const VideoEncoder::EncodeOptions& options,
-    const gfx::HDRMetadata& input_frame_hdr_metadata) {
+    const gfx::HDRMetadata& input_frame_hdr_metadata,
+    base::TimeDelta timestamp) {
+  // Codec delegates read the frame timestamp from `metadata_` in
+  // `EncodeImpl()`, for example to drive the software rate controller.
+  metadata_.timestamp = timestamp;
   if (options.reference_buffers.size() > GetMaxNumOfManualRefBuffers()) {
     return base::unexpected(EncoderStatus{
         EncoderStatus::Codes::kBadReferenceBuffer,

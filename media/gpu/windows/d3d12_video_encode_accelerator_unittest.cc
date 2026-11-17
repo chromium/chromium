@@ -60,7 +60,8 @@ class MockVideoEncoderDelegate : public D3D12VideoEncodeDelegate {
                const gfx::ColorSpace&,
                const BitstreamBuffer&,
                const VideoEncoder::EncodeOptions&,
-               const gfx::HDRMetadata&),
+               const gfx::HDRMetadata&,
+               base::TimeDelta),
               (override));
   MOCK_METHOD(EncoderStatus,
               EncodeImpl,
@@ -95,11 +96,12 @@ class MockVideoEncoderDelegateFactory
         .WillByDefault(Return(16));
     ON_CALL(*encoder_delegate, GetMaxNumOfManualRefBuffers())
         .WillByDefault(Return(0));
-    ON_CALL(*encoder_delegate, Encode(_, _, _, _, _, _))
+    ON_CALL(*encoder_delegate, Encode(_, _, _, _, _, _, _))
         .WillByDefault(
             [](D3D12PictureBuffer, const gfx::Rect&, const gfx::ColorSpace&,
                const BitstreamBuffer& bitstream_buffer,
-               const VideoEncoder::EncodeOptions&, const gfx::HDRMetadata&)
+               const VideoEncoder::EncodeOptions&, const gfx::HDRMetadata&,
+               base::TimeDelta)
                 -> base::expected<D3D12VideoEncodeDelegate::EncodeResult,
                                   EncoderStatus> {
               return D3D12VideoEncodeDelegate::EncodeResult{
@@ -520,12 +522,13 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, EncodeErrorStopsProcessingNextFrames) {
           .WillByDefault(Return(16));
       ON_CALL(*encoder_delegate, GetMaxNumOfManualRefBuffers())
           .WillByDefault(Return(0));
-      ON_CALL(*encoder_delegate, Encode(_, _, _, _, _, _))
+      ON_CALL(*encoder_delegate, Encode(_, _, _, _, _, _, _))
           .WillByDefault(
-              [this](
-                  D3D12PictureBuffer, const gfx::Rect&, const gfx::ColorSpace&,
-                  const BitstreamBuffer& bitstream_buffer,
-                  const VideoEncoder::EncodeOptions&, const gfx::HDRMetadata&)
+              [this](D3D12PictureBuffer, const gfx::Rect&,
+                     const gfx::ColorSpace&,
+                     const BitstreamBuffer& bitstream_buffer,
+                     const VideoEncoder::EncodeOptions&,
+                     const gfx::HDRMetadata&, base::TimeDelta)
                   -> base::expected<D3D12VideoEncodeDelegate::EncodeResult,
                                     EncoderStatus> {
                 ++encode_call_count_;
@@ -620,13 +623,13 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, ForwardsVisibleRectToDelegate) {
           MockVideoEncoderDelegateFactory::CreateVideoEncodeDelegate(
               video_device, profile);
       ON_CALL(*static_cast<MockVideoEncoderDelegate*>(encoder_delegate.get()),
-              Encode(_, _, _, _, _, _))
+              Encode(_, _, _, _, _, _, _))
           .WillByDefault(
               [this](D3D12PictureBuffer, const gfx::Rect& input_visible_rect,
                      const gfx::ColorSpace&,
                      const BitstreamBuffer& bitstream_buffer,
                      const VideoEncoder::EncodeOptions&,
-                     const gfx::HDRMetadata&)
+                     const gfx::HDRMetadata&, base::TimeDelta)
                   -> base::expected<D3D12VideoEncodeDelegate::EncodeResult,
                                     EncoderStatus> {
                 visible_rects_.push_back(input_visible_rect);

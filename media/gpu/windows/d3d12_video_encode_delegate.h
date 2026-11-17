@@ -69,13 +69,15 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   // of |picture_buffer| that holds picture content, i.e. the region that should
   // be encoded. It must be non-empty and contained in |picture_buffer|; callers
   // that do not crop pass the whole texture rather than an empty rectangle.
+  // |timestamp| is the presentation timestamp of the input frame.
   virtual base::expected<EncodeResult, EncoderStatus> Encode(
       D3D12PictureBuffer picture_buffer,
       const gfx::Rect& input_visible_rect,
       const gfx::ColorSpace& input_frame_color_space,
       const BitstreamBuffer& bitstream_buffer,
       const VideoEncoder::EncodeOptions& options,
-      const gfx::HDRMetadata& input_frame_hdr_metadata = gfx::HDRMetadata());
+      const gfx::HDRMetadata& input_frame_hdr_metadata = gfx::HDRMetadata(),
+      base::TimeDelta timestamp = base::TimeDelta());
 
   // Do the codec specific encoding.
   virtual EncoderStatus EncodeImpl(

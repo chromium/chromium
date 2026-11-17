@@ -294,6 +294,10 @@ class D3D12VideoEncodeH265DelegateTest
           return S_OK;
         });
 
+    CreateEncoderDelegate();
+  }
+
+  void CreateEncoderDelegate() override {
     gpu::GpuDriverBugWorkarounds gpu_workarounds{};
     encoder_delegate_ = std::make_unique<D3D12VideoEncodeH265Delegate>(
         video_device3_, gpu_workarounds);
@@ -1396,6 +1400,18 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeFramesAndVerifyKeyFrameFlag) {
     ASSERT_TRUE(result_or_error.has_value());
     Mock::VerifyAndClearExpectations(GetVideoEncoderWrapper());
   }
+}
+
+TEST_F(D3D12VideoEncodeH265DelegateTest, RateControlUsesFrameTimestamps) {
+  // Static screen content can arrive at 1 fps while the encoder is configured
+  // for 30 fps. Each frame then has a 30 times larger bit budget, so the same
+  // frames must end up with a lower QP than when they arrive at 30 fps.
+  VideoEncodeAccelerator::Config config = GetDefaultH265Config();
+  config.bitrate = Bitrate::ConstantBitrate(1000000u);
+  config.content_type = VideoEncodeAccelerator::Config::ContentType::kDisplay;
+  auto [qp_at_1fps, qp_at_30fps] = GetLastQpAtIntervalAndAtConfigFramerate(
+      config, /*frame_size=*/20000, /*num_frames=*/30, base::Seconds(1));
+  EXPECT_LT(qp_at_1fps, qp_at_30fps);
 }
 
 }  // namespace media

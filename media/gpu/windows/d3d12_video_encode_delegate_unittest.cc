@@ -4,6 +4,8 @@
 
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
 
+#include <algorithm>
+
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -195,6 +197,74 @@ void D3D12VideoEncodeDelegateTestBase::DisableFeature(
     const base::Feature& feature) {
   scoped_feature_list_.emplace();
   scoped_feature_list_->InitAndDisableFeature(feature);
+}
+
+std::vector<int> D3D12VideoEncodeDelegateTestBase::InitializeAndEncodeFrames(
+    const VideoEncodeAccelerator::Config& config,
+    size_t frame_size,
+    const std::vector<base::TimeDelta>& timestamps) {
+  if (!encoder_delegate_->Initialize(config).is_ok()) {
+    ADD_FAILURE() << "Failed to initialize the encoder delegate";
+    return {};
+  }
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  // Leave room for the parameter sets written in front of the slice data.
+  const size_t buffer_size = frame_size + 1024;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(buffer_size);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), buffer_size);
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+      .WillRepeatedly([this, frame_size] {
+        return GetEncoderOutputMetadataResourceMap(frame_size);
+      });
+  // Some codec delegates check that the slice data starts with a start code.
+  EXPECT_CALL(*GetVideoEncoderWrapper(), ReadbackBitstream)
+      .WillRepeatedly([](base::span<uint8_t> buffer) {
+        constexpr base::span kStartCode = base::span_from_cstring("\0\0\1");
+        if (buffer.size() >= kStartCode.size()) {
+          std::ranges::copy(kStartCode, buffer.begin());
+        }
+        return EncoderStatus(EncoderStatus::Codes::kOk);
+      });
+
+  std::vector<int> qps;
+  for (base::TimeDelta timestamp : timestamps) {
+    auto result_or_error = encoder_delegate_->Encode(
+        input_frame, gfx::Rect(config.input_visible_size),
+        gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        VideoEncoder::EncodeOptions(), gfx::HDRMetadata(), timestamp);
+    if (!result_or_error.has_value()) {
+      ADD_FAILURE() << "Failed to encode the frame at " << timestamp;
+      break;
+    }
+    qps.push_back(std::move(result_or_error).value().metadata.qp);
+  }
+  return qps;
+}
+
+std::pair<int, int>
+D3D12VideoEncodeDelegateTestBase::GetLastQpAtIntervalAndAtConfigFramerate(
+    const VideoEncodeAccelerator::Config& config,
+    size_t frame_size,
+    int num_frames,
+    base::TimeDelta interval) {
+  auto last_qp = [&](base::TimeDelta frame_interval) {
+    std::vector<base::TimeDelta> timestamps;
+    for (int i = 0; i < num_frames; ++i) {
+      timestamps.push_back(i * frame_interval);
+    }
+    CreateEncoderDelegate();
+    std::vector<int> qps =
+        InitializeAndEncodeFrames(config, frame_size, timestamps);
+    EXPECT_EQ(qps.size(), timestamps.size());
+    return qps.empty() ? -1 : qps.back();
+  };
+  return {last_qp(interval), last_qp(base::Seconds(1) / config.framerate)};
+}
+
+void D3D12VideoEncodeDelegateTestBase::CreateEncoderDelegate() {
+  ADD_FAILURE() << "CreateEncoderDelegate() is not implemented by this fixture";
 }
 
 class D3D12VideoEncodeDelegateTest : public D3D12VideoEncodeDelegateTestBase {
