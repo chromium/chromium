@@ -11,4 +11,10 @@ import org.chromium.build.annotations.NullMarked;
 public interface VerticalTabsActionDelegate {
     /** Opens the tab search overlay side panel. */
     void openTabSearch();
+
+    /**
+     * Opens the grid tab switcher (Hub) with its search bar focused. Used as a fallback when the
+     * tab search overlay is unavailable and the grid tab switcher is still available.
+     */
+    void openHubSearch();
 }

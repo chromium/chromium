@@ -156,7 +156,9 @@ public class VerticalTabsTest {
     @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testToolbarButtonsVisibility_TabSearchDisabled() {
         onView(withId(R.id.collapse_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.tab_search_button)).check(matches(withEffectiveVisibility(GONE)));
+        // The grid tab switcher is available on tablets, so the search button falls back to Hub
+        // search and remains visible.
+        onView(withId(R.id.tab_search_button)).check(matches(isDisplayed()));
         onView(withId(R.id.new_tab_button)).check(matches(isDisplayed()));
     }
 

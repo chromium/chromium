@@ -1385,25 +1385,44 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
-    public void testTabSearchButtonClick_TabSearchForALEnabled() {
-        createCoordinator();
-        View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
-        assertNotNull(tabSearchButton);
-        assertEquals(View.VISIBLE, tabSearchButton.getVisibility());
-        UserActionTester userActionTester = new UserActionTester();
-        tabSearchButton.performClick();
-        verify(mVerticalTabsActionDelegate).openTabSearch();
-        assertTrue(
-                userActionTester.getActions().contains("Android.VerticalTabs.SearchButtonClicked"));
-        userActionTester.tearDown();
+    public void testTabSearchButton_TabSearchEnabled_OpensTabSearch() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        clickTabSearchButtonAndVerify(/* expectTabSearch= */ true);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP,
+        ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER
+    })
+    public void testTabSearchButton_TabSearchEnabled_GtsDisabled_OpensTabSearch() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        clickTabSearchButtonAndVerify(/* expectTabSearch= */ true);
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
-    public void testTabSearchButton_TabSearchForALDisabled_Hidden() {
-        createCoordinator();
-        View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
-        assertNotNull(tabSearchButton);
+    public void testTabSearchButton_TabSearchDisabled_NonDesktop_OpensHubSearch() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        clickTabSearchButtonAndVerify(/* expectTabSearch= */ false);
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP,
+        ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER
+    })
+    public void testTabSearchButton_TabSearchDisabled_DesktopGtsEnabled_OpensHubSearch() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        clickTabSearchButtonAndVerify(/* expectTabSearch= */ false);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testTabSearchButton_TabSearchDisabled_GtsDisabled_Hidden() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        View tabSearchButton = createCoordinatorAndGetTabSearchButton();
         assertEquals(View.GONE, tabSearchButton.getVisibility());
         verifyNoInteractions(mVerticalTabsActionDelegate);
     }
@@ -5504,5 +5523,28 @@ public class VerticalTabListCoordinatorUnitTest {
                 nonOriginatingDelegate,
                 delegate);
         return delegate;
+    }
+
+    private View createCoordinatorAndGetTabSearchButton() {
+        createCoordinator();
+        View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
+        assertNotNull(tabSearchButton);
+        return tabSearchButton;
+    }
+
+    /**
+     * Creates the coordinator, asserts the tab search button is visible, clicks it, and verifies
+     * the click is recorded and routed to exactly one of tab search or Hub search.
+     */
+    private void clickTabSearchButtonAndVerify(boolean expectTabSearch) {
+        View tabSearchButton = createCoordinatorAndGetTabSearchButton();
+        assertEquals(View.VISIBLE, tabSearchButton.getVisibility());
+        UserActionTester userActionTester = new UserActionTester();
+        tabSearchButton.performClick();
+        verify(mVerticalTabsActionDelegate, times(expectTabSearch ? 1 : 0)).openTabSearch();
+        verify(mVerticalTabsActionDelegate, times(expectTabSearch ? 0 : 1)).openHubSearch();
+        assertTrue(
+                userActionTester.getActions().contains("Android.VerticalTabs.SearchButtonClicked"));
+        userActionTester.tearDown();
     }
 }

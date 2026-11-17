@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.tab_ui.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tab_ui.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.browser.tabmodel.NextTabSelectionUtil;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -621,9 +622,12 @@ public class VerticalTabListCoordinator {
                         .setDataProvider(mDataProvider)
                         .build();
 
-        // The tab search button is only shown when tab search is enabled, matching the
-        // horizontal tab strip.
+        // The tab search button opens the tab search overlay when enabled, matching the horizontal
+        // tab strip. When the overlay is disabled, fall back to the grid tab switcher (Hub) search
+        // as long as the grid tab switcher is available; otherwise hide the button entirely since
+        // it would have no functional target.
         boolean isTabSearchEnabled = ChromeFeatureList.sTabSearchForDesktop.isEnabled();
+        boolean isHubSearchAvailable = !TabSwitcherUtils.isGridTabSwitcherDisabled();
         mContainerModel =
                 new PropertyModel.Builder(VerticalTabListProperties.ALL_KEYS)
                         .with(
@@ -631,11 +635,15 @@ public class VerticalTabListCoordinator {
                                 v -> {
                                     RecordUserAction.record(
                                             "Android.VerticalTabs.SearchButtonClicked");
-                                    verticalTabsActionDelegate.openTabSearch();
+                                    if (isTabSearchEnabled) {
+                                        verticalTabsActionDelegate.openTabSearch();
+                                    } else {
+                                        verticalTabsActionDelegate.openHubSearch();
+                                    }
                                 })
                         .with(
                                 VerticalTabListProperties.IS_SEARCH_BUTTON_VISIBLE,
-                                isTabSearchEnabled)
+                                isTabSearchEnabled || isHubSearchAvailable)
                         .with(
                                 VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER,
                                 v -> handleNewTabButtonClick())

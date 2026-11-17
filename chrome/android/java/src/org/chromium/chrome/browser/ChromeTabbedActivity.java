@@ -3904,10 +3904,19 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private VerticalTabsActionDelegate createVerticalTabsActionDelegate() {
-        return () -> {
-            if (mRootUiCoordinator != null) {
-                ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                        .showTabSearchOverlay(TabSearchEntryPoint.VERTICAL_TABS);
+        return new VerticalTabsActionDelegate() {
+            @Override
+            public void openTabSearch() {
+                if (mRootUiCoordinator != null) {
+                    ((TabbedRootUiCoordinator) mRootUiCoordinator)
+                            .showTabSearchOverlay(TabSearchEntryPoint.VERTICAL_TABS);
+                }
+            }
+
+            @Override
+            public void openHubSearch() {
+                if (TabSwitcherUtils.isGridTabSwitcherDisabled()) return;
+                onMenuOrKeyboardAction(R.id.tab_search, /* fromMenu= */ false);
             }
         };
     }

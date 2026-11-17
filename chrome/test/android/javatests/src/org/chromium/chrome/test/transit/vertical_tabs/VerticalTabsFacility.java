@@ -28,7 +28,9 @@ import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
 public class VerticalTabsFacility<HostStationT extends CtaPageStation>
         extends Facility<HostStationT> {
     public final ViewElement<View> railElement;
-    // Only shown when Tab Search for desktop is enabled.
+    // Only declared when Tab Search for desktop is enabled, since that is when clicking it opens
+    // the Tab Search overlay. When disabled, the button may still be shown as a Hub search
+    // fallback if the grid tab switcher is available.
     public final @Nullable ViewElement<View> tabSearchButtonElement;
 
     public VerticalTabsFacility() {
