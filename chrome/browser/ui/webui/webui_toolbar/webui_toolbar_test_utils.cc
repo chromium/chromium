@@ -84,7 +84,8 @@ toolbar_ui_api::mojom::ToolbarStatePtr CreateValidToolbarState() {
       /*layout_constants_version=*/0,
       /*touch_ui=*/false, toolbar_ui_api::mojom::GlicButtonState::New(),
       toolbar_ui_api::mojom::GlicActorTaskIconState::New(),
-      /*controls_appear_inactive=*/false);
+      /*controls_appear_inactive=*/false,
+      /*keyboard_navigable=*/true);
 }
 
 MockCommandUpdater::MockCommandUpdater() = default;

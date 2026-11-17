@@ -361,7 +361,8 @@ END_METADATA
 WebUIToolbarWebView::WebUIToolbarWebView(
     BrowserWindowInterface* browser,
     chrome::BrowserCommandController* controller,
-    std::unique_ptr<WebUILocationBar> location_bar)
+    std::unique_ptr<WebUILocationBar> location_bar,
+    views::AccessiblePaneView* pane)
     : browser_(browser),
       controller_(controller),
       icon_table_(this),
@@ -384,7 +385,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       clock_(base::DefaultTickClock::GetInstance()),
       touch_ui_subscription_(ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&WebUIToolbarWebView::OnTouchUiChanged,
-                              base::Unretained(this)))) {
+                              base::Unretained(this)))),
+      pane_(pane) {
   base::trace_event::EmitNamedTrigger("webui-toolbar-constructor");
   last_queued_state_.split_tabs_control_state =
       toolbar_ui_api::mojom::SplitTabsControlState::New();
@@ -436,6 +438,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       toolbar_ui_api::mojom::GlicButtonState::New();
   last_queued_state_.glic_actor_task_icon_state =
       toolbar_ui_api::mojom::GlicActorTaskIconState::New();
+  last_queued_state_.keyboard_navigable =
+      webui_toolbar::IsKeyboardNavigableByDefault();
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -516,6 +520,12 @@ WebUIToolbarWebView::WebUIToolbarWebView(
     browser_controls_adapter_ =
         std::make_unique<browser_controls_api::BrowserControlsAdapterImpl>(
             browser, controller);
+  }
+
+  if (pane_) {
+    pane_subscription_ = pane_->AddPaneFocusChangedCallback(
+        base::BindRepeating(&WebUIToolbarWebView::OnPaneHasFocusChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -1489,7 +1499,22 @@ views::FlexSpecification WebUIToolbarWebView::GetFlexSpecification(
 
 void WebUIToolbarWebView::AdjustForToolbarFocus() {
   if (GetFocusManager()->GetFocusedView() == web_view_) {
-    web_view_->web_contents()->FocusThroughTabTraversal(/*reverse=*/false);
+    // Since ToolbarView called SetPaneFocus, if we're the first focusable thing
+    // we should have focus now without any attempts to adjust DOM focus.
+    // Set it via our own interface so we get a chance to adjust
+    // keyboard_navigable; asking Blink to do it would race since it would use
+    // a different mojo pipe.
+    OnFocusRequested(
+        toolbar_ui_api::mojom::FocusRequestTarget::kFirstFocusable);
+  }
+}
+
+void WebUIToolbarWebView::AdjustForPaneFocus() {
+  if (GetFocusManager()->GetFocusedView() == web_view_) {
+    if (location_bar_) {
+      location_bar_->FocusLocation(/*is_user_initiated=*/true,
+                                   /*clear_focus_if_failed=*/false);
+    }
   }
 }
 
@@ -1901,6 +1926,35 @@ void WebUIToolbarWebView::RequestFocusForTarget(
   MaybeFlushPendingFocusRequest();
 }
 
+void WebUIToolbarWebView::FocusOut(bool reverse) {
+  auto* focus_manager = GetFocusManager();
+  if (!focus_manager || focus_manager->GetFocusedView() != web_view_) {
+    return;
+  }
+  focus_manager->AdvanceFocus(reverse);
+}
+
+void WebUIToolbarWebView::OnKeyboardNavigableMaybeChanged() {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/567215920): query the proper value (and arrange for this
+  // to be called the right times)
+  bool should_be_key_navigable = true;
+#else
+  bool should_be_key_navigable = false;
+  if (pane_) {
+    should_be_key_navigable = pane_->pane_has_focus();
+  }
+#endif
+  if (last_queued_state_.keyboard_navigable != should_be_key_navigable) {
+    last_queued_state_.keyboard_navigable = should_be_key_navigable;
+    PostPushToolbarState();
+  }
+}
+
+void WebUIToolbarWebView::OnPaneHasFocusChanged(bool) {
+  OnKeyboardNavigableMaybeChanged();
+}
+
 void WebUIToolbarWebView::OnInternalWebViewFocused() {
   const bool had_pending_focus_request = pending_focus_request_.has_value();
   MaybeFlushPendingFocusRequest();
@@ -1939,6 +1993,10 @@ void WebUIToolbarWebView::MaybeFlushPendingFocusRequest() {
     const toolbar_ui_api::mojom::FocusRequestTarget target =
         *std::exchange(pending_focus_request_, std::nullopt);
     if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
+      // We need to push out any pending state request before adjusting
+      // focus, since it may affect which things are focusable (at least
+      // via keyboard_navigable bit, but possibly other things).
+      FlushPendingToolbarState();
       web_ui->OnFocusRequested(target);
     }
     return;
@@ -2075,7 +2133,7 @@ void WebUIToolbarWebView::PushToolbarState() {
   }
 }
 
-void WebUIToolbarWebView::FlushPendingToolbarStateForTesting() {
+void WebUIToolbarWebView::FlushPendingToolbarState() {
   if (!state_push_weak_ptr_factory_.HasWeakPtrs()) {
     return;  // No push is pending.
   }

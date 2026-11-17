@@ -25,6 +25,7 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     super([
       'adjustOmniboxTextForCopy',
       'executeExtensionAction',
+      'focusOut',
       'getInitialState',
       'invokePinnedToolbarAction',
       'moveExtensionAction',
@@ -70,6 +71,10 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
   getInitialState(): Promise<InitialState> {
     this.methodCalled('getInitialState');
     return new Promise<never>(() => {});
+  }
+
+  focusOut(reverse: boolean) {
+    this.methodCalled('focusOut', [reverse]);
   }
 
   showContextMenu(

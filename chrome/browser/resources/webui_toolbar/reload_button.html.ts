@@ -11,7 +11,7 @@ export function getHtml(this: ReloadButtonElement) {
 <cr-icon-button id="button" class="iph-visual-target"
     iron-icon="${this.getIronIcon_()}" title="${this.tooltip}"
     aria-label="${this.accName_}" aria-haspopup="${this.state.canShowMenu}"
-    ?disabled="${this.isDisabled}"
+    ?disabled="${this.isDisabled || this.fakeDisabledForTesting}"
     ?is-menu-open="${this.state.isContextMenuVisible}"
     ?noink="${this.glowUpEnabled}" @pointerdown="${this.onPointerdown_}"
     @pointerup="${this.onPointerup_}"

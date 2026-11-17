@@ -250,6 +250,7 @@ class MockToolbarUIDelegate
       AdjustOmniboxTextForCopy,
       (const std::u16string&, int32_t),
       (override));
+  MOCK_METHOD(void, FocusOut, (bool reverse), (override));
 };
 
 // Test fixture for WebUIToolbarUI. These tests test the connectivity between

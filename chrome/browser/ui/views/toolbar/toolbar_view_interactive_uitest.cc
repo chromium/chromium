@@ -89,7 +89,8 @@ function getDeepActiveElement() {
 getDeepActiveElement().ariaLabel || getDeepActiveElement().tagName
   )JS";
 
-int GetIDForFocusedViewElement(const views::View* view) {
+base::expected<int, std::string> MaybeGetIDForFocusedViewElement(
+    const views::View* view) {
   const std::string kReloadControlName =
       base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
   const std::string kBackControlName =
@@ -109,11 +110,20 @@ int GetIDForFocusedViewElement(const views::View* view) {
     } else if (element_name == kForwardControlName) {
       return VIEW_ID_FORWARD_BUTTON;
     } else {
-      ADD_FAILURE() << "Unexpected focused element: " << element_name;
-      return VIEW_ID_NONE;
+      return base::unexpected("Unexpected focused element: " + element_name);
     }
   } else {
     return view->GetID();
+  }
+}
+
+int GetIDForFocusedViewElement(const views::View* view) {
+  auto maybe_id = MaybeGetIDForFocusedViewElement(view);
+  if (maybe_id.has_value()) {
+    return *maybe_id;
+  } else {
+    ADD_FAILURE() << maybe_id.error();
+    return VIEW_ID_NONE;
   }
 }
 
@@ -245,7 +255,15 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(
 
   views::FocusManager* focus_manager = widget->GetFocusManager();
   views::View* first_view = focus_manager->GetFocusedView();
-  int first_id = GetIDForFocusedViewElement(first_view);
+  int first_id = VIEW_ID_NONE;
+  // In case of WebView, the focus takes place asynchronously.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto maybe_id = MaybeGetIDForFocusedViewElement(first_view);
+    if (maybe_id.has_value()) {
+      first_id = *maybe_id;
+    }
+    return maybe_id.has_value();
+  }));
 
   std::vector<int> ids;
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -27,6 +28,8 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   METADATA_HEADER(AccessiblePaneView, View)
 
  public:
+  using PaneFocusChangedCallback = base::RepeatingCallback<void(bool)>;
+
   AccessiblePaneView();
 
   AccessiblePaneView(const AccessiblePaneView&) = delete;
@@ -42,6 +45,10 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   bool SetPaneFocus(View* initial_focus);
 
   bool pane_has_focus() const { return pane_has_focus_; }
+
+  // Adds a callback that's called when pane_has_focus() changes.
+  base::CallbackListSubscription AddPaneFocusChangedCallback(
+      PaneFocusChangedCallback callback);
 
   // Set focus to the pane with complete keyboard access, with the
   // focus initially set to the default child. Focus will be restored
@@ -137,6 +144,7 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
 
   friend class AccessiblePaneViewFocusSearch;
 
+  base::RepeatingCallbackList<void(bool)> pane_focus_changed_callbacks_;
   base::WeakPtrFactory<AccessiblePaneView> method_factory_{this};
 };
 

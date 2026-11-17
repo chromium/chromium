@@ -1035,10 +1035,24 @@ struct ToolbarState {
   // matching native toolbar buttons, which use kColorToolbarButtonIconInactive
   // in that case.
   bool controls_appear_inactive = false;
+
+  // Whether controls on the toolbar other than those inside the location bar
+  // should be navigable by keyboard. The expected value per platform:
+  // 1) On Mac, it should match the platform keyboard navigable setting.
+  //    (Keyboard shortcut that activates VoiceOver activates that setting as
+  //     well by default, but it is actually an independent toggle).
+  // 2) On other platforms, it should depend on pane_has_focus() of
+  //    ToolbarView's AccessiblePaneView base, which basically gets enabled
+  //    short-term if focus toolbar or focus menu shortcuts are used (but not
+  //    the focus location bar shortcuts).
+  bool keyboard_navigable = true;
 };
 
 enum FocusRequestTarget {
   kUnspecified,
+
+  // Focus the first focusable element
+  kFirstFocusable,
 
   // Focus the location bar.
   kLocationBar,

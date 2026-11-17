@@ -1697,7 +1697,7 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
       LifecycleTestSetup& setup) {
     auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
         &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
-        /*location_bar=*/nullptr);
+        /*location_bar=*/nullptr, /*pane=*/nullptr);
     toolbar_view->ToolbarInitialized();
     return toolbar_view;
   }
@@ -2344,7 +2344,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
   // 1. Setup: Create the view.
   auto webui_toolbar_view = std::make_unique<WebUIToolbarWebView>(
       browser(), chrome::BrowserCommandController::From(browser()),
-      /*location_bar=*/nullptr);
+      /*location_bar=*/nullptr, /*pane=*/nullptr);
 
   content::WebContents* web_contents =
       webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
@@ -2825,7 +2825,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   };
 
   // Start with no pending push.
-  toolbar->FlushPendingToolbarStateForTesting();
+  toolbar->FlushPendingToolbarState();
   ASSERT_FALSE(is_push_pending());
 
   base::SimpleTestTickClock clock;

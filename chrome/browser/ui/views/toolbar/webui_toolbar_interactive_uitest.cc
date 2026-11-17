@@ -2847,6 +2847,10 @@ class WebUIToolbarFocusInteractiveUiTestBase
             if (curr.tagName === 'LOCATION-ICON') {
               return 'location-icon-container';
             }
+            if (curr.tagName === 'PAGE-ACTION-ICON' ||
+                curr.tagName === 'PINNED-TOOLBAR-ACTION') {
+              return curr.getAttribute('data-native-id');
+            }
             if (curr.id && curr.id !== 'container' &&
                 curr.id !== 'buttonWrapper' && curr.id !== 'textInput' &&
                 curr.id !== 'button') {
@@ -2865,6 +2869,56 @@ class WebUIToolbarFocusInteractiveUiTestBase
         expected_id));
   }
 };
+
+// Only 3 navigation controls.
+class WebUIToolbarFocusThreeControlsInteractiveUiTest
+    : public WebUIToolbarFocusInteractiveUiTestBase {
+ public:
+  WebUIToolbarFocusThreeControlsInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIBackForwardButton,
+         features::kWebUIReloadButton,
+         features::kSkipIPCChannelPausingForNonGuests,
+         features::kWebUIInProcessResourceLoadingV2},
+        {features::kWebUILocationBar, features::kWebUIPinnedToolbarActions,
+         features::kWebUIHomeButton, features::kWebUISplitTabsButton});
+  }
+  ~WebUIToolbarFocusThreeControlsInteractiveUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that if no WebUI navigation control is enabled, and we're the first
+// thing in tab order, focus gets transferred correctly (to a non-WebUI target)
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusThreeControlsInteractiveUiTest,
+                       FocusToolbarNoNavControlEnabled) {
+  const char kFakeDisabled[] = R"(
+    async(el) => {
+      el.fakeDisabledForTesting = true;
+      await el.updateComplete;
+    }
+  )";
+
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      ExecuteJsAt(WebUIToolbarId(), WebUIReloadButtonDeepQuery(),
+                  kFakeDisabled),
+
+      Do(base::BindLambdaForTesting([this]() {
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_TOOLBAR);
+      })),
+
+      ExpectFocusedView(kToolbarHomeButtonElementId));
+}
 
 // Test focus traversal of with only WebUI navigation controls.
 class WebUIToolbarFocusMinimalInteractiveUiTest
@@ -3122,7 +3176,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
                   {"toolbar-app", "#pinnedToolbarActions",
                    "pinned-toolbar-action", "toolbar-chip-button"},
                   "el => el.focus()"),
-      ExpectFocusedWebUIElement("pinnedToolbarActions"),
+      ExpectFocusedWebUIElement("kToolbarCopyUrlElementId"),
 
 #if BUILDFLAG(IS_CHROMEOS)
       // ChromeOS has no profile button, so skip to Chrome menu.
@@ -3168,6 +3222,105 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
       SendKeyPress(WebUIToolbarId(), ui::VKEY_END),
       ExpectFocusedView(kToolbarAppMenuButtonElementId));
 }
+
+// Mac has very different tab order semantics (and will be in next CL, with
+// separate tests).
+#if !BUILDFLAG(IS_MAC)
+
+// On Windows and Linux, toolbar buttons aren't focusable after Ctrl-L
+// (but location bar chips are).
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
+                       TabFocusFromCtrlL) {
+  RunTestSequence(
+      // 1. Wait for toolbar to load.
+      WaitForToolbarLoaded(),
+
+      // Pin an action so that WebUIPinnedToolbarActions has at least one action
+      // and is visible. This ensure there is a WebUI thing to the right of the
+      // location bar.
+      Do(base::BindLambdaForTesting([this]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionCopyUrl, true);
+      })),
+
+      // Wait for Lit rendering to complete (until Back button is rendered in
+      // shadow DOM).
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+
+      // 2. Focus the location bar using Ctrl/Cmd-L
+      Do(base::BindLambdaForTesting([this]() {
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_LOCATION);
+      })),
+      ExpectFocusedWebUIElement("omnibox-text-input"),
+
+      // 3. Tab focuses the bookmark star.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB),
+      ExpectFocusedWebUIElement("kBookmarkStarViewElementId"),
+
+      // 4. Tab again should skip straight to content area.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB),
+      ExpectFocusedView(ContentsWebView::kContentsWebViewElementId),
+
+      // 5. Shift-tab back to bookmark star.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB,
+                   ui::EF_SHIFT_DOWN),
+      ExpectFocusedWebUIElement("kBookmarkStarViewElementId"),
+
+      // 6. Shift-tab to omnibox input.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB,
+                   ui::EF_SHIFT_DOWN),
+      ExpectFocusedWebUIElement("omnibox-text-input"),
+
+      // 7. Shift-tab to page info button.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB,
+                   ui::EF_SHIFT_DOWN),
+      ExpectFocusedWebUIElement("location-icon-container"));
+}
+
+// Going via F6/Shift-F6 does make everything tab focusable.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
+                       FocusNextPaneAndBackFromOmnibox) {
+  RunTestSequence(
+      WaitForToolbarLoaded(), Do(base::BindLambdaForTesting([this]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionCopyUrl, true);
+      })),
+
+      WaitForElementVisible(WebUIToolbarId(),
+                            DeepQuery({"toolbar-app", "#back"})),
+      // Focus the omnibox using IDC_FOCUS_LOCATION (Cmd+L / Ctrl+L).
+      Do(base::BindLambdaForTesting([this]() {
+        chrome::BrowserCommandController::From(browser())->ExecuteCommand(
+            IDC_FOCUS_LOCATION);
+      })),
+      ExpectFocusedWebUIElement("omnibox-text-input"),
+
+      // Tab over to the bookmark star.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB),
+      ExpectFocusedWebUIElement("kBookmarkStarViewElementId"),
+
+      // Press IDC_FOCUS_PREVIOUS_PANE shortcut to wrap from ToolbarView to
+      // ContentsWebView.
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_F6, ui::EF_SHIFT_DOWN),
+      ExpectFocusedView(ContentsWebView::kContentsWebViewElementId),
+
+      // Now focus next page back to toolbar. It should go to omnibox text
+      // input, not bookmark star.
+      SendKeyPress(WebUIToolbarId(), ui::VKEY_F6),
+      ExpectFocusedWebUIElement("omnibox-text-input"),
+
+      // Tab to bookmark star.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB),
+      ExpectFocusedWebUIElement("kBookmarkStarViewElementId"),
+
+      // Next tab should be to the pinned button, not content area.
+      SendKeyPress(kToolbarAppMenuButtonElementId, ui::VKEY_TAB),
+      ExpectFocusedWebUIElement("kToolbarCopyUrlElementId"));
+}
+
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
                        FocusNextPaneFromOmnibox) {

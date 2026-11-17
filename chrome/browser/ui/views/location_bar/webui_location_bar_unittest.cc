@@ -78,7 +78,7 @@ class WebUILocationBarTest : public testing::Test {
     location_bar_ = location_bar.get();
 
     toolbar_view_ = std::make_unique<WebUIToolbarWebView>(
-        &mock_browser_, nullptr, std::move(location_bar));
+        &mock_browser_, nullptr, std::move(location_bar), /*pane=*/nullptr);
 
     // Assign directly instead of calling Init() to avoid initializing heavy
     // web UI popups that require fully attached widgets and profiles.

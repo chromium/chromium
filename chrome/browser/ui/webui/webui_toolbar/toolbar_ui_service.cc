@@ -449,4 +449,11 @@ void ToolbarUIService::OnGlicActorTaskIconClicked() {
     delegate_->OnGlicActorTaskIconClicked();
   }
 }
+
+void ToolbarUIService::FocusOut(bool reverse) {
+  if (delegate_) {
+    delegate_->FocusOut(reverse);
+  }
+}
+
 }  // namespace toolbar_ui_api

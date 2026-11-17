@@ -180,10 +180,11 @@ class WebUIToolbarWebView
   METADATA_HEADER(WebUIToolbarWebView, views::View)
 
  public:
-  // `location_bar` may be null.
+  // `location_bar` may be null; `pane` may be null in tests.
   WebUIToolbarWebView(BrowserWindowInterface* browser,
                       chrome::BrowserCommandController* controller,
-                      std::unique_ptr<WebUILocationBar> location_bar);
+                      std::unique_ptr<WebUILocationBar> location_bar,
+                      views::AccessiblePaneView* pane);
   WebUIToolbarWebView(const WebUIToolbarWebView&) = delete;
   WebUIToolbarWebView& operator=(const WebUIToolbarWebView&) = delete;
   ~WebUIToolbarWebView() override;
@@ -410,6 +411,12 @@ class WebUIToolbarWebView
   // toolbar operation.
   void AdjustForToolbarFocus();
 
+  // Called upon receiving focus due to IDC_FOCUS_NEXT_PANE & friends to
+  // adjust JS focus appropriately. Unlike AdjustForToolbarFocus(), it
+  // doesn't prefer the first focusable element, but rather the location bar,
+  // even opening zero-suggest.
+  void AdjustForPaneFocus();
+
   // Special path for omnibox context menu, since it needs the `params`.
   void HandleOmniboxContextMenu(const gfx::Point& point,
                                 ui::mojom::MenuSourceType source_type,
@@ -471,9 +478,8 @@ class WebUIToolbarWebView
   }
 
   // Synchronously performs the state push that PostPushToolbarState() has
-  // coalesced into a pending task, if any, so tests can observe the latest
-  // state on the WebUI side without spinning the message loop.
-  void FlushPendingToolbarStateForTesting();
+  // coalesced into a pending task, if any.
+  void FlushPendingToolbarState();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
@@ -573,10 +579,14 @@ class WebUIToolbarWebView
   void OnPaneFocusRequested(
       views::AccessiblePaneView* pane,
       toolbar_ui_api::mojom::FocusRequestTarget target) override;
+  void FocusOut(bool reverse) override;
   std::optional<GURL> ConsumeDroppedUrl(
       const gfx::PointF& drop_position) override;
 
   toolbar_ui_api::mojom::ToolbarStatePtr GetToolbarState();
+
+  void OnKeyboardNavigableMaybeChanged();
+  void OnPaneHasFocusChanged(bool);
 
   // Reloads the WebUI toolbar to recover from crashes or unresponsiveness.
   void RecoverFromRendererCrashOrUnresponsiveness();
@@ -822,6 +832,8 @@ class WebUIToolbarWebView
 
   base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
       focus_manager_observation_{this};
+  raw_ptr<views::AccessiblePaneView> pane_ = nullptr;
+  base::CallbackListSubscription pane_subscription_;
 
   base::WeakPtrFactory<DependencyProvider> weak_factory_{this};
 

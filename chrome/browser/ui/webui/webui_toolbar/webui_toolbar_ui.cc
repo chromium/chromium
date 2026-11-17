@@ -127,6 +127,7 @@ constexpr char kThemeColorsCssUrl[] =
 constexpr char kApplyBoundProfileFn[] =
     "(window.__webuiToolbarApplyBoundProfile ?? "
     "(state => window.__webuiToolbarBoundProfile = state))";
+constexpr char kKeyboardNavigable[] = "keyboardNavigable";
 
 // Retrieves the current toolbar state from the provider's fetcher
 // and populates a nested dictionary `initialState`.
@@ -160,6 +161,8 @@ void PopulateInitialState(base::DictValue& dict,
   if (provider && provider->GetToolbarStateFetcher()) {
     state = provider->GetToolbarStateFetcher()->GetToolbarState();
   }
+
+  dict.Set(kKeyboardNavigable, webui_toolbar::IsKeyboardNavigableByDefault());
   if (!state) {
     dict.Set(kIsNavigationLoading, false);
     dict.Set(kReloadCanShowMenu, false);

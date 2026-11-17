@@ -194,6 +194,7 @@ class MockToolbarUIServiceDelegate
   MOCK_METHOD(void, OnMediaButtonClicked, (), (override));
   MOCK_METHOD(void, OnGlicButtonClicked, (), (override));
   MOCK_METHOD(void, OnGlicActorTaskIconClicked, (), (override));
+  MOCK_METHOD(void, FocusOut, (bool reverse), (override));
 };
 
 class MockBrowserControlsServiceDelegate

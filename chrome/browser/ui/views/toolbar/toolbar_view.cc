@@ -443,7 +443,7 @@ void ToolbarView::Init() {
   if (features::IsWebUIToolbarEnabled()) {
     toolbar_webview_ = AddChildView(std::make_unique<WebUIToolbarWebView>(
         browser_, chrome::BrowserCommandController::From(browser_),
-        std::move(webui_location_bar)));
+        std::move(webui_location_bar), /*pane=*/this));
   }
 
   if (!features::IsWebUIReloadButtonEnabled()) {
@@ -1588,6 +1588,17 @@ void ToolbarView::ChildVisibilityChanged(views::View* child) {
 // also so that it selects all content in the location bar.
 views::View* ToolbarView::GetDefaultFocusableChild() {
   return location_bar_view_;
+}
+
+void ToolbarView::RequestFocus() {
+  AccessiblePaneView::RequestFocus();
+
+  // The above call will focus a non-WebUI location bar, after checking our
+  // GetDefaultFocusableChild(), but for WebUI one we may need to ask it to
+  // adjust the DOM focus.
+  if (toolbar_webview_) {
+    toolbar_webview_->AdjustForPaneFocus();
+  }
 }
 
 void ToolbarView::InitLayout() {

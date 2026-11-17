@@ -277,4 +277,7 @@ interface ToolbarUIService {
 
   // Called when the Glic actor task icon is clicked.
   OnGlicActorTaskIconClicked();
+
+  // Transfer focus to the next/previous adjacent view, based on `reverse`.
+  FocusOut(bool reverse);
 };

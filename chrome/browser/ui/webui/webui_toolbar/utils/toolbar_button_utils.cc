@@ -657,4 +657,17 @@ MojomPageActionId ActionIdToMojomPageActionId(actions::ActionId action_id) {
   NOTREACHED();
 }
 
+bool IsKeyboardNavigableByDefault() {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/567215920): get actual value via
+  // ui::IsFullKeyboardAccessEnabled()
+  return true;
+#else
+  // On non-Mac platforms, keyboard navigability for toolbar is always off
+  // initially, and toggled on when a shortcut like IDC_FOCUS_TOOLBAR is used
+  // to get into it (but not IDC_FOCUS_LOCATION).
+  return false;
+#endif
+}
+
 }  // namespace webui_toolbar

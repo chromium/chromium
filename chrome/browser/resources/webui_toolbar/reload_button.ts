@@ -65,6 +65,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
       tooltip: {type: String, reflect: true},
       showStopIcon: {type: Boolean, reflect: true},
       isDisabled: {type: Boolean, reflect: true},
+      fakeDisabledForTesting: {type: Boolean},
       touchUi: {type: Boolean},
       glowUpEnabled: {type: Boolean},
     };
@@ -95,6 +96,9 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
   // `disableStopIconTimer_` is running, or when the button is temporarily
   // disabled during Glow Up animations to prevent interruption.
   protected accessor isDisabled: boolean = false;
+
+  // Force disabled for tests outside normal logic.
+  protected accessor fakeDisabledForTesting: boolean = false;
 
   accessor touchUi: boolean = false;
   accessor glowUpEnabled: boolean =

@@ -19,15 +19,15 @@ import type {IconUpdate} from '/shared/icon_handle.mojom-webui.js';
 import {IconTable} from '/shared/icon_table.js';
 import {HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
-import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, SplitTabActiveLocation} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, FocusRequestTarget, SplitTabActiveLocation} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {ToolbarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {BrowserProxyImpl, createDefaultLocationBarState, INVALID_TOOLBAR_STATE_LISTENER_HANDLE, ToolbarStateKey} from './browser_proxy.js';
-import type {BoundProfileState, BrowserProxy, InitialStateReader, ToolbarStateListenerHandle} from './browser_proxy.js';
+import {BrowserProxyImpl, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE, ToolbarStateKey} from './browser_proxy.js';
+import type {BoundProfileState, BrowserProxy, FocusRequestHandle, InitialStateReader, ToolbarStateListenerHandle} from './browser_proxy.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import type {ExtensionsElement} from './extensions.js';
 import type {LocationBarElement} from './location_bar.js';
@@ -212,9 +212,10 @@ export class ToolbarAppElement extends AppElementBase {
       // on some platforms.
       doubleClickInterval: {microseconds: BigInt(500 * 1000)},
 
-      canShowMenu: this.initialState_.getBoolean(ToolbarStateKey.RELOAD_CAN_SHOW_MENU),
-      isNavigationLoading:
-          this.initialState_.getBoolean(ToolbarStateKey.IS_NAVIGATION_LOADING),
+      canShowMenu: this.initialState_.getBoolean(
+          ToolbarStateKey.RELOAD_CAN_SHOW_MENU),
+      isNavigationLoading: this.initialState_.getBoolean(
+          ToolbarStateKey.IS_NAVIGATION_LOADING),
       isContextMenuVisible: false,
       stateToken: 0,
     },
@@ -227,20 +228,22 @@ export class ToolbarAppElement extends AppElementBase {
     },
     backForwardControlState: {
       backButtonState: {
-        enabled: this.initialState_.getBoolean(ToolbarStateKey.BACK_BUTTON_ENABLED),
+        enabled: this.initialState_.getBoolean(
+            ToolbarStateKey.BACK_BUTTON_ENABLED),
         shouldBeShown: true,
         isContextMenuVisible: false,
       },
       forwardButtonState: {
-        enabled: this.initialState_.getBoolean(ToolbarStateKey.FORWARD_BUTTON_ENABLED),
+        enabled: this.initialState_.getBoolean(
+            ToolbarStateKey.FORWARD_BUTTON_ENABLED),
         shouldBeShown: true,
         isContextMenuVisible: false,
       },
       windowIsMaximizedOrFullscreen: false,
     },
     homeControlState: {
-      shouldBeShown:
-          this.initialState_.getBoolean(ToolbarStateKey.HOME_BUTTON_SHOULD_BE_SHOWN),
+      shouldBeShown: this.initialState_.getBoolean(
+          ToolbarStateKey.HOME_BUTTON_SHOULD_BE_SHOWN),
       isContextMenuVisible: false,
     },
     performanceInterventionControlState: {
@@ -257,8 +260,8 @@ export class ToolbarAppElement extends AppElementBase {
     },
 
     batterySaverControlState: {
-      shouldBeShown:
-          this.initialState_.getBoolean(ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE),
+      shouldBeShown: this.initialState_.getBoolean(
+          ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE),
       preventOverflow: false,
     },
     locationBarState: createDefaultLocationBarState(),
@@ -297,15 +300,19 @@ export class ToolbarAppElement extends AppElementBase {
       tooltip: '',
       isPressed: false,
     },
-    layoutConstantsVersion:
-        this.initialState_.getInteger(ToolbarStateKey.LAYOUT_CONSTANTS_VERSION),
+    layoutConstantsVersion: this.initialState_.getInteger(
+        ToolbarStateKey.LAYOUT_CONSTANTS_VERSION),
     touchUi: this.initialState_.getBoolean(ToolbarStateKey.TOUCH_UI),
     pinnedToolbarActionsState: [],
     extensionsState: [],
     controlsAppearInactive: false,
+    keyboardNavigable: this.initialState_.getBoolean(
+        ToolbarStateKey.KEYBOARD_NAVIGABLE),
   };
   private toolbarStateListenerHandle_: ToolbarStateListenerHandle =
       INVALID_TOOLBAR_STATE_LISTENER_HANDLE;
+  private focusRequestHandle_: FocusRequestHandle =
+      INVALID_FOCUS_REQUEST_HANDLE;
   private iconTable_: IconTable;
   private isPageInitialized_: boolean = false;
   private registeredTrackedElements_ = new Map<string, HTMLElement>();
@@ -340,20 +347,6 @@ export class ToolbarAppElement extends AppElementBase {
       () => void = () => this.layoutResponsiveControls();
 
   private isRtl_: boolean = loadTimeData.getString('textdirection') === 'rtl';
-
-  // Whether controls on the toolbar other than those inside the location bar
-  // should be navigable by keyboard. The expected value per platform:
-  // 1) On Mac, it should match the platform keyboard navigable setting.
-  //    (Keyboard shortcut that activates VoiceOver activates that setting as
-  //     well by default, but it is actually an independent toggle).
-  //
-  // 2) On other platforms, it should depend on pane_has_focus() of
-  //    ToolbarView's AccessiblePaneView base, which basically gets enabled
-  //    short-term if focus toolbar or focus menu shortcuts are used (but not
-  //    the focus location bar shortcuts).
-  //
-  //    TODO(crbug.com/567215920): Send proper value over Mojo.
-  private keyboardNavigable_: boolean = true;
 
   get browserProxyForTesting(): BrowserProxy {
     return this.browserProxy_;
@@ -588,6 +581,10 @@ export class ToolbarAppElement extends AppElementBase {
                     })(),
                   ]);
                 });
+
+                this.focusRequestHandle_ =
+                    this.browserProxy_.addFocusRequestListener(
+                        this.onFocusRequest_.bind(this));
               }
 
               // Defer notifying the browser that the page is ready until after
@@ -762,6 +759,9 @@ export class ToolbarAppElement extends AppElementBase {
 
     this.browserProxy_.removeToolbarStateListener(
         this.toolbarStateListenerHandle_);
+    if (this.focusRequestHandle_ !== INVALID_FOCUS_REQUEST_HANDLE) {
+      this.browserProxy_.removeFocusRequestListener(this.focusRequestHandle_);
+    }
 
     this.initialState_ = this.browserProxy_.getInitialState();
     this.isInitialized_ =
@@ -789,6 +789,13 @@ export class ToolbarAppElement extends AppElementBase {
     return active;
   }
 
+  private isNonFocusable_(el: Element) {
+    // Note: we need to check tabindex as attribute and not property
+    // here since a missing tabindex for things that aren't inherently
+    // tabbable returns -1 for property, but can behave differently.
+    return el.getAttribute('tabindex') === '-1';
+  }
+
   // Recursively find all focusable elements
   private getDeepFocusableElements(root: Element|Document|ShadowRoot):
       HTMLElement[] {
@@ -803,12 +810,20 @@ export class ToolbarAppElement extends AppElementBase {
         const isDisabled = el.hasAttribute('disabled');
         const isHidden = el.closest('[hidden]') !== null;
         const isVisible = el.offsetWidth > 0 || el.offsetHeight > 0;
+        const nonFocusable = this.isNonFocusable_(el);
 
-        if (!isDisabled && !isHidden && isVisible) {
+        if (!isDisabled && !isHidden && !nonFocusable && isVisible) {
           focusable.push(el);
         }
 
         // Don't bother digging into cr-buttons etc.
+        continue;
+      }
+
+      if (node.localName === 'tab-focus-disabler' &&
+          this.isNonFocusable_(node)) {
+        // If we group disabled tab navigation for a portion of toolbar,
+        // don't recurse there.
         continue;
       }
 
@@ -889,6 +904,21 @@ export class ToolbarAppElement extends AppElementBase {
 
     event.preventDefault();
     focusableElements[nextIndex]!.focus();
+  }
+
+  private onFocusRequest_(target: FocusRequestTarget) {
+    if (target === FocusRequestTarget.kFirstFocusable) {
+      this.updateComplete.then(() => this.focusFirst_());
+    }
+  }
+
+  private focusFirst_() {
+    const focusableElements = this.getDeepFocusableElements(this.shadowRoot);
+    if (focusableElements.length) {
+      focusableElements[0]!.focus({focusVisible: true});
+    } else {
+      this.browserProxy_.toolbarUIHandler.focusOut(/*reverse=*/ false);
+    }
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
@@ -1211,7 +1241,7 @@ export class ToolbarAppElement extends AppElementBase {
   }
 
   protected keyboardNavigable(): boolean {
-    return this.keyboardNavigable_;
+    return this.toolbarState_.keyboardNavigable;
   }
 }
 

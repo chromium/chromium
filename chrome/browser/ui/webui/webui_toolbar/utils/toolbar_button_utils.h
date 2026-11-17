@@ -41,6 +41,8 @@ toolbar_ui_api::mojom::PageActionId ActionIdToMojomPageActionId(
 actions::ActionId MojomPageActionIdToActionId(
     toolbar_ui_api::mojom::PageActionId page_action_id);
 
+bool IsKeyboardNavigableByDefault();
+
 }  // namespace webui_toolbar
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_UTILS_TOOLBAR_BUTTON_UTILS_H_

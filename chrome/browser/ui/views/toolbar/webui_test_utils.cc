@@ -1364,7 +1364,7 @@ const char kGetAllAnimationsJS[] = R"(
 
   // Send any state push that PostPushToolbarState() has coalesced into a
   // pending task, so the observer flush below covers it.
-  toolbar->FlushPendingToolbarStateForTesting();
+  toolbar->FlushPendingToolbarState();
 
   // browser -> WebUI.
   toolbar_ui->FlushToolbarUIObserversForTesting();

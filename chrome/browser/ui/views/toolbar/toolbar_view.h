@@ -297,6 +297,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // AccessiblePaneView:
   views::View* GetDefaultFocusableChild() override;
+  void RequestFocus() override;
 
   // AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;

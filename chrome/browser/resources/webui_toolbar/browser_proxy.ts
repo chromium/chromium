@@ -62,6 +62,7 @@ export enum ToolbarStateKey {
   CAN_SHOW_AVATAR_FOR_PROFILE = 'canShowAvatarForProfile',
   IS_UNBOUND = 'isUnbound',
   COLORS_CSS = 'colorsCss',
+  KEYBOARD_NAVIGABLE = 'keyboardNavigable',
 }
 
 /**
@@ -81,6 +82,7 @@ export interface ToolbarFlatStateSchema {
   [ToolbarStateKey.IS_FALLBACK_PREWARMING]: boolean;
   [ToolbarStateKey.IS_PROFILE_ELIGIBLE_FOR_GLIC]: boolean;
   [ToolbarStateKey.CAN_SHOW_AVATAR_FOR_PROFILE]: boolean;
+  [ToolbarStateKey.KEYBOARD_NAVIGABLE]: boolean;
   [ToolbarStateKey.IS_UNBOUND]: boolean;
   [ToolbarStateKey.COLORS_CSS]: string;
 }

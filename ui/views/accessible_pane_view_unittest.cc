@@ -6,10 +6,13 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -18,6 +21,8 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
+
+using testing::ElementsAre;
 
 namespace views {
 
@@ -175,14 +180,28 @@ TEST_F(AccessiblePaneViewTest, TwoSetPaneFocus) {
   View* root = widget->GetRootView();
   auto* test_view = root->AddChildView(std::make_unique<TestBarView>());
   auto* test_view_2 = root->AddChildView(std::make_unique<TestBarView>());
+
+  std::vector<bool> pane_changes_1;
+  auto pane_changes_subscribe_1 =
+      test_view->AddPaneFocusChangedCallback(base::BindLambdaForTesting(
+          [&](bool value) { pane_changes_1.push_back(value); }));
+  std::vector<bool> pane_changes_2;
+  auto pane_changes_subscribe_2 =
+      test_view_2->AddPaneFocusChangedCallback(base::BindLambdaForTesting(
+          [&](bool value) { pane_changes_2.push_back(value); }));
+
   widget->Show();
   widget->Activate();
+  EXPECT_THAT(pane_changes_1, ElementsAre());
+  EXPECT_THAT(pane_changes_2, ElementsAre());
 
   // Set pane focus succeeds, focus on child.
   EXPECT_TRUE(test_view->SetPaneFocusAndFocusDefault());
   EXPECT_EQ(test_view, test_view->GetPaneFocusTraversable());
   EXPECT_EQ(test_view->child_button(),
             test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+  EXPECT_THAT(pane_changes_1, ElementsAre(true));
+  EXPECT_THAT(pane_changes_2, ElementsAre());
 
   // Set focus on another test_view, focus move to that pane.
   EXPECT_TRUE(test_view_2->SetPaneFocus(test_view_2->second_child_button()));
@@ -190,6 +209,8 @@ TEST_F(AccessiblePaneViewTest, TwoSetPaneFocus) {
                test_view->GetWidget()->GetFocusManager()->GetFocusedView());
   EXPECT_EQ(test_view_2->second_child_button(),
             test_view->GetWidget()->GetFocusManager()->GetFocusedView());
+  EXPECT_THAT(pane_changes_1, ElementsAre(true, false));
+  EXPECT_THAT(pane_changes_2, ElementsAre(true));
   widget->CloseNow();
   widget.reset();
 }
