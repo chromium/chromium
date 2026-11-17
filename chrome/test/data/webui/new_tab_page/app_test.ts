@@ -6152,10 +6152,8 @@ suite('NewTabPageAppTest', () => {
 
       // Assert dual-logging (both new unified metrics and legacy NTP
       // metrics).
-      assertEquals(1, metrics.count('VoiceSearch.Action'));
       assertEquals(
           1, metrics.count('VoiceSearch.Action', 0 /* ACTIVATED_BY_ICON */));
-      assertEquals(1, metrics.count('VoiceSearch.Action.NTP_REALBOX'));
       assertEquals(
           1,
           metrics.count(
@@ -6192,12 +6190,10 @@ suite('NewTabPageAppTest', () => {
 
           // Assert dual-logging (both new unified metrics and legacy NTP
           // metrics).
-          assertEquals(1, metrics.count('VoiceSearch.Action'));
           assertEquals(
               1,
               metrics.count(
                   'VoiceSearch.Action', 1 /* ACTIVATED_BY_KEYBOARD */));
-          assertEquals(1, metrics.count('VoiceSearch.Action.NTP_REALBOX'));
           assertEquals(
               1,
               metrics.count(
