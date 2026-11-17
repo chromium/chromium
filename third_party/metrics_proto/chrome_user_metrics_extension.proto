@@ -15,7 +15,7 @@ option java_outer_classname = "ChromeUserMetricsExtensionProtos";
 package metrics;
 
 import "third_party/metrics_proto/cast_logs.proto";
-import "third_party/metrics_proto/chrome_os_app_list_launch_event.proto";
+
 import "third_party/metrics_proto/custom_tab_session.proto";
 import "third_party/metrics_proto/histogram_event.proto";
 import "third_party/metrics_proto/omnibox_event.proto";
@@ -190,8 +190,6 @@ message ChromeUserMetricsExtension {
 
   repeated TranslateEventProto translate_event = 15;
   repeated PrinterEventProto printer_event = 16;
-
-  repeated ChromeOSAppListLaunchEventProto chrome_os_app_list_launch_event = 20;
 
   StructuredDataProto structured_data = 23;
 

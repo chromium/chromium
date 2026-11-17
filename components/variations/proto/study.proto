@@ -569,6 +569,6 @@ message Study {
   // WIP: Do not use yet.
   // Indicates that this study config is runtime mutable and will apply to users
   // as they receive a new Finch config (without needing a Chrome restart).
-  // TODO: b/482451024 - Document this feature.
+  // TODO: b/467018552 - Document this feature.
   bool runtime_mutable = 19;
 }

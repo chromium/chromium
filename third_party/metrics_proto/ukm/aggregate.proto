@@ -30,12 +30,6 @@ message Aggregate {
   // The total number of times this source/event was dropped due to sampling.
   uint64 dropped_due_to_sampling = 5;
 
-  // The total number of times this source/event was dropped due to filter.
-  // Unlike the others, records dropped for this reason are not included
-  // in the |total_count|.
-  // https://source.chromium.org/chromium/chromium/src/+/main:components/ukm/ukm_entry_filter.h
-  uint64 dropped_due_to_filter = 8;
-
   // The total number of times this source/event was dropped due to there
   // being no configuration of UKM via Finch. Until a full configuration is
   // delivered by Finch to the client, UKM is disabled but some basic
@@ -45,6 +39,7 @@ message Aggregate {
   // For each Event, we have a list of possible metrics included. Metric names
   // cannot be repeated. There is no guarantee that all metrics that are
   // possible for a given event will be included in a single Aggregate.
+  // Next tag: 10
   message Metric {
     // The hash of the metric's name.
     fixed64 metric_hash = 1;
@@ -52,17 +47,16 @@ message Aggregate {
     // The sum of all the values seen for this metric.
     double value_sum = 2;
 
-    // The sum of all the squared-values seen for this metric.
-    double value_square_sum = 3;
-
-    // Overrides of values given above if different for this specific metric.
-    uint64 total_count = 4;
-    uint64 dropped_due_to_limits = 5;
-    uint64 dropped_due_to_sampling = 6;
-
-    uint64 dropped_due_to_filter = 8;
-    uint64 dropped_due_to_unconfigured = 9;
+    reserved 3 to 9;
+    reserved value_square_sum, total_count, dropped_due_to_limits,
+        dropped_due_to_sampling, DEPRECATED_dropped_due_to_whitelist,
+        dropped_due_to_whitelist, dropped_due_to_filter,
+        dropped_due_to_unconfigured;
   }
 
   repeated Metric metrics = 6;
+
+  reserved 7, 8;
+  reserved DEPRECATED_dropped_due_to_whitelist, dropped_due_to_whitelist,
+      dropped_due_to_filter;
 }
