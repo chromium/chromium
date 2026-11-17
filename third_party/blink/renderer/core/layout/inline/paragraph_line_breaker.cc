@@ -163,7 +163,7 @@ std::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
       return std::nullopt;  // Balancing not needed for single line paragraphs.
     }
 
-    if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()) {
+    if (RuntimeEnabledFeatures::CSSLineClampEnabled()) {
       line_clamp_ellipsis_width =
           InlineLayoutAlgorithm::ShapeLineClampEllipsis(node)
               .shape_result->SnappedWidth();

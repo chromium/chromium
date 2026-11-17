@@ -1487,10 +1487,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterBidiContext(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::EnterBlock(
     const ComputedStyle* style) {
-  // The ScoreLineBreaker doesn't support line clamping with the ellipsis
-  // handled as part of line breaking.
-  if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() &&
-      style->HasLineClamp()) [[unlikely]] {
+  // The ScoreLineBreaker doesn't support non-legacy line clamp.
+  if (RuntimeEnabledFeatures::CSSLineClampEnabled() && style->HasLineClamp())
+      [[unlikely]] {
     is_score_line_break_disabled_ = true;
   }
 

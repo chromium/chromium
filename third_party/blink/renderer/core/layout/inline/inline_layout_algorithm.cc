@@ -445,12 +445,11 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
   // Truncate the line if:
   //  - 'text-overflow: ellipsis' is set and we *aren't* a line-clamp context.
-  //  - If we've reached the line-clamp limit.
+  //  - If we've reached the line-clamp limit (for legacy -webkit-line-clamp)
   const LineClampState line_clamp_state = GetLineClampState(line_info);
   if (line_clamp_state == LineClampState::kTextOverflowEllipsis ||
       (line_clamp_state == LineClampState::kLineClampEllipsis &&
-       !RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()))
-      [[unlikely]] {
+       !RuntimeEnabledFeatures::CSSLineClampEnabled())) [[unlikely]] {
     DCHECK(!line_info->IsBlockInInline());
     LineTruncator truncator(
         *line_info,
@@ -1077,7 +1076,7 @@ bool InlineLayoutAlgorithm::AddAnyClearanceAfterLine(
 // static
 InlineLayoutAlgorithm::LineClampEllipsis
 InlineLayoutAlgorithm::ShapeLineClampEllipsis(const InlineNode& node) {
-  DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+  DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
   const Font* font = node.Style().GetFont();
   const SimpleFontData* font_data = font->PrimaryFont();
   DCHECK(font_data);
@@ -1248,7 +1247,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
           leading_floats, break_token, column_spanner_path_,
           context_->GetFragmentedOofContainer(), &GetExclusionSpace());
       line_break_strategy.SetupLineBreaker(context_, line_breaker);
-      if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() &&
+      if (RuntimeEnabledFeatures::CSSLineClampEnabled() &&
           GetLineClampState(nullptr) == LineClampState::kLineClampEllipsis) {
         LayoutUnit ellipsis_width = SetupLineClampEllipsis();
         line_breaker.SetLineClampEllipsisWidth(ellipsis_width);

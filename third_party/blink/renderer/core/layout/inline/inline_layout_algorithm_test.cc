@@ -1024,8 +1024,7 @@ foo
 }
 
 TEST_F(InlineLayoutAlgorithmTest, BidiControlsInLineClampedLines) {
-  ScopedCSSLineClampLineBreakingEllipsisForTest
-      enable_line_breaking_ellipsis_for_test(true);
+  ScopedCSSLineClampForTest enable_line_clamp_for_test(true);
 
   SetBodyInnerHTML(R"HTML(
 <div style="line-clamp: 1; font: monospace; width: 7ch;">
@@ -1042,8 +1041,7 @@ TEST_F(InlineLayoutAlgorithmTest, BidiControlsInLineClampedLines) {
 }
 
 TEST_F(InlineLayoutAlgorithmTest, LineClampAndMaxContent) {
-  ScopedCSSLineClampLineBreakingEllipsisForTest
-      enable_line_breaking_ellipsis_for_test(true);
+  ScopedCSSLineClampForTest enable_line_clamp_for_test(true);
   ScopedWebTestMode web_test_mode(false);
 
   LoadFontFromFile(GetFrame(), blink::test::CoreTestDataPath("Revalia.woff"),

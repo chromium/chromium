@@ -86,7 +86,7 @@ class CORE_EXPORT LineBreaker {
   void SetBreakAt(const LineBreakPoint& offset);
 
   void SetLineClampEllipsisWidth(LayoutUnit width) {
-    DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+    DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
     bool had_ellipsis = line_clamp_ellipsis_width_;
     line_clamp_ellipsis_width_ = width;
     UpdateAvailableWidth();

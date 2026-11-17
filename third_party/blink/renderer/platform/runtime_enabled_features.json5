@@ -1953,11 +1953,6 @@
       status: "test"
     },
     {
-      name: "CSSLineClampLineBreakingEllipsis",
-      depends_on: ["CSSLineClamp"],
-      status: "experimental",
-    },
-    {
       // https://chromestatus.com/feature/5095153430822912
       name: "CSSLinkParametersProperty",
       status: "experimental",

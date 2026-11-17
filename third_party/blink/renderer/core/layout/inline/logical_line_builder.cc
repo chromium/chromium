@@ -166,7 +166,7 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
   box_states_->OnEndPlaceItems(constraint_space_, line_box, baseline_type_);
 
   if (has_line_clamp_ellipsis) {
-    DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+    DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
     const auto& ellipsis_data = *main_line_helper->GetLineClampEllipsis();
     const ShapeResultView* shape_result_view =
         ShapeResultView::Create(ellipsis_data.shape_result);

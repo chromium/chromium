@@ -3122,10 +3122,8 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
       // LayoutObject is the containing LayoutBlockFlow, because there is no
       // inline layout object that it belongs to. In that case, we must also use
       // the line style, which is this LayoutObject's style.
-      DCHECK(
-          IsInline() ||
-          (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() &&
-           IsLayoutBlockFlow() && ChildrenInline()));
+      DCHECK(IsInline() || (RuntimeEnabledFeatures::CSSLineClampEnabled() &&
+                            IsLayoutBlockFlow() && ChildrenInline()));
       if (!IsLayoutBlockFlow()) {
         if (const LayoutObject* container = ContainingBox()) {
           return container->Style();
