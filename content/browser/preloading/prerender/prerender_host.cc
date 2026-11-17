@@ -863,6 +863,27 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   std::vector<FrameTreeNode*> subframe_nodes(std::next(node_range.begin()),
                                              node_range.end());
 
+  // Delete the RenderFrameHosts in the subframes' pending deletion lists (i.e.,
+  // the ones swapped out on navigation and still waiting for unload
+  // completion), as if their unload timeout expired. They are owned by the
+  // RenderFrameHostManagers of `subframe_nodes`, so they would be moved to
+  // `target_frame_tree` along with the subframes. However,
+  // FrameTreeNode::SetFrameTree() below doesn't update their FrameTree (nor
+  // the ones of their descendants), which would dangle once the prerendering
+  // FrameTree is destroyed, while they can still receive messages from the
+  // renderer (see https://crbug.com/583734992). The RenderFrameHosts in the
+  // root's pending deletion list are not moved, and are deleted when the
+  // prerendering FrameTree is shut down.
+  //
+  // This needs to happen before TakePrerenderedPage() below, as deleting a
+  // RenderFrameHost notifies observers.
+  //
+  // TODO(crbug.com/40177949): Consider moving these RenderFrameHosts to
+  // `target_frame_tree` instead, so that their unload handlers can complete.
+  for (FrameTreeNode* subframe_node : subframe_nodes) {
+    subframe_node->render_manager()->ClearRFHsPendingShutdown();
+  }
+
   // Before the root's current_frame_host is cleared, collect the replication
   // state so that it can be used for post-activation validation.
   blink::mojom::FrameReplicationState prior_replication_state =
@@ -932,14 +953,9 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // associated frame tree. Note that subframe proxies don't need their
   // FrameTrees independently updated, since their FrameTreeNodes don't
   // change, and FrameTree references in those FrameTreeNodes will be updated
-  // through RenderFrameHosts.
-  //
-  // TODO(crbug.com/40177949): Need to investigate if and how
-  // pending delete RenderFrameHost objects should be handled if prerendering
-  // runs all of the unload handlers; they are not currently handled here.
-  // This is because pending delete RenderFrameHosts can still receive and
-  // process some messages while the RenderFrameHost FrameTree and
-  // FrameTreeNode are stale.
+  // through RenderFrameHosts. The RenderFrameHosts in the subframes' pending
+  // deletion lists don't need to be updated either, as they were deleted
+  // above.
   for (FrameTreeNode* subframe_node : subframe_nodes) {
     subframe_node->SetFrameTree(target_frame_tree);
   }
