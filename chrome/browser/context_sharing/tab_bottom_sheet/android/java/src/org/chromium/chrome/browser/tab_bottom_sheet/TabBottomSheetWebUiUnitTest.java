@@ -1228,6 +1228,25 @@ public class TabBottomSheetWebUiUnitTest {
     }
 
     @Test
+    public void testTabBottomSheetWebUiContainer_dispatchDragEvent_setsDropUriPermissionsGranted() {
+        DragAndDropActivity activity =
+                Robolectric.buildActivity(DragAndDropActivity.class).setup().get();
+        TabBottomSheetWebUiContainer container = new TabBottomSheetWebUiContainer(activity, null);
+        container.setWebContentsSupplier(() -> mWebContents);
+
+        DragEvent grantedDrop = mock(DragEvent.class);
+        when(grantedDrop.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        activity.mPermissionsForEvent.put(grantedDrop, mock(DragAndDropPermissions.class));
+        container.dispatchDragEvent(grantedDrop);
+        verify(mEventForwarder).setDropUriPermissionsGranted(true);
+
+        DragEvent notGrantedDrop = mock(DragEvent.class);
+        when(notGrantedDrop.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        container.dispatchDragEvent(notGrantedDrop);
+        verify(mEventForwarder).setDropUriPermissionsGranted(false);
+    }
+
+    @Test
     public void testSetWebContents_forwardsPermissionDelegate() {
         WindowAndroid thinWindow = mock(WindowAndroid.class);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(thinWindow);

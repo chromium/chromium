@@ -156,6 +156,7 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
+import org.chromium.ui.dragdrop.DragAndDropPermissionsUtils;
 import org.chromium.url.GURL;
 
 import java.io.File;
@@ -5033,8 +5034,13 @@ public class AwContents implements SmartClipProvider {
             } else if (event.getAction() == DragEvent.ACTION_DROP) {
                 Activity activity = ContextUtils.activityFromContext(mContext);
                 if (activity != null) {
-                    mDragAndDropPermissions = activity.requestDragAndDropPermissions(event);
+                    mDragAndDropPermissions =
+                            DragAndDropPermissionsUtils.requestPermissions(activity, event);
                 }
+                // Content URIs in the drop are only used if this drop granted permissions for them.
+                mWebContents
+                        .getEventForwarder()
+                        .setDropUriPermissionsGranted(mDragAndDropPermissions != null);
             }
             return mWebContents.getEventForwarder().onDragEvent(event, mContainerView);
         }

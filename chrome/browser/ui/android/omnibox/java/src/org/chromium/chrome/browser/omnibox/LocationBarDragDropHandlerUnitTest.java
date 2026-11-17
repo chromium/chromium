@@ -342,6 +342,30 @@ public class LocationBarDragDropHandlerUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES,
+        UiAndroidFeatures.DRAG_DROP_REQUIRES_URI_PERMISSIONS
+    })
+    public void testOnDrag_Drop_ContentUriWithoutPermissions_Rejected() {
+        mActivity.mPermissions = null;
+        when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
+        when(mDragEvent.getClipData()).thenReturn(mClipData);
+        when(mClipData.getItemCount()).thenReturn(1);
+        when(mClipData.getItemAt(0)).thenReturn(mClipDataItem);
+
+        Uri contentUri = Uri.parse("content://com.example.provider/document.pdf");
+        when(mClipDataItem.getUri()).thenReturn(contentUri);
+
+        when(mContentProvider.getType(contentUri)).thenReturn("application/pdf");
+        ShadowContentResolver.registerProviderInternal("com.example.provider", mContentProvider);
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
+        assertFalse(mHandler.onDrag(new View(mContext), mDragEvent));
+        verify(mOmniboxStub, never()).loadUrl(any());
+    }
+
+    @Test
     @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
     public void testOnDrag_Drop_ContentUri_LoadFailed() {
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);

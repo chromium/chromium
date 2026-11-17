@@ -15,6 +15,10 @@ import android.widget.FrameLayout;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.dragdrop.DragAndDropPermissionsUtils;
+
+import java.util.function.Supplier;
 
 /**
  * A custom FrameLayout that delegates touch events to an external handler. This is used to
@@ -37,9 +41,15 @@ public class TabBottomSheetWebUiContainer extends FrameLayout {
     private @Nullable TouchHandler mTouchHandler;
     private boolean mIsDispatchingToHandler;
     private @Nullable DragAndDropPermissions mDragAndDropPermissions;
+    private @Nullable Supplier<@Nullable WebContents> mWebContentsSupplier;
 
     public TabBottomSheetWebUiContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    /** Sets the supplier of the WebContents shown in this container. */
+    public void setWebContentsSupplier(Supplier<@Nullable WebContents> webContentsSupplier) {
+        mWebContentsSupplier = webContentsSupplier;
     }
 
     /** Sets the touch handler for this container. */
@@ -70,7 +80,16 @@ public class TabBottomSheetWebUiContainer extends FrameLayout {
             releaseDragAndDropPermissions();
             Activity activity = ContextUtils.activityFromContext(getContext());
             if (activity != null) {
-                mDragAndDropPermissions = activity.requestDragAndDropPermissions(event);
+                mDragAndDropPermissions =
+                        DragAndDropPermissionsUtils.requestPermissions(activity, event);
+            }
+            // Content URIs in the drop are only used if this drop granted permissions for them.
+            WebContents webContents =
+                    mWebContentsSupplier != null ? mWebContentsSupplier.get() : null;
+            if (webContents != null) {
+                webContents
+                        .getEventForwarder()
+                        .setDropUriPermissionsGranted(mDragAndDropPermissions != null);
             }
         }
         return super.dispatchDragEvent(event);

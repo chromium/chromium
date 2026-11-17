@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContentUriOwner;
 import org.chromium.base.ContentUriUtils;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
@@ -32,6 +33,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.UiAndroidFeatureMap;
 import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragAndDropPermissionsUtils;
 import org.chromium.url.GURL;
 
 import java.util.Locale;
@@ -42,6 +44,8 @@ import java.util.Locale;
  */
 @NullMarked
 public class LocationBarDragDropHandler implements OnDragListener {
+    private static final String TAG = "LocationBarDragDrop";
+
     private final OmniboxStub mOmniboxStub;
     private final LocationBarDataProvider mDataProvider;
 
@@ -111,11 +115,23 @@ public class LocationBarDragDropHandler implements OnDragListener {
         if (activity == null) return false;
 
         DragAndDropPermissions permissions =
-                hasContentUri(clipData) ? activity.requestDragAndDropPermissions(event) : null;
+                hasContentUri(clipData)
+                        ? DragAndDropPermissionsUtils.requestPermissions(activity, event)
+                        : null;
 
         try {
             Uri uriToLoad = findUriToLoad(context, clipData, event.getClipDescription());
             if (uriToLoad == null) return false;
+
+            // Reject content URIs that the drop did not grant permissions for, so that the browser
+            // does not load them using its own permissions.
+            if (permissions == null
+                    && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uriToLoad.getScheme())
+                    && UiAndroidFeatureMap.isEnabled(
+                            UiAndroidFeatures.DRAG_DROP_REQUIRES_URI_PERMISSIONS)) {
+                Log.w(TAG, "Ignoring drop without permissions: " + uriToLoad.getAuthority());
+                return false;
+            }
 
             String url = uriToLoad.toString();
             if (permissions != null

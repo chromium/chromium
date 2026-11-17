@@ -6,6 +6,7 @@ package org.chromium.ui.base;
 
 import static android.view.WindowInsets.Type.systemGestures;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.clearInvocations;
@@ -303,6 +303,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"text/plain"},
                 new ClipData.Item[] {new ClipData.Item("text content")},
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ "text content",
                 /* expectedHtml= */ null,
@@ -312,6 +313,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"text/html"},
                 new ClipData.Item[] {new ClipData.Item("text content", "html content")},
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ "text content",
                 /* expectedHtml= */ "html content",
@@ -321,6 +323,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"text/x-moz-url"},
                 new ClipData.Item[] {new ClipData.Item("url content")},
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ "url content",
                 /* expectedHtml= */ null,
@@ -333,6 +336,7 @@ public class EventForwarderTest {
                     new ClipData.Item(Uri.parse("content://com.pkg/foo/image.jpg")),
                     new ClipData.Item(Uri.parse("content://com.pkg/foo/hello.txt"))
                 },
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {
                     {"content://com.pkg/foo/image.jpg", ""}, {"content://com.pkg/foo/hello.txt", ""}
                 },
@@ -344,7 +348,122 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 new String[] {"text/plain"},
                 new ClipData.Item[] {new ClipData.Item(Uri.parse("/foo/image.jpg"))},
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null);
+        validateDragDropEvent(
+                new String[] {"text/plain"},
+                new ClipData.Item[] {new ClipData.Item(Uri.parse("file:///foo/image.jpg"))},
+                /* uriPermissionsGranted= */ true,
+                /* expectedFilenames= */ new String[][] {},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null);
+        validateDragDropEvent(
+                new String[] {"text/plain"},
+                new ClipData.Item[] {new ClipData.Item(Uri.parse("CONtent:///foo/image.jpg"))},
+                /* uriPermissionsGranted= */ true,
+                /* expectedFilenames= */ new String[][] {},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null);
+    }
+
+    @Test
+    @EnableFeatures({
+        UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES,
+        UiAndroidFeatures.DRAG_DROP_REQUIRES_URI_PERMISSIONS
+    })
+    public void testDragDropEvent_contentUrisRequirePermissions() {
+        // Content URIs are ignored if the drop did not grant permissions.
+        validateDragDropEvent(
+                new String[] {"image/jpeg"},
+                new ClipData.Item[] {new ClipData.Item(Uri.parse("content://com.pkg/foo/a.jpg"))},
+                /* uriPermissionsGranted= */ false,
+                /* expectedFilenames= */ new String[][] {},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null);
+
+        // Content URIs are used if the drop granted permissions.
+        validateDragDropEvent(
+                new String[] {"image/jpeg"},
+                new ClipData.Item[] {new ClipData.Item(Uri.parse("content://com.pkg/foo/a.jpg"))},
+                /* uriPermissionsGranted= */ true,
+                /* expectedFilenames= */ new String[][] {{"content://com.pkg/foo/a.jpg", ""}},
+                /* expectedText= */ null,
+                /* expectedHtml= */ null,
+                /* expectedUrl= */ null);
+    }
+
+    /** Forwards a drop of {@code uri} and returns the filenames passed to native. */
+    private String[][] dropAndGetFilenames(EventForwarder eventForwarder, String uri) {
+        String[] mimeTypes = new String[] {"image/jpeg"};
+        DragEvent event = mock(DragEvent.class);
+        doReturn(DragEvent.ACTION_DROP).when(event).getAction();
+        doReturn(new ClipData("label", mimeTypes, new ClipData.Item(Uri.parse(uri))))
+                .when(event)
+                .getClipData();
+        doReturn(new ClipDescription("label", mimeTypes)).when(event).getClipDescription();
+        eventForwarder.onDragEvent(event, mView);
+
+        ArgumentCaptor<String[][]> filenames = ArgumentCaptor.forClass(String[][].class);
+        verify(mNativeMock)
+                .onDragEvent(
+                        eq(NATIVE_EVENT_FORWARDER_ID),
+                        eq(DragEvent.ACTION_DROP),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        anyFloat(),
+                        any(),
+                        anyBoolean(),
+                        filenames.capture(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
+        clearInvocations(mNativeMock);
+        return filenames.getValue();
+    }
+
+    @Test
+    @EnableFeatures({
+        UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES,
+        UiAndroidFeatures.DRAG_DROP_REQUIRES_URI_PERMISSIONS
+    })
+    public void testDragDropEvent_contentUriPermissionsOnlyApplyToNextDrop() {
+        String uri = "content://com.pkg/foo/a.jpg";
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
+        try {
+            // The first drop granted permissions, so its content URI is used.
+            eventForwarder.setDropUriPermissionsGranted(true);
+            assertArrayEquals(new String[][] {{uri, ""}}, dropAndGetFilenames(eventForwarder, uri));
+
+            // The next drop did not set permissions, so its content URI is ignored.
+            assertArrayEquals(new String[][] {}, dropAndGetFilenames(eventForwarder, uri));
+        } finally {
+            eventForwarder.destroy();
+        }
+    }
+
+    @Test
+    @EnableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+    @DisableFeatures(UiAndroidFeatures.DRAG_DROP_REQUIRES_URI_PERMISSIONS)
+    public void testDragDropEvent_contentUrisWithoutPermissions_featureDisabled() {
+        validateDragDropEvent(
+                new String[] {"image/jpeg"},
+                new ClipData.Item[] {new ClipData.Item(Uri.parse("content://com.pkg/foo/a.jpg"))},
+                /* uriPermissionsGranted= */ false,
+                /* expectedFilenames= */ new String[][] {{"content://com.pkg/foo/a.jpg", ""}},
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
                 /* expectedUrl= */ null);
@@ -879,6 +998,7 @@ public class EventForwarderTest {
     private void validateDragDropEvent(
             String[] mimeTypes,
             ClipData.Item[] items,
+            boolean uriPermissionsGranted,
             String[][] expectedFilenames,
             String expectedText,
             String expectedHtml,
@@ -886,6 +1006,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 mimeTypes,
                 items,
+                uriPermissionsGranted,
                 expectedFilenames,
                 expectedText,
                 expectedHtml,
@@ -900,6 +1021,7 @@ public class EventForwarderTest {
     private void validateDragDropEvent(
             String[] mimeTypes,
             ClipData.Item[] items,
+            boolean uriPermissionsGranted,
             String[][] expectedFilenames,
             String expectedText,
             String expectedHtml,
@@ -922,6 +1044,7 @@ public class EventForwarderTest {
         EventForwarder eventForwarder =
                 new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false, false, mScaledTouchSlop);
         try {
+            eventForwarder.setDropUriPermissionsGranted(uriPermissionsGranted);
             eventForwarder.setAllowIntraAppImageDrops(allowIntraAppImageDrops);
             DragEvent event = mock(DragEvent.class);
             doReturn(DragEvent.ACTION_DROP).when(event).getAction();
@@ -934,6 +1057,7 @@ public class EventForwarderTest {
                             .expectIntRecord(
                                     "Android.DragDrop.Files.Count", expectedFilenames.length)
                             .build();
+            ArgumentCaptor<String[][]> filenames = ArgumentCaptor.forClass(String[][].class);
             eventForwarder.onDragEvent(event, mView);
             verify(mNativeMock, times(1))
                     .onDragEvent(
@@ -945,22 +1069,7 @@ public class EventForwarderTest {
                             eq(21.0f), // screenY
                             eq(mimeTypes),
                             anyBoolean(), // hasFiles
-                            argThat(
-                                    (String[][] filenames) -> {
-                                        if (filenames.length != expectedFilenames.length) {
-                                            return false;
-                                        }
-                                        for (int i = 0; i < filenames.length; i++) {
-                                            if (filenames[i].length != 2
-                                                    || !expectedFilenames[i][0].equals(
-                                                            filenames[i][0])
-                                                    || !expectedFilenames[i][1].equals(
-                                                            filenames[i][1])) {
-                                                return false;
-                                            }
-                                        }
-                                        return true;
-                                    }),
+                            filenames.capture(),
                             eq(expectedText),
                             eq(expectedHtml),
                             eq(expectedUrl),
@@ -970,6 +1079,7 @@ public class EventForwarderTest {
                             eq(expectedImageBytes),
                             eq(expectedImageExtension),
                             eq(expectedImageFilename));
+            assertArrayEquals(expectedFilenames, filenames.getValue());
             clearInvocations(mNativeMock);
             histograms.assertExpected();
         } finally {
@@ -1064,6 +1174,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 mimeTypes,
                 liveUriItems,
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {{liveUri.toString(), "image.jpg"}},
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
@@ -1078,6 +1189,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 mimeTypes,
                 liveUriItems,
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
@@ -1095,6 +1207,7 @@ public class EventForwarderTest {
             validateDragDropEvent(
                     mimeTypes,
                     liveUriItems,
+                    /* uriPermissionsGranted= */ true,
                     /* expectedFilenames= */ new String[][] {},
                     /* expectedText= */ null,
                     /* expectedHtml= */ null,
@@ -1111,6 +1224,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 mimeTypes,
                 new ClipData.Item[] {new ClipData.Item(Uri.withAppendedPath(liveUri, "stale"))},
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
@@ -1123,6 +1237,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 mimeTypes,
                 new ClipData.Item[] {new ClipData.Item(Uri.parse(FILE_PROVIDER_URI))},
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
@@ -1139,6 +1254,7 @@ public class EventForwarderTest {
                 new ClipData.Item[] {
                     new ClipData.Item(Uri.parse("content://com.pkg/foo/image.jpg"))
                 },
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {{"content://com.pkg/foo/image.jpg", ""}},
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,
@@ -1155,6 +1271,7 @@ public class EventForwarderTest {
         validateDragDropEvent(
                 mimeTypes,
                 liveUriItems,
+                /* uriPermissionsGranted= */ true,
                 /* expectedFilenames= */ new String[][] {},
                 /* expectedText= */ null,
                 /* expectedHtml= */ null,

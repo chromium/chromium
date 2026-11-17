@@ -64,6 +64,9 @@ public class EventForwarder {
     private static final Map<Long, EventForwarder> sEventForwarders = new HashMap<>();
 
     private final boolean mIsDragDropEnabled;
+    // Whether the current drop granted URI permissions. Set by the embedder before forwarding
+    // ACTION_DROP, and cleared by the next call to onDragEvent().
+    private boolean mDropUriPermissionsGranted;
     private final boolean mConvertTrackpadEventsToMouse;
     private final boolean mUseBufferedInput;
     private boolean mAllowIntraAppImageDrops;
@@ -835,6 +838,20 @@ public class EventForwarder {
     }
 
     /**
+     * Sets whether the drop that is about to be forwarded granted URI permissions. Embedders must
+     * call this immediately before forwarding {@link DragEvent#ACTION_DROP} with whether {@link
+     * org.chromium.ui.dragdrop.DragAndDropPermissionsUtils#requestPermissions} returned
+     * permissions. The value only applies to the next call to {@link #onDragEvent}. Content URIs
+     * from other apps are ignored unless permissions were granted, so that the browser does not
+     * read them using its own permissions on behalf of the app that started the drag.
+     *
+     * @param granted Whether URI permissions were granted for the drop.
+     */
+    public void setDropUriPermissionsGranted(boolean granted) {
+        mDropUriPermissionsGranted = granted;
+    }
+
+    /**
      * @see View#onDragEvent(DragEvent)
      * @param event {@link DragEvent} instance.
      * @param containerView A view on which the drag event is taking place.
@@ -896,6 +913,10 @@ public class EventForwarder {
             float screenY,
             @Nullable ClipDescription clipDescription,
             @Nullable ClipData clipData) {
+        // Only use the permissions state for the event immediately after it is set.
+        boolean dropUriPermissionsGranted = mDropUriPermissionsGranted;
+        mDropUriPermissionsGranted = false;
+
         // Do not forward browser content events to native eventForwarder.
         if (clipDescription != null
                 && MimeTypeUtils.clipDescriptionHasBrowserContent(clipDescription)) {
@@ -962,6 +983,15 @@ public class EventForwarder {
                         if (UiAndroidFeatureMap.isEnabled(
                                         UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
                                 && !isUriSafeForDrop(uri)) {
+                            continue;
+                        }
+                        // Reject content URIs that the drop did not grant permissions for, so that
+                        // the browser does not read them using its own permissions.
+                        if (!dropUriPermissionsGranted
+                                && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())
+                                && UiAndroidFeatureMap.isEnabled(
+                                        UiAndroidFeatures.DRAG_DROP_REQUIRES_URI_PERMISSIONS)) {
+                            Log.w(TAG, "Ignoring drop without permissions: " + uri.getAuthority());
                             continue;
                         }
 

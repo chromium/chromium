@@ -189,9 +189,13 @@ public class CompositorViewHolderUnitTest {
     // Subclass needed to return mock DragAndDropPermissions.
     public static class DropTestActivity extends Activity {
         final List<DragAndDropPermissions> mPermissions = new ArrayList<>();
+        boolean mGrantPermissions = true;
+        boolean mThrowSecurityException;
 
         @Override
-        public DragAndDropPermissions requestDragAndDropPermissions(DragEvent event) {
+        public @Nullable DragAndDropPermissions requestDragAndDropPermissions(DragEvent event) {
+            if (mThrowSecurityException) throw new SecurityException("Source cannot grant");
+            if (!mGrantPermissions) return null;
             DragAndDropPermissions permissions = mock(DragAndDropPermissions.class);
             mPermissions.add(permissions);
             return permissions;
@@ -2378,6 +2382,7 @@ public class CompositorViewHolderUnitTest {
     public void testDropPermissions_heldUntilShutDown() {
         DropTestActivity activity = Robolectric.buildActivity(DropTestActivity.class).get();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mWebContents.getEventForwarder()).thenReturn(mEventForwarder);
         mCompositorViewHolder.onNativeLibraryReady(
                 mWindowAndroid, /* tabContentManager= */ null, mPrefService);
         mCompositorViewHolder.onContentChanged();
@@ -2419,6 +2424,49 @@ public class CompositorViewHolderUnitTest {
         for (DragAndDropPermissions permissions : activity.mPermissions) {
             verify(permissions).release();
         }
+    }
+
+    @Test
+    public void testDropPermissions_passedToEventForwarder() {
+        DropTestActivity activity = Robolectric.buildActivity(DropTestActivity.class).get();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mWebContents.getEventForwarder()).thenReturn(mEventForwarder);
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+        mCompositorViewHolder.onContentChanged();
+        ClipData clipData =
+                new ClipData(
+                        "file",
+                        new String[] {"image/png"},
+                        new ClipData.Item(Uri.parse("content://media/image1.png")));
+
+        // A drop that granted permissions allows the EventForwarder to use its URIs.
+        dispatchDrop(clipData);
+        verify(mEventForwarder).setDropUriPermissionsGranted(true);
+
+        // A drop without permissions does not.
+        activity.mGrantPermissions = false;
+        dispatchDrop(clipData);
+        verify(mEventForwarder).setDropUriPermissionsGranted(false);
+    }
+
+    @Test
+    public void testDropPermissions_securityExceptionTreatedAsNotGranted() {
+        DropTestActivity activity = Robolectric.buildActivity(DropTestActivity.class).get();
+        activity.mThrowSecurityException = true;
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+        when(mWebContents.getEventForwarder()).thenReturn(mEventForwarder);
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+        mCompositorViewHolder.onContentChanged();
+
+        // A drag source asking to grant URIs it cannot access must not crash.
+        dispatchDrop(
+                new ClipData(
+                        "file",
+                        new String[] {"image/png"},
+                        new ClipData.Item(Uri.parse("content://media/image1.png"))));
+        verify(mEventForwarder).setDropUriPermissionsGranted(false);
     }
 
     private void dispatchDrop(ClipData clipData) {

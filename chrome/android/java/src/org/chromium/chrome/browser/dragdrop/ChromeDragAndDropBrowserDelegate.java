@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
+import org.chromium.ui.dragdrop.DragAndDropPermissionsUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
@@ -94,7 +95,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         if (mActivitySupplier.get() == null) {
             return null;
         }
-        return mActivitySupplier.get().requestDragAndDropPermissions(dropEvent);
+        return DragAndDropPermissionsUtils.requestPermissions(mActivitySupplier.get(), dropEvent);
     }
 
     @Override

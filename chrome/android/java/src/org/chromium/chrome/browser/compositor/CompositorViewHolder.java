@@ -118,6 +118,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragAndDropPermissionsUtils;
 import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
@@ -1111,8 +1112,14 @@ public class CompositorViewHolder extends FrameLayout
         if (e.getAction() == DragEvent.ACTION_DRAG_STARTED) {
             trackDragSource();
         } else if (e.getAction() == DragEvent.ACTION_DROP) {
-            DragAndDropPermissions permissions = mActivity.requestDragAndDropPermissions(e);
+            DragAndDropPermissions permissions =
+                    DragAndDropPermissionsUtils.requestPermissions(mActivity, e);
             if (permissions != null) mDragAndDropPermissions.add(permissions);
+            // Content URIs in the drop are only used if this drop granted permissions for them.
+            WebContents webContents = getWebContents();
+            if (webContents != null) {
+                webContents.getEventForwarder().setDropUriPermissionsGranted(permissions != null);
+            }
         }
         boolean ret = super.dispatchDragEvent(e);
         if (e.getAction() == DragEvent.ACTION_DRAG_ENDED) {

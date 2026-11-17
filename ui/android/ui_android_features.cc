@@ -48,6 +48,8 @@ BASE_FEATURE(kConnectedDisplayDensityDebugLogs,
 BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDragDropRequiresUriPermissions, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHasContentUri, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMaximumWindowForGestureNavDetection,

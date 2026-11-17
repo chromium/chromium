@@ -76,6 +76,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kConnectedDisplayDensityDebugLogs);
 // Whether photo picker should be disabled for video capture.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDisablePhotoPickerForVideoCapture);
 
+// Ignores content URIs from external apps in drops unless the drop granted
+// URI permissions, so the browser does not read them using its own permissions.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDragDropRequiresUriPermissions);
+
 // Whether to read ClipDescription.hasContentUri().
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kHasContentUri);
 

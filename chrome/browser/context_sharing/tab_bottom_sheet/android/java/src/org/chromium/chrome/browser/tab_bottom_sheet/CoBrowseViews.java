@@ -99,6 +99,7 @@ public class CoBrowseViews {
 
         // Cache view lookups.
         mWebUiContainer = assertNonNull(containerView.findViewById(R.id.web_ui_container));
+        mWebUiContainer.setWebContentsSupplier(mWebContentsSupplier);
         mPeekContainer = assertNonNull(containerView.findViewById(R.id.peek_view_container));
         mLoadingPlaceholderContainer =
                 assertNonNull(containerView.findViewById(R.id.loading_placeholder_container));

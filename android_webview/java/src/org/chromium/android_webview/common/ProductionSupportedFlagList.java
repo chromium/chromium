@@ -1603,6 +1603,10 @@ public final class ProductionSupportedFlagList {
                 "AlwaysUse64BitCrashHandlerIfAvailable",
                 "When enabled, 32-bit browser processes launch a 64-bit Crashpad handler for"
                         + " client processes if a 64-bit handler is available."),
+        Flag.baseFeature(
+                UiAndroidFeatures.DRAG_DROP_REQUIRES_URI_PERMISSIONS,
+                "When enabled, content URIs from other apps in a drop are ignored unless the drop"
+                        + " granted URI permissions for them."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

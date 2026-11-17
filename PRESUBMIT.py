@@ -359,6 +359,20 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
         True,
         excluded_paths=(r'third_party/',),
     ),
+    BanRule(
+        'requestDragAndDropPermissions(',
+        (
+            'Do not call Activity.requestDragAndDropPermissions() directly. Use '
+            'org.chromium.ui.dragdrop.DragAndDropPermissionsUtils.'
+            'requestPermissions(), which handles SecurityException.',
+        ),
+        True,
+        excluded_paths=(
+            r'.*Test[^a-z]',
+            r'third_party/',
+            'ui/android/java/src/org/chromium/ui/dragdrop/DragAndDropPermissionsUtils.java',
+        ),
+    ),
 )
 
 _BANNED_JAVASCRIPT_FUNCTIONS: Sequence[BanRule] = (
