@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -10,6 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -706,9 +708,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
   SetFavicon(kSingleProfileIndex, bookmark, icon_url, original_favicon,
              bookmarks_helper::FROM_SYNC);
 
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex),
-                                           GetFakeServer())
-                  .Wait());
+  ASSERT_TRUE(
+      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
+          .Wait());
 
   scoped_refptr<base::RefCountedMemory> original_favicon_bytes =
       original_favicon.As1xPNGBytes();
@@ -720,6 +722,14 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
   // Check that the data was not mutated from the original.
   EXPECT_TRUE(original_favicon_bytes.get());
   EXPECT_TRUE(original_favicon_bytes->Equals(final_favicon_bytes));
+
+  const std::vector<sync_pb::SyncEntity> server_bookmarks =
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
+  ASSERT_EQ(1u, server_bookmarks.size());
+  EXPECT_EQ(server_bookmarks.front().specifics().bookmark().favicon(),
+            std::string(base::as_string_view(*original_favicon_bytes)));
+  EXPECT_EQ(server_bookmarks.front().specifics().bookmark().icon_url(),
+            icon_url.spec());
 }
 
 // Test that a client deletes favicons from sync when they have been removed
@@ -733,17 +743,25 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest, DeleteFaviconFromSync) {
       AddURL(kSingleProfileIndex, u"title", page_url, GetStoreType());
   SetFavicon(0, bookmark, icon_url, CreateFavicon(SK_ColorWHITE),
              bookmarks_helper::FROM_UI);
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex),
-                                           GetFakeServer())
-                  .Wait());
+  ASSERT_TRUE(
+      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
+          .Wait());
+  ASSERT_EQ(
+      1u, GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
+  EXPECT_TRUE(GetFakeServer()
+                  ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
+                  .front()
+                  .specifics()
+                  .bookmark()
+                  .has_favicon());
 
   // Simulate receiving a favicon deletion from sync.
   DeleteFaviconMappings(kSingleProfileIndex, bookmark,
                         bookmarks_helper::FROM_SYNC);
 
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex),
-                                           GetFakeServer())
-                  .Wait());
+  ASSERT_TRUE(
+      CommittedAllNudgedChangesChecker(GetSyncService(kSingleProfileIndex))
+          .Wait());
   ASSERT_THAT(
       GetBookmarkBarNode(kSingleProfileIndex, GetStoreType())->children(),
       ElementsAre(IsUrlBookmark(u"title", page_url)));
@@ -751,6 +769,20 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest, DeleteFaviconFromSync) {
   CheckHasNoFavicon(kSingleProfileIndex, page_url);
   EXPECT_TRUE(
       GetBookmarkModel(kSingleProfileIndex)->GetFavicon(bookmark).IsEmpty());
+  ASSERT_EQ(
+      1u, GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
+  EXPECT_FALSE(GetFakeServer()
+                   ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
+                   .front()
+                   .specifics()
+                   .bookmark()
+                   .has_favicon());
+  EXPECT_FALSE(GetFakeServer()
+                   ->GetSyncEntitiesByDataType(syncer::BOOKMARKS)
+                   .front()
+                   .specifics()
+                   .bookmark()
+                   .has_icon_url());
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest, OneFolderRemovedEvent) {
