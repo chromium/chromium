@@ -2,12 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import copy  # noqa: F401
 import enum
 import hashlib
-import os  # noqa: F401
 import re
-from typing import List, Dict, Set, Union  # noqa: F401
 
 NEWLINE = ' " +\n         "'
 
@@ -245,7 +242,6 @@ COMMON_FIELDS = {
     'comment',
     'visibility',
     'default_applicable_licenses',
-    'default_visibility',
     'build_file_path',
     'allow_rebasing',
     'gn_type',
@@ -255,8 +251,6 @@ COMMON_FIELDS = {
     'java_prevent_excluded_classes_from_classpath',
     'genrule_headers',
     'genrule_srcs',
-    'genrule_shared_libs',
-    'genrule_header_libs',
     'include_build_directory',
     'apex_available',
     'host_supported',
@@ -295,7 +289,6 @@ COMMON_SOONG_FIELDS = {
     'name',
     'visibility',
     'default_applicable_licenses',
-    'default_visibility',
     'include_build_directory',
     'apex_available',
     'host_supported',
@@ -322,7 +315,6 @@ class Module:
         self.comment = 'GN: ' + gn_target
         self.visibility = set()
         self.default_applicable_licenses = set()
-        self.default_visibility = []
         self.gn_type = None
         self.build_file_path = None
         self.allow_rebasing = False
@@ -340,8 +332,6 @@ class Module:
         self._initialize_targets(Target)
         self.genrule_headers = set()
         self.genrule_srcs = set()
-        self.genrule_shared_libs = set()
-        self.genrule_header_libs = set()
 
     def _initialize_targets(self, target_class=Target):
         for arch in [
@@ -424,27 +414,6 @@ class Module:
         output.append('}')
         output.append('')
 
-    def add_android_shared_lib(self, lib):
-        if self.type.startswith('java'):
-            raise Exception(
-                'Adding Android shared lib for java_* targets is unsupported'
-            )
-        if self.type == 'cc_binary_host':
-            raise Exception(
-                'Adding Android shared lib for host tool is unsupported'
-            )
-
-        if self.host_supported:
-            self.target['android'].shared_libs.add(lib)
-        else:
-            shared_libs = getattr(self, 'shared_libs', None)
-            if shared_libs is not None:
-                shared_libs.add(lib)
-            else:
-                raise AttributeError(
-                    f"Module '{self.name}' of type '{self.type}' does not support shared_libs"
-                )
-
     def _output_field(
         self, output, name, sort=True, list_to_multiline_string=False
     ):
@@ -488,25 +457,19 @@ class CcModule(Module):
         'shared_libs',
         'static_libs',
         'whole_static_libs',
-        'init_rc',
         'export_include_dirs',
         'generated_headers',
         'export_generated_headers',
-        'export_static_lib_headers',
         'export_header_lib_headers',
         'cflags',
         'include_dirs',
         'local_include_dirs',
         'extra_include_dir_deps',
         'header_libs',
-        'strip',
         'stl',
         'cpp_std',
         'min_sdk_version',
         'version_script',
-        'test_suites',
-        'test_config',
-        'proto',
         'linker_scripts',
         'ldflags',
         'cppflags',
@@ -525,25 +488,19 @@ class CcModule(Module):
         self.shared_libs = set()
         self.static_libs = set()
         self.whole_static_libs = set()
-        self.init_rc = set()
         self.export_include_dirs = set()
         self.generated_headers = set()
         self.export_generated_headers = set()
-        self.export_static_lib_headers = set()
         self.export_header_lib_headers = set()
         self.cflags = list()
         self.include_dirs = set()
         self.local_include_dirs = set()
         self.extra_include_dir_deps = set()
         self.header_libs = set()
-        self.strip = dict()
         self.stl = None
         self.cpp_std = None
         self.min_sdk_version = None
         self.version_script = None
-        self.test_suites = set()
-        self.test_config = None
-        self.proto = dict()
         self.linker_scripts = set()
         self.ldflags = list()
         self.cppflags = list()
@@ -564,11 +521,7 @@ class CcModule(Module):
 class JavaModule(Module):
     SUPPORTED_FIELDS = {
         'srcs',
-        'plugins',
-        'processor_class',
         'sdk_version',
-        'javacflags',
-        'jarjar_rules',
         'jars',
         'errorprone',
         'libs',
@@ -576,18 +529,13 @@ class JavaModule(Module):
         'min_sdk_version',
         'java_version',
         'lint',
-        'manifest',
     }
 
     def __init__(
         self, mod_type, name, gn_target, context, is_test=False, role=None
     ):
         super().__init__(mod_type, name, gn_target, context, is_test, role)
-        self.plugins = set()
-        self.processor_class = None
         self.sdk_version = None
-        self.javacflags = set()
-        self.jarjar_rules = ""
         self.jars = set()
         self.errorprone = dict()
         self.libs = set()
@@ -595,7 +543,6 @@ class JavaModule(Module):
         self.min_sdk_version = None
         self.java_version = None
         self.lint = dict()
-        self.manifest = None
 
     def add_java_dependency(self, dep_module):
         if self.java_unfiltered_module and dep_module.java_unfiltered_module:
@@ -810,7 +757,6 @@ def create_module(mod_type, name, gn_target, context, is_test=False, role=None):
         'java_library',
         'java_import',
         'java_defaults',
-        'android_library',
     ):
         return JavaModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type in ('rust_ffi_static', 'rust_binary', 'rust_proc_macro'):

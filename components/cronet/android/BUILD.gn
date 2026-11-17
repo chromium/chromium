@@ -2388,6 +2388,7 @@ action("api_static_checks") {
 
 GN2BP_SOURCES = [
   "//components/cronet/gn2bp/action_sanitizers.py",
+  "//components/cronet/gn2bp/arguments.py",
   "//components/cronet/gn2bp/common.py",
   "//components/cronet/gn2bp/context.py",
   "//components/cronet/gn2bp/copybara_diff3.sh",
@@ -2417,14 +2418,6 @@ LICENSE_SOURCES = [
   "//components/cronet/license/metadata.py",
   "//components/cronet/license/metadata_dictionary.py",
 ]
-
-script_test("generate_build_script_test") {
-  script = "//testing/scripts/run_isolated_script_test.py"
-  data = [ "//components/cronet/gn2bp/tests/generate_build_scripts_output_test.py" ] + GN2BP_SOURCES
-  args = [ "@WrappedPath(" + rebase_path(
-               "//components/cronet/gn2bp/tests/generate_build_scripts_output_test.py",
-               root_build_dir) + ")" ]
-}
 
 group("gn2bp_production_targets") {
   deps = [

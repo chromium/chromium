@@ -9,7 +9,6 @@ import copy
 import json
 import logging as log
 import os
-import pathlib  # noqa: F401
 import re
 import sys
 import shlex
@@ -84,13 +83,6 @@ def is_crubit_cpp_support_target(target_name):
     return target_name.startswith(CRUBIT_CPP_SUPPORT_TARGET)
 
 
-def repo_root():
-    """Returns an absolute path to the repository root."""
-    return os.path.join(
-        os.path.realpath(os.path.dirname(__file__)), os.path.pardir
-    )
-
-
 def _get_build_path_from_label(target_name: str) -> str:
     """Returns the path to the BUILD file for which this target was declared."""
     return target_name[2:].split(":")[0]
@@ -136,10 +128,6 @@ def label_to_path(label):
     """Turn a GN output label (e.g., //some_dir/file.cc) into a path."""
     assert label.startswith('//')
     return label[2:] or ""
-
-
-def _is_java_source(src):
-    return os.path.splitext(src)[1] == '.java' and not src.startswith("//out/")
 
 
 def _remove_out_prefix(label):
@@ -298,7 +286,6 @@ class GnParser:
                 self.include_dirs = set()
                 self.deps = set()
                 self.direct_deps = set()
-                self.direct_build_only_deps = set()
                 self.transitive_static_libs_deps = set()
                 self.ldflags = []
                 # These are valid only for type == 'action'
@@ -336,11 +323,9 @@ class GnParser:
             )
             self.type = gn_type
             self.testonly = False
-            self.toolchain = None
 
             # These are valid only for type == proto_library.
             self.proto_paths = set()
-            self.proto_exports = set()
             self.proto_in_dir = ""
 
             # TODO(primiano): consider whether the public section should be part of
@@ -359,7 +344,6 @@ class GnParser:
             # 'common' stores common architecture independent properties.
             self.common = self.Arch()
             self.arch = {}
-            self.build_only_deps = set()
 
             # This is used to get the name/version of libcronet
             self.output_name = None
@@ -528,12 +512,6 @@ class GnParser:
             for arg in action_desc.get('response_file_contents', [])
         )
 
-    def _is_java_group(self, type_, target_name):
-        # Per https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
-        # java target names must end in "_java".
-        # TODO: There are some other possible variations we might need to support.
-        return type_ == 'group' and target_name.endswith('_java')
-
     def _get_arch(self, toolchain):
         if toolchain == '//build/toolchain/android:android_clang_x86':
             return 'android_x86', 'x86'
@@ -570,8 +548,6 @@ class GnParser:
         gn_desc,
         gn_target_name,
         is_test_target=False,
-        custom_processor=None,
-        override_deps=None,
     ):
         """Parses a gn desc tree and resolves all target dependencies.
 
@@ -638,12 +614,8 @@ class GnParser:
 
         target.testonly = desc.get('testonly', False)
         deps = desc.get("deps", [])
-        build_only_deps = []
-        if custom_processor is not None:
-            custom_processor(target, desc, deps, build_only_deps)
-        elif target.type == 'proto_library':
+        if target.type == 'proto_library':
             target.proto_paths.update(self.get_proto_paths(desc))
-            target.proto_exports.update(self.get_proto_exports(desc))
             target.proto_in_dir = self.get_proto_in_dir(desc)
             target.arch[arch].sources.update(desc.get('sources', []))
             target.arch[arch].inputs.update(desc.get('inputs', []))
@@ -1074,24 +1046,12 @@ class GnParser:
             dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
             target.direct_jni_deps.add(dep.name)
 
-        if override_deps is not None:
-            deps = override_deps
-
         # Recurse in dependencies to ensure they are parsed, and collect direct deps.
         for gn_dep_name in sorted(set(deps)):
             dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
             target.arch[arch].direct_deps.add(dep.name)
 
-        for gn_dep_name in sorted(set(build_only_deps)):
-            dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
-            target.arch[arch].direct_build_only_deps.add(dep.name)
-
         return target
-
-    def get_proto_exports(self, proto_desc):
-        # exports in metadata will be available for source_set targets.
-        metadata = proto_desc.get('metadata', {})
-        return metadata.get('exports', [])
 
     def get_proto_paths(self, proto_desc):
         args = proto_desc.get('args')
@@ -1099,13 +1059,13 @@ class GnParser:
         for arg in args:
             is_match = re.match(PROTO_IMPORT_DIRS_REGEX, arg)
             if is_match:
-                proto_paths.add(re.sub('^\.\./\.\./', '', is_match.group(1)))
+                proto_paths.add(re.sub(r'^\.\./\.\./', '', is_match.group(1)))
         return proto_paths
 
     def get_proto_in_dir(self, proto_desc):
         args = proto_desc.get('args')
         return re.sub(
-            '^\.\./\.\./',
+            r'^\.\./\.\./',
             '',
             CommandLineUtility(args).get_flag_value('--proto-in-dir'),
         )
@@ -1126,7 +1086,6 @@ class GnParser:
         all_direct_deps = set()
         for arch in target.arch.keys():
             all_direct_deps.update(target.arch[arch].direct_deps)
-            all_direct_deps.update(target.arch[arch].direct_build_only_deps)
         all_direct_deps.update(target.direct_jni_deps)
 
         for dep_name in sorted(all_direct_deps):
@@ -1145,9 +1104,7 @@ class GnParser:
         for arch in sorted(target.arch.keys()):
             arch_obj = target.arch[arch]
 
-            for dep_name in sorted(
-                arch_obj.direct_deps | arch_obj.direct_build_only_deps
-            ):
+            for dep_name in sorted(arch_obj.direct_deps):
                 if dep_name not in self.all_targets:
                     continue
 
@@ -1182,19 +1139,11 @@ class GnParser:
                 elif dep.type == "rust_executable":
                     arch_obj.deps.add(dep.name)
                 elif dep.type == 'java_library':
-                    if dep_name in arch_obj.direct_build_only_deps:
-                        # Chromium builds Java code against the unfiltered dependencies
-                        # (_java__header). This reproduces this behavior.
-                        target.build_only_deps.add(
-                            dep.unfiltered_java_target.name
-                        )
-                    else:
-                        target.common.deps.add(dep.name)
+                    target.common.deps.add(dep.name)
                     target.transitive_jni_java_sources.update(
                         dep.transitive_jni_java_sources
                     )
                 elif dep.type in [
-                    'rust_binary',
                     "rust_library",
                     "rust_proc_macro",
                     "rust_bindgen",

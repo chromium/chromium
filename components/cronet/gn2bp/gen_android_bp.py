@@ -4,20 +4,15 @@
 # found in the LICENSE file.
 
 import argparse
-import enum  # noqa: F401
 import itertools
 import json
 import logging as log
-import operator  # noqa: F401
 import os
 import re
 import sys
 import copy
-from typing import List, Dict, Iterable, Set, Tuple, Union  # noqa: F401
+from typing import List, Dict, Iterable, Set, Union
 from pathlib import Path
-import hashlib  # noqa: F401
-import shlex  # noqa: F401
-import collections  # noqa: F401
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 import gn_utils  # noqa: E402
@@ -42,32 +37,6 @@ REPOSITORY_ROOT = os.path.abspath(
 sys.path.insert(0, REPOSITORY_ROOT)
 
 import components.cronet.tools.utils as cronet_utils  # noqa: E402
-
-
-# Android equivalents for third-party libraries that the upstream project
-# depends on. This will be applied to normal and testing targets.
-def turn_off_allocator_shim_for_musl(module):
-    allocation_shim = (
-        "base/allocator/partition_allocator/shim/allocator_shim.cc"
-    )
-    allocator_shim_files = {
-        allocation_shim,
-        "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_glibc.cc",
-    }
-    module.srcs -= allocator_shim_files
-    for arch in module.target.values():
-        arch.srcs -= allocator_shim_files
-    module.target['android'].srcs.add(allocation_shim)
-    if gn_utils.TESTING_SUFFIX in module.name:
-        # allocator_shim_default_dispatch_to_glibc is only added to the __testing version of base
-        # since base_base__testing is compiled for host. When compiling for host. Soong compiles
-        # using glibc or musl(experimental). We currently only support compiling for glibc.
-        module.target['glibc'].srcs.update(allocator_shim_files)
-    else:
-        # allocator_shim_default_dispatch_to_glibc does not exist in the prod version of base
-        # `base_base` since this only compiles for android and bionic is used. Bionic is the equivalent
-        # of glibc but for android.
-        module.target['glibc'].srcs.add(allocation_shim)
 
 
 DEFAULT_CPP_STD_TARGET = "//components/cronet/android:cronet"
@@ -1364,11 +1333,6 @@ def main():
         help='JSON-formatted file containing output of build scripts broken down'
         + 'by architecture.',
         required=True,
-    )
-    parser.add_argument(
-        '--output',
-        help='Blueprint file to create',
-        default=os.path.join(gn_utils.repo_root(), 'Android.bp'),
     )
     parser.add_argument(
         '-v',

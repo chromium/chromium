@@ -4,8 +4,6 @@
 
 from typing import Optional
 
-import gn_utils  # noqa: F401
-
 
 class Override:
     def apply(self, target):
@@ -134,17 +132,8 @@ class TranslationContext:
                     },
                 )
             ],
-            '//net/third_party/quiche:net_quic_test_tools_proto_gen#h#testing': [
-                AppendSet(
-                    'export_include_dirs',
-                    {
-                        "net/third_party/quiche/src",
-                    },
-                )
-            ],
-            # TODO: fix upstream. Both //base:base and
-            # //base/allocator/partition_allocator:partition_alloc do not create a
-            # dependency on gtest despite using gtest_prod.h.
+            # TODO: fix upstream. //base:base does not create a dependency on
+            # gtest despite using gtest_prod.h.
             '//base:base': [
                 AppendSet(
                     'header_libs',
@@ -154,14 +143,6 @@ class TranslationContext:
                 ),
                 AppendSet(
                     'export_header_lib_headers',
-                    {
-                        'libgtest_prod_headers',
-                    },
-                ),
-            ],
-            '//base/allocator/partition_allocator:partition_alloc': [
-                AppendSet(
-                    'header_libs',
                     {
                         'libgtest_prod_headers',
                     },
@@ -215,46 +196,12 @@ class TranslationContext:
                 )
             ],
             # TODO(b/324872305): Remove when gn desc expands public_configs and update code to propagate the
-            # include_dir from the public_configs
-            # We had to add the export_include_dirs for each target because soong generates each header
-            # file in a specific directory named after the target.
-            '//base/allocator/partition_allocator/src/partition_alloc:chromecast_buildflags': [
-                AppendSet(
-                    'export_include_dirs',
-                    {
-                        "base/allocator/partition_allocator/src/",
-                    },
-                )
-            ],
-            '//base/allocator/partition_allocator/src/partition_alloc:chromeos_buildflags': [
-                AppendSet(
-                    'export_include_dirs',
-                    {
-                        "base/allocator/partition_allocator/src/",
-                    },
-                )
-            ],
-            '//base/allocator/partition_allocator/src/partition_alloc:debugging_buildflags': [
-                AppendSet(
-                    'export_include_dirs',
-                    {
-                        "base/allocator/partition_allocator/src/",
-                    },
-                )
-            ],
+            # include_dir from the public_configs.
             '//base/allocator/partition_allocator/src/partition_alloc:buildflags': [
                 AppendSet(
                     'export_include_dirs',
                     {
                         ".",
-                        "base/allocator/partition_allocator/src/",
-                    },
-                )
-            ],
-            '//base/allocator/partition_allocator/src/partition_alloc:raw_ptr_buildflags': [
-                AppendSet(
-                    'export_include_dirs',
-                    {
                         "base/allocator/partition_allocator/src/",
                     },
                 )
@@ -289,21 +236,6 @@ class TranslationContext:
                         "third_party/perfetto/build_config/",
                     },
                 )
-            ],
-            # See https://crbug.com/517894073#comment5
-            '//third_party/boringssl:raw_bssl_sys_bindings': [
-                AppendSet(
-                    'export_include_dirs',
-                    {
-                        "third_party/boringssl/src/include",
-                    },
-                ),
-                AppendSet(
-                    'local_include_dirs',
-                    {
-                        "third_party/boringssl/src/include",
-                    },
-                ),
             ],
             # TODO: https://crbug.com/418746360 - Handle //base:build_date_internal
             # for os:linux_glibc.

@@ -116,6 +116,3 @@ class CommandLineUtility:
 
     def set_arg_at(self, position: int, value: str):
         self._args[position] = value
-
-    def update_arg_at(self, position: int, func):
-        self._args[position] = func(self._args[position])

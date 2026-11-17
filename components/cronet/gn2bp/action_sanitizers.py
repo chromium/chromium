@@ -5,9 +5,7 @@
 import os
 import re
 import copy
-import operator  # noqa: F401
 import shlex
-from typing import List, Dict, Set, Union  # noqa: F401
 
 import gn_utils
 import soong_ast
@@ -52,7 +50,7 @@ class BaseActionSanitizer:
     def _sanitize_filepath(self, filepath):
         # Careful, order matters!
         # delete all leading ../
-        filepath = re.sub('^(\.\./)+', '', filepath)
+        filepath = re.sub(r'^(\.\./)+', '', filepath)
         filepath = re.sub('^gen/jni_headers', '$(genDir)', filepath)
         filepath = re.sub('^gen', '$(genDir)', filepath)
         return filepath
@@ -160,16 +158,7 @@ class BaseActionSanitizer:
         return any(os.path.splitext(it)[1] == '.h' for it in self.get_outputs())
 
 
-class GenerateCanonicalLocalesListSanitizer(BaseActionSanitizer):
-    def _sanitize_args(self):
-        self.args.set_arg_at(0, '$(out)')
-        super()._sanitize_args()
-
-    def is_header_generated(self):
-        return True
-
-
-class GenerateKnownBcp47SubtagsSanitizer(BaseActionSanitizer):
+class GenerateI18nHeaderSanitizer(BaseActionSanitizer):
     def _sanitize_args(self):
         self.args.set_arg_at(0, '$(out)')
         super()._sanitize_args()
@@ -359,12 +348,6 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
             file for file in tool_files if not file.endswith('bin/javap')
         }
 
-        # TODO: Remove once https://chromium-review.googlesource.com/c/chromium/src/+/5370266 has made
-        #       its way to AOSP
-        # Files not specified in anywhere but jni_generator.py imports this file
-        tool_files.add('third_party/jni_zero/codegen/header_common.py')
-        tool_files.add('third_party/jni_zero/codegen/placeholder_java_type.py')
-
         return tool_files
 
     def get_tools(self):
@@ -518,15 +501,6 @@ d = {"java_files": [f"../{sys.argv[1]}/{f}" for f in sys.argv[2:]]}
 
         return self.get_pre_cmd() + base_cmd
 
-    def get_tool_files(self):
-        tool_files = super().get_tool_files()
-        # TODO: Remove once https://chromium-review.googlesource.com/c/chromium/src/+/5370266 has made
-        #       its way to AOSP
-        # Files not specified in anywhere but jni_generator.py imports this file
-        tool_files.add('third_party/jni_zero/codegen/header_common.py')
-        tool_files.add('third_party/jni_zero/codegen/placeholder_java_type.py')
-        return tool_files
-
 
 class JavaJniRegistrationGeneratorSanitizer(JniRegistrationGeneratorSanitizer):
     def get_name(self):
@@ -555,7 +529,7 @@ class VersionSanitizer(BaseActionSanitizer):
         return tool_files
 
 
-class JavaCppEnumSanitizer(BaseActionSanitizer):
+class JavaCppCodegenSanitizer(BaseActionSanitizer):
     def _sanitize_args(self):
         self.args.update_all_args(self._sanitize_filepath_with_location_tag)
         self.args.set_flag_value('--srcjar', '$(out)')
@@ -571,20 +545,6 @@ class MakeDafsaSanitizer(BaseActionSanitizer):
     def _sanitize_args(self):
         self.args.update_all_args(self._sanitize_filepath_with_location_tag)
         self.args.update_all_args(self._sanitize_filepath)
-        super()._sanitize_args()
-
-
-class JavaCppFeatureSanitizer(BaseActionSanitizer):
-    def _sanitize_args(self):
-        self.args.update_all_args(self._sanitize_filepath_with_location_tag)
-        self.args.set_flag_value('--srcjar', '$(out)')
-        super()._sanitize_args()
-
-
-class JavaCppStringSanitizer(BaseActionSanitizer):
-    def _sanitize_args(self):
-        self.args.update_all_args(self._sanitize_filepath_with_location_tag)
-        self.args.set_flag_value('--srcjar', '$(out)')
         super()._sanitize_args()
 
 
@@ -696,10 +656,11 @@ def get_action_sanitizer(
         return PerfettoWriteBuildFlagHeaderSanitizer(target, arch, context)
     if target.script == "//base/write_build_date_header.py":
         return WriteBuildDateHeaderSanitizer(target, arch, context)
-    if target.script == "//tools/i18n/generate_canonical_locales_list.py":
-        return GenerateCanonicalLocalesListSanitizer(target, arch, context)
-    if target.script == "//tools/i18n/generate_known_bcp47_subtags.py":
-        return GenerateKnownBcp47SubtagsSanitizer(target, arch, context)
+    if target.script in (
+        "//tools/i18n/generate_canonical_locales_list.py",
+        "//tools/i18n/generate_known_bcp47_subtags.py",
+    ):
+        return GenerateI18nHeaderSanitizer(target, arch, context)
     if (
         target.script
         == "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py"
@@ -709,14 +670,14 @@ def get_action_sanitizer(
         )
     if target.script == "//build/util/version.py":
         return VersionSanitizer(target, arch, context)
-    if target.script == "//build/android/gyp/java_cpp_enum.py":
-        return JavaCppEnumSanitizer(target, arch, context)
+    if target.script in (
+        "//build/android/gyp/java_cpp_enum.py",
+        "//build/android/gyp/java_cpp_features.py",
+        "//build/android/gyp/java_cpp_strings.py",
+    ):
+        return JavaCppCodegenSanitizer(target, arch, context)
     if target.script == "//net/tools/dafsa/make_dafsa.py":
         return MakeDafsaSanitizer(target, arch, context)
-    if target.script == '//build/android/gyp/java_cpp_features.py':
-        return JavaCppFeatureSanitizer(target, arch, context)
-    if target.script == '//build/android/gyp/java_cpp_strings.py':
-        return JavaCppStringSanitizer(target, arch, context)
     if target.script == '//build/android/gyp/write_native_libraries_java.py':
         return WriteNativeLibrariesJavaSanitizer(target, arch, context)
     if target.script == '//cp':

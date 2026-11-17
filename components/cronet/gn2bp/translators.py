@@ -8,7 +8,7 @@ import copy
 import shlex
 import hashlib
 from pathlib import Path
-from typing import List, Dict, Set, Union, Iterable  # noqa: F401
+from typing import List, Dict, Set, Union
 
 import gn_utils
 import build.gn_helpers
@@ -1186,7 +1186,7 @@ def _extract_version_script(ldflags):
         if flag.startswith("-Wl,--version-script="):
             # Everything after the = is the path and delete all leading ../
             new_version_script = re.sub(
-                '^(\.\./)+', '', flag.split("=", maxsplit=2)[1]
+                r'^(\.\./)+', '', flag.split("=", maxsplit=2)[1]
             )
             assert version_script is None, (
                 f"Found two different version scripts for a single target! First script: {version_script}, Second script: {new_version_script}"
@@ -1435,10 +1435,6 @@ def create_aidl_module(
 # The benefit of using |translation_config.replace_deps| over |translation_config.builtin_deps| is that some of the module's
 # attributes can be reused / copied as the module is created in memory. unlike |translation_config.builtin_deps|
 # which never visits the target itself.
-
-
-def get_target_name(label):
-    return label[label.find(":") + 1 :]
 
 
 def normalize_rust_flags(
@@ -2251,8 +2247,6 @@ def _resolve_dependencies(
                             dep_module.genrule_headers
                         )
                 module_target.srcs.update(dep_module.genrule_srcs)
-                module_target.shared_libs.update(dep_module.genrule_shared_libs)
-                module_target.header_libs.update(dep_module.genrule_header_libs)
             elif dep_module.is_java_top_level_module():
                 # A module depending on a module with system_current sdk version should also compile against
                 # the system sdk. This is because a module's SDK API surface should be >= its deps SDK API surface.
