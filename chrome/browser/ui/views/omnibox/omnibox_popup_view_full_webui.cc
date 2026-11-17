@@ -98,11 +98,14 @@ void OmniboxPopupViewFullWebUI::BlurOmnibox(
       edit_model->has_temporary_text()) {
     edit_model->AcceptTemporaryTextAsUserText();
   }
-  edit_model->RevertUneditedText();
 
+  // Blur the popup view before reverting, so that it saves the selection the
+  // user had, like `OmniboxViewViews::OnBlur()`.
   if (OmniboxPopupView* popup_view = edit_model->popup_view()) {
     popup_view->OnBlur();
   }
+
+  edit_model->RevertUneditedText();
 
   move_focus();
   edit_model->OnKillFocus();
@@ -154,10 +157,10 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIImpl(
       user_input_in_progress ? edit_model->user_text() : permanent_display_text;
   bool focus = edit_model->has_focus();
   const std::u16string full_url = controller()->client()->GetFormattedFullURL();
-  const bool should_show_full_url =
+  bool should_show_full_url =
       show_full_url && !user_input_in_progress && !full_url.empty();
-  // Default to select-all on permanent URLs (so focusing or refocusing selects
-  // all text, and empty text defaults to Range(0, 0)).
+  // Default to select-all on permanent URLs when there's no saved, native or
+  // WebUI selection to keep below (empty text defaults to Range(0, 0)).
   gfx::Range selection(
       0, should_show_full_url ? full_url.length() : text.length());
 
@@ -190,10 +193,21 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIImpl(
       native_selection.IsValid() && !native_selection.is_empty() &&
       native_selection.GetMax() <= max_selection_length;
 
-  // When `should_show_full_url` is true (e.g. Ctrl+L / Cmd+L), keep the full
-  // URL selected rather than restoring a prior native or WebUI selection.
-  if (!should_show_full_url && has_native_highlight &&
-      native_selection != last_consumed_native_selection_) {
+  // Restore the selection saved when the omnibox was blurred, like
+  // `OmniboxViewViews::OnFocus()`. Otherwise, when `should_show_full_url` is
+  // true (e.g. Ctrl+L / Cmd+L), keep the full URL selected rather than
+  // restoring a prior native or WebUI selection.
+  if (focus && saved_selection_for_focus_change_.IsValid()) {
+    selection = gfx::Range(std::min(saved_selection_for_focus_change_.start(),
+                                    max_selection_length),
+                           std::min(saved_selection_for_focus_change_.end(),
+                                    max_selection_length));
+    should_show_full_url = saved_show_full_url_for_focus_change_ &&
+                           !user_input_in_progress && !full_url.empty();
+    saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
+    saved_show_full_url_for_focus_change_ = false;
+  } else if (!should_show_full_url && has_native_highlight &&
+             native_selection != last_consumed_native_selection_) {
     // The native view has a highlight we have not handed off yet (e.g. from
     // mouse dragging or double-clicking in Views), so preserve the exact
     // selection range. Record it so that later syncs, which would still see
@@ -209,11 +223,15 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUIImpl(
                     ? handler_selection
                     : gfx::Range(text.length(), text.length());
   } else if (!should_show_full_url && is_handler_selection_valid &&
-             !handler_selection.is_empty()) {
+             (!handler_selection.is_empty() ||
+              (focus && last_sent_focus_.value_or(false)))) {
     // For permanent URLs without native selection, if WebUI already has a valid
     // non-empty selection range (e.g. from user highlighting text in WebUI),
-    // preserve it.
+    // preserve it. While the omnibox stays focused, also preserve a caret, as
+    // `OmniboxViewViews` keeps its selection while focused. Keep whether the
+    // URL is unelided too, since the selection is relative to it.
     selection = handler_selection;
+    should_show_full_url = popup_handler->show_full_url() && !full_url.empty();
   }
 
   // Restore the selection the omnibox had before a modal dialog blurred it, if
@@ -261,12 +279,23 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
   bool logically_focused = edit_model->has_focus();
 
   // The text input lives in WebUI, so the native view hierarchy does not
-  // track selection. Fetch it from the WebUI handler.
+  // track selection. Fetch it from the WebUI handler, unless it hasn't been
+  // sent this tab's state yet (e.g. while a new window's WebUI loads), in which
+  // case keep the selection restored from the tab, as `OmniboxViewViews` does.
   gfx::Range selection;
   bool show_full_url = false;
-  if (auto* popup_handler = GetPopupHandler()) {
+  gfx::Range saved_selection = saved_selection_for_focus_change_;
+  auto* popup_handler = GetPopupHandler();
+  if (popup_handler && last_sent_text_) {
     selection = popup_handler->latest_selection();
     show_full_url = popup_handler->show_full_url();
+  } else if (const auto* existing_state = static_cast<OmniboxState*>(
+                 tab->GetUserData(OmniboxTabHelper::kOmniboxStateKey))) {
+    selection = existing_state->selection;
+    show_full_url = existing_state->show_full_url;
+  }
+  if (!logically_focused && saved_selection.IsValid()) {
+    show_full_url = saved_show_full_url_for_focus_change_;
   }
 
   // If the user cleared the Omnibox, we should not preserve the empty draft
@@ -295,19 +324,16 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
     // we must select-all on restoration (since the permanent URL will be
     // restored).
     selection = gfx::Range(0, permanent_text.length());
+    saved_selection = gfx::Range::InvalidRange();
+    show_full_url = false;
     // Force `user_input_in_progress` to false to trigger a revert
     // to the permanent URL on restoration.
     state->user_input_in_progress = false;
   }
 
-  // WebUI retains selection across focus changes, so we only need to sync
-  // the active selection. `saved_selection_for_focus_change` is unused.
-  tab->SetUserData(
-      OmniboxTabHelper::kOmniboxStateKey,
-      std::make_unique<OmniboxState>(
-          *state, selection,
-          /*saved_selection_for_focus_change=*/gfx::Range::InvalidRange(),
-          show_full_url));
+  tab->SetUserData(OmniboxTabHelper::kOmniboxStateKey,
+                   std::make_unique<OmniboxState>(
+                       *state, selection, saved_selection, show_full_url));
 }
 
 void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
@@ -322,10 +348,6 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   // waiting for the WebUI's `stopAutocomplete` IPC.
   controller()->StopAutocomplete(/*clear_result=*/true);
 
-  // TODO(b:544433912) Consider removing or fixing `target_popup_state` logic as
-  //   it doesn't seem to be opening the popup as it intends, nor is it clear if
-  //   it even should.
-  OmniboxPopupState target_popup_state;
   auto* state = static_cast<OmniboxState*>(
       contents->GetUserData(OmniboxTabHelper::kOmniboxStateKey));
   bool should_focus_popup = false;
@@ -342,39 +364,29 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   // is drawn again.
   const bool can_show_popup = !location_bar() || location_bar()->IsDrawn();
 
-  if (state) {
-    // Restore the saved state for the tab.
-    controller()->edit_model()->RestoreState(&state->model_state);
+  // Restore the selection saved when the tab's omnibox was blurred, like
+  // `OmniboxViewViews::OnTabChanged()`.
+  saved_selection_for_focus_change_ =
+      state ? state->saved_selection_for_focus_change
+            : gfx::Range::InvalidRange();
+  saved_show_full_url_for_focus_change_ =
+      saved_selection_for_focus_change_.IsValid() && state->show_full_url;
+  // `OmniboxViewViews::OnTabChanged()` also applies the tab's selection to the
+  // view. If the WebUI can't be sent it yet (e.g. in a new window whose WebUI
+  // is still loading), hold onto it so the first sync once the WebUI is ready
+  // applies it rather than selecting all.
+  if (state && !IsPopupHandlerReady() &&
+      !saved_selection_for_focus_change_.IsValid()) {
+    saved_selection_for_focus_change_ = state->selection;
+    saved_show_full_url_for_focus_change_ = state->show_full_url;
+  }
 
-    // Only request native keyboard focus for the omnibox
-    // popup if it was logically focused when the user switched tabs.
+  if (state) {
+    // Restore the saved state for the tab, and only focus the popup if the
+    // omnibox was logically focused when the user switched tabs.
+    controller()->edit_model()->RestoreState(&state->model_state);
     should_focus_popup =
         can_show_popup && state->model_state.focus_state != OMNIBOX_FOCUS_NONE;
-
-    // The popup must be visible (`OmniboxPopupState::kFull`) if there is an
-    // active draft or if the omnibox should have visible focus, and the popup
-    // is initialized and ready.
-    target_popup_state =
-        IsPopupHandlerReady() && can_show_popup &&
-                (non_empty_user_input_in_progress || should_focus_popup)
-            ? OmniboxPopupState::kFull
-            : OmniboxPopupState::kNone;
-
-    // Set popup state before setting focus state to avoid focus ring flicker.
-    controller()->popup_state_manager()->SetPopupState(target_popup_state);
-
-    // Prevent focus state leaks by explicitly syncing the `OmniboxEditModel`'s
-    // focus state with the restored state of the newly active tab.
-    if (should_focus_popup) {
-      if (!is_first_tab_changed) {
-        TRACE_EVENT_INSTANT0(
-            "omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged:OnSetFocus",
-            TRACE_EVENT_SCOPE_THREAD);
-      }
-      controller()->edit_model()->OnSetFocus(/*control_down=*/false);
-    } else {
-      controller()->edit_model()->OnKillFocus();
-    }
   } else {
     // No saved state. Revert the edit model and check if the tab should focus
     // the location bar by default (e.g., New Tab Page).
@@ -382,24 +394,36 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     controller()->edit_model()->OnChanged();
     should_focus_popup =
         can_show_popup && contents->FocusLocationBarByDefault();
-    // Only transition to `kFull` if the popup is initialized and ready.
-    // Otherwise, maintain `kNone` until `OnPopupHandlerReady()` is called.
-    target_popup_state = IsPopupHandlerReady() && should_focus_popup
-                             ? OmniboxPopupState::kFull
-                             : OmniboxPopupState::kNone;
-    // Set popup state before setting focus state to avoid focus ring flicker.
-    controller()->popup_state_manager()->SetPopupState(target_popup_state);
+  }
 
-    if (should_focus_popup) {
-      if (!is_first_tab_changed) {
-        TRACE_EVENT_INSTANT0(
-            "omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged:OnSetFocus",
-            TRACE_EVENT_SCOPE_THREAD);
-      }
-      controller()->edit_model()->OnSetFocus(/*control_down=*/false);
-    } else {
-      controller()->edit_model()->OnKillFocus();
+  // TODO(b:544433912) Consider removing or fixing `target_popup_state` logic as
+  //   it doesn't seem to be opening the popup as it intends, nor is it clear if
+  //   it even should.
+  //
+  // The popup must be visible (`OmniboxPopupState::kFull`) if there is an
+  // active draft or if the omnibox should have visible focus, and the popup is
+  // initialized and ready. Otherwise, keep it closed. If the native omnibox has
+  // focus while the WebUI loads (e.g. on a new NTP),
+  // `LocationBarView::OnFullWebUiOmniboxReady()` opens it once ready.
+  const OmniboxPopupState target_popup_state =
+      IsPopupHandlerReady() && can_show_popup &&
+              (non_empty_user_input_in_progress || should_focus_popup)
+          ? OmniboxPopupState::kFull
+          : OmniboxPopupState::kNone;
+
+  // Set popup state before setting focus state to avoid focus ring flicker.
+  controller()->popup_state_manager()->SetPopupState(target_popup_state);
+
+  // Prevent focus state leaks by explicitly syncing the `OmniboxEditModel`'s
+  // focus state with the restored state of the newly active tab.
+  if (should_focus_popup) {
+    if (!is_first_tab_changed) {
+      TRACE_EVENT_INSTANT("omnibox",
+                          "OmniboxPopupViewFullWebUI::OnTabChanged:OnSetFocus");
     }
+    controller()->edit_model()->OnSetFocus(/*control_down=*/false);
+  } else {
+    controller()->edit_model()->OnKillFocus();
   }
 
   // Keep `focused_` in sync with the tab's target focus state. When switching
@@ -451,7 +475,8 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
         controller()->edit_model()->GetPermanentDisplayText();
     std::u16string text =
         non_empty_user_input_in_progress ? user_text : permanent_display_text;
-    bool show_full_url = state ? state->show_full_url : false;
+    // Only show the unelided URL while focused.
+    bool show_full_url = state && should_focus_popup && state->show_full_url;
     const std::u16string full_url =
         controller()->client()->GetFormattedFullURL();
     gfx::Range selection =
@@ -506,10 +531,19 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps,
         ->CancelPendingContextMenuRequest();
   }
   focused_ = true;
+  // An explicit select-all, zero-prefix query or unelide replaces the
+  // selection saved on blur, like `OmniboxViewViews::OnFocus()` on focus
+  // traversal.
+  if (query_zps || select_all || show_full_url) {
+    saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
+    saved_show_full_url_for_focus_change_ = false;
+  }
+  const bool restore_saved_selection =
+      saved_selection_for_focus_change_.IsValid();
   bool changed = controller()->popup_state_manager()->popup_state() !=
                  OmniboxPopupState::kFull;
 
-  if (changed) {
+  if (changed || restore_saved_selection) {
     last_sent_text_.reset();
     last_sent_focus_.reset();
   }
@@ -549,7 +583,7 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps,
   // keyboard events route to the WebUI input field.
   popup_host()->RequestFocus();
 
-  if (changed) {
+  if (changed || restore_saved_selection) {
     SyncNativeStateToWebUIImpl(
         query_zps ? omnibox_popup::mojom::MatchesUpdate::kQueryZps
                   : omnibox_popup::mojom::MatchesUpdate::kDefault,
@@ -574,10 +608,26 @@ void OmniboxPopupViewFullWebUI::Blur() {
 }
 
 void OmniboxPopupViewFullWebUI::OnBlur() {
-  focused_ = false;
-  if (auto* popup_handler = GetPopupHandler()) {
-    popup_handler->SetFocus(false);
+  auto* popup_handler = GetPopupHandler();
+  // Save the selection to restore when the omnibox is focused again, like
+  // `OmniboxViewViews::OnBlur()`. Only the WebUI knows it, and only once it was
+  // sent this tab's state. Check the edit model too, since clicking into an
+  // open popup focuses the omnibox without `OnFocus()`.
+  if ((focused_ || controller()->edit_model()->has_focus()) && popup_handler &&
+      last_sent_text_) {
+    saved_selection_for_focus_change_ = popup_handler->latest_selection();
+    saved_show_full_url_for_focus_change_ = popup_handler->show_full_url();
   }
+  focused_ = false;
+  if (popup_handler) {
+    popup_handler->SetFocus(false);
+    last_sent_focus_ = false;
+  }
+}
+
+void OmniboxPopupViewFullWebUI::ClearSavedSelectionForFocusChange() {
+  saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
+  saved_show_full_url_for_focus_change_ = false;
 }
 
 bool OmniboxPopupViewFullWebUI::RequestWebUIContextMenu(
@@ -643,13 +693,19 @@ void OmniboxPopupViewFullWebUI::OnFullscreenTransitionStarting() {
 
 void OmniboxPopupViewFullWebUI::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  // A selection saved for the previous URL doesn't apply to the new one, even
+  // after a same-document navigation, as `OmniboxViewViews::RevertAll()` drops
+  // its saved selection whenever the URL changes.
+  ClearSavedSelectionForFocusChange();
   // Clicking into the page with a draft in the omnibox leaves the popup open,
   // unfocused, to show the draft (see OmniboxPopupFullPresenter::OnEvent()).
   // A later cross-document navigation of the page, e.g. clicking a link, ends
   // that edit session.
-  if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
+  if (navigation_handle->IsSameDocument()) {
     return;
   }
   // An unfocused draft is shown in the open popup, or kept in the edit model

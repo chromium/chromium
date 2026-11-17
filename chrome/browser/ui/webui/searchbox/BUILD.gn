@@ -366,6 +366,7 @@ if (enable_webui_ntp && !is_android) {
       "//third_party/blink/public/common:headers",
       "//ui/accessibility",
       "//ui/base",
+      "//ui/base:ozone_buildflags",
       "//ui/base/clipboard",
       "//ui/base/emoji",
       "//ui/events:test_support",
@@ -400,6 +401,9 @@ if (enable_webui_ntp && !is_android) {
         "//ui/aura",
         "//ui/aura:test_support",
       ]
+    }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
     }
   }
 }

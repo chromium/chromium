@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -99,9 +100,11 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_tray_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -184,6 +187,7 @@
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -247,6 +251,10 @@
 #include "chrome/browser/profiles/profile_test_util.h"  // nogncheck
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"  // nogncheck
 #include "chrome/browser/ui/signin/signin_view_controller.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 namespace {
@@ -2959,6 +2967,504 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                            "(el) => el && !el.dropdownIsVisible && "
                            "el.result === null && el.activeQueryId === -1"),
       WaitForOmniboxFocus(true));
+}
+
+// Tests that the Full WebUI omnibox restores focus and selection the same way
+// the Views omnibox does: whenever Views focus is restored to the location bar
+// (tab switches, tab drags), the popup opens with the selection saved when the
+// omnibox was blurred.
+class FullWebUIOmniboxFocusRestoreInteractiveTest
+    : public FullWebUIOmniboxInteractiveTest {
+ public:
+  FullWebUIOmniboxFocusRestoreInteractiveTest() {
+    // The tab drag helpers below use the horizontal `TabStrip`, as
+    // `TabDragControllerTest` does.
+    tab_strip_feature_list_.InitAndDisableFeature(tabs::kTabStripUnification);
+  }
+
+ protected:
+  // Returns the selection most recently reported by the WebUI.
+  std::optional<gfx::Range> GetPopupHandlerSelection() {
+    auto* popup_view = static_cast<OmniboxPopupViewFullWebUI*>(
+        BrowserWindow::FromBrowser(browser())
+            ->GetLocationBar()
+            ->GetOmniboxPopupView());
+    if (!popup_view || !popup_view->popup_handler_for_testing()) {
+      return std::nullopt;
+    }
+    return popup_view->popup_handler_for_testing()->latest_selection();
+  }
+
+  // Opens chrome://version in a focused omnibox at tab index 1, with
+  // about:blank at tab index 2, and selects `[start, end)` in the WebUI input.
+  auto SetUpTabsWithOmniboxSelection(int start, int end) {
+    return Steps(
+        OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+        UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),
+        AddInstrumentedTab(kTab2, GURL("about:blank")),
+        WaitForWebContentsReady(kTab2),
+        SwitchTabAndRestorePopup(kTabStripElementId, 1),
+        WaitForOmniboxFocus(true),
+        InAnyContext(ExecuteJsAt(
+            kPopupWebView, kWebUIInput,
+            base::StringPrintf("(el) => { el.setSelectionRange(%d, %d); "
+                               "el.dispatchEvent(new Event('selectionchange', "
+                               "{bubbles: true})); }",
+                               start, end))),
+        PollUntil(
+            [this, start, end]() {
+              return GetPopupHandlerSelection() == gfx::Range(start, end);
+            },
+            "WaitForSelection"));
+  }
+
+  // Waits for the popup to be focused with `[start, end)` selected.
+  auto WaitForRestoredSelection(int start, int end) {
+    return Steps(
+        UninstrumentWebContents(kPopupWebView),
+        InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+        InAnyContext(
+            InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+        WaitForOmniboxFocus(true),
+        InAnyContext(CheckWebUIInputSelection(start, end)));
+  }
+
+  // Returns false (after marking the test skipped) if tab dragging with a move
+  // loop can't be exercised.
+  bool CanTestTabDragging() {
+    if (IsWebUIToolbarEnabled()) {
+      // TODO(b/586611488): Support the WebUI location bar.
+      return false;
+    }
+#if BUILDFLAG(IS_OZONE)
+    if (!ui::OzonePlatform::GetInstance()
+             ->GetPlatformProperties()
+             .supports_global_screen_coordinates) {
+      return false;
+    }
+#endif
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetWidget()
+        ->IsMoveLoopSupported();
+  }
+
+  // Presses on the tab at `tab_index` and drags it past the drag threshold.
+  TabDragController* StartTabDrag(int tab_index, gfx::Point* start_point) {
+    TabStrip* tab_strip = BrowserView::GetBrowserViewForBrowser(browser())
+                              ->horizontal_tab_strip_for_testing();
+    Tab* tab = tab_strip->tab_at(tab_index);
+    *start_point = tab->GetBoundsInScreen().CenterPoint();
+    ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(),
+                         *start_point, base::TimeTicks::Now(),
+                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+    tab_strip->MaybeStartDrag(tab, press, tab_strip->GetSelectionModel());
+    TabDragController* controller =
+        tab_strip->GetDragContext()->GetDragController();
+    EXPECT_TRUE(controller);
+    EXPECT_EQ(TabDragController::Liveness::kAlive,
+              controller->Drag(*start_point + gfx::Vector2d(20, 0)));
+    return controller;
+  }
+
+  // Returns the browser other than `browser()`, if any.
+  BrowserWindowInterface* GetOtherBrowser() {
+    BrowserWindowInterface* other = nullptr;
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [&](BrowserWindowInterface* candidate) {
+          if (candidate != browser()) {
+            other = candidate;
+            return false;
+          }
+          return true;
+        });
+    return other;
+  }
+
+  // Selects [2, 7) in a focused omnibox, drags the tab out into a new window
+  // and back into its tab strip, and checks that the selection is restored. If
+  // `wait_for_dragged_webui`, drags back only once the new window's WebUI has
+  // loaded and synced the tab's state.
+  void DragTabOutAndBackAndCheckSelection(bool wait_for_dragged_webui) {
+    DragTabOutAndBackAndCheck(SetUpTabsWithOmniboxSelection(2, 7),
+                              WaitForRestoredSelection(2, 7),
+                              wait_for_dragged_webui);
+  }
+
+  // Runs `set_up` (which leaves tab index 1 active), drags the tab out into a
+  // new window and back into its tab strip, and runs `check` once the dragged
+  // window has closed. If `wait_for_dragged_webui`, drags back only once the
+  // new window's WebUI has loaded and synced the tab's state. If
+  // `expect_focus_restored`, the omnibox was focused before the drag and its
+  // focus is restored before `check` runs (see below).
+  void DragTabOutAndBackAndCheck(MultiStep set_up,
+                                 MultiStep check,
+                                 bool wait_for_dragged_webui,
+                                 bool expect_focus_restored = true) {
+    RunTestSequence(std::move(set_up));
+
+    gfx::Point start_point;
+    TabDragController* controller = StartTabDrag(1, &start_point);
+    ASSERT_TRUE(controller);
+
+    // Dragging out of the tab strip runs a nested move loop for the new
+    // window. Drag back into the source tab strip once the new window is ready,
+    // which exits the loop and reattaches the tab. If
+    // `wait_for_dragged_webui`, it's ready once its WebUI has been sent the
+    // tab's state.
+    auto is_ready = [&]() {
+      BrowserWindowInterface* dragged_browser = GetOtherBrowser();
+      if (!dragged_browser || !wait_for_dragged_webui) {
+        return !!dragged_browser;
+      }
+      auto* popup_view = static_cast<OmniboxPopupViewFullWebUI*>(
+          BrowserWindow::FromBrowser(dragged_browser)
+              ->GetLocationBar()
+              ->GetOmniboxPopupView());
+      return popup_view && popup_view->IsPopupHandlerReady() &&
+             popup_view->has_sent_state_for_testing();
+    };
+    bool did_reattach = false;
+    auto drag_back = [&]() {
+      did_reattach = true;
+      ASSERT_EQ(TabDragController::Liveness::kAlive,
+                controller->Drag(start_point));
+    };
+    bool move_loop_done = false;
+    base::RepeatingClosure reattach;
+    reattach = base::BindLambdaForTesting([&]() {
+      if (did_reattach || move_loop_done || !TabDragController::IsActive()) {
+        return;
+      }
+      if (!is_ready()) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                                    reattach);
+        return;
+      }
+      drag_back();
+    });
+    controller->SetDragLoopDoneCallbackForTesting(
+        base::BindLambdaForTesting([&]() {
+          move_loop_done = true;
+          if (did_reattach || !TabDragController::IsActive()) {
+            return;
+          }
+          // Without a real mouse press, the move loop can end right away (e.g.
+          // on Windows and ChromeOS), and the drag ends once this returns. Wait
+          // for the new window here instead.
+          ASSERT_TRUE(base::test::RunUntil(is_ready));
+          drag_back();
+        }));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                                reattach);
+    ASSERT_EQ(TabDragController::Liveness::kAlive,
+              controller->Drag(start_point + gfx::Vector2d(20, 200)));
+    EndTabDrag();
+
+    // The source window can briefly lose activation as the dragged window
+    // closes. On macOS, reactivation restores the location bar, which reopens
+    // the popup. On Aura, reactivation focuses the page instead (see
+    // `OmniboxPopupFullPresenter::BlurForWindowDeactivation()`), or, if it
+    // comes before the deactivation blurs the omnibox, leaves the omnibox
+    // focused with the popup inactive. Restore the location bar's focus the
+    // same way here.
+    // TODO(b/567944511): Remove once Aura restores omnibox focus on
+    // reactivation.
+    RunTestSequence(
+        PollUntil(
+            [this]() {
+              return !GetOtherBrowser() && IsBrowserOrPopupActive(browser());
+            },
+            "WaitForDraggedWindowClosed"),
+        Do([this, expect_focus_restored]() {
+          content::RunAllTasksUntilIdle();
+          if (!expect_focus_restored) {
+            return;
+          }
+          auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+          views::Widget* popup_widget = GetPopupWidget(browser());
+          if (!GetOmniboxControllerForTest()->edit_model()->has_focus()) {
+            browser_view->GetFocusManager()->SetFocusedViewWithReason(
+                browser_view->GetLocationBarView(),
+                views::FocusManager::FocusChangeReason::kFocusRestore);
+          } else if (!popup_widget || !popup_widget->IsActive()) {
+            browser_view->GetLocationBarView()->FocusLocation(
+                /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
+          }
+        }),
+        std::move(check));
+  }
+
+  // Ends the drag in progress in the source tab strip, if any.
+  void EndTabDrag() {
+    TabStrip* tab_strip = BrowserView::GetBrowserViewForBrowser(browser())
+                              ->horizontal_tab_strip_for_testing();
+    if (TabDragController* controller =
+            tab_strip->GetDragContext()->GetDragController()) {
+      controller->EndDrag(EndDragReason::kComplete);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList tab_strip_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxFocusRestoreInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUIToolbarEnabled"
+                                             : "WebUIToolbarDisabled";
+                         });
+
+// Verifies that switching away from a tab with a focused omnibox and back
+// restores focus and the exact selection.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       TabSwitchRestoresSelection) {
+  RunTestSequence(
+      SetUpTabsWithOmniboxSelection(2, 7), SelectTab(kTabStripElementId, 2),
+      WaitForPopupTransitionLockout(), SelectTab(kTabStripElementId, 1),
+      WaitForRestoredSelection(2, 7));
+}
+
+// Verifies that restoring focus to the location bar after the omnibox was
+// blurred (e.g. on window reactivation) reopens the popup with the selection
+// saved on blur, as `OmniboxViewViews::OnFocus()` does.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       FocusRestoreAfterBlurRestoresSelection) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/586611488): Support the WebUI location bar.";
+  }
+  RunTestSequence(
+      SetUpTabsWithOmniboxSelection(2, 7),
+      UninstrumentWebContents(kPopupWebView), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), WaitForEditModelFocus(false), Do([this]() {
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        browser_view->GetFocusManager()->SetFocusedViewWithReason(
+            browser_view->GetLocationBarView(),
+            views::FocusManager::FocusChangeReason::kFocusRestore);
+      }),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForOmniboxFocus(true), InAnyContext(CheckWebUIInputSelection(2, 7)));
+}
+
+// Verifies that a selection made in the native omnibox after blurring (e.g. a
+// drag-select handed off by `LocationBarView::OpenOmniboxPopup()`) replaces
+// the selection saved on blur, as a click does in the Views omnibox.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       NativeSelectionAfterBlurReplacesSavedSelection) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/586611488): Support the WebUI location bar.";
+  }
+  RunTestSequence(
+      SetUpTabsWithOmniboxSelection(5, 5),
+      UninstrumentWebContents(kPopupWebView), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), WaitForEditModelFocus(false),
+      WaitForPopupTransitionLockout(), Do([this]() {
+        auto* location_bar_view =
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetLocationBarView();
+        location_bar_view->omnibox_view()->SetSelectionBounds(gfx::Range(0, 6));
+        location_bar_view->OpenOmniboxPopup(/*query_zps=*/false);
+      }),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForOmniboxFocus(true), InAnyContext(CheckWebUIInputSelection(0, 6)));
+}
+
+// Verifies that navigating while the omnibox is blurred drops the selection
+// saved for the previous page, so restoring focus selects all of the new URL,
+// as `OmniboxViewViews::RevertAll()` does.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       NavigationAfterBlurDropsSavedSelection) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/586611488): Support the WebUI location bar.";
+  }
+  const std::string new_text = "chrome://credits";
+  RunTestSequence(
+      SetUpTabsWithOmniboxSelection(2, 7),
+      UninstrumentWebContents(kPopupWebView), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), WaitForEditModelFocus(false),
+      NavigateWebContents(kTab1, GURL("chrome://credits/")),
+      WaitForPopupTransitionLockout(), Do([this]() {
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        browser_view->GetFocusManager()->SetFocusedViewWithReason(
+            browser_view->GetLocationBarView(),
+            views::FocusManager::FocusChangeReason::kFocusRestore);
+      }),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForOmniboxFocus(true), WaitForWebUIInputValue(new_text),
+      InAnyContext(CheckWebUIInputSelection(0, new_text.length())));
+}
+
+// Verifies that a same-document navigation while the omnibox is blurred also
+// drops the selection saved for the previous URL, as `OmniboxViewViews` reverts
+// whenever the URL changes.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       SameDocumentNavigationAfterBlurDropsSavedSelection) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/586611488): Support the WebUI location bar.";
+  }
+  auto permanent_text = [this]() {
+    return GetOmniboxControllerForTest()
+        ->edit_model()
+        ->GetPermanentDisplayText();
+  };
+  RunTestSequence(
+      SetUpTabsWithOmniboxSelection(2, 7),
+      UninstrumentWebContents(kPopupWebView), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), WaitForEditModelFocus(false),
+      ExecuteJs(kTab1, "() => { location.hash = 'same-document'; }"),
+      PollUntil(
+          [permanent_text]() {
+            return permanent_text().find(u"same-document") !=
+                   std::u16string::npos;
+          },
+          "WaitForSameDocumentUrl"),
+      WaitForPopupTransitionLockout(), Do([this]() {
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        browser_view->GetFocusManager()->SetFocusedViewWithReason(
+            browser_view->GetLocationBarView(),
+            views::FocusManager::FocusChangeReason::kFocusRestore);
+      }),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForOmniboxFocus(true),
+      PollUntil(
+          [this, permanent_text]() {
+            return GetPopupHandlerSelection() ==
+                   gfx::Range(0, permanent_text().length());
+          },
+          "WaitForSelectAll"));
+}
+
+// Verifies that a non-user-initiated `FocusLocation()` while the omnibox is
+// blurred (e.g. after closing the page info bubble) selects all, as
+// `OmniboxViewViews::SetFocus()` does, rather than restoring the selection
+// saved on blur.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       NonUserInitiatedFocusLocationAfterBlurSelectsAll) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/586611488): Support the WebUI location bar.";
+  }
+  RunTestSequence(
+      SetUpTabsWithOmniboxSelection(2, 6),
+      UninstrumentWebContents(kPopupWebView), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), WaitForEditModelFocus(false),
+      WaitForPopupTransitionLockout(), Do([this]() {
+        BrowserWindow::FromBrowser(browser())->GetLocationBar()->FocusLocation(
+            /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
+      }),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForOmniboxFocus(true), WaitForWebUIInputValue("chrome://version"),
+      InAnyContext(CheckWebUIInputSelection(0, strlen("chrome://version"))));
+}
+
+// Verifies that reordering a tab with a focused omnibox within the tab strip
+// restores focus and the exact selection.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       TabReorderRestoresSelection) {
+  if (!CanTestTabDragging()) {
+    GTEST_SKIP() << "Tab dragging with a move loop isn't supported.";
+  }
+  RunTestSequence(SetUpTabsWithOmniboxSelection(2, 7));
+
+  gfx::Point start_point;
+  TabDragController* controller = StartTabDrag(1, &start_point);
+  ASSERT_TRUE(controller);
+  TabStrip* tab_strip = BrowserView::GetBrowserViewForBrowser(browser())
+                            ->horizontal_tab_strip_for_testing();
+  const gfx::Rect tab0_bounds = tab_strip->tab_at(0)->GetBoundsInScreen();
+  ASSERT_EQ(TabDragController::Liveness::kAlive,
+            controller->Drag(gfx::Point(tab0_bounds.x() + 10,
+                                        tab0_bounds.CenterPoint().y())));
+  EndTabDrag();
+
+  RunTestSequence(CheckActiveTabIndex(0), WaitForRestoredSelection(2, 7));
+}
+
+// Verifies that dragging a tab with a focused omnibox out into a new window
+// and straight back into its tab strip, before the new window's WebUI loads,
+// restores focus and the exact selection.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       TabDragOutAndBackRestoresSelection) {
+  if (!CanTestTabDragging()) {
+    GTEST_SKIP() << "Tab dragging with a move loop isn't supported.";
+  }
+  DragTabOutAndBackAndCheckSelection(/*wait_for_dragged_webui=*/false);
+}
+
+// Verifies that dragging a tab with a focused omnibox out into a new window,
+// waiting for that window's WebUI to load, and dragging it back restores focus
+// and the exact selection rather than the new window's default select-all.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       TabDragOutAndBackAfterWebUILoadsRestoresSelection) {
+  if (!CanTestTabDragging()) {
+    GTEST_SKIP() << "Tab dragging with a move loop isn't supported.";
+  }
+  DragTabOutAndBackAndCheckSelection(/*wait_for_dragged_webui=*/true);
+}
+
+// Verifies that dragging a tab out and back, after the new window's WebUI
+// loads, restores a caret placed at the end of the unelided URL rather than
+// selecting all of the elided URL.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       TabDragOutAndBackRestoresUnelidedCaret) {
+  if (!CanTestTabDragging()) {
+    GTEST_SKIP() << "Tab dragging with a move loop isn't supported.";
+  }
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  const std::string full_url = url.spec();
+  const int caret = static_cast<int>(full_url.length());
+  DragTabOutAndBackAndCheck(
+      Steps(OpenInitialTabAndFocusOmnibox(kTab1, url),
+            UninstrumentWebContents(kPopupWebView),
+            WaitForPopupTransitionLockout(),
+            AddInstrumentedTab(kTab2, GURL("about:blank")),
+            WaitForWebContentsReady(kTab2),
+            SwitchTabAndRestorePopup(kTabStripElementId, 1),
+            WaitForOmniboxFocus(true),
+            // Collapse the selection to the end of the unelided URL.
+            InAnyContext(
+                SendKeyPress(kPopupWebView, ui::VKEY_RIGHT, ui::EF_NONE)),
+            WaitForWebUIInputValue(full_url),
+            PollUntil(
+                [this, caret]() {
+                  return GetPopupHandlerSelection() == gfx::Range(caret, caret);
+                },
+                "WaitForCaret")),
+      Steps(UninstrumentWebContents(kPopupWebView),
+            InAnyContext(
+                WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+            InAnyContext(InstrumentNonTabWebView(kPopupWebView,
+                                                 GetActivePopupWebView())),
+            WaitForOmniboxFocus(true), WaitForWebUIInputValue(full_url),
+            InAnyContext(CheckWebUIInputSelection(caret, caret))),
+      /*wait_for_dragged_webui=*/true);
+}
+
+// Verifies that dragging a tab with an unfocused omnibox out into a new window
+// and back leaves the omnibox unfocused.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFocusRestoreInteractiveTest,
+                       TabDragOutAndBackKeepsUnfocusedOmniboxUnfocused) {
+  if (!CanTestTabDragging()) {
+    GTEST_SKIP() << "Tab dragging with a move loop isn't supported.";
+  }
+  DragTabOutAndBackAndCheck(
+      Steps(SetUpTabsWithOmniboxSelection(2, 7),
+            UninstrumentWebContents(kPopupWebView), ClickWebPageBody(kTab1),
+            WaitForPopupDismissed(), WaitForEditModelFocus(false)),
+      Steps(Do([]() { content::RunAllTasksUntilIdle(); }),
+            WaitForEditModelFocus(false), WaitForPopupDismissed()),
+      /*wait_for_dragged_webui=*/false, /*expect_focus_restored=*/false);
 }
 
 // Verifies that opening multiple New Tab Pages (NTPs) consecutively focuses the

@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
@@ -544,6 +545,11 @@ void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
       }
     }
     edit_model()->OnSetFocus(/*control_down=*/false);
+    // The user focused the WebUI input directly (e.g. clicking into a popup a
+    // draft kept open), so its own selection replaces the one saved on blur.
+    if (auto* popup_view = edit_model()->popup_view()) {
+      popup_view->ClearSavedSelectionForFocusChange();
+    }
   } else {
     edit_model()->OnWillKillFocus();
     // Delay killing focus for full popup until state is properly synced in
