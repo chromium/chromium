@@ -9,9 +9,15 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <utility>
 
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,8 +127,17 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
   void HandleFrameChanged() override {}
   void HandleNativeFocus(HWND last_focused_window) override {}
   void HandleNativeBlur(HWND focused_window) override {}
-  bool HandleMouseEvent(ui::MouseEvent* event) override { return false; }
-  void HandleKeyEvent(ui::KeyEvent* event) override {}
+  bool HandleMouseEvent(ui::MouseEvent* event) override {
+    if (mouse_event_callback_) {
+      std::move(mouse_event_callback_).Run();
+    }
+    return false;
+  }
+  void set_mouse_event_callback(base::OnceClosure callback) {
+    mouse_event_callback_ = std::move(callback);
+  }
+  void HandleKeyEvent(ui::KeyEvent* event) override { ++key_event_count_; }
+  int key_event_count() const { return key_event_count_; }
   void HandleTouchEvent(ui::TouchEvent* event) override {}
   bool HandleIMEMessage(UINT message,
                         WPARAM w_param,
@@ -142,7 +157,17 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
   }
   void PostHandleMSG(UINT message, WPARAM w_param, LPARAM l_param) override {}
   bool HandleScrollEvent(ui::ScrollEvent* event) override { return false; }
-  bool HandleGestureEvent(ui::GestureEvent* event) override { return false; }
+  bool HandleGestureEvent(ui::GestureEvent* event) override {
+    ++gesture_event_count_;
+    if (gesture_event_callback_) {
+      std::move(gesture_event_callback_).Run();
+    }
+    return false;
+  }
+  int gesture_event_count() const { return gesture_event_count_; }
+  void set_gesture_event_callback(base::OnceClosure callback) {
+    gesture_event_callback_ = std::move(callback);
+  }
   void HandleWindowScaleFactorChanged(float window_scale_factor) override {}
   void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) override {}
   HBRUSH GetBackgroundPaintBrush() override { return nullptr; }
@@ -151,6 +176,10 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
   std::unique_ptr<ui::MockInputMethod> mock_input_method_;
   int accelerator_handled_count_ = 0;
   ui::Accelerator last_accelerator_;
+  int key_event_count_ = 0;
+  int gesture_event_count_ = 0;
+  base::OnceClosure mouse_event_callback_;
+  base::OnceClosure gesture_event_callback_;
 };
 
 class ActivatableHWNDMessageHandlerDelegate
@@ -419,6 +448,97 @@ TEST_F(HWNDMessageHandlerTest, DeferredDestruction) {
   bool handled = false;
   target->HandlePointerMessage(WM_POINTERDOWN, 0, 0, &handled);
   EXPECT_FALSE(handled);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_handler; }));
+
+  EXPECT_FALSE(weak_handler);
+}
+
+TEST_F(HWNDMessageHandlerTest, DeferredDestructionInWindowEventTarget) {
+  TestHWNDMessageHandlerDelegate delegate;
+  HWNDMessageHandler* handler =
+      HWNDMessageHandler::Create(&delegate, "test").release();
+  ASSERT_TRUE(handler);
+  handler->Init(nullptr, gfx::Rect(0, 0, 100, 100));
+  ASSERT_TRUE(handler->hwnd());
+
+  base::WeakPtr<HWNDMessageHandler> weak_handler = handler->GetWeakPtr();
+  ASSERT_TRUE(weak_handler);
+
+  ui::WindowEventTarget* target = handler;
+  bool callback_ran = false;
+  bool nested_task_ran = false;
+  delegate.set_mouse_event_callback(base::BindLambdaForTesting([&]() {
+    callback_ran = true;
+    handler->DestroyHandler();
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          nested_task_ran = true;
+          ASSERT_TRUE(weak_handler);
+          EXPECT_TRUE(weak_handler->delete_pending_);
+
+          bool key_handled = true;
+          target->HandleKeyboardMessage(WM_KEYDOWN, VK_RETURN, 0, &key_handled);
+          EXPECT_FALSE(key_handled);
+          EXPECT_EQ(0, delegate.key_event_count());
+        }));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(weak_handler);
+    EXPECT_TRUE(weak_handler->delete_pending_);
+  }));
+
+  bool handled = false;
+  target->HandleMouseMessage(WM_MOUSEMOVE, 0, 0, &handled);
+  EXPECT_TRUE(callback_ran);
+  EXPECT_TRUE(nested_task_ran);
+  EXPECT_TRUE(handled);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_handler; }));
+
+  EXPECT_FALSE(weak_handler);
+}
+
+TEST_F(HWNDMessageHandlerTest, DeferredDestructionInWindowEventTargetGesture) {
+  TestHWNDMessageHandlerDelegate delegate;
+  HWNDMessageHandler* handler =
+      HWNDMessageHandler::Create(&delegate, "test").release();
+  ASSERT_TRUE(handler);
+  handler->Init(nullptr, gfx::Rect(0, 0, 100, 100));
+  ASSERT_TRUE(handler->hwnd());
+
+  base::WeakPtr<HWNDMessageHandler> weak_handler = handler->GetWeakPtr();
+  ASSERT_TRUE(weak_handler);
+
+  ui::WindowEventTarget* target = handler;
+  bool callback_ran = false;
+  bool nested_task_ran = false;
+  delegate.set_gesture_event_callback(base::BindLambdaForTesting([&]() {
+    callback_ran = true;
+    handler->DestroyHandler();
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          nested_task_ran = true;
+          ASSERT_TRUE(weak_handler);
+          EXPECT_TRUE(weak_handler->delete_pending_);
+
+          target->ApplyPinchZoomScale(2.0f);
+          EXPECT_EQ(1, delegate.gesture_event_count());
+        }));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(weak_handler);
+    EXPECT_TRUE(weak_handler->delete_pending_);
+  }));
+
+  target->ApplyPinchZoomScale(1.5f);
+  EXPECT_TRUE(callback_ran);
+  EXPECT_TRUE(nested_task_ran);
+  EXPECT_EQ(1, delegate.gesture_event_count());
 
   EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_handler; }));
 
