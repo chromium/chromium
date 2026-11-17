@@ -60,7 +60,7 @@
 #define HAVE_STRICMP
 #define HAVE_MEMCPY_S
 #define HAVE__SNWPRINTF_S
-#define HAVE_SNPRINTF_S
+#define HAVE__SNPRINTF_S
 #define HAVE_STRNCPY_S
 #define HAVE_STRERROR_S
 #endif
