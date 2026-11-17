@@ -239,6 +239,11 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         mTabPersistencePolicy.deleteMetadataStateFileAsync();
     }
 
+    public void retainTabsOnFinish() {
+        saveState();
+        mTabPersistencePolicy.retireMetadataStateFileAsync();
+    }
+
     public void saveState() {
         TabModelOrchestrator tabModelOrchestrator = mTabFactory.getTabModelOrchestrator();
         assumeNonNull(tabModelOrchestrator);

@@ -115,6 +115,7 @@ public class CustomTabIntentDataHolderUnitTest {
         assertFalse(restored.mInteractWithBackground);
         assertFalse(restored.mTabbedCctAllowedByEmbedder);
         assertFalse(restored.mTabbedCctEnabledByEmbedder);
+        assertNull(restored.mTabbedCctAccountId);
         assertNull(restored.mAuthRedirectScheme);
         assertNull(restored.mAuthRedirectHost);
         assertNull(restored.mAuthRedirectPath);
@@ -274,6 +275,7 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setInteractWithBackground(true)
                         .setTabbedCctAllowedByEmbedder(true)
                         .setTabbedCctEnabledByEmbedder(true)
+                        .setTabbedCctAccountId("account-123")
                         .setAuthRedirectScheme("myscheme")
                         .setAuthRedirectHost("auth.example.com")
                         .setAuthRedirectPath("/callback")
@@ -389,6 +391,7 @@ public class CustomTabIntentDataHolderUnitTest {
         assertTrue(restored.mInteractWithBackground);
         assertTrue(restored.mTabbedCctAllowedByEmbedder);
         assertTrue(restored.mTabbedCctEnabledByEmbedder);
+        assertEquals("account-123", restored.mTabbedCctAccountId);
         assertEquals("myscheme", restored.mAuthRedirectScheme);
         assertEquals("auth.example.com", restored.mAuthRedirectHost);
         assertEquals("/callback", restored.mAuthRedirectPath);

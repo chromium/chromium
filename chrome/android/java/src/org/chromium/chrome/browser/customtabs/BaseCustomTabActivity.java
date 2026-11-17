@@ -1830,7 +1830,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     public CustomTabTabPersistencePolicy getCustomTabTabPersistencePolicy() {
         if (mCustomTabTabPersistencePolicy == null) {
             mCustomTabTabPersistencePolicy =
-                    new CustomTabTabPersistencePolicy(this, getSavedInstanceState());
+                    new CustomTabTabPersistencePolicy(
+                            this, getSavedInstanceState(), mIntentDataProvider);
         }
         return mCustomTabTabPersistencePolicy;
     }

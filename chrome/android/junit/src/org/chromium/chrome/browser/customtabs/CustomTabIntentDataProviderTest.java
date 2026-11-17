@@ -2390,13 +2390,20 @@ public class CustomTabIntentDataProviderTest {
                         eq(tabProvider), eq(dataProvider), eq(outboundIntent), eq(viewId));
     }
 
+    private Intent createTabbedCctIntent() {
+        Intent intent = new Intent();
+        intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, PACKAGE);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ACCOUNT_ID, "account_1");
+        return intent;
+    }
+
     @Test
     @DisableFeatures({
         ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER,
         ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER
     })
     public void isTabbedCctEnabled_bothFlagsDisabled_returnsFalse() {
-        Intent intent = new Intent();
+        Intent intent = createTabbedCctIntent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, true);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
@@ -2408,18 +2415,19 @@ public class CustomTabIntentDataProviderTest {
     @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
     @DisableFeatures(ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER)
     public void isTabbedCctEnabled_embedderFlagEnabled_intentExtraEnabled_returnsTrue() {
-        Intent intent = new Intent();
+        Intent intent = createTabbedCctIntent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertTrue(provider.isTabbedCctEnabled());
+        assertEquals("account_1", provider.getTabbedCctAccountId());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
     @DisableFeatures(ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER)
     public void isTabbedCctEnabled_embedderFlagEnabled_intentExtraDisabled_returnsFalse() {
-        Intent intent = new Intent();
+        Intent intent = createTabbedCctIntent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, true);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, false);
         CustomTabIntentDataProvider provider =
@@ -2431,7 +2439,7 @@ public class CustomTabIntentDataProviderTest {
     @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER)
     @DisableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
     public void isTabbedCctEnabled_chromeFlagEnabled_intentExtraEnabled_returnsTrue() {
-        Intent intent = new Intent();
+        Intent intent = createTabbedCctIntent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
@@ -2442,7 +2450,7 @@ public class CustomTabIntentDataProviderTest {
     @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ALLOWED_BY_EMBEDDER)
     @DisableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
     public void isTabbedCctEnabled_chromeFlagEnabled_intentExtraDisabled_returnsFalse() {
-        Intent intent = new Intent();
+        Intent intent = createTabbedCctIntent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, false);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
@@ -2456,7 +2464,7 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER
     })
     public void isTabbedCctEnabled_bothFlagsEnabled_eitherExtraEnabled_returnsTrue() {
-        Intent intent = new Intent();
+        Intent intent = createTabbedCctIntent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, false);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
         CustomTabIntentDataProvider provider =
@@ -2470,12 +2478,34 @@ public class CustomTabIntentDataProviderTest {
         ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER
     })
     public void isTabbedCctEnabled_bothFlagsEnabled_bothExtrasDisabled_returnsFalse() {
-        Intent intent = new Intent();
+        Intent intent = createTabbedCctIntent();
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ALLOWED_BY_EMBEDDER, false);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, false);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertFalse(provider.isTabbedCctEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TABBED_CCT_IF_ENABLED_BY_EMBEDDER)
+    public void isTabbedCctEnabled_missingAccountIdStillReturnsTrue_missingPackageReturnsFalse() {
+        Intent missingAccountIntent = new Intent();
+        missingAccountIntent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, PACKAGE);
+        missingAccountIntent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
+        CustomTabIntentDataProvider providerWithoutAccount =
+                new CustomTabIntentDataProvider(missingAccountIntent, mContext, COLOR_SCHEME_LIGHT);
+        assertTrue(providerWithoutAccount.isTabbedCctEnabled());
+        assertNull(providerWithoutAccount.getTabbedCctAccountId());
+
+        Intent missingPackageIntent = new Intent();
+        missingPackageIntent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ACCOUNT_ID, "account_1");
+        missingPackageIntent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, true);
+        CustomTabIntentDataProvider providerWithoutPackage =
+                new CustomTabIntentDataProvider(missingPackageIntent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse(providerWithoutPackage.isTabbedCctEnabled());
     }
 
     private int getOibStateForType(int type) {

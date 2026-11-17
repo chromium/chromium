@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.OPEN_IN_BROWSER;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.OTHER;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.REPARENTING;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
@@ -535,10 +536,21 @@ public class CustomTabActivityNavigationController
                     TimeUtils.uptimeMillis());
         }
         if (mIsFinishing) {
-            mTabController.closeAndForgetTab();
+            if (shouldRetainTabsOnFinish()) {
+                mTabController.retainTabsOnFinish();
+            } else {
+                mTabController.closeAndForgetTab();
+            }
         } else {
             mTabController.saveState();
         }
+    }
+
+    private boolean shouldRetainTabsOnFinish() {
+        if (mFinishReason == REPARENTING || mFinishReason == OPEN_IN_BROWSER) {
+            return false;
+        }
+        return mIntentDataProvider.isTabbedCctEnabled();
     }
 
     @Override

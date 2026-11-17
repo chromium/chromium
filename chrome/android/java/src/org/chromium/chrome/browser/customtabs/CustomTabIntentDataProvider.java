@@ -181,6 +181,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER =
             "androidx.browser.customtabs.extra.EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER";
 
+    // TODO(crbug.com/583449770): Use the definition from AndroidX once it is ready.
+    public static final String EXTRA_TABBED_CCT_ACCOUNT_ID =
+            "androidx.browser.customtabs.extra.EXTRA_TABBED_CCT_ACCOUNT_ID";
+
     /** Extra that defines the initial background color (RGB color stored as an integer). */
     public static final String EXTRA_INITIAL_BACKGROUND_COLOR =
             "org.chromium.chrome.browser.customtabs.EXTRA_INITIAL_BACKGROUND_COLOR";
@@ -720,6 +724,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             builder.setTabbedCctEnabledByEmbedder(
                     IntentUtils.safeGetBooleanExtra(
                             intent, EXTRA_TABBED_CCT_ENABLED_BY_EMBEDDER, false));
+            builder.setTabbedCctAccountId(
+                    IntentUtils.safeGetStringExtra(intent, EXTRA_TABBED_CCT_ACCOUNT_ID));
             // The default behavior is that the PCCT's height is resizable.
             @ActivityHeightResizeBehavior
             int activityHeightResizeBehavior =
@@ -2096,6 +2102,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean isTabbedCctEnabled() {
+        if (isOffTheRecord()
+                || getActivityType() != ActivityType.CUSTOM_TAB
+                || isAuthTab()
+                || (TextUtils.isEmpty(getClientPackageName())
+                        && TextUtils.isEmpty(getClientPackageNameIdentitySharing()))) {
+            return false;
+        }
+
         boolean isEnabledForEmbedderExperiment =
                 sTabbedCctIfEnabledByEmbedder.isEnabled()
                         && mDataHolder.mTabbedCctEnabledByEmbedder;
@@ -2105,6 +2119,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         && mDataHolder.mTabbedCctAllowedByEmbedder;
 
         return isEnabledForEmbedderExperiment || isEnabledForChromeExperiment;
+    }
+
+    @Override
+    public @Nullable String getTabbedCctAccountId() {
+        return mDataHolder.mTabbedCctAccountId;
     }
 
     @Override

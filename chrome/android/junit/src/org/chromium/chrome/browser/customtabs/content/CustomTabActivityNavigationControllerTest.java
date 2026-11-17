@@ -506,4 +506,24 @@ public class CustomTabActivityNavigationControllerTest {
 
         verify(mFinishHandler).onFinish(FinishReason.HANDLED_BY_OS, true);
     }
+
+    @Test
+    public void onStopWithNative_WhenFinishingAndTabbedCctEnabled_RetainsTabs() {
+        when(env.intentDataProvider.isTabbedCctEnabled()).thenReturn(true);
+        mNavigationController.finish(FinishReason.USER_NAVIGATION);
+        mNavigationController.onStopWithNative();
+
+        verify(mTabController).retainTabsOnFinish();
+        verify(mTabController, never()).closeAndForgetTab();
+    }
+
+    @Test
+    public void onStopWithNative_WhenFinishingForOpenInBrowser_ClosesAndForgetsTabs() {
+        when(env.intentDataProvider.isTabbedCctEnabled()).thenReturn(true);
+        mNavigationController.finish(FinishReason.OPEN_IN_BROWSER);
+        mNavigationController.onStopWithNative();
+
+        verify(mTabController).closeAndForgetTab();
+        verify(mTabController, never()).retainTabsOnFinish();
+    }
 }

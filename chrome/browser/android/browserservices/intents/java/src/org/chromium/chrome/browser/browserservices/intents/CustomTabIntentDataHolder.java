@@ -92,6 +92,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final boolean mInteractWithBackground;
     public final boolean mTabbedCctAllowedByEmbedder;
     public final boolean mTabbedCctEnabledByEmbedder;
+    public final @Nullable String mTabbedCctAccountId;
     public final @Nullable String mAuthRedirectScheme;
     public final @Nullable String mAuthRedirectHost;
     public final @Nullable String mAuthRedirectPath;
@@ -160,6 +161,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mInteractWithBackground = builder.mInteractWithBackground;
         mTabbedCctAllowedByEmbedder = builder.mTabbedCctAllowedByEmbedder;
         mTabbedCctEnabledByEmbedder = builder.mTabbedCctEnabledByEmbedder;
+        mTabbedCctAccountId = builder.mTabbedCctAccountId;
         mAuthRedirectScheme = builder.mAuthRedirectScheme;
         mAuthRedirectHost = builder.mAuthRedirectHost;
         mAuthRedirectPath = builder.mAuthRedirectPath;
@@ -230,6 +232,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mInteractWithBackground = in.readBoolean();
         mTabbedCctAllowedByEmbedder = in.readBoolean();
         mTabbedCctEnabledByEmbedder = in.readBoolean();
+        mTabbedCctAccountId = in.readString();
         mAuthRedirectScheme = in.readString();
         mAuthRedirectHost = in.readString();
         mAuthRedirectPath = in.readString();
@@ -308,6 +311,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         dest.writeBoolean(mInteractWithBackground);
         dest.writeBoolean(mTabbedCctAllowedByEmbedder);
         dest.writeBoolean(mTabbedCctEnabledByEmbedder);
+        dest.writeString(mTabbedCctAccountId);
         dest.writeString(mAuthRedirectScheme);
         dest.writeString(mAuthRedirectHost);
         dest.writeString(mAuthRedirectPath);
@@ -572,6 +576,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         private boolean mInteractWithBackground;
         private boolean mTabbedCctAllowedByEmbedder;
         private boolean mTabbedCctEnabledByEmbedder;
+        private @Nullable String mTabbedCctAccountId;
         private @Nullable String mAuthRedirectScheme;
         private @Nullable String mAuthRedirectHost;
         private @Nullable String mAuthRedirectPath;
@@ -815,6 +820,11 @@ public class CustomTabIntentDataHolder implements Parcelable {
 
         public Builder setTabbedCctEnabledByEmbedder(boolean tabbedCctEnabledByEmbedder) {
             mTabbedCctEnabledByEmbedder = tabbedCctEnabledByEmbedder;
+            return this;
+        }
+
+        public Builder setTabbedCctAccountId(@Nullable String tabbedCctAccountId) {
+            mTabbedCctAccountId = tabbedCctAccountId;
             return this;
         }
 

@@ -869,6 +869,11 @@ public abstract class BrowserServicesIntentDataProvider {
         return false;
     }
 
+    /** Returns the account ID specified for Tabbed CCT, or null if not present. */
+    public @Nullable String getTabbedCctAccountId() {
+        return null;
+    }
+
     /**
      * @return The {@link CustomTabIntentDataHolder} for this provider, or null if not applicable.
      */

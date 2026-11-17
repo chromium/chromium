@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -47,6 +48,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
@@ -222,7 +224,7 @@ public class CustomTabTabPersistencePolicyTest {
                         cct2.getCustomTabTabPersistencePolicy().getActivityId()));
 
         // Recreating cct1 from savedState clears it from sSavedActivityIds.
-        new CustomTabTabPersistencePolicy(cct1, savedState);
+        new CustomTabTabPersistencePolicy(cct1, savedState, /* intentDataProvider= */ null);
         tabIds.clear();
         activityIds.clear();
         CustomTabTabPersistencePolicy.getAllLiveTabAndActivityIds(tabIds, activityIds);
@@ -362,20 +364,98 @@ public class CustomTabTabPersistencePolicyTest {
     @UiThreadTest
     public void testActivityUuidSavedAndRestoredFromBundle() {
         CustomTabActivity cct1 = buildTestCustomTabActivity(7, new int[] {10}, null);
-        CustomTabTabPersistencePolicy policy1 = new CustomTabTabPersistencePolicy(cct1, null);
+        CustomTabTabPersistencePolicy policy1 =
+                new CustomTabTabPersistencePolicy(cct1, null, /* intentDataProvider= */ null);
 
         CustomTabActivity cct2 = buildTestCustomTabActivity(7, new int[] {20}, null);
-        CustomTabTabPersistencePolicy policy2 = new CustomTabTabPersistencePolicy(cct2, null);
+        CustomTabTabPersistencePolicy policy2 =
+                new CustomTabTabPersistencePolicy(cct2, null, /* intentDataProvider= */ null);
 
         // Two CustomTabActivities sharing the same taskId (7) must get distinct metadata files.
+        assertTrue(
+                policy1.getMetadataFileName()
+                        .startsWith(TabMetadataFileManager.SAVED_METADATA_FILE_PREFIX + "7_"));
         assertNotEquals(policy1.getMetadataFileName(), policy2.getMetadataFileName());
 
         Bundle savedInstanceState = new Bundle();
         policy1.saveToBundle(savedInstanceState);
 
         CustomTabTabPersistencePolicy restoredPolicy1 =
-                new CustomTabTabPersistencePolicy(cct1, savedInstanceState);
+                new CustomTabTabPersistencePolicy(
+                        cct1, savedInstanceState, /* intentDataProvider= */ null);
         assertEquals(policy1.getMetadataFileName(), restoredPolicy1.getMetadataFileName());
+    }
+
+    /**
+     * Ensure Tabbed CCT uses custom_tabs_app/app_<pkg>/acct_<sha256_16(accountId)> and renames
+     * tab_state_active_<taskId>_<uuid> to tab_state_retired_<taskId>_<uuid>_<timestamp> on finish.
+     */
+    @Test
+    @Feature("TabPersistentStore")
+    @MediumTest
+    public void testTabbedCctDirectoryAndRetireMetadataFile() throws Exception {
+        CustomTabActivity cct =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> buildTestCustomTabActivity(99, new int[] {10}, null));
+        BrowserServicesIntentDataProvider intentDataProvider =
+                Mockito.mock(BrowserServicesIntentDataProvider.class);
+        Mockito.when(intentDataProvider.isTabbedCctEnabled()).thenReturn(true);
+        Mockito.when(intentDataProvider.getClientPackageNameIdentitySharing())
+                .thenReturn("com.google.android.googlequicksearchbox");
+        Mockito.when(intentDataProvider.getTabbedCctAccountId()).thenReturn("user_account_123");
+
+        CustomTabTabPersistencePolicy policy =
+                new CustomTabTabPersistencePolicy(cct, null, intentDataProvider);
+        policy.setTaskRunner(mSequencedTaskRunner);
+
+        File stateDir = policy.getOrCreateStateDirectory();
+        String hashedAccountId = TabStateDirectory.hashAccountId("user_account_123");
+        assertEquals(16, hashedAccountId.length());
+        String expectedAccountDir = "acct_" + hashedAccountId;
+        assertEquals(expectedAccountDir, stateDir.getName());
+        assertEquals(
+                "app_com.google.android.googlequicksearchbox", stateDir.getParentFile().getName());
+        assertEquals(
+                TabStateDirectory.CUSTOM_TABS_APP_DIRECTORY,
+                stateDir.getParentFile().getParentFile().getName());
+
+        File activeFile = new File(stateDir, policy.getMetadataFileName());
+        assertTrue(
+                activeFile
+                        .getName()
+                        .startsWith(
+                                CustomTabTabPersistencePolicy.ACTIVE_METADATA_FILE_PREFIX + "99_"));
+        assertTrue(activeFile.createNewFile());
+
+        String expectedRetiredPrefix =
+                CustomTabTabPersistencePolicy.RETIRED_METADATA_FILE_PREFIX
+                        + policy.getActivityId()
+                                .substring(
+                                        CustomTabTabPersistencePolicy.ACTIVE_METADATA_TAG_PREFIX
+                                                .length())
+                        + "_";
+        policy.retireMetadataStateFileAsync();
+
+        final CallbackHelper helper = new CallbackHelper();
+        mSequencedTaskRunner.execute(helper::notifyCalled);
+        helper.waitForCallback(0);
+
+        assertFalse(activeFile.exists());
+        File[] files = stateDir.listFiles();
+        assertNotNull(files);
+        assertEquals(1, files.length);
+        assertTrue(files[0].getName().startsWith(expectedRetiredPrefix));
+        files[0].delete();
+
+        // When account ID is omitted (null), the directory falls back to "acct_default".
+        Mockito.when(intentDataProvider.getTabbedCctAccountId()).thenReturn(null);
+        CustomTabTabPersistencePolicy defaultAcctPolicy =
+                new CustomTabTabPersistencePolicy(cct, null, intentDataProvider);
+        File defaultStateDir = defaultAcctPolicy.getOrCreateStateDirectory();
+        assertEquals("acct_default", defaultStateDir.getName());
+        assertEquals(
+                "app_com.google.android.googlequicksearchbox",
+                defaultStateDir.getParentFile().getName());
     }
 
     /**
@@ -392,7 +472,8 @@ public class CustomTabTabPersistencePolicyTest {
                         () -> buildTestCustomTabActivity(42, new int[] {10}, null));
         Bundle legacySavedInstanceState = new Bundle();
         CustomTabTabPersistencePolicy policy =
-                new CustomTabTabPersistencePolicy(cct, legacySavedInstanceState);
+                new CustomTabTabPersistencePolicy(
+                        cct, legacySavedInstanceState, /* intentDataProvider= */ null);
 
         File stateDirectory = policy.getOrCreateStateDirectory();
         File legacyMetadataFile =
