@@ -68,6 +68,7 @@ source_set("mime_handler_page") {
     "//content/public/common",
     "//content/public/common:buildflags",
     "//extensions:extensions_resources_grd",
+    "//extensions/common",
     "//skia",
     "//ui/base",
   ]

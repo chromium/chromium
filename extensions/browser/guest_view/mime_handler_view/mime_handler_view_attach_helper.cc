@@ -74,7 +74,8 @@ std::string MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
                      internal_id),
       std::move(resume_load));
   return CreateTemplateMimeHandlerPage(resource_url, mime_type, internal_id,
-                                       /*use_oopif=*/false);
+                                       /*use_oopif=*/false,
+                                       /*handler=*/nullptr);
 }
 
 void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(

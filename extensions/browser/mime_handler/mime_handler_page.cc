@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/webplugininfo.h"
+#include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/grit/extensions_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -43,8 +44,11 @@ SkColor GetBackgroundColorStringForMimeType(const GURL& url,
 std::string CreateTemplateMimeHandlerPage(const GURL& resource_url,
                                           const std::string& mime_type,
                                           const std::string& internal_id,
-                                          bool use_oopif) {
-  SkColor color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
+                                          bool use_oopif,
+                                          const MimeTypesHandler* handler) {
+  SkColor color =
+      handler ? handler->GetBackgroundColor()
+              : GetBackgroundColorStringForMimeType(resource_url, mime_type);
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           use_oopif ? IDR_OOPIF_MIME_HANDLER_HTML
