@@ -212,7 +212,7 @@
 <translation id="3037190258341683404">Pots fixar la Cerca de Google a Chrome per fer preguntes mentre navegues</translation>
 <translation id="3038232873781883849">S'està esperant per instal·lar...</translation>
 <translation id="3045032126857188731">Idioma de traducció: <ph name="LANGUAGE" /></translation>
-<translation id="3047590466164881923">Tanca el quadre de diàleg de suggeriments</translation>
+<translation id="3047590466164881923">Tanca el quadre de diàleg de comentaris</translation>
 <translation id="3064717200427679322"><ph name="EXISTING_USER" /> ja ha iniciat la sessió. Per mantenir la navegació per separat, inicia la sessió a Chromium amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />. També obtindràs la llista de lectura i altres dades de <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Altres perfils de Chromium</translation>
 <translation id="3068290154869370196">Les extensions són complements que et permeten personalitzar Chromium. Des de mantenir l'ordre fins a simplificar les tasques quotidianes, les extensions t'ajuden a fer-te teu Chromium.</translation>
@@ -738,7 +738,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8105840573057009683">Chromium necessita permís d'accés a la ubicació per a aquest lloc web</translation>
 <translation id="8107060931443639922">La propera vegada que obris Chromium al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per activar les alertes de seguiment de preus.</translation>
 <translation id="8117908349476699973">Rep alertes de baixada de preu dels articles que t'interessen amb l'aplicació Chromium al telèfon</translation>
-<translation id="8118331347066725040">Envia suggeriments per a la cerca amb Lens</translation>
+<translation id="8118331347066725040">Envia comentaris per a la cerca amb Lens</translation>
 <translation id="8130609355518033382">Personalitza Chromium</translation>
 <translation id="8133124826068723441">Chromium OS no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>

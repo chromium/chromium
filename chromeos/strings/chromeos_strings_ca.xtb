@@ -101,7 +101,7 @@
 <translation id="1394661041439318933">La funda del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
 <translation id="1398634363027580500">La latència d'HTTPS és molt alta</translation>
-<translation id="1406389211945506521">Gràcies per compartir la teva experiència. Els teus suggeriments ens ajuden a crear contingut més precís i útil.</translation>
+<translation id="1406389211945506521">Gràcies per compartir la teva experiència. Els teus comentaris ens ajuden a crear contingut més precís i útil.</translation>
 <translation id="1407069428457324124">Tema fosc</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
@@ -213,7 +213,7 @@
 <translation id="1808803439260407870">Art clàssic</translation>
 <translation id="181434555916624618">De moment, no es mostraran resultats amb persones. Prova-ho amb una altra indicació.</translation>
 <translation id="1815850098929213707">La tecla seleccionada és <ph name="KEYS" />. Toca el botó per editar el control.</translation>
-<translation id="1818174214124933000">Quan seleccionis Envia, els teus suggeriments i contingut (que es mostren més avall) s'enviaran a Google, els revisarà un equip de persones i s'utilitzaran per entrenar o millorar els nostres productes i serveis d'acord amb la <ph name="LINK_POLICY_BEGIN" />política de privadesa<ph name="LINK_POLICY_END" /> i les <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />condicions del servei<ph name="LINK_TERMS_OF_SERVICE_END" /> de Google.</translation>
+<translation id="1818174214124933000">Quan seleccionis Envia, els teus comentaris i contingut (que es mostren més avall) s'enviaran a Google, els revisarà un equip de persones i s'utilitzaran per entrenar o millorar els nostres productes i serveis d'acord amb la <ph name="LINK_POLICY_BEGIN" />política de privadesa<ph name="LINK_POLICY_END" /> i les <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />condicions del servei de Google<ph name="LINK_TERMS_OF_SERVICE_END" />.</translation>
 <translation id="1823120442877418684">Temes</translation>
 <translation id="1827738518074806965">Galeria d'art</translation>
 <translation id="183287940576828840">Ofensiu / No segur</translation>
@@ -244,7 +244,7 @@
 <translation id="1908234395526491708">Errors en la sol·licitud d'UDP</translation>
 <translation id="1908394185991500139">fletxa esquerra</translation>
 <translation id="1914144885717544695">divendres</translation>
-<translation id="1915960750806557358">Comparteix els teus suggeriments o descriu el problema. Assegura't de no incloure-hi informació personal, sensible ni confidencial.</translation>
+<translation id="1915960750806557358">Comparteix els teus comentaris o descriu el problema. Assegura't de no incloure-hi informació personal, sensible ni confidencial.</translation>
 <translation id="1923388006036088459">Colors d'èmfasi</translation>
 <translation id="1926611810597212636">unicorn</translation>
 <translation id="1944321879609775960">Per crear un resum, reinicia el dispositiu <ph name="DEVICE_TYPE" /></translation>
@@ -577,7 +577,7 @@
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3606583719724308068">Latència alta als llocs web HTTPS</translation>
 <translation id="3614639364827854748">Mou aquest menú cap a l'esquerra</translation>
-<translation id="361575905210396100">Gràcies pels teus suggeriments</translation>
+<translation id="361575905210396100">Gràcies pels teus comentaris</translation>
 <translation id="3621072146987826699">elefants</translation>
 <translation id="3628462041319107639">S'està baixant el model de transcripció…</translation>
 <translation id="3632040286124154621">El suggeriment és bo</translation>
@@ -876,7 +876,7 @@
 <translation id="4910858703033903787">Tipus d'APN</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
-<translation id="491791267030419270">Consells per escriure suggeriments</translation>
+<translation id="491791267030419270">Consells per escriure comentaris</translation>
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4930320165497208503">Per configurar o actualitzar una connexió, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
@@ -1229,7 +1229,7 @@
 <translation id="6526200165918397681">Fes coincidir el fons de pantalla</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
 <translation id="6531528791584205545">inserció ràpida</translation>
-<translation id="6535178685492749208">No tens connexió. Els suggeriments s'enviaran més tard.</translation>
+<translation id="6535178685492749208">No tens connexió. Els comentaris s'enviaran més tard.</translation>
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6550369542114086980">dijous</translation>
 <translation id="6551839203326557324">pomes</translation>
@@ -1246,7 +1246,7 @@
 <translation id="6587870930887634392">suculenta</translation>
 <translation id="6595046262780525922">Vols activar la transcripció i baixar el model de transcripció?</translation>
 <translation id="6596816719288285829">Adreça IP</translation>
-<translation id="6599673642868607614">Gràcies per la teva opinió. Els suggeriments ens ajuden a millorar l'experiència de Chromebook i el nostre equip els revisarà. Com que hi ha un gran nombre d'informes, no podrem respondre.</translation>
+<translation id="6599673642868607614">Gràcies per la teva opinió. Els comentaris ens ajuden a millorar l'experiència de Chromebook i el nostre equip els revisarà. Com que hi ha un gran nombre d'informes, no podrem respondre.</translation>
 <translation id="6608043585557830684">La transcripció està desactivada. Activa-la a Configuració o al menú <ph name="THREE_DOTS_MENU_ICON" />.</translation>
 <translation id="660846213831377756">Tecles del ratolí</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
@@ -1298,7 +1298,7 @@
 <translation id="6846843854964504403">Restabliment de seguretat</translation>
 <translation id="6853312040151791195">Percentatge de descàrrega</translation>
 <translation id="6862228900689076919">El teu administrador gestiona aquesta funció</translation>
-<translation id="6862416241246624313">S'han enviat els suggeriments</translation>
+<translation id="6862416241246624313">S'han enviat els comentaris</translation>
 <translation id="6866732840889595464">margarida</translation>
 <translation id="6871256179359663621">porpra clar</translation>
 <translation id="6887967050249348172">S'han desactivat les extensions per evitar canvis en la configuració. Activa només les extensions en què confiïs.</translation>
@@ -1318,7 +1318,7 @@
 <translation id="6931666215260956151">galàxia</translation>
 <translation id="6939766318048400022">Cafeteria</translation>
 <translation id="6940212863873359282">un tros de tela organza blanca flotant al centre, sobre un arc de marbre blanc amb un fons de color crema</translation>
-<translation id="6942253772720771875">Comparteix els teus suggeriments o descriu el problema</translation>
+<translation id="6942253772720771875">Comparteix els teus comentaris o descriu el problema</translation>
 <translation id="6943893908656559156">Identitat remota (opcional)</translation>
 <translation id="694981048020558038">Cerca el títol de la gravació</translation>
 <translation id="6953137545147683679">or</translation>
@@ -1374,7 +1374,7 @@
 <translation id="7144954474087165241">pagoda</translation>
 <translation id="7147557737960578492">Torna a assignar seleccionant una clau nova</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
-<translation id="7154020516215182599">Comparteix els teus suggeriments o descriu el problema. Si és possible, inclou els passos per reproduir el problema.</translation>
+<translation id="7154020516215182599">Comparteix els teus comentaris o descriu el problema. Si és possible, inclou els passos per reproduir el problema.</translation>
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>
@@ -1500,7 +1500,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7764171263909999400">llum volumètrica</translation>
 <translation id="7769672763586021400">Identificador del model</translation>
 <translation id="7774759755755950354">Enrere</translation>
-<translation id="7778717409420828014">Els suggeriments ens ajuden a millorar l'experiència de Chromebook i el nostre equip els revisarà. Com que hi ha un gran nombre d'informes, no podrem respondre.</translation>
+<translation id="7778717409420828014">Els comentaris ens ajuden a millorar l'experiència de Chromebook i el nostre equip els revisarà. Com que hi ha un gran nombre d'informes, no podrem respondre.</translation>
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7784116172884276937">No hi ha cap servidor DNS configurat</translation>
 <translation id="7791543448312431591">Afegeix</translation>

@@ -75,7 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{S'ha importat 1 contrasenya a <ph name="BRAND" /> en aquest dispositiu}other{S'han importat {NUM_PASSWORDS} contrasenyes a <ph name="BRAND" /> en aquest dispositiu}}</translation>
 <translation id="1046572983040892965">La finestra s'ha mogut cap amunt i cap a l'esquerra</translation>
 <translation id="1047431265488717055">Copia el te&amp;xt de l'enllaç</translation>
-<translation id="104751728059674265">Els suggeriments no estan disponibles per al teu compte. Un adult pot utilitzar el seu dispositiu o perfil per informar d'un problema en nom teu.</translation>
+<translation id="104751728059674265">Els comentaris no estan disponibles per al teu compte. Un adult pot utilitzar el seu dispositiu o perfil per informar d'un problema en nom teu.</translation>
 <translation id="1048986595386481879">Assignada de manera dinàmica</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{S'estan rebent <ph name="ATTACHMENTS" /> del dispositiu <ph name="DEVICE_NAME" />}other{S'estan rebent <ph name="ATTACHMENTS" /> del dispositiu <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incògnit</translation>
@@ -1068,7 +1068,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no pot continuar utilitzant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">S'està emetent <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Serveis</translation>
-<translation id="1813828404076816564">Selecciona el botó de suggeriments per enviar suggeriments sobre la funció de grups de pestanyes compartits</translation>
+<translation id="1813828404076816564">Selecciona el botó de comentaris per enviar comentaris sobre la funció de grups de pestanyes compartits</translation>
 <translation id="1815083418640426271">Enganxa com a text sense format</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> més...</translation>
 <translation id="1816036116994822943">Velocitat de cerca del teclat</translation>
@@ -3818,7 +3818,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3856902135796972992">Aquest lloc web requereix una acció addicional. Fes-la a la pàgina perquè es pugui finalitzar el canvi de contrasenya.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="385939467708172187">Utilitza una contrasenya segura</translation>
-<translation id="3859869403161297890">Envia els teus suggeriments sobre els grups de pestanyes compartits aquí</translation>
+<translation id="3859869403161297890">Envia els teus comentaris sobre els grups de pestanyes compartits aquí</translation>
 <translation id="386009056910366930">Gestiona el grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="3861852898230054539">Actualment s'està utilitzant la contrasenya del Compte de Google. Pots configurar una contrasenya de <ph name="DEVICE_TYPE" /> per iniciar la sessió més fàcilment.</translation>
 <translation id="3861977424605124250">Mostra a l'inici</translation>
@@ -4545,7 +4545,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="442528696198546304">Les contrasenyes, les claus d'accés i altres dades se suprimiran permanentment de <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Suprimeix <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Per començar, comprova que l'interruptor USB o Bluetooth estigui connectat al Chromebook. També pots utilitzar les tecles del teclat.</translation>
-<translation id="4426490308207168518">Comparteix suggeriments o informa d'un problema</translation>
+<translation id="4426490308207168518">Comparteix comentaris o informa d'un problema</translation>
 <translation id="4426508677408162512">Totes les adreces d'interès</translation>
 <translation id="4426513927906544654">Obtén recomanacions de contingut</translation>
 <translation id="4427111270137140798">S'ha detectat <ph name="COUNT" /> vegades</translation>
@@ -6149,7 +6149,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5687340364605915800">Els llocs web faran servir el seu propi criteri a l'hora de respondre a aquesta sol·licitud</translation>
 <translation id="5689233503102158537">Alt+retrocés</translation>
 <translation id="5689516760719285838">Ubicació</translation>
-<translation id="568984110402742489">No es poden enviar suggeriments</translation>
+<translation id="568984110402742489">No es poden enviar comentaris</translation>
 <translation id="56907980372820799">Enllaça les dades</translation>
 <translation id="5691772641933328258">L'empremta digital no s'ha reconegut</translation>
 <translation id="5693255400847650006">Micròfon en ús</translation>
@@ -6190,7 +6190,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="572328651809341494">Pestanyes recents</translation>
 <translation id="5723508132121499792">No hi cap aplicació en execució en segon pla</translation>
 <translation id="5724723163580775373">Enfocament gran</translation>
-<translation id="5725112283692663422">Envia suggeriments sobre Crea un tema amb IA</translation>
+<translation id="5725112283692663422">Envia comentaris sobre Crea un tema amb IA</translation>
 <translation id="5727728807527375859">Les extensions, les aplicacions i els temes poden malmetre el vostre equip. Segur que voleu continuar?</translation>
 <translation id="5727872803091928075">Les pestanyes es comparteixen per oferir-te respostes més rellevants. Google utilitza el contingut i l'URL de la pestanya oberta quan inicies un xat nou. Pots canviar aquesta opció de configuració en qualsevol moment.</translation>
 <translation id="5728072125198221967">Serveis de Google enllaçats</translation>
@@ -7583,7 +7583,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6803766346203101854">Aquest lloc web té permís per desar dades al dispositiu.</translation>
 <translation id="6805236548654699520">Restableix la configuració als valors predeterminats segurs per suprimir finestres emergents no desitjades, corregir problemes de xarxa i més.</translation>
 <translation id="6805478749741295868">Aquesta funció d'IA és experimental i el resultat no sempre serà correcte.</translation>
-<translation id="6805817411033102703">Suggeriments sobre els grups de pestanyes compartits</translation>
+<translation id="6805817411033102703">Comentaris sobre els grups de pestanyes compartits</translation>
 <translation id="6806123901116522137">Ves a Innovacions d'IA</translation>
 <translation id="6806781719264274042">Només els teus contactes amb un Compte de Google. <ph name="LINK_BEGIN" />Mostra els contactes<ph name="LINK_END" />.</translation>
 <translation id="6807225474325352189">Fes clic a Controls multimèdia</translation>
@@ -9650,7 +9650,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8358685469073206162">Voleu restaurar les pàgines?</translation>
 <translation id="835927394551949760">Pregunta a Google</translation>
 <translation id="835951711479681002">Desa-la al teu Compte de Google</translation>
-<translation id="8360267485906769442">Botó Envia suggeriments</translation>
+<translation id="8360267485906769442">Botó Envia comentaris</translation>
 <translation id="8363095875018065315">estable</translation>
 <translation id="8363142353806532503">El micròfon està bloquejat</translation>
 <translation id="8363277452449582220">Oceà</translation>
@@ -10319,7 +10319,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8874341931345877644">Emet a un dispositiu:</translation>
 <translation id="8874647982044395866">Orgànic</translation>
 <translation id="8874790741333031443">Prova de permetre temporalment les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
-<translation id="8874864294955002500">Els suggeriments no estan disponibles per al teu compte. L'administrador de l'empresa pot utilitzar el seu dispositiu o perfil per informar d'un problema en nom teu.</translation>
+<translation id="8874864294955002500">Els comentaris no estan disponibles per al teu compte. L'administrador de l'empresa pot utilitzar el seu dispositiu o perfil per informar d'un problema en nom teu.</translation>
 <translation id="8875736897340638404">Tria la teva visibilitat</translation>
 <translation id="8876307312329369159">Aquesta opció de configuració no es pot canviar durant una sessió de demostració.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> utilitza la cerca de dispositius Bluetooth per trobar dispositius propers.</translation>

@@ -551,7 +551,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1927930548546198515">Chrome registra com utilitzes la funció, com ara les teves sol·licituds i el teu comportament quan acceptes o ignores els suggeriments</translation>
 <translation id="1932098463447129402">No abans</translation>
 <translation id="1932629105611536854">Codi postal d'entrega</translation>
-<translation id="1935353813610900265">Envia suggeriments per a la cerca a l'historial amb tecnologia d'IA</translation>
+<translation id="1935353813610900265">Envia comentaris per a la cerca a l'historial amb tecnologia d'IA</translation>
 <translation id="1935995810530254458">Copia igualment</translation>
 <translation id="1938580037092872316">Afegeix informació nova a l'adreça desada</translation>
 <translation id="1938812296371201896">No es pot desar el vídeo</translation>
@@ -721,7 +721,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2195729137168608510">Protecció del correu electrònic</translation>
 <translation id="2198183835992354675">Número de viatger conegut</translation>
 <translation id="2198215508485017216">Hi ha hagut un error inesperat. <ph name="BEGIN_LINK" />Més informació sobre les pujades de Drive<ph name="END_LINK" /></translation>
-<translation id="2200678913752027654">Botó No m'agrada: prem Retorn per obrir un formulari i enviar comentaris detallats sobre per què indiques que no t'agrada aquest suggeriment</translation>
+<translation id="2200678913752027654">Botó No m'agrada: prem Retorn per obrir un formulari i enviar comentaris detallats sobre per què indiques que no t'agrada aquest comentari</translation>
 <translation id="2202627062836089804">al revers de la targeta</translation>
 <translation id="2207770355672215546">Permet sempre amb qualsevol targeta</translation>
 <translation id="2208053750671792556">No has rebut el codi? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
@@ -1021,7 +1021,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2679216653373462289">Utilitzar els sensors de moviment i de llum</translation>
 <translation id="2679659833697380">La teva informació es desa al dispositiu</translation>
 <translation id="2683195745483370038">S'han trobat altres resultats</translation>
-<translation id="2686919536310834199">Envia suggeriments sobre la funció Ajuda'm a escriure.</translation>
+<translation id="2686919536310834199">Envia comentaris sobre la funció Ajuda'm a escriure.</translation>
 <translation id="2687555958734450033">Mida òptima</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Sí, continua</translation>
@@ -4282,7 +4282,7 @@ Detalls addicionals:
 <translation id="810875025413331850">No s'ha trobat cap dispositiu a prop.</translation>
 <translation id="8116925261070264013">Silenciats</translation>
 <translation id="8118489163946903409">Mètode de pagament</translation>
-<translation id="8118506371121007279">Envia suggeriments</translation>
+<translation id="8118506371121007279">Envia comentaris</translation>
 <translation id="812020627659652807">Suprimeix els fitxers ara</translation>
 <translation id="8120720167840853945">Aquesta política no controla el comportament predeterminat de cap altra política.</translation>
 <translation id="8120827570827570666">Domini del comerciant</translation>
