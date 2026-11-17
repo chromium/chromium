@@ -856,12 +856,12 @@ export class OmniboxEverywhereAppElement extends
     this.classList.toggle('has-permission-prompt', e.detail.isOpened);
     if (e.detail.isOpened) {
       this.style.setProperty(
-          '--voice_search_minimum_height', `${e.detail.height}px`);
+          '--voice-search-minimum-height', `${e.detail.height}px`);
       this.style.setProperty(
-          '--voice_search_minimum_width', `${e.detail.width}px`);
+          '--voice-search-minimum-width', `${e.detail.width}px`);
     } else {
-      this.style.removeProperty('--voice_search_minimum_height');
-      this.style.removeProperty('--voice_search_minimum_width');
+      this.style.removeProperty('--voice-search-minimum-height');
+      this.style.removeProperty('--voice-search-minimum-width');
     }
 
     const audioAnimation =

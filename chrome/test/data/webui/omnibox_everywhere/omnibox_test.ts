@@ -2530,6 +2530,8 @@ suite('OmniboxEverywhereAppTest', () => {
     assertTrue(voiceSearch.liveTranscriptEnabled);
     assertEquals(160, dialog.offsetHeight);
 
+    // Verify multiline expansion using a sample line count in the supported
+    // 1..7 range: 160px base height + (4 - 1) * 24px line-height = 232px.
     dialog.style.transition = 'none';
     voiceSearch.transcriptLines = 4;
     await microtasksFinished();
@@ -2573,10 +2575,10 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(app.classList.contains('has-permission-prompt'));
         assertEquals(
             '200px',
-            app.style.getPropertyValue('--voice_search_minimum_height'));
+            app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
             '100px',
-            app.style.getPropertyValue('--voice_search_minimum_width'));
+            app.style.getPropertyValue('--voice-search-minimum-width'));
 
         // Verify permission prompt closed state is handled.
         voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
@@ -2594,9 +2596,9 @@ suite('OmniboxEverywhereAppTest', () => {
         assertFalse(glow.classList.contains('permission-prompt-showing'));
         assertFalse(app.classList.contains('has-permission-prompt'));
         assertEquals(
-            '', app.style.getPropertyValue('--voice_search_minimum_height'));
+            '', app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
-            '', app.style.getPropertyValue('--voice_search_minimum_width'));
+            '', app.style.getPropertyValue('--voice-search-minimum-width'));
       });
 
   test(
@@ -2647,10 +2649,10 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(app.classList.contains('has-permission-prompt'));
         assertEquals(
             '200px',
-            app.style.getPropertyValue('--voice_search_minimum_height'));
+            app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
             '100px',
-            app.style.getPropertyValue('--voice_search_minimum_width'));
+            app.style.getPropertyValue('--voice-search-minimum-width'));
 
         // Verify permission prompt closed state is handled in composebox mode.
         voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
@@ -2668,9 +2670,9 @@ suite('OmniboxEverywhereAppTest', () => {
         assertFalse(glow.classList.contains('permission-prompt-showing'));
         assertFalse(app.classList.contains('has-permission-prompt'));
         assertEquals(
-            '', app.style.getPropertyValue('--voice_search_minimum_height'));
+            '', app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
-            '', app.style.getPropertyValue('--voice_search_minimum_width'));
+            '', app.style.getPropertyValue('--voice-search-minimum-width'));
       });
 
   test(
@@ -2935,9 +2937,9 @@ suite('OmniboxEverywhereAppTest', () => {
         // Initial state: no prompt class or minimum dimensions set on host.
         assertFalse(app.classList.contains('has-permission-prompt'));
         assertEquals(
-            '', app.style.getPropertyValue('--voice_search_minimum_height'));
+            '', app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
-            '', app.style.getPropertyValue('--voice_search_minimum_width'));
+            '', app.style.getPropertyValue('--voice-search-minimum-width'));
 
         voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
           detail: {
@@ -2955,10 +2957,10 @@ suite('OmniboxEverywhereAppTest', () => {
         assertTrue(app.classList.contains('has-permission-prompt'));
         assertEquals(
             '120px',
-            app.style.getPropertyValue('--voice_search_minimum_height'));
+            app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
             '250px',
-            app.style.getPropertyValue('--voice_search_minimum_width'));
+            app.style.getPropertyValue('--voice-search-minimum-width'));
 
         voiceSearch.dispatchEvent(new CustomEvent('voice-permission-changed', {
           detail: {
@@ -2976,9 +2978,9 @@ suite('OmniboxEverywhereAppTest', () => {
         assertFalse(glow.classList.contains('permission-prompt-showing'));
         assertFalse(app.classList.contains('has-permission-prompt'));
         assertEquals(
-            '', app.style.getPropertyValue('--voice_search_minimum_height'));
+            '', app.style.getPropertyValue('--voice-search-minimum-height'));
         assertEquals(
-            '', app.style.getPropertyValue('--voice_search_minimum_width'));
+            '', app.style.getPropertyValue('--voice-search-minimum-width'));
       });
 
   test(

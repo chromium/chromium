@@ -93,12 +93,12 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
    * to not be cut off by outer view container.
    */
   height: calc(100% - 48px);
-  min-height: var(--voice_search_minimum_height, 160px);
+  min-height: var(--voice-search-minimum-height, 160px);
   /* Shrinks each horizontal side by 24px to match dialog
    * anchor's sizing.
    */
   width: anchor-size(width);
-  min-width: var(--voice_search_minimum_width);
+  min-width: var(--voice-search-minimum-width);
 }
 
 #dialogAnchor {
@@ -351,7 +351,7 @@ cr-most-visited:not([hide-title]) {
 }
 
 :host([show-voice-search-overlay_].has-permission-prompt) {
-  min-height: var(--voice_search_minimum_height, 160px);
+  min-height: var(--voice-search-minimum-height, 160px);
 }
 
 :host([show-voice-search-overlay_]) #content {
