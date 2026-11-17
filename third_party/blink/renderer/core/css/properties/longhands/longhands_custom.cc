@@ -4968,7 +4968,6 @@ const CSSValue* FontLanguageOverride::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
-  DCHECK(RuntimeEnabledFeatures::FontLanguageOverrideEnabled());
   return css_parsing_utils::ConsumeFontLanguageOverride(stream, context);
 }
 
@@ -4977,7 +4976,6 @@ const CSSValue* FontLanguageOverride::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool,
     CSSValuePhase) const {
-  DCHECK(RuntimeEnabledFeatures::FontLanguageOverrideEnabled());
   return ComputedStyleUtils::ValueForFontLanguageOverride(style);
 }
 

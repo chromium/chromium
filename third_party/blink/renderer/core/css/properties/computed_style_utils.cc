@@ -1601,14 +1601,11 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
     return nullptr;
   }
 
-  if (RuntimeEnabledFeatures::FontLanguageOverrideEnabled()) {
-    CSSValue* language_override = ValueForFontLanguageOverride(style);
-    if (!base::ValuesEquivalent(
-            language_override,
-            static_cast<CSSValue*>(
-                CSSIdentifierValue::Create(CSSValueID::kNormal)))) {
-      return nullptr;
-    }
+  CSSValue* language_override = ValueForFontLanguageOverride(style);
+  if (!base::ValuesEquivalent(language_override,
+                              static_cast<CSSValue*>(CSSIdentifierValue::Create(
+                                  CSSValueID::kNormal)))) {
+    return nullptr;
   }
 
   FontDescription::Kerning kerning = style.GetFontDescription().GetKerning();

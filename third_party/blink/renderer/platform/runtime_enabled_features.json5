@@ -3502,11 +3502,6 @@
       status: "stable",
     },
     {
-      // crbug.com/41170551
-      name: "FontLanguageOverride",
-      status: "stable",
-    },
-    {
       // https://crbug.com/40083285
       name: "FontNonNullPrimaryFont",
       status: "stable",

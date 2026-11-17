@@ -1893,7 +1893,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       font: true,
-      runtime_flag: "FontLanguageOverride",
       priority: 1,
       keywords: ["normal"],
       typedom_types: ["Keyword"],
