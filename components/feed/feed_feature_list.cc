@@ -70,5 +70,5 @@ BASE_FEATURE(kFeedNullItemAnimatorOnScrollRestore,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(base::TimeDelta, kFeedCloseRefreshDelay, &kInterestFeedV2,
-                    "feed_close_refresh_delay", base::Minutes(30));
+                    "feed_close_refresh_delay", base::Minutes(15));
 }  // namespace feed

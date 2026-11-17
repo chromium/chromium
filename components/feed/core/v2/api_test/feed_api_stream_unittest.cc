@@ -3123,7 +3123,7 @@ TEST_F(FeedCloseRefreshTest, Scroll) {
 
   // Scrolling should cause a refresh to be scheduled.
   stream_->ReportStreamScrolled(surface.GetSurfaceId(), 1);
-  EXPECT_EQ(base::Minutes(30), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(15), refresh_scheduler_.scheduled_run_time);
 
   refresh_scheduler_.Clear();
 
@@ -3135,7 +3135,7 @@ TEST_F(FeedCloseRefreshTest, Scroll) {
   refresh_scheduler_.Clear();
   task_environment_.FastForwardBy(base::Minutes(5) + base::Seconds(1));
   stream_->ReportStreamScrolled(surface.GetSurfaceId(), 1);
-  EXPECT_EQ(base::Minutes(30), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(15), refresh_scheduler_.scheduled_run_time);
 }
 
 TEST_F(FeedCloseRefreshTest, Open) {
@@ -3145,7 +3145,7 @@ TEST_F(FeedCloseRefreshTest, Open) {
   // Opening should cause a refresh to be scheduled.
   stream_->ReportOpenAction(GURL("http://example.com"), surface.GetSurfaceId(),
                             "", OpenActionType::kDefault);
-  EXPECT_EQ(base::Minutes(30), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(15), refresh_scheduler_.scheduled_run_time);
 }
 
 TEST_F(FeedCloseRefreshTest, OpenInNewTab) {
@@ -3155,7 +3155,7 @@ TEST_F(FeedCloseRefreshTest, OpenInNewTab) {
   // Should cause a refresh to be scheduled.
   stream_->ReportOpenAction(GURL("http://example.com"), surface.GetSurfaceId(),
                             "", OpenActionType::kNewTab);
-  EXPECT_EQ(base::Minutes(30), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(15), refresh_scheduler_.scheduled_run_time);
 }
 
 TEST_F(FeedCloseRefreshTest, ManualRefreshResetsCoalesceTimestamp) {
@@ -3174,7 +3174,7 @@ TEST_F(FeedCloseRefreshTest, ManualRefreshResetsCoalesceTimestamp) {
   // ReportStreamScrolled() should update the schedule.
   stream_->ManualRefresh(surface.GetSurfaceId(), base::DoNothing());
   stream_->ReportStreamScrolled(surface.GetSurfaceId(), 1);
-  EXPECT_EQ(base::Minutes(30), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(15), refresh_scheduler_.scheduled_run_time);
 }
 
 TEST_F(FeedCloseRefreshTest, ExistingScheduleGetsReplaced) {
@@ -3199,7 +3199,7 @@ TEST_F(FeedCloseRefreshTest, ExistingScheduleGetsReplaced) {
 
   // Should cause a refresh to be scheduled.
   stream_->ReportStreamScrolled(surface.GetSurfaceId(), 1);
-  EXPECT_EQ(base::Minutes(30), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(15), refresh_scheduler_.scheduled_run_time);
 }
 
 TEST_F(FeedCloseRefreshTest, Retry) {
@@ -3208,11 +3208,11 @@ TEST_F(FeedCloseRefreshTest, Retry) {
   // Update the schedule.
   stream_->ReportOpenAction(GURL("http://example.com"), surface.GetSurfaceId(),
                             "", OpenActionType::kDefault);
-  EXPECT_EQ(base::Minutes(30), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(15), refresh_scheduler_.scheduled_run_time);
 
   // Simulate an allowed refresh that failed.
   surface.Detach();
-  task_environment_.FastForwardBy(base::Minutes(35));
+  task_environment_.FastForwardBy(base::Minutes(20));
   WaitForIdleTaskQueue();
   refresh_scheduler_.Clear();
   FeedNetwork::RawResponse raw_response;
@@ -3221,24 +3221,24 @@ TEST_F(FeedCloseRefreshTest, Retry) {
   stream_->ExecuteRefreshTask();
   WaitForIdleTaskQueue();
 
-  // The next one should have been scheduled for 60 minutes after the anchor
-  // time, and the clock advanced 35 minutes, so the next one should be
-  // scheduled 25 minutes from now.
+  // The next one should have been scheduled for 30 minutes after the anchor
+  // time, and the clock advanced 20 minutes, so the next one should be
+  // scheduled 10 minutes from now.
   EXPECT_TRUE(refresh_scheduler_.completed);
-  EXPECT_EQ(base::Minutes(25), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(10), refresh_scheduler_.scheduled_run_time);
 
   // Same thing again. There should be one more scheduled retry.
-  task_environment_.FastForwardBy(base::Minutes(35));
+  task_environment_.FastForwardBy(base::Minutes(20));
   refresh_scheduler_.Clear();
   network_.InjectApiRawResponse<QueryBackgroundFeedDiscoverApi>(raw_response);
   stream_->ExecuteRefreshTask();
   WaitForIdleTaskQueue();
 
-  // The next one should have been scheduled for 90 minutes after the anchor
-  // time, and the clock advanced 70 minutes total, so the next one should be
-  // scheduled 20 minutes from now.
+  // The next one should have been scheduled for 45 minutes after the anchor
+  // time, and the clock advanced 40 minutes total, so the next one should be
+  // scheduled 5 minutes from now.
   EXPECT_TRUE(refresh_scheduler_.completed);
-  EXPECT_EQ(base::Minutes(20), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(5), refresh_scheduler_.scheduled_run_time);
 }
 
 TEST_F(FeedCloseRefreshTest, RequestType) {
@@ -3249,7 +3249,7 @@ TEST_F(FeedCloseRefreshTest, RequestType) {
   // Opening should cause a refresh to be scheduled.
   stream_->ReportOpenAction(GURL("http://example.com"), surface.GetSurfaceId(),
                             "", OpenActionType::kDefault);
-  EXPECT_EQ(base::Minutes(30), refresh_scheduler_.scheduled_run_time);
+  EXPECT_EQ(base::Minutes(15), refresh_scheduler_.scheduled_run_time);
 
   // Close the surface and unload the model.
   surface.Detach();
