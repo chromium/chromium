@@ -117,6 +117,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           "help block malicious ads. The specific data depends on the "
           "security-relevant event."
         destination: GOOGLE_OWNED_SERVICE
+        legacy_api_url: "https://safebrowsing.google.com/safebrowsing/clientreport/malware"
       }
       policy {
         cookies_allowed: YES

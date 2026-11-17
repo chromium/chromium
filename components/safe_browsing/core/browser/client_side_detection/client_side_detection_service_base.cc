@@ -732,6 +732,7 @@ void ClientSideDetectionServiceBase::SendClientReportPhishingRequest(
               "loaded in the page, if certain likely phishing and social "
               "engineering terms found on the page, etc."
             destination: GOOGLE_OWNED_SERVICE
+            legacy_api_url: "https://sb-ssl.google.com/safebrowsing/clientreport/phishing"
             last_reviewed: "2026-06-17"
           }
           policy {
