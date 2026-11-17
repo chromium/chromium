@@ -2343,53 +2343,59 @@ export class OmniboxPopupSearchboxElement extends
     const dropdown = this.getDropdownElement();
     const inputEl = this.getInputElement();
 
-    // Stage 1 (`kRevertTemporaryText`): If temporary text active
-    // (selectedMatchIndex > 0 or non-default match/action highlighted),
-    // restores typed query and resets match selection to index 0. Dropdown
-    // stays open and focus stays in Omnibox.
-    const selectedLine = this.virtualFocusEnabled ? this.selection.line :
-                                                    this.selectedMatchIndex;
-    const selectedState = this.virtualFocusEnabled ?
-        this.selection.state :
-        (dropdown?.selection?.state ?? SelectionLineState.kNormal);
+    // Stage 1 (`kRevertTemporaryText`): If temporary text is active (a match
+    // other than the default match is selected, or a button/action is
+    // highlighted), restores the typed query and resets the selection to the
+    // initial line: the default match, or no match if there is none (e.g.
+    // zero-prefix suggestions). Dropdown stays open and focus stays in
+    // Omnibox.
+    const currentSelection: OmniboxPopupSelection =
+        this.virtualFocusEnabled ? this.selection : {
+          line: this.selectedMatchIndex,
+          state: dropdown?.selection?.state ?? SelectionLineState.kNormal,
+          actionIndex: dropdown?.selection?.actionIndex ?? 0,
+        };
+    // The initial line is the default match if there is one, else none (e.g.
+    // zero-prefix suggestions), like
+    // `OmniboxEditModel::IsPopupSelectionOnInitialLine()`.
+    const hasDefaultMatch =
+        !!this.result?.matches?.[0]?.allowedToBeDefaultMatch;
+    const initialSelection: OmniboxPopupSelection = hasDefaultMatch ?
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0} :
+        kDefaultSelection;
+    // Any selection other than `initialSelection` (another match, or a
+    // highlighted button/action) unwinds in Stage 1.
     const hasTemporaryText =
-        selectedLine > 0 || selectedState !== SelectionLineState.kNormal;
+        !selectionsEqual(currentSelection, initialSelection);
     if (this.dropdownIsVisible && hasTemporaryText) {
-      dropdown.selectFirst();
-      this.selectedMatchIndex = 0;
-      if (this.virtualFocusEnabled) {
-        this.setSelection({
-          line: 0,
-          state: SelectionLineState.kNormal,
-          actionIndex: 0,
-        });
+      if (hasDefaultMatch) {
+        dropdown.selectFirst();
+      } else {
+        dropdown.unselect();
       }
-      const defaultMatch = this.result?.matches?.[0];
+      this.selectedMatchIndex = initialSelection.line;
+      if (this.virtualFocusEnabled) {
+        this.setSelection(initialSelection);
+      }
+      // Revert the edit model the same way.
+      this.popupPageHandler_.revertTemporaryText(this.currentSequenceNum_);
+      const defaultMatch =
+          hasDefaultMatch ? (this.result?.matches?.[0] ?? null) : null;
       const typedText = this.lastQueriedInput ?? '';
-      const isDefaultMatch =
-          !!defaultMatch && defaultMatch.allowedToBeDefaultMatch;
-      const inlineText =
-          isDefaultMatch ? defaultMatch.inlineAutocompletion : '';
+      const inlineText = defaultMatch ? defaultMatch.inlineAutocompletion : '';
       this.fullUrlShown_ = false;
       inputEl.setInput({
         text: typedText,
         inline: inlineText,
-        additionalText: isDefaultMatch ? defaultMatch.additionalText : '',
+        additionalText: defaultMatch ? defaultMatch.additionalText : '',
         moveCursorToEnd: inlineText.length === 0,
       });
       if (this.virtualFocusEnabled) {
         // Narrate the restored selection rather than the restored input text.
-        inputEl.setSelectionA11yLabel(this.getSelectionA11yLabel(
-            defaultMatch ?? null,
-            {line: 0, state: SelectionLineState.kNormal, actionIndex: 0}));
+        inputEl.setSelectionA11yLabel(
+            this.getSelectionA11yLabel(defaultMatch, initialSelection));
       }
-      if (defaultMatch && defaultMatch.allowedToBeDefaultMatch) {
-        inputEl.urlEmphasis = defaultMatch.urlEmphasis;
-      } else if (!this.userInputInProgress_) {
-        inputEl.urlEmphasis = this.getSteadyStateUrlEmphasis_();
-      } else {
-        inputEl.urlEmphasis = null;
-      }
+      this.updateUrlEmphasisFromMatch_();
       this.popupPageHandler_.logEscapeAction(
           OmniboxEscapeAction.kRevertTemporaryText);
       return;
