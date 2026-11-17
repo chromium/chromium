@@ -37,8 +37,11 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -48,8 +51,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A controller for the account mismatched notice message. */
 @NullMarked
-public class MismatchNotificationController
-        implements SigninManager.SignInStateObserver, AccountsChangeObserver {
+public class MismatchNotificationController implements SigninManager.SignInStateObserver {
     // LINT.IfChange(SuppressedReason)
     /** Used to record Signin.CctAccountMismatchNoticeSuppressed histogram. */
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -88,8 +90,13 @@ public class MismatchNotificationController
     private final String mAppAccountEmail;
     private final CoreAccountId mAppAccountId;
     private final AccountManagerFacade mAccountManagerFacade;
+    private final IdentityManager mIdentityManager;
     private final SigninManager mSigninManager;
     private final MismatchNotificationSigninDelegate mSigninDelegate;
+    private final AccountsChangeObserver mAccountManagerAccountsChangeObserver =
+            new AccountManagerAccountsObserver();
+    private final IdentityManager.Observer mIdentityManagerObserver =
+            new IdentityManagerAccountsObserver();
 
     private PropertyModel mMessageProperties;
     private boolean mMessageReachedFullyVisible;
@@ -118,17 +125,26 @@ public class MismatchNotificationController
         mProfile = profile;
         mAppAccountEmail = appAccountName;
         mSigninDelegate = signinDelegate;
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
-        assert identityManager != null;
+        mIdentityManager =
+                assertNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            assert mIdentityManager.getRefreshTokensLoadingState()
+                    == RefreshTokensLoadingState.SUCCEEDED;
+        }
         AccountInfo accountInfo =
-                identityManager.findExtendedAccountInfoByEmailAddress(appAccountName);
+                mIdentityManager.findExtendedAccountInfoByEmailAddress(appAccountName);
         assert accountInfo != null;
         mAppAccountId = accountInfo.getId();
         mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
         mSigninManager.addSignInStateObserver(this);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        mAccountManagerFacade.addObserver(this);
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            mIdentityManager.addObserver(mIdentityManagerObserver);
+        } else {
+            mAccountManagerFacade.addObserver(mAccountManagerAccountsChangeObserver);
+        }
     }
 
     public static void recordMismatchNoticeSuppressedHistogram(
@@ -216,11 +232,11 @@ public class MismatchNotificationController
         } else {
             closeType =
                     switch (reason) {
-                        case DismissReason.PRIMARY_ACTION,
-                                DismissReason.SECONDARY_ACTION -> CloseType.ACCEPTED;
+                        case DismissReason.PRIMARY_ACTION, DismissReason.SECONDARY_ACTION ->
+                                CloseType.ACCEPTED;
                         case DismissReason.GESTURE -> CloseType.DISMISSED;
                         case DismissReason.TIMER -> CloseType.TIMED_OUT;
-                            // Rest of the cases has no user intervention, thus viewed as time-out.
+                        // Rest of the cases has no user intervention, thus viewed as time-out.
                         default -> CloseType.TIMED_OUT;
                     };
         }
@@ -230,7 +246,12 @@ public class MismatchNotificationController
     }
 
     private void destroy() {
-        mAccountManagerFacade.removeObserver(this);
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            mIdentityManager.removeObserver(mIdentityManagerObserver);
+        } else {
+            mAccountManagerFacade.removeObserver(mAccountManagerAccountsChangeObserver);
+        }
         mSigninManager.removeSignInStateObserver(this);
     }
 
@@ -239,13 +260,28 @@ public class MismatchNotificationController
         dismissMessage();
     }
 
-    @Override
-    public void onAccountsChanged() {
-        var accountsPromise = mAccountManagerFacade.getAccounts();
-        assert accountsPromise.isFulfilled();
-        if (AccountUtils.findAccountByEmail(accountsPromise.getResult(), mAppAccountEmail)
-                == null) {
-            dismissMessage();
+    private class IdentityManagerAccountsObserver implements IdentityManager.Observer {
+        @Override
+        public void onRefreshTokenRemovedForAccount(CoreAccountId accountId) {
+            assert SigninFeatureMap.isEnabled(
+                    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2);
+            if (accountId.equals(mAppAccountId)) {
+                dismissMessage();
+            }
+        }
+    }
+
+    private class AccountManagerAccountsObserver implements AccountsChangeObserver {
+        @Override
+        public void onAccountsChanged() {
+            assert !SigninFeatureMap.isEnabled(
+                    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2);
+            var accountsPromise = mAccountManagerFacade.getAccounts();
+            assert accountsPromise.isFulfilled();
+            if (AccountUtils.findAccountByEmail(accountsPromise.getResult(), mAppAccountEmail)
+                    == null) {
+                dismissMessage();
+            }
         }
     }
 

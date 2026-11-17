@@ -32,9 +32,17 @@ import androidx.test.filters.MediumTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -52,7 +60,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.messages.DismissReason;
@@ -67,24 +75,58 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/** Tests for the {@link MismatchNotificationController} */
-@RunWith(ChromeJUnit4ClassRunner.class)
+/**
+ * Tests for the {@link MismatchNotificationController}.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2 launch.
+ */
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 // TODO(http://crbug.com/495529795): Enable side panel and fix this test.
 @DisableFeatures({ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
 public class MismatchNotificationControllerTest {
+    @ClassParameter
+    private static final List<ParameterSet> sClassParameters =
+            Arrays.asList(
+                    new ParameterSet().value(false).name("withAccountManagerFacadeSource"),
+                    new ParameterSet().value(true).name("withIdentityManagerSource"));
+
     private static final String TEST_URL = "https://www.google.com";
 
+    private final boolean mIsIdentityManagerSourceOfAccounts;
+
+    private final TestRule mFeatureOverridesRule =
+            (base, description) ->
+                    new Statement() {
+                        @Override
+                        public void evaluate() throws Throwable {
+                            FeatureOverrides.overrideFlag(
+                                    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+                                    mIsIdentityManagerSourceOfAccounts);
+                            base.evaluate();
+                        }
+                    };
+
+    private final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mFeatureOverridesRule).around(mSigninTestRule);
 
     @Rule(order = 1)
     public final CustomTabActivityTestRule mActivityTestRule = new CustomTabActivityTestRule();
+
+    public MismatchNotificationControllerTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+    }
 
     private MismatchNotificationController mMismatchNotificationController;
     private MismatchNotificationChecker mMismatchNotificationChecker;
@@ -235,6 +277,12 @@ public class MismatchNotificationControllerTest {
                                 mActivityTestRule.getActivity(), this::onClose));
 
         // Verify that the message is displayed.
+        onView(withText(R.string.custom_tabs_signed_out_message_subtitle))
+                .check(matches(isDisplayed()));
+
+        // Adding and removing a different account should not dismiss the message.
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
         onView(withText(R.string.custom_tabs_signed_out_message_subtitle))
                 .check(matches(isDisplayed()));
 
