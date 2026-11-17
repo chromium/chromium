@@ -45,6 +45,23 @@ void InitAttributes(optimization_guide::proto::ContentAttributes* attributes,
   attributes->mutable_interaction_info()->set_document_scoped_z_order(z_order);
 }
 
+// Adds to the page of `context` a frame at `bounds`, in device pixels, in
+// front of everything else, whose document has another origin than the page's.
+void AddCrossOriginFrame(PointerContext& context, const gfx::Rect& bounds) {
+  context.page_content.mutable_main_frame_data()
+      ->mutable_security_origin()
+      ->set_value("https://page.test");
+  auto* frame = context.page_content.mutable_root_node()
+                    ->add_children_nodes()
+                    ->mutable_content_attributes();
+  InitAttributes(frame, optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME,
+                 bounds, /*z_order=*/10);
+  frame->mutable_iframe_data()
+      ->mutable_frame_data()
+      ->mutable_security_origin()
+      ->set_value("https://other.test");
+}
+
 // What is captured of a 1000x600 DIP viewport on a 2x display, whose page has
 // one element: an image at (400,200) of 200x200 DIP.
 PointerContext MakeContext() {
@@ -141,6 +158,37 @@ TEST(GetPointerResponseTest, SeveralPoints) {
   EXPECT_TRUE(response.visual_content());
 }
 
+// The model is not shown frames of other origins than the page's.
+TEST(GetPointerResponseTest, FramesOfOtherOriginsArePaintedOver) {
+  PointerContext context = MakeContext();
+  // At (450,250) of 50x50 DIP.
+  AddCrossOriginFrame(context, gfx::Rect(900, 500, 100, 100));
+
+  // The user points into the frame.
+  const std::vector<Location> locations = {{.point = gfx::PointF(475, 275)}};
+  const ToolResponse response = BuildGetPointerResponse(
+      context, locations, /*include_node_identity=*/false);
+  ASSERT_TRUE(response.Ok());
+  // What is in the frame is not described.
+  const base::ListValue* points = response.GetResult().FindList("points");
+  ASSERT_TRUE(points);
+  ASSERT_EQ(points->size(), 1u);
+  EXPECT_FALSE(points->front().GetDict().FindDict("node"));
+
+  // The image is of the 500x300 DIP at (225,125), in device pixels: the frame
+  // is at (450,250) in it, of 100x100, and the page is white beside it. The
+  // crosshair, whose arms reach 48 pixels from the frame's middle, is drawn
+  // after the frame is painted over.
+  ASSERT_TRUE(response.visual_content());
+  const SkBitmap image =
+      gfx::JPEGCodec::Decode(response.visual_content()->image_data);
+  ASSERT_EQ(image.width(), 1000);
+  ASSERT_EQ(image.height(), 600);
+  EXPECT_LT(SkColorGetG(image.getColor(460, 260)), 0x20u);
+  EXPECT_GT(SkColorGetR(image.getColor(540, 300)), 0x60u);
+  EXPECT_GT(SkColorGetG(image.getColor(440, 260)), 0xE0u);
+}
+
 TEST(GetPointerResponseTest, NoPointInTheViewport) {
   const std::vector<Location> outside = {
       {.point = gfx::PointF(-1, 300)},
@@ -206,6 +254,26 @@ TEST_F(GetPointerResponseSelectionTest, ShowsSelectionWhenNotPointing) {
     "viewport": {"width": 1000, "height": 600}
   })"));
   EXPECT_TRUE(response.visual_content());
+}
+
+// The image of a selection does not show frames of other origins either.
+TEST_F(GetPointerResponseSelectionTest, FramesOfOtherOriginsArePaintedOver) {
+  PointerContext context = MakeContextWithSelection();
+  // At (300,100) of 50x50 DIP, below the selected paragraph.
+  AddCrossOriginFrame(context, gfx::Rect(600, 200, 100, 100));
+
+  const ToolResponse response =
+      BuildGetPointerResponse(context, {}, /*include_node_identity=*/false);
+  ASSERT_TRUE(response.Ok());
+  ASSERT_TRUE(response.visual_content());
+  // The image starts at the viewport's origin, so the frame is where it is in
+  // the screenshot, and the page is white beside it.
+  const SkBitmap image =
+      gfx::JPEGCodec::Decode(response.visual_content()->image_data);
+  ASSERT_GT(image.width(), 650);
+  ASSERT_GT(image.height(), 250);
+  EXPECT_LT(SkColorGetG(image.getColor(650, 250)), 0x20u);
+  EXPECT_GT(SkColorGetG(image.getColor(500, 250)), 0xE0u);
 }
 
 // The selection runs from its start node to the end of its end node.

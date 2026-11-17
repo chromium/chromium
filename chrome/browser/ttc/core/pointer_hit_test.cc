@@ -37,26 +37,6 @@ constexpr size_t kMaxTextBytes = 128;
 // a thing on it. To be tuned once there are evals of the tool.
 constexpr double kBackgroundViewportFraction = 0.5;
 
-// Whether `node` is an iframe whose document has another origin than the
-// page's main document. The model is not given the content of such frames, so
-// what the pointer is on in one must not be described to it either. A frame
-// whose content was left out or could not be had, or whose origin is unknown,
-// counts as one.
-bool IsCrossOriginFrame(const ContentNode& node,
-                        const AnnotatedPageContent& page_content) {
-  const ContentAttributes& attributes = node.content_attributes();
-  if (attributes.attribute_type() !=
-      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
-    return false;
-  }
-  if (!attributes.iframe_data().has_frame_data()) {
-    return true;
-  }
-  return !IsSameSecurityOrigin(
-      attributes.iframe_data().frame_data().security_origin(),
-      page_content.main_frame_data().security_origin());
-}
-
 // Returns the start of the text of `root` and its descendants, in document
 // order, leaving out that of frames of other origins. Iterative because the
 // tree comes from a renderer and may be deep.
@@ -230,6 +210,21 @@ std::optional<base::DictValue> DescribeNodeAtPoint(
                                 .Set("width", bounds.width())
                                 .Set("height", bounds.height()));
   return description;
+}
+
+bool IsCrossOriginFrame(const ContentNode& node,
+                        const AnnotatedPageContent& page_content) {
+  const ContentAttributes& attributes = node.content_attributes();
+  if (attributes.attribute_type() !=
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+    return false;
+  }
+  if (!attributes.iframe_data().has_frame_data()) {
+    return true;
+  }
+  return !IsSameSecurityOrigin(
+      attributes.iframe_data().frame_data().security_origin(),
+      page_content.main_frame_data().security_origin());
 }
 
 bool IsSameSecurityOrigin(const optimization_guide::proto::SecurityOrigin& a,

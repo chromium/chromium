@@ -38,6 +38,10 @@ struct PointerContext;
 //     "viewport": {"width": 1280, "height": 720}
 //   }
 //
+// Frames whose documents have another origin than the page's are painted over
+// in the image, whichever of the two it shows; see
+// PaintOverCrossOriginFrames().
+//
 // If no location is in the viewport and kTtcGetPointerUseSelection is on, the
 // text the user has selected in the page's main document stands in for where
 // they point. The image then has no crosshair, and instead of "points" the

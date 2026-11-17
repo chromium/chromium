@@ -15,6 +15,7 @@
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/pointer_context_capturer.h"
 #include "chrome/browser/ttc/core/pointer_crop_geometry.h"
+#include "chrome/browser/ttc/core/pointer_frame_redaction.h"
 #include "chrome/browser/ttc/core/pointer_hit_test.h"
 #include "chrome/browser/ttc/core/pointer_image_annotator.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -165,7 +166,7 @@ ToolResponse BuildGetPointerResponse(
   // The viewport is what the screenshot shows, so that the points, the image
   // and the hit test all agree on what is in it. There is none if the
   // screenshot is not an image or the scale factor is not a usable number.
-  const SkBitmap screenshot = gfx::JPEGCodec::Decode(context.screenshot);
+  SkBitmap screenshot = gfx::JPEGCodec::Decode(context.screenshot);
   const gfx::Size viewport =
       context.scale_factor > 0
           ? gfx::ScaleToFlooredSize(
@@ -177,6 +178,11 @@ ToolResponse BuildGetPointerResponse(
         actor::mojom::ActionResultCode::kScreenshotCaptureFailed,
         "The screenshot could not be read");
   }
+
+  // The model is not given the content of frames of other origins than the
+  // page's, so they are not for it to see either, whether the image is of
+  // where the user points or of what they have selected.
+  PaintOverCrossOriginFrames(context.page_content, screenshot);
 
   // In the order the user pointed. Contains() is false for a point that is
   // not a number, so those are left out too.

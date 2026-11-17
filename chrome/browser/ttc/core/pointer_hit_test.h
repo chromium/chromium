@@ -15,6 +15,7 @@ class PointF;
 
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
+class ContentNode;
 class SecurityOrigin;
 }  // namespace optimization_guide::proto
 
@@ -44,6 +45,15 @@ std::optional<base::DictValue> DescribeNodeAtPoint(
     const optimization_guide::proto::AnnotatedPageContent& page_content,
     const gfx::PointF& point,
     float scale_factor);
+
+// Whether `node` is an iframe whose document has another origin than the main
+// document of `page_content`. The model is not given the content of such
+// frames, so neither what the pointer is on in one nor how one looks may reach
+// it. A frame whose content was left out of the page content or could not be
+// had, or whose origin is unknown, counts as one.
+bool IsCrossOriginFrame(
+    const optimization_guide::proto::ContentNode& node,
+    const optimization_guide::proto::AnnotatedPageContent& page_content);
 
 // Whether `a` and `b`, which are origins as the page content records them, are
 // the same origin: what url::Origin::IsSameOriginWith() says of the origins
