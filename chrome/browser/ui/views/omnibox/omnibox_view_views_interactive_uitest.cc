@@ -502,7 +502,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest,
 
 #endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
-IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, SelectAllOnTabToFocus) {
+// TODO(crbug.com/587050783): Re-enable on Linux Wayland.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SelectAllOnTabToFocus DISABLED_SelectAllOnTabToFocus
+#else
+#define MAYBE_SelectAllOnTabToFocus SelectAllOnTabToFocus
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MAYBE_SelectAllOnTabToFocus) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   ASSERT_TRUE(
