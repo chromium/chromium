@@ -162,6 +162,7 @@ BASE_DECLARE_FEATURE(kDynamicAimSubmit);
 extern const base::FeatureParam<bool> kShowRhsAimHint;
 BASE_DECLARE_FEATURE(kOmniboxMultimodalInput);
 BASE_DECLARE_FEATURE(kOmniboxDebounceKeyboardVisibility);
+BASE_DECLARE_FEATURE(kOmniboxUrlBarAimNaturalTextIme);
 BASE_DECLARE_FEATURE(kOmniboxSkipRedundantLocationBarUpdates);
 BASE_DECLARE_FEATURE(kOmniboxDisableTabsForCanvas);
 BASE_DECLARE_FEATURE(kOmniboxAimOpenInNewTab);

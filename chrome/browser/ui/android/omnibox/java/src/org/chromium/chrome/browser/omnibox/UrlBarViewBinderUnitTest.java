@@ -172,6 +172,15 @@ public class UrlBarViewBinderUnitTest {
     }
 
     @Test
+    public void testSetUseNaturalTextIme() {
+        mModel.set(UrlBarProperties.USE_NATURAL_TEXT_IME, true);
+        assertTrue(mUrlBar.getUseNaturalTextImeForTesting());
+
+        mModel.set(UrlBarProperties.USE_NATURAL_TEXT_IME, false);
+        assertFalse(mUrlBar.getUseNaturalTextImeForTesting());
+    }
+
+    @Test
     public void testSetManageSearchEnginesCallback() {
         mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, mRunnable);
         assertEquals(mRunnable, mUrlBar.getManageSearchEnginesCallback());

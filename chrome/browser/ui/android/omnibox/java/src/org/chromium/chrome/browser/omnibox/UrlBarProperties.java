@@ -193,6 +193,10 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<Callback<Integer>> URL_DIRECTION_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the URL bar should configure the IME for natural text composition. */
+    public static final WritableBooleanPropertyKey USE_NATURAL_TEXT_IME =
+            new WritableBooleanPropertyKey();
+
     /** Whether the URL bar should use a small text size. */
     public static final WritableBooleanPropertyKey USE_SMALL_TEXT =
             new WritableBooleanPropertyKey();
@@ -226,6 +230,7 @@ class UrlBarProperties {
                 TEXT_STATE,
                 TEXT_WRAPPED_CALLBACK,
                 URL_DIRECTION_LISTENER,
+                USE_NATURAL_TEXT_IME,
                 USE_SMALL_TEXT
                 // go/keep-sorted end
             };
