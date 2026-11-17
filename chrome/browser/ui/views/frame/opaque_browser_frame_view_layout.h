@@ -84,7 +84,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // Returns the height of the entire nonclient top border, from the edge of the
   // window to the top of the tabs. If |restored| is true, this is calculated as
   // if the window was restored, regardless of its current state.
-  int NonClientTopHeight(bool restored) const;
+  virtual int NonClientTopHeight(bool restored) const;
 
   // Returns the y-coordinate of the caption button when native frame buttons
   // are disabled.  If |restored| is true, acts as if the window is restored
@@ -166,6 +166,14 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // when the window is restored.
   virtual int NonClientExtraTopThickness() const;
 
+  virtual void LayoutTitleBar(views::View* host);
+
+  views::View* window_icon() const { return window_icon_; }
+  views::Label* window_title() const { return window_title_; }
+  void set_window_icon_bounds(const gfx::Rect& bounds) {
+    window_icon_bounds_ = bounds;
+  }
+
   raw_ptr<OpaqueBrowserFrameViewLayoutDelegate> delegate_ = nullptr;
 
   // The leading and trailing x positions of the empty space available for
@@ -182,7 +190,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   // Layout various sub-components of this view.
   void LayoutWindowControls();
-  void LayoutTitleBar();
 
   void ConfigureButton(views::FrameButton button_id, ButtonAlignment align);
 

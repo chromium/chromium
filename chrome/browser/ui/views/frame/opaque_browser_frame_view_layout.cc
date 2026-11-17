@@ -293,7 +293,7 @@ void OpaqueBrowserFrameViewLayout::LayoutWindowControls() {
   }
 }
 
-void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
+void OpaqueBrowserFrameViewLayout::LayoutTitleBar(views::View* host) {
   bool use_hidden_icon_location = true;
 
   int size = delegate_->GetIconSize();
@@ -608,7 +608,7 @@ void OpaqueBrowserFrameViewLayout::Layout(views::View* host) {
   if (is_window_controls_overlay_enabled_) {
     LayoutTitleBarForWindowControlsOverlay(host);
   } else {
-    LayoutTitleBar();
+    LayoutTitleBar(host);
   }
 
   // Any buttons/icon/title were laid out based on the frame border thickness,

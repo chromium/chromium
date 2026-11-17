@@ -35,6 +35,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   // BrowserFrameViewLinux:
   void Layout(PassKey) override;
+  bool ShouldShowWindowIcon() const override;
   FrameButtonStyle GetFrameButtonStyle() const override;
   int GetTranslucentTopAreaHeight() const override;
   BrowserLayoutParams GetBrowserLayoutParams() const override;

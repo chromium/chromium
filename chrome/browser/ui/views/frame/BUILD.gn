@@ -2733,6 +2733,7 @@ if (is_linux) {
     deps = [
       ":opaque_browser_frame_view_layout",
       "//build:buildflag_header_h",
+      "//ui/gfx",
       "//ui/gfx/geometry",
       "//ui/linux:linux_ui",
       "//ui/views",

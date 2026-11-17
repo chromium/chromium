@@ -32,6 +32,12 @@ void BrowserFrameViewLinuxNative::Layout(PassKey) {
   LayoutSuperclass<BrowserFrameViewLinux>(this);
 }
 
+bool BrowserFrameViewLinuxNative::ShouldShowWindowIcon() const {
+  return (IsTabStripVisible() || WebAppButtonHeight() > 0 ||
+          GetUnframedModeEnabled()) &&
+         BrowserFrameViewLinux::ShouldShowWindowIcon();
+}
+
 BrowserFrameViewLinuxNative::FrameButtonStyle
 BrowserFrameViewLinuxNative::GetFrameButtonStyle() const {
   return FrameButtonStyle::kImageButton;

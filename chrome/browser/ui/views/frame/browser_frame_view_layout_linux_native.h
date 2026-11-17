@@ -29,6 +29,9 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
 
   ui::WindowFrameProvider* GetFrameProvider() const;
 
+  // OpaqueBrowserFrameViewLayout:
+  int NonClientTopHeight(bool restored) const override;
+
  protected:
   // OpaqueBrowserFrameViewLayout:
   int CaptionButtonY(views::FrameButton button_id,
@@ -39,8 +42,13 @@ class BrowserFrameViewLayoutLinuxNative : public BrowserFrameViewLayoutLinux {
   int GetWindowCaptionSpacing(views::FrameButton button_id,
                               bool leading_spacing,
                               bool is_leading_button) const override;
+  void LayoutTitleBar(views::View* host) override;
 
  private:
+  // Returns true when this window should use GTK headerbar metrics and title
+  // layout (non-tabbed, non-web-app windows).
+  bool ShouldUseNativeHeaderBar() const;
+
   // Converts a FrameButton to a FrameButtonDisplayType, taking into
   // consideration the maximized state of the browser window.
   ui::NavButtonProvider::FrameButtonDisplayType GetButtonDisplayType(
