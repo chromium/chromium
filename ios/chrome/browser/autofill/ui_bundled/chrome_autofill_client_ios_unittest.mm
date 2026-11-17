@@ -11,6 +11,8 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/gtest_util.h"
+#import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "base/test/values_test_util.h"
@@ -24,6 +26,7 @@
 #import "components/autofill/core/browser/integrators/password_form_classification.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -44,8 +47,13 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/personal_context/core/mock_personal_context_eligibility_service.h"
+#import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
@@ -56,12 +64,21 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/form_input_accessory_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -115,6 +132,11 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
       : web_client_(std::make_unique<ChromeWebClient>()) {
     scene_state_ = [[SceneState alloc] init];
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -134,11 +156,11 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
                   testing::Return(PersonalContextEligibilityState::kEligible));
           return service;
         }));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_, scene_state_);
 
-    web::WebState::CreateParams params(profile_.get());
+    web::WebState::CreateParams params(profile_);
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -164,7 +186,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     autofill_client_ =
         std::make_unique<WithFakedFromWebState<ChromeAutofillClientIOS>>(
-            profile_.get(), web_state_.get(),
+            profile_, web_state_.get(),
             InfoBarManagerImpl::FromWebState(web_state_.get()), autofill_agent);
     autofill_manager_injector_ =
         std::make_unique<TestAutofillManagerInjectorIOS<TestAutofillManager>>(
@@ -218,16 +240,64 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   id autofill_agent_delegate_;
   id mock_snackbar_handler_;
 
-  TestProfileIOS* profile() { return profile_.get(); }
+  TestProfileIOS* profile() { return profile_; }
+
+  void SignInFakeUserWithUnknownCapabilities() {
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentityWithUnknownCapabilities(fake_identity);
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForProfile(profile());
+    auth_service->SignIn(fake_identity,
+                         signin_metrics::AccessPoint::kStartPage);
+  }
+
+  void SetMustShowEquallyWeightedButtonsCapability(bool value) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile());
+    CoreAccountInfo core_account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    AccountInfo account_info =
+        identity_manager->FindExtendedAccountInfo(core_account_info);
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator
+        .set_must_show_equally_weighted_buttons_for_private_passes_in_autofill(
+            value);
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  }
+
+  // Shows the entity import bubble and returns the extracted
+  // `SaveEntityParams` if an infobar was displayed, or `std::nullopt` if the
+  // prompt was suppressed.
+  std::optional<SaveEntityParams> ShowEntityImportBubbleAndGetParams(
+      EntityInstance entity,
+      AutofillClient::EntityImportPromptResultCallback callback =
+          base::DoNothing()) {
+    client().ShowEntityImportBubble(
+        std::move(entity), /*old_entity=*/std::nullopt,
+        /*save_is_synchronous=*/true, /*public_passes_notice=*/{},
+        std::move(callback));
+    infobars::InfoBarManager* infobar_manager =
+        InfoBarManagerImpl::FromWebState(web_state());
+    if (infobar_manager->infobars().empty()) {
+      return std::nullopt;
+    }
+    auto* delegate = static_cast<AutofillAiSaveEntityInfoBarDelegateIOS*>(
+        infobar_manager->infobars()[0]->delegate());
+    return delegate->ExtractParams();
+  }
 
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
 
   web::ScopedTestingWebClient web_client_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   // Declared after `web_state_` so that the agent, which holds a raw_ptr to the
   // profile's `PrefService`, is released before the profile goes away.
@@ -1107,4 +1177,60 @@ TEST_F(ChromeAutofillClientIOSTest,
                            FillingProduct::kAddress);
   EXPECT_FALSE(client().suggestion_controller().is_showing());
 }
+
+class ChromeAutofillClientIOSPrivatePassRecordTypeTest
+    : public ChromeAutofillClientIOSTest,
+      public testing::WithParamInterface<EntityInstance::RecordType> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChromeAutofillClientIOSPrivatePassRecordTypeTest,
+    testing::Values(EntityInstance::RecordType::kLocal,
+                    EntityInstance::RecordType::kServerWallet));
+
+// Tests that `ShowEntityImportBubble()` enables the explicit decline button
+// when the account capability is true for private passes.
+TEST_P(ChromeAutofillClientIOSPrivatePassRecordTypeTest,
+       ShowEntityImportBubble_RefinedUxWhenCapabilityTrueForPrivatePass) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+  SignInFakeUserWithUnknownCapabilities();
+  SetMustShowEquallyWeightedButtonsCapability(true);
+
+  std::optional<SaveEntityParams> params = ShowEntityImportBubbleAndGetParams(
+      test::GetPassportEntityInstance({.record_type = GetParam()}));
+  ASSERT_TRUE(params.has_value());
+  EXPECT_TRUE(params->show_explicit_decline_button);
+}
+
+// Tests that `ShowEntityImportBubble()` keeps the explicit decline button
+// disabled when the account capability is false for private passes.
+TEST_P(ChromeAutofillClientIOSPrivatePassRecordTypeTest,
+       ShowEntityImportBubble_StandardUxWhenCapabilityFalseForPrivatePass) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+  SignInFakeUserWithUnknownCapabilities();
+  SetMustShowEquallyWeightedButtonsCapability(false);
+
+  std::optional<SaveEntityParams> params = ShowEntityImportBubbleAndGetParams(
+      test::GetPassportEntityInstance({.record_type = GetParam()}));
+  ASSERT_TRUE(params.has_value());
+  EXPECT_FALSE(params->show_explicit_decline_button);
+}
+
+// Tests that `ShowEntityImportBubble()` keeps the explicit decline button
+// disabled when `kAutofillRegionalizedPrivatePassesUxRefine` is disabled.
+TEST_P(ChromeAutofillClientIOSPrivatePassRecordTypeTest,
+       ShowEntityImportBubble_StandardUxWhenFlagDisabledForPrivatePass) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
+  SignInFakeUserWithUnknownCapabilities();
+
+  std::optional<SaveEntityParams> params = ShowEntityImportBubbleAndGetParams(
+      test::GetPassportEntityInstance({.record_type = GetParam()}));
+  ASSERT_TRUE(params.has_value());
+  EXPECT_FALSE(params->show_explicit_decline_button);
+}
+
 }  // namespace autofill
