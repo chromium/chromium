@@ -32,3 +32,6 @@ per-file web_app_isolation_delegate*=file://chrome/browser/web_applications/isol
 
 # For large-scale Sync-related changes, refactorings, etc.
 per-file *sync*=file://components/sync/OWNERS
+
+# Web Install API
+per-file web_install*=liahiscock@microsoft.com,kristinlee@microsoft.com
