@@ -132,6 +132,11 @@ class MockWebUIToolbarControlDelegate
               (toolbar_ui_api::mojom::FocusRequestTarget target),
               (override));
   MOCK_METHOD(void,
+              OnPaneFocusRequested,
+              (views::AccessiblePaneView * pane,
+               toolbar_ui_api::mojom::FocusRequestTarget target),
+              (override));
+  MOCK_METHOD(void,
               OverflowButtonClicked,
               (ui::ElementIdentifier identifier),
               (override));

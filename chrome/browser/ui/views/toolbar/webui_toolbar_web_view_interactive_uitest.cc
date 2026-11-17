@@ -8,9 +8,12 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -48,18 +52,22 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -157,6 +165,9 @@ class WebUIToolbarWebViewInteractiveTest : public InteractiveBrowserTest {
     // Disable kExtensionsPinnedByDefault to prevent test extensions from being
     // pinned automatically upon installation. This avoids a DCHECK crash when
     // the test subsequently tries to pin them manually.
+    // Disable kOmniboxEverywhere (enabled by the field trial testing config on
+    // macOS and Windows), whose post-startup status tray icon intermittently
+    // hangs in AppKit on macOS 26 during test setup (crbug.com/585197086).
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
          features::kWebUILocationBar, features::kWebUIBackForwardButton,
@@ -164,7 +175,8 @@ class WebUIToolbarWebViewInteractiveTest : public InteractiveBrowserTest {
          features::kWebUIExtensionsContainer,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2},
-        /*disabled_features=*/{features::kExtensionsPinnedByDefault});
+        /*disabled_features=*/{features::kExtensionsPinnedByDefault,
+                               omnibox::kOmniboxEverywhere});
   }
 
   void SetUpOnMainThread() override {
@@ -650,6 +662,114 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
   ASSERT_TRUE(contents_view);
   contents_view->RequestFocus();
   EXPECT_FALSE(toolbar_view->GetAppMenuFocused());
+}
+
+// Focusing the app menu from C++ (e.g. via F10 or Alt) shows a focus ring on
+// the app menu button even after a mouse click in the toolbar, and even if the
+// button already had focus without a focus ring.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       AppMenuFocusShowsFocusRing) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kToolbarAppMenuButtonElementId, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  ASSERT_TRUE(webui_toolbar_view);
+  ASSERT_TRUE(web_view);
+
+  content::WebContents* web_contents = web_view->GetWebContents();
+  AppMenuControl* app_menu_control = webui_toolbar_view->GetAppMenuControl();
+  ASSERT_TRUE(app_menu_control);
+  ASSERT_TRUE(WaitForButtonVisible(web_contents, kReloadButtonSelector));
+
+  // Returns whether the innermost focused element is the `<button>` inside
+  // `chip_js` (a `toolbar-chip-button` or `cr-icon-button`) and whether it
+  // matches `:focus-visible`, as "<focused> <focus-visible>".
+  auto get_focus_state = [&](const std::string& chip_js) {
+    return content::EvalJs(web_contents, base::StringPrintf(
+                                             R"((() => {
+                     let el = document.activeElement;
+                     while (el?.shadowRoot?.activeElement) {
+                       el = el.shadowRoot.activeElement;
+                     }
+                     const chip = %s;
+                     const focused = !!el && !!chip && (el === chip ||
+                         el.getRootNode() === chip.shadowRoot);
+                     return focused + ' ' + (!!el &&
+                         el.matches(':focus-visible'));
+                   })())",
+                                             chip_js.c_str()))
+        .ExtractString();
+  };
+  const std::string app_menu_js = GetButtonIconJS(kAppMenuButtonSelector);
+  const std::string reload_js = GetButtonIconJS(kReloadButtonSelector);
+
+  // Clicks the reload button with the mouse, so that subsequent programmatic
+  // focus changes don't match `:focus-visible` by default. The button's
+  // pointer handlers are suppressed so that the click only focuses it: an
+  // actual reload can briefly disable the button when the navigation finishes
+  // while it is hovered, which drops its focus.
+  auto click_reload = [&]() {
+    ASSERT_TRUE(content::ExecJs(
+        web_contents, base::StrCat({R"((() => {
+          const host = )",
+                                    GetButtonAppJS(kReloadButtonSelector),
+                                    R"(;
+          for (const type of ['pointerdown', 'pointerup', 'click']) {
+            host.addEventListener(type, e => e.stopPropagation(),
+                                  {capture: true, once: true});
+          }
+        })())"})));
+    content::EvalJsResult result = content::EvalJs(
+        web_contents,
+        base::StrCat({reload_js, ".getBoundingClientRect().toJSON()"}));
+    ASSERT_TRUE(result.is_ok());
+    const base::DictValue& rect = result.ExtractDict();
+    const double zoom = blink::ZoomLevelToZoomFactor(
+        zoom::ZoomController::GetZoomLevelForWebContents(web_contents));
+    const gfx::Point center(
+        base::ClampFloor(
+            (*rect.FindDouble("left") + *rect.FindDouble("width") / 2) * zoom),
+        base::ClampFloor(
+            (*rect.FindDouble("top") + *rect.FindDouble("height") / 2) * zoom));
+    content::SimulateMouseClickAt(web_contents, 0,
+                                  blink::WebMouseEvent::Button::kLeft, center);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return get_focus_state(reload_js) == "true false"; }));
+    EXPECT_FALSE(
+        browser()->tab_strip_model()->GetActiveWebContents()->IsLoading());
+  };
+
+  web_view->RequestFocus();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return web_view->HasFocus(); }));
+  // Ensure any startup focus request (such as initial location bar focus) has
+  // been processed by the WebUI before simulating mouse clicks in the toolbar.
+  ASSERT_TRUE(FlushWebUIToolbarPipes(browser()));
+
+  // 1. Focus moves to the app menu button from another, mouse-focused button.
+  ASSERT_NO_FATAL_FAILURE(click_reload());
+  app_menu_control->Focus(
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return get_focus_state(app_menu_js) == "true true"; }));
+
+  // 2. The app menu button already has focus, without a focus ring. The mouse
+  // click above left the document's last focus type as mouse, so blurring the
+  // inner button and re-focusing without options focuses it without
+  // `:focus-visible`.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      base::StrCat({"(() => { const chip = ", app_menu_js,
+                    "; chip.$.button.blur(); chip.focus(); })()"})));
+  ASSERT_EQ("true false", get_focus_state(app_menu_js));
+  app_menu_control->Focus(
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return get_focus_state(app_menu_js) == "true true"; }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,

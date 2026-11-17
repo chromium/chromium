@@ -171,14 +171,17 @@ export class AppMenuButtonElement extends AppMenuButtonElementBase {
         'webui-toolbar:app_menu_glow_up_end';
   }
 
-  override focus() {
-    this.$.button.focus();
+  override focus(options?: FocusOptions) {
+    this.$.button.focus(options);
   }
 
   // Handles focus requests from the C++ side.
   private onFocusRequest_(target: FocusRequestTarget) {
     if (target === FocusRequestTarget.kAppMenu) {
-      this.focus();
+      // The internal WebView gets views focus directly rather than through tab
+      // traversal, so request a focus ring explicitly, as keyboard focus (e.g.
+      // F10 or Alt) should show one even after a mouse click in the toolbar.
+      this.focus({focusVisible: true});
     }
   }
 

@@ -73,6 +73,7 @@ struct ContextMenuParams;
 }  // namespace content
 
 namespace views {
+class AccessiblePaneView;
 struct ProposedLayout;
 class WebView;
 }  // namespace views
@@ -144,6 +145,11 @@ class WebUIToolbarControlDelegate {
   virtual void OnGlicActorTaskIconStateChanged(
       toolbar_ui_api::mojom::GlicActorTaskIconStatePtr state) = 0;
   virtual void OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
+  // Like `OnFocusRequested()`, but focuses the internal WebView with
+  // `pane->SetPaneFocus()`, so that `pane` gets pane focus.
+  virtual void OnPaneFocusRequested(
+      views::AccessiblePaneView* pane,
       toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
 
   virtual void OverflowButtonClicked(ui::ElementIdentifier identifier) = 0;
@@ -564,6 +570,9 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::GlicActorTaskIconStatePtr state) override;
   void OnFocusRequested(
       toolbar_ui_api::mojom::FocusRequestTarget target) override;
+  void OnPaneFocusRequested(
+      views::AccessiblePaneView* pane,
+      toolbar_ui_api::mojom::FocusRequestTarget target) override;
   std::optional<GURL> ConsumeDroppedUrl(
       const gfx::PointF& drop_position) override;
 
@@ -684,6 +693,11 @@ class WebUIToolbarWebView
   // viewport origin into absolute screen rectangle coordinates in DIPs.
   gfx::Rect ConvertBoundsFromCssPixelsToScreenCoords(
       const gfx::RectF& bounds_in_css_pixels) const;
+
+  // Records `target` as the pending focus request and focuses `web_view_`,
+  // with `pane->SetPaneFocus()` if `pane` is non-null.
+  void RequestFocusForTarget(views::AccessiblePaneView* pane,
+                             toolbar_ui_api::mojom::FocusRequestTarget target);
 
   // Hands `pending_focus_request_` to the WebUI if the page is initialized and
   // the WebView holds views focus. If the page is initialized but focus is

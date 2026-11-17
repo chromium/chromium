@@ -131,8 +131,18 @@ export class ToolbarChipButtonElement extends CrLitElement {
    */
   accessor flatEdge: 'start'|'end'|null = null;
 
-  override focus() {
-    this.$.button.focus();
+  override focus(options?: FocusOptions) {
+    // `focus()` is a no-op on the focused element, so blur first if a focus
+    // ring is requested for a button that has focus without one (e.g. after a
+    // mouse click). Check `activeElement` rather than `:focus`, which doesn't
+    // match while the frame itself is unfocused (e.g. a focus request that
+    // arrives before the frame regains focus).
+    if (options?.focusVisible &&
+        this.shadowRoot.activeElement === this.$.button &&
+        !this.$.button.matches(':focus-visible')) {
+      this.$.button.blur();
+    }
+    this.$.button.focus(options);
   }
 
   protected onPrefixIconSlotchange_(e: Event) {

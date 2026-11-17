@@ -115,6 +115,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
@@ -1867,17 +1868,34 @@ void WebUIToolbarWebView::OnGlicActorTaskIconStateChanged(
 
 void WebUIToolbarWebView::OnFocusRequested(
     toolbar_ui_api::mojom::FocusRequestTarget target) {
-  // Record the request before focusing the WebView: if `RequestFocus()` grants
-  // focus synchronously it re-enters `OnInternalWebViewFocused()`, which
-  // delivers the request right away (if the page is ready).
+  RequestFocusForTarget(/*pane=*/nullptr, target);
+}
+
+void WebUIToolbarWebView::OnPaneFocusRequested(
+    views::AccessiblePaneView* pane,
+    toolbar_ui_api::mojom::FocusRequestTarget target) {
+  RequestFocusForTarget(pane, target);
+}
+
+void WebUIToolbarWebView::RequestFocusForTarget(
+    views::AccessiblePaneView* pane,
+    toolbar_ui_api::mojom::FocusRequestTarget target) {
+  // Record the request before focusing the WebView: if focus is granted
+  // synchronously it re-enters `OnInternalWebViewFocused()`, which delivers
+  // the request right away (if the page is ready) and does not notify
+  // `location_bar_`, which could otherwise re-focus an open omnibox popup.
   pending_focus_request_ = target;
   {
     base::AutoReset<bool> in_focus_request(&in_focus_request_, true);
-    // We need to focus the WebView as well, besides the JS focus.
-    web_view_->RequestFocus();
+    // Focus the WebView as well, besides the JS focus.
+    if (pane) {
+      pane->SetPaneFocus(web_view_);
+    } else {
+      web_view_->RequestFocus();
+    }
   }
   // Covers the case where the WebView already had focus, so that
-  // `RequestFocus()` was a no-op and `OnInternalWebViewFocused()` did not run.
+  // focusing it was a no-op and `OnInternalWebViewFocused()` did not run.
   // Otherwise this is a no-op too and the request stays pending until the
   // page initializes and/or the WebView gains focus.
   MaybeFlushPendingFocusRequest();

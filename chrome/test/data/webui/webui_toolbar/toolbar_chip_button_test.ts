@@ -4,7 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
-import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {ToolbarChipButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
@@ -20,6 +20,22 @@ suite('ToolbarChipButtonTest', function() {
 
   test('CreatesElement', function() {
     assertEquals('TOOLBAR-CHIP-BUTTON', element.tagName);
+  });
+
+  test('FocusVisible', function() {
+    const button = element.$.button;
+
+    element.focus();
+    assertEquals(button, element.shadowRoot.activeElement);
+
+    // Requesting a focus ring applies it even if the button already has focus
+    // without one.
+    button.blur();
+    button.focus({focusVisible: false});
+    assertFalse(button.matches(':focus-visible'));
+    element.focus({focusVisible: true});
+    assertEquals(button, element.shadowRoot.activeElement);
+    assertTrue(button.matches(':focus-visible'));
   });
 
   test('ForwardAriaLabel', async function() {

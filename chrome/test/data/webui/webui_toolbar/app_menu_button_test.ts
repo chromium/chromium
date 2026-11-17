@@ -312,6 +312,7 @@ suite('AppMenuButtonTest', function() {
 
     activeEl = activeEl?.shadowRoot?.activeElement ?? null;
     assertEquals('BUTTON', activeEl?.tagName);
+    assertTrue(activeEl!.matches(':focus-visible'));
   });
 
   test('Focusin/Focusout Reporting', function() {

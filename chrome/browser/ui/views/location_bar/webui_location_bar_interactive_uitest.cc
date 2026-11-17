@@ -1067,6 +1067,24 @@ class WebUILocationBarIMEInteractiveUiTest
   base::WeakPtr<PretendComposeInputMethod> ime_;
 };
 
+// Also replaces the app menu button with WebUI.
+class WebUILocationBarAppMenuInteractiveUiTest
+    : public WebUILocationBarInteractiveUiTest {
+ public:
+  WebUILocationBarAppMenuInteractiveUiTest() {
+    app_menu_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kWebUIAppMenuButton},
+        // The field trial testing config enables Omnibox Everywhere on macOS
+        // and Windows, which creates a status tray icon after startup that
+        // intermittently hangs in AppKit on macOS 26 during test setup
+        // (crbug.com/585197086).
+        /*disabled_features=*/{omnibox::kOmniboxEverywhere});
+  }
+
+ private:
+  base::test::ScopedFeatureList app_menu_feature_list_;
+};
+
 // Show and hide the omnibox popup.
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, ShowHidePopup) {
   RunTestSequence(InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
@@ -2429,6 +2447,44 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+// Focusing the app menu (e.g. with F10 or Alt) while the omnibox popup is open
+// moves focus to the app menu button rather than back to the popup.
+IN_PROC_BROWSER_TEST_P(WebUILocationBarAppMenuInteractiveUiTest,
+                       FocusAppMenuWithPopupOpen) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kAppMenuFocused);
+  history::HistoryService* const history_service =
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(history_service);
+  ui_test_utils::WaitForHistoryToLoad(history_service);
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  auto app_menu_focused = [browser_view]() {
+    return browser_view->GetWidget()->IsActive() &&
+           browser_view->toolbar()->GetAppMenuFocused();
+  };
+  RunTestSequence(InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+                  InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+                  FocusOmnibox(), EnterText(u"input"), WaitForPopupShow(),
+                  PollState(kAppMenuFocused, app_menu_focused),
+                  Do([browser_view]() { browser_view->FocusAppMenu(); }),
+                  WaitForState(kAppMenuFocused, true),
+                  StopObservingState(kAppMenuFocused),
+                  CheckResult(app_menu_focused, true));
+
+  // Stop any in-progress autocomplete query, close the popup, and drain
+  // `HistoryURLProvider` DB tasks and their UI-thread `QueryComplete` replies
+  // before shutdown so unexecuted replies do not leak
+  // `HistoryURLProviderParams` with a dangling provider `raw_ptr`
+  // (crbug.com/463764823).
+  browser_view->GetLocationBar()->Revert();
+  base::test::TestFuture<void> history_flushed;
+  history_service->FlushForTest(history_flushed.GetCallback());
+  ASSERT_TRUE(history_flushed.Wait());
+}
+
 #if BUILDFLAG(IS_WIN)
 // The test fixture sets up ui_test_utils::BringBrowserWindowToFront to run
 // early on, and that hangs the tests with Full Popup on Windows. Unfortunately
@@ -2458,6 +2514,14 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     WebUILocationBarPopupTransitionInteractiveUiTest,
+    ::testing::Values(MODES_TO_TEST),
+    [](const testing::TestParamInfo<Mode>& info) {
+      return ModeToString(info.param);
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WebUILocationBarAppMenuInteractiveUiTest,
     ::testing::Values(MODES_TO_TEST),
     [](const testing::TestParamInfo<Mode>& info) {
       return ModeToString(info.param);

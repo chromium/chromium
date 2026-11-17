@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,6 +15,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_page_focus_override.h"
 #include "ui/gfx/switches.h"
 
 class WebUiToolbarJsTest : public WebUIMochaBrowserTest {
@@ -27,7 +30,21 @@ class WebUiToolbarJsTest : public WebUIMochaBrowserTest {
     CHECK(features::IsWebUIToolbarEnabled());
   }
 
+ protected:
+  // Emulates page focus so that focus-dependent checks (e.g. `:focus-visible`)
+  // don't flake when another test window steals activation.
+  void OnWebContentsAvailable(content::WebContents* web_contents) override {
+    focus_override_ =
+        std::make_unique<content::ScopedPageFocusOverride>(web_contents);
+  }
+
+  void TearDownOnMainThread() override {
+    focus_override_.reset();
+    WebUIMochaBrowserTest::TearDownOnMainThread();
+  }
+
  private:
+  std::unique_ptr<content::ScopedPageFocusOverride> focus_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
