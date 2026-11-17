@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -311,6 +312,15 @@ bool ReadAloudPlaybackController::PlayIfReady() {
   }
   play_on_ready_ = false;
   play_on_ready_timer_.Stop();
+  if (playback_state_ == read_aloud::mojom::PlaybackState::kEndOfStream) {
+    std::optional<TimelinePosition> start =
+        timeline_.ResolveSegmentOffset(/*segment_index=*/0,
+                                       /*character_offset=*/0);
+    if (start.has_value()) {
+      ExecuteSeek(*start);
+      return true;
+    }
+  }
   if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
     audio_resources_->audio_output_stream->Play();
   }
@@ -560,6 +570,14 @@ void ReadAloudPlaybackController::ExecuteSeek(const TimelinePosition& target) {
   decoder_sequencer_.SetNextChunkToDecode(
       target.chunk.index,
       base::checked_cast<uint32_t>(target.global_char.start_offset));
+
+  // Seeking restarts play if playback had reached the end of the audio.
+  if (playback_state_ == read_aloud::mojom::PlaybackState::kEndOfStream) {
+    if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
+      audio_resources_->audio_output_stream->Play();
+    }
+    decoder_sequencer_.StartPumping();
+  }
 }
 
 void ReadAloudPlaybackController::MaybeApplyPendingWordSeek() {

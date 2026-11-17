@@ -14,6 +14,8 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/files/file_path.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +30,8 @@
 #include "components/optimization_guide/proto/features/read_aloud_generate_text.pb.h"
 #include "components/optimization_guide/proto/features/read_aloud_synthesize.pb.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/test_data_util.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -2529,5 +2533,389 @@ TEST_F(ReadAloudPlaybackControllerTest,
                                                  base::Milliseconds(300))));
   mock_renderer = nullptr;
 }
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       PlayAfterEndOfStreamRestartsFromBeginning) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+
+  std::vector<std::u16string> requested_chunks;
+  mock_client_->set_synthesis_handler(base::BindRepeating(
+      [](std::vector<std::u16string>* out_chunks,
+         std::vector<read_aloud::mojom::ReadAloudPlaybackControllerClient::
+                         RequestSpeechSynthesisCallback>* out_callbacks,
+         const std::u16string& text_chunk, read_aloud::mojom::Speaker, uint64_t,
+         read_aloud::mojom::ReadAloudPlaybackControllerClient::
+             RequestSpeechSynthesisCallback callback) {
+        out_chunks->push_back(text_chunk);
+        out_callbacks->push_back(std::move(callback));
+      },
+      &requested_chunks, &held_synthesis_callbacks_));
+
+  SetSingleTextSegment(u"First sentence. Second sentence.");
+  FlushAll();
+  ASSERT_THAT(mock_client_->progress_history(),
+              testing::Not(testing::IsEmpty()));
+  const base::TimeDelta total_duration =
+      mock_client_->progress_history().back().second;
+
+  controller_remote_->Play();
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  mock_client_->ClearStateHistory();
+  mock_client_->ClearProgressHistory();
+  fake_stream_.ClearCommands();
+  requested_chunks.clear();
+
+  // Transition to `kEndOfStream` at the end of the timeline with non-zero
+  // renderer media time.
+  mock_renderer->set_media_time(base::Seconds(1));
+  controller_remote_->SeekToTime(base::Seconds(60));
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  ASSERT_THAT(
+      mock_client_->state_history(),
+      testing::ElementsAre(read_aloud::mojom::PlaybackState::kEndOfStream));
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPause));
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(total_duration, total_duration)));
+
+  mock_client_->ClearStateHistory();
+  mock_client_->ClearProgressHistory();
+  fake_stream_.ClearCommands();
+  requested_chunks.clear();
+
+  // Calling `Play()` after reaching `kEndOfStream` must flush the renderer
+  // (which resets its media time to zero), reset progress to 0, resume the
+  // output stream, and restart synthesis from chunk 0.
+  EXPECT_CALL(*mock_renderer, Flush()).WillOnce([mock_renderer] {
+    mock_renderer->set_media_time(base::TimeDelta());
+  });
+  controller_remote_->Play();
+  FlushAll();
+  fake_stream_.FlushForTesting();
+
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPlay));
+  EXPECT_THAT(
+      mock_client_->progress_history(),
+      testing::ElementsAre(testing::Pair(base::TimeDelta(), total_duration)));
+  ASSERT_THAT(requested_chunks, testing::Not(testing::IsEmpty()));
+  EXPECT_EQ(requested_chunks.front(), u"First sentence.");
+  EXPECT_THAT(
+      mock_client_->state_history(),
+      testing::ElementsAre(read_aloud::mojom::PlaybackState::kBuffering));
+
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekAfterEndOfStreamAutomaticallyResumesPlayback) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+
+  std::vector<std::u16string> requested_chunks;
+  mock_client_->set_synthesis_handler(base::BindRepeating(
+      [](std::vector<std::u16string>* out_chunks,
+         std::vector<read_aloud::mojom::ReadAloudPlaybackControllerClient::
+                         RequestSpeechSynthesisCallback>* out_callbacks,
+         const std::u16string& text_chunk, read_aloud::mojom::Speaker, uint64_t,
+         read_aloud::mojom::ReadAloudPlaybackControllerClient::
+             RequestSpeechSynthesisCallback callback) {
+        out_chunks->push_back(text_chunk);
+        out_callbacks->push_back(std::move(callback));
+      },
+      &requested_chunks, &held_synthesis_callbacks_));
+
+  SetSingleTextSegment(
+      u"Sentence zero is quite long indeed. "
+      u"Sentence one is quite long indeed. "
+      u"Sentence two is quite long indeed. "
+      u"Sentence three is quite long indeed. "
+      u"Sentence four is quite long indeed. "
+      u"Sentence five is quite long indeed. "
+      u"Sentence six is quite long indeed. "
+      u"Sentence seven is quite long indeed. "
+      u"Sentence eight is quite long indeed. "
+      u"Sentence nine is quite long indeed.");
+  FlushAll();
+
+  // Transition to `kEndOfStream` at the end of the timeline.
+  controller_remote_->Play();
+  FlushAll();
+  controller_remote_->SeekToTime(base::Seconds(60));
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  ASSERT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kEndOfStream);
+  mock_client_->ClearStateHistory();
+  fake_stream_.ClearCommands();
+  requested_chunks.clear();
+
+  // Explicitly seeking to chunk 2 while in `kEndOfStream` must automatically
+  // resume the output stream and decoder pump from chunk 2.
+  EXPECT_CALL(*mock_renderer, Flush()).Times(1);
+  controller_remote_->SeekToWord(/*segment_index=*/2, /*character_offset=*/0);
+  FlushAll();
+  fake_stream_.FlushForTesting();
+
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPlay));
+  ASSERT_THAT(requested_chunks, testing::Not(testing::IsEmpty()));
+  EXPECT_EQ(requested_chunks.front(), u"Sentence two is quite long indeed.");
+  EXPECT_THAT(
+      requested_chunks,
+      testing::Not(testing::Contains(u"Sentence zero is quite long indeed.")));
+  EXPECT_THAT(
+      mock_client_->state_history(),
+      testing::ElementsAre(read_aloud::mojom::PlaybackState::kBuffering));
+
+  mock_renderer = nullptr;
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekRelativeBackwardAfterEndOfStreamAutomaticallyResumesPlayback) {
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+
+  std::vector<std::u16string> requested_chunks;
+  mock_client_->set_synthesis_handler(base::BindRepeating(
+      [](std::vector<std::u16string>* out_chunks,
+         std::vector<read_aloud::mojom::ReadAloudPlaybackControllerClient::
+                         RequestSpeechSynthesisCallback>* out_callbacks,
+         const std::u16string& text_chunk, read_aloud::mojom::Speaker, uint64_t,
+         read_aloud::mojom::ReadAloudPlaybackControllerClient::
+             RequestSpeechSynthesisCallback callback) {
+        out_chunks->push_back(text_chunk);
+        out_callbacks->push_back(std::move(callback));
+      },
+      &requested_chunks, &held_synthesis_callbacks_));
+
+  // Build 10 sentences (each 35 chars -> 2.275s estimated, total 22.75s).
+  SetSingleTextSegment(
+      u"Sentence zero is quite long indeed. "
+      u"Sentence one is quite long indeed. "
+      u"Sentence two is quite long indeed. "
+      u"Sentence three is quite long indeed. "
+      u"Sentence four is quite long indeed. "
+      u"Sentence five is quite long indeed. "
+      u"Sentence six is quite long indeed. "
+      u"Sentence seven is quite long indeed. "
+      u"Sentence eight is quite long indeed. "
+      u"Sentence nine is quite long indeed.");
+  FlushAll();
+  ASSERT_THAT(mock_client_->progress_history(),
+              testing::Not(testing::IsEmpty()));
+  const base::TimeDelta total_duration =
+      mock_client_->progress_history().back().second;
+
+  // Transition to `kEndOfStream` at the end of the timeline.
+  controller_remote_->Play();
+  FlushAll();
+  controller_remote_->SeekToTime(base::Seconds(60));
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  ASSERT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kEndOfStream);
+  mock_client_->ClearStateHistory();
+  mock_client_->ClearProgressHistory();
+  fake_stream_.ClearCommands();
+  requested_chunks.clear();
+
+  // Seeking -10s from the end (22.75s - 10s = 12.75s, inside chunk 5) must
+  // automatically resume playback at 12.75s.
+  EXPECT_CALL(*mock_renderer, Flush()).WillOnce([mock_renderer] {
+    mock_renderer->set_media_time(base::TimeDelta());
+  });
+  controller_remote_->SeekRelative(base::Seconds(-10));
+  FlushAll();
+  fake_stream_.FlushForTesting();
+
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPlay));
+  EXPECT_THAT(mock_client_->progress_history(),
+              testing::ElementsAre(testing::Pair(
+                  total_duration - base::Seconds(10), total_duration)));
+  ASSERT_THAT(requested_chunks, testing::Not(testing::IsEmpty()));
+  EXPECT_EQ(requested_chunks.front(), u"Sentence five is quite long indeed.");
+  EXPECT_THAT(
+      mock_client_->state_history(),
+      testing::ElementsAre(read_aloud::mojom::PlaybackState::kBuffering));
+
+  mock_renderer = nullptr;
+}
+
+#if BUILDFLAG(ENABLE_FFMPEG)
+// When the final chunk is already cached in `PrefetchManager` (e.g. after
+// playing to the end) and the user seeks backward into that final chunk while
+// in `kEndOfStream`, `SetNextChunkToDecode()` immediately decodes the cached
+// chunk and advances `next_chunk_to_decode_` to `GetChunkCount()`. Playback
+// must resume from the sought position in the final chunk without re-requesting
+// chunk 0.
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekIntoCachedFinalChunkAfterEndOfStreamAutomaticallyResumesPlayback) {
+  base::FilePath file_path = media::GetTestDataFilePath("sfx-opus.ogg");
+  base::MemoryMappedFile opus_file;
+  ASSERT_TRUE(opus_file.Initialize(file_path));
+
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+
+  std::vector<std::u16string> requested_chunks;
+  mock_client_->set_synthesis_handler(base::BindLambdaForTesting(
+      [&](const std::u16string& text_chunk, read_aloud::mojom::Speaker,
+          uint64_t,
+          MockReadAloudPlaybackControllerClient::RequestSpeechSynthesisCallback
+              callback) {
+        requested_chunks.push_back(text_chunk);
+        optimization_guide::proto::ReadAloudSynthesizeResponse response;
+        response.set_audio_bytes(
+            std::string(base::as_string_view(opus_file.bytes())));
+        // Two words in each chunk: [0, 5) at 0ms and [6, text_chunk.size()) at
+        // 120ms.
+        optimization_guide::proto::WordTiming* timing0 = response.add_timings();
+        timing0->set_start_offset(0);
+        timing0->set_end_offset(5);
+        timing0->set_time_offset_ms(0);
+        optimization_guide::proto::WordTiming* timing1 = response.add_timings();
+        timing1->set_start_offset(6);
+        timing1->set_end_offset(text_chunk.size());
+        timing1->set_time_offset_ms(120);
+        std::string serialized;
+        EXPECT_TRUE(response.SerializeToString(&serialized));
+        std::move(callback).Run(
+            mojo_base::BigBuffer(base::as_byte_span(serialized)),
+            /*success=*/true);
+      }));
+
+  SetSingleTextSegment(u"First sentence. Second sentence.");
+  controller_remote_->Play();
+  mock_client_->WaitForStateChange(read_aloud::mojom::PlaybackState::kPlaying);
+  FlushAll();
+  ASSERT_THAT(requested_chunks,
+              testing::ElementsAre(u"First sentence.", u"Second sentence."));
+
+  // Both chunks have been synthesized and cached in `PrefetchManager`. Seek to
+  // the end of the timeline so the controller flushes the queue and enters
+  // `kEndOfStream` while preserving the cached Opus segments in
+  // `PrefetchManager`.
+  EXPECT_CALL(*mock_renderer, MarkEndOfStream())
+      .WillRepeatedly([mock_renderer] {
+        return mock_renderer->ReadAloudAudioRenderer::MarkEndOfStream();
+      });
+  controller_remote_->SeekToTime(base::Seconds(60));
+  FlushAll();
+  fake_stream_.FlushForTesting();
+  ASSERT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kEndOfStream);
+
+  mock_client_->ClearStateHistory();
+  mock_client_->ClearProgressHistory();
+  fake_stream_.ClearCommands();
+  requested_chunks.clear();
+
+  // Seek into the second word of the final chunk (chunk 1, char offset 7:
+  // "sentence.") while in `kEndOfStream`. Because chunk 1 is cached, it decodes
+  // immediately and advances `next_chunk_to_decode_` to `GetChunkCount()` (2).
+  EXPECT_CALL(*mock_renderer, Flush()).WillOnce([mock_renderer] {
+    mock_renderer->set_media_time(base::TimeDelta());
+  });
+  controller_remote_->SeekToWord(/*segment_index=*/1, /*character_offset=*/7);
+  mock_client_->WaitForStateChange(read_aloud::mojom::PlaybackState::kPlaying);
+  FlushAll();
+  fake_stream_.FlushForTesting();
+
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPlay));
+  EXPECT_THAT(requested_chunks, testing::IsEmpty());
+  EXPECT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kPlaying);
+  ASSERT_THAT(mock_client_->progress_history(),
+              testing::Not(testing::IsEmpty()));
+  EXPECT_GT(mock_client_->progress_history().back().first, base::TimeDelta());
+
+  mock_renderer = nullptr;
+}
+
+// When the user seeks into the cached final chunk after `kEndOfStream` (which
+// decodes the final chunk and advances `next_chunk_to_decode_` to
+// `GetChunkCount()`), pausing and pressing `Play()` must resume from the sought
+// position rather than mistaking `next_chunk_to_decode_ == GetChunkCount()` for
+// an un-sought `kEndOfStream` and resetting to 0.
+TEST_F(ReadAloudPlaybackControllerTest,
+       PlayAfterPauseOnCachedFinalChunkSeekPreservesPosition) {
+  base::FilePath file_path = media::GetTestDataFilePath("sfx-opus.ogg");
+  base::MemoryMappedFile opus_file;
+  ASSERT_TRUE(opus_file.Initialize(file_path));
+
+  raw_ptr<MockReadAloudAudioRenderer> mock_renderer = nullptr;
+  ASSERT_NO_FATAL_FAILURE(CreateSessionWithMockRenderer(&mock_renderer));
+
+  mock_client_->set_synthesis_handler(base::BindLambdaForTesting(
+      [&](const std::u16string& text_chunk, read_aloud::mojom::Speaker,
+          uint64_t,
+          MockReadAloudPlaybackControllerClient::RequestSpeechSynthesisCallback
+              callback) {
+        optimization_guide::proto::ReadAloudSynthesizeResponse response;
+        response.set_audio_bytes(
+            std::string(base::as_string_view(opus_file.bytes())));
+        optimization_guide::proto::WordTiming* timing0 = response.add_timings();
+        timing0->set_start_offset(0);
+        timing0->set_end_offset(5);
+        timing0->set_time_offset_ms(0);
+        optimization_guide::proto::WordTiming* timing1 = response.add_timings();
+        timing1->set_start_offset(6);
+        timing1->set_end_offset(text_chunk.size());
+        timing1->set_time_offset_ms(120);
+        std::string serialized;
+        EXPECT_TRUE(response.SerializeToString(&serialized));
+        std::move(callback).Run(
+            mojo_base::BigBuffer(base::as_byte_span(serialized)),
+            /*success=*/true);
+      }));
+
+  SetSingleTextSegment(u"First sentence. Second sentence.");
+  controller_remote_->Play();
+  mock_client_->WaitForStateChange(read_aloud::mojom::PlaybackState::kPlaying);
+  FlushAll();
+
+  EXPECT_CALL(*mock_renderer, MarkEndOfStream())
+      .WillRepeatedly([mock_renderer] {
+        return mock_renderer->ReadAloudAudioRenderer::MarkEndOfStream();
+      });
+  controller_remote_->SeekToTime(base::Seconds(60));
+  FlushAll();
+  ASSERT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kEndOfStream);
+
+  // Seek into the cached final chunk and pause once it auto-resumes.
+  controller_remote_->SeekToWord(/*segment_index=*/1, /*character_offset=*/7);
+  mock_client_->WaitForStateChange(read_aloud::mojom::PlaybackState::kPlaying);
+  FlushAll();
+  controller_remote_->Pause();
+  FlushAll();
+  ASSERT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kPaused);
+  mock_client_->ClearProgressHistory();
+
+  // Pressing `Play()` must resume from the sought position without flushing the
+  // renderer or resetting progress to 0.
+  EXPECT_CALL(*mock_renderer, Flush()).Times(0);
+  controller_remote_->Play();
+  FlushAll();
+
+  EXPECT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kPlaying);
+  EXPECT_THAT(mock_client_->progress_history(), testing::IsEmpty());
+
+  mock_renderer = nullptr;
+}
+#endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 }  // namespace readaloud

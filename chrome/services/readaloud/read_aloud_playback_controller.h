@@ -101,8 +101,9 @@ class ReadAloudPlaybackController
   void ResetSession();
 
   // Cancels in-flight network requests, flushes decoded PCM buffers and
-  // AudioRenderer, and repositions the decoder sequencer to `target` while
-  // preserving cached Opus segments in PrefetchManager.
+  // `ReadAloudAudioRenderer`, and repositions the decoder sequencer to `target`
+  // while preserving cached Opus segments in `PrefetchManager`. Seeking
+  // restarts play if playback had reached the end of the audio.
   void ExecuteSeek(const TimelinePosition& target);
 
   // Applies `pending_word_seek_` against the freshly set timeline, if any. The
@@ -147,8 +148,9 @@ class ReadAloudPlaybackController
   bool IsTextSet() const;
   bool IsAudioInitialized() const;
 
-  // Evaluates playback readiness. If all requirements are met, starts playback
-  // pipeline, clears play_on_ready_, and returns true.
+  // Evaluates playback readiness. If all requirements are met, seeks back to
+  // the beginning of the timeline if restarting from `kEndOfStream`, starts the
+  // playback pipeline, clears `play_on_ready_`, and returns true.
   bool PlayIfReady();
 
   // If a Play request is pending (play_on_ready_) and all prerequisites are
