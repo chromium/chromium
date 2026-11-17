@@ -733,6 +733,7 @@ TEST(X509CertificateModel, RelativeOidNameValue) {
             model.GetSubjectName());
   EXPECT_EQ(OptionalStringOrError("trustAnchorID = 32473.1\n"),
             model.GetIssuerName());
+  EXPECT_EQ("trustAnchorID=32473.1", model.GetTitle());
 }
 
 TEST(X509CertificateModel, InvalidRelativeOidNameValue) {
@@ -760,6 +761,8 @@ TEST(X509CertificateModel, InvalidRelativeOidNameValue) {
   ASSERT_TRUE(model.is_valid());
   EXPECT_EQ(OptionalStringOrError(Error()), model.GetSubjectName());
   EXPECT_EQ(OptionalStringOrError(Error()), model.GetIssuerName());
+  // The title falls back to the RFC 2253 form.
+  EXPECT_EQ("1.3.6.1.5.5.7.25.3=#81FD", model.GetTitle());
 }
 
 TEST(X509CertificateModel, QcStatements) {

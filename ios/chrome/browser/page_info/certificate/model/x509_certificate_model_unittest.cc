@@ -362,15 +362,18 @@ TEST_F(X509CertificateModelTest, RelativeOidNameValue) {
   X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
   ASSERT_TRUE(model.is_valid());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectCommonName());
+  EXPECT_EQ("trustAnchorID=32473.1", model.GetTitle());
 
   auto subject_attrs = model.GetSubjectAttributesInOrder();
   ASSERT_EQ(1u, subject_attrs.size());
   EXPECT_EQ("1.3.6.1.5.5.7.25.3", subject_attrs[0].oid);
+  EXPECT_EQ("trustAnchorID", subject_attrs[0].label);
   EXPECT_EQ("32473.1", subject_attrs[0].value);
 
   auto issuer_attrs = model.GetIssuerAttributesInOrder();
   ASSERT_EQ(1u, issuer_attrs.size());
   EXPECT_EQ("1.3.6.1.5.5.7.25.3", issuer_attrs[0].oid);
+  EXPECT_EQ("trustAnchorID", issuer_attrs[0].label);
   EXPECT_EQ("32473.1", issuer_attrs[0].value);
 }
 
@@ -396,6 +399,8 @@ TEST_F(X509CertificateModelTest, InvalidRelativeOidNameValue) {
 
   X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
   ASSERT_TRUE(model.is_valid());
+  // The title falls back to the RFC 2253 form.
+  EXPECT_EQ("1.3.6.1.5.5.7.25.3=#81FD", model.GetTitle());
 
   // The value falls back to hex, as for other undecodable values.
   auto subject_attrs = model.GetSubjectAttributesInOrder();

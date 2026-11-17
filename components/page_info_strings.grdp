@@ -787,6 +787,11 @@
       Merkle Tree proof
     </message>
 
+    <!-- Name attribute strings shared across platforms -->
+    <message name="IDS_CERT_OID_TRUST_ANCHOR_ID" desc="label for the X.509 name attribute type id-rdna-trustAnchorID" translateable="false">
+      trustAnchorID
+    </message>
+
     <!-- Extended Key Usage strings shared across platforms -->
     <message name="IDS_CERT_EKU_ANY_EKU" desc="description of X.509 certificate extended key usage value `anyExtendedKeyUsage`. This indicates that the certificate may be used for any purpose.">
       Any
