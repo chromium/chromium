@@ -2313,6 +2313,48 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
       "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
 }
 
+// crbug.com/584779460: GEiC dogfooders reported that page context wasn't
+// shared while a modal dialog was open. A `showModal()` dialog makes the
+// rest of the page inert, which must not drop the background content from
+// the tab context.
+IN_PROC_BROWSER_TEST_P(GlicApiTest,
+                       testGetContextFromFocusedTabWithModalDialog) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  NavigateTab(*tab, embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(content::ExecJs(tab->GetContents(), R"js(
+    document.body.innerHTML =
+        '<p>Background report text</p>' +
+        '<dialog id="modal"><p>Modal dialog text</p></dialog>';
+    document.getElementById('modal').showModal();
+  )js"));
+  ASSERT_EQ(true, content::EvalJs(tab->GetContents(),
+                                  "document.getElementById('modal').open"));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  // The dialog is still open after extraction.
+  EXPECT_EQ(true, content::EvalJs(tab->GetContents(),
+                                  "document.getElementById('modal').open"));
+}
+
+// crbug.com/584346705: GEiC failed to answer from a spreadsheet in the focused
+// tab. Checks that table cell values are extracted from the tab context.
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetContextFromFocusedTabWithTable) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  NavigateTab(*tab, embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(content::ExecJs(tab->GetContents(), R"js(
+    document.body.innerHTML =
+        '<table>' +
+        '<tr><th>Region</th><th>Target</th><th>Actual</th></tr>' +
+        '<tr><td>Europe</td><td>1250.5</td><td>1078.25</td></tr>' +
+        '<tr><td>Latin America</td><td>640.75</td><td>525.4</td></tr>' +
+        '</table>';
+  )js"));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());

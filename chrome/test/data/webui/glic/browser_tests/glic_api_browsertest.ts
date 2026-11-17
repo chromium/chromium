@@ -1004,6 +1004,72 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(metaTag.name, 'author');
     assertEquals(metaTag.content, 'George');
   }
+
+  // Returns the focused tab's innerText and decoded annotated page content,
+  // after checking that the context is for the focused tab.
+  async getFocusedTabTextContext():
+      Promise<{innerText: string, annotatedPageContent: string}> {
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getContextFromFocusedTab);
+    assertDefined(this.host.setTabContextPermissionState);
+    await this.host.setTabContextPermissionState(true);
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const focusedTab = checkDefined(focus.hasFocus?.tabData);
+
+    const result = await this.host.getContextFromFocusedTab({
+      innerText: true,
+      annotatedPageContent: true,
+    });
+    assertEquals(focusedTab.tabId, result.tabData.tabId);
+    assertEquals(focusedTab.url, result.tabData.url);
+    const annotatedPageData = checkDefined(result.annotatedPageData);
+    const annotatedPageContent =
+        await new Response(annotatedPageData.annotatedPageContent).text();
+    return {
+      innerText:
+          checkDefined(checkDefined(result.webPageData).mainDocument.innerText),
+      annotatedPageContent,
+    };
+  }
+
+  async testGetContextFromFocusedTabWithModalDialog() {
+    const {innerText, annotatedPageContent} =
+        await this.getFocusedTabTextContext();
+    // The modal dialog makes the rest of the page inert, but the background
+    // text is still extracted.
+    for (const text of ['Background report text', 'Modal dialog text']) {
+      assertTrue(
+          innerText.includes(text),
+          `innerText should include '${text}', got: ${innerText}`);
+      assertTrue(
+          annotatedPageContent.includes(text),
+          `annotatedPageContent should include '${text}'`);
+    }
+  }
+
+  async testGetContextFromFocusedTabWithTable() {
+    const {innerText, annotatedPageContent} =
+        await this.getFocusedTabTextContext();
+    // innerText separates cells with tabs and rows with newlines.
+    for (const row
+             of ['Region\tTarget\tActual', 'Europe\t1250.5\t1078.25',
+                 'Latin America\t640.75\t525.4']) {
+      assertTrue(
+          innerText.includes(row),
+          `innerText should include row '${row}', got: ${
+              JSON.stringify(innerText)}`);
+    }
+    // Annotated page content is a serialized proto, so this only checks that
+    // the cell strings are in it.
+    for (const cell
+             of ['Region', 'Europe', '1078.25', 'Latin America', '525.4']) {
+      assertTrue(
+          annotatedPageContent.includes(cell),
+          `annotatedPageContent should include cell '${cell}'`);
+    }
+  }
+
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);
