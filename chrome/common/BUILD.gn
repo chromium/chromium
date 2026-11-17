@@ -634,6 +634,8 @@ static_library("test_support") {
   testonly = true
   visibility = [
     "//chrome/common/extensions:unit_tests",
+    "//chrome/renderer:platform_browser_tests",
+    "//chrome/renderer:unit_tests",
     "//chrome/test:*",
   ]
 

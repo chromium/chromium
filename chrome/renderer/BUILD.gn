@@ -538,11 +538,12 @@ source_set("platform_browser_tests") {
   deps = [
     ":renderer",
     "//base",
-    "//chrome/test:test_support",
+    "//chrome/common:test_support",
     "//chrome/test/base:chrome_render_view_test",
     "//chrome/test/base:chrome_test_utils",
     "//content/public/browser",
     "//content/public/common",
+    "//content/public/renderer",
     "//content/test:test_support",
     "//extensions/buildflags",
     "//net:test_support",
@@ -579,7 +580,6 @@ if (is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/common",
-      "//chrome/test:test_support",
       "//chrome/test/base:chrome_render_view_test",
       "//components/autofill/content/common/mojom",
       "//components/autofill/content/renderer",
@@ -615,6 +615,7 @@ if (is_android) {
         "//components/safe_browsing/core/common/proto:client_model_proto",
         "//components/safe_browsing/core/common/proto:csd_proto",
         "//crypto",
+        "//net:test_support",
       ]
     }
   }
@@ -637,14 +638,25 @@ source_set("unit_tests") {
     ":renderer",
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:test_support",
-    "//chrome/test:test_support",
+    "//chrome/common",
+    "//chrome/common:mojo_bindings",
+    "//chrome/common:offline_page_auto_fetcher_mojom",
+    "//chrome/common:test_support",
     "//chrome/test/base:chrome_render_view_test",
+    "//components/error_page/common",
+    "//components/resources:components_resources",
+    "//components/strings:components_strings",
+    "//components/sync/base:features",
     "//components/sync_tab_context:constants",
     "//components/translate/core/common",
+    "//extensions/buildflags",
     "//gin",
     "//gin:gin_test",
     "//testing/gtest",
   ]
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
 
   if (enable_bound_session_credentials) {
     sources += [
@@ -675,6 +687,11 @@ source_set("unit_tests") {
       "//services/metrics/public/cpp:ukm_builders",
       "//services/strings",
       "//third_party/fuzztest",
+
+      # tflite provides the third_party/tflite/src/ include path, needed because
+      # the read_anything / phrase_segmentation test headers transitively
+      # include tflite internal headers.
+      "//third_party/tflite",
     ]
   }
 
