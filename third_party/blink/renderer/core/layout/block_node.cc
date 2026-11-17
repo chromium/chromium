@@ -635,6 +635,13 @@ const LayoutResult* BlockNode::Layout(
     } while (scrollbars_after != scrollbars_before);
   }
 
+  if (!Style().ScrollMarkerGroupNone() &&
+      !DisableLayoutSideEffectsScope::IsDisabled()) {
+    // With all the contents laid out, we can populate the scroll-marker-group
+    // with scroll markers.
+    HandleScrollMarkerGroup();
+  }
+
   // We always need to update the ShapeOutsideInfo even if the layout is
   // intermediate (e.g. called during a min/max pass).
   //
@@ -781,12 +788,38 @@ void BlockNode::FinishRepeatableRoot() const {
   FragmentRepeater::DeepCloneRepeatableRoot(*box_);
 }
 
+void BlockNode::SealScrollMarkerGroupForLayout() const {
+  DCHECK(box_->IsScrollMarkerGroup());
+
+  // A scroll-marker-group is usually a box sibling of its originating scroller
+  // element (except if this is the root node, in which case it's a child of its
+  // originating element).
+  //
+  // If it is a sibling, it may still not be a true sibling of its originating
+  // element in the box fragment tree, if one of them is out-of-flow positioned,
+  // and the other one is not. Make sure that detaching/attaching doesn't mark
+  // outside the scroll-marker-group (and thus parts of the document tree that
+  // we may already be done with).
+  box_->SetNeedsLayout(layout_invalidation_reason::kScrollMarkersChanged,
+                       kMarkOnlyThis);
+  box_->SetChildNeedsLayout(kMarkOnlyThis);
+}
+
 void BlockNode::PrepareForLayout() const {
   auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (block && block->IsScrollContainer()) {
     DCHECK(block->GetScrollableArea());
     if (block->GetScrollableArea()->ShouldPerformScrollAnchoring())
       block->GetScrollableArea()->GetScrollAnchor()->NotifyBeforeLayout();
+
+    if (BlockNode group_node = GetScrollMarkerGroup()) {
+      // We're about to lay out a node that has a scroll marker group. Scroll
+      // markers may be added or removed, via ::column::scroll-marker
+      // pseudo-elements during layout of the scrollable originating element
+      // (this element). This should not mark anything for layout on the outside
+      // of the group.
+      group_node.SealScrollMarkerGroupForLayout();
+    }
   }
 
   // Scroll markers are found and attached when the scrollable container has
@@ -1389,16 +1422,11 @@ void BlockNode::PopulateScrollMarkerGroup(const BlockNode& scroller) const {
 
   StyleEngine::AttachScrollMarkersScope scope(GetDocument().GetStyleEngine());
 
-  // We're about to repopulate the layout tree inside a scroll marker group,
-  // i.e. detach potentially old and attach current scroll markers.
-  //
-  // The scroll marker group may not be a true layout sibling of its scroller,
-  // if one is out-of-flow positioned, and the other one is not. Make sure that
-  // detaching and attaching don't mark outside the group subtree (and thus
-  // parts of the document tree that we may already be done with).
-  box_->SetNeedsLayout(layout_invalidation_reason::kScrollMarkersChanged,
-                       kMarkOnlyThis);
-  box_->SetChildNeedsLayout(kMarkOnlyThis);
+  // We're most likely going to reattach nodes here, and since we're in the
+  // middle of layout, but not necessarily in the container of the
+  // scroll-marker-group, seal the node for layout escapement, so that any
+  // marking for layout stays on the inside.
+  SealScrollMarkerGroupForLayout();
 
   // Detach all markers.
   while (LayoutObject* child = GetLayoutBox()->SlowFirstChild()) {

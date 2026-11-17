@@ -234,6 +234,11 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   String ToString() const;
 
  private:
+  // Scroll marker groups are populated with nodes during layout, so make sure
+  // that no ancestor is marked for layout. Layout is performed manually when
+  // the group has been populated.
+  void SealScrollMarkerGroupForLayout() const;
+
   void PrepareForLayout() const;
 
   const LayoutResult* RunSimplifiedLayout(const LayoutAlgorithmParams&,

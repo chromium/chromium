@@ -697,15 +697,8 @@ LayoutResult::EStatus BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
   PropagateSizeDependentData();
 
   LayoutResult::EStatus status = OutOfFlowLayoutPart::Run(this);
-  if (status != LayoutResult::kSuccess) {
-    DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
-    return status;
-  }
-
-  if (!Style().ScrollMarkerGroupNone() && !GetConstraintSpace().IsAnonymous()) {
-    Node().HandleScrollMarkerGroup();
-  }
-
+  DCHECK(status == LayoutResult::kSuccess ||
+         RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   return status;
 }
 
