@@ -366,22 +366,6 @@ void BlobDataBuilder::AppendFileSystemFile(
   total_size_ += length;
 }
 
-void BlobDataBuilder::AppendReadableDataHandle(
-    scoped_refptr<DataHandle> data_handle,
-    uint64_t offset,
-    uint64_t length) {
-  if (length == 0ul)
-    return;
-  auto item = BlobDataItem::CreateReadableDataHandle(std::move(data_handle),
-                                                     offset, length);
-
-  total_size_ += item->length();
-  auto shareable_item = base::MakeRefCounted<ShareableBlobDataItem>(
-      std::move(item), ShareableBlobDataItem::POPULATED_WITHOUT_QUOTA,
-      creator_identity_);
-  items_.push_back(std::move(shareable_item));
-}
-
 void BlobDataBuilder::AppendMojoDataItem(mojom::BlobDataItemPtr item_ptr) {
   if (item_ptr->size == 0ul)
     return;

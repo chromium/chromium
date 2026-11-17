@@ -5,6 +5,8 @@
 #ifndef STORAGE_BROWSER_TEST_BLOB_TEST_UTILS_H_
 #define STORAGE_BROWSER_TEST_BLOB_TEST_UTILS_H_
 
+#include <string>
+
 #include "base/containers/span.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -12,6 +14,8 @@
 namespace storage {
 
 std::string BlobToString(blink::mojom::Blob* blob);
+
+mojom::BlobDataItemPtr CreateBlobDataItemFromString(std::string body_data);
 
 void RegisterBlobWithContents(mojom::BlobStorageContext& blob_storage_context,
                               mojo::PendingReceiver<blink::mojom::Blob> blob,

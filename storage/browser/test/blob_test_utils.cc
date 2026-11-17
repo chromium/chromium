@@ -6,16 +6,15 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <utility>
 
-#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_view_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/net_errors.h"
@@ -24,20 +23,15 @@ namespace storage {
 
 namespace {
 
-// Serves the passed data, and deletes itself once no longer registered.
 class MemoryBlobDataItemReader : public mojom::BlobDataItemReader {
  public:
-  MemoryBlobDataItemReader(
-      base::span<const uint8_t> data,
-      mojo::PendingReceiver<mojom::BlobDataItemReader> receiver)
-      : data_(base::HeapArray<uint8_t>::CopiedFrom(data)) {
-    readers_.set_disconnect_handler(base::BindRepeating(
-        &MemoryBlobDataItemReader::OnDisconnect, base::Unretained(this)));
-    readers_.Add(this, std::move(receiver));
-  }
+  explicit MemoryBlobDataItemReader(std::string data)
+      : data_(std::move(data)) {}
 
   MemoryBlobDataItemReader(const MemoryBlobDataItemReader&) = delete;
   MemoryBlobDataItemReader& operator=(const MemoryBlobDataItemReader&) = delete;
+
+  ~MemoryBlobDataItemReader() override = default;
 
   void Read(uint64_t offset,
             uint64_t length,
@@ -53,23 +47,12 @@ class MemoryBlobDataItemReader : public mojom::BlobDataItemReader {
         std::min<uint64_t>(length, data_.size() - read_offset));
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync_primitives;
     const bool success = mojo::BlockingCopyFromString(
-        std::string(base::as_string_view(
-            base::span(data_).subspan(read_offset, read_length))),
-        pipe);
+        data_.substr(read_offset, read_length), pipe);
     std::move(callback).Run(success ? net::OK : net::ERR_FAILED);
   }
 
  private:
-  ~MemoryBlobDataItemReader() override = default;
-
-  void OnDisconnect() {
-    if (readers_.empty()) {
-      delete this;
-    }
-  }
-
-  base::HeapArray<uint8_t> data_;
-  mojo::ReceiverSet<mojom::BlobDataItemReader> readers_;
+  const std::string data_;
 };
 
 // Helper class to copy a blob to a string.
@@ -103,18 +86,22 @@ std::string BlobToString(blink::mojom::Blob* blob) {
   return output;
 }
 
+mojom::BlobDataItemPtr CreateBlobDataItemFromString(std::string body_data) {
+  mojom::BlobDataItemPtr item = mojom::BlobDataItem::New();
+  item->size = body_data.size();
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<MemoryBlobDataItemReader>(std::move(body_data)),
+      item->reader.InitWithNewPipeAndPassReceiver());
+  return item;
+}
+
 void RegisterBlobWithContents(mojom::BlobStorageContext& blob_storage_context,
                               mojo::PendingReceiver<blink::mojom::Blob> blob,
                               const std::string& uuid,
                               base::span<const uint8_t> data) {
-  mojom::BlobDataItemPtr item = mojom::BlobDataItem::New();
-  item->type = mojom::BlobDataItemType::kUnknown;
-  item->size = data.size();
-  mojo::PendingReceiver<mojom::BlobDataItemReader> reader =
-      item->reader.InitWithNewPipeAndPassReceiver();
-  new MemoryBlobDataItemReader(data, std::move(reader));
-  blob_storage_context.RegisterFromDataItem(std::move(blob), uuid,
-                                            std::move(item));
+  blob_storage_context.RegisterFromDataItem(
+      std::move(blob), uuid,
+      CreateBlobDataItemFromString(std::string(base::as_string_view(data))));
 }
 
 }  // namespace storage

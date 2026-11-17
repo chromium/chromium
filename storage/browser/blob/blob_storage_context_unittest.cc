@@ -36,7 +36,7 @@
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/browser/test/fake_blob_data_handle.h"
+#include "storage/browser/test/blob_test_utils.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -487,35 +487,6 @@ TEST_F(BlobStorageContextTest, AddFinishedBlob_LargeOffset) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(BlobStorageContextTest, BuildReadableDataHandleBlob) {
-  const std::string kTestBlobData = "Test Blob Data";
-  auto data_handle = base::MakeRefCounted<FakeBlobDataHandle>(kTestBlobData);
-
-  {
-    BlobStorageContext context;
-
-    const std::string kId1Prime("id1.prime");
-    BlobDataBuilder canonicalized_blob_data(kId1Prime);
-    canonicalized_blob_data.AppendData(kTestBlobData.c_str());
-
-    const std::string kId1("id1");
-    auto builder = std::make_unique<BlobDataBuilder>(kId1);
-
-    builder->AppendReadableDataHandle(data_handle);
-
-    std::unique_ptr<BlobDataSnapshot> builder_data = builder->CreateSnapshot();
-    std::unique_ptr<BlobDataHandle> blob_data_handle =
-        context.AddFinishedBlob(std::move(builder));
-    std::unique_ptr<BlobDataSnapshot> data = blob_data_handle->CreateSnapshot();
-    EXPECT_EQ(*data, *builder_data);
-    EXPECT_FALSE(data_handle->HasOneRef())
-        << "Data handle was destructed while context and builder still exist.";
-  }
-  EXPECT_TRUE(data_handle->HasOneRef())
-      << "Data handle was not destructed along with blob storage context.";
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(BlobStorageContextTest, BuildFutureFileOnlyBlob) {
   const std::string kId1("id1");
   context_ = std::make_unique<BlobStorageContext>(
@@ -605,8 +576,7 @@ TEST_F(BlobStorageContextTest, CompoundBlobs) {
 
   auto blob_data3_builder = std::make_unique<BlobDataBuilder>(kId3);
   blob_data3_builder->AppendData("Data4");
-  auto data_handle = base::MakeRefCounted<FakeBlobDataHandle>("Data5");
-  blob_data3_builder->AppendReadableDataHandle(std::move(data_handle));
+  blob_data3_builder->AppendMojoDataItem(CreateBlobDataItemFromString("Data5"));
   std::unique_ptr<BlobDataSnapshot> blob_data3 =
       blob_data3_builder->CreateSnapshot();
 
@@ -694,8 +664,7 @@ size_t AppendDataInBuilder(
     BlobDataBuilder* builder,
     std::vector<BlobDataBuilder::FutureData>* future_datas,
     std::vector<BlobDataBuilder::FutureFile>* future_files,
-    size_t index,
-    scoped_refptr<BlobDataItem::DataHandle> data_handle) {
+    size_t index) {
   size_t size = 0;
   // We can't have both future data and future files, so split those up.
   if (index % 2 != 0) {
@@ -720,7 +689,8 @@ size_t AppendDataInBuilder(
     size += 20u;
   }
   if (index % 3 != 0) {
-    builder->AppendReadableDataHandle(data_handle);
+    builder->AppendMojoDataItem(
+        CreateBlobDataItemFromString(kTestDataHandleData));
     size += strlen(kTestDataHandleData);
   }
   return size;
@@ -758,9 +728,6 @@ TEST_F(BlobStorageContextTest, BuildBlobCombinations) {
       temp_dir_.GetPath(), temp_dir_.GetPath(), file_runner_);
 
   SetTestMemoryLimits();
-  auto data_handle =
-      base::MakeRefCounted<FakeBlobDataHandle>(kTestDataHandleData);
-
   // This tests mixed blob content with both synchronous and asynchronous
   // construction. Blobs should also be paged to disk during execution.
   std::vector<std::unique_ptr<BlobDataBuilder>> builders;
@@ -773,7 +740,7 @@ TEST_F(BlobStorageContextTest, BuildBlobCombinations) {
     future_files.emplace_back();
     auto& builder = *builders.back();
     size_t size = AppendDataInBuilder(&builder, &future_datas.back(),
-                                      &future_files.back(), i, data_handle);
+                                      &future_files.back(), i);
     EXPECT_NE(0u, size);
     sizes.push_back(size);
   }

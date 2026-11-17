@@ -416,7 +416,6 @@ blink::mojom::SerializedBlobPtr CacheStorageCacheEntryHandler::CreateBlob(
 
   auto element = storage::mojom::BlobDataItem::New();
   element->size = blob_entry->GetSize(disk_cache_index);
-  element->type = storage::mojom::BlobDataItemType::kCacheStorage;
 
   auto handle = std::make_unique<EntryReaderImpl>(std::move(blob_entry),
                                                   disk_cache_index);

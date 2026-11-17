@@ -17,17 +17,8 @@ interface BlobDataItemReader {
       => (int32 success);
 };
 
-// The type of BlobDataItem.  Used for histograms.
-enum BlobDataItemType {
-  kUnknown,       // Type not known.
-  kCacheStorage,  // Data comes from the cache storage system.
-  kIndexedDB,     // Data comes from the IndexedDB storage system.
-};
-
 // A remote representation of a BlobDataItem::DataHandle for cache storage.
 struct BlobDataItem {
-  BlobDataItemType type;
-
   // The size of the data.  BlobDataItem::DataHandle needs this
   // synchronously, which is why it is in a struct and not the interface.
   uint64 size;

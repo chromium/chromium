@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <sstream>
 
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
@@ -199,13 +198,9 @@ void ViewBlobInternalsJob::GenerateHTMLForBlobData(
               out);
         }
         break;
-      case BlobDataItem::Type::kReadableDataHandle: {
+      case BlobDataItem::Type::kReadableDataHandle:
         AddHTMLListItem(kType, "readable data handle", out);
-        std::stringstream ss;
-        item.data_handle()->PrintTo(&ss);
-        AddHTMLListItem(kURL, ss.str(), out);
         break;
-      }
       case BlobDataItem::Type::kBytesDescription:
         AddHTMLListItem(kType, "pending data", out);
         break;

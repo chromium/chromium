@@ -42,7 +42,6 @@ class FileSystemURL;
 // BlobDataHandle::GetBlobStatus to check for an error after creating the blob.
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
  public:
-  using DataHandle = BlobDataItem::DataHandle;
   using ItemCopyEntry = BlobEntry::ItemCopyEntry;
 
   explicit BlobDataBuilder(const std::string& uuid);
@@ -166,13 +165,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
       file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
           file_access = base::NullCallback());
 
-  void AppendReadableDataHandle(scoped_refptr<DataHandle> data_handle) {
-    auto length = data_handle->GetSize();
-    AppendReadableDataHandle(std::move(data_handle), 0u, length);
-  }
-  void AppendReadableDataHandle(scoped_refptr<DataHandle> data_handle,
-                                uint64_t offset,
-                                uint64_t length);
   void AppendMojoDataItem(mojom::BlobDataItemPtr item);
 
   void set_content_type(const std::string& content_type) {

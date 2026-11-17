@@ -321,7 +321,6 @@ void ActiveBlobStreamer::BindRegistryBlob(
   auto element = storage::mojom::BlobDataItem::New();
   element->size = blob_length_;
   element->content_type = content_type_;
-  element->type = storage::mojom::BlobDataItemType::kIndexedDB;
   readers_.Add(this, element->reader.InitWithNewPipeAndPassReceiver());
   blob_registry.RegisterFromDataItem(
       registry_blob_.BindNewPipeAndPassReceiver(), uuid_, std::move(element));

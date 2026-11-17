@@ -49,7 +49,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
-#include "storage/browser/test/fake_blob_data_handle.h"
+#include "storage/browser/test/blob_test_utils.h"
 #include "storage/browser/test/mock_blob_registry_delegate.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
@@ -259,9 +259,8 @@ class BlobURLTest : public testing::Test {
     blob_data_->AppendFile(temp_file1_, 2, 3, temp_file_modification_time1_);
     expected_result += kTestFileData1.substr(2, 3);
 
-    blob_data_->AppendReadableDataHandle(
-        base::MakeRefCounted<storage::FakeBlobDataHandle>(
-            kTestDataHandleData1));
+    blob_data_->AppendMojoDataItem(
+        storage::CreateBlobDataItemFromString(kTestDataHandleData1));
     expected_result += kTestDataHandleData1;
 
     blob_data_->AppendFileSystemFile(
@@ -455,8 +454,8 @@ TEST_F(BlobURLTest, TestGetSlicedFileSystemFileRequest) {
 }
 
 TEST_F(BlobURLTest, TestGetSimpleDataHandleRequest) {
-  blob_data_->AppendReadableDataHandle(
-      base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData1));
+  blob_data_->AppendMojoDataItem(
+      storage::CreateBlobDataItemFromString(kTestDataHandleData1));
   TestSuccessNonrangeRequest(kTestDataHandleData1);
 }
 

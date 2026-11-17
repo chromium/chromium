@@ -63,9 +63,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataItem
                       uint64_t bytes_to_read,
                       base::OnceCallback<void(int)> callback) = 0;
 
-    // Print a description of the readable DataHandle for debugging.
-    virtual void PrintTo(::std::ostream* os) const = 0;
-
    protected:
     virtual ~DataHandle();
 

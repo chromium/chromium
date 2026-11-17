@@ -44,12 +44,6 @@ class MojoDataItem : public BlobDataItem::DataHandle {
                   std::move(callback));
   }
 
-  void PrintTo(::std::ostream* os) const override {
-    // TODO(enne): this is tricky to implement, as it's synchronous.
-    // PrintTo should ideally be asynchronous.  See: http://crbug.com/809821
-    *os << "<MojoDataItem>";
-  }
-
  protected:
   ~MojoDataItem() override = default;
 
@@ -252,9 +246,7 @@ void PrintTo(const BlobDataItem& x, ::std::ostream* os) {
       *os << "kFileFilesystem, url: " << x.filesystem_url().DebugString();
       break;
     case BlobDataItem::Type::kReadableDataHandle:
-      *os << "kReadableDataHandle"
-          << ", data_handle_: ";
-      x.data_handle()->PrintTo(os);
+      *os << "kReadableDataHandle";
       break;
   }
   *os << ", length: " << x.length() << ", offset: " << x.offset()
