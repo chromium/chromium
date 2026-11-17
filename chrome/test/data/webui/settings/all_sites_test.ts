@@ -4,11 +4,11 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {AllSitesElement, SiteGroup} from 'chrome://settings/lazy_load.js';
+import type {AllSitesElement, SiteEntryElement, SiteGroup} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
 import {DeleteBrowsingDataAction, loadTimeData, MetricsBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
@@ -18,6 +18,15 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 
 // clang-format on
+
+/**
+ * Flushes the Polymer <iron-list> in <all-sites> and then waits for the Lit
+ * <site-entry> children to finish their asynchronous render.
+ */
+async function flushList() {
+  flush();
+  await microtasksFinished();
+}
 
 suite('AllSites', function() {
   /**
@@ -109,6 +118,14 @@ suite('AllSites', function() {
     }
   }
 
+  function getDisplayName(siteEntry: SiteEntryElement): string {
+    const urlDirectionality =
+        siteEntry.$.displayName.querySelector<HTMLElement>(
+            '.url-directionality');
+    assertTrue(!!urlDirectionality);
+    return urlDirectionality.textContent.trim();
+  }
+
   function getSubstitutedString(messageId: string, substitute: string): string {
     return loadTimeData.substituteString(
         testElement.i18n(messageId), substitute);
@@ -121,7 +138,7 @@ suite('AllSites', function() {
     assertEquals(3, testElement.siteGroupMap.size);
 
     // Flush to be sure list container is populated.
-    flush();
+    await flushList();
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(3, siteEntries.length);
@@ -133,7 +150,7 @@ suite('AllSites', function() {
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
     // Flush to be sure list container is populated.
-    flush();
+    await flushList();
     let siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(3, siteEntries.length);
@@ -145,7 +162,7 @@ suite('AllSites', function() {
     Router.getInstance().navigateTo(currentRoute, searchParams);
     testElement.filter = SEARCH_QUERY;
 
-    flush();
+    await flushList();
     // Changing filter shouldn't trigger additional getAllSites calls.
     assertEquals(0, browserProxy.getCallCount('getAllSites'));
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
@@ -155,7 +172,7 @@ suite('AllSites', function() {
 
     for (const entry of siteEntries) {
       if (!hiddenSiteEntries.includes(entry)) {
-        assertTrue(entry.siteGroup.origins.some(origin => {
+        assertTrue(entry.siteGroup!.origins.some(origin => {
           return origin.origin.includes(SEARCH_QUERY);
         }));
       }
@@ -188,22 +205,22 @@ suite('AllSites', function() {
     // method first to ensure changing to 'Most visited' works.
     testElement.$.sortMethod.value = 'name';
     testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-    flush();
+    await flushList();
     let siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
-    assertEquals('bar.com', siteEntries[0]!.$.displayName.innerText.trim());
-    assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
-    assertEquals('google.com', siteEntries[2]!.$.displayName.innerText.trim());
+    assertEquals('bar.com', getDisplayName(siteEntries[0]!));
+    assertEquals('foo.com', getDisplayName(siteEntries[1]!));
+    assertEquals('google.com', getDisplayName(siteEntries[2]!));
 
     testElement.$.sortMethod.value = 'most-visited';
     testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-    flush();
+    await flushList();
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
     // Each site entry is sorted by its maximum engagement, so expect
     // 'foo.com' to come after 'google.com'.
-    assertEquals('google.com', siteEntries[0]!.$.displayName.innerText.trim());
-    assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
-    assertEquals('bar.com', siteEntries[2]!.$.displayName.innerText.trim());
+    assertEquals('google.com', getDisplayName(siteEntries[0]!));
+    assertEquals('foo.com', getDisplayName(siteEntries[1]!));
+    assertEquals('bar.com', getDisplayName(siteEntries[2]!));
   });
 
   test('dynamic filtered clear data button strings', async function() {
@@ -400,7 +417,7 @@ suite('AllSites', function() {
 
     assertFalse(isChildVisible(testElement, '#noSitesFoundText'));
 
-    clearDataViaClearAllButton('action-button');
+    await clearDataViaClearAllButton('action-button');
     await flushTasks();
 
     assertTrue(isChildVisible(testElement, '#noSitesFoundText'));
@@ -410,46 +427,46 @@ suite('AllSites', function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
-    flush();
+    await flushList();
     let siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     // Add additional origins to SiteGroups with cookies to simulate their
     // being grouped entries, plus add local storage.
-    siteEntries[0]!.siteGroup.origins[0]!.usage = 900;
-    siteEntries[1]!.siteGroup.origins.push(createOriginInfo('http://bar.com'));
-    siteEntries[1]!.siteGroup.origins[0]!.usage = 500;
-    siteEntries[1]!.siteGroup.origins[1]!.usage = 500;
-    siteEntries[2]!.siteGroup.origins.push(
+    siteEntries[0]!.siteGroup!.origins[0]!.usage = 900;
+    siteEntries[1]!.siteGroup!.origins.push(createOriginInfo('http://bar.com'));
+    siteEntries[1]!.siteGroup!.origins[0]!.usage = 500;
+    siteEntries[1]!.siteGroup!.origins[1]!.usage = 500;
+    siteEntries[2]!.siteGroup!.origins.push(
         createOriginInfo('http://google.com'));
 
     testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
     // Verify all sites is not sorted by storage.
     assertEquals(3, siteEntries.length);
-    assertEquals('foo.com', siteEntries[0]!.$.displayName.innerText.trim());
-    assertEquals('bar.com', siteEntries[1]!.$.displayName.innerText.trim());
-    assertEquals('google.com', siteEntries[2]!.$.displayName.innerText.trim());
+    assertEquals('foo.com', getDisplayName(siteEntries[0]!));
+    assertEquals('bar.com', getDisplayName(siteEntries[1]!));
+    assertEquals('google.com', getDisplayName(siteEntries[2]!));
 
     // Change the sort method, then verify all sites is now sorted by
     // name.
     testElement.$.sortMethod.value = 'data-stored';
     testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
 
-    flush();
+    await flushList();
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(
         'bar.com',
-        siteEntries[0]!.shadowRoot!
+        siteEntries[0]!.shadowRoot
             .querySelector<HTMLElement>(
                 '#displayName .url-directionality')!.innerText.trim());
     assertEquals(
         'foo.com',
-        siteEntries[1]!.shadowRoot!
+        siteEntries[1]!.shadowRoot
             .querySelector<HTMLElement>(
                 '#displayName .url-directionality')!.innerText.trim());
     assertEquals(
         'google.com',
-        siteEntries[2]!.shadowRoot!
+        siteEntries[2]!.shadowRoot
             .querySelector<HTMLElement>(
                 '#displayName .url-directionality')!.innerText.trim());
   });
@@ -464,23 +481,23 @@ suite('AllSites', function() {
     document.body.appendChild(testElement);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
-    flush();
+    await flushList();
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
 
     assertEquals(
         'google.com',
-        siteEntries[0]!.shadowRoot!
+        siteEntries[0]!.shadowRoot
             .querySelector<HTMLElement>(
                 '#displayName .url-directionality')!.innerText.trim());
     assertEquals(
         'bar.com',
-        siteEntries[1]!.shadowRoot!
+        siteEntries[1]!.shadowRoot
             .querySelector<HTMLElement>(
                 '#displayName .url-directionality')!.innerText.trim());
     assertEquals(
         'foo.com',
-        siteEntries[2]!.shadowRoot!
+        siteEntries[2]!.shadowRoot
             .querySelector<HTMLElement>(
                 '#displayName .url-directionality')!.innerText.trim());
   });
@@ -489,24 +506,24 @@ suite('AllSites', function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
-    flush();
+    await flushList();
     let siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
 
     // Verify all sites is not sorted by name.
     assertEquals(3, siteEntries.length);
-    assertEquals('foo.com', siteEntries[0]!.$.displayName.innerText.trim());
-    assertEquals('bar.com', siteEntries[1]!.$.displayName.innerText.trim());
-    assertEquals('google.com', siteEntries[2]!.$.displayName.innerText.trim());
+    assertEquals('foo.com', getDisplayName(siteEntries[0]!));
+    assertEquals('bar.com', getDisplayName(siteEntries[1]!));
+    assertEquals('google.com', getDisplayName(siteEntries[2]!));
 
     // Change the sort method, then verify all sites is now sorted by name.
     testElement.$.sortMethod.value = 'name';
     testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-    flush();
+    await flushList();
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
-    assertEquals('bar.com', siteEntries[0]!.$.displayName.innerText.trim());
-    assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
-    assertEquals('google.com', siteEntries[2]!.$.displayName.innerText.trim());
+    assertEquals('bar.com', getDisplayName(siteEntries[0]!));
+    assertEquals('foo.com', getDisplayName(siteEntries[1]!));
+    assertEquals('google.com', getDisplayName(siteEntries[2]!));
   });
 
   test('can sort by name by passing URL param', async function() {
@@ -516,20 +533,20 @@ suite('AllSites', function() {
     document.body.appendChild(testElement);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
-    flush();
+    await flushList();
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
 
-    assertEquals('bar.com', siteEntries[0]!.$.displayName.innerText.trim());
-    assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
-    assertEquals('google.com', siteEntries[2]!.$.displayName.innerText.trim());
+    assertEquals('bar.com', getDisplayName(siteEntries[0]!));
+    assertEquals('foo.com', getDisplayName(siteEntries[1]!));
+    assertEquals('google.com', getDisplayName(siteEntries[2]!));
   });
 
   test('merging additional SiteGroup lists works', async function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
-    flush();
+    await flushList();
     let siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(3, siteEntries.length);
@@ -562,25 +579,25 @@ suite('AllSites', function() {
     ];
     testElement.onStorageListFetched(STORAGE_SITE_GROUP_LIST);
 
-    flush();
+    await flushList();
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(4, siteEntries.length);
 
-    assertEquals(fooEtldPlus1, siteEntries[0]!.siteGroup.displayName);
-    assertEquals(2, siteEntries[0]!.siteGroup.origins.length);
-    assertEquals(fooOrigin, siteEntries[0]!.siteGroup.origins[0]!.origin);
+    assertEquals(fooEtldPlus1, siteEntries[0]!.siteGroup!.displayName);
+    assertEquals(2, siteEntries[0]!.siteGroup!.origins.length);
+    assertEquals(fooOrigin, siteEntries[0]!.siteGroup!.origins[0]!.origin);
     assertEquals(
-        'https://foo.com', siteEntries[0]!.siteGroup.origins[1]!.origin);
+        'https://foo.com', siteEntries[0]!.siteGroup!.origins[1]!.origin);
 
-    assertEquals(addEtldPlus1, siteEntries[3]!.siteGroup.displayName);
-    assertEquals(1, siteEntries[3]!.siteGroup.origins.length);
-    assertEquals(addOrigin, siteEntries[3]!.siteGroup.origins[0]!.origin);
+    assertEquals(addEtldPlus1, siteEntries[3]!.siteGroup!.displayName);
+    assertEquals(1, siteEntries[3]!.siteGroup!.origins.length);
+    assertEquals(addOrigin, siteEntries[3]!.siteGroup!.origins[0]!.origin);
   });
 
-  function clearDataViaClearAllButton(buttonType: string) {
+  async function clearDataViaClearAllButton(buttonType: string) {
     assertTrue(
         buttonType === 'cancel-button' || buttonType === 'action-button');
-    flush();
+    await flushList();
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertTrue(siteEntries.length >= 1);
@@ -605,13 +622,15 @@ suite('AllSites', function() {
     assertFalse(confirmClearAllData.open);
   }
 
-  test('cancelling the confirm dialog on clear all data works', function() {
-    testElement.siteGroupMap.set(
-        TEST_MULTIPLE_SITE_GROUP.groupingKey,
-        structuredClone(TEST_MULTIPLE_SITE_GROUP));
-    testElement.forceListUpdateForTesting();
-    clearDataViaClearAllButton('cancel-button');
-  });
+  test(
+      'cancelling the confirm dialog on clear all data works',
+      async function() {
+        testElement.siteGroupMap.set(
+            TEST_MULTIPLE_SITE_GROUP.groupingKey,
+            structuredClone(TEST_MULTIPLE_SITE_GROUP));
+        testElement.forceListUpdateForTesting();
+        await clearDataViaClearAllButton('cancel-button');
+      });
 
   test('clearing data via clear all dialog', async function() {
     // Test when all origins has no permission settings and no data.
@@ -626,7 +645,7 @@ suite('AllSites', function() {
     ]);
     testElement.siteGroupMap.set(googleSiteGroup.groupingKey, googleSiteGroup);
     testElement.forceListUpdateForTesting();
-    clearDataViaClearAllButton('action-button');
+    await clearDataViaClearAllButton('action-button');
     // Ensure a call was made to clearSiteGroupDataAndCookies.
     assertEquals(2, browserProxy.getCallCount('clearSiteGroupDataAndCookies'));
     assertEquals(testElement.$.allSitesList.items!.length, 0);
@@ -657,7 +676,7 @@ suite('AllSites', function() {
         assertEquals(
             testElement.$.allSitesList.items![0].origins.length,
             siteGroup.origins.length);
-        clearDataViaClearAllButton('action-button');
+        await clearDataViaClearAllButton('action-button');
         assertEquals(testElement.$.allSitesList.items!.length, 1);
         assertEquals(testElement.$.allSitesList.items![0].origins.length, 1);
 
@@ -685,17 +704,17 @@ suite('AllSites', function() {
     assertTrue(isVisible(clearAllButton));
 
     // Clearing all data should re-hide the button.
-    clearDataViaClearAllButton('action-button');
+    await clearDataViaClearAllButton('action-button');
     assertEquals(testElement.$.allSitesList.items!.length, 0);
     assertFalse(isVisible(clearAllButton));
   });
 
-  function removeFirstOrigin() {
+  async function removeFirstOrigin() {
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(1, siteEntries.length);
     const originList = siteEntries[0]!.$.originList.get();
-    flush();
+    await flushList();
     const originEntries = originList.querySelectorAll('.hr');
     assertEquals(3, originEntries.length);
     originEntries[0]!.querySelector<HTMLElement>(
@@ -706,7 +725,8 @@ suite('AllSites', function() {
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(1, siteEntries.length);
-    siteEntries[0]!.$$<HTMLElement>('#removeSiteButton')!.click();
+    siteEntries[0]!.shadowRoot.querySelector<HTMLElement>(
+                                  '#removeSiteButton')!.click();
   }
 
   function confirmDialog() {
@@ -725,12 +745,12 @@ suite('AllSites', function() {
     return testElement.i18n(messageId);
   }
 
-  test('remove site group', function() {
+  test('remove site group', async function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,
         structuredClone(TEST_MULTIPLE_SITE_GROUP));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
     removeFirstSiteGroup();
     confirmDialog();
@@ -751,9 +771,9 @@ suite('AllSites', function() {
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
-    removeFirstOrigin();
+    await removeFirstOrigin();
     confirmDialog();
 
     assertEquals(
@@ -784,14 +804,14 @@ suite('AllSites', function() {
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
     // Remove the the partitioned entry, which will have been ordered to the
     // bottom of the displayed origins.
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     const originList = siteEntries[0]!.$.originList.get();
-    flush();
+    await flushList();
     const originEntries = originList.querySelectorAll('.hr');
     assertEquals(3, originEntries.length);
     originEntries[2]!.querySelector<HTMLElement>(
@@ -809,7 +829,7 @@ suite('AllSites', function() {
     assertEquals(5, testElement.$.allSitesList.items![0].numCookies);
   });
 
-  test('remove last origin keeps eTLD+1 cookies placeholder', function() {
+  test('remove last origin keeps eTLD+1 cookies placeholder', async function() {
     // A group with a single origin and additional cookies scoped to the
     // eTLD+1 itself.
     const siteGroup = createSiteGroup('foo.com', 'foo.com', [
@@ -820,13 +840,13 @@ suite('AllSites', function() {
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals(1, siteEntries.length);
     const originList = siteEntries[0]!.$.originList.get();
-    flush();
+    await flushList();
     const originEntries = originList.querySelectorAll('.hr');
     assertEquals(1, originEntries.length);
     originEntries[0]!.querySelector<HTMLElement>(
@@ -843,12 +863,12 @@ suite('AllSites', function() {
     assertEquals(2, updatedGroup.origins[0]!.numCookies);
   });
 
-  test('cancel remove site group', function() {
+  test('cancel remove site group', async function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.groupingKey,
         structuredClone(TEST_MULTIPLE_SITE_GROUP));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
     removeFirstSiteGroup();
     cancelDialog();
@@ -858,7 +878,7 @@ suite('AllSites', function() {
     assertEquals(0, browserProxy.getCallCount('clearSiteGroupDataAndCookies'));
   });
 
-  test('cancel remove origin', function() {
+  test('cancel remove origin', async function() {
     const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
     siteGroup.origins[0]!.numCookies = 1;
     siteGroup.origins[1]!.numCookies = 2;
@@ -867,9 +887,9 @@ suite('AllSites', function() {
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
-    removeFirstOrigin();
+    await removeFirstOrigin();
     cancelDialog();
 
     assertEquals(
@@ -878,15 +898,15 @@ suite('AllSites', function() {
     assertEquals(6, testElement.$.allSitesList.items![0].numCookies);
   });
 
-  test('permissions bullet point visbility', function() {
+  test('permissions bullet point visbility', async function() {
     const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
     siteGroup.origins[0]!.hasPermissionSettings = true;
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
-    removeFirstOrigin();
+    await removeFirstOrigin();
     assertTrue(testElement.$.confirmRemoveSite.get().open);
     assertTrue(isChildVisible(testElement, '#permissionsBulletPoint'));
     cancelDialog();
@@ -900,9 +920,9 @@ suite('AllSites', function() {
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
-    removeFirstOrigin();
+    await removeFirstOrigin();
     assertTrue(testElement.$.confirmRemoveSite.get().open);
     assertFalse(isChildVisible(testElement, '#permissionsBulletPoint'));
     cancelDialog();
@@ -913,15 +933,15 @@ suite('AllSites', function() {
     cancelDialog();
   });
 
-  test('dynamic strings', function() {
+  test('dynamic strings', async function() {
     // Single origin, no apps.
     const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
-    removeFirstOrigin();
+    await removeFirstOrigin();
     assertEquals(
         getSubstitutedString(
             'siteSettingsRemoveSiteOriginDialogTitle', 'subdomain.example.com'),
@@ -951,9 +971,9 @@ suite('AllSites', function() {
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
-    removeFirstOrigin();
+    await removeFirstOrigin();
     assertEquals(
         getSubstitutedString(
             'siteSettingsRemoveSiteOriginAppDialogTitle',
@@ -984,7 +1004,7 @@ suite('AllSites', function() {
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
     removeFirstSiteGroup();
     assertEquals(
@@ -1004,7 +1024,7 @@ suite('AllSites', function() {
         singleOriginSiteGroup.groupingKey,
         structuredClone(singleOriginSiteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
     removeFirstSiteGroup();
     assertEquals(
@@ -1024,7 +1044,7 @@ suite('AllSites', function() {
         singleOriginSiteGroup.groupingKey,
         structuredClone(singleOriginSiteGroup));
     testElement.forceListUpdateForTesting();
-    flush();
+    await flushList();
 
     removeFirstSiteGroup();
     assertEquals(

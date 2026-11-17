@@ -8,31 +8,27 @@
  */
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../settings_shared.css.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '../site_favicon.js';
-import './cr_lazy_render.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {FocusRowMixinLit} from 'chrome://resources/cr_elements/focus_row_mixin_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {AllSitesAction2, SortMethod} from './constants.js';
-import type {CrLazyRenderElement} from './cr_lazy_render.js';
-import {FocusRowMixin} from './focus_row_mixin.js';
-import {getTemplate} from './site_entry.html.js';
+import {getCss} from './site_entry.css.js';
+import {getHtml} from './site_entry.html.js';
 import type {OriginInfo, SiteGroup} from './site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
-
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
 
 export interface SiteEntryElement {
   $: {
@@ -40,188 +36,140 @@ export interface SiteEntryElement {
     collapseParent: HTMLElement,
     cookies: HTMLElement,
     displayName: HTMLElement,
-    originList: CrLazyRenderElement<CrCollapseElement>,
+    originList: CrLazyRenderLitElement<CrCollapseElement>,
     toggleButton: HTMLElement,
     extensionIdDescription: HTMLElement,
   };
 }
 
 const SiteEntryElementBase =
-    FocusRowMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));
+    FocusRowMixinLit(SiteSettingsMixinLit(I18nMixinLit(CrLitElement)));
 
 export class SiteEntryElement extends SiteEntryElementBase {
   static get is() {
     return 'site-entry';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * An object representing a group of sites with the same eTLD+1.
        */
-      siteGroup: {
-        type: Object,
-        observer: 'onSiteGroupChanged_',
-      },
+      siteGroup: {type: Object},
 
       /**
-       * The name to display beside the icon. If grouped_() is true, it will be
-       * the eTLD+1 for all the origins. For Isolated Web Apps instead of
-       * displaying the origin, the short name of the app will be displayed.
-       * Otherwise, it will return the host.
+       * Whether the collapsible list of origins is expanded.
        */
-      displayName_: String,
+      expanded_: {type: Boolean},
+
+      /**
+       * The origins in |siteGroup|, sorted according to |sortMethod|.
+       */
+      sortedOrigins_: {type: Array},
 
       /**
        * The string to display when there is a non-zero number of cookies.
        */
-      cookieString_: String,
+      cookieString_: {type: String},
 
       /**
        * The position of this site-entry in its parent list.
        */
-      listIndex: {
-        type: Number,
-        value: -1,
-      },
+      listIndex: {type: Number},
 
       /**
        * The string to display showing the overall usage of this site-entry.
        */
-      overallUsageString_: String,
+      overallUsageString_: {type: String},
 
       /**
        * An array containing the strings to display showing the individual disk
        * usage for each origin in |siteGroup|.
        */
-      originUsages_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
+      originUsages_: {type: Array},
 
       /**
        * An array containing the strings to display showing the individual
        * cookies number for each origin in |siteGroup|.
        */
-      cookiesNum_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
+      cookiesNum_: {type: Array},
 
       /**
        * The selected sort method.
        */
-      sortMethod: {type: String, observer: 'updateOrigins_'},
+      sortMethod: {type: String},
     };
   }
 
-  declare siteGroup: SiteGroup;
-  declare private displayName_: string;
-  declare private cookieString_: string;
-  declare listIndex: number;
-  declare private overallUsageString_: string;
-  declare private originUsages_: string[];
-  declare private cookiesNum_: string[];
-  declare sortMethod?: SortMethod;
+  accessor siteGroup: SiteGroup|undefined = undefined;
+  protected accessor expanded_: boolean = false;
+  protected accessor sortedOrigins_: OriginInfo[] = [];
+  protected accessor cookieString_: string = '';
+  accessor listIndex: number = -1;
+  protected accessor overallUsageString_: string = '';
+  protected accessor originUsages_: string[] = [];
+  protected accessor cookiesNum_: string[] = [];
+  accessor sortMethod: SortMethod|undefined = undefined;
 
-  private button_: Element|null = null;
-  private eventTracker_: EventTracker = new EventTracker();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
-    if (this.button_) {
-      this.eventTracker_.remove(this.button_, 'keydown');
+    if (changedProperties.has('siteGroup')) {
+      if (this.siteGroup) {
+        if (!this.isGrouped_()) {
+          // Ensure ungrouped |siteGroup|s do not get stuck in an opened state.
+          this.expanded_ = false;
+        }
+        this.calculateUsageInfo_(this.siteGroup);
+        this.getCookieNumString_(this.siteGroup.numCookies).then(string => {
+          this.cookieString_ = string;
+        });
+        this.updateOrigins_(this.sortMethod);
+      } else {
+        this.sortedOrigins_ = [];
+      }
     }
-  }
 
-  private onButtonKeydown_(e: KeyboardEvent) {
-    if (e.shiftKey && e.key === 'Tab') {
-      this.focus();
+    if (changedProperties.has('sortMethod') &&
+        !changedProperties.has('siteGroup')) {
+      this.updateOrigins_(this.sortMethod);
     }
   }
 
   /**
    * Whether the list of origins displayed in this site-entry is a group of
    * eTLD+1 origins or not.
-   * @param siteGroup The eTLD+1 group of origins.
    */
-  private grouped_(siteGroup: SiteGroup): boolean {
-    if (!siteGroup) {
+  protected isGrouped_(): boolean {
+    if (!this.siteGroup) {
       return false;
     }
-    if (siteGroup.origins.length > 1 ||
-        siteGroup.numCookies > siteGroup.origins[0].numCookies ||
-        siteGroup.origins.some(o => o.isPartitioned)) {
+    if (this.siteGroup.origins.length > 1 ||
+        this.siteGroup.numCookies > this.siteGroup.origins[0].numCookies ||
+        this.siteGroup.origins.some(o => o.isPartitioned)) {
       return true;
     }
     return false;
   }
 
   /**
-   * Returns a user-friendly name for the siteGroup.
-   * @param siteGroup The group of origins.
-   * @return The user-friendly name.
-   */
-  private siteGroupRepresentation_(siteGroup: SiteGroup): string {
-    if (!siteGroup) {
-      return '';
-    }
-    return siteGroup.displayName;
-  }
-
-  /**
-   * @param siteGroup The eTLD+1 group of origins.
-   */
-  private onSiteGroupChanged_(siteGroup: SiteGroup) {
-    // Update the button listener.
-    if (this.button_) {
-      this.eventTracker_.remove(this.button_, 'keydown');
-    }
-    this.button_ =
-        this.shadowRoot!.querySelector('#toggleButton *:not([hidden])');
-    assert(this.button_);
-    this.eventTracker_.add(
-        this.button_, 'keydown',
-        (e: KeyboardEvent) => this.onButtonKeydown_(e));
-
-    if (!this.grouped_(siteGroup)) {
-      // Ensure ungrouped |siteGroup|s do not get stuck in an opened state.
-      const collapseChild = this.$.originList.getIfExists();
-      if (collapseChild && collapseChild.opened) {
-        this.toggleCollapsible_();
-      }
-    }
-    if (!siteGroup) {
-      return;
-    }
-    this.calculateUsageInfo_(siteGroup);
-    this.getCookieNumString_(siteGroup.numCookies).then(string => {
-      this.cookieString_ = string;
-    });
-    this.updateOrigins_(this.sortMethod);
-    this.displayName_ = this.siteGroupRepresentation_(siteGroup);
-  }
-
-  /**
    * Returns any non-HTTPS scheme/protocol for the siteGroup that only contains
    * one origin. Otherwise, returns a empty string.
-   * @param siteGroup The eTLD+1 group of origins.
    * @return The scheme if non-HTTPS, or empty string if HTTPS.
    */
-  private siteGroupScheme_(siteGroup: SiteGroup): string {
-    if (!siteGroup || (this.grouped_(siteGroup))) {
+  protected getSiteGroupScheme_(): string {
+    if (!this.siteGroup || this.isGrouped_()) {
       return '';
     }
-    return this.originScheme_(siteGroup.origins[0]);
+    return this.getOriginScheme_(this.siteGroup.origins[0]);
   }
 
   /**
@@ -229,7 +177,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
    * an empty string.
    * @return The scheme if non-HTTPS, or empty string if HTTPS.
    */
-  private originScheme_(origin: OriginInfo): string {
+  protected getOriginScheme_(origin: OriginInfo): string {
     const url = this.toUrl(origin.origin)!;
     const scheme = url.protocol.replace(new RegExp(':*$'), '');
     const HTTPS_SCHEME = 'https';
@@ -242,11 +190,13 @@ export class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Get an appropriate favicon that represents this group of eTLD+1 sites as a
    * whole.
-   * @param siteGroup The eTLD+1 group of origins.
    * @return URL that is used for fetching the favicon
    */
-  private getSiteGroupIcon_(siteGroup: SiteGroup): string {
-    const origins = siteGroup.origins;
+  protected getSiteGroupIcon_(): string {
+    if (!this.siteGroup) {
+      return '';
+    }
+    const origins = this.siteGroup.origins;
     assert(origins);
     assert(origins.length >= 1);
     if (origins.length === 1) {
@@ -256,9 +206,9 @@ export class SiteEntryElement extends SiteEntryElementBase {
     // origin. Otherwise find the origin with largest storage, and use the
     // number of cookies as a tie breaker.
     for (const originInfo of origins) {
-      if (siteGroup.etldPlus1 &&
+      if (this.siteGroup.etldPlus1 &&
           this.toUrl(originInfo.origin)!.host ===
-              'www.' + siteGroup.etldPlus1) {
+              'www.' + this.siteGroup.etldPlus1) {
         return originInfo.origin;
       }
     }
@@ -299,24 +249,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
   }
 
   /**
-   * Array binding for the |originUsages_| array for use in the HTML.
-   * @param change The change record for the array.
-   * @param index The index of the array item.
-   */
-  private originUsagesItem_(change: {base: string[]}, index: number): string {
-    return change.base[index];
-  }
-
-  /**
-   * Array binding for the |cookiesNum_| array for use in the HTML.
-   * @param change The change record for the array.
-   * @param index The index of the array item.
-   */
-  private originCookiesItem_(change: {base: string[]}, index: number): string {
-    return change.base[index];
-  }
-
-  /**
    * Navigates to the corresponding Site Details page for the given origin.
    * @param origin The origin to navigate to the Site Details page for it.
    */
@@ -331,11 +263,14 @@ export class SiteEntryElement extends SiteEntryElementBase {
   /**
    * A handler for selecting a site (by clicking on the origin).
    */
-  private onOriginClick_(e: DomRepeatEvent<OriginInfo>) {
-    if (this.siteGroup.origins[e.model.index].isPartitioned) {
+  protected onOriginClick_(e: MouseEvent) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const origin = this.sortedOrigins_[index];
+    assert(origin);
+    if (origin.isPartitioned) {
       return;
     }
-    this.navigateToSiteDetails_(this.siteGroup.origins[e.model.index].origin);
+    this.navigateToSiteDetails_(origin.origin);
     this.browserProxy.recordAction(AllSitesAction2.ENTER_SITE_DETAILS);
     chrome.metricsPrivate.recordUserAction('AllSites_EnterSiteDetails');
   }
@@ -344,9 +279,10 @@ export class SiteEntryElement extends SiteEntryElementBase {
    * A handler for clicking on a site-entry heading. This will either show a
    * list of origins or directly navigates to Site Details if there is only one.
    */
-  private onSiteEntryClick_() {
+  protected onSiteEntryClick_() {
+    assert(this.siteGroup);
     // Individual origins don't expand - just go straight to Site Details.
-    if (!this.grouped_(this.siteGroup)) {
+    if (!this.isGrouped_()) {
       this.navigateToSiteDetails_(this.siteGroup.origins[0].origin);
       this.browserProxy.recordAction(AllSitesAction2.ENTER_SITE_DETAILS);
       chrome.metricsPrivate.recordUserAction('AllSites_EnterSiteDetails');
@@ -362,19 +298,14 @@ export class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Toggles open and closed the list of origins if there is more than one.
    */
-  private toggleCollapsible_() {
-    const collapseChild = this.$.originList.get();
-    collapseChild.toggle();
-    this.$.toggleButton.setAttribute(
-        'aria-expanded', collapseChild.opened ? 'true' : 'false');
-    this.$.expandIcon.setAttribute(
-        'aria-expanded', collapseChild.opened ? 'true' : 'false');
-    this.$.expandIcon.classList.toggle('icon-expand-more');
-    this.$.expandIcon.classList.toggle('icon-expand-less');
+  private async toggleCollapsible_() {
+    this.expanded_ = !this.expanded_;
+    this.$.originList.get();
+    await this.updateComplete;
     this.fire('iron-resize');
   }
 
-  private onRemove_(e: Event) {
+  protected onRemoveClick_(e: Event) {
     this.fire('remove-site', {
       target: e.target,
       index: this.listIndex,
@@ -390,20 +321,23 @@ export class SiteEntryElement extends SiteEntryElementBase {
    * Returns the correct class to apply depending on this site-entry's position
    * in a list.
    */
-  private getClassForIndex_(index: number): string {
-    return index > 0 ? 'hr' : '';
+  protected getClassForIndex_(): string {
+    return this.listIndex > 0 ? 'hr' : '';
   }
 
-  private getSubpageLabel_(target: string): string {
+  protected getSubpageLabel_(): string {
     return this.i18n(
-        'siteSettingsSiteDetailsSubpageAccessibilityLabel', target);
+        'siteSettingsSiteDetailsSubpageAccessibilityLabel',
+        this.siteGroup?.displayName || '');
   }
 
-  private getOriginSubpageLabel_(origin: string): string {
-    return this.getSubpageLabel_(this.originRepresentation(origin));
+  protected getOriginSubpageLabel_(origin: string): string {
+    return this.i18n(
+        'siteSettingsSiteDetailsSubpageAccessibilityLabel',
+        this.originRepresentation(origin));
   }
 
-  private getRemoveOriginButtonTitle_(origin: string): string {
+  protected getRemoveOriginButtonTitle_(origin: string): string {
     return this.i18n(
         'siteSettingsCookieRemoveSite', this.originRepresentation(origin));
   }
@@ -412,25 +346,34 @@ export class SiteEntryElement extends SiteEntryElementBase {
    * Update the order and data display text for origins.
    */
   private updateOrigins_(sortMethod?: SortMethod) {
-    if (!sortMethod || !this.siteGroup || !this.grouped_(this.siteGroup)) {
+    if (!this.siteGroup) {
+      this.sortedOrigins_ = [];
+      return;
+    }
+    if (!sortMethod || !this.isGrouped_()) {
+      this.sortedOrigins_ = this.siteGroup.origins;
       return;
     }
 
-    const origins = this.siteGroup.origins.slice();
+    const origins = [...this.siteGroup.origins];
     origins.sort(this.sortFunction_(sortMethod));
-    this.set('siteGroup.origins', origins);
+    this.sortedOrigins_ = origins;
 
     this.originUsages_ = new Array(origins.length);
     origins.forEach((originInfo, i) => {
       this.browserProxy.getFormattedBytes(originInfo.usage).then((string) => {
-        this.set(`originUsages_.${i}`, string);
+        const next = [...this.originUsages_];
+        next[i] = string;
+        this.originUsages_ = next;
       });
     });
 
-    this.cookiesNum_ = new Array(this.siteGroup.origins.length);
+    this.cookiesNum_ = new Array(origins.length);
     origins.forEach((originInfo, i) => {
       this.getCookieNumString_(originInfo.numCookies).then((string) => {
-        this.set(`cookiesNum_.${i}`, string);
+        const next = [...this.cookiesNum_];
+        next[i] = string;
+        this.cookiesNum_ = next;
       });
     });
   }
@@ -466,16 +409,19 @@ export class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Get extension id description string for an extension |siteGroup|.
    */
-  private extensionIdDescription_(siteGroup: SiteGroup): string {
-    const id = this.originRepresentation(siteGroup.origins[0].origin);
+  protected getExtensionIdDescription_(): string {
+    if (!this.siteGroup || !this.siteGroup.origins.length) {
+      return '';
+    }
+    const id = this.originRepresentation(this.siteGroup.origins[0].origin);
     return loadTimeData.getStringF('siteSettingsExtensionIdDescription', id);
   }
 
   /**
    * Check if the given |siteGroup| is an extension.
    */
-  private isExtension_(siteGroup: SiteGroup): boolean {
-    return this.siteGroupScheme_(siteGroup) === 'chrome-extension';
+  protected isExtension_(): boolean {
+    return this.getSiteGroupScheme_() === 'chrome-extension';
   }
 }
 
