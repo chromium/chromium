@@ -285,7 +285,8 @@ class DeviceStatisticsTracker {
 
   static std::vector<DeviceData> DeduplicateEntities(
       const std::vector<sync_pb::SyncEntity>& entities,
-      const base::flat_set<std::string>& current_device_cache_guids);
+      const base::flat_set<std::string>& current_device_cache_guids,
+      bool use_legacy_early_exclusion_of_current_device);
 
   void RunCallback(base::OnceClosure callback);
 
@@ -316,10 +317,15 @@ class DeviceStatisticsTracker {
 
   const RequestFailed kRequestFailed;
 
-  // Results. This will have exactly one entry for every request that completed,
-  // successfully or not. On success, the value is the list of all valid other
-  // devices (which may be empty).
+  // Results. These will have exactly one entry for every request that
+  // completed, successfully or not. On success, the value is the list of all
+  // valid other devices (which may be empty).
   OtherDevicesByGaia other_devices_by_gaia_;
+  // Legacy results where the current device was excluded before deduplication
+  // (used to continue recording the *2 histograms for comparison/continuity).
+  // TODO(crbug.com/465716865): Remove once the *2 histograms are no longer
+  // needed.
+  OtherDevicesByGaia other_devices_by_gaia_legacy_;
 
   base::WeakPtrFactory<DeviceStatisticsTracker> weak_ptr_factory_{this};
 };

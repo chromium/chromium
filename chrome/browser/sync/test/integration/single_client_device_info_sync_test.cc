@@ -1051,6 +1051,8 @@ IN_PROC_BROWSER_TEST_P(
                                FROM_HERE);
   histograms_.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall2", 0,
                                FROM_HERE);
+  histograms_.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall3", 0,
+                               FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1118,9 +1120,18 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoWithDeviceStatisticsSyncTest,
       syncer::DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
           kPrimaryYesNonPrimaryNA,
       /*expected_count=*/1, FROM_HERE);
+  histograms_.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      syncer::DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryYesNonPrimaryNA,
+      /*expected_count=*/1, FROM_HERE);
 
   histograms_.ExpectUniqueSample(
       "Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients2",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1, FROM_HERE);
+  histograms_.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients3",
       /*sample=*/2,
       /*expected_bucket_count=*/1, FROM_HERE);
 }
@@ -1210,10 +1221,20 @@ IN_PROC_BROWSER_TEST_P(
       syncer::DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
           kPrimaryNANonPrimaryYes,
       /*expected_count=*/1, FROM_HERE);
+  histograms_.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      syncer::DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNANonPrimaryYes,
+      /*expected_count=*/1, FROM_HERE);
 
   histograms_.ExpectUniqueSample(
       "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
       "NumberOfAdditionalClients2",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1, FROM_HERE);
+  histograms_.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "NumberOfAdditionalClients3",
       /*sample=*/2,
       /*expected_bucket_count=*/1, FROM_HERE);
 }

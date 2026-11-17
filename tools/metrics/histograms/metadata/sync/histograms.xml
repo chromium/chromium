@@ -1272,6 +1272,27 @@ chromium-metrics-reviews@google.com.
     not counting this client) of a non-primary account. Recorded at most once
     per day (30 seconds after profile initialization) for every non-primary
     account.
+
+    Kept alongside NumberOfAdditionalClients3 for comparison and continuity.
+    Unlike version 3, this version does not deduplicate stale pre-reset entities
+    from the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.NumberOfAdditionalClients3"
+    units="clients" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of additional syncing clients (i.e.
+    not counting this client) of a non-primary account. Recorded at most once
+    per day (30 seconds after profile initialization) for every non-primary
+    account.
+
+    Supersedes NumberOfAdditionalClients2 by excluding previous entities
+    corresponding to the current device (which can exist e.g. due to device
+    resets).
   </summary>
 </histogram>
 
@@ -1285,6 +1306,27 @@ chromium-metrics-reviews@google.com.
     not counting this client) of a non-primary account which are opted in to
     history sync. Recorded at most once per day (30 seconds after profile
     initialization) for every non-primary account.
+
+    Kept alongside NumberOfAdditionalClientsWithHistoryOptIn3 for comparison and
+    continuity. Unlike version 3, this version does not deduplicate stale
+    pre-reset entities from the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.NumberOfAdditionalClientsWithHistoryOptIn3"
+    units="clients" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of additional syncing clients (i.e.
+    not counting this client) of a non-primary account which are opted in to
+    history sync. Recorded at most once per day (30 seconds after profile
+    initialization) for every non-primary account.
+
+    Supersedes NumberOfAdditionalClientsWithHistoryOptIn2 by excluding previous
+    entities corresponding to the current device (which can exist e.g. due to
+    device resets).
   </summary>
 </histogram>
 
@@ -1326,6 +1368,28 @@ chromium-metrics-reviews@google.com.
     Multiple clients with the same platform and form factor are recorded
     individually. Recorded at most once per day (30 seconds after profile
     initialization), but with one sample per other client.
+
+    Kept alongside PlatformAndFormFactorOfAdditionalClient3 for comparison and
+    continuity. Unlike version 3, this version does not deduplicate stale
+    pre-reset entities from the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.PlatformAndFormFactorOfAdditionalClient3"
+    enum="SyncDeviceStatisticsPlatformAndFormFactor" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the platform and form factor of each additional
+    syncing client (i.e. not counting this client) of each non-primary account.
+    Multiple clients with the same platform and form factor are recorded
+    individually. Recorded at most once per day (30 seconds after profile
+    initialization), but with one sample per other client.
+
+    Supersedes PlatformAndFormFactorOfAdditionalClient2 by excluding previous
+    entities corresponding to the current device (which can exist e.g. due to
+    device resets).
   </summary>
 </histogram>
 
@@ -1340,6 +1404,28 @@ chromium-metrics-reviews@google.com.
     clients with the same platform are recorded individually. Recorded at most
     once per day (30 seconds after profile initialization), but with one sample
     per other client.
+
+    Kept alongside PlatformOfAdditionalClient3 for comparison and continuity.
+    Unlike version 3, this version does not deduplicate stale pre-reset entities
+    from the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.PlatformOfAdditionalClient3"
+    enum="SyncDeviceStatisticsPlatform" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the platform of each additional syncing client
+    (i.e. not counting this client) of each non-primary account. Multiple
+    clients with the same platform are recorded individually. Recorded at most
+    once per day (30 seconds after profile initialization), but with one sample
+    per other client.
+
+    Supersedes PlatformOfAdditionalClient2 by excluding previous entities
+    corresponding to the current device (which can exist e.g. due to device
+    resets).
   </summary>
 </histogram>
 
@@ -1351,6 +1437,24 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the overall outcome, i.e. whether primary and/or
     non-primary accounts have other syncing devices. Recorded at most once per
     day (30 seconds after profile initialization).
+
+    Kept alongside Overall3 for comparison and continuity. Unlike version 3,
+    this version does not deduplicate stale pre-reset entities from the current
+    device against the current device.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DeviceStatistics.Outcome.Overall3"
+    enum="SyncDeviceStatisticsOutcome" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the overall outcome, i.e. whether primary and/or
+    non-primary accounts have other syncing devices. Recorded at most once per
+    day (30 seconds after profile initialization).
+
+    Supersedes Overall2 by excluding previous entities corresponding to the
+    current device (which can exist e.g. due to device resets).
   </summary>
 </histogram>
 
@@ -1374,6 +1478,25 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the history opt-in status of the primary account,
     across this device and any other signed-in-to-Chrome devices. Recorded at
     most once per day (30 seconds after profile initialization).
+
+    Kept alongside HistoryOptIn3 for comparison and continuity. Unlike version
+    3, this version does not deduplicate stale pre-reset entities from the
+    current device against the current device.
+  </summary>
+</histogram>
+
+<histogram name="Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn3"
+    enum="SyncDeviceStatisticsHistoryOptInDevicesSummary"
+    expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the history opt-in status of the primary account,
+    across this device and any other signed-in-to-Chrome devices. Recorded at
+    most once per day (30 seconds after profile initialization).
+
+    Supersedes HistoryOptIn2 by excluding previous entities corresponding to the
+    current device (which can exist e.g. due to device resets).
   </summary>
 </histogram>
 
@@ -1400,6 +1523,26 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the multi-device readiness of the primary
     account, i.e. whether there are other signed-in-to-Chrome devices. Recorded
     at most once per day (30 seconds after profile initialization).
+
+    Kept alongside MultiDeviceReadiness3 for comparison and continuity. Unlike
+    version 3, this version does not deduplicate stale pre-reset entities from
+    the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness3"
+    enum="SyncDeviceStatisticsMultiDeviceReadiness" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the multi-device readiness of the primary
+    account, i.e. whether there are other signed-in-to-Chrome devices. Recorded
+    at most once per day (30 seconds after profile initialization).
+
+    Supersedes MultiDeviceReadiness2 by excluding previous entities
+    corresponding to the current device (which can exist e.g. due to device
+    resets).
   </summary>
 </histogram>
 
@@ -1426,6 +1569,26 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the number of additional syncing clients (i.e.
     not counting this client) of the primary account. Recorded at most once per
     day (30 seconds after profile initialization).
+
+    Kept alongside NumberOfAdditionalClients3 for comparison and continuity.
+    Unlike version 3, this version does not deduplicate stale pre-reset entities
+    from the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients3"
+    units="clients" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of additional syncing clients (i.e.
+    not counting this client) of the primary account. Recorded at most once per
+    day (30 seconds after profile initialization).
+
+    Supersedes NumberOfAdditionalClients2 by excluding previous entities
+    corresponding to the current device (which can exist e.g. due to device
+    resets).
   </summary>
 </histogram>
 
@@ -1439,6 +1602,27 @@ chromium-metrics-reviews@google.com.
     not counting this client) of the primary account which are opted in to
     history sync. Recorded at most once per day (30 seconds after profile
     initialization).
+
+    Kept alongside NumberOfAdditionalClientsWithHistoryOptIn3 for comparison and
+    continuity. Unlike version 3, this version does not deduplicate stale
+    pre-reset entities from the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClientsWithHistoryOptIn3"
+    units="clients" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of additional syncing clients (i.e.
+    not counting this client) of the primary account which are opted in to
+    history sync. Recorded at most once per day (30 seconds after profile
+    initialization).
+
+    Supersedes NumberOfAdditionalClientsWithHistoryOptIn2 by excluding previous
+    entities corresponding to the current device (which can exist e.g. due to
+    device resets).
   </summary>
 </histogram>
 
@@ -1480,6 +1664,28 @@ chromium-metrics-reviews@google.com.
     Multiple clients with the same platform and form factor are recorded
     individually. Recorded at most once per day (30 seconds after profile
     initialization), but with one sample per other client.
+
+    Kept alongside PlatformAndFormFactorOfAdditionalClient3 for comparison and
+    continuity. Unlike version 3, this version does not deduplicate stale
+    pre-reset entities from the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.PlatformAndFormFactorOfAdditionalClient3"
+    enum="SyncDeviceStatisticsPlatformAndFormFactor" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the platform and form factor of each additional
+    syncing client (i.e. not counting this client) of the primary account.
+    Multiple clients with the same platform and form factor are recorded
+    individually. Recorded at most once per day (30 seconds after profile
+    initialization), but with one sample per other client.
+
+    Supersedes PlatformAndFormFactorOfAdditionalClient2 by excluding previous
+    entities corresponding to the current device (which can exist e.g. due to
+    device resets).
   </summary>
 </histogram>
 
@@ -1494,6 +1700,28 @@ chromium-metrics-reviews@google.com.
     with the same platform are recorded individually. Recorded at most once per
     day (30 seconds after profile initialization), but with one sample per other
     client.
+
+    Kept alongside PlatformOfAdditionalClient3 for comparison and continuity.
+    Unlike version 3, this version does not deduplicate stale pre-reset entities
+    from the current device against the current device.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.PlatformOfAdditionalClient3"
+    enum="SyncDeviceStatisticsPlatform" expires_after="2027-11-15">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the platform of each additional syncing client
+    (i.e. not counting this client) of the primary account. Multiple clients
+    with the same platform are recorded individually. Recorded at most once per
+    day (30 seconds after profile initialization), but with one sample per other
+    client.
+
+    Supersedes PlatformOfAdditionalClient2 by excluding previous entities
+    corresponding to the current device (which can exist e.g. due to device
+    resets).
   </summary>
 </histogram>
 

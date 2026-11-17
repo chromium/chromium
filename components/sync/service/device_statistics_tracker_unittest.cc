@@ -178,6 +178,21 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsOutcomeWhenNoAccounts) {
       /*sample=*/
       DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::kNoAccounts,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::kNoAccounts,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness2",
+      /*sample=*/
+      DeviceStatisticsTracker::MultiDeviceReadiness::kSignedOut,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness3",
+      /*sample=*/
+      DeviceStatisticsTracker::MultiDeviceReadiness::kSignedOut,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceStatisticsTrackerTest,
@@ -250,6 +265,8 @@ TEST_F(DeviceStatisticsTrackerTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall2",
                                     0);
+  histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall3",
+                                    0);
 }
 
 TEST_F(DeviceStatisticsTrackerTest, RecordsNoOutcomeWhenAllRequestsFail) {
@@ -280,6 +297,8 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsNoOutcomeWhenAllRequestsFail) {
       /*sample=*/DeviceStatisticsTracker::RequestsCompletedSuccess::kAllFailed,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall2",
+                                    0);
+  histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall3",
                                     0);
 }
 
@@ -320,6 +339,8 @@ TEST_F(DeviceStatisticsTrackerTest, RecordsNoOutcomeWhenPrimaryAccountChanges) {
           kPrimaryAccountChangedOrRemoved,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall2",
+                                    0);
+  histogram_tester.ExpectTotalCount("Sync.DeviceStatistics.Outcome.Overall3",
                                     0);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -392,7 +413,18 @@ TEST_F(DeviceStatisticsTrackerTest,
           kPrimaryNoNonPrimaryNA,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryNA,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness2",
+      /*sample=*/
+      DeviceStatisticsTracker::MultiDeviceReadiness::kSingleDevice,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness3",
       /*sample=*/
       DeviceStatisticsTracker::MultiDeviceReadiness::kSingleDevice,
       /*expected_bucket_count=*/1);
@@ -589,7 +621,18 @@ TEST_F(DeviceStatisticsTrackerTest,
           kPrimaryNANonPrimaryNo,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNANonPrimaryNo,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness2",
+      /*sample=*/
+      DeviceStatisticsTracker::MultiDeviceReadiness::kSignedOut,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness3",
       /*sample=*/
       DeviceStatisticsTracker::MultiDeviceReadiness::kSignedOut,
       /*expected_bucket_count=*/1);
@@ -637,7 +680,18 @@ TEST_F(DeviceStatisticsTrackerTest,
           kPrimaryNANonPrimaryNo,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      /*sample=*/
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNANonPrimaryNo,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness2",
+      /*sample=*/
+      DeviceStatisticsTracker::MultiDeviceReadiness::kSignedOut,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness3",
       /*sample=*/
       DeviceStatisticsTracker::MultiDeviceReadiness::kSignedOut,
       /*expected_bucket_count=*/1);
@@ -1131,6 +1185,243 @@ TEST_F(DeviceStatisticsTrackerTest, DedupesByActivityTimeRange) {
       "PlatformOfAdditionalClient2",
       DeviceStatisticsTracker::Platform::kWindows,
       /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformOfAdditionalClient3",
+      DeviceStatisticsTracker::Platform::kWindows,
+      /*expected_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest, DedupesPreResetEntityAgainstCurrentDevice) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      identity_test_env_.identity_manager(), GURL("https://example.com/"),
+      CreateRequestFactory(), {kThisDeviceCacheGuid});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 1u);
+  const base::Time now = base::Time::Now();
+
+  // Simulate a device reset: a stale pre-reset entity whose activity ended
+  // before the current device's entity was created.
+  sync_pb::SyncEntity pre_reset_entity = CreateDeviceInfo(
+      "old_device_guid", sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      /*history_opt_in=*/true, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  pre_reset_entity.set_ctime(syncer::TimeToProtoTime(now - base::Days(10)));
+  pre_reset_entity.set_mtime(syncer::TimeToProtoTime(now - base::Days(3)));
+
+  sync_pb::SyncEntity current_entity = CreateDeviceInfo(
+      kThisDeviceCacheGuid, sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      /*history_opt_in=*/false, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  current_entity.set_ctime(syncer::TimeToProtoTime(now - base::Days(2)));
+  current_entity.set_mtime(syncer::TimeToProtoTime(now - base::Days(1)));
+
+  fake_requests_[primary.GetGaiaId()]->SimulateSuccess(
+      {pre_reset_entity, current_entity});
+  EXPECT_TRUE(future.Wait());
+
+  // Version 3 deduplicates the stale pre-reset entity against the current
+  // device, so 0 additional devices are reported.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryNA,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients3",
+      /*sample=*/0, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "NumberOfAdditionalClientsWithHistoryOptIn3",
+      /*sample=*/0, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness3",
+      DeviceStatisticsTracker::MultiDeviceReadiness::kSingleDevice,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn3",
+      DeviceStatisticsTracker::HistoryOptInDevicesSummary::
+          kThisDeviceNoOtherDevicesNA,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformOfAdditionalClient3",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient3",
+      0);
+
+  // Version 2 (legacy) excluded the current device before deduplication, so it
+  // still counts the stale pre-reset entity.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall2",
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryYesNonPrimaryNA,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients2",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "NumberOfAdditionalClientsWithHistoryOptIn2",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiDeviceReadiness2",
+      DeviceStatisticsTracker::MultiDeviceReadiness::kMultiDeviceWithoutHistory,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn2",
+      DeviceStatisticsTracker::HistoryOptInDevicesSummary::
+          kThisDeviceNoOtherDevicesYes,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformOfAdditionalClient2",
+      DeviceStatisticsTracker::Platform::kAndroid,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient2",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kAndroidPhone,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       DoesNotDedupeConcurrentSameTypeDeviceAgainstCurrentDevice) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  base::HistogramTester histogram_tester;
+
+  DeviceStatisticsTracker tracker(
+      identity_test_env_.identity_manager(), GURL("https://example.com/"),
+      CreateRequestFactory(), {kThisDeviceCacheGuid});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 1u);
+  const base::Time now = base::Time::Now();
+
+  // Two genuinely concurrent devices of the same OS and form factor
+  // (`other_entity.mtime >= current_entity.ctime`).
+  sync_pb::SyncEntity other_entity = CreateDeviceInfo(
+      "other_phone_guid", sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      /*history_opt_in=*/true, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  other_entity.set_ctime(syncer::TimeToProtoTime(now - base::Days(10)));
+  other_entity.set_mtime(syncer::TimeToProtoTime(now - base::Days(2)));
+
+  sync_pb::SyncEntity current_entity = CreateDeviceInfo(
+      kThisDeviceCacheGuid, sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      /*history_opt_in=*/true, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  current_entity.set_ctime(syncer::TimeToProtoTime(now - base::Days(5)));
+  current_entity.set_mtime(syncer::TimeToProtoTime(now - base::Days(1)));
+
+  fake_requests_[primary.GetGaiaId()]->SimulateSuccess(
+      {other_entity, current_entity});
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall2",
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryYesNonPrimaryNA,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryYesNonPrimaryNA,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients2",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalClients3",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.PrimaryAccount."
+      "PlatformAndFormFactorOfAdditionalClient3",
+      DeviceStatisticsTracker::PlatformAndFormFactor::kAndroidPhone,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(DeviceStatisticsTrackerTest,
+       DedupesPreResetEntityAgainstCurrentDeviceForNonPrimaryAccount) {
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@example.com");
+
+  base::HistogramTester histogram_tester;
+
+  constexpr char kThisDeviceSecondaryCacheGuid[] = "this_device_guid2";
+  DeviceStatisticsTracker tracker(
+      identity_test_env_.identity_manager(), GURL("https://example.com/"),
+      CreateRequestFactory(),
+      {kThisDeviceCacheGuid, kThisDeviceSecondaryCacheGuid});
+
+  base::test::TestFuture<void> future;
+  tracker.Start(future.GetCallback());
+
+  ASSERT_EQ(fake_requests_.size(), 2u);
+  const base::Time now = base::Time::Now();
+
+  sync_pb::SyncEntity pre_reset_entity = CreateDeviceInfo(
+      "old_secondary_guid", sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      /*history_opt_in=*/false, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  pre_reset_entity.set_ctime(syncer::TimeToProtoTime(now - base::Days(10)));
+  pre_reset_entity.set_mtime(syncer::TimeToProtoTime(now - base::Days(3)));
+
+  sync_pb::SyncEntity current_secondary_entity = CreateDeviceInfo(
+      kThisDeviceSecondaryCacheGuid, sync_pb::SyncEnums_OsType_OS_TYPE_ANDROID,
+      /*history_opt_in=*/false, sync_pb::SyncEnums::DEVICE_FORM_FACTOR_PHONE);
+  current_secondary_entity.set_ctime(
+      syncer::TimeToProtoTime(now - base::Days(2)));
+  current_secondary_entity.set_mtime(
+      syncer::TimeToProtoTime(now - base::Days(1)));
+
+  fake_requests_[primary.GetGaiaId()]->SimulateSuccess({});
+  fake_requests_[secondary.GetGaiaId()]->SimulateSuccess(
+      {pre_reset_entity, current_secondary_entity});
+  EXPECT_TRUE(future.Wait());
+
+  // Version 3 deduplicates the stale pre-reset entity for the non-primary
+  // account as well.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall3",
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryNo,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "NumberOfAdditionalClients3",
+      /*sample=*/0, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "PlatformOfAdditionalClient3",
+      0);
+
+  // Version 2 (legacy) still counts it.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.Overall2",
+      DeviceStatisticsTracker::AccountsHaveOtherDevicesSummary::
+          kPrimaryNoNonPrimaryYes,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "NumberOfAdditionalClients2",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.DeviceStatistics.Outcome.NonPrimaryAccount."
+      "PlatformOfAdditionalClient2",
+      DeviceStatisticsTracker::Platform::kAndroid,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DeviceStatisticsTrackerTest, ExcludesIGSADevices) {

@@ -246,14 +246,21 @@ void DeviceStatisticsTracker::Start(base::OnceClosure callback) {
         /*primary_account_history_opt_in=*/false,
         /*other_devices=*/0, /*other_devices_with_history_opt_in=*/0,
         /*histogram_version=*/"2");
+    RecordPrimaryAccountMultiDeviceReadiness(
+        /*has_primary_account=*/false,
+        /*primary_account_history_opt_in=*/false,
+        /*other_devices=*/0, /*other_devices_with_history_opt_in=*/0,
+        /*histogram_version=*/"3");
     RecordPrimaryAccountMultiPlatformReadiness(
         /*other_platforms=*/0, /*other_platforms_with_history_opt_in=*/0);
   }
 
   // If there are no accounts at all, there's not much to do.
   if (accounts.empty()) {
-    RecordOverallDevicesOutcome(other_devices_by_gaia_, primary_account_,
+    RecordOverallDevicesOutcome(other_devices_by_gaia_legacy_, primary_account_,
                                 /*histogram_version=*/"2");
+    RecordOverallDevicesOutcome(other_devices_by_gaia_, primary_account_,
+                                /*histogram_version=*/"3");
     RecordOverallPlatformsOutcome();
 
     // Note: This is plumbed through a class method to ensure that the callback
@@ -297,8 +304,12 @@ void DeviceStatisticsTracker::RequestDoneForGaiaId(const GaiaId& gaia) {
   requests_.erase(gaia);
 
   if (request->GetState() == DeviceStatisticsRequest::State::kComplete) {
-    other_devices_by_gaia_[gaia] =
-        DeduplicateEntities(request->GetResults(), current_device_cache_guids_);
+    other_devices_by_gaia_[gaia] = DeduplicateEntities(
+        request->GetResults(), current_device_cache_guids_,
+        /*use_legacy_early_exclusion_of_current_device=*/false);
+    other_devices_by_gaia_legacy_[gaia] = DeduplicateEntities(
+        request->GetResults(), current_device_cache_guids_,
+        /*use_legacy_early_exclusion_of_current_device=*/true);
 
     // If this request was for the primary account, figure out whether the user
     // has opted in to history on the current device, and on any device matching
@@ -324,6 +335,7 @@ void DeviceStatisticsTracker::RequestDoneForGaiaId(const GaiaId& gaia) {
     }
   } else {
     other_devices_by_gaia_[gaia] = base::unexpected(kRequestFailed);
+    other_devices_by_gaia_legacy_[gaia] = base::unexpected(kRequestFailed);
   }
 
   if (requests_.empty()) {
@@ -340,9 +352,12 @@ void DeviceStatisticsTracker::AllRequestsDone() {
       "Sync.DeviceStatistics.RequestsCompletedSuccess", success);
 
   if (ShouldRecordOutcomeMetrics(success)) {
-    RecordDevicesOutcomeMetrics(other_devices_by_gaia_, primary_account_,
+    RecordDevicesOutcomeMetrics(other_devices_by_gaia_legacy_, primary_account_,
                                 primary_account_history_opt_in_,
                                 /*histogram_version=*/"2");
+    RecordDevicesOutcomeMetrics(other_devices_by_gaia_, primary_account_,
+                                primary_account_history_opt_in_,
+                                /*histogram_version=*/"3");
     RecordPlatformsOutcomeMetrics();
   }
 
@@ -740,7 +755,8 @@ DeviceStatisticsTracker::GetHistoryOptInPlatformsSummary(
 std::vector<DeviceStatisticsTracker::DeviceData>
 DeviceStatisticsTracker::DeduplicateEntities(
     const std::vector<sync_pb::SyncEntity>& entities,
-    const base::flat_set<std::string>& current_device_cache_guids) {
+    const base::flat_set<std::string>& current_device_cache_guids,
+    bool use_legacy_early_exclusion_of_current_device) {
   absl::flat_hash_map<std::pair<sync_pb::SyncEnums::DeviceFormFactor,
                                 sync_pb::SyncEnums::OsType>,
                       std::vector<sync_pb::SyncEntity>>
@@ -758,8 +774,8 @@ DeviceStatisticsTracker::DeduplicateEntities(
       continue;
     }
 
-    // Don't consider the current device.
-    if (current_device_cache_guids.contains(device.cache_guid())) {
+    if (use_legacy_early_exclusion_of_current_device &&
+        current_device_cache_guids.contains(device.cache_guid())) {
       continue;
     }
 
@@ -793,6 +809,15 @@ DeviceStatisticsTracker::DeduplicateEntities(
                                          })
                             .ctime();
     for (const sync_pb::SyncEntity& entity : type_entities) {
+      // Don't consider the current device. (Done after computing `max_ctime`
+      // so stale pre-reset entities from the current device are still
+      // deduplicated against it.)
+      if (current_device_cache_guids.contains(
+              entity.specifics().device_info().cache_guid())) {
+        CHECK(!use_legacy_early_exclusion_of_current_device);
+        continue;
+      }
+
       if (entity.mtime() < max_ctime) {
         // This entity was last used before the newest one was created. That
         // means it's likely the same device, just with a different cache GUID.
