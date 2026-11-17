@@ -97,6 +97,29 @@ PerProfileDesktopEntryChangedCallbacks() {
 }
 
 #if defined(USE_GLIB)
+// xdg-desktop-menu (xdg-utils, at least up to 1.2.1) does not parse desktop
+// files as key files when it collects the MIME types to register as default
+// associations: it treats the text after the substring "MimeType=" on any line
+// as a MIME type list. Desktop files therefore must not contain that substring
+// anywhere other than at the start of the actual MimeType key, since other
+// values may contain text from web content (page titles, app names, URLs).
+constexpr std::string_view kMimeTypeKey = "MimeType=";
+
+// Breaks up every occurrence of `kMimeTypeKey` in `contents` that is not the
+// key at the start of a line. The inserted U+200B ZERO WIDTH SPACE leaves
+// names visually unchanged. Exec arguments are handled earlier by
+// QuoteArgForDesktopFileExec(), which preserves their meaning.
+std::string NeutralizeMimeTypeKeyInValues(std::string_view contents) {
+  std::vector<std::string> lines = base::SplitString(
+      contents, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (std::string& line : lines) {
+    size_t offset = line.starts_with(kMimeTypeKey) ? kMimeTypeKey.size() : 0;
+    base::ReplaceSubstringsAfterOffset(&line, offset, kMimeTypeKey,
+                                       "MimeType\xE2\x80\x8B=");
+  }
+  return base::JoinString(lines, "\n");
+}
+
 struct GKeyFileDataDeleter {
   void operator()(gchar* data) { g_free(data); }
 };
@@ -116,7 +139,7 @@ std::string GetFileContents(GKeyFile* key_file) {
     // remove it to avoid double-newline after the shebang.
     data_view.remove_prefix(1);
   }
-  return std::string(data_view);
+  return NeutralizeMimeTypeKeyInValues(data_view);
 }
 #endif
 
@@ -207,8 +230,14 @@ std::string GetDesktopBaseName(const std::string& desktop_file_name) {
 std::string QuoteArgForDesktopFileExec(const std::string& arg) {
   // http://standards.freedesktop.org/desktop-entry-spec/latest/ar01s06.html
 
-  // Literal % characters must be escaped as %%.
+  // The only arguments that can contain web-controlled text are URLs. Percent-
+  // encode the "M" of any "MimeType=" in them, which keeps the URL equivalent,
+  // so that xdg-desktop-menu doesn't read the Exec line as a MIME type list
+  // (see kMimeTypeKey).
   std::string arg_copy = arg;
+  base::ReplaceSubstringsAfterOffset(&arg_copy, 0, kMimeTypeKey, "%4DimeType=");
+
+  // Literal % characters must be escaped as %%.
   RE2::GlobalReplace(&arg_copy, "%", "%%");
 
   // Quoting is only necessary if the argument has a reserved character.

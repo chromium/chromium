@@ -26,6 +26,7 @@
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -90,6 +91,18 @@ class MockEnvironment : public base::Environment {
  private:
   std::map<std::string, std::string> variables_;
 };
+
+// Expects that "MimeType=" appears in `contents` only as the key at the start
+// of a line.
+void ExpectMimeTypeOnlyAsKey(const std::string& contents) {
+  constexpr std::string_view kKey = "MimeType=";
+  for (std::string_view line : base::SplitStringPiece(
+           contents, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    size_t offset = line.starts_with(kKey) ? kKey.size() : 0;
+    EXPECT_EQ(line.find(kKey, offset), std::string_view::npos)
+        << "Line: " << line;
+  }
+}
 
 }  // namespace
 
@@ -1186,6 +1199,54 @@ TEST(ShellIntegrationLinuxTest, GetDesktopFileContentsEscapesPercent) {
   EXPECT_TRUE(contents.find("Exec=") != std::string::npos);
   EXPECT_TRUE(contents.find("https://evil.example/?q=%%c") != std::string::npos)
       << "Contents: " << contents;
+}
+
+TEST(ShellIntegrationLinuxTest, GetDesktopFileContentsNeutralizesMimeType) {
+  base::ScopedEnvironmentVariableOverride scoped_override(
+      "CHROME_WEB_APP_DESKTOP_ID_PREFIX");
+  const base::FilePath kChromeExePath("/opt/google/chrome/google-chrome");
+  std::set<web_app::DesktopActionInfo> action_info = {
+      web_app::DesktopActionInfo("action1", "Name MimeType=text/html;",
+                                 GURL("https://example.com/a")),
+      web_app::DesktopActionInfo(
+          "action2", "Action 2",
+          GURL("https://example.com/MimeType=a/b?MimeType=x-scheme-handler/"
+               "https;inode/directory")),
+  };
+
+  std::string contents = GetDesktopFileContents(
+      kChromeExePath, web_app::GenerateApplicationNameFromAppId("TestAppId"),
+      GURL("https://example.com"), "TestAppId", u"App MimeType=text/plain;",
+      "IconName", base::FilePath("Default"), "", "image/png", false, "",
+      action_info);
+
+  ExpectMimeTypeOnlyAsKey(contents);
+  EXPECT_THAT(contents, testing::HasSubstr("\nMimeType=image/png;"));
+  EXPECT_THAT(contents,
+              testing::HasSubstr("\nName=App MimeType\u200B=text/plain;\n"));
+  EXPECT_THAT(contents,
+              testing::HasSubstr("\nName=Name MimeType\u200B=text/html;\n"));
+  // The launch URL is percent-encoded, which keeps it equivalent.
+  EXPECT_THAT(contents,
+              testing::HasSubstr("--app-launch-url-for-shortcuts-menu-item="
+                                 "https://example.com/%%4DimeType=a/"
+                                 "b?%%4DimeType=x-scheme-handler/"
+                                 "https;inode/directory\"\n"));
+}
+
+TEST(ShellIntegrationLinuxTest,
+     GetDesktopFileContentsForUrlShortcutNeutralizesMimeType) {
+  std::string contents = GetDesktopFileContentsForUrlShortcut(
+      "Title MimeType=text/html;",
+      GURL("https://evil.example/?MimeType=x-scheme-handler/https;"),
+      base::FilePath("/tmp/icon.png"), base::FilePath("/tmp/profile"));
+
+  ExpectMimeTypeOnlyAsKey(contents);
+  EXPECT_THAT(contents,
+              testing::HasSubstr("\nName=Title MimeType\u200B=text/html;\n"));
+  EXPECT_THAT(contents,
+              testing::HasSubstr(
+                  "https://evil.example/?%%4DimeType=x-scheme-handler/https;"));
 }
 
 }  // namespace shell_integration_linux
