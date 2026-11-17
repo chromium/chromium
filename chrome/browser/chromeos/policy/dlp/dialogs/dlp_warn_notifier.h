@@ -5,29 +5,25 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_DLP_WARN_NOTIFIER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_DLP_WARN_NOTIFIER_H_
 
+#include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace policy {
 
 // DlpWarnNotifier is used to create and show DlpWarnDialogs and should be the
 // only way to do this.
-class DlpWarnNotifier : public views::WidgetObserver {
+class DlpWarnNotifier {
  public:
   DlpWarnNotifier();
   DlpWarnNotifier(const DlpWarnNotifier& other) = delete;
   DlpWarnNotifier& operator=(const DlpWarnNotifier& other) = delete;
-  ~DlpWarnNotifier() override;
-
-  // WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
+  virtual ~DlpWarnNotifier();
 
   // Shows a warning dialog that informs the user that printing is not
   // recommended. Calls `callback` and passes user's choice of whether to
@@ -70,15 +66,15 @@ class DlpWarnNotifier : public views::WidgetObserver {
       WarningCallback callback,
       DlpWarnDialog::DlpWarnDialogOptions options);
 
-  // Helper method to show the `widget`.
-  virtual void ShowWidget(views::Widget* widget);
+  // Helper method to show the `widget` and keep it until it closes.
+  virtual void ShowWidget(std::unique_ptr<views::Widget> widget);
 
-  // Removes the `widget` from widgets_ and stops observing it.
-  void RemoveWidget(views::Widget* widget);
+  // Removes the `widget` from widgets_, which destroys it.
+  void RemoveWidget(views::Widget* widget, views::Widget::ClosedReason reason);
 
   // List of active widgets. Used in tests to verify that the dialog has or
   // hasn't been shown.
-  std::vector<raw_ptr<views::Widget, VectorExperimental>> widgets_;
+  std::vector<std::unique_ptr<views::Widget>> widgets_;
 };
 
 }  // namespace policy
