@@ -8031,7 +8031,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // Verifies that ArrowDown and ArrowUp step through match lines (skipping
 // auxiliary buttons), wrap around from the last match to the first and from
 // the first match to the last, and mirror each selected match's text in the
-// WebUI input.
+// WebUI input while keeping focus in the input and the caret at the end of the
+// text.
 //
 // Typing `kTypedText` produces these matches, in this order:
 //   [0] `kTypedText`: the search-what-you-typed default match.
@@ -8046,11 +8047,14 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
   static constexpr char kSuggestion2[] = "suggestion-2";
 
   // Waits until match `expected_line` is selected (in the WebUI and the
-  // browser) and its text, `expected_input`, fills the WebUI input.
+  // browser) and its text, `expected_input`, fills the WebUI input with focus
+  // remaining in the input and the caret collapsed at the end of the text.
   auto wait_for_line_selected = [this](size_t expected_line,
                                        const std::string& expected_input) {
     return Steps(
-        WaitForWebUIInputValue(expected_input),
+        WaitForWebUIInputValue(expected_input), CheckOmniboxFocus(true),
+        InAnyContext(CheckWebUIInputSelection(expected_input.length(),
+                                              expected_input.length())),
         WaitForJsConditionAt(
             kPopupWebView, kPopupSearchbox,
             base::StringPrintf(
@@ -8097,6 +8101,59 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       wait_for_line_selected(1, kSuggestion1),
       InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_UP, ui::EF_NONE)),
       wait_for_line_selected(0, kTypedText));
+}
+
+// Verifies that after arrowing through suggestions, focus remains in the WebUI
+// input with the caret at the end of each selected suggestion's text, and
+// typing immediately with real key presses appends to the selected suggestion
+// and updates the suggestions.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       TypingAfterArrowingAppendsToSelectedSuggestion) {
+  static constexpr char kTypedText[] = "ffffff";
+  static constexpr char kSuggestion1[] = "suggestion-1";
+  static constexpr char kSuggestion2[] = "suggestion-2";
+  static constexpr char kAppended[] = "example";
+  const std::string expected_appended = base::StrCat({kSuggestion1, kAppended});
+
+  auto check_caret_at_end = [this](const std::string& text) {
+    return Steps(
+        InAnyContext(WaitForWebUIInputValue(text)), CheckOmniboxFocus(true),
+        InAnyContext(CheckWebUIInputSelection(text.length(), text.length())));
+  };
+
+  RunTestSequence(
+      OpenNtpAndWaitForPopupReady(kTab1),
+      TypeWebUITextWithKeyPresses(kTypedText), check_caret_at_end(kTypedText),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   kSuggestion1),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible && "
+                           "el.result?.matches?.length === 3"),
+
+      // Arrow down through the suggestions and back up onto `kSuggestion1`,
+      // verifying focus and caret-at-end after each step.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      check_caret_at_end(kSuggestion1),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      check_caret_at_end(kSuggestion2),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_UP, ui::EF_NONE)),
+      check_caret_at_end(kSuggestion1),
+
+      // Without taking any other action, type "example" with real key presses;
+      // it appends to `kSuggestion1` and updates the suggestions.
+      TypeWebUITextWithKeyPresses(kAppended),
+      check_caret_at_end(expected_appended),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion,
+                           expected_appended),
+      WaitForJsConditionAt(
+          kPopupWebView, kPopupSearchbox,
+          base::StringPrintf(
+              "(el) => el && el.dropdownIsVisible && "
+              "el.result?.input === '%s' && el.selection?.line === 0 && "
+              "el.selection.state === 1",
+              expected_appended.c_str())),
+      WaitForOmniboxText(base::ASCIIToUTF16(expected_appended)),
+      CheckUserInputInProgress(true));
 }
 
 // Verifies character-by-character cursor movement with ArrowLeft / ArrowRight,
@@ -8422,6 +8479,43 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
                   WaitForPopupDismissed(),
                   CheckPopupState(OmniboxPopupState::kNone),
                   CheckUserInputInProgress(false), WaitForOmniboxText(u""));
+}
+
+// Verifies that while arrowing down and up through zero-prefix suggestions of
+// different lengths on the NTP, focus stays in the WebUI input with the caret
+// at the end of each suggestion's text, and typing "example" right after
+// selecting a suggestion appends to its text and updates the suggestions.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
+                       ArrowThroughZpsKeepsCaretAtEndAndTypingAppends) {
+  static constexpr char kAppended[] = "example";
+  const std::string expected_appended = base::StrCat({kZpsMatch0, kAppended});
+
+  auto check_caret_at_end = [this](const std::string& text) {
+    return Steps(
+        InAnyContext(WaitForWebUIInputValue(text)), CheckOmniboxFocus(true),
+        InAnyContext(CheckWebUIInputSelection(text.length(), text.length())));
+  };
+
+  RunTestSequence(
+      FocusOmniboxOnNtpAndWaitForZps(), check_caret_at_end(""),
+
+      // Arrow down through both ZPS matches and back up to the first; focus
+      // stays in the input and the caret tracks each match's end.
+      PressKey(ui::VKEY_DOWN), check_caret_at_end(kZpsMatch0),
+      PressKey(ui::VKEY_DOWN), check_caret_at_end(kZpsMatch1),
+      PressKey(ui::VKEY_UP), check_caret_at_end(kZpsMatch0),
+
+      // Without taking any other action, type "example"; it appends to
+      // `kZpsMatch0` and replaces the ZPS dropdown with suggestions for the
+      // appended query.
+      TypeWebUITextWithKeyPresses(kAppended),
+      check_caret_at_end(expected_appended),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion,
+                           expected_appended),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      WaitForOmniboxText(base::ASCIIToUTF16(expected_appended)),
+      CheckUserInputInProgress(true));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
