@@ -82,19 +82,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/settings/histograms.xml:Profile) -->
 
-<histogram name="Privacy.AFP.BlockList.CheckResult"
-    enum="AntiFingerprintingBlockListResult" expires_after="2024-04-01">
-  <owner>thesalsa@google.com</owner>
-  <owner>rizvis@google.com</owner>
-  <summary>
-    The result of checking the anti-fingerprinting blocklist for a URL and
-    deciding whether to block it. Recorded each time the blocklist is checked.
-
-    Only clients that have opted into the blocklist feature will emit this
-    metric.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.ClearBrowsingData.TabsEnabled" enum="BooleanEnabled"
     expires_after="2026-11-15">
   <owner>zalmashni@google.com</owner>

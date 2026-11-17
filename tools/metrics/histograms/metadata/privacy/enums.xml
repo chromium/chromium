@@ -26,16 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AntiFingerprintingBlockListResult">
-  <summary>
-    The possible results from checking a network resource URL against the
-    anti-fingerprinting blocklist.
-  </summary>
-  <int value="0" label="Third-party resource Blocked"/>
-  <int value="1" label="Third-party resource Allowed"/>
-  <int value="2" label="First-party resource Allowed"/>
-</enum>
-
 <!-- LINT.IfChange(ContentSettingPatternScope) -->
 
 <enum name="ContentSettingPatternScope">
