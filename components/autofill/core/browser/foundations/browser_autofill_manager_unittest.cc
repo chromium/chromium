@@ -1914,6 +1914,39 @@ TEST_F(BrowserAutofillManagerTest,
        Suggestion(u"two", SuggestionType::kAutocompleteEntry),
        Suggestion(SuggestionType::kSeparator),
        Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)});
+  ASSERT_EQ(external_delegate()->suggestions().size(), 4u);
+  EXPECT_EQ(external_delegate()->suggestions()[2].filtration_policy,
+            Suggestion::FiltrationPolicy::kStatic);
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       WebauthnSignInWithAnotherDeviceSuggestionOrderedAboveUndo) {
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+  form = AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
+
+  ON_CALL(password_delegate(), GetWebauthnInlineQrCodeSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnPasskeyQrCode)));
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      ElementsAre(
+          EqualsSuggestion(SuggestionType::kAddressFieldByFieldFilling,
+                           u"buddy@gmail.com"),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kWebauthnPasskeyQrCode),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kWebauthnSignInWithAnotherDevice),
+          EqualsSuggestion(SuggestionType::kUndo),
+          EqualsSuggestion(SuggestionType::kManageAddress)));
 }
 
 TEST_F(

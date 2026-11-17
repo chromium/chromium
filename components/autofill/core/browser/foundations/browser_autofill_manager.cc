@@ -729,44 +729,148 @@ void LogSuggestionGenerationMetrics(
   autofill_metrics::LogSuggestionsCount(suggestions);
 }
 
-// Finds the footer section with "Manage" suggestions or adds a separator to
-// create a new footer section if there is none. Then, it moves any WebAuthn
-// fallback items to the footer - before any "Manage" suggestion, moving them
-// as a block to preserve their relative order from generation.
+// Classifies suggestions for `ReorderWebAuthnSuggestionsToFooter()`, which
+// moves merged WebAuthn items from the end of `suggestions` to the top of the
+// popup's footer section.
+enum class FooterReorderRole {
+  // Body and structural items (e.g. `kSeparator`) that stay above the footer
+  // section.
+  kNone,
+  // Merged items appended in `GenerateFooter()` (e.g. WebAuthn hybrid sign-in
+  // items) that should be placed at the top of the footer section, above
+  // `kTrailingFooterItem` items.
+  kLeadingFooterItem,
+  // Pre-existing footer items (e.g. "Manage...", "Undo", "Scan card") that
+  // stay below `kLeadingFooterItem` items.
+  kTrailingFooterItem,
+};
+
+FooterReorderRole GetFooterReorderRole(const Suggestion& suggestion) {
+  switch (suggestion.type) {
+    case SuggestionType::kWebauthnPasskeyQrCode:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      return FooterReorderRole::kLeadingFooterItem;
+    case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kAutocompleteAtMemoryButton:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageAutofillAiIdentityDocs:
+    case SuggestionType::kManageAutofillAiShopping:
+    case SuggestionType::kManageAutofillAiTravel:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageEnhancedAutofill:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManageOffers:
+    case SuggestionType::kOpenGmailForOtps:
+    case SuggestionType::kPersonalContextNotice:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kUndo:
+      return FooterReorderRole::kTrailingFooterItem;
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAtMemoryAiDisclosure:
+    case SuggestionType::kAtMemoryFetching:
+    case SuggestionType::kAtMemoryGenericError:
+    case SuggestionType::kAtMemoryInactivityNudge:
+    case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kAtMemoryOpenGemini:
+    case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kAtMemorySearchResult:
+    case SuggestionType::kAtMemoryShortcutSettingsPromo:
+    case SuggestionType::kAtMemorySourceAttribution:
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kAutofillAiOtherOrders:
+    case SuggestionType::kAutofillAiOtherShipments:
+    case SuggestionType::kAutofillAiPrivateInferenceNotice:
+    case SuggestionType::kAutofillAiSourceAttribution:
+    case SuggestionType::kBackupPasswordEntry:
+    case SuggestionType::kBnplEntry:
+    case SuggestionType::kBnplFootnote:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+    case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kFetchingAmbientData:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kFreeformFooter:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kGmailOneTimePasswordEntry:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kIdentityCredential:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kLoadingThrobber:
+    case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kMaximizeCreditCardBenefitsEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
+    case SuggestionType::kRemoveAutofillAi:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kTitle:
+    case SuggestionType::kTroubleSigningInEntry:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kWebauthnCredential:
+      return FooterReorderRole::kNone;
+  }
+  NOTREACHED();
+}
+
+// Finds the trailing footer section (or adds a static separator to start one
+// when none exists) and moves WebAuthn fallback items directly above any
+// existing footer options, preserving their relative order from generation
+// (e.g., inline QR code before text fallback).
 void ReorderWebAuthnSuggestionsToFooter(std::vector<Suggestion>& suggestions) {
   if (suggestions.size() < 2) {
     return;
   }
-  // Points to the first "Manage" item of the footer block due to `base` adding
-  // an offset when converting the reverse iterator to the forward iterator.
-  const auto manage_pos =
-      std::find_if_not(suggestions.rbegin(), suggestions.rend(),
-                       &IsManagementFooterOption)
-          .base();
-  auto is_webauthn_fallback_item = [](const Suggestion& s) {
-    return s.type == SuggestionType::kWebauthnSignInWithAnotherDevice ||
-           s.type == SuggestionType::kWebauthnPasskeyQrCode;
-  };
-  // Use stable_partition to move all WebAuthn items as a unified block directly
-  // above any "Manage" options while strictly preserving their relative order
-  // from generation (e.g., QR code before text fallback).
-  auto webauthn_end = std::stable_partition(manage_pos, suggestions.end(),
-                                            is_webauthn_fallback_item);
-  if (webauthn_end == manage_pos) {
+  const auto footer_pos =
+      std::ranges::find_if(suggestions, [](const Suggestion& s) {
+        return GetFooterReorderRole(s) != FooterReorderRole::kNone;
+      });
+  // Move all `kLeadingFooterItem` items in `[footer_pos, end)` to the front of
+  // the footer section (directly above `kTrailingFooterItem` items),
+  // preserving their relative order from generation (e.g. inline QR code before
+  // text fallback).
+  const auto merged_footer_end = std::stable_partition(
+      footer_pos, suggestions.end(), [](const Suggestion& s) {
+        return GetFooterReorderRole(s) == FooterReorderRole::kLeadingFooterItem;
+      });
+  if (merged_footer_end == footer_pos) {
     return;  // Nothing to reorder (no WebAuthn fallback items found).
   }
 
-  const bool has_other_management_items = webauthn_end != suggestions.end();
-  // Without "Manage" suggestions, ensure a separator for the footer exists
-  // if standard suggestions precede the WebAuthn items.
-  if (!has_other_management_items && manage_pos != suggestions.begin() &&
-      !std::ranges::contains(suggestions, SuggestionType::kSeparator,
-                             &Suggestion::type)) {
-    suggestions.emplace(manage_pos, SuggestionType::kSeparator);
+  auto create_static_separator = [] {
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    return separator;
+  };
+
+  // Ensure a separator precedes the footer items when standard body suggestions
+  // precede them.
+  if (footer_pos != suggestions.begin() &&
+      std::prev(footer_pos)->type != SuggestionType::kSeparator) {
+    suggestions.insert(footer_pos, create_static_separator());
   }
 
   // Ensure a line separator between the inline QR code item and the item that
-  // is after it.
+  // follows it.
   std::vector<Suggestion>::iterator qr_pos = std::ranges::find(
       suggestions, SuggestionType::kWebauthnPasskeyQrCode, &Suggestion::type);
   if (qr_pos == suggestions.end()) {
@@ -775,9 +879,7 @@ void ReorderWebAuthnSuggestionsToFooter(std::vector<Suggestion>& suggestions) {
   std::vector<Suggestion>::iterator next_pos = std::next(qr_pos);
   if (next_pos != suggestions.end() &&
       next_pos->type != SuggestionType::kSeparator) {
-    Suggestion separator(SuggestionType::kSeparator);
-    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-    suggestions.insert(next_pos, std::move(separator));
+    suggestions.insert(next_pos, create_static_separator());
   }
 }
 
