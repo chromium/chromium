@@ -581,14 +581,10 @@ void TextFieldInputType::ValueAttributeChanged() {
 void TextFieldInputType::DisabledOrReadonlyAttributeChanged(
     DisabledChangedReason reason) {
   if (SpinButtonElement* spin_button = GetSpinButtonElement()) {
-    bool avoid_dispatch =
-        RuntimeEnabledFeatures::
-            DisableFormControlChangeEventDuringMutationEnabled() &&
-        (GetElement().GetDocument().StatePreservingAtomicMoveInProgress() ||
-         reason == DisabledChangedReason::kFieldsetChildrenChanged);
     SpinButtonElement::EventDispatch dispatch =
-        avoid_dispatch ? SpinButtonElement::kEventDispatchDisallowed
-                       : SpinButtonElement::kEventDispatchAllowed;
+        ShouldSuppressChangeEventForDisabledStateChange(reason)
+            ? SpinButtonElement::kEventDispatchDisallowed
+            : SpinButtonElement::kEventDispatchAllowed;
     spin_button->ReleaseCapture(dispatch);
   }
   UpdateWheelEventRegistration(/*is_detaching=*/false);

@@ -35,6 +35,7 @@
 #include "base/debug/crash_logging.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -191,6 +192,14 @@ InputType::~InputType() = default;
 
 void InputType::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
+}
+
+bool InputType::ShouldSuppressChangeEventForDisabledStateChange(
+    DisabledChangedReason reason) const {
+  return RuntimeEnabledFeatures::
+             DisableFormControlChangeEventDuringMutationEnabled() &&
+         (GetElement().GetDocument().StatePreservingAtomicMoveInProgress() ||
+          reason == DisabledChangedReason::kFieldsetChildrenChanged);
 }
 
 const AtomicString& InputType::FormControlTypeAsString() const {
