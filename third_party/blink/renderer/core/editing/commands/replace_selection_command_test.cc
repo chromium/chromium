@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -16,17 +17,56 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
+
+namespace {
+
+class MutateTextOnBlurListener final : public NativeEventListener {
+ public:
+  MutateTextOnBlurListener(Text* text_node,
+                           const String& new_data,
+                           bool remove_node = false)
+      : text_node_(text_node), new_data_(new_data), remove_node_(remove_node) {}
+
+  void Invoke(ExecutionContext*, Event*) override {
+    if (invoked_ || !text_node_) {
+      return;
+    }
+    invoked_ = true;
+    if (remove_node_) {
+      text_node_->remove();
+    } else {
+      text_node_->setData(new_data_);
+    }
+  }
+
+  bool invoked() const { return invoked_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(text_node_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<Text> text_node_;
+  String new_data_;
+  bool remove_node_ = false;
+  bool invoked_ = false;
+};
+
+}  // namespace
 
 class ReplaceSelectionCommandTest : public EditingTestBase {};
 
@@ -678,6 +718,131 @@ TEST_F(ReplaceSelectionCommandTest, NormalizeNbspSkippedForTextarea) {
 
   EXPECT_TRUE(command.Apply());
   EXPECT_EQ(String(u"Hello\u00A0World"), textarea->InnerEditorValue());
+}
+
+TEST_F(ReplaceSelectionCommandTest,
+       TrivialReplaceWithParkableTextMutatedDuringBlur) {
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+  SetBodyContent(
+      "<fieldset id='fs' contenteditable>"
+      "<legend><button id='btn'></button></legend>hello</fieldset>");
+  Element* fieldset = GetElementById("fs");
+  Element* button = GetElementById("btn");
+  ASSERT_TRUE(fieldset);
+  ASSERT_TRUE(button);
+  auto* target_text = To<Text>(fieldset->lastChild());
+
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(target_text, 0))
+                               .Extend(Position(target_text, 5))
+                               .Build(),
+                           SetSelectionOptions());
+
+  button->Focus();
+  button->SetBooleanAttribute(html_names::kDisabledAttr, true);
+  ASSERT_EQ(button, GetDocument().FocusedElement());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  Text* replacement_text = Text::Create(GetDocument(), "replacement text");
+  replacement_text->MakeParkable();
+  fragment.appendChild(replacement_text);
+
+  auto* listener = MakeGarbageCollected<MutateTextOnBlurListener>(
+      replacement_text, "modified data");
+  button->addEventListener(event_type_names::kBlur, listener, false);
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /*options=*/0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_TRUE(listener->invoked());
+  EXPECT_EQ("replacement text", target_text->data());
+  EXPECT_EQ(Position(target_text, 16),
+            Selection().GetSelectionInDomTree().Focus());
+}
+
+TEST_F(ReplaceSelectionCommandTest,
+       TrivialReplaceWithTargetTextShortenedDuringBlur) {
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+  SetBodyContent(
+      "<fieldset id='fs' contenteditable>"
+      "<legend><button id='btn'></button></legend>hello</fieldset>");
+  Element* fieldset = GetElementById("fs");
+  Element* button = GetElementById("btn");
+  ASSERT_TRUE(fieldset);
+  ASSERT_TRUE(button);
+  auto* target_text = To<Text>(fieldset->lastChild());
+
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(target_text, 3))
+                               .Extend(Position(target_text, 5))
+                               .Build(),
+                           SetSelectionOptions());
+
+  button->Focus();
+  button->SetBooleanAttribute(html_names::kDisabledAttr, true);
+  ASSERT_EQ(button, GetDocument().FocusedElement());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), "replacement text"));
+
+  auto* listener =
+      MakeGarbageCollected<MutateTextOnBlurListener>(target_text, "ab");
+  button->addEventListener(event_type_names::kBlur, listener, false);
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, ReplaceSelectionCommand::kSelectReplacement,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
+
+  EXPECT_FALSE(command.Apply());
+  EXPECT_TRUE(listener->invoked());
+  EXPECT_EQ("ab", target_text->data());
+  EXPECT_EQ(Position(target_text, 0),
+            Selection().GetSelectionInDomTree().Anchor());
+  EXPECT_EQ(Position(target_text, 0),
+            Selection().GetSelectionInDomTree().Focus());
+}
+
+TEST_F(ReplaceSelectionCommandTest,
+       TrivialReplaceWithTargetTextRemovedDuringBlur) {
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+  SetBodyContent(
+      "<fieldset id='fs' contenteditable>"
+      "<legend><button id='btn'></button></legend>hello</fieldset>");
+  Element* fieldset = GetElementById("fs");
+  Element* button = GetElementById("btn");
+  ASSERT_TRUE(fieldset);
+  ASSERT_TRUE(button);
+  auto* target_text = To<Text>(fieldset->lastChild());
+
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(target_text, 0))
+                               .Extend(Position(target_text, 5))
+                               .Build(),
+                           SetSelectionOptions());
+
+  button->Focus();
+  button->SetBooleanAttribute(html_names::kDisabledAttr, true);
+  ASSERT_EQ(button, GetDocument().FocusedElement());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), "replacement text"));
+
+  auto* listener = MakeGarbageCollected<MutateTextOnBlurListener>(
+      target_text, g_empty_string, /*remove_node=*/true);
+  button->addEventListener(event_type_names::kBlur, listener, false);
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /*options=*/0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
+
+  EXPECT_FALSE(command.Apply());
+  EXPECT_TRUE(listener->invoked());
+  EXPECT_FALSE(target_text->isConnected());
 }
 
 }  // namespace blink

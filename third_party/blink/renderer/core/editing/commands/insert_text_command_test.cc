@@ -5,13 +5,54 @@
 #include "third_party/blink/renderer/core/editing/commands/insert_text_command.h"
 
 #include "build/buildflag.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+class MutateTextOnBlurListener final : public NativeEventListener {
+ public:
+  MutateTextOnBlurListener(Text* text_node,
+                           const String& new_data,
+                           bool remove_node = false)
+      : text_node_(text_node), new_data_(new_data), remove_node_(remove_node) {}
+
+  void Invoke(ExecutionContext*, Event*) override {
+    if (invoked_ || !text_node_) {
+      return;
+    }
+    invoked_ = true;
+    if (remove_node_) {
+      text_node_->remove();
+    } else {
+      text_node_->setData(new_data_);
+    }
+  }
+
+  bool invoked() const { return invoked_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(text_node_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  Member<Text> text_node_;
+  String new_data_;
+  bool remove_node_ = false;
+  bool invoked_ = false;
+};
+
+}  // namespace
 
 class InsertTextCommandTest : public EditingTestBase {};
 
@@ -326,6 +367,78 @@ TEST_F(InsertTextCommandTest, MultilineSelectionCrash) {
   // Shouldn't crash inside.
   GetDocument().execCommand("InsertText", false, "x", ASSERT_NO_EXCEPTION);
   EXPECT_EQ("A<span>x|</span>", GetSelectionTextFromBody());
+}
+
+TEST_F(InsertTextCommandTest, TrivialReplaceWithTargetTextShortenedDuringBlur) {
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+  SetBodyContent(
+      "<fieldset id='fs' contenteditable>"
+      "<legend><button id='btn'></button></legend>hello</fieldset>");
+  Element* fieldset = GetElementById("fs");
+  Element* button = GetElementById("btn");
+  ASSERT_TRUE(fieldset);
+  ASSERT_TRUE(button);
+  auto* target_text = To<Text>(fieldset->lastChild());
+
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(target_text, 3))
+                               .Extend(Position(target_text, 5))
+                               .Build(),
+                           SetSelectionOptions());
+
+  button->Focus();
+  button->SetBooleanAttribute(html_names::kDisabledAttr, true);
+  ASSERT_EQ(button, GetDocument().FocusedElement());
+
+  auto* listener =
+      MakeGarbageCollected<MutateTextOnBlurListener>(target_text, "a");
+  button->addEventListener(event_type_names::kBlur, listener, false);
+
+  auto& command = *MakeGarbageCollected<InsertTextCommand>(
+      GetDocument(), "replacement",
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_TRUE(listener->invoked());
+  EXPECT_EQ("a", target_text->data());
+  EXPECT_EQ(Position(target_text, 1),
+            Selection().GetSelectionInDomTree().Focus());
+}
+
+TEST_F(InsertTextCommandTest, TrivialReplaceWithTargetTextRemovedDuringBlur) {
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+  SetBodyContent(
+      "<fieldset id='fs' contenteditable>"
+      "<legend><button id='btn'></button></legend>hello</fieldset>");
+  Element* fieldset = GetElementById("fs");
+  Element* button = GetElementById("btn");
+  ASSERT_TRUE(fieldset);
+  ASSERT_TRUE(button);
+  auto* target_text = To<Text>(fieldset->lastChild());
+
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(target_text, 0))
+                               .Extend(Position(target_text, 5))
+                               .Build(),
+                           SetSelectionOptions());
+
+  button->Focus();
+  button->SetBooleanAttribute(html_names::kDisabledAttr, true);
+  ASSERT_EQ(button, GetDocument().FocusedElement());
+
+  auto* listener = MakeGarbageCollected<MutateTextOnBlurListener>(
+      target_text, g_empty_string, /*remove_node=*/true);
+  button->addEventListener(event_type_names::kBlur, listener, false);
+
+  auto& command = *MakeGarbageCollected<InsertTextCommand>(
+      GetDocument(), "replacement",
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
+
+  EXPECT_FALSE(command.Apply());
+  EXPECT_TRUE(listener->invoked());
+  EXPECT_FALSE(target_text->isConnected());
 }
 
 }  // namespace blink
