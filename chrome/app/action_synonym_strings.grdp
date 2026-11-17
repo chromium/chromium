@@ -159,7 +159,7 @@
   </message>
   <!-- kActionClearBrowsingData: "Delete browsing data". -->
   <message name="IDS_ACTION_SYNONYMS_CLEAR_BROWSING_DATA" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Delete browsing data') that users might type in the Chrome menu search bar to find the 'Delete browsing data' action, which deletes history, cookies, cached files, and other browsing data. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
-    delete, remove, security, privacy, cleanup, storage, reset, cache, slow, speed
+    delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed
   </message>
   <!-- kActionOptions: "Settings". -->
   <message name="IDS_ACTION_SYNONYMS_OPTIONS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Settings') that users might type in the Chrome menu search bar to find the 'Settings' action, which opens the Chrome settings page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
