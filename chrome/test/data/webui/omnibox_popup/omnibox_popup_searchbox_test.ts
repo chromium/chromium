@@ -3905,6 +3905,49 @@ suite('OmniboxPopupSearchboxTest', function() {
        });
  });
 
+ // Cmd+L on Mac doesn't involve Ctrl.
+ if (!isMac) {
+   test('CtrlL_ConsumesCtrl', async () => {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: '',
+       isFocused: true,
+     }));
+     await microtasksFinished();
+     const inputEl = searchbox.getInputElement().inputElement;
+     inputEl.value = 'zxqv';
+     inputEl.dispatchEvent(
+         new InputEvent('input', {bubbles: true, composed: true}));
+     await microtasksFinished();
+     searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+       queryId: searchbox.activeQueryId,
+       input: 'zxqv',
+       matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+     }));
+     await microtasksFinished();
+
+     // Hold Ctrl through Ctrl+L and Enter.
+     for (const key of ['Control', 'l', 'Enter']) {
+       inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+         key,
+         ctrlKey: true,
+         bubbles: true,
+         cancelable: true,
+         composed: true,
+       }));
+       await microtasksFinished();
+     }
+
+     // Like the native omnibox, Ctrl+L consumed Ctrl, so Enter opens the
+     // default match instead of the input with 'www.' and '.com' added.
+     assertEquals(
+         0,
+         testProxy.handler.getCallCount('openPopupSelectionWithDisposition'));
+     const [, line] =
+         await testProxy.handler.whenCalled('openAutocompleteMatch');
+     assertEquals(0, line);
+   });
+ }
+
  test('FocusSearch_ClearsPermanentUrlWhenUserInputNotInProgress', async () => {
    testProxy.page.setAvailableKeywordModels(
        [{
