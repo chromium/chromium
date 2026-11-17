@@ -5,7 +5,6 @@
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <limits>
 #include <optional>
 #include <string>

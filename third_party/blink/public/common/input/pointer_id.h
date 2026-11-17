@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_POINTER_ID_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_POINTER_ID_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace blink {
 
-using PointerId = std::int32_t;
+using PointerId = int32_t;
 
 }  // namespace blink
 

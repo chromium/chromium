@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <array>
-#include <cstdint>
 #include <functional>
 #include <iosfwd>
 #include <string>

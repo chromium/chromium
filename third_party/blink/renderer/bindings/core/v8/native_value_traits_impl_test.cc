@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 
 #include <cmath>
-#include <cstdint>
 #include <limits>
 #include <numeric>
 #include <utility>

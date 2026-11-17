@@ -32,9 +32,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
 
+#include <stdint.h>
+
 #include <cmath>
 #include <concepts>
-#include <cstdint>
 #include <limits>
 #include <optional>
 

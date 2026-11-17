@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_DOCUMENT_POLICY_ENUM_VALUES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_DOCUMENT_POLICY_ENUM_VALUES_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string_view>
 #include <utility>

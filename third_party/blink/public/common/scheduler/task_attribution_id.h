@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SCHEDULER_TASK_ATTRIBUTION_ID_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SCHEDULER_TASK_ATTRIBUTION_ID_H_
 
+#include <stdint.h>
+
 #include <atomic>
 #include <compare>
-#include <cstdint>
 
 namespace blink::scheduler {
 

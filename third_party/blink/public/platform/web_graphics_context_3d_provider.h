@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_GRAPHICS_CONTEXT_3D_PROVIDER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_GRAPHICS_CONTEXT_3D_PROVIDER_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/functional/callback_forward.h"
 #include "components/viz/common/resources/shared_image_format.h"

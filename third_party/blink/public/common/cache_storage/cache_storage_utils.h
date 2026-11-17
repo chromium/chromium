@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_CACHE_STORAGE_CACHE_STORAGE_UTILS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_CACHE_STORAGE_CACHE_STORAGE_UTILS_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "third_party/blink/public/common/common_export.h"
 

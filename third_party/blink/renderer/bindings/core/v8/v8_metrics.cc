@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_metrics.h"
 
-#include <cstdint>
-
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"

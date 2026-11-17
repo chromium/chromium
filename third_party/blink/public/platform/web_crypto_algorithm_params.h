@@ -31,7 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_PARAMS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_ALGORITHM_PARAMS_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <vector>
 

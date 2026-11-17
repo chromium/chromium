@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_INTERACTION_EFFECTS_MONITOR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_INTERACTION_EFFECTS_MONITOR_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"

@@ -31,7 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-shared.h"

@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FINGERPRINTING_PROTECTION_NOISE_TOKEN_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FINGERPRINTING_PROTECTION_NOISE_TOKEN_H_
 
+#include <stdint.h>
+
 #include <compare>
-#include <cstdint>
 
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/blink/public/common/common_export.h"

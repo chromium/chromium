@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_JAVASCRIPT_FRAMEWORK_DETECTION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_JAVASCRIPT_FRAMEWORK_DETECTION_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <map>
 
 #include "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom-shared.h"

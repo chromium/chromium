@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstdint>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/test/allow_check_is_test_for_testing.h"

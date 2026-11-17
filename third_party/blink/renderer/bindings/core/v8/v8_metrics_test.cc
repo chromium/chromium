@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_metrics.h"
 
-#include <cstdint>
 #include <string_view>
 
 #include "base/strings/strcat.h"
