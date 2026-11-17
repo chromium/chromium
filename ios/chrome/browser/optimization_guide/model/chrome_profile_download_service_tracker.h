@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/optimization_guide/core/delivery/profile_download_service_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -51,7 +52,7 @@ class ChromeProfileDownloadServiceTracker
   // The list of regular profiles that are currently active. This list is used
   // to determine which profile to use for model downloads. Kept in the order
   // that the profiles were added.
-  std::vector<ProfileIOS*> active_profiles_;
+  std::vector<raw_ptr<ProfileIOS>> active_profiles_;
 };
 
 }  // namespace optimization_guide

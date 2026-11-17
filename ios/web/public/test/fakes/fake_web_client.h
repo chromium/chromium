@@ -69,7 +69,8 @@ class FakeWebClient : public web::WebClient {
       API_AVAILABLE(ios(18.4));
 
  private:
-  std::vector<JavaScriptFeature*> java_script_features_;
+  std::vector<raw_ptr<JavaScriptFeature, DanglingUntriaged>>
+      java_script_features_;
   UserAgentType default_user_agent_ = UserAgentType::MOBILE;
   UniversalOptOutState universal_opt_out_state_ =
       UniversalOptOutState::kNotEligible;

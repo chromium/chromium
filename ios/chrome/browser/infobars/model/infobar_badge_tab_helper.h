@@ -170,7 +170,7 @@ class InfobarBadgeTabHelper
   // Map storing the BadgeState for each InfobarType.
   std::map<InfobarType, BadgeState> infobar_badge_states_;
   // Vector storing infobars that are added when prerendering.
-  std::vector<infobars::InfoBar*> infobars_added_when_prerendering_;
+  std::vector<raw_ptr<infobars::InfoBar>> infobars_added_when_prerendering_;
 
   // List of observers to be notified when the infobar badges are updated.
   base::ObserverList<InfobarBadgeTabHelperObserver, true>
