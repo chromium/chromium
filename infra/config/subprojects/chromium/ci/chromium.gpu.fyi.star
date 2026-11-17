@@ -3727,6 +3727,9 @@ ci.thin_tester(
                     },
                 ),
             ),
+            "xr_browser_tests": targets.remove(
+                reason = "crbug.com/570690123",
+            ),
         },
     ),
     targets_settings = targets.settings(
