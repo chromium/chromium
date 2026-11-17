@@ -83,11 +83,9 @@ JNI_ExtensionUtilBridge_GetExtensionOmniboxIcon(
 
 // static
 void JNI_ExtensionUtilBridge_OnOmniboxExtensionInputEntered(
-    JNIEnv* env,
     content::WebContents* web_contents,
     const std::string& url_str,
-    bool open_in_new_tab,
-    bool open_in_new_window) {
+    ui::mojom::WindowOpenDisposition disposition) {
   CHECK(web_contents);
 
   GURL url(url_str);
@@ -98,14 +96,6 @@ void JNI_ExtensionUtilBridge_OnOmniboxExtensionInputEntered(
   // "{searchTerms}" unreplaced. Clear it so empty input is passed.
   if (input_text == "{searchTerms}") {
     input_text.clear();
-  }
-
-  ui::mojom::WindowOpenDisposition disposition =
-      ui::mojom::WindowOpenDisposition::kCurrentTab;
-  if (open_in_new_window) {
-    disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
-  } else if (open_in_new_tab) {
-    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(

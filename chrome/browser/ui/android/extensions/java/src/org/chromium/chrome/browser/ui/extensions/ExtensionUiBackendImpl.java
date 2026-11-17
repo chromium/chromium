@@ -11,6 +11,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /** The implementation of {@link ExtensionUiBackend}. */
 @NullMarked
@@ -30,8 +31,7 @@ public class ExtensionUiBackendImpl implements ExtensionUiBackend {
 
     @Override
     public void onOmniboxExtensionInputEntered(
-            WebContents webContents, String url, boolean openInNewTab, boolean openInNewWindow) {
-        ExtensionUtilBridge.onOmniboxExtensionInputEntered(
-                webContents, url, openInNewTab, openInNewWindow);
+            WebContents webContents, String url, @WindowOpenDisposition.EnumType int disposition) {
+        ExtensionUtilBridge.onOmniboxExtensionInputEntered(webContents, url, disposition);
     }
 }

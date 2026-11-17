@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /**
  * An interface providing general access to the extension UI backend in C++.
@@ -50,9 +51,8 @@ public interface ExtensionUiBackend {
      *
      * @param webContents The web contents.
      * @param url The extension URL.
-     * @param openInNewTab Whether to open in a new tab.
-     * @param openInNewWindow Whether to open in a new window.
+     * @param disposition The {@link WindowOpenDisposition} for the omnibox input.
      */
     void onOmniboxExtensionInputEntered(
-            WebContents webContents, String url, boolean openInNewTab, boolean openInNewWindow);
+            WebContents webContents, String url, @WindowOpenDisposition.EnumType int disposition);
 }

@@ -829,11 +829,15 @@ class AutocompleteMediator
             return;
         }
 
+        boolean isAltOrCtrlPressed =
+                (modifiers & (KeyEvent.META_ALT_ON | KeyEvent.META_CTRL_ON)) != 0;
         boolean isShiftPressed = (modifiers & KeyEvent.META_SHIFT_ON) != 0;
+        // Shift alone opens in the current tab(intended behavior, not in a new window).
+        // Alt/Ctrl opens a new tab (in the background when combined with Shift).
         boolean openInNewTab =
-                (modifiers & (KeyEvent.META_ALT_ON | KeyEvent.META_CTRL_ON)) != 0
-                        || (!isShiftPressed && shouldOpenAimRequestInNewTab());
+                isAltOrCtrlPressed || (!isShiftPressed && shouldOpenAimRequestInNewTab());
         boolean openInNewWindow = !openInNewTab && isShiftPressed;
+        boolean openInBackground = isAltOrCtrlPressed && isShiftPressed;
 
         loadUrlForOmniboxMatch(
                 matchIndex,
@@ -842,7 +846,7 @@ class AutocompleteMediator
                 mLastActionUpTimestamp,
                 openInNewTab,
                 openInNewWindow,
-                /* openInBackground= */ false);
+                openInBackground);
     }
 
     /**
@@ -1814,8 +1818,18 @@ class AutocompleteMediator
                 Tab tab = mDataProvider.getTab();
                 WebContents webContents = tab != null ? tab.getWebContents() : null;
                 if (webContents != null) {
+                    @WindowOpenDisposition.EnumType
+                    int disposition = WindowOpenDisposition.CURRENT_TAB;
+                    if (openInNewWindow) {
+                        disposition = WindowOpenDisposition.NEW_WINDOW;
+                    } else if (openInNewTab) {
+                        disposition =
+                                openInBackground
+                                        ? WindowOpenDisposition.NEW_BACKGROUND_TAB
+                                        : WindowOpenDisposition.NEW_FOREGROUND_TAB;
+                    }
                     ExtensionUi.onOmniboxExtensionInputEntered(
-                            webContents, url.getSpec(), openInNewTab, openInNewWindow);
+                            webContents, url.getSpec(), disposition);
                 }
                 // Dismiss the suggestions list and clear focus immediately. This is an extension
                 // match, so an event is fired to the extension rather than having any kind of

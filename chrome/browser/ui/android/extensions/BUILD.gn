@@ -103,6 +103,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:material_design_java",
     "//ui/android:ui_full_java",
+    "//ui/base/mojom:mojom_java",
   ]
 
   if (enable_extensions_core) {
@@ -181,6 +182,7 @@ android_library("test_support_java") {
     "//extensions/buildflags:buildflags_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/base/mojom:mojom_java",
   ]
 
   if (enable_extensions_core) {

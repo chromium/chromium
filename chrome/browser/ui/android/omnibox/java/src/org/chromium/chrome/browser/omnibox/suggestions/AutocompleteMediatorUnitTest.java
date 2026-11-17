@@ -139,6 +139,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -1667,6 +1668,21 @@ public class AutocompleteMediatorUnitTest {
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
         assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
         assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInNewWindow);
+    }
+
+    @Test
+    public void onSuggestionClicked_openInBackgroundTab() {
+        mMediator.beginInput(createEmptySession());
+        GURL url = JUnitTestGURLs.BLUE_1;
+
+        // Alt+Shift+Click/Enter -> open in new background tab.
+        mMediator.onSuggestionClicked(
+                mSuggestionsList.get(0), 0, url, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON);
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
+        assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewWindow);
+        assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInBackground);
     }
 
     @Test
@@ -3447,8 +3463,36 @@ public class AutocompleteMediatorUnitTest {
                 .onOmniboxExtensionInputEntered(
                         mWebContents,
                         extensionUrl.getSpec(),
-                        /* openInNewTab= */ true,
-                        /* openInNewWindow= */ false);
+                        WindowOpenDisposition.NEW_FOREGROUND_TAB);
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
+    }
+
+    @Test
+    public void loadUrlForOmniboxMatch_extensionMatch_inBackground_dispatchesToExtensionUi() {
+        ExtensionUi.setBackendForTesting(mExtensionUiBackend);
+        ResettersForTesting.register(() -> ExtensionUi.setBackendForTesting(null));
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        doReturn(mWebContents).when(mTab).getWebContents();
+
+        setUpSessionAndMatch(
+                AutocompleteRequestType.SEARCH, OmniboxSuggestionType.SEARCH_OTHER_ENGINE);
+        doReturn(true).when(mAutocompleteMatch).isExtensionMatch();
+
+        GURL extensionUrl = new GURL(UrlConstants.CHROME_EXTENSION_SCHEME + "://id/?q=test");
+        mMediator.loadUrlForOmniboxMatch(
+                /* matchIndex= */ 0,
+                mAutocompleteMatch,
+                extensionUrl,
+                /* inputStart= */ 0,
+                /* openInNewTab= */ true,
+                /* openInNewWindow= */ false,
+                /* openInBackground= */ true);
+
+        verify(mExtensionUiBackend)
+                .onOmniboxExtensionInputEntered(
+                        mWebContents,
+                        extensionUrl.getSpec(),
+                        WindowOpenDisposition.NEW_BACKGROUND_TAB);
         verify(mAutocompleteDelegate, never()).loadUrl(any());
     }
 

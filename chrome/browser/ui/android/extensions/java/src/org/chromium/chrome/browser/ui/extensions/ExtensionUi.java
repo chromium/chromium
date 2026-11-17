@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /**
  * A collection of utility functions common to the extension UI.
@@ -59,14 +60,13 @@ public class ExtensionUi {
      *
      * @param webContents The web contents.
      * @param url The extension URL.
-     * @param openInNewTab Whether to open in a new tab.
-     * @param openInNewWindow Whether to open in a new window.
+     * @param disposition The {@link WindowOpenDisposition} for the omnibox input.
      */
     public static void onOmniboxExtensionInputEntered(
-            WebContents webContents, String url, boolean openInNewTab, boolean openInNewWindow) {
+            WebContents webContents, String url, @WindowOpenDisposition.EnumType int disposition) {
         if (sBackend == null) {
             return;
         }
-        sBackend.onOmniboxExtensionInputEntered(webContents, url, openInNewTab, openInNewWindow);
+        sBackend.onOmniboxExtensionInputEntered(webContents, url, disposition);
     }
 }

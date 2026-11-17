@@ -25,6 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,9 +160,8 @@ public class ExtensionUtilBridge {
     }
 
     public static void onOmniboxExtensionInputEntered(
-            WebContents webContents, String url, boolean openInNewTab, boolean openInNewWindow) {
-        ExtensionUtilBridgeJni.get()
-                .onOmniboxExtensionInputEntered(webContents, url, openInNewTab, openInNewWindow);
+            WebContents webContents, String url, @WindowOpenDisposition.EnumType int disposition) {
+        ExtensionUtilBridgeJni.get().onOmniboxExtensionInputEntered(webContents, url, disposition);
     }
 
     @NativeMethods
@@ -172,7 +172,7 @@ public class ExtensionUtilBridge {
         void onOmniboxExtensionInputEntered(
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("std::string") String url,
-                boolean openInNewTab,
-                boolean openInNewWindow);
+                @JniType("ui::mojom::WindowOpenDisposition") @WindowOpenDisposition.EnumType
+                        int disposition);
     }
 }
