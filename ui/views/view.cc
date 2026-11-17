@@ -2621,8 +2621,10 @@ void View::DestroyLayerImpl(LayerChangeNotifyBehavior notify_parents) {
   // It would leave this view in an inconsistent state if its layer were
   // destroyed while layers beneath were still present. So, assume this doesn't
   // happen.
-  CHECK(layers_below_.empty(), base::NotFatalUntil::M163);
-  CHECK(layers_above_.empty(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586498676): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(layers_below_.empty());
+  DCHECK(layers_above_.empty());
 
   if (!layer()) {
     return;
