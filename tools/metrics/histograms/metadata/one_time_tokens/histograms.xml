@@ -76,8 +76,13 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/one_time_token/attempt_otp_filling_metrics.cc:AttemptOtpFillingStepSuffix) -->
 
+<!-- TODO(crbug.com/583695450): Rename the variants to match the product flows
+     once the OtpCoordinator refactoring lands. -->
+
 <variants name="GmailOtpFlowType">
-  <variant name="GmailAgentic" summary="the agentic flow (GmailOtpRetriever)"/>
+  <variant name="GmailAgentic"
+      summary="GmailOtpRetriever, which both the autofill flow and the actor
+               flow use"/>
   <variant name="GmailNonAgentic"
       summary="the non-agentic flow (GmailOtpService)"/>
 </variants>
@@ -310,6 +315,135 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="OneTimeTokens.Backend.Gmail.AuthLatency" units="ms"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the duration of the OAuth token fetch for the Gmail OTP backend.
+    Recorded when the access token fetch completes.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.ErrorCode"
+    enum="GmailOneTimeTokensBackendErrorCode" expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the error encountered while attempting to retrieve Gmail one time
+    tokens. Recorded when a retrieval attempt fails.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.ErrorLatency" units="ms"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Real-time duration of the asynchronous attempt to retrieve a Gmail one time
+    token from the backend. Recorded when the asynchronous job failed.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.HasActiveSubscription"
+    enum="Boolean" expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records whether a subscription was already active when a Gmail OTP
+    notification arrived. Recorded when an incoming Gmail OTP backend
+    notification is received. True if a subscription was active (immediate hit),
+    false if the notification had to wait for a subscription.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.NetworkLatency" units="ms"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the duration of the network request to the OneTimeTokenService to
+    fetch a Gmail one time token. Recorded when the response is received.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.QueueLatency" units="ms"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the duration a Gmail OTP notification spent in the pending queue
+    before being processed. Recorded when a notification is popped from the
+    pending queue to be processed.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.QueueSize" units="count"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Recorded when a notification enters the coordinator; monitors the depth of
+    the pending queue.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency"
+    units="ms" expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the duration a Gmail OTP notification spent in the opportunistic
+    cache waiting for a subscription, from when the notification is received to
+    when it is retrieved from the cache. Recorded when a notification is
+    retrieved from the opportunistic cache.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.Success" enum="Boolean"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records whether the attempt to retrieve a Gmail one time token from the
+    backend succeeds. Recorded when the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Backend.Gmail.SuccessLatency" units="ms"
+    expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Real-time duration of the asynchronous attempt to retrieve a Gmail one time
+    token from the backend. The latency is measured from when the incoming
+    notification enters the pending queue to when the response from the Gmail
+    backend is received. Recorded when the asynchronous job succeeded.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Gmail.EmailReceivedToTickleLatency" units="ms"
+    expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the latency between an OTP email being received by the Gmail SMTP
+    edge server and Chrome receiving the push notification (tickle) from the
+    backend. Recorded upon tickle arrival.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Gmail.EmailSavedToTickleLatency" units="ms"
+    expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the latency between an OTP email appearing in the user's inbox
+    (stored in the mail store) and Chrome receiving the push notification
+    (tickle) from the backend. Recorded upon tickle arrival.
+  </summary>
+</histogram>
+
 <histogram name="OneTimeTokens.Gmail.FieldDetectionToOtpSuggestionReadyLatency"
     units="ms" expires_after="2027-08-01">
   <owner>kazinova@google.com</owner>
@@ -319,6 +453,17 @@ found in the LICENSE file.
     Gmail OTP suggestion becoming ready to be offered. Recorded once per origin
     listening session when the Gmail OTP push notification arrives after field
     detection.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Gmail.FieldDetectionToTickleLatency" units="ms"
+    expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the latency between detecting an OTP field on a web page and
+    receiving a push notification (tickle) from the backend. Recorded when a
+    tickle arrives after an OTP field was detected.
   </summary>
 </histogram>
 
@@ -372,6 +517,76 @@ found in the LICENSE file.
     already showing, opted in, declined cool-off, session cool-off. Not decided
     means the opt-in bubble will be shown;
     OneTimeTokens.Gmail.OptIn.BubbleResult records its outcome.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Gmail.PageLanguage.{Outcome}"
+    enum="LocaleCodeBCP47" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Captures the page language distribution across different OTP outcomes and
+    arrival sequences to identify locales with high win rates or missing backend
+    push support. Recorded for {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="NoFieldDetected"
+        summary="tickles where no OTP field was detected within 3 minutes of
+                 arrival. The language is logged speculatively from the page
+                 open when the tickle was received."/>
+    <variant name="NoTickleReceived"
+        summary="OTP forms where no tickle was received within 3 minutes of
+                 field detection."/>
+    <variant name="TickleAfterUserInteraction"
+        summary="OTP forms where a tickle arrived after user interaction."/>
+    <variant name="TickleBeforeUserInteraction"
+        summary="OTP forms where a tickle arrived before user interaction."/>
+  </token>
+</histogram>
+
+<histogram name="OneTimeTokens.Gmail.Tickle.Arrival"
+    enum="OneTimeTokensTickleArrival" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Measures push notification delivery dynamics relative to form
+    classification. Records the arrival order and timing of push notifications
+    relative to OTP form detection on a web page.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Gmail.Tickle.FormOutcome"
+    enum="OneTimeTokensTickleFormOutcome" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Measures the outcome of every detected OTP form on a web page relative to
+    push notification delivery and user interaction. Recorded either when a push
+    notification arrives (before or after user interaction) or after 3 minutes
+    have elapsed without receiving a push notification for this form.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Gmail.TickleToFieldDetectionLatency" units="ms"
+    expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the latency between receiving a push notification (tickle) from the
+    backend and detecting an OTP field on a web page. Recorded when an OTP field
+    is detected on a page after a tickle was already received.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.Gmail.TickleTransmissionLatency" units="ms"
+    expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Recorded upon tickle arrival to evaluate how long tickle travels from the
+    server to the client, namely the diff between
+    OneTimeTokenBackendNotification::notification_sent_timestamp and
+    OneTimeTokenBackendNotification::notification_received_timestamp.
   </summary>
 </histogram>
 

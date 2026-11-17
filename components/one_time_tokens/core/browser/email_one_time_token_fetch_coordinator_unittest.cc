@@ -59,8 +59,8 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, SignalNetworkRequestNeeded) {
   coordinator_.SignalNetworkRequestNeeded(OneTimeTokenBackendNotification(
       EncryptedMessageReference("test_reference")));
 
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.QueueSize", 1, 1);
+  histogram_tester_.ExpectUniqueSample("OneTimeTokens.Backend.Gmail.QueueSize",
+                                       1, 1);
 }
 
 // Tests that the coordinator enforces the concurrency limit.
@@ -108,10 +108,10 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, EnforcesConcurrencyLimit) {
   // - Notification 4: Added to an empty queue (size 1) but active requests
   //   are full (limit 3), so it remains pending.
   // - Notification 5: Added to a queue containing notification 4 (size 2).
-  histogram_tester_.ExpectBucketCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.QueueSize", 1, 4);
-  histogram_tester_.ExpectBucketCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.QueueSize", 2, 1);
+  histogram_tester_.ExpectBucketCount("OneTimeTokens.Backend.Gmail.QueueSize",
+                                      1, 4);
+  histogram_tester_.ExpectBucketCount("OneTimeTokens.Backend.Gmail.QueueSize",
+                                      2, 1);
 }
 
 // Tests that the coordinator ignores duplicate tickles for the same
@@ -132,8 +132,8 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, DeDuplicatesIncomingTickles) {
   coordinator_.SignalNetworkRequestNeeded(notification);
 
   // Histogram should only be recorded once for the non-duplicate request.
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.QueueSize", 1, 1);
+  histogram_tester_.ExpectUniqueSample("OneTimeTokens.Backend.Gmail.QueueSize",
+                                       1, 1);
 }
 
 // Tests that the coordinator ignores duplicate tickles for the same reference
@@ -283,10 +283,9 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest, RecordsQueueLatency) {
 
   // Validate the histogram is recorded with the exact latency.
   histogram_tester_.ExpectTimeBucketCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.QueueLatency",
-      base::Milliseconds(500), 1);
-  histogram_tester_.ExpectTotalCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.QueueLatency", 4);
+      "OneTimeTokens.Backend.Gmail.QueueLatency", base::Milliseconds(500), 1);
+  histogram_tester_.ExpectTotalCount("OneTimeTokens.Backend.Gmail.QueueLatency",
+                                     4);
 }
 
 TEST_F(EmailOneTimeTokenFetchCoordinatorTest, HasPendingRequests) {

@@ -134,13 +134,12 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
   EXPECT_EQ(token.on_device_arrival_time(), kNotificationReceivedTicks);
   EXPECT_EQ(token.email_received_timestamp(), kEmailReceivedTimestamp);
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.Success", true, 1);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Backend.Gmail.Success",
+                                      true, 1);
   histogram_tester.ExpectTimeBucketCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.SuccessLatency",
-      base::Milliseconds(500), 1);
+      "OneTimeTokens.Backend.Gmail.SuccessLatency", base::Milliseconds(500), 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", true, 1);
+      "OneTimeTokens.Backend.Gmail.HasActiveSubscription", true, 1);
 }
 
 // Tests a failed retrieval of an OTP from Gmail.
@@ -171,11 +170,10 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetTokenFailure) {
 
   ASSERT_FALSE(result.has_value());
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.Success", false, 1);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Backend.Gmail.Success",
+                                      false, 1);
   histogram_tester.ExpectTimeBucketCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.ErrorLatency",
-      base::Milliseconds(500), 1);
+      "OneTimeTokens.Backend.Gmail.ErrorLatency", base::Milliseconds(500), 1);
 }
 
 // Tests no backend calls are issued when there are no subscribers.
@@ -325,7 +323,7 @@ TEST_F(GmailOtpBackendImplTest, RecentTicklesProcessedUponSubscription) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", false, 1);
+      "OneTimeTokens.Backend.Gmail.HasActiveSubscription", false, 1);
 
   // Subscription arrives.
   base::test::TestFuture<
@@ -382,8 +380,8 @@ TEST_F(GmailOtpBackendImplTest, SubscriptionWaitLatencyIsZeroWhenActive) {
       OneTimeTokenBackendNotification(EncryptedMessageReference("ref1")));
 
   histogram_tester.ExpectTimeBucketCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
-      base::TimeDelta(), 1);
+      "OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency", base::TimeDelta(),
+      1);
 }
 
 // Tests that SubscriptionWaitLatency records the actual wait time when
@@ -406,8 +404,8 @@ TEST_F(GmailOtpBackendImplTest, SubscriptionWaitLatencyRecordsWaitTime) {
       /*expiration_callback=*/base::DoNothing());
 
   histogram_tester.ExpectTimeBucketCount(
-      "Autofill.OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency",
-      base::Seconds(2), 1);
+      "OneTimeTokens.Backend.Gmail.SubscriptionWaitLatency", base::Seconds(2),
+      1);
 }
 
 // Tests that if the backend is created with null URLLoaderFactory, Subscribe
@@ -429,10 +427,10 @@ TEST_F(GmailOtpBackendImplTest, Subscribe_InitializationFailed) {
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendInitializationFailed);
 
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Backend.Gmail.Success",
+                                      false, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.Success", false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.ErrorCode",
+      "OneTimeTokens.Backend.Gmail.ErrorCode",
       static_cast<int>(
           OneTimeTokenRetrievalError::kGmailOtpBackendInitializationFailed),
       1);
@@ -531,7 +529,7 @@ TEST_F(GmailOtpBackendImplTest, SubscribeToTicklesAndReceiveNotification) {
   // Ensure no network requests were made for payload fetching.
   EXPECT_EQ(test_url_loader_factory_.total_requests(), 0u);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", true, 1);
+      "OneTimeTokens.Backend.Gmail.HasActiveSubscription", true, 1);
 }
 
 TEST_F(GmailOtpBackendImplTest, SubscribeToTicklesWithPreCachedNotification) {
@@ -542,7 +540,7 @@ TEST_F(GmailOtpBackendImplTest, SubscribeToTicklesWithPreCachedNotification) {
           EncryptedMessageReference("encrypted_reference")));
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.OneTimeTokens.Backend.Gmail.HasActiveSubscription", false, 1);
+      "OneTimeTokens.Backend.Gmail.HasActiveSubscription", false, 1);
 
   // Now subscribe to tickles: it should immediately fire for the cached
   // notification.

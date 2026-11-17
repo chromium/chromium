@@ -108,10 +108,9 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromCache) {
       "OneTimeTokens.GmailAgentic.SenderDomainMatchAcceptedMatchType.Received",
       0);
   // Nothing is recorded to UKM without a valid source.
-  EXPECT_TRUE(
-      test_ukm_recorder()
-          .GetEntriesByName(ukm::builders::Autofill_OneTimeTokens::kEntryName)
-          .empty());
+  EXPECT_TRUE(test_ukm_recorder()
+                  .GetEntriesByName(ukm::builders::OneTimeTokens::kEntryName)
+                  .empty());
 }
 
 TEST_F(GmailOtpRetrieverTest, RetrieveOtp_SuccessFromSubscription) {
@@ -768,7 +767,7 @@ TEST_F(GmailOtpRetrieverTest, RetrieveOtp_ReceivedToken_RejectionsLogged) {
 // given source.
 TEST_F(GmailOtpRetrieverTest,
        RetrieveOtp_RecordsCachedRejectionAndReceivedAcceptanceUkm) {
-  using UkmEntry = ukm::builders::Autofill_OneTimeTokens;
+  using UkmEntry = ukm::builders::OneTimeTokens;
   const ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   gmail_otp_backend().ProcessCallbacks(
       OneTimeToken(OneTimeTokenType::kGmail, "111111", base::TimeTicks::Now(),
@@ -805,7 +804,7 @@ TEST_F(GmailOtpRetrieverTest,
 // token accepted by it are recorded to the matching UKM metrics.
 TEST_F(GmailOtpRetrieverTest,
        RetrieveOtp_RecordsReceivedRejectionAndCachedAcceptanceUkm) {
-  using UkmEntry = ukm::builders::Autofill_OneTimeTokens;
+  using UkmEntry = ukm::builders::OneTimeTokens;
   const ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   gmail_otp_backend().ProcessCallbacks(
       OneTimeToken(OneTimeTokenType::kGmail, "111111", base::TimeTicks::Now(),

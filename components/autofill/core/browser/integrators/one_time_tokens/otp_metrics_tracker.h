@@ -37,17 +37,17 @@ class AutofillManager;
 class OtpMetricsTracker {
  public:
   static constexpr char kFieldDetectionToTickleLatencyHistogram[] =
-      "Autofill.OneTimeTokens.FieldDetectionToTickleLatency";
+      "OneTimeTokens.Gmail.FieldDetectionToTickleLatency";
   static constexpr char kTickleToFieldDetectionLatencyHistogram[] =
-      "Autofill.OneTimeTokens.TickleToFieldDetectionLatency";
+      "OneTimeTokens.Gmail.TickleToFieldDetectionLatency";
   static constexpr char kPageLanguageTickleBeforeUserInteractionHistogram[] =
-      "Autofill.OneTimeTokens.PageLanguage.TickleBeforeUserInteraction";
+      "OneTimeTokens.Gmail.PageLanguage.TickleBeforeUserInteraction";
   static constexpr char kPageLanguageTickleAfterUserInteractionHistogram[] =
-      "Autofill.OneTimeTokens.PageLanguage.TickleAfterUserInteraction";
+      "OneTimeTokens.Gmail.PageLanguage.TickleAfterUserInteraction";
   static constexpr char kPageLanguageNoTickleReceivedHistogram[] =
-      "Autofill.OneTimeTokens.PageLanguage.NoTickleReceived";
+      "OneTimeTokens.Gmail.PageLanguage.NoTickleReceived";
   static constexpr char kPageLanguageNoFieldDetectedHistogram[] =
-      "Autofill.OneTimeTokens.PageLanguage.NoFieldDetected";
+      "OneTimeTokens.Gmail.PageLanguage.NoFieldDetected";
 
   // Maximum duration between OTP field detection and tickle arrival for them to
   // be considered correlated. If more than this time has passed, the tickle is

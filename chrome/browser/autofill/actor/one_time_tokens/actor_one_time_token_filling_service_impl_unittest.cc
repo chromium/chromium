@@ -336,7 +336,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
   EXPECT_EQ(future.Get().value(), kOtp);
   // The sender domain check is recorded to UKM against the tab's page.
   auto entries = test_ukm_recorder.GetEntriesByName(
-      ukm::builders::Autofill_OneTimeTokens::kEntryName);
+      ukm::builders::OneTimeTokens::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
   EXPECT_EQ(entries[0]->source_id,
             web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
