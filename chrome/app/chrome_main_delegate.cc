@@ -1661,27 +1661,20 @@ void ChromeMainDelegate::PreSandboxStartup() {
     // Therefore file descriptors to the .pak files that we need are passed in
     // at process creation time.
     auto* global_descriptors = base::GlobalDescriptors::GetInstance();
-    int pak_fd =
-        global_descriptors->Get(kAndroidMainWebViewLocalePakDescriptor);
+    int pak_fd = global_descriptors->Get(kAndroidMainLocalePakDescriptor);
     base::MemoryMappedFile::Region pak_region =
-        global_descriptors->GetRegion(kAndroidMainWebViewLocalePakDescriptor);
+        global_descriptors->GetRegion(kAndroidMainLocalePakDescriptor);
     ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(base::File(pak_fd),
                                                             pak_region);
 
-    int additional_locale_pak_keys[] = {
-        kAndroidMainNonWebViewLocalePakDescriptor,
-        kAndroidFallbackWebViewLocalePakDescriptor,
-        kAndroidFallbackNonWebViewLocalePakDescriptor,
-    };
-    for (int additional_locale_pak_key : additional_locale_pak_keys) {
-      // Load additional locale .pak file if it exists.
-      pak_fd = global_descriptors->MaybeGet(additional_locale_pak_key);
-      if (pak_fd != -1) {
-        pak_region = global_descriptors->GetRegion(additional_locale_pak_key);
-        ui::ResourceBundle::GetSharedInstance()
-            .LoadAdditionalLocaleDataWithPakFileRegion(base::File(pak_fd),
-                                                       pak_region);
-      }
+    // Load fallback locale .pak file if it exists.
+    pak_fd = global_descriptors->MaybeGet(kAndroidFallbackLocalePakDescriptor);
+    if (pak_fd != -1) {
+      pak_region =
+          global_descriptors->GetRegion(kAndroidFallbackLocalePakDescriptor);
+      ui::ResourceBundle::GetSharedInstance()
+          .LoadAdditionalLocaleDataWithPakFileRegion(base::File(pak_fd),
+                                                     pak_region);
     }
 
     // Define PAK file configurations with their scale factors

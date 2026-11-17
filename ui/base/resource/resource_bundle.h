@@ -83,20 +83,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   };
 
 #if BUILDFLAG(IS_ANDROID)
-  // The purpose for a pak file represented by an FdAndRegion. These correspond
-  // to entries in the android_webview/common/aw_descriptors.h and
-  // chrome/common/chrome_descriptors.h enums.
-  enum class LocalePakPurpose {
-    kWebViewMain = 0,
-    kNonWebViewMain,
-    kWebViewFallback,
-    kNonWebViewFallback,
-  };
-
   struct FdAndRegion {
     int fd;
     base::MemoryMappedFile::Region region;
-    LocalePakPurpose purpose;
   };
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -130,7 +130,6 @@ class _TransitiveValues:
         # Assets
         self.assets = OrderedSet()
         self.uncompressed_assets = OrderedSet()
-        self.locale_paks = OrderedSet()
         # Resources
         self.dependency_zip_overlays = OrderedSet()
         self.dependency_zips = OrderedSet()
@@ -327,12 +326,11 @@ class _TransitiveValuesBuilder:
                 resource_deps.collect('resources_overlay_zip')
             )
 
-        assets, uncompressed_assets, locale_paks = _MergeAssets(
+        assets, uncompressed_assets = _MergeAssets(
             all_deps_without_under_test.of_type('android_assets')
         )
         ret.assets.update(assets)
         ret.uncompressed_assets.update(uncompressed_assets)
-        ret.locale_paks = locale_paks
 
         if params.get('java_resources_jar_path'):
             ret.java_resources_jars.add(params)
@@ -420,20 +418,16 @@ def _MergeAssets(all_assets):
     """Merges all assets from the given deps.
 
     Returns:
-      A tuple of: (compressed, uncompressed, locale_paks)
+      A tuple of: (compressed, uncompressed)
       |compressed| and |uncompressed| are lists of "srcPath:zipPath". srcPath is
       the path of the asset to add, and zipPath is the location within the zip
       (excluding assets/ prefix).
-      |locale_paks| is a set of all zipPaths that have been marked as
-      treat_as_locale_paks=true.
     """
     compressed = {}
     uncompressed = {}
-    locale_paks = set()
     for asset_dep in all_assets:
         entry = asset_dep['assets']
         disable_compression = entry.get('disable_compression')
-        treat_as_locale_paks = entry.get('treat_as_locale_paks')
         dest_map = uncompressed if disable_compression else compressed
         other_map = compressed if disable_compression else uncompressed
         outputs = entry.get('outputs', [])
@@ -444,25 +438,24 @@ def _MergeAssets(all_assets):
             # deps of the same target override previous ones.
             other_map.pop(dest, 0)
             dest_map[dest] = src
-            if treat_as_locale_paks:
-                locale_paks.add(dest)
 
     def create_list(asset_map):
         # Sort to ensure deterministic ordering.
         items = sorted(asset_map.items())
         return [f'{src}:{dest}' for dest, src in items]
 
-    return create_list(compressed), create_list(uncompressed), locale_paks
+    return create_list(compressed), create_list(uncompressed)
 
 
-def _CreateJavaLocaleListFromAssets(assets, locale_paks):
+def _IsLocalePakSubpath(subpath):
+    return subpath.startswith(('fallback-locales/', 'locales#lang_'))
+
+
+def _CreateJavaLocaleListFromAssets(assets):
     """Returns a java literal array from a list of locale assets.
 
     Args:
       assets: A list of all APK asset paths in the form 'src:dst'
-      locale_paks: A list of asset paths that correponds to the locale pak
-        files of interest. Each |assets| entry will have its 'dst' part matched
-        against it to determine if they are part of the result.
     Returns:
       A string that is a Java source literal array listing the locale names
       of the corresponding asset files, without directory or .pak suffix.
@@ -470,7 +463,7 @@ def _CreateJavaLocaleListFromAssets(assets, locale_paks):
     """
     assets_paths = [a.split(':')[1] for a in assets]
     locales = [
-        os.path.basename(a)[:-4] for a in assets_paths if a in locale_paks
+        os.path.basename(a)[:-4] for a in assets_paths if _IsLocalePakSubpath(a)
     ]
     return '{%s}' % ','.join('"%s"' % l for l in sorted(locales))  # noqa: E741
 
@@ -584,13 +577,18 @@ def _SuffixAssets(config, target_config, suffix_string=None):
     target_suffix = target_config.get(
         'apk_assets_suffix', f"+{target_config['package_name']}+"
     )
-    suffix_string = suffix_string or target_config['package_name']
-    suffix = f'+{suffix_string}+'
     suffix_names = {
         x.split(':', 1)[1].replace(target_suffix, '')
         for x in all_assets
         if 'pinlist.meta' not in x
     }
+    if suffix_string:
+        # Custom suffix_string is only used to work around asset collisions with
+        # system-image TrichromeLibrary.apk (crbug.com/40064988), which never
+        # contained locale .pak files.
+        suffix_names = {x for x in suffix_names if not _IsLocalePakSubpath(x)}
+    suffix_string = suffix_string or target_config['package_name']
+    suffix = f'+{suffix_string}+'
     config['assets'] = helper(suffix_names, suffix, config['assets'])
     config['uncompressed_assets'] = helper(
         suffix_names, suffix, config['uncompressed_assets']
@@ -877,7 +875,7 @@ def main():
 
     if params.get('create_locales_java_list'):
         main_config['locales_java_list'] = _CreateJavaLocaleListFromAssets(
-            tv.uncompressed_assets, tv.locale_paks
+            tv.uncompressed_assets
         )
 
     if params.collects_resources():

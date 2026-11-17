@@ -51,23 +51,18 @@ public final class ResourceBundle {
      *
      * @param locale Chromium locale name.
      * @param gender User's gender.
-     * @param inSplit If true, return the path of the .pak file containing Chromium UI strings,
-     *     which is stored in a language split when using app bundles. If false, return the path of
-     *     the WebView UI strings instead.
      * @param logError Logs if the file is not found.
      * @return Asset path to .pak file, or null if the locale is not supported.
      */
     @CalledByNative
     static @Nullable String getLocalePakResourcePath(
-            String locale, @Gender int gender, boolean inSplit, boolean logError) {
+            String locale, @Gender int gender, boolean logError) {
         if (Arrays.binarySearch(sAvailableLocales, locale) < 0) {
             // This locale is not supported by Chromium.
             return null;
         }
         String pathPrefix;
-        if (!inSplit) {
-            pathPrefix = "assets/stored-locales/";
-        } else if (locale.equals("en-US") && gender == Gender.DEFAULT) {
+        if (locale.equals("en-US") && gender == Gender.DEFAULT) {
             pathPrefix = "assets/fallback-locales/";
         } else {
             String lang =

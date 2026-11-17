@@ -9,23 +9,12 @@
 #include "content/public/common/content_descriptors.h"
 
 enum {
-  // The main pak file for the user's locale and gender, for strings that are
-  // included in WebView. Expected to be sparse.
-  kAndroidMainWebViewLocalePakDescriptor = kContentIPCDescriptorMax + 1,
-
-  // The main pak file for the user's locale and gender, for strings that are
-  // not included in WebView. Expected to be sparse.
-  kAndroidMainNonWebViewLocalePakDescriptor,
+  // The main pak file for the user's locale and gender. Expected to be sparse.
+  kAndroidMainLocalePakDescriptor = kContentIPCDescriptorMax + 1,
 
   // The pak file to fall back to if a string is not found in the main pak. This
-  // one uses the default gender and is expected to be complete. (For strings
-  // that are included in WebView).
-  kAndroidFallbackWebViewLocalePakDescriptor,
-
-  // The pak file to fall back to if a string is not found in the main pak. This
-  // one uses the default gender and is expected to be complete. (For strings
-  // that are not included in WebView).
-  kAndroidFallbackNonWebViewLocalePakDescriptor,
+  // one uses the default gender and is expected to be complete.
+  kAndroidFallbackLocalePakDescriptor,
 
   kAndroidChrome100PercentPakDescriptor,
   kAndroidChrome200PercentPakDescriptor,

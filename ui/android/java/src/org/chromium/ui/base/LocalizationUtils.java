@@ -145,7 +145,7 @@ public class LocalizationUtils {
             default:
                 return language;
         }
-        // LINT.ThenChange(//chrome/android/BUILD.gn:SplitLanguageForAndroid)
+        // LINT.ThenChange(//build/config/android/rules.gni:SplitLanguageForAndroid)
     }
 
     /**

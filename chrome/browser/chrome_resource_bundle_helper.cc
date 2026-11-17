@@ -62,13 +62,6 @@ extern void InitializeLocalState(
 // locale. An empty |actual_locale| value indicates failure.
 std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
                                                  bool is_running_tests) {
-#if BUILDFLAG(IS_ANDROID)
-  // In order for DetectAndSetLoadNonWebViewLocalePaks() to work ResourceBundle
-  // must not have been created yet.
-  CHECK(!ui::ResourceBundle::HasSharedInstance(), base::NotFatalUntil::M162);
-  ui::DetectAndSetLoadNonWebViewLocalePaks();
-#endif
-
   std::string preferred_locale;
 #if BUILDFLAG(IS_MAC)
   // TODO(markusheintz): Read preference pref::kApplicationLocale in order

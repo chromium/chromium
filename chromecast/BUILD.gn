@@ -592,24 +592,10 @@ if (is_android) {
     disable_compression = true
   }
 
-  android_assets("cast_browser_apk_locale_assets") {
-    renaming_sources = []
-    renaming_destinations = []
-
-    foreach(locale, cast_locales) {
-      foreach(_gender_suffix, gender_suffixes) {
-        renaming_sources += [
-          "$root_out_dir/chromecast_locales/${locale}${_gender_suffix}.pak",
-        ]
-        renaming_destinations +=
-            [ "stored-locales/${locale}${_gender_suffix}.pak" ]
-      }
-    }
-
+  android_locale_pak_assets("cast_browser_apk_locale_assets") {
+    locales = cast_locales
+    paks_dir = "$root_out_dir/chromecast_locales"
     deps = [ ":chromecast_locales_pak" ]
-
-    treat_as_locale_paks = true
-    disable_compression = true
   }
 
   android_apk("cast_browser_apk") {

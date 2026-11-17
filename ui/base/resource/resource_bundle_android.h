@@ -45,20 +45,16 @@ int Get200PercentResourcesPackFd(base::MemoryMappedFile::Region* out_region);
 COMPONENT_EXPORT(UI_BASE)
 const std::vector<ResourceBundle::FdAndRegion>& GetLocalePaks();
 
-// Tell ResourceBundle to locate locale pak files via
+// Tell ResourceBundle to only locate locale pak files via
 // GetPathForAndroidLocalePakWithinApk rather than looking for them on disk.
 COMPONENT_EXPORT(UI_BASE) void SetLocalePaksStoredInApk(bool value);
-
-// Tell ResourceBundle to determine whether load non-webview locale .pak files
-// based on whether non-webview locale .pak files exist.
-COMPONENT_EXPORT(UI_BASE) void DetectAndSetLoadNonWebViewLocalePaks();
 
 // Called by ResourceBundle::UnloadLocaleResources() to clear Android-specific
 // locale state.
 COMPONENT_EXPORT(UI_BASE) void UnloadAndroidLocaleResources();
 
 // Returns the existing locale packs and sets them to the given instance. This
-// passes vectors by copy, but the vectors should be only up to size 4.
+// passes vectors by copy, but the vectors should be only up to size 2.
 COMPONENT_EXPORT(UI_BASE)
 std::vector<ResourceBundle::FdAndRegion> SwapAndroidGlobalsForTesting(
     const std::vector<ResourceBundle::FdAndRegion>& new_locale_packs);
