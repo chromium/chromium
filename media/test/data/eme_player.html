@@ -88,7 +88,8 @@
       emeApp = new EMEApp(testConfig);
       setInterval(function () {
                       Utils.timeLog('heartbeat #' + ++heartbeatCount +
-                                    ' video: ' + getVideoStatus(player.video));
+                                    ' video: ' + getVideoStatus(
+                                        player ? player.video : null));
                   }, 1000);
     }
 
@@ -174,11 +175,17 @@
         return video.play();
       }
       if (urlParams.get('stopAfterPlaybackStart') === '1') {
+        // Loop so a slow frame does not hit ended and detach the visibility
+        // tracker before the lifecycle update finishes, and pause from a task
+        // after rAF so DidFinishLifecycleUpdate runs while still playing.
+        video.loop = true;
         video.addEventListener('playing', function() {
           requestAnimationFrame(function() {
             requestAnimationFrame(function() {
-              video.pause();
-              Utils.setResultInTitle('ENDED');
+              setTimeout(function() {
+                video.pause();
+                Utils.setResultInTitle('ENDED');
+              }, 0);
             });
           });
         }, {once: true});

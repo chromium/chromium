@@ -2091,3 +2091,6 @@ mp4fragment spherical.mp4 spherical_frag.mp4
 
 #### trun_overflow.mp4
 Fragmented MP4 whose trun sample count exceeds index entries, from https://crbug.com/573128234.
+
+#### eme_player.html
+Encrypted Media Extensions browser test harness page used by `EncryptedMediaTest`, `MseEncryptedMediaTest`, `ECKEncryptedMediaTest`, and `EncryptedMediaVisibilityRatioReportTest`.
