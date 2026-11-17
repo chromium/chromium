@@ -22,7 +22,7 @@ class SystemMemoryPressureEvaluator;
 
 // This class relies on a set of MemoryPressureVoters to determine the memory
 // pressure state. The MemoryPressureVoteAggregator is in charge of receiving
-// votes from these voters and notifying MemoryPressureListeners of the
+// votes from these voters and notifying the MemoryPressureSource of the
 // MemoryPressureLevel via the monitor's |dispatch_callback_|. The pressure
 // level is calculated as the most critical of all votes collected.
 // This class is not thread safe and should be used from a single sequence.
@@ -57,9 +57,8 @@ class MultiSourceMemoryPressureMonitor
   void SetSystemEvaluator(
       std::unique_ptr<SystemMemoryPressureEvaluator> evaluator);
 
-  // Allows tests to override the call to
-  // `base::MemoryPressureListener::NotifyMemoryPressure` that is done whenever
-  // `OnNotifyListenersRequested` is invoked.
+  // Allows tests to override the call to `base::SetMemoryPressureLevel` that is
+  // done whenever `OnNotifyListenersRequested` is invoked.
   void SetDispatchCallbackForTesting(const DispatchCallback& callback);
 
   MemoryPressureVoteAggregator* aggregator_for_testing() {

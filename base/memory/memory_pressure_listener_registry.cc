@@ -62,19 +62,13 @@ MemoryPressureListenerRegistry::~MemoryPressureListenerRegistry() {
 // static
 void MemoryPressureListenerRegistry::NotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
-  CHECK(
-      !SingleThreadTaskRunner::HasMainThreadDefault() ||
-      SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
-  if (auto* source = MemoryPressureSource::MaybeGet()) {
-    source->SetMemoryPressureLevel(memory_pressure_level);
-  }
+  base::SetMemoryPressureLevel(memory_pressure_level);
 }
 
 // static
 void MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
     MemoryPressureLevel memory_pressure_level) {
-  MemoryPressureSource::SetMemoryPressureLevelFromAnyThread(
-      memory_pressure_level);
+  base::SetMemoryPressureLevelFromAnyThread(memory_pressure_level);
 }
 
 void MemoryPressureListenerRegistry::AddObserver(

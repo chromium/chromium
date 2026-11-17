@@ -16,9 +16,9 @@
 #include "base/base_paths_posix.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -185,8 +185,7 @@ void AwBrowserProcess::OnAppStateChanged(State state) {
 }
 
 void AwBrowserProcess::PurgeMemory() {
-  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::SetMemoryPressureLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 AwBrowserPolicyConnector* AwBrowserProcess::browser_policy_connector() {

@@ -32,9 +32,9 @@
 #include "base/immediate_crash.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr_asan_service.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -1756,13 +1756,11 @@ void PartitionAllocMemoryPressureMonitor::
   }
   last_notified_level_ = level;
   if (level == PartitionAllocSupport::MemoryPressureLevel::kCriticalPressure) {
-    base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    base::SetMemoryPressureLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   } else {
     // This is not necessarily the right thing to do, since memory pressure may
     // exist otherwise.
-    base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
-        base::MEMORY_PRESSURE_LEVEL_NONE);
+    base::SetMemoryPressureLevel(base::MEMORY_PRESSURE_LEVEL_NONE);
   }
 }
 

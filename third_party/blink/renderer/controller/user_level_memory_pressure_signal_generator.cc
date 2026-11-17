@@ -7,8 +7,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -206,8 +205,7 @@ void UserLevelMemoryPressureSignalGenerator::Generate(
   }
   last_requested_ = std::nullopt;
   current_level_ = level;
-  base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
-      level);
+  base::SetMemoryPressureLevelFromAnyThread(level);
 }
 
 void UserLevelMemoryPressureSignalGenerator::OnTimerFired(TimerBase*) {

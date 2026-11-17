@@ -24,8 +24,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -940,8 +940,8 @@ bool ChildThreadImpl::IsInBrowserProcess() const {
 void ChildThreadImpl::OnMemoryPressureFromBrowserReceived(
     base::MemoryPressureLevel level) {
   CHECK(!IsInBrowserProcess());
-  // Forward the notification to the registry of MemoryPressureListeners.
-  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(level);
+  // Forward the notification to the MemoryPressureSource.
+  base::SetMemoryPressureLevel(level);
 }
 
 }  // namespace content

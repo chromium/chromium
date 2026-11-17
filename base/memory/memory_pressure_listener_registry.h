@@ -29,11 +29,10 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   MemoryPressureListenerRegistry();
   ~MemoryPressureListenerRegistry();
 
-  // Forwards to MemoryPressureSource::SetMemoryPressureLevel(). Does nothing if
-  // no MemoryPressureSource exists.
+  // Forwards to base::SetMemoryPressureLevel().
   static void NotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);
 
-  // Forwards to MemoryPressureSource::SetMemoryPressureLevelFromAnyThread().
+  // Forwards to base::SetMemoryPressureLevelFromAnyThread().
   static void NotifyMemoryPressureFromAnyThread(
       MemoryPressureLevel memory_pressure_level);
 

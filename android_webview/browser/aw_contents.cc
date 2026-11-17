@@ -60,9 +60,9 @@
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -470,10 +470,9 @@ AwContents::~AwContents() {
   // Chromium, because the app process may continue to run for a long time
   // without ever using another WebView.
   if (instance_count == 0) {
-    // TODO(timvolodine): consider moving NotifyMemoryPressure to
+    // TODO(timvolodine): consider moving this notification to
     // AwContentsLifecycleNotifier (crbug.com/522988).
-    base::MemoryPressureListener::NotifyMemoryPressure(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    base::SetMemoryPressureLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
   browser_view_renderer_.SetCurrentCompositorFrameConsumer(nullptr);
   AwContentsLifecycleNotifier::GetInstance().OnWebViewDestroyed(this);

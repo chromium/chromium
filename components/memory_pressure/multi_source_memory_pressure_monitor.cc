@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -25,8 +26,7 @@ MultiSourceMemoryPressureMonitor* g_monitor = nullptr;
 
 MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
     : current_pressure_level_(base::MEMORY_PRESSURE_LEVEL_NONE),
-      dispatch_callback_(base::BindRepeating(
-          &base::MemoryPressureListener::NotifyMemoryPressure)),
+      dispatch_callback_(base::BindRepeating(&base::SetMemoryPressureLevel)),
       aggregator_(this),
       level_reporter_(current_pressure_level_,
                       "Memory.PressureLevel2",

@@ -14,7 +14,7 @@
 #include "base/debug/profiler.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/notreached.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/utf_string_conversions.h"
@@ -282,13 +282,11 @@ void HandleDebugURL(const GURL& url,
     return;
   }
   if (url == blink::kChromeUIMemoryPressureCriticalURL) {
-    base::MemoryPressureListener::NotifyMemoryPressure(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    base::SetMemoryPressureLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     return;
   }
   if (url == blink::kChromeUIMemoryPressureModerateURL) {
-    base::MemoryPressureListener::NotifyMemoryPressure(
-        base::MEMORY_PRESSURE_LEVEL_MODERATE);
+    base::SetMemoryPressureLevel(base::MEMORY_PRESSURE_LEVEL_MODERATE);
     return;
   }
 }

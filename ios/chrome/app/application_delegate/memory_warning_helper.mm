@@ -4,7 +4,7 @@
 
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 
-#import "base/memory/memory_pressure_listener.h"
+#import "base/memory_coordinator/memory_pressure_source.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
@@ -34,8 +34,7 @@ const CFTimeInterval kOutOfMemoryResetTimeInterval = 5;
 
 - (void)handleMemoryPressure {
   // Notify the system that the memory is critical and something should be done.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::SetMemoryPressureLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   ++_foregroundMemoryWarningCount;
   // Register that we might die because of memory. If we are still alive in

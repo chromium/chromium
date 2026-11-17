@@ -10,8 +10,7 @@
 #include "base/android/self_compaction_manager.h"
 #endif
 #include "base/feature_list.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -190,7 +189,7 @@ void MemoryPurgeManager::PerformMemoryPurge() {
       !purge_inhibited_because_already_purged_with_frozen_page) {
     // In --single-process mode, `PerformMemoryPurge()` does not run on the main
     // thread.
-    base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
+    base::SetMemoryPressureLevelFromAnyThread(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 

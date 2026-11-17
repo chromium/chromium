@@ -57,8 +57,7 @@ TEST(MemoryPressureSourceStandaloneTest, Singleton) {
 
 TEST(MemoryPressureSourceStandaloneTest, SetLevelWithoutSource) {
   // Does nothing, but doesn't crash.
-  MemoryPressureSource::SetMemoryPressureLevelFromAnyThread(
-      MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::SetMemoryPressureLevelFromAnyThread(MEMORY_PRESSURE_LEVEL_CRITICAL);
   {
     MemoryPressureSuppressionToken token;
   }
@@ -119,9 +118,8 @@ TEST_F(MemoryPressureSourceTest, SetMemoryPressureLevelFromAnyThread) {
       }));
 
   thread.task_runner()->PostTask(
-      FROM_HERE,
-      BindOnce(&MemoryPressureSource::SetMemoryPressureLevelFromAnyThread,
-               MEMORY_PRESSURE_LEVEL_CRITICAL));
+      FROM_HERE, BindOnce(&base::SetMemoryPressureLevelFromAnyThread,
+                          MEMORY_PRESSURE_LEVEL_CRITICAL));
   thread.FlushForTesting();
   ASSERT_TRUE(test::RunUntil([&]() { return !received_levels_.empty(); }));
   EXPECT_THAT(received_levels_, ElementsAre(MEMORY_PRESSURE_LEVEL_CRITICAL));

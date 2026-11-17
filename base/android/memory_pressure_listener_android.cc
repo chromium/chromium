@@ -7,7 +7,7 @@
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/task/single_thread_task_runner.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -25,12 +25,11 @@ static void JNI_MemoryPressureListener_OnMemoryPressure(
     return;
   }
 
-  // Forward the notification to the registry of MemoryPressureListeners.
+  // Forward the notification to the MemoryPressureSource.
   base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &base::MemoryPressureListener::NotifyMemoryPressure,
-          static_cast<base::MemoryPressureLevel>(memory_pressure_level)));
+      FROM_HERE, base::BindOnce(&base::SetMemoryPressureLevel,
+                                static_cast<base::MemoryPressureLevel>(
+                                    memory_pressure_level)));
 }
 
 static void JNI_MemoryPressureListener_OnPreFreeze(JNIEnv* env) {

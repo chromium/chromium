@@ -2838,7 +2838,7 @@ _CONFIG = [
             'base::MEMORY_PRESSURE_LEVEL_CRITICAL',
             'base::MEMORY_PRESSURE_LEVEL_NONE',
             'base::MemoryPressureLevel',
-            'base::MemoryPressureListenerRegistry',
+            'base::SetMemoryPressureLevelFromAnyThread',
         ],
     },
     {

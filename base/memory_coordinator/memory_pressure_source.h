@@ -46,15 +46,11 @@ class BASE_EXPORT MemoryPressureSource {
   ~MemoryPressureSource();
 
   // Sets the memory pressure level of the process, and notifies subscribers
-  // unless notifications are suppressed. Intended for use by the producers of
-  // the memory pressure signal.
+  // unless notifications are suppressed. See also the free functions
+  // base::SetMemoryPressureLevel() and
+  // base::SetMemoryPressureLevelFromAnyThread() below, which don't require a
+  // MemoryPressureSource to exist.
   void SetMemoryPressureLevel(MemoryPressureLevel memory_pressure_level);
-
-  // Same as SetMemoryPressureLevel(), but can be invoked from any thread. If
-  // not called from the process's main thread, this will post a task to it.
-  // Does nothing if no MemoryPressureSource exists.
-  static void SetMemoryPressureLevelFromAnyThread(
-      MemoryPressureLevel memory_pressure_level);
 
   // These methods should not be used anywhere else but in memory measurement
   // code, where they are intended to maintain stable conditions across
@@ -113,6 +109,16 @@ class BASE_EXPORT MemoryPressureSource {
 
   THREAD_CHECKER(thread_checker_);
 };
+
+// Same as MemoryPressureSource::SetMemoryPressureLevel(), but does nothing if
+// no MemoryPressureSource exists. Must be called on the main thread.
+BASE_EXPORT void SetMemoryPressureLevel(
+    MemoryPressureLevel memory_pressure_level);
+
+// Same as SetMemoryPressureLevel(), but can be invoked from any thread. If not
+// called from the process's main thread, this will post a task to it.
+BASE_EXPORT void SetMemoryPressureLevelFromAnyThread(
+    MemoryPressureLevel memory_pressure_level);
 
 // Used to suppress memory pressure notifications, as long as an instance of
 // this class exists.
