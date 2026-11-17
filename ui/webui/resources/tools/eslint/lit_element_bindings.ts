@@ -27,7 +27,7 @@ const ENUMERATED_BOOLEAN_IDL_ATTRIBUTES = new Set([
   'translate',
 ]);
 
-const LOCAL_TAG_REGEX = /<([a-zA-Z0-9-]+)[^>]*$/;
+const OPEN_TAG_START_REGEX = /^<([a-zA-Z][a-zA-Z0-9-]*)/;
 const ID_ATTRIBUTE_REGEX = /\bid="([^\s"]+)"/;
 const STATIC_QUESTION_MARK_REGEX = /\s\?(?<boolName>[a-zA-Z0-9-]+)/g;
 const STATIC_TRUE_REGEX = /\s(?<attrName>[a-zA-Z0-9-]+)="true"/g;
@@ -38,34 +38,64 @@ const HTML_COMMENT_REGEX = /<!--[\s\S]*?-->/g;
 const BINDING_REGEX =
     /(\?(?<boolName>[a-zA-Z0-9-]+)|@(?<eventName>[a-zA-Z0-9-]+))="$|(\s+(?<attrName>[a-zA-Z0-9\-]+)|\.(?<propName>[a-zA-Z0-9_-]+))="(?<prefix>[^"]*)$/;
 
-interface TagInfo {
+interface OpenTagInfo {
   tagName: string;
   tagId: string;
+  inQuote: boolean;
 }
 
-function getTagAtOffset(
-    raw: string, offset: number, prevTagName: string,
-    prevTagId: string): TagInfo|null {
-  const before = raw.slice(0, offset);
-  const afterUntilClose = raw.slice(offset).split('>')[0]!;
-  const localTagMatch = LOCAL_TAG_REGEX.exec(before);
-  if (localTagMatch) {
-    const fullTagChunk = localTagMatch[0] + afterUntilClose;
-    const idMatch = ID_ATTRIBUTE_REGEX.exec(fullTagChunk);
-    return {
-      tagName: localTagMatch[1]!,
-      tagId: idMatch ? idMatch[1]! : '',
-    };
+function getOpenTagAtOffset(
+    raw: string, offset: number, prevOpenTag: OpenTagInfo|null): OpenTagInfo|
+    null {
+  let tagName = prevOpenTag ? prevOpenTag.tagName : '';
+  let inheritedTagId = prevOpenTag ? prevOpenTag.tagId : '';
+  let inQuote = prevOpenTag ? prevOpenTag.inQuote : false;
+  let tagStartIndex = prevOpenTag ? 0 : -1;
+
+  for (let i = 0; i < offset; i++) {
+    const ch = raw[i]!;
+    if (tagName !== '') {
+      if (ch === '"') {
+        inQuote = !inQuote;
+      } else if (!inQuote && ch === '>') {
+        tagName = '';
+        inheritedTagId = '';
+        tagStartIndex = -1;
+      }
+    } else if (ch === '<') {
+      const match = OPEN_TAG_START_REGEX.exec(raw.slice(i));
+      if (match) {
+        tagName = match[1]!;
+        inQuote = false;
+        tagStartIndex = i;
+        i += match[0].length - 1;
+      }
+    }
   }
-  if (prevTagName !== '' && !before.includes('>') && !before.includes('<')) {
-    const fullTagChunk = before + afterUntilClose;
-    const idMatch = ID_ATTRIBUTE_REGEX.exec(fullTagChunk);
-    return {
-      tagName: prevTagName,
-      tagId: idMatch ? idMatch[1]! : prevTagId,
-    };
+
+  if (tagName === '') {
+    return null;
   }
-  return null;
+
+  let scanInQuote = inQuote;
+  let tagEndIndex = raw.length;
+  for (let i = offset; i < raw.length; i++) {
+    const ch = raw[i]!;
+    if (ch === '"') {
+      scanInQuote = !scanInQuote;
+    } else if (!scanInQuote && ch === '>') {
+      tagEndIndex = i;
+      break;
+    }
+  }
+
+  const fullTagChunk = raw.slice(tagStartIndex, tagEndIndex);
+  const idMatch = ID_ATTRIBUTE_REGEX.exec(fullTagChunk);
+  return {
+    tagName,
+    tagId: idMatch ? idMatch[1]! : inheritedTagId,
+    inQuote,
+  };
 }
 
 function getElementApparentType(
@@ -313,7 +343,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
 
     function checkStaticAttributes(
         quasi: TSESTree.TemplateElement, rawWithoutComments: string,
-        prevTagName: string, prevTagId: string, tsNode: ts.Node,
+        prevOpenTag: OpenTagInfo|null, tsNode: ts.Node,
         checker: ts.TypeChecker) {
       // Check 1: ?attr attributes not followed by ="${...}".
       for (const match of rawWithoutComments.matchAll(
@@ -326,9 +356,9 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           // Dynamic boolean attribute binding ?attr="${...}".
           continue;
         }
-        const tagInfo = getTagAtOffset(
-            rawWithoutComments, match.index, prevTagName, prevTagId);
-        if (!tagInfo) {
+        const openTag =
+            getOpenTagAtOffset(rawWithoutComments, match.index, prevOpenTag);
+        if (!openTag || openTag.inQuote) {
           continue;
         }
         context.report({
@@ -345,13 +375,13 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
       for (const match of rawWithoutComments.matchAll(STATIC_TRUE_REGEX)) {
         assert.ok(match.groups);
         const attrName = match.groups['attrName']!;
-        const tagInfo = getTagAtOffset(
-            rawWithoutComments, match.index, prevTagName, prevTagId);
-        if (!tagInfo) {
+        const openTag =
+            getOpenTagAtOffset(rawWithoutComments, match.index, prevOpenTag);
+        if (!openTag || openTag.inQuote) {
           continue;
         }
         if (isBooleanAttribute(
-                tagInfo.tagName, tagInfo.tagId, attrName, tsNode, checker)) {
+                openTag.tagName, openTag.tagId, attrName, tsNode, checker)) {
           context.report({
             node: quasi,
             messageId: 'noStaticTrueBooleanAttribute',
@@ -369,13 +399,13 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
         assert.ok(match.groups);
         const prefix = match.groups['prefix']!;
         const attrName = match.groups['attrName']!;
-        const tagInfo = getTagAtOffset(
-            rawWithoutComments, match.index, prevTagName, prevTagId);
-        if (!tagInfo) {
+        const openTag =
+            getOpenTagAtOffset(rawWithoutComments, match.index, prevOpenTag);
+        if (!openTag || openTag.inQuote) {
           continue;
         }
         if (isCamelCaseProperty(
-                tagInfo.tagName, tagInfo.tagId, attrName, tsNode, checker)) {
+                openTag.tagName, openTag.tagId, attrName, tsNode, checker)) {
           context.report({
             node: quasi,
             messageId: 'camelCaseAttribute',
@@ -399,9 +429,9 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           // Dynamic property binding .prop="...${...}...".
           continue;
         }
-        const tagInfo = getTagAtOffset(
-            rawWithoutComments, match.index, prevTagName, prevTagId);
-        if (!tagInfo) {
+        const openTag =
+            getOpenTagAtOffset(rawWithoutComments, match.index, prevOpenTag);
+        if (!openTag || openTag.inQuote) {
           continue;
         }
         context.report({
@@ -436,8 +466,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
 
       if (attrName !== attrName.toLowerCase() || attrName.startsWith('aria-') ||
           attrName.startsWith('data-') ||
-          ENUMERATED_BOOLEAN_IDL_ATTRIBUTES.has(attrName) ||
-          attrName === 'style') {
+          ENUMERATED_BOOLEAN_IDL_ATTRIBUTES.has(attrName)) {
         return;
       }
 
@@ -456,6 +485,12 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
       const targetPropName = propSymbol.name;
       const expectedType =
           checker.getTypeOfSymbolAtLocation(propSymbol, tsNode);
+      const expectedTypeStr = checker.typeToString(expectedType);
+      if (expectedTypeStr === 'CSSStyleDeclaration' ||
+          expectedTypeStr === 'DOMTokenList') {
+        return;
+      }
+
       const targetLitType = getLitPropertyType(expectedType, checker);
 
       // Check 2: Should not bind to an Object or Array property on the element.
@@ -587,8 +622,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
         const checker = services.program.getTypeChecker();
         const templateTsNode = services.esTreeNodeToTSNodeMap.get(node);
         assert.ok(templateTsNode);
-        let currentTagName = '';
-        let currentTagId = '';
+        let currentOpenTag: OpenTagInfo|null = null;
 
         for (let i = 0; i < node.quasis.length; i++) {
           const quasi = node.quasis[i]!;
@@ -596,25 +630,24 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
               quasi.value.raw.replace(HTML_COMMENT_REGEX, '');
 
           checkStaticAttributes(
-              quasi, rawWithoutComments, currentTagName, currentTagId,
-              templateTsNode, checker);
+              quasi, rawWithoutComments, currentOpenTag, templateTsNode,
+              checker);
 
-          // Extract the enclosing opening tag (if any) before the next
-          // expression. `endTagInfo` is null for child/text expressions and the
-          // trailing tail quasi, but must be non-null when BINDING_REGEX
-          // matches an attribute, property, boolean, or event binding below.
-          const endTagInfo = getTagAtOffset(
-              rawWithoutComments, rawWithoutComments.length, currentTagName,
-              currentTagId);
-          currentTagName = endTagInfo ? endTagInfo.tagName : '';
-          currentTagId = endTagInfo ? endTagInfo.tagId : '';
+          // Update the enclosing unclosed opening `<tag ...>` (if any) before
+          // `node.expressions[i]`. When `currentOpenTag` is null (e.g. child
+          // text like `<div>${this.x}</div>` where `<div>` already closed with
+          // `>`, or the trailing tail quasi) or not inside a quoted attribute,
+          // the expression cannot be an attribute, property, or event binding.
+          currentOpenTag = getOpenTagAtOffset(
+              rawWithoutComments, rawWithoutComments.length, currentOpenTag);
+          if (!currentOpenTag || !currentOpenTag.inQuote) {
+            continue;
+          }
 
           const match = BINDING_REGEX.exec(rawWithoutComments);
           if (!match) {
             continue;
           }
-
-          assert.ok(currentTagName !== '');
 
           const expression = node.expressions[i];
           if (!expression) {
@@ -651,7 +684,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           const propBinding = match.groups['propName'];
           if (propBinding) {
             checkPropertyBinding(
-                currentTagName, currentTagId, propBinding, expression, tsNode,
+                currentOpenTag.tagName, currentOpenTag.tagId, propBinding,
+                expression, tsNode,
                 isConcatenatedString ? checker.getStringType() : expressionType,
                 isConcatenatedString ? 'string' : expressionTypeStr, checker);
             continue;
@@ -678,7 +712,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           if (attrName) {
             const litType = getLitPropertyType(expressionType, checker);
             checkAttributeBinding(
-                currentTagName, currentTagId, attrName, expression, tsNode,
+                currentOpenTag.tagName, currentOpenTag.tagId, attrName,
+                expression, tsNode,
                 isConcatenatedString ? checker.getStringType() : expressionType,
                 isConcatenatedString ? 'string' : expressionTypeStr,
                 litType === 'Object' || litType === 'Array', propName, checker);

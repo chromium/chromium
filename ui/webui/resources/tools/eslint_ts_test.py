@@ -1207,6 +1207,16 @@ class EslintTsTest(unittest.TestCase):
         'propertyName': 'fooObject',
         'propertyExpression': '.fooObject=',
       },
+      _PROPERTY_NOT_FOUND_ERROR
+      % {
+        'propertyName': 'afterStaticGt',
+        'tagName': 'hello-world-child',
+      },
+      _PROPERTY_NOT_FOUND_ERROR
+      % {
+        'propertyName': 'afterDynamicGt',
+        'tagName': 'hello-world-child',
+      },
     ]
     for e in errors:
       self.assertTrue(
@@ -1315,6 +1325,30 @@ class EslintTsTest(unittest.TestCase):
         'tagName': 'input',
         'expectedType': 'number',
         'providedType': 'string',
+      },
+      _INCORRECT_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'part',
+        'propertyName': 'part',
+        'propertyExpression': '.part=',
+      },
+      _INCORRECT_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'sandbox',
+        'propertyName': 'sandbox',
+        'propertyExpression': '.sandbox=',
+      },
+      _INCORRECT_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'foo',
+        'propertyName': 'limits',
+        'propertyExpression': '.foo=',
+      },
+      _INCORRECT_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'bar',
+        'propertyName': 'limits',
+        'propertyExpression': '.bar=',
       },
     ]
     for e in non_errors:
