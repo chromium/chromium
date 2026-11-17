@@ -239,6 +239,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   protected onWebsiteInput_() {
     this.website_ = this.$.websiteInput.value;
     if (this.website_.length === 0) {
+      this.domainInfo_ = null;
       this.websiteErrorMessage_ = null;
       return;
     }

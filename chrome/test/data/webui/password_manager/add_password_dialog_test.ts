@@ -137,6 +137,31 @@ suite('AddPasswordDialogTest', function() {
         assertTrue(dialog.$.viewExistingPasswordLink.hidden);
       });
 
+  test(
+      'duplicate username error clears when website is cleared',
+      async function() {
+        passwordManager.data.passwords = [
+          createPasswordEntry({url: 'example.com', username: 'test'}),
+        ];
+        const dialog = document.createElement('add-password-dialog');
+        document.body.appendChild(dialog);
+        await microtasksFinished();
+
+        await setValue(dialog.$.usernameInput, 'test');
+        passwordManager.setGetDomainInfoResponse(
+            createDomainInfo('example.com'));
+        await setValue(dialog.$.websiteInput, 'example.com');
+        assertTrue(dialog.$.usernameInput.invalid);
+        assertFalse(dialog.$.viewExistingPasswordLink.hidden);
+
+        await setValue(dialog.$.websiteInput, '');
+
+        assertFalse(dialog.$.websiteInput.invalid);
+        assertFalse(dialog.$.usernameInput.invalid);
+        assertEquals('', dialog.$.usernameInput.errorMessage);
+        assertTrue(dialog.$.viewExistingPasswordLink.hidden);
+      });
+
   test('show/hide password', async function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
