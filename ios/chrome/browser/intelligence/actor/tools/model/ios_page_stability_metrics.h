@@ -15,6 +15,8 @@
 namespace actor {
 
 // Terminal outcome for the page stability check on iOS.
+// Logged as `IOSPageStabilityOutcome` for the `IOS.Actor.PageStability.Outcome`
+// histogram.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -31,7 +33,12 @@ enum class PageStabilityOutcome {
   kTimeout = 3,
   // The monitored web frame was destroyed before stability was reached.
   kWebFrameGoingAway = 4,
-  kMaxValue = kWebFrameGoingAway,
+  // Monitoring was cancelled because the requester destroyed the monitor while
+  // the web frame was still alive.
+  kCancelled = 5,
+  // Monitoring failed due to a JavaScript dispatch or execution error.
+  kError = 6,
+  kMaxValue = kError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSPageStabilityOutcome)
 
@@ -40,16 +47,18 @@ enum class PageStabilityOutcome {
 class IOSPageStabilityMetrics : public PageStabilityMetrics {
  public:
   IOSPageStabilityMetrics();
-  ~IOSPageStabilityMetrics() override;
 
   IOSPageStabilityMetrics(const IOSPageStabilityMetrics&) = delete;
   IOSPageStabilityMetrics& operator=(const IOSPageStabilityMetrics&) = delete;
+
+  // Marks monitoring as failed due to a JavaScript dispatch or execution error
+  // so subsequent completion records `kError` instead of `kTimeout`.
+  void OnMonitoringError();
 
   // PageStabilityMetrics:
   void Start() override;
   void WillMoveToState(
       page_content_annotations::PageStabilityState state) override;
-  void Flush() override;
 
  private:
   // Records the timing metrics to UMA based on the calculated outcome.
@@ -58,7 +67,6 @@ class IOSPageStabilityMetrics : public PageStabilityMetrics {
   base::TimeTicks start_waiting_time_;
   base::TimeTicks start_monitoring_time_;
   PageStabilityOutcome result_ = PageStabilityOutcome::kUnknown;
-  bool recorded_ = false;
 };
 
 }  // namespace actor

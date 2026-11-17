@@ -144,20 +144,89 @@ TEST_F(IOSPageStabilityMetricsTest, LogsWebFrameGoingAwayOutcomeAndTiming) {
       base::Milliseconds(100), 1);
 }
 
-// Test that flushing twice is idempotent and does not record double metrics.
-TEST_F(IOSPageStabilityMetricsTest, FlushIsIdempotent) {
+// Tests that `IOSPageStabilityMetrics` records `kCancelled` outcome without
+// duration timing histograms when disconnected before completion.
+TEST_F(IOSPageStabilityMetricsTest, LogsCancelledOutcome) {
   IOSPageStabilityMetrics metrics;
   metrics.Start();
 
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  metrics.WillMoveToState(
+      page_content_annotations::PageStabilityState::kStartMonitoring);
+  task_environment_.FastForwardBy(base::Milliseconds(20));
+  metrics.WillMoveToState(
+      page_content_annotations::PageStabilityState::kMojoDisconnected);
+  metrics.WillMoveToState(page_content_annotations::PageStabilityState::kDone);
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSActorPageStabilityOutcomeMetricName,
+      static_cast<base::HistogramBase::Sample32>(
+          PageStabilityOutcome::kCancelled),
+      1);
+  histogram_tester_.ExpectTotalCount(
+      kIOSActorPageStabilityTotalTimeToStableMetricName, 0);
+  histogram_tester_.ExpectTotalCount(
+      kIOSActorPageStabilityTimeFromMonitoringToStableMetricName, 0);
+  histogram_tester_.ExpectTotalCount(
+      kIOSActorPageStabilityTotalTimeToWebFrameGoingAwayMetricName, 0);
+}
+
+// Tests that `IOSPageStabilityMetrics` records `kError` outcome without
+// duration timing histograms when a monitoring error precedes timeout/done.
+TEST_F(IOSPageStabilityMetricsTest, LogsErrorOutcome) {
+  IOSPageStabilityMetrics metrics;
+  metrics.Start();
+
+  task_environment_.FastForwardBy(base::Milliseconds(50));
+  metrics.WillMoveToState(
+      page_content_annotations::PageStabilityState::kStartMonitoring);
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  metrics.OnMonitoringError();
+  metrics.WillMoveToState(
+      page_content_annotations::PageStabilityState::kTimeout);
+  metrics.WillMoveToState(page_content_annotations::PageStabilityState::kDone);
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSActorPageStabilityOutcomeMetricName,
+      static_cast<base::HistogramBase::Sample32>(PageStabilityOutcome::kError),
+      1);
+  histogram_tester_.ExpectTotalCount(
+      kIOSActorPageStabilityTotalTimeToStableMetricName, 0);
+  histogram_tester_.ExpectTotalCount(
+      kIOSActorPageStabilityTimeFromMonitoringToStableMetricName, 0);
+  histogram_tester_.ExpectTotalCount(
+      kIOSActorPageStabilityTotalTimeToWebFrameGoingAwayMetricName, 0);
+}
+
+// Tests that destruction before reaching `kDone` does not record metrics, and
+// reaching `kDone` records the terminal outcome.
+TEST_F(IOSPageStabilityMetricsTest, RecordsMetricsOnlyUponReachingDone) {
+  {
+    IOSPageStabilityMetrics metrics;
+    metrics.Start();
+
+    metrics.WillMoveToState(
+        page_content_annotations::PageStabilityState::kStartMonitoring);
+    metrics.WillMoveToState(
+        page_content_annotations::PageStabilityState::kTimeout);
+  }
+
+  histogram_tester_.ExpectTotalCount(kIOSActorPageStabilityOutcomeMetricName,
+                                     0);
+
+  IOSPageStabilityMetrics metrics;
+  metrics.Start();
   metrics.WillMoveToState(
       page_content_annotations::PageStabilityState::kStartMonitoring);
   metrics.WillMoveToState(
       page_content_annotations::PageStabilityState::kTimeout);
-  metrics.Flush();
-  metrics.Flush();
+  metrics.WillMoveToState(page_content_annotations::PageStabilityState::kDone);
 
-  histogram_tester_.ExpectTotalCount(kIOSActorPageStabilityOutcomeMetricName,
-                                     1);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSActorPageStabilityOutcomeMetricName,
+      static_cast<base::HistogramBase::Sample32>(
+          PageStabilityOutcome::kTimeout),
+      1);
 }
 
 // Test that destructing an unstarted metrics instance does not record metrics.

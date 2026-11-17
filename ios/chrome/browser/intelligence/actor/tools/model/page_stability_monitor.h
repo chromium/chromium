@@ -20,7 +20,7 @@ class WebFrame;
 
 namespace actor {
 
-class PageStabilityMonitorDelegate;
+class IOSPageStabilityMonitorDelegate;
 
 // Monitors page stability signals to determine when a page has settled.
 //
@@ -33,8 +33,9 @@ class PageStabilityMonitor {
   using NotifyWhenStableCallback = base::OnceCallback<void()>;
 
   explicit PageStabilityMonitor(base::WeakPtr<web::WebFrame> target_frame);
-  PageStabilityMonitor(base::WeakPtr<web::WebFrame> target_frame,
-                       std::unique_ptr<PageStabilityMonitorDelegate> delegate);
+  PageStabilityMonitor(
+      base::WeakPtr<web::WebFrame> target_frame,
+      std::unique_ptr<IOSPageStabilityMonitorDelegate> delegate);
   ~PageStabilityMonitor();
 
   // Invokes the given callback when the page is deemed stable enough for an
@@ -97,7 +98,7 @@ class PageStabilityMonitor {
 
   std::vector<State> state_history_ = {State::kInitial};
 
-  std::unique_ptr<PageStabilityMonitorDelegate> delegate_;
+  std::unique_ptr<IOSPageStabilityMonitorDelegate> delegate_;
 
   base::WeakPtrFactory<PageStabilityMonitor> weak_ptr_factory_{this};
 };

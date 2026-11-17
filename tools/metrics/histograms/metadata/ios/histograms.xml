@@ -420,7 +420,9 @@ chromium-metrics-reviews@google.com.
   <owner>kaklilu@google.com</owner>
   <owner>bling-ai-foundations@google.com</owner>
   <summary>
-    Records the final outcome of an iOS page stability monitoring check.
+    Records the final outcome of an iOS page stability monitoring check,
+    including timeouts, frame destruction, requester cancellations, and
+    JavaScript dispatch or execution errors.
 
     Page stability indicates that the web page is 'stable' (i.e. DOM mutations
     have ceased or settled within configured thresholds) so that the Actor can

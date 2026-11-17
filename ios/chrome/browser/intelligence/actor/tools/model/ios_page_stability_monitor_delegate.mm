@@ -36,8 +36,17 @@ IOSPageStabilityMonitorDelegate::IOSPageStabilityMonitorDelegate(
       journal_(std::move(journal)) {}
 
 IOSPageStabilityMonitorDelegate::~IOSPageStabilityMonitorDelegate() {
+  // Clear before the base class destroys `metrics_` to avoid a dangling
+  // `raw_ptr`.
+  ios_metrics_ = nullptr;
   if (!journal_ && async_journal_entry_) {
     async_journal_entry_->mark_as_terminated();
+  }
+}
+
+void IOSPageStabilityMonitorDelegate::OnMonitoringError() {
+  if (ios_metrics_) {
+    ios_metrics_->OnMonitoringError();
   }
 }
 
@@ -86,7 +95,9 @@ void IOSPageStabilityMonitorDelegate::LogEvent(
 
 std::unique_ptr<PageStabilityMetrics>
 IOSPageStabilityMonitorDelegate::CreateMetrics() {
-  return std::make_unique<IOSPageStabilityMetrics>();
+  auto metrics = std::make_unique<IOSPageStabilityMetrics>();
+  ios_metrics_ = metrics.get();
+  return metrics;
 }
 
 }  // namespace actor

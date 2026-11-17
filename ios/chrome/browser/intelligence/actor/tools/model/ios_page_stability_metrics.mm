@@ -13,8 +13,8 @@ namespace actor {
 
 IOSPageStabilityMetrics::IOSPageStabilityMetrics() = default;
 
-IOSPageStabilityMetrics::~IOSPageStabilityMetrics() {
-  RecordTimingMetrics();
+void IOSPageStabilityMetrics::OnMonitoringError() {
+  result_ = PageStabilityOutcome::kError;
 }
 
 #pragma mark - PageStabilityMetrics
@@ -26,10 +26,6 @@ void IOSPageStabilityMetrics::Start() {
 
 void IOSPageStabilityMetrics::WillMoveToState(
     page_content_annotations::PageStabilityState state) {
-  if (recorded_) {
-    return;
-  }
-
   switch (state) {
     case page_content_annotations::PageStabilityState::kInitial:
     case page_content_annotations::PageStabilityState::kMonitorStartDelay:
@@ -47,12 +43,15 @@ void IOSPageStabilityMetrics::WillMoveToState(
       }
       break;
     case page_content_annotations::PageStabilityState::kTimeout:
-      result_ = PageStabilityOutcome::kTimeout;
+      if (result_ != PageStabilityOutcome::kError) {
+        result_ = PageStabilityOutcome::kTimeout;
+      }
       break;
     case page_content_annotations::PageStabilityState::kRenderFrameGoingAway:
       result_ = PageStabilityOutcome::kWebFrameGoingAway;
       break;
     case page_content_annotations::PageStabilityState::kMojoDisconnected:
+      result_ = PageStabilityOutcome::kCancelled;
       break;
     case page_content_annotations::PageStabilityState::kInvokeCallback:
       break;
@@ -62,17 +61,12 @@ void IOSPageStabilityMetrics::WillMoveToState(
   }
 }
 
-void IOSPageStabilityMetrics::Flush() {
-  RecordTimingMetrics();
-}
-
 #pragma mark - Private
 
 void IOSPageStabilityMetrics::RecordTimingMetrics() {
-  if (recorded_ || start_waiting_time_.is_null()) {
+  if (start_waiting_time_.is_null()) {
     return;
   }
-  recorded_ = true;
 
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta total_duration = now - start_waiting_time_;
@@ -98,6 +92,8 @@ void IOSPageStabilityMetrics::RecordTimingMetrics() {
       break;
     case PageStabilityOutcome::kTimeout:
       // We don't record a duration since it'll just be the timeout value.
+    case PageStabilityOutcome::kCancelled:
+    case PageStabilityOutcome::kError:
     case PageStabilityOutcome::kUnknown:
       break;
   }

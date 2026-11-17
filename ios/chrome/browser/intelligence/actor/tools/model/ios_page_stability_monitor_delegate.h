@@ -9,6 +9,7 @@
 #import <string_view>
 #import <vector>
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/page_stability_monitor_delegate.h"
@@ -16,6 +17,8 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 
 namespace actor {
+
+class IOSPageStabilityMetrics;
 
 // The iOS implementation of `PageStabilityMonitorDelegate`.
 class IOSPageStabilityMonitorDelegate : public PageStabilityMonitorDelegate {
@@ -29,6 +32,10 @@ class IOSPageStabilityMonitorDelegate : public PageStabilityMonitorDelegate {
       delete;
   IOSPageStabilityMonitorDelegate& operator=(
       const IOSPageStabilityMonitorDelegate&) = delete;
+
+  // Notifies the active metrics instance that monitoring failed due to a
+  // JavaScript dispatch or execution error.
+  void OnMonitoringError();
 
  protected:
   // PageStabilityMonitorDelegate:
@@ -44,6 +51,8 @@ class IOSPageStabilityMonitorDelegate : public PageStabilityMonitorDelegate {
   // events logged while the async entry is pending are emitted on this track
   // so they are nested inside the async entry.
   uint64_t async_journal_track_uuid_ = 0;
+  // Non-owning pointer to the metrics object owned by the base class.
+  raw_ptr<IOSPageStabilityMetrics> ios_metrics_ = nullptr;
 };
 
 }  // namespace actor

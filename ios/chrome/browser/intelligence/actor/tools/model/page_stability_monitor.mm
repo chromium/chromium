@@ -38,19 +38,24 @@ PageStabilityMonitor::PageStabilityMonitor(
 
 PageStabilityMonitor::PageStabilityMonitor(
     base::WeakPtr<web::WebFrame> target_frame,
-    std::unique_ptr<PageStabilityMonitorDelegate> delegate)
+    std::unique_ptr<IOSPageStabilityMonitorDelegate> delegate)
     : target_frame_(target_frame), delegate_(std::move(delegate)) {
   CHECK(delegate_);
 }
 
 PageStabilityMonitor::~PageStabilityMonitor() {
-  if (state_ == State::kDone) {
+  if (state_ == State::kInitial || state_ == State::kDone) {
     return;
   }
 
-  // If we have a callback, ensure it replies now.
-  OnWebFrameGoingAway();
-  CHECK(state_ == State::kInitial || state_ == State::kDone);
+  if (target_frame_) {
+    // Requester went away while the frame is alive (Desktop:
+    // `kMojoDisconnected`).
+    MoveToState(State::kMojoDisconnected);
+  } else {
+    OnWebFrameGoingAway();
+  }
+  CHECK_EQ(state_, State::kDone);
 }
 
 void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
@@ -103,7 +108,12 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     case State::kStartMonitoring: {
       start_monitoring_time_ = base::TimeTicks::Now();
 
-      if (target_frame_ && target_frame_->GetBrowserState()) {
+      if (!target_frame_) {
+        OnWebFrameGoingAway();
+        break;
+      }
+
+      if (target_frame_->GetBrowserState()) {
         PageStabilityJavaScriptFeature::GetInstance()->WaitForStability(
             target_frame_,
             base::BindOnce(&PageStabilityMonitor::OnStabilityResult,
@@ -112,8 +122,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kTimeout: {
-      final_result_ =
-          ToolExecutionResult(mojom::ActionResultCode::kToolTimeout);
+      if (final_result_.IsOk()) {
+        final_result_ =
+            ToolExecutionResult(mojom::ActionResultCode::kToolTimeout);
+      }
       StopMonitoring();
       MoveToState(State::kInvokeCallback);
       break;
@@ -145,7 +157,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     case State::kInvokeCallback: {
       CHECK(is_stable_callback_);
 
-      // Transition to kDone before running the callback in case the callback
+      // Transition to `kDone` before running the callback in case the callback
       // destroys this object.
       NotifyWhenStableCallback callback = std::move(is_stable_callback_);
       MoveToState(State::kDone);
@@ -160,12 +172,16 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       MoveToState(State::kInvokeCallback);
       break;
     }
+    case State::kMojoDisconnected: {
+      StopMonitoring();
+      MoveToState(State::kDone);
+      break;
+    }
     case State::kDone: {
       Teardown();
       break;
     }
-    // These states are not used for the PageStabilityMonitor on iOS.
-    case State::kMojoDisconnected:
+    // This state is not used for `PageStabilityMonitor` on iOS.
     case State::kWaitForNavigation:
       NOTREACHED();
   }
@@ -202,16 +218,28 @@ base::OnceClosure PageStabilityMonitor::PostMoveToStateClosure(
       MoveToStateClosure(new_state), delay);
 }
 
-// Currently used only for testing.
-//
-// TODO(crbug.com/498991756): Call from this kStartMonitoring state when the DOM
-// is stable.
 void PageStabilityMonitor::OnStabilityResult(ToolExecutionResult result) {
+  // Guard against intermediate terminal states as well as `kDone` because
+  // `CheckStateTransition()` uses a release `CHECK` if a callback ever fires
+  // re-entrantly during `StopMonitoring()`.
   if (state_ == State::kDone || state_ == State::kInvokeCallback ||
-      state_ == State::kTimeout) {
+      state_ == State::kTimeout || state_ == State::kRenderFrameGoingAway ||
+      state_ == State::kMojoDisconnected) {
+    return;
+  }
+  if (result.code() == mojom::ActionResultCode::kFrameWentAway ||
+      !target_frame_) {
+    OnWebFrameGoingAway();
     return;
   }
   final_result_ = result;
+  if (!result.IsOk()) {
+    if (result.code() != mojom::ActionResultCode::kToolTimeout) {
+      delegate_->OnMonitoringError();
+    }
+    OnTimeout();
+    return;
+  }
   if (!monitoring_complete_) {
     monitoring_complete_ = true;
     MoveToState(State::kMonitorCompleted);
@@ -219,7 +247,7 @@ void PageStabilityMonitor::OnStabilityResult(ToolExecutionResult result) {
 }
 
 void PageStabilityMonitor::OnWebFrameGoingAway() {
-  // Don't enter the state machine until NotifyWhenStable is called.
+  // Don't enter the state machine until `NotifyWhenStable()` is called.
   if (state_ == State::kInitial) {
     return;
   }
@@ -241,11 +269,13 @@ void PageStabilityMonitor::CheckStateTransition(State old_state,
           {State::kMonitorStartDelay, {
               State::kStartMonitoring,
               State::kTimeout,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kStartMonitoring, {
               State::kMonitorCompleted,
               State::kTimeout,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kTimeout, {
               State::kInvokeCallback}},
           {State::kMonitorCompleted, {
@@ -254,9 +284,12 @@ void PageStabilityMonitor::CheckStateTransition(State old_state,
           {State::kDelayCallback, {
               State::kInvokeCallback,
               State::kTimeout,
-              State::kRenderFrameGoingAway}},
+              State::kRenderFrameGoingAway,
+              State::kMojoDisconnected}},
           {State::kRenderFrameGoingAway, {
               State::kInvokeCallback}},
+          {State::kMojoDisconnected, {
+              State::kDone}},
           {State::kInvokeCallback, {
               State::kDone}},
           {State::kDone, {}}

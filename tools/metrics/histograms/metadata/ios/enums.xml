@@ -1720,11 +1720,16 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(IOSPageStabilityOutcome) -->
 
 <enum name="IOSPageStabilityOutcome">
-  <int value="0" label="kUnknown"/>
-  <int value="1" label="kStable"/>
-  <int value="2" label="kStableBeforeMinDelay"/>
-  <int value="3" label="kTimeout"/>
-  <int value="4" label="kWebFrameGoingAway"/>
+  <int value="0" label="Unknown page stability outcome"/>
+  <int value="1" label="Page deemed as stable"/>
+  <int value="2"
+      label="Page deemed as stable before the minimum wait duration"/>
+  <int value="3" label="Page stability check timed out"/>
+  <int value="4"
+      label="Web frame went away before the page stability check finished"/>
+  <int value="5"
+      label="Page stability check cancelled while the web frame was alive"/>
+  <int value="6" label="Page stability check failed with a JavaScript error"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/ios_page_stability_metrics.h:IOSPageStabilityOutcome) -->
