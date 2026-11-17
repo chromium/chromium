@@ -116,19 +116,23 @@ namespace internal {
 template <typename Node>
 class LinkedListBaseT;
 
+// Tag struct used to initialize root nodes via constructor overload.
+// A root node should start by pointing to itself.
+struct LinkedListRootNodeTag {};
+
 // Base class for UnsafeLinkNode<T> and SafeLinkNode<T>.
 class BASE_EXPORT LinkNodeBase {
  public:
-  void RemoveFromList();
-
   LinkNodeBase(const LinkNodeBase&) = delete;
   LinkNodeBase& operator=(const LinkNodeBase&) = delete;
 
  protected:
   LinkNodeBase();
-  LinkNodeBase(LinkNodeBase* previous, LinkNodeBase* next);
+  explicit LinkNodeBase(LinkedListRootNodeTag);
   LinkNodeBase(LinkNodeBase&& rhs);
   ~LinkNodeBase() = default;
+
+  void RemoveFromListBase();
 
   // Calling these with |e| as a different link node type as |this| is
   // unsafe. These are protected and only called from the derived template node
@@ -171,14 +175,14 @@ class LinkNodeBaseT : public internal::LinkNodeBase {
 
   Node* next() const { return static_cast<Node*>(this->next_base()); }
 
-  // Cast from the node-type to the value type.
-  const T* value() const { return static_cast<const T*>(this); }
-  T* value() { return static_cast<T*>(this); }
-
  protected:
+  // Cast from the node-type to the value type.
+  const T* value_base() const { return static_cast<const T*>(this); }
+  T* value_base() { return static_cast<T*>(this); }
+
   LinkNodeBaseT() = default;
-  LinkNodeBaseT(Node* previous, Node* next)
-      : internal::LinkNodeBase(previous, next) {}
+  explicit LinkNodeBaseT(LinkedListRootNodeTag is_root)
+      : internal::LinkNodeBase(is_root) {}
   LinkNodeBaseT(LinkNodeBaseT<T, Node>&&) = default;
   ~LinkNodeBaseT() = default;
 };
@@ -206,7 +210,7 @@ class LinkedListBaseT {
   // The "root" node is self-referential, and forms the basis of a circular
   // list (root_.next() will point back to the start of the list,
   // and root_->previous() wraps around to the end of the list).
-  LinkedListBaseT() : root_(&root_, &root_) {}
+  LinkedListBaseT() : root_(LinkedListRootNodeTag()) {}
 
   // Use move constructor with care. Returning a linked list from a function may
   // be unsafe if the nodes are allocated on the stack. This operation is O(1)
@@ -231,9 +235,23 @@ template <typename T>
 class UnsafeLinkNode : public internal::LinkNodeBaseT<T, UnsafeLinkNode<T>> {
  public:
   UnsafeLinkNode() = default;
-  UnsafeLinkNode(UnsafeLinkNode<T>* previous, UnsafeLinkNode<T>* next)
-      : internal::LinkNodeBaseT<T, UnsafeLinkNode<T>>(previous, next) {}
   UnsafeLinkNode(UnsafeLinkNode<T>&&) = default;
+
+  inline void RemoveFromList() { internal::LinkNodeBase::RemoveFromListBase(); }
+
+  inline T* value() {
+    return internal::LinkNodeBaseT<T, UnsafeLinkNode<T>>::value_base();
+  }
+  inline const T* value() const {
+    return internal::LinkNodeBaseT<T, UnsafeLinkNode<T>>::value_base();
+  }
+
+ private:
+  template <typename U>
+  friend class internal::LinkedListBaseT;
+
+  explicit UnsafeLinkNode(internal::LinkedListRootNodeTag is_root)
+      : internal::LinkNodeBaseT<T, UnsafeLinkNode<T>>(is_root) {}
 };
 
 // Basic linked list without any UAF protection.
@@ -255,22 +273,46 @@ template <typename T>
 class SafeLinkNode : public internal::LinkNodeBaseT<T, SafeLinkNode<T>> {
  public:
   SafeLinkNode() = default;
-  SafeLinkNode(SafeLinkNode<T>* previous, SafeLinkNode<T>* next)
-      : internal::LinkNodeBaseT<T, SafeLinkNode<T>>(previous, next) {}
   SafeLinkNode(SafeLinkNode<T>&&) = default;
   ~SafeLinkNode() {
     // A self-referencing node should always be the list root, and is destroyed
     // with the list itself.
-    if (this->next_base() != this || this->previous_base() != this) {
+    if (!is_root_) {
       CHECK_EQ(nullptr, this->next_base());
       CHECK_EQ(nullptr, this->previous_base());
     }
   }
+
+  T* value() {
+    CHECK(!is_root_);
+    return internal::LinkNodeBaseT<T, SafeLinkNode<T>>::value_base();
+  }
+
+  const T* value() const {
+    CHECK(!is_root_);
+    return internal::LinkNodeBaseT<T, SafeLinkNode<T>>::value_base();
+  }
+
+  // The root node of a list cannot be removed. Hide the base implementation
+  // with one that's slightly safer.
+  void RemoveFromList() {
+    CHECK(!is_root_);
+    internal::LinkNodeBase::RemoveFromListBase();
+  }
+
+ private:
+  template <typename U>
+  friend class internal::LinkedListBaseT;
+
+  explicit SafeLinkNode(internal::LinkedListRootNodeTag is_root)
+      : internal::LinkNodeBaseT<T, SafeLinkNode<T>>(is_root), is_root_(true) {}
+
+  const bool is_root_ = false;
 };
 
 // Linked list for use with SafeLinkNode. Guarantees that no dead node will ever
 // be reachable from a live node, no matter what order nodes or lists are
-// destroyed in.
+// destroyed in. Also guarantees that the root node cannot be removed.
 template <typename T>
 class SafeLinkedList : public internal::LinkedListBaseT<SafeLinkNode<T>> {
  public:

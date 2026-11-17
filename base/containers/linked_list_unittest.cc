@@ -505,6 +505,32 @@ TEST(SafeLinkedListTest, ListCrashesIfNodeNotRemovedOnDestruction) {
   list->clear();
 }
 
+TEST(SafeLinkedListTest, CrashesOnDereferenceRoot) {
+  SafeLinkedList<SafeNode> list;
+  SafeNode n1(1);
+  list.Append(&n1);
+  auto* root = list.head()->next();
+  const auto* const_root = root;
+  EXPECT_CHECK_DEATH(root->value());
+  EXPECT_CHECK_DEATH(const_root->value());
+  n1.RemoveFromList();
+  root = list.head();
+  const_root = root;
+  EXPECT_CHECK_DEATH(root->value());
+  EXPECT_CHECK_DEATH(const_root->value());
+}
+
+TEST(SafeLinkedListTest, CrashesOnRemoveRoot) {
+  SafeLinkedList<SafeNode> list;
+  SafeNode n1(1);
+  list.Append(&n1);
+  EXPECT_CHECK_DEATH(list.head()->next()->RemoveFromList());
+  EXPECT_CHECK_DEATH(list.head()->previous()->RemoveFromList());
+  n1.RemoveFromList();
+  EXPECT_CHECK_DEATH(list.head()->RemoveFromList());
+  EXPECT_CHECK_DEATH(list.tail()->RemoveFromList());
+}
+
 class MultipleInheritanceNodeBase {
  public:
   MultipleInheritanceNodeBase() = default;

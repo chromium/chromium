@@ -10,8 +10,8 @@ namespace base::internal {
 
 LinkNodeBase::LinkNodeBase() = default;
 
-LinkNodeBase::LinkNodeBase(LinkNodeBase* previous, LinkNodeBase* next)
-    : previous_(previous), next_(next) {}
+LinkNodeBase::LinkNodeBase(LinkedListRootNodeTag)
+    : previous_(this), next_(this) {}
 
 LinkNodeBase::LinkNodeBase(LinkNodeBase&& rhs) {
   if (&rhs == rhs.next_) {
@@ -36,7 +36,7 @@ LinkNodeBase::LinkNodeBase(LinkNodeBase&& rhs) {
   }
 }
 
-void LinkNodeBase::RemoveFromList() {
+void LinkNodeBase::RemoveFromListBase() {
   previous_->next_ = next_;
   next_->previous_ = previous_;
   // next() and previous() return non-null if and only this node is not in any
