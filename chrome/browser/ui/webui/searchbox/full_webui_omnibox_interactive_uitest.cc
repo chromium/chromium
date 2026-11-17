@@ -171,6 +171,7 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -864,18 +865,21 @@ class FullWebUIOmniboxInteractiveTestBase
                                 "el.selectionEnd === el.value.length");
   }
 
-  // Sends a real key press to the popup for each character of `text`, which
-  // must be lowercase ASCII letters. Unlike `InputWebUIText()`, which sets the
-  // input's value from JS, this goes through the platform's key event routing
-  // to the popup widget and Blink's text editing, as real typing does.
-  auto TypeWebUITextWithKeyPresses(std::string_view text) {
+  // Sends a real key press to a popup WebView (`kPopupWebView` or
+  // `kAimPopupWebView`) for each character of `text`, which must be lowercase
+  // ASCII letters or spaces. Unlike `InputWebUIText()`, which sets the input's
+  // value from JS, this goes through the platform's key event routing to the
+  // popup widget and Blink's text editing, as real typing does.
+  auto TypeWebUITextWithKeyPresses(
+      std::string_view text,
+      const ui::ElementIdentifier& contents_id = kPopupWebView) {
     MultiStep steps;
     for (const char c : text) {
-      CHECK(base::IsAsciiLower(c));
-      AddStep(steps, InAnyContext(SendKeyPress(
-                         kPopupWebView,
-                         static_cast<ui::KeyboardCode>(ui::VKEY_A + (c - 'a')),
-                         ui::EF_NONE)));
+      CHECK(base::IsAsciiLower(c) || c == ' ');
+      const ui::KeyboardCode key =
+          (c == ' ') ? ui::VKEY_SPACE
+                     : static_cast<ui::KeyboardCode>(ui::VKEY_A + (c - 'a'));
+      AddStep(steps, InAnyContext(SendKeyPress(contents_id, key, ui::EF_NONE)));
     }
     return steps;
   }
@@ -10293,6 +10297,7 @@ class FullWebUIOmniboxAimInteractiveTest
                            omnibox::kAimServerEligibilityEnabled,
                            omnibox::kAimFuseboxEligibilityCheckEnabled,
                            omnibox::kComposeboxPersistentAimButtonOmnibox,
+                           omnibox::kComposeboxPersistentAimButtonWithX,
                            features::kWebUILocationBar});
   }
 
@@ -10559,6 +10564,342 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
           },
           true, "StaysOnNtp"));
 }
+
+class FullWebUIOmniboxAimPopupFlowsInteractiveTest
+    : public FullWebUIOmniboxAimInteractiveTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  FullWebUIOmniboxAimPopupFlowsInteractiveTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetEnabledFeatures(/*force_enable_aim=*/true);
+    enabled_features.emplace_back(omnibox::kAimUsePecApi,
+                                  base::FieldTrialParams());
+    std::vector<base::test::FeatureRef> disabled_features = {
+        omnibox::internal::kWebUIOmniboxPopup,
+        omnibox::kAimServerEligibilityEnabled,
+        omnibox::kAimFuseboxEligibilityCheckEnabled,
+        omnibox::kComposeboxPersistentAimButtonOmnibox,
+        omnibox::kComposeboxPersistentAimButtonWithX,
+        // Avoids macOS status bar item creation hangs during flakiness checks.
+        omnibox::kOmniboxEverywhere};
+    if (IsWebUIToolbarEnabled()) {
+      enabled_features.emplace_back(features::kInitialWebUI,
+                                    base::FieldTrialParams());
+      enabled_features.emplace_back(features::kWebUIToolbar,
+                                    base::FieldTrialParams());
+    } else {
+      disabled_features.push_back(features::kWebUIToolbar);
+      disabled_features.push_back(features::kWebUILocationBar);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+  ~FullWebUIOmniboxAimPopupFlowsInteractiveTest() override = default;
+
+  bool IsWebUIToolbarEnabled() const { return GetParam(); }
+
+  void SetUpOnMainThread() override {
+    FullWebUIOmniboxAimInteractiveTestBase::SetUpOnMainThread();
+    // Replace `SearchboxInteractiveTestMixin`'s default suggest interceptor so
+    // zero-prefix requests return `GROUP_MIA_RECOMMENDATIONS` (45000) matches
+    // that `DesktopComposeboxZpsSection` retains for AI Mode ZPS, distinct from
+    // typed query suggestions.
+    TearDownUrlLoaderInterceptor();
+    omnibox::GroupsInfo groups_info;
+    (*groups_info.mutable_group_configs())[omnibox::GROUP_MIA_RECOMMENDATIONS];
+    const std::string encoded_groups_info =
+        base::Base64Encode(groups_info.SerializeAsString());
+    aim_url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            [](const std::string& encoded_groups_info,
+               content::URLLoaderInterceptor::RequestParams* params) {
+              if (params->url_request.url.path() != "/complete/s" &&
+                  params->url_request.url.path() != "/complete/search") {
+                return false;
+              }
+              std::string query;
+              std::string q_param;
+              if (net::GetValueForKeyInQuery(params->url_request.url, "q",
+                                             &q_param)) {
+                query = base::UnescapeURLComponent(
+                    q_param, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+              }
+              const std::string response_json =
+                  query.empty()
+                      ? base::StringPrintf(
+                            R"()]}'
+["", ["%s", "%s"], ["", ""], [], {
+  "google:groupsinfo": "%s",
+  "google:suggestdetail": [{"zl": %d}, {"zl": %d}],
+  "google:suggestrelevance": [601, 600],
+  "google:suggesttype": ["QUERY", "QUERY"]
+}])",
+                            kAimZps1, kAimZps2, encoded_groups_info.c_str(),
+                            omnibox::GROUP_MIA_RECOMMENDATIONS,
+                            omnibox::GROUP_MIA_RECOMMENDATIONS)
+                      : base::StringPrintf(
+                            R"()]}'\n["%s", ["suggestion-1", "suggestion-2"]])",
+                            query.c_str());
+              constexpr std::string_view kHeaders =
+                  "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
+              content::URLLoaderInterceptor::WriteResponse(
+                  kHeaders, response_json, params->client.get());
+              return true;
+            },
+            encoded_groups_info));
+  }
+
+  void TearDownOnMainThread() override {
+    aim_url_loader_interceptor_.reset();
+    FullWebUIOmniboxAimInteractiveTestBase::TearDownOnMainThread();
+  }
+
+ protected:
+  static constexpr char kAimZps1[] = "aim-zps-1";
+  static constexpr char kAimZps2[] = "aim-zps-2";
+
+  const DeepQuery kAimComposebox = {"omnibox-aim-app", "#composebox"};
+  const DeepQuery kAimFirstZpsMatchPrimaryText = {
+      "omnibox-aim-app", "#composebox", "#matches", "#match0", "#primaryText"};
+  const DeepQuery kAimSecondZpsMatchPrimaryText = {
+      "omnibox-aim-app", "#composebox", "#matches", "#match1", "#primaryText"};
+
+  auto WaitForAutocompleteDone() {
+    return PollUntil(
+        [this]() {
+          auto* controller = GetOmniboxControllerForTest();
+          return controller && controller->autocomplete_controller()->done();
+        },
+        "WaitForAutocompleteDone");
+  }
+
+  auto CheckAimInputFocus(bool expected_focus) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimInputFocusChanged);
+    StateChange focus_changed;
+    focus_changed.event = kAimInputFocusChanged;
+    focus_changed.where = kAimInput;
+    focus_changed.test_function = base::StringPrintf(
+        R"((el) => {
+              let is_focused = false;
+              if (el && el.ownerDocument.hasFocus()) {
+                let active = el.ownerDocument.activeElement;
+                while (active?.shadowRoot?.activeElement) {
+                  active = active.shadowRoot.activeElement;
+                }
+                is_focused = (active === el);
+              }
+              return is_focused === %s;
+            })",
+        expected_focus ? "true" : "false");
+    focus_changed.continue_across_navigation = true;
+    return InAnyContext(WaitForStateChange(kAimPopupWebView, focus_changed));
+  }
+
+  // Waits until the AI Mode composebox dropdown is visible and renders the AI
+  // Mode zero-prefix suggestions (`GROUP_MIA_RECOMMENDATIONS`).
+  auto WaitForAimZpsShown() {
+    return Steps(
+        WaitForMatch(kAimPopupWebView, kAimFirstZpsMatchPrimaryText, kAimZps1),
+        WaitForMatch(kAimPopupWebView, kAimSecondZpsMatchPrimaryText, kAimZps2),
+        WaitForJsConditionAt(
+            kAimPopupWebView, kAimComposebox,
+            "(el) => !!el && el.showDropdown && !el.shouldHideDropdown() && "
+            "el.result?.matches?.length >= 2"));
+  }
+
+  // Opens the AI Mode popup from the focused Full WebUI popup by clicking
+  // `#composeButton` with a real mouse click once the initial mouse-forwarding
+  // window ends.
+  auto ClickComposeButtonToOpenAimPopup() {
+    return Steps(
+        InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+        InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+        WaitForPopupToStopForwardingMouseEvents(),
+        ClickPopupElement(kPopupWebView, kComposeButton),
+        UninstrumentWebContents(kPopupWebView), WaitForAimPopupReady(),
+        InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)),
+        CheckAimInputFocus(true));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<content::URLLoaderInterceptor> aim_url_loader_interceptor_;
+};
+
+// Clicking the AI Mode button with empty input opens the AI Mode popup with an
+// empty focused composebox input and AI Mode zero-prefix suggestions.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxAimPopupFlowsInteractiveTest,
+                       ClickAimButtonWithEmptyInputOpensAimPopupWithZps) {
+  RunTestSequence(
+      SetAimEligibleResponse(), FocusOmniboxOnInitialNtp(kTab1),
+      ClickComposeButtonToOpenAimPopup(),
+      InAnyContext(WaitForAimInputValue(kAimPopupWebView, kAimInput, "")),
+      WaitForAimZpsShown());
+}
+
+// Focusing the AI Mode button with Tab and pressing Enter with empty input
+// opens the AI Mode popup with AI Mode zero-prefix suggestions.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxAimPopupFlowsInteractiveTest,
+                       TabEnterAimButtonWithEmptyInputOpensAimPopupWithZps) {
+  RunTestSequence(
+      SetAimEligibleResponse(), FocusOmniboxOnInitialNtp(kTab1),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      WaitForAutocompleteDone(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_TAB, ui::EF_NONE)),
+      WaitForJsConditionAt(
+          kPopupWebView, kPopupSearchbox,
+          "(el) => !!el && (el.isAiModeVirtualFocused() || "
+          "el.shadowRoot?.activeElement === el.$.composeButton)"),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_NONE)
+                       .SetMustRemainVisible(false)),
+      UninstrumentWebContents(kPopupWebView), WaitForAimPopupReady(),
+      InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)),
+      CheckAimInputFocus(true),
+      InAnyContext(WaitForAimInputValue(kAimPopupWebView, kAimInput, "")),
+      WaitForAimZpsShown());
+}
+
+// Typing a query and clicking the AI Mode button with a real mouse click
+// navigates directly to the AI Mode results page (`udm=50`).
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxAimPopupFlowsInteractiveTest,
+                       ClickAimButtonWithInputNavigatesToAiMode) {
+  static constexpr char kQuery[] = "aimquery";
+  RunTestSequence(
+      SetAimEligibleResponse(), FocusOmniboxOnInitialNtp(kTab1),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      TypeWebUITextWithKeyPresses(kQuery),
+      InAnyContext(WaitForWebUIInputValue(kQuery)),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      WaitForPopupToStopForwardingMouseEvents(),
+      ClickPopupElement(kPopupWebView, kComposeButton),
+      WaitForGoogleSearch(kTab1, {{"q", kQuery}, {"udm", "50"}}),
+      WaitForPopupState(OmniboxPopupState::kNone));
+}
+
+// Typing a query, pressing Tab to focus the AI Mode button, and pressing Enter
+// navigates directly to the AI Mode results page (`udm=50`) rather than opening
+// the AI Mode popup or performing a standard web search.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxAimPopupFlowsInteractiveTest,
+                       TabEnterAimButtonWithInputNavigatesToAiMode) {
+  static constexpr char kQuery[] = "aimquery";
+  RunTestSequence(
+      SetAimEligibleResponse(), FocusOmniboxOnInitialNtp(kTab1),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      TypeWebUITextWithKeyPresses(kQuery),
+      InAnyContext(WaitForWebUIInputValue(kQuery)),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      WaitForAutocompleteDone(),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_TAB, ui::EF_NONE)),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => !!el && el.isAiModeVirtualFocused()"),
+      InAnyContext(WaitForWebUIInputValue(kQuery)),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_NONE)
+                       .SetMustRemainVisible(false)),
+      WaitForGoogleSearch(kTab1, {{"q", kQuery}, {"udm", "50"}}),
+      WaitForPopupState(OmniboxPopupState::kNone));
+}
+
+// Pressing Escape repeatedly from the AI Mode popup with typed text on a web
+// page unwinds step by step:
+//   1. Closes the AI Mode popup and hands the draft back to the focused Full
+//      WebUI omnibox input (dropdown collapsed).
+//   2. Clears the draft and restores the page's permanent URL (selected) while
+//      keeping the omnibox focused.
+//   3. Closes the Full WebUI popup and blurs the omnibox back to steady state.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxAimPopupFlowsInteractiveTest,
+                       EscapeFromAimPopupUnwindsInThreeStages) {
+  embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL page_url = embedded_https_test_server().GetURL("/title1.html");
+  const std::string display_url = page_url.spec().substr(strlen("https://"));
+  static constexpr char kDraft[] = "aim draft";
+  static constexpr int kDraftLength = std::char_traits<char>::length(kDraft);
+
+  RunTestSequence(
+      SetAimEligibleResponse(), OpenInitialTabAndFocusOmnibox(kTab1, page_url),
+      ClickComposeButtonToOpenAimPopup(),
+      TypeWebUITextWithKeyPresses(kDraft, kAimPopupWebView),
+      InAnyContext(WaitForAimInputValue(kAimPopupWebView, kAimInput, kDraft)),
+      InAnyContext(WaitForAimSubmitEnabled(kAimPopupWebView)),
+
+      // Stage 1: Escape closes the AIM popup and transfers the draft to the
+      // focused Full WebUI omnibox with the dropdown hidden.
+      InAnyContext(SendKeyPress(kAimPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)
+                       .SetMustRemainVisible(false)),
+      WaitForAimPopupHidden(), WaitForPopupReady(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      WaitForWebUIInputValue(kDraft),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => !!el && !el.dropdownIsVisible"),
+      WaitForOmniboxFocus(true),
+      InAnyContext(CheckWebUIInputSelection(kDraftLength, kDraftLength)),
+      CheckUserInputInProgress(true),
+
+      // Stage 2: Escape clears the transferred draft and restores the permanent
+      // page URL while keeping the omnibox focused.
+      WaitForPopupTransitionLockout(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForWebUIInputValue(display_url),
+      InAnyContext(CheckWebUIInputSelection(0, display_url.length())),
+      WaitForOmniboxFocus(true), CheckUserInputInProgress(false),
+
+      // Stage 3: Escape blurs the omnibox and closes the Full WebUI popup back
+      // to steady state.
+      WaitForPopupTransitionLockout(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_ESCAPE, ui::EF_NONE)
+                       .SetMustRemainVisible(false)),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxReverted(base::UTF8ToUTF16(display_url)),
+      WaitForOmniboxFocus(false));
+}
+
+// Clicking the classic `#cancelIcon` ("X") in the AI Mode popup with text
+// clears the text and shows AI Mode ZPS while keeping the AI Mode popup open
+// and focused; clicking "X" again with empty input closes the AI Mode popup and
+// returns focus to the cleared Full WebUI omnibox input row.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxAimPopupFlowsInteractiveTest,
+                       CancelIconClearsTextToAimZpsThenClosesToOmnibox) {
+  static constexpr char kDraft[] = "aim draft";
+
+  RunTestSequence(
+      SetAimEligibleResponse(), FocusOmniboxOnInitialNtp(kTab1),
+      ClickComposeButtonToOpenAimPopup(), WaitForAimZpsShown(),
+      TypeWebUITextWithKeyPresses(kDraft, kAimPopupWebView),
+      InAnyContext(WaitForAimInputValue(kAimPopupWebView, kAimInput, kDraft)),
+      InAnyContext(WaitForAimSubmitEnabled(kAimPopupWebView)),
+      InAnyContext(WaitForElementToRender(kAimPopupWebView, kCancelIcon)),
+
+      // First "X" click (with text): clears the composebox text, keeps the AIM
+      // popup open and focused, and displays AI Mode ZPS.
+      ClickPopupElement(kAimPopupWebView, kCancelIcon),
+      CheckPopupState(OmniboxPopupState::kAim),
+      InAnyContext(WaitForAimInputValue(kAimPopupWebView, kAimInput, "")),
+      CheckAimInputFocus(true), WaitForAimZpsShown(),
+
+      // Second "X" click (empty input): closes the AIM popup and returns to the
+      // focused, cleared Full WebUI omnibox input row.
+      InAnyContext(WaitForElementToRender(kAimPopupWebView, kCancelIcon)),
+      ClickPopupElement(kAimPopupWebView, kCancelIcon), WaitForAimPopupHidden(),
+      WaitForPopupReady(), WaitForPopupState(OmniboxPopupState::kFull),
+      WaitForWebUIInputValue(""),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => !!el && !el.dropdownIsVisible"),
+      WaitForOmniboxFocus(true), InAnyContext(CheckWebUIInputSelection(0, 0)),
+      CheckUserInputInProgress(false));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxAimPopupFlowsInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUIToolbarEnabled"
+                                             : "WebUIToolbarDisabled";
+                         });
 
 class FullWebUIOmniboxSimplificationInteractiveTest
     : public FullWebUIOmniboxAimInteractiveTestBase {
