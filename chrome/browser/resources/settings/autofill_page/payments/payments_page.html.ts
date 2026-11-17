@@ -99,7 +99,7 @@ export function getHtml(this: SettingsPaymentsPageElement) {
             this.onCanMakePaymentSettingsBooleanControlChange_}">
     </settings-toggle-button>
 
-    <div id="manageLink" class="cr-row">
+    <div id="manageLink" class="cr-row section-row-sublabel">
       <!-- This span lays out the link correctly, relative to the text. -->
       <div class="cr-padded-text">$i18nRaw{manageCreditCardsLabel}</div>
     </div>

@@ -7,6 +7,17 @@
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
+:host-context([settings-refresh-2026]) {
+  .list-frame > .list-item:first-child {
+    border-top-left-radius: var(--cr-card-border-radius);
+    border-top-right-radius: var(--cr-card-border-radius);
+  }
+
+  .list-frame {
+    background-color: transparent;
+  }
+}
+
 .multi-card > .card {
   background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);

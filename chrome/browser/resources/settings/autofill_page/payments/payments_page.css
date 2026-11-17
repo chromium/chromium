@@ -30,10 +30,27 @@
 }
 
 :host-context([settings-refresh-2026]) {
+  .settings-card :has(+ .section-row-sublabel) {
+    border-bottom-left-radius: var(--cr-card-border-radius);
+    border-bottom-right-radius: var(--cr-card-border-radius);
+  }
+
+  .section-row-sublabel {
+    background-color: transparent;
+    color: var(--cr-secondary-text-color);
+    font-weight: 400;
+    min-height: 0;
+  }
+
   #paymentsList {
     border-radius: var(--cr-card-border-radius);
     overflow: hidden;
     padding: 0;
+  }
+
+  #manageLink > .cr-padded-text {
+    padding-block-end: 0;
+    padding-block-start: 12px;
   }
 }
 
