@@ -14,6 +14,9 @@
   display: block;
   position: relative;
   transition: opacity 150ms ease;
+  /* Dragging the window starts on the page, so don't let the pointer select
+   * images or text before the drag begins. Text inputs stay selectable. */
+  user-select: none;
   width: 100%;
 }
 
